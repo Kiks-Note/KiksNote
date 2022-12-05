@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
-import { useFirebase } from "./config/firebase";
-import { collection, doc, getDoc, getDocs } from "firebase/firestore";
-import FirebaseExample from "./FirebaseExample";
+import FirebaseContextProvider from "./config/firebase";
+import RoutesProvider from "./Routes";
 
 function App() {
-  return <FirebaseExample />;
+  return (
+    <FirebaseContextProvider>
+      <RoutesProvider />
+    </FirebaseContextProvider>
+  );
 }
 
 export default App;
