@@ -8,14 +8,26 @@ app.use(cors());
 
 const PORT = process.env.PORT || 5000;
 
-app.post("/addUser", (req, res) => {
-  const data = req.body;
-  db.collection("users").add(data);
-  res.send({ message: "User created successfully" });
+app.post("/inventoryAdd", (req, res) => {
+  const itemRef = req.body.name;
+  const space = " ";
+  const newItemRef = itemRef.replace(space, "_");
+
+  db.doc("/inventory/" + newItemRef)
+    .set({
+      name: req.body.name,
+      quantity: req.body.quantity,
+    })
+    .then(() => {
+      res.send("Item added to inventory");
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
 
-app.get("/users", (req, res) => {
-  db.collection("users")
+app.get("/inventory", (req, res) => {
+  db.collection("inventory")
     .get()
     .then((snapshot) => {
       const data = [];

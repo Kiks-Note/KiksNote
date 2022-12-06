@@ -7,8 +7,8 @@ import FirebaseContextProvider from "./config/firebase";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <FirebaseContextProvider>
-      <App />
-    </FirebaseContextProvider>
+    {/* <FirebaseContextProvider> */}
+    <App />
+    {/* </FirebaseContextProvider> */}
   </React.StrictMode>
 );

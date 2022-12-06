@@ -3,9 +3,9 @@ import RoutesProvider from "./Routes";
 
 function App() {
   return (
-    <FirebaseContextProvider>
-      <RoutesProvider />
-    </FirebaseContextProvider>
+    // <FirebaseContextProvider>
+    <RoutesProvider />
+    // </FirebaseContextProvider>
   );
 }
 
