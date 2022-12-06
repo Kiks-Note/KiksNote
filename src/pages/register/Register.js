@@ -4,10 +4,10 @@ import { useForm } from "react-hook-form";
 function Register() {
     const {handleSubmit} = useForm();
     const onSubmit = (data, r) => {
-        alert(`Thank you for your message from`);
+        alert(`Vérifier votre adresse mail.`);
         const templateId = 'ConfirmMail';
         const serviceID = 'ConfirmKiks';
-        sendConfirm(serviceID, templateId, { from_name: "Kik's Note Confirmation", message_html: "https://www.youtube.com/watch?v=RN1eftSE9xU", reply_to: "davidroquain03@gmail.com" })
+        sendConfirm(serviceID, templateId, { from_name: "Kik's Note", message_html: "http://localhost:3000/Confirmation/0", to_email: "davidroquain03@gmail.com" })
         r.target.reset();
     }
     const sendConfirm = (serviceID, templateId, variables) => {
