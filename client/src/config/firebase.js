@@ -1,8 +1,4 @@
 import { initializeApp } from "firebase/app";
-import "firebase/auth";
-import "firebase/database";
-import "firebase/storage";
-import "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { collection, doc, getFirestore, onSnapshot } from "firebase/firestore";
