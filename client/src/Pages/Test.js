@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Navbar from "../components/navbar/Navbar";
+
 
 function Test() {
   const [users, setUsers] = useState([]);
@@ -11,15 +13,18 @@ function Test() {
   }, []);
 
   return (
-    <div>
-      {users.map((user) => {
-        return (
-          <div key={user.id}>
-            <h1>User name = {user.name}</h1>
-          </div>
-        );
-      })}
-    </div>
+    <>
+      <Navbar  />
+      <div>
+        {users.map((user) => {
+          return (
+            <div key={user.id}>
+              <h1>User name = {user.name}</h1>
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 }
 
