@@ -1,108 +1,83 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect } from 'react';
 
 const Register = () => {
     const [isSignup, setIsSignup] = useState(true);
-    const [form, setForm] = useState({
-        firstName: '',
-        lastName: '',
-        password: '',
-        confirmPassword: '',
-        email: '',
-        birthdate: '',
-        status: ''
-    });
-     
-    const [error, setError] = useState({
-        firstName: '',
-        lastName: '',
-        password: '',
-        confirmPassword: '',
-        email: '',
-        birthdate: '',
-        status: ''
-    })
-     
-    const onInputChange = e => {
-        const { name, value } = e.target;
-        setForm(prev => ({
-          ...prev,
-          [name]: value
-    }));
-        validateForm(e);
-    }
-     
-    const validateForm = e => {
-        let { name, value } = e.target;
-        setError(prev => {
-            const stateObj = { ...prev, [name]: "" };
-     
-        switch (name) {
-            case "firstname":
-                if (!value) {
-                    stateObj[name] = "Veuillez entrer un votre nom";
-                }
-            break;
-
-            case "lastname":
-                if (!value) {
-                    stateObj[name] = "Veuillez entrer votre prénom";
-                }
-            break;
-     
-            case "password":
-                if (!value) {
-                    stateObj[name] = "Veuillez entrer un mot de passe";
-                } else if (form.confirmPassword && value !== form.confirmPassword) {
-                    stateObj["confirmPassword"] = "Le mot de passe ne correspond pas";
-                } else {
-                    stateObj["confirmPassword"] = form.confirmPassword ? "" : error.confirmPassword;
-                }
-            break;
-     
-            case "confirmPassword":
-                if (!value) {
-                    stateObj[name] = "Confirmez le mot de passe ";
-                } else if (form.password && value !== form.password) {
-                    stateObj[name] = "Le mot de passe ne correspond pas";
-                }
-            break;
-
-            case "email":
-                if (!value) {
-                    stateObj[name] = "Veuillez entrer un mail";
-                } else if(!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(value.email)) {
-                    stateObj[name] = "Adresse mail invalide";
-                }
-                // } else if(form.status == "etudiant" && value != /^[^\s@]+@edu\.itescia\.fr$/) {
-                //     stateObj[name] = "Adresse mail étudiant invalide";
-                // }
-            break;
-
-            case "birthdate":
-                if (!value) {
-                    stateObj[name] = "Veuillez entrer une date de naissance";
-                }
-            break;
-
-            case "status":
-                if (!value) {
-                    stateObj[name] = "Veuillez choisir votre status";
-                } else if(value === "etudiant" && form.email != /^[^\s@]+@edu\.itescia\.fr$/) {
-                    stateObj.email = "Adresse mail étudiant invalide";
-                }
-            break;
-     
-            default:
-              break;
-          }
-     
-          return stateObj;
-        });
-      }
 
     const switchMode = () => {
         setIsSignup((prevIsSignup) => !prevIsSignup);
     }
+
+    const initialValues = { 
+        firstName: "", 
+        lastName: "", 
+        password: "", 
+        confirmPassword: "", 
+        email: "", 
+        birthdate: "", 
+        status: "" 
+    };
+
+    const [formValues, setFormValues] = useState(initialValues);
+    const [formErrors, setFormErrors] = useState({});
+    const [isSubmit, setIsSubmit] = useState(false);
+
+    const handleChange = (e) => {
+    const { name, value } = e.target;
+        setFormValues({ ...formValues, [name]: value });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setFormErrors(validate(formValues));
+        setIsSubmit(true);
+    };
+
+    useEffect(() => {
+        console.log(formErrors);
+        if (Object.keys(formErrors).length === 0 && isSubmit) {
+            console.log(formValues);
+        }
+    }, [formErrors]);
+
+    const validate = (values) => {
+        const errors = {};
+        const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        const regexedu = /^[^\s@]+@edu\.itescia\.fr$/;
+
+        if (!values.lastname) {
+            errors.lastname = "Le nom est requis!";
+        }
+        if (!values.firstname) {
+            errors.firstname = "Le prénom est requis!";
+        }
+        if (!values.email) {
+            errors.email = "L'adresse mail est requis !";
+        } else if (!regex.test(values.email)) {
+            errors.email = "Ce n'est pas un format d'e-mail valide !";
+        }
+        if (!values.password) {
+            errors.password = "Mot de passe requis";
+        } else if (values.password.length < 4) {
+            errors.password = "Le mot de passe doit comporter plus de 4 caractères";
+        } else if (values.password.length > 10) {
+            errors.password = "Le mot de passe ne peut pas dépasser plus de 10 caractères";
+        }
+        if(!values.confirmPassword) {
+            errors.confirmPassword = "Confirmez le mot de passe";
+        } else if(values.password != values.confirmPassword) {
+            errors.confirmPassword = "Le mot de passe ne correspond pas";
+        }
+        if(!values.status) {
+            errors.status = "Choisissez le statut"
+        } else if(values.status == "etudiant" && !regexedu.test(values.email)) {
+            errors.email = "Courriel edu introuvable";
+        }
+        if(!values.birthdate) {
+            errors.birthdate = "Remplir";
+        }
+
+        return errors;
+    };
 
     // @edu.itescia.fr
 
@@ -111,126 +86,120 @@ const Register = () => {
             <div className="auth__form-container_fields">
                 <div className="auth__form-container_fields-content">
                     <p>{isSignup ? 'Inscription' : 'Connexion'}</p>
-                    {/* <form onSubmit={handleSubmit}> */}
-                    <form>
-                    {isSignup && (
+                    {Object.keys(formErrors).length === 0 && isSubmit ? (
+                        <div className="ui message success">Signed in successfully</div>
+                        )
+                        : <div className="ui message"></div>
+                        // : (<pre>{JSON.stringify(formValues, undefined, 2)}</pre>)
+                    }
+                    <form onSubmit={handleSubmit}>
+                        {isSignup && (
                         <div className="auth__form-container_fields-content_input">
                             <label htmlFor="lastName"></label>
                             <input 
                                 type="text"
                                 name="lastname" 
-                                placeholder="Prénom"
-                                value={form.lastname}
-                                onChange={onInputChange}
-                                onBlur={validateForm}
-                                required
+                                placeholder="Nom"
+                                value={formValues.lastname}
+                                onChange={handleChange}
                             />
-                            {error.lastName && <span className='err'>{error.lastName}</span>}
+                            <span>{formErrors.lastname}</span>
                         </div>
-                    )}
-                    {isSignup && (
+                        )}
+                        {isSignup && (
                         <div className="auth__form-container_fields-content_input">
                             <label htmlFor="firstName"></label>
                             <input 
                                 type="text"
                                 name="firstname" 
-                                placeholder="Nom"
-                                value={form.firstname}
-                                onChange={onInputChange}
-                                onBlur={validateForm}
-                                required
+                                placeholder="Prénom"
+                                value={formValues.firstname}
+                                onChange={handleChange}
                             />
-                            {error.firstname && <span className='err'>{error.firstname}</span>}
+                            <span>{formErrors.firstname}</span>
                         </div>
-                    )}
-                    <div className="auth__form-container_fields-content_input">
-                        <label htmlFor="mail"></label>
+                        )}
+                        <div className="auth__form-container_fields-content_input">
+                            <label htmlFor="mail"></label>
                             <input 
                                 type="mail"
                                 name="email" 
                                 placeholder="Mail"
-                                value={form.email}
-                                onChange={onInputChange}
-                                onBlur={validateForm}
-                                required
+                                value={formValues.email}
+                                onChange={handleChange}
                             />
-                            {error.email && <span className='err'>{error.email}</span>}
-                    </div>
-                    {isSignup && (
+                            <span>{formErrors.email}</span>
+                        </div>
+                        {isSignup && (
                         <div className="auth__form-container_fields-content_input">
                             <label htmlFor="birthdate"></label>
                             <input 
                                 type="birthdate"
                                 name="birthdate"
                                 placeholder="Date de Naissance"
-                                value={form.birthdate}
-                                onChange={onInputChange}
-                                onBlur={validateForm}
-                                required
+                                value={formValues.birthdate}
+                                onChange={handleChange}
                             />
-                            {error.birthdate && <span className='err'>{error.birthdate}</span>}
+                            <span>{formErrors.birthdate}</span>
                         </div>
-                    )}
-                    <div className="auth__form-container_fields-content_input">
+                        )}
+                        <div className="auth__form-container_fields-content_input">
                         <label htmlFor="password"></label>
                             <input 
                                 type="password"
                                 name="password" 
                                 placeholder="Mot de passe"
-                                onChange={onInputChange}
-                                onBlur={validateForm}
-                                required
+                                value={formValues.password}
+                                onChange={handleChange}
                             />
-                            {error.password && <span className='err'>{error.password}</span>}
-                    </div>
-                    {isSignup && (
+                            <span>{formErrors.password}</span>
+                        </div>
+                        {isSignup && (
                         <div className="auth__form-container_fields-content_input">
-                            <label htmlFor="confirmPassword"></label>
+                        <label htmlFor="confirmPassword"></label>
                             <input 
                                 type="password"
                                 name="confirmPassword" 
                                 placeholder="Confirm Password"
-                                onChange={onInputChange}
-                                onBlur={validateForm}
-                                required
+                                value={formValues.confirmPassword}
+                                onChange={handleChange}
                             />
-                            {error.confirmPassword && <span className='err'>{error.confirmPassword}</span>}
+                            <span>{formErrors.confirmPassword}</span>
                         </div>
-                    )}
-                    {isSignup && (
+                        )}
+                        {isSignup && (
                         <div className="auth__form-container_fields-content_input">
-                            <label htmlFor="status">
-                                <select name="status" 
-                                        onChange={onInputChange}
-                                        onBlur={validateForm} required>
-                                        <option disabled={true} value="">
-                                            --Status--
-                                        </option>
-                                        <option value="etudiant">Étudiant</option>
-                                        <option value="po">PO</option>
-                                        <option value="pedago">Pedago</option>
-                                </select>
-                            </label>
+                        <label htmlFor="status">
+                            <select name="status" 
+                                onChange={handleChange}>
+                                <option disabled={true} value="">
+                                    --Status--
+                                </option>
+                                <option value="etudiant">Étudiant</option>
+                                <option value="po">PO</option>
+                                <option value="pedago">Pedago</option>
+                            </select>
+                        </label>
                         </div>
-                    )}
-                    <div className="auth__form-container_fields-content_button">
-                        <button>{isSignup ? "S'inscrire" : "Connexion"}</button>
-                    </div>
+                        )}
+                        <div className="auth__form-container_fields-content_button">
+                            <button>{isSignup ? "S'inscrire" : "Connexion"}</button>
+                        </div>
                     </form>
-                    <div className="auth__form-container_fields-account">
-                        <p>
-                            {isSignup
-                                ? "Vous avez déjà un compte. " 
-                                : "Pas encore de compte ? Créer en un "
-                            }
-                            <span onClick={switchMode}>
-                                {isSignup ? 'Se connecter' : 'ici'}
-                            </span>
-                        </p>
-                    </div>
+                <div className="auth__form-container_fields-account">
+                <p>
+                    {isSignup
+                    ? "Vous avez déjà un compte. " 
+                    : "Pas encore de compte ? Créer en un "
+                    }
+                <span onClick={switchMode}>
+                    {isSignup ? 'Se connecter' : 'ici'}
+                </span>
+                </p>
                 </div>
             </div>
         </div>
+    </div>
     )
 }
 
