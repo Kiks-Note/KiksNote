@@ -25,7 +25,6 @@ const Login = () => {
   };
 
   useEffect(() => {
-    console.log(formErrors);
     if (Object.keys(formErrors).length === 0 && isSubmit) {
       console.log(formValues);
     }
@@ -50,57 +49,86 @@ const Login = () => {
     return errors;
   };
 
-  // @edu.itescia.fr
   return (
     <div className="Login">
       <div className="Login-header">
-        <div>
-          <h1 style={{ margin: 10 }}>Connexion</h1>
+        <div className="container-login">
+          <h1 className="text-4xl font-extrabold dark:text-white m-4 text-center">
+            Connexion
+          </h1>
           <Divider
             variant="middle"
             style={{ background: "#fff", height: "1px" }}
           />
-          <form>
-            <label
-              for="input-email"
-            >
-              Adresse mail
-            </label>
-            <input
-              id="input-email"
-              type="email"
-              name="email"
-              value={formValues.email}
-              onChange={handleChange}
-              placeholder="votrecompte@edu.esiee-it.fr"
-              required
-            />
-            <span>{formErrors.email}</span>
-            <label
-              for="input-password"
-            >
-              Mot de passe
-            </label>
-            <input
-              id="input-password"
-              type="password"
-              name="password"
-              value={formValues.password}
-              onChange={handleChange}
-              required
-            />
-            <a href="../resetpassword/ResetPassword.js">
-              Mot de passe oublie ?
-            </a>
-            <span>{formErrors.password}</span>
-            <button type="submit" onClick={handleSubmit}>
-              Connexion
-            </button>
+          <form className="p-15">
+            <div className="m-4">
+              <label
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                htmlFor="input-email"
+              >
+                Adresse mail
+              </label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                id="input-email"
+                type="email"
+                name="email"
+                value={formValues.email}
+                onChange={handleChange}
+                placeholder="votrecompte@edu.esiee-it.fr"
+              />
+              <span className="mt-2 text-sm text-red-600 dark:text-red-500">
+                {formErrors.email}
+              </span>
+            </div>
+
+            <div className="m-4">
+              <label
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                htmlFor="input-password"
+              >
+                Mot de passe
+              </label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                id="input-password"
+                type="password"
+                name="password"
+                value={formValues.password}
+                onChange={handleChange}
+                placeholder="votre mot de passe"
+              />
+              <div className="flex flex-col">
+              <span className="mt-4 text-sm text-red-600 dark:text-red-500">
+                  {formErrors.password}
+                </span>
+                <a
+                  className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline pt-4"
+                  href="/resetpassword"
+                >
+                  Mot de passe oublie ?
+                </a>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <button
+                className="bg-[#93258c] hover:bg-[#ab278e] text-white text-base font-bold py-2 px-4 rounded "
+                type="submit"
+                onClick={handleSubmit}
+              >
+                Connexion
+              </button>
+            </div>
           </form>
 
-          <p>
+          <p className="text-sm font-medium text-center m-3">
             Pas encore de compte? Créez-en un{" "}
-            <a href="../register/Register.js">ici</a>
+            <a
+              className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline"
+              href="/signup"
+            >
+              ici
+            </a>
           </p>
         </div>
       </div>
