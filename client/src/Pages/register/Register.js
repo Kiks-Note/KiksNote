@@ -3,11 +3,10 @@ import React, { useState , useEffect } from 'react';
 const Register = () => {
     const [isSignup, setIsSignup] = useState(true);
 
-    const onSubmit = (data, r) => {
+    const onSubmit = (data) => {
         const templateId = 'ConfirmMail';
         const serviceID = 'ConfirmKiks';
-        sendConfirm(serviceID, templateId, { to_name: data.lastName+" "+data.firstName,from_name: "Kik's Note", message_html: "http://localhost:3000/Confirmation/0", to_email: data.mail })
-        r.target.reset();
+        sendConfirm(serviceID, templateId, { to_name: data.lastname+" "+data.firstname,from_name: "Kik's Note", message_html: "http://localhost:3000/Confirmation/0", to_email: data.email })
     }
     const sendConfirm = (serviceID, templateId, variables) => {
         window.emailjs.send(
@@ -16,19 +15,7 @@ const Register = () => {
         ).then(res => {
             alert('Vérifier votre adresse mail pour finaliser votre inscription.')
         })
-            .catch(err => alert('Un problème est survenu pendant votre inscription, nous nous excusons de la gêne occasionée.', err))
-    }
-
-    const handleChange = (e) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log(form);
-        onSubmit(form);
-
-        window.location.reload();
+            .catch(err => {alert('Un problème est survenu pendant votre inscription, nous nous excusons de la gêne occasionée.')})
     }
 
     const switchMode = () => {
@@ -64,13 +51,14 @@ const Register = () => {
         console.log(formErrors);
         if (Object.keys(formErrors).length === 0 && isSubmit) {
             console.log(formValues);
+            onSubmit(formValues);
         }
     }, [formErrors]);
 
     const validate = (values) => {
         const errors = {};
         const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        const regexedu = /^[^\s@]+@edu\.itescia\.fr$/;
+        const regexedu = /^[^\s@]+@edu\.esiee-it\.fr$/;
 
         if (!values.lastname) {
             errors.lastname = "Le nom est requis!";
