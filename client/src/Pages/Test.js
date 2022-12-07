@@ -14,14 +14,14 @@ function Test() {
 
   return (
     <>
-      <Navbar  />
+      <Navbar />
       <div>
         {users.map((user) => {
           return (
             <div key={user.id}>
               <h1>User name = {user.name}</h1>
             </div>
-          );
+          )
         })}
       </div>
     </>

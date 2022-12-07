@@ -3,7 +3,6 @@ import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
@@ -11,12 +10,22 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
+import Link from "@mui/material/Link";
 import AdbIcon from "@mui/icons-material/Adb";
 
-const pages = ["Calendrier", "Boards", "Blog"];
-const settings = ["Profil", "Dashboard", "Déconnexion"];
+const pages = [
+  { id: 1, name: "Calendrier", route: "#" },
+  { id: 2, name: "Blog", route: "#" },
+];
+// ["Calendrier", "Boards", "Blog"];
+const settings = [
+  { id: 1, name: "Profil", route: "#" },
+  { id: 2, name: "Dashboard", route: "#" },
+];
+// ["Profil", "Dashboard", "Déconnexion"];
 
 function ResponsiveAppBar() {
+  // const logo = "/Logo.svg";
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -39,25 +48,8 @@ function ResponsiveAppBar() {
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography>
-
+          {/* <img alt="logo" src={logo} className="logo" /> */}
+          <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
@@ -88,40 +80,27 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.id} onClick={handleCloseNavMenu}>
+                  <Link href={page.route} color="inherit" underline="none">
+                    {page.name}
+                  </Link>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
           <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
+          {/* <img alt="logo" src={logo} className="logo-smart" /> */}
 
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            KIK'S
-          </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.id}
                 onClick={handleCloseNavMenu}
                 sx={{ my: 2, color: "white", display: "block" }}
               >
-                {page}
+                <Link href={page.route} color="inherit" underline="none">
+                  {page.name}
+                </Link>
               </Button>
             ))}
           </Box>
@@ -130,7 +109,10 @@ function ResponsiveAppBar() {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 {/*  METTRE LE LIEN DE LA PHOTO DE L'UTILISATEUR */}
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/.jpg" />
+                <Avatar
+                  alt="Photo de profil"
+                  src="https://thispersondoesnotexist.com/image"
+                />
               </IconButton>
             </Tooltip>
             <Menu
@@ -150,8 +132,10 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+                <MenuItem key={setting.id} onClick={handleCloseUserMenu}>
+                  <Link href={setting.route} underline="none">
+                    {setting.name}
+                  </Link>
                 </MenuItem>
               ))}
             </Menu>
