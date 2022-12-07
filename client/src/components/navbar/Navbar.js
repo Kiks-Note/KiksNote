@@ -6,7 +6,6 @@ import MuiAppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
-import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -101,8 +100,8 @@ export default function MiniDrawer() {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
+      <AppBar position="fixed" open={open}>
+        <Toolbar>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -115,13 +114,17 @@ export default function MiniDrawer() {
           >
             <MenuIcon />
           </IconButton>
-          {/* <IconButton onClick={handleDrawerClose}>
+        </Toolbar>
+      </AppBar>
+      <Drawer variant="permanent" open={open}>
+        <DrawerHeader>
+          <IconButton onClick={handleDrawerClose}>
             {theme.direction === "rtl" ? (
               <ChevronRightIcon />
             ) : (
               <ChevronLeftIcon />
             )}
-          </IconButton> */}
+          </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
@@ -176,6 +179,7 @@ export default function MiniDrawer() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
+       
       </Box>
     </Box>
   );
