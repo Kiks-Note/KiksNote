@@ -4,7 +4,7 @@ import axios from "axios";
 function Test() {
   const [users, setUsers] = useState([]);
   useEffect(() => {
-    axios.get("http://localhost:5000/users").then((res) => {
+    axios.get("http://localhost:5050/users").then((res) => {
       setUsers(res.data);
     });
     console.log(users);
