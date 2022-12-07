@@ -1,22 +1,25 @@
 import * as React from "react";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
+import Person2Icon from "@mui/icons-material/Person2";
+import Link from "@mui/material/Link";
+import PropTypes from "prop-types";
+import HomeIcon from "@mui/icons-material/Home";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import BallotIcon from "@mui/icons-material/Ballot";
 
 const drawerWidth = 240;
 
@@ -50,8 +53,6 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   ...theme.mixins.toolbar,
 }));
 
-
-
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
@@ -69,8 +70,7 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function MiniDrawer() {
-  const theme = useTheme();
+export default function MiniDrawer({ element }) {
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
@@ -97,10 +97,11 @@ export default function MiniDrawer() {
         <Divider />
         <List>
           {[
-            { id: 1, name: "Accueil", route: "#" },
-            { id: 2, name: "Agile", route: "#" },
-            { id: 3, name: "Profile", route: "#" },
-            { id: 4, name: "Board", route: "#" },
+            { id: 1, name: "Accueil", route: "#", icon: <HomeIcon /> },
+            { id: 2, name: "Agile", route: "#", icon: <BallotIcon /> },
+            { id: 3, name: "Profile", route: "#", icon: <Person2Icon /> },
+            { id: 4, name: "Board", route: "#", icon: <DashboardIcon /> },
+            { id: 5, name: "Blog", route: "#", icon: <AlternateEmailIcon /> },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
               <ListItemButton
@@ -117,10 +118,15 @@ export default function MiniDrawer() {
                     justifyContent: "center",
                   }}
                 >
-                  {page.id % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {page.icon}
                 </ListItemIcon>
+
                 <ListItemText
-                  primary={page.name}
+                  primary={
+                    <Link href="#" underline="none" color="dark">
+                      {page.name}
+                    </Link>
+                  }
                   sx={{ opacity: open ? 1 : 0 }}
                 />
               </ListItemButton>
@@ -129,8 +135,15 @@ export default function MiniDrawer() {
         </List>
         <Divider />
         <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
+          {[
+            {
+              id: 1,
+              name: "Déconnexion",
+              route: "#",
+              icon: <LogoutOutlinedIcon />,
+            },
+          ].map((page) => (
+            <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
               <ListItemButton
                 sx={{
                   minHeight: 48,
@@ -145,9 +158,12 @@ export default function MiniDrawer() {
                     justifyContent: "center",
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  {page.icon}
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText
+                  primary={page.name}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
@@ -155,7 +171,12 @@ export default function MiniDrawer() {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
+        <>{element}</>
       </Box>
     </Box>
   );
 }
+
+MiniDrawer.propTypes = {
+  element: PropTypes.func,
+};

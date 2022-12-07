@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Navbar from "../components/navbar/Navbar";
+// import Navbar from "../components/navbar/Navbar";
 
 
 function Test() {
@@ -10,11 +10,10 @@ function Test() {
       setUsers(res.data);
     });
     console.log(users);
-  }, []);
+  }, [users]);
 
   return (
-    <>
-      <Navbar />
+
       <div>
         {users.map((user) => {
           return (
@@ -24,7 +23,6 @@ function Test() {
           )
         })}
       </div>
-    </>
   );
 }
 
