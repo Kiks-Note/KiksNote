@@ -8,7 +8,7 @@ function Test() {
       setUsers(res.data);
     });
     console.log(users);
-  }, []);
+  });
 
   return (
     <div>

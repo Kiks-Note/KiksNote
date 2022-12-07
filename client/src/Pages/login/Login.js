@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./Login.scss";
 
-import Grid from "@mui/material/Grid";
-import Button from "@mui/material/Button";
-import Link from "@mui/material/Link";
 import Divider from "@mui/material/Divider";
-import Box from "@mui/material/Box";
-import {
-  FormControl,
-  InputLabel,
-  Input /*FormHelperText*/,
-} from "@mui/material";
 
 const Login = () => {
   const initialValues = {
@@ -25,7 +16,6 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
-    console.log(name, value);
   };
 
   const handleSubmit = (e) => {
@@ -46,83 +36,74 @@ const Login = () => {
     const regexedu = /^[^\s@]+@edu\.esiee-it\.fr$/;
     const password = "coding";
 
-    if (!regexedu.test(values.email)) {
-      errors.email = "L'adresse mail est incorrect !";
+    if (!values.email) {
+      errors.email = "L'adresse mail est requis !";
+    } else if (!regexedu.test(values.email)) {
+      errors.email = "Ce n'est pas un format d'e-mail valide !";
     }
-    if (password !== values.password) {
+    if (!values.password) {
+      errors.password = "Le mode de passe est requis !";
+    } else if (password !== values.password) {
       errors.password = "Le mot de passe est incorrect!";
     }
-    
+
     return errors;
   };
 
   // @edu.itescia.fr
   return (
     <div className="Login">
-      <header className="Login-header">
-        <Box sx={{ boxShadow: 5 }} style={{ width: "50%", padding: "15px" }}>
+      <div className="Login-header">
+        <div>
           <h1 style={{ margin: 10 }}>Connexion</h1>
           <Divider
             variant="middle"
             style={{ background: "#fff", height: "1px" }}
           />
-          <Grid
-            container
-            direction="column"
-            justifyContent="center"
-            alignItems="center"
-            padding={2}
-          >
-            <form >
-              <InputLabel
-                htmlFor="input-email"
-                style={{ color: "white", fontWeight: "bold" }}
-              >
-                Adresse mail
-              </InputLabel>
-              <Input
-                name="email"
-                type="email"
-                id="input-email"
-                aria-describedby="my-helper-text"
-                style={{ color: "white" }}
-                value={formValues.email}
-                onChange={handleChange}
-              />
-              <span>{formErrors.email}</span>
-              <InputLabel
-                htmlFor="input-password"
-                style={{ color: "white", fontWeight: "bold" }}
-              >
-                Mot de passe
-              </InputLabel>
-              <Input
-                name="password"
-                type="password"
-                id="input-password"
-                aria-describedby="my-helper-text"
-                style={{ color: "white" }}
-                value={formValues.password}
-                onChange={handleChange}
-              />
-              <span>{formErrors.password}</span>
-            </form>
+          <form>
+            <label
+              for="input-email"
+            >
+              Adresse mail
+            </label>
+            <input
+              id="input-email"
+              type="email"
+              name="email"
+              value={formValues.email}
+              onChange={handleChange}
+              placeholder="votrecompte@edu.esiee-it.fr"
+              required
+            />
+            <span>{formErrors.email}</span>
+            <label
+              for="input-password"
+            >
+              Mot de passe
+            </label>
+            <input
+              id="input-password"
+              type="password"
+              name="password"
+              value={formValues.password}
+              onChange={handleChange}
+              required
+            />
+            <a href="../resetpassword/ResetPassword.js">
+              Mot de passe oublie ?
+            </a>
+            <span>{formErrors.password}</span>
+            <button type="submit" onClick={handleSubmit}>
+              Connexion
+            </button>
+          </form>
 
-            {/* <FormHelperText id="my-helper-text">
-                  <Link href="#" underline="none" style={{ color: "white" }}>
-                    Mot de passe oublie ?
-                  </Link>
-                </FormHelperText> */}
-            <button onClick={handleSubmit}>Gz</button>
-          </Grid>
-          <p style={{ fontSize: "12px", marginTop: 0 }}>
+          <p>
             Pas encore de compte? Créez-en un{" "}
-            <Link href="#" underline="none">
-              ici
-            </Link>
+            <a href="../register/Register.js">ici</a>
           </p>
-        </Box>
-      </header>
+        </div>
+      </div>
     </div>
   );
 };
