@@ -1,12 +1,7 @@
-import FirebaseContextProvider from "./config/firebase";
 import RoutesProvider from "./Routes";
 
 function App() {
-  return (
-    // <FirebaseContextProvider>
-    <RoutesProvider />
-    // </FirebaseContextProvider>
-  );
+  return <RoutesProvider />;
 }
 
 export default App;

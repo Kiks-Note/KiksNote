@@ -6,7 +6,7 @@ const { db } = require("./firebase");
 app.use(express.json());
 app.use(cors());
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5050;
 
 app.post("/inventoryAdd", (req, res) => {
   const itemRef = req.body.name;
