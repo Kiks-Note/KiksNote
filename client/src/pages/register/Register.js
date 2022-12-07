@@ -3,18 +3,33 @@ import React, { useState , useEffect } from 'react';
 const Register = () => {
     const [isSignup, setIsSignup] = useState(true);
 
+    const onSubmit = (data) => {
+        const templateId = 'ConfirmMail';
+        const serviceID = 'ConfirmKiks';
+        sendConfirm(serviceID, templateId, { to_name: data.lastname+" "+data.firstname,from_name: "Kik's Note", message_html: "http://localhost:3000/Confirmation/0", to_email: data.email })
+    }
+    const sendConfirm = (serviceID, templateId, variables) => {
+        window.emailjs.send(
+            serviceID, templateId,
+            variables
+        ).then(res => {
+            alert('Vérifier votre adresse mail pour finaliser votre inscription.')
+        })
+            .catch(err => {alert('Un problème est survenu pendant votre inscription, nous nous excusons de la gêne occasionée.')})
+    }
+
     const switchMode = () => {
         setIsSignup((prevIsSignup) => !prevIsSignup);
     }
 
-    const initialValues = { 
-        firstName: "", 
-        lastName: "", 
-        password: "", 
-        confirmPassword: "", 
-        email: "", 
-        birthdate: "", 
-        status: "" 
+    const initialValues = {
+        firstName: "",
+        lastName: "",
+        password: "",
+        confirmPassword: "",
+        email: "",
+        birthdate: "",
+        status: ""
     };
 
     const [formValues, setFormValues] = useState(initialValues);
@@ -36,13 +51,14 @@ const Register = () => {
         console.log(formErrors);
         if (Object.keys(formErrors).length === 0 && isSubmit) {
             console.log(formValues);
+            onSubmit(formValues);
         }
-    }, [formErrors]);
+    });
 
     const validate = (values) => {
         const errors = {};
         const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        const regexedu = /^[^\s@]+@edu\.itescia\.fr$/;
+        const regexedu = /^[^\s@]+@edu\.esiee-it\.fr$/;
 
         if (!values.lastname) {
             errors.lastname = "Le nom est requis!";
@@ -64,12 +80,12 @@ const Register = () => {
         }
         if(!values.confirmPassword) {
             errors.confirmPassword = "Confirmez le mot de passe";
-        } else if(values.password != values.confirmPassword) {
+        } else if(values.password !== values.confirmPassword) {
             errors.confirmPassword = "Le mot de passe ne correspond pas";
         }
         if(!values.status) {
             errors.status = "Choisissez le statut"
-        } else if(values.status == "etudiant" && !regexedu.test(values.email)) {
+        } else if(values.status === "etudiant" && !regexedu.test(values.email)) {
             errors.email = "Courriel edu introuvable";
         }
         if(!values.birthdate) {
@@ -78,8 +94,6 @@ const Register = () => {
 
         return errors;
     };
-
-    // @edu.itescia.fr
 
     return(
         <div className="auth__form-container">
@@ -96,9 +110,9 @@ const Register = () => {
                         {isSignup && (
                         <div className="auth__form-container_fields-content_input">
                             <label htmlFor="lastName"></label>
-                            <input 
+                            <input
                                 type="text"
-                                name="lastname" 
+                                name="lastname"
                                 placeholder="Nom"
                                 value={formValues.lastname}
                                 onChange={handleChange}
@@ -109,9 +123,9 @@ const Register = () => {
                         {isSignup && (
                         <div className="auth__form-container_fields-content_input">
                             <label htmlFor="firstName"></label>
-                            <input 
+                            <input
                                 type="text"
-                                name="firstname" 
+                                name="firstname"
                                 placeholder="Prénom"
                                 value={formValues.firstname}
                                 onChange={handleChange}
@@ -121,9 +135,9 @@ const Register = () => {
                         )}
                         <div className="auth__form-container_fields-content_input">
                             <label htmlFor="mail"></label>
-                            <input 
+                            <input
                                 type="mail"
-                                name="email" 
+                                name="email"
                                 placeholder="Mail"
                                 value={formValues.email}
                                 onChange={handleChange}
@@ -133,7 +147,7 @@ const Register = () => {
                         {isSignup && (
                         <div className="auth__form-container_fields-content_input">
                             <label htmlFor="birthdate"></label>
-                            <input 
+                            <input
                                 type="birthdate"
                                 name="birthdate"
                                 placeholder="Date de Naissance"
@@ -145,9 +159,9 @@ const Register = () => {
                         )}
                         <div className="auth__form-container_fields-content_input">
                         <label htmlFor="password"></label>
-                            <input 
+                            <input
                                 type="password"
-                                name="password" 
+                                name="password"
                                 placeholder="Mot de passe"
                                 value={formValues.password}
                                 onChange={handleChange}
@@ -157,9 +171,9 @@ const Register = () => {
                         {isSignup && (
                         <div className="auth__form-container_fields-content_input">
                         <label htmlFor="confirmPassword"></label>
-                            <input 
+                            <input
                                 type="password"
-                                name="confirmPassword" 
+                                name="confirmPassword"
                                 placeholder="Confirm Password"
                                 value={formValues.confirmPassword}
                                 onChange={handleChange}
@@ -170,7 +184,7 @@ const Register = () => {
                         {isSignup && (
                         <div className="auth__form-container_fields-content_input">
                         <label htmlFor="status">
-                            <select name="status" 
+                            <select name="status"
                                 onChange={handleChange}>
                                 <option disabled={true} value="">
                                     --Status--
@@ -189,7 +203,7 @@ const Register = () => {
                 <div className="auth__form-container_fields-account">
                 <p>
                     {isSignup
-                    ? "Vous avez déjà un compte. " 
+                    ? "Vous avez déjà un compte. "
                     : "Pas encore de compte ? Créer en un "
                     }
                 <span onClick={switchMode}>
