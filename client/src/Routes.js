@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Appel from "./pages/appel/Appel";
+import Appel from "./pages/call/Call";
 import Test from "./pages/Test";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";

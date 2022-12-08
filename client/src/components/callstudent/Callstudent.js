@@ -1,6 +1,6 @@
 import ReactGiphySearchbox from "react-giphy-searchbox";
 import { useEffect, useRef, useState } from "react";
-import "./AppelEleve.scss";
+import "./Callstudent.scss";
 import SendIcon from "@mui/icons-material/Send";
 import GifBoxIcon from "@mui/icons-material/GifBox";
 import Popup from "reactjs-popup";
