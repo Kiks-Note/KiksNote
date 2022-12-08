@@ -1,4 +1,5 @@
 import React, { useState , useEffect } from 'react';
+import { Link } from "react-router-dom";
 
 const Register = () => {
     const [isSignup, setIsSignup] = useState(true);
@@ -215,7 +216,9 @@ const Register = () => {
                     : "Pas encore de compte ? Créer en un "
                     }
                 <span onClick={switchMode}>
-                    {isSignup ? 'Se connecter' : 'ici'}
+                    {isSignup ? 
+                    <Link to="/login">Se connecter</Link>
+                    : <Link to="/register">ici</Link>}
                 </span>
                 </p>
                 </div>
