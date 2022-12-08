@@ -1,0 +1,88 @@
+.ContentProf{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.ContentInfo{
+    display: flex;
+    height: 60%;
+}
+
+.Timer{
+    height: 20%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.Timer h1 {
+    font-size: 40px;
+}
+
+.DivQr{
+    display: flex;
+    align-items: center;
+    margin: 2rem;
+}
+
+.Qrcode{
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    max-height: 480px;
+}
+
+.DivList {
+    display: flex;
+    max-width: 30%;
+    flex-direction: column;
+    justify-content: space-around;
+    margin: 2rem;
+}
+
+.ListUser {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.UserItem {
+    width: 20%;
+    margin: 0.5rem;
+    flex: 1;
+    text-align: center;
+}
+
+.Chat{
+    width: 100%;
+    height: 100%;
+    // border: 0.1em;
+    // border-radius: 8px;
+    // border-color: black;
+    // border-style: solid ;
+    overflow-y: scroll;
+}
+
+.DivChat{
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem;
+}
+
+.ChatContent {
+    display: flex;
+    flex-direction: column;
+    border: 0.1em;
+    margin: 0.2em;
+    padding: 0.2em;
+    border-radius: 8px;
+    border-color: black;
+    border-style: solid ;
+}
+
+.ChatContentHeader{
+    display: flex;
+    justify-content: space-between;
+}
