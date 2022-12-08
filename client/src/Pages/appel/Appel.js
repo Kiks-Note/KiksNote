@@ -2,7 +2,7 @@ import AppelProf from "../../components/appelprof/AppelProf";
 import AppelEleve from "../../components/appeleleve/AppelEleve";
 
 function Appel() {
-  const admin = false;
+  const admin = true;
   return (
     <div>{admin ? <AppelProf></AppelProf> : <AppelEleve></AppelEleve>}</div>
   );
