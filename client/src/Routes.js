@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Test from "./Pages/Test";
+import Register from "./Pages/register/Register"
 import PrivateRoutes from "./Utils/PrivateRoutes";
 
 function RoutesProvider() {
@@ -10,6 +11,7 @@ function RoutesProvider() {
 
         {/* <Route path="/login" element={<Login />} /> */}
         {/* <Route path="/register" element={<Register />} /> */}
+        <Route path="/register" element={<Register />} />
         <Route path="/test" element={<Test />} />
 
         <Route element={<PrivateRoutes />}>
