@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Call from "./pages/call/Call";
+import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
 
@@ -14,6 +15,7 @@ function RoutesProvider() {
 
         <Route element={<PrivateRoutes />}>
           <Route path="/call" element={<Navbar element={<Call />} />} />
+          <Route path="/groups" element={<Navbar element={<Groups />} />} />
           {/* <Route path="/" exact element={<Home />} /> */}
         </Route>
       </Routes>
