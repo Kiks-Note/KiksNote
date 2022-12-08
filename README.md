@@ -14,18 +14,17 @@ Add credentials.json in KiksNote/server for FireBase
   git pull
 ```
 
-then
+then in 2 different terminals
 
 ```bash
   cd server
   yarn install
   yarn run dev
-  cd ..
-
+```
+```bash
   cd client
   yarn install
   yarn start
-  cd ..
 ```
 
 # Good practices
@@ -40,12 +39,12 @@ All your commits must be related to an Issue. Please add tags and assignees when
 
 ### Branch naming
 
-    type/group/title
+    type/title
 
 e.g.
 
-    feat/board/sprint
-    docs/commun/readme
+    feat/blog
+    docs/readme
 
 ### Commit naming
 
@@ -53,8 +52,16 @@ e.g.
 
 e.g.
 
-    #14 feat/new readme with setup and good practices
+    #3 style/drawer
     #7 fix/comment code for firebase
+
+or for the last commit of the issue
+
+    close #issue type/title
+
+e.g.
+
+    close #14 docs/finished readme
 
 ### Available types  
 
