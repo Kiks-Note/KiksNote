@@ -7,6 +7,7 @@ import {
   validateCaptcha
 } from "react-simple-captcha";
 
+// Create the captcha of 10 characters using a class
 class CaptchaTest extends Component {
   componentDidMount() {
     loadCaptchaEnginge(10);
@@ -36,7 +37,9 @@ class CaptchaTest extends Component {
   }
 }
 
+// Login page
 const Login = () => {
+  // Initiate all values from the login form to null
   const initialValues = {
     email: "",
     password: "",
@@ -46,11 +49,13 @@ const Login = () => {
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
 
+  // Set the initial value to input value
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
   };
 
+  // On submit, check the captcha and if input values are equal to database value
   const handleSubmit = (e) => {
     e.preventDefault();
     let user_captcha = document.getElementById("user_captcha_input").value;
@@ -73,6 +78,7 @@ const Login = () => {
     }
   });
 
+  // Check if an input value isn't set or is incorrect 
   const verifError = (values) => {
     const errors = {};
     const regexedu = /^[^\s@]+@edu\.esiee-it\.fr$/;
@@ -98,6 +104,7 @@ const Login = () => {
     return errors;
   };
 
+  // return the page
   return (
     <div className="Login">
       <div className="Login-header">
@@ -110,6 +117,7 @@ const Login = () => {
             style={{ background: "#fff", height: "1px" }}
           />
           <form className="p-15">
+            {/* mail adress label and input */}
             <div className="m-4">
               <label
                 id="label-email"
@@ -131,7 +139,7 @@ const Login = () => {
                 {formErrors.email}
               </span>
             </div>
-
+            {/* password label and input */}
             <div className="m-4">
               <label
                 id="label-password"
@@ -161,10 +169,10 @@ const Login = () => {
                 </a>
               </div>
             </div>
+            {/* Get the captcha from the class CaptchaTest */}
             <div class="m-4">
               <CaptchaTest />
             </div>
-            <div></div>
             <div className="flex justify-center">
               <button
                 id="btn-login"
