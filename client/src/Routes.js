@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Call from "./pages/call/Call";
-import Groups from "./pages/groups/Groups";
+import Call from "./Pages/call/Call";
+import Groups from "./Pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
 
