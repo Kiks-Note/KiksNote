@@ -218,7 +218,7 @@ const Register = () => {
                 <span onClick={switchMode}>
                     {isSignup ? 
                     <Link to="/login">Se connecter</Link>
-                    : <Link to="/register">ici</Link>}
+                    : <Link to="/signup">ici</Link>}
                 </span>
                 </p>
                 </div>
