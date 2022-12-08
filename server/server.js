@@ -16,7 +16,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 5050;
+const PORT = process.env.PORT || 4000;
 
 require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
 

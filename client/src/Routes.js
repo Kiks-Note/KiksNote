@@ -1,6 +1,7 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Test from "./pages/Test";
-import PrivateRoutes from "./utils/PrivateRoutes";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Appel from "./Pages/appel/Appel";
+import Test from "./Pages/Test";
+import PrivateRoutes from "./Utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
 
 import Home from "./pages/home/Home.js";
@@ -21,20 +22,16 @@ function RoutesProvider() {
                 {/*<Route path="/" element={<Navbar element={<Test/>}/>}/>*/}
                 {/*<Route path="/test" element={<Navbar element={<Test/>}/>}/>*/}
 
-
-                {/* Write here route that you don't need to be login*/}
-
-
-                <Route element={<PrivateRoutes/>}>
-                    {/* Write here route that you need to be login*/}
-
-                    <Route path="/" element={<Home/>}/>
+        <Route element={<PrivateRoutes />}>
+          <Route path="/appel" element={<Appel/>}/>
+          {/* <Route path="/" exact element={<Home />} /> */}
+                              <Route path="/" element={<Home/>}/>
                     <Route path="/blog" element={<Blog/>}/>
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 
-                </Route>
-            </Routes>
-        </BrowserRouter>
-    );
 }
 
 export default RoutesProvider;
