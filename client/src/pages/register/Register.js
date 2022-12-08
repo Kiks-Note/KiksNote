@@ -57,22 +57,30 @@ const Register = () => {
 
     const validate = (values) => {
         const errors = {};
-        const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-        const regexedu = /^[^\s@]+@edu\.esiee-it\.fr$/;
+        const user_regex = /^\[A-z\][A-z0-9-_]{3,23}$/;
+        const pwd_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
+        const email_regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+        const emailedu_regex = /^[^\s@]+@edu\.esiee-it\.fr$/;
 
         if (!values.lastname) {
             errors.lastname = "Le nom est requis!";
+        } else if(!user_regex.test(values.lastname)) {
+            errors.firstname = "Format invalide"
         }
-        if (!values.firstname) {
+        if (values.firstname) {
             errors.firstname = "Le prénom est requis!";
+        } else if(!user_regex.test(values.firstname)) {
+            errors.firstname = "Format invalide"
         }
         if (!values.email) {
             errors.email = "L'adresse mail est requis !";
-        } else if (!regex.test(values.email)) {
+        } else if (!email_regex.test(values.email)) {
             errors.email = "Ce n'est pas un format d'e-mail valide !";
         }
         if (!values.password) {
             errors.password = "Mot de passe requis";
+        } else if (!pwd_regex) {
+            errors.password = "Format mot de passe invalide";
         } else if (values.password.length < 4) {
             errors.password = "Le mot de passe doit comporter plus de 4 caractères";
         } else if (values.password.length > 10) {
@@ -85,7 +93,7 @@ const Register = () => {
         }
         if(!values.status) {
             errors.status = "Choisissez le statut"
-        } else if(values.status === "etudiant" && !regexedu.test(values.email)) {
+        } else if(values.status === "etudiant" && !emailedu_regex.test(values.email)) {
             errors.email = "Courriel edu introuvable";
         }
         if(!values.birthdate) {
