@@ -1,6 +1,7 @@
 import React, { useState, useEffect, Component } from "react";
 import "./Login.scss";
 import Divider from "@mui/material/Divider";
+import { useNavigate } from "react-router-dom";
 
 import {
   loadCaptchaEnginge,
@@ -47,6 +48,7 @@ const Login = (props) => {
     password: "",
   };
 
+  const navigate = useNavigate();
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
@@ -77,6 +79,7 @@ const Login = (props) => {
   useEffect(() => {
     if (Object.keys(formErrors).length === 0 && isSubmit) {
       console.log(formValues);
+      navigate("/home");
     }
   });
 
