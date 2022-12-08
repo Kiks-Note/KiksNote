@@ -20,6 +20,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import BallotIcon from "@mui/icons-material/Ballot";
+ 
 
 const drawerWidth = 240;
 
@@ -123,7 +124,7 @@ export default function MiniDrawer({ element }) {
 
                 <ListItemText
                   primary={
-                    <Link href="#" underline="none" color="dark">
+                    <Link href={page.route} underline="none" color="dark">
                       {page.name}
                     </Link>
                   }
@@ -134,6 +135,7 @@ export default function MiniDrawer({ element }) {
           ))}
         </List>
         <Divider />
+        {/* Information for List to Logout */}
         <List>
           {[
             {
@@ -161,7 +163,11 @@ export default function MiniDrawer({ element }) {
                   {page.icon}
                 </ListItemIcon>
                 <ListItemText
-                  primary={page.name}
+                  primary={
+                    <Link href={page.route} underline="none" color="dark">
+                      {page.name}
+                    </Link>
+                  }
                   sx={{ opacity: open ? 1 : 0 }}
                 />
               </ListItemButton>
