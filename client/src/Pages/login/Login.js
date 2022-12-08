@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./Login.scss";
 import Divider from "@mui/material/Divider";
-import Captcha from "demos-react-captcha";
 import CaptchaTest from "./CaptchaTest";
 
 const Login = () => {
@@ -35,12 +34,12 @@ const Login = () => {
     const errors = {};
     const regexedu = /^[^\s@]+@edu\.esiee-it\.fr$/;
     const password = "coding";
-    const label_email = document.getElementById("label-email");
-    const label_password = document.getElementById("label-password");
-    const input_email = document.getElementById("input-email");
-    const input_password = document.getElementById("input-password");
+    // const label_email = document.getElementById("label-email");
+    // const label_password = document.getElementById("label-password");
+    // const input_email = document.getElementById("input-email");
+    // const input_password = document.getElementById("input-password");
 
-    const button = document.getElementById("btn-login");
+    // const button = document.getElementById("btn-login");
 
     if (!values.email) {
       errors.email = "L'adresse mail est requis !";

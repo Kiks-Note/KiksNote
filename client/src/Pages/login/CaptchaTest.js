@@ -14,7 +14,7 @@ class CaptchaTest extends Component {
   doSubmit = () => {
     let user_captcha = document.getElementById("user_captcha_input").value;
 
-    if (validateCaptcha(user_captcha) == true) {
+    if (validateCaptcha(user_captcha) === true) {
       alert("Captcha Matched");
       loadCaptchaEnginge(6);
       document.getElementById("user_captcha_input").value = "";
