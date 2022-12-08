@@ -17,3 +17,24 @@
   height: 500px;
   justify-content: center;
 }
+
+#reload_href{
+  font-size: 15px;
+  color: white !important;
+  border: 1px solid white;
+  padding: 10px;
+  border-radius: 10px;
+  width: 30%;
+  margin-left: 35%;
+}
+
+.box-captcha{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#canv{
+  width: 100%;
+  height: 60px;
+}

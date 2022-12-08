@@ -1,7 +1,40 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Component } from "react";
 import "./Login.scss";
 import Divider from "@mui/material/Divider";
-import CaptchaTest from "./CaptchaTest";
+import {
+  loadCaptchaEnginge,
+  LoadCanvasTemplate,
+  validateCaptcha
+} from "react-simple-captcha";
+
+class CaptchaTest extends Component {
+  componentDidMount() {
+    loadCaptchaEnginge(10);
+  }
+
+  render() {
+    return (
+      <div>
+        <div>
+          <div class="box-captcha">
+            <div>
+              <LoadCanvasTemplate />
+            </div>
+            <div>
+              <input
+                placeholder="Enter Captcha"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-5 mb-5 w-full"
+                id="user_captcha_input"
+                name="user_captcha_input"
+                type="text"
+              ></input>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
 
 const Login = () => {
   const initialValues = {
@@ -20,6 +53,16 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    let user_captcha = document.getElementById("user_captcha_input").value;
+
+    if (validateCaptcha(user_captcha) === true) {
+      alert("Captcha Matched");
+      loadCaptchaEnginge(6);
+      document.getElementById("user_captcha_input").value = "";
+    } else {
+      alert("Captcha Does Not Match");
+      document.getElementById("user_captcha_input").value = "";
+    }
     setFormErrors(verifError(formValues));
     setIsSubmit(true);
   };
@@ -118,7 +161,7 @@ const Login = () => {
                 </a>
               </div>
             </div>
-            <div>
+            <div class="m-4">
               <CaptchaTest />
             </div>
             <div></div>
@@ -148,5 +191,7 @@ const Login = () => {
     </div>
   );
 };
+
+
 
 export default Login;
