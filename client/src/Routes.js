@@ -12,7 +12,7 @@ function RoutesProvider() {
         {/* <Route path="/login" element={<Login />} /> */}
         {/* <Route path="/register" element={<Register />} /> */}
         <Route path="/test" element={<Test />} />
-        <Route path="/resetPass" element={<ResetPassword />} />
+        <Route path="/askresetpass" element={<ResetPassword />} />
 
 
         <Route element={<PrivateRoutes />}>
