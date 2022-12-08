@@ -1,5 +1,5 @@
-import AppelProf from "../../components/appelprof/AppelProf";
-import AppelEleve from "../../components/appeleleve/AppelEleve";
+import AppelProf from "../../components/callteacher/Callteacher";
+import AppelEleve from "../../components/callstudent/Callstudent";
 
 function Appel() {
   const admin = true;

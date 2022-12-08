@@ -1,4 +1,4 @@
-import "./AppelProf.scss";
+import "./Callteacher.scss";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 
