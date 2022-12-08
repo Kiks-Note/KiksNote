@@ -1,45 +1,153 @@
-import * as React from "react";
-import './Login.scss';
+import React, { useState, useEffect } from "react";
+import "./Login.scss";
+import Divider from "@mui/material/Divider";
+import Captcha from "demos-react-captcha";
+import CaptchaTest from "./CaptchaTest";
 
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import Link from '@mui/material/Link';
-import Divider from '@mui/material/Divider';
-import Box from '@mui/material/Box';
-import { FormControl, InputLabel, Input, FormHelperText} from '@mui/material';
+const Login = () => {
+  const initialValues = {
+    email: "",
+    password: "",
+  };
 
-function Login(){
-    return(
-      <div className="Login">
-        <header className="Login-header">
-        <Box sx={{ boxShadow: 5}} style={{width:"50%", padding:"15px"}}>
-            <h1 style={{margin:10}}>Connexion</h1>
-            <Divider variant="middle" style={{background: "#fff", height: "1px"}}/>
-            <FormControl onSubmit="">
-              <Grid
-                container
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-                padding={2}
+  const [formValues, setFormValues] = useState(initialValues);
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmit, setIsSubmit] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setFormErrors(verifError(formValues));
+    setIsSubmit(true);
+  };
+
+  useEffect(() => {
+    if (Object.keys(formErrors).length === 0 && isSubmit) {
+      console.log(formValues);
+    }
+  });
+
+  const verifError = (values) => {
+    const errors = {};
+    const regexedu = /^[^\s@]+@edu\.esiee-it\.fr$/;
+    const password = "coding";
+    const label_email = document.getElementById("label-email");
+    const label_password = document.getElementById("label-password");
+    const input_email = document.getElementById("input-email");
+    const input_password = document.getElementById("input-password");
+
+    const button = document.getElementById("btn-login");
+
+    if (!values.email) {
+      errors.email = "L'adresse mail est requis !";
+    } else if (!regexedu.test(values.email)) {
+      errors.email = "Ce n'est pas un format d'e-mail valide !";
+    }
+    if (!values.password) {
+      errors.password = "Le mode de passe est requis !";
+    } else if (password !== values.password) {
+      errors.password = "Le mot de passe est incorrect!";
+    }
+
+    return errors;
+  };
+
+  return (
+    <div className="Login">
+      <div className="Login-header">
+        <div className="container-login">
+          <h1 className="text-4xl font-extrabold dark:text-white m-4 text-center">
+            Connexion
+          </h1>
+          <Divider
+            variant="middle"
+            style={{ background: "#fff", height: "1px" }}
+          />
+          <form className="p-15">
+            <div className="m-4">
+              <label
+                id="label-email"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                htmlFor="input-email"
               >
-                <FormControl style={{margin:10, width:"300px"}}>
-                  <InputLabel htmlFor="my-input" style={{color:"white", fontWeight:"bold"}}>Adresse mail</InputLabel>
-                  <Input type="email" id="my-input" aria-describedby="my-helper-text" style={{color:"white"}} />
-                </FormControl>
-                <FormControl style={{margin:10, width:"300px"}}>
-                  <InputLabel htmlFor="my-input" style={{color:"white", fontWeight:"bold"}}>Mot de passe</InputLabel>
-                  <Input type="password" id="my-input" aria-describedby="my-helper-text" style={{color:"white"}} />
-                  <FormHelperText id="my-helper-text"><Link href="#" underline="none" style={{color:"white"}}>Mot de passe oublie ?</Link></FormHelperText>
-                </FormControl>
-                <Button type="submit" style={{backgroundColor: "#fff", color: "black", fontWeight:"bold", textTransform: 'none', margin:10}} variant="contained">Connexion</Button>
-              </Grid>
-            </FormControl>
-            <p style={{fontSize:"12px", marginTop:0}}>Pas encore de compte? Créez-en un <Link href="#" underline="none">ici</Link></p>
-          </Box>
-        </header>
+                Adresse mail
+              </label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                id="input-email"
+                type="email"
+                name="email"
+                value={formValues.email}
+                onChange={handleChange}
+                placeholder="votrecompte@edu.esiee-it.fr"
+              />
+              <span className="mt-2 text-sm text-red-600 dark:text-red-500">
+                {formErrors.email}
+              </span>
+            </div>
+
+            <div className="m-4">
+              <label
+                id="label-password"
+                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                htmlFor="input-password"
+              >
+                Mot de passe
+              </label>
+              <input
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                id="input-password"
+                type="password"
+                name="password"
+                value={formValues.password}
+                onChange={handleChange}
+                placeholder="votre mot de passe"
+              />
+              <div className="flex flex-col">
+                <span className="mt-4 text-sm text-red-600 dark:text-red-500">
+                  {formErrors.password}
+                </span>
+                <a
+                  className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline pt-4"
+                  href="/resetpassword"
+                >
+                  Mot de passe oublie ?
+                </a>
+              </div>
+            </div>
+            <div>
+              <CaptchaTest />
+            </div>
+            <div></div>
+            <div className="flex justify-center">
+              <button
+                id="btn-login"
+                className="bg-[#93258c] hover:bg-[#ab278e] text-white text-base font-bold py-2 px-4 rounded "
+                type="submit"
+                onClick={handleSubmit}
+              >
+                Connexion
+              </button>
+            </div>
+          </form>
+
+          <p className="text-sm font-medium text-center m-3">
+            Pas encore de compte? Créez-en un{" "}
+            <a
+              className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline"
+              href="/signup"
+            >
+              ici
+            </a>
+          </p>
+        </div>
       </div>
-    )
-}
+    </div>
+  );
+};
 
 export default Login;
