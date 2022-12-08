@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Test from "./Pages/Test";
-import PrivateRoutes from "./Utils/PrivateRoutes";
+import Test from "./pages/Test";
+import PrivateRoutes from "./utils/PrivateRoutes";
 
 function RoutesProvider() {
   return (
