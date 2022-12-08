@@ -98,3 +98,8 @@ e.g.
 
 The lesser the scope, the shorter the name can be. 
 The greater the scope, the more explicit the name should be. 
+
+### Database
+
+Everything is snake_case. Collection names are plural.
+Ask for more details before adding/changing anything. 
