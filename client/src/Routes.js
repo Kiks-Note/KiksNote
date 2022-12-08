@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Test from "./pages/Test";
-import PrivateRoutes from "./utils/PrivateRoutes";
+import Appel from "./Pages/appel/Appel";
+import Test from "./Pages/Test";
+import PrivateRoutes from "./Utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
 function RoutesProvider() {
   return (
@@ -16,6 +17,7 @@ function RoutesProvider() {
         <Route path="/test" element={<Navbar element={<Test />} />} />
 
         <Route element={<PrivateRoutes />}>
+          <Route path="/appel" element={<Appel/>}/>
           {/* <Route path="/" exact element={<Home />} /> */}
         </Route>
       </Routes>
