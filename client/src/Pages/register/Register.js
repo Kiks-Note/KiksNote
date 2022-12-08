@@ -6,7 +6,7 @@ const Register = () => {
     const onSubmit = (data) => {
         const templateId = 'ConfirmMail';
         const serviceID = 'ConfirmKiks';
-        sendConfirm(serviceID, templateId, { to_name: data.lastname+" "+data.firstname,from_name: "Kik's Note", message_html: "http://localhost:3000/Confirmation/0", to_email: data.email })
+        sendConfirm(serviceID, templateId, { to_name: data.lastname+" "+data.firstname,from_name: "Kik's Note", message_html: "http://localhost:3000/confirm/0", to_email: data.email })
     }
     const sendConfirm = (serviceID, templateId, variables) => {
         window.emailjs.send(
@@ -53,7 +53,7 @@ const Register = () => {
             console.log(formValues);
             onSubmit(formValues);
         }
-    }, [formErrors]);
+    });
 
     const validate = (values) => {
         const errors = {};
@@ -80,12 +80,12 @@ const Register = () => {
         }
         if(!values.confirmPassword) {
             errors.confirmPassword = "Confirmez le mot de passe";
-        } else if(values.password != values.confirmPassword) {
+        } else if(values.password !== values.confirmPassword) {
             errors.confirmPassword = "Le mot de passe ne correspond pas";
         }
         if(!values.status) {
             errors.status = "Choisissez le statut"
-        } else if(values.status == "etudiant" && !regexedu.test(values.email)) {
+        } else if(values.status === "etudiant" && !regexedu.test(values.email)) {
             errors.email = "Courriel edu introuvable";
         }
         if(!values.birthdate) {
