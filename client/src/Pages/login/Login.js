@@ -12,7 +12,7 @@ import {
 
 class CaptchaTest extends Component {
   componentDidMount() {
-    loadCaptchaEnginge(5);
+    loadCaptchaEnginge(10);
   }
 
   render() {
@@ -26,7 +26,7 @@ class CaptchaTest extends Component {
             <div>
               <input
                 placeholder="Enter Captcha"
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-5 mb-5 w-full"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 mt-5 w-full"
                 id="user_captcha_input"
                 name="user_captcha_input"
                 type="text"
@@ -161,7 +161,7 @@ const Login = (props) => {
               </div>
               <a
                 className="flex text-sm text-[#B312FF] dark:text-[#B312FF] hover:underline"
-                href="/resetpassword"
+                href="/askresetpass"
               >
                 Mot de passe oublie ?
               </a>
