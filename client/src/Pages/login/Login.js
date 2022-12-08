@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./Login.scss";
-
 import Divider from "@mui/material/Divider";
+import Captcha from "demos-react-captcha";
+import CaptchaTest from "./CaptchaTest";
 
 const Login = () => {
   const initialValues = {
@@ -34,6 +35,12 @@ const Login = () => {
     const errors = {};
     const regexedu = /^[^\s@]+@edu\.esiee-it\.fr$/;
     const password = "coding";
+    const label_email = document.getElementById("label-email");
+    const label_password = document.getElementById("label-password");
+    const input_email = document.getElementById("input-email");
+    const input_password = document.getElementById("input-password");
+
+    const button = document.getElementById("btn-login");
 
     if (!values.email) {
       errors.email = "L'adresse mail est requis !";
@@ -63,6 +70,7 @@ const Login = () => {
           <form className="p-15">
             <div className="m-4">
               <label
+                id="label-email"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 htmlFor="input-email"
               >
@@ -84,6 +92,7 @@ const Login = () => {
 
             <div className="m-4">
               <label
+                id="label-password"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                 htmlFor="input-password"
               >
@@ -99,7 +108,7 @@ const Login = () => {
                 placeholder="votre mot de passe"
               />
               <div className="flex flex-col">
-              <span className="mt-4 text-sm text-red-600 dark:text-red-500">
+                <span className="mt-4 text-sm text-red-600 dark:text-red-500">
                   {formErrors.password}
                 </span>
                 <a
@@ -110,8 +119,13 @@ const Login = () => {
                 </a>
               </div>
             </div>
+            <div>
+              <CaptchaTest />
+            </div>
+            <div></div>
             <div className="flex justify-center">
               <button
+                id="btn-login"
                 className="bg-[#93258c] hover:bg-[#ab278e] text-white text-base font-bold py-2 px-4 rounded "
                 type="submit"
                 onClick={handleSubmit}
