@@ -1,23 +1,25 @@
 import React, { useState, useEffect, Component } from "react";
 import "./Login.scss";
 import Divider from "@mui/material/Divider";
+
 import {
   loadCaptchaEnginge,
   LoadCanvasTemplate,
-  validateCaptcha
+  validateCaptcha,
 } from "react-simple-captcha";
 
-// Create the captcha of 10 characters using a class
+// Create the captcha of 10 characters using a className
+
 class CaptchaTest extends Component {
   componentDidMount() {
-    loadCaptchaEnginge(10);
+    loadCaptchaEnginge(5);
   }
 
   render() {
     return (
       <div>
         <div>
-          <div class="box-captcha">
+          <div className="box-captcha">
             <div>
               <LoadCanvasTemplate />
             </div>
@@ -38,7 +40,7 @@ class CaptchaTest extends Component {
 }
 
 // Login page
-const Login = () => {
+const Login = (props) => {
   // Initiate all values from the login form to null
   const initialValues = {
     email: "",
@@ -78,17 +80,12 @@ const Login = () => {
     }
   });
 
-  // Check if an input value isn't set or is incorrect 
+  // Check if an input value isn't set or is incorrect
   const verifError = (values) => {
     const errors = {};
     const regexedu = /^[^\s@]+@edu\.esiee-it\.fr$/;
     const password = "coding";
-    // const label_email = document.getElementById("label-email");
-    // const label_password = document.getElementById("label-password");
-    // const input_email = document.getElementById("input-email");
-    // const input_password = document.getElementById("input-password");
-
-    // const button = document.getElementById("btn-login");
+    
 
     if (!values.email) {
       errors.email = "L'adresse mail est requis !";
@@ -135,7 +132,7 @@ const Login = () => {
                 onChange={handleChange}
                 placeholder="votrecompte@edu.esiee-it.fr"
               />
-              <span className="mt-2 text-sm text-red-600 dark:text-red-500">
+              <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                 {formErrors.email}
               </span>
             </div>
@@ -158,19 +155,19 @@ const Login = () => {
                 placeholder="votre mot de passe"
               />
               <div className="flex flex-col">
-                <span className="mt-4 text-sm text-red-600 dark:text-red-500">
+                <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                   {formErrors.password}
                 </span>
-                <a
-                  className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline pt-4"
-                  href="/resetpassword"
-                >
-                  Mot de passe oublie ?
-                </a>
               </div>
+              <a
+                className="flex text-sm text-[#B312FF] dark:text-[#B312FF] hover:underline"
+                href="/resetpassword"
+              >
+                Mot de passe oublie ?
+              </a>
             </div>
-            {/* Get the captcha from the class CaptchaTest */}
-            <div class="m-4">
+            {/* Get the captcha from the className CaptchaTest */}
+            <div className="m-4">
               <CaptchaTest />
             </div>
             <div className="flex justify-center">
@@ -188,7 +185,7 @@ const Login = () => {
           <p className="text-sm font-medium text-center m-3">
             Pas encore de compte? Créez-en un{" "}
             <a
-              className="text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline"
+              className="text-sm font-medium text-[#B312FF] dark:text-[#B312FF] hover:underline"
               href="/signup"
             >
               ici
@@ -199,7 +196,5 @@ const Login = () => {
     </div>
   );
 };
-
-
 
 export default Login;

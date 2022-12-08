@@ -20,12 +20,13 @@
 
 #reload_href{
   font-size: 15px;
-  color: white !important;
-  border: 1px solid white;
-  padding: 10px;
-  border-radius: 10px;
-  width: 30%;
-  margin-left: 35%;
+    font-weight: bold;
+    color: white !important;
+    border: 1px solid white;
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 }
 
 .box-captcha{
