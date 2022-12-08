@@ -16,7 +16,6 @@ function Test() {
         return (
           <div key={user.id}>
             <h1>User name = {user.name}</h1>
-            
           </div>
         );
       })}
