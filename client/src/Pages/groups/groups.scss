@@ -1,8 +1,32 @@
+@import url("https://fonts.googleapis.com/css2?family=Reenie+Beanie&display=swap");
+
 .students {
-  background-color: black;
-  height: 150vh;
+  background-color: rgb(202, 202, 202);
+  height: 100vh;
+  padding: 20px;
+  width: fit-content;
   .student {
-    background-color: red;
-    margin: 5px;
+    height: 100px;
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 0px;
+    font-size: 20px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-family: "Reenie Beanie", cursive;
+    box-shadow: 5px 5px 7px rgba(0, 0, 0, 0.7);
   }
+}
+
+.groups-content {
+  display: flex;
+  flex-direction: row;
+}
+
+.groups {
+  height: 100vh;
+  background-color: black;
+  width: 500px;
 }

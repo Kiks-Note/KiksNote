@@ -24,38 +24,66 @@ function Groups() {
     updateStudents(items);
   }
 
+  const colors = [
+    "#f7d472",
+    "#cff772",
+    "#9ef772",
+    "#72f7d8",
+    "#72b7f7",
+    "#8872f7",
+    "#e372f7",
+    "#f7729c",
+  ];
+
   return (
-    <DragDropContext onDragEnd={handleOnDragEnd}>
-      <Droppable droppableId="students">
-        {(provided) => (
-          <ul
-            className="students"
-            {...provided.droppableProps}
-            ref={provided.innerRef}
-          >
-            {students.map(({ id, username }, index) => {
-              return (
-                <Draggable key={id} draggableId={id} index={index}>
-                  {(provided) => (
-                    <li
-                      className="student"
-                      ref={provided.innerRef}
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                    >
-                      <p>
-                        {username} id:{id}
-                      </p>
-                    </li>
-                  )}
-                </Draggable>
-              );
-            })}
-            {provided.placeholder}
-          </ul>
-        )}
-      </Droppable>
-    </DragDropContext>
+    <div className="groups-content">
+      <DragDropContext onDragEnd={handleOnDragEnd}>
+        <Droppable droppableId="students">
+          {(provided) => (
+            <ul
+              className="students"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {students.map(({ id, username }, index) => {
+                return (
+                  <Draggable key={id} draggableId={id} index={index}>
+                    {(provided) => (
+                      <li
+                        className="student"
+                        ref={provided.innerRef}
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        style={{
+                          backgroundColor: colors[index],
+                          color: "black",
+                          ...provided.draggableProps.style,
+                        }}
+                      >
+                        <p>{username}</p>
+                      </li>
+                    )}
+                  </Draggable>
+                );
+              })}
+              {provided.placeholder}
+            </ul>
+          )}
+        </Droppable>
+
+        <Droppable droppableId="groups">
+          {(provided) => (
+            <ul
+              className="groups"
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+            >
+              {provided.placeholder}
+            </ul>
+          )}
+        </Droppable>
+      </DragDropContext>
+    </div>
   );
 }
 
