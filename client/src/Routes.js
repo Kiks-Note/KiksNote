@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Appel from "./Pages/appel/Appel";
 import Test from "./Pages/Test";
 import PrivateRoutes from "./Utils/PrivateRoutes";
 
@@ -13,6 +14,7 @@ function RoutesProvider() {
         <Route path="/test" element={<Test />} />
 
         <Route element={<PrivateRoutes />}>
+          <Route path="/appel" element={<Appel/>}/>
           {/* <Route path="/" exact element={<Home />} /> */}
         </Route>
       </Routes>

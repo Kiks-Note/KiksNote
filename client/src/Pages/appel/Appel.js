@@ -1,29 +1,13 @@
-import { useState } from "react";
-import { Button } from "@mui/material";
-import QRCode from "qrcode";
+import AppelProf from "../../components/appelprof/AppelProf";
+import AppelEleve from "../../components/appeleleve/AppelEleve";
 
 function Appel() {
-    const [ url , setUrl ] = useState ( '' );
-    const [ qrcode , setQrcode ] = useState ( '' );   
 
-    const testUrl = "https://www.google.com/";
-    const GenerateQrcode = () => {     
-        setUrl(testUrl)
-        QRCode.toDataURL(url, (err, url) => {
-            if(err) return console.log(err)
-
-            console.log(url)
-            setQrcode(url)
-        })
-    }
-
-
+    const admin = false;
     return(
         <div>
-            {qrcode && <>
-                <img src={qrcode} alt="" />
-            </>}
-            <button onClick={GenerateQrcode}>test</button>
+            {admin ? <AppelProf></AppelProf> : <AppelEleve></AppelEleve>}
+            
         </div>
     )
 }
