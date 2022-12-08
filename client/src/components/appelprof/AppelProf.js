@@ -1,7 +1,6 @@
 import "./AppelProf.scss"
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
-import ReactGiphySearchbox from 'react-giphy-searchbox'
 
 
 function AppelProf(){
@@ -43,12 +42,6 @@ function AppelProf(){
         })
     }
 
-    const addGif = (gif) => {
-        const chatCopy = [...Chats]
-        chatCopy.push({id : Chats.length + 1, date: "07/12/2022 14:43", username : "jules", content : gif.images.downsized_medium.url, isGif : true})
-        setChats(chatCopy)
-    }
-
     return(
         <div className="ContentProf">
             <div className="Timer">
@@ -84,9 +77,6 @@ function AppelProf(){
                 <h1>Chat</h1>
                 <div className="Chat">
                     {Chats.map((chat) => {
-                        // if(chat.isGif){
-                        //     chat.content = "/client/public/gif/" + chat.content
-                        // }
                         return(
                             <div className="ChatContent">
                                 <div className="ChatContentHeader">
@@ -102,10 +92,6 @@ function AppelProf(){
                     })}
                 </div>
             </div>
-            <ReactGiphySearchbox
-            apiKey="CHO3gHhn8JI87jBJ8zFewMT7jT8uRGJe" // Required: get your on https://developers.giphy.com
-            onSelect={item => addGif(item)}
-            />
             </div>
         </div>
     )
