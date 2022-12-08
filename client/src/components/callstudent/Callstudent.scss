@@ -1,0 +1,86 @@
+.ContentEleve {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+}
+
+.ChatEleve {
+  width: 82%;
+  height: 100%;
+  border: 0.1em;
+  border-radius: 8px;
+  border-color: black;
+  border-style: solid;
+  overflow-y: scroll;
+}
+
+.DivChatEleve {
+  width: 100%;
+  height: 80%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 2rem;
+}
+
+.ChatContentEleve {
+  display: flex;
+  flex-direction: column;
+  border: 0.1em;
+  margin: 0.2em;
+  padding: 0.2em;
+  border-radius: 8px;
+  border-color: black;
+  border-style: solid;
+}
+
+.ChatContentHeaderEleve {
+  display: flex;
+  justify-content: space-between;
+}
+
+.InputChat {
+  width: 100%;
+  margin: 0.2em;
+  padding: 0.3em;
+  border: 0.1em;
+  border-radius: 8px;
+  border-color: black;
+  border-style: solid;
+}
+
+.DivInputChat {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 85%;
+}
+
+.ButtonAddMsg {
+  border-radius: 3px;
+  height: 90%;
+  width: 3%;
+}
+
+.ButtonAddMsg:hover {
+  background-color: lightgray;
+}
+
+.PopupGif {
+  background-color: lightgray;
+  padding: 0.5em;
+  border-radius: 5px;
+}
+
+.popup-arrow {
+  color: lightgray;
+}
+
+.popup-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+[data-popup="tooltip"].popup-overlay {
+  background: transparent;
+}
