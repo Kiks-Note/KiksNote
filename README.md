@@ -55,13 +55,13 @@ e.g.
     #3 style/drawer
     #7 fix/comment code for firebase
 
-or for the last commit of the issue
+or for merge commit closing an issue
 
-    close #issue type/title
+    close #issue generated_merge_commit_name
 
 e.g.
 
-    close #14 docs/finished readme
+    close #14 Merge pull request #21 from Kiks-Note/docs/readme
 
 ### Available types  
 
