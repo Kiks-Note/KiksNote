@@ -14,7 +14,7 @@ Add credentials.json in KiksNote/server for FireBase
   git pull
 ```
 
-puis
+then
 
 ```bash
   cd server
