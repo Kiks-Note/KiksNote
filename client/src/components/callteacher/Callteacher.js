@@ -1,11 +1,12 @@
-import "./Callteacher.scss";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import "./Callteacher.scss";
 
 function AppelProf() {
   const [url, setUrl] = useState("");
   const [qrcode, setQrcode] = useState("");
+  const [calls, setCalls] = useState([]);
 
   const users = [
     { id: 1, username: "jules" },
@@ -23,13 +24,20 @@ function AppelProf() {
   }, []);
 
   const addCall = async () => {
-    const res = await axios.post("http://localhost:5000/inventoryAdd", {
+    const res = await axios.post("http://localhost:4000/callAdd", {
       id_lesson: "",
       qrcode: "",
       student_scan: [],
       chats: [],
     });
     console.log(res);
+  };
+
+  const getCalls = () => {
+    axios.get("http://localhost:4000/calls").then((res) => {
+      setCalls(res.data);
+    });
+    console.log(calls);
   };
 
   const GenerateQrcode = () => {
@@ -100,6 +108,10 @@ function AppelProf() {
               );
             })}
           </div>
+        </div>
+        <div>
+          <button onClick={addCall}>add</button>
+          <button onClick={getCalls}>get</button>
         </div>
       </div>
     </div>
