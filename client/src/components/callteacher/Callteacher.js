@@ -1,6 +1,7 @@
 import "./Callteacher.scss";
 import QRCode from "qrcode";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 function AppelProf() {
   const [url, setUrl] = useState("");
@@ -15,69 +16,21 @@ function AppelProf() {
     { id: 6, username: "rui" },
   ];
 
-  const [Chats, setChats] = useState([
-    {
-      id: 1,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content:
-        "https://media2.giphy.com/media/8L00JcT3slsmfVYldi/giphy.gif?cid=e8452e68e80occrhiho8lvwha7tl3mgvjkp9ry9294msfys2&rid=giphy.gif&ct=g",
-      isGif: true,
-    },
-    {
-      id: 2,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "🐑",
-      isGif: false,
-    },
-    {
-      id: 3,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 4,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 5,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 6,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 7,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 8,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-  ]);
+  const [Chats, setChats] = useState([]);
 
   useEffect(() => {
     GenerateQrcode();
   }, []);
+
+  const addCall = async () => {
+    const res = await axios.post("http://localhost:5000/inventoryAdd", {
+      id_lesson: "",
+      qrcode: "",
+      student_scan: [],
+      chats: [],
+    });
+    console.log(res);
+  };
 
   const GenerateQrcode = () => {
     QRCode.toDataURL(
