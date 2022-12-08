@@ -5,37 +5,25 @@ import CardContent from "@mui/material/CardContent";
 import CardActions from "@mui/material/CardActions";
 import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
-import Typography from "@mui/material/Typography";
-import StarIcon from "@mui/icons-material/Star";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
-export default function CardBoard({ picture, firstname }) {
-  const [fav, setFav] = React.useState(false);
+export default function CardBoard({ picture, firstname, sprint_group ,fav }) {
+  // const [fav, setFav] = React.useState(false);
 
   return (
     <Card sx={{ maxWidth: 345 }}>
       <CardHeader
         avatar={<Avatar src={picture}></Avatar>}
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
+          <IconButton aria-label="add to favorites">
+            <FavoriteIcon color="secondary" />
           </IconButton>
         }
         title={firstname}
-        subheader="Groupe"
+        subheader={sprint_group}
       />
-      <CardContent>
-        <Typography variant="body2" color="text.secondary">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the
-          mussels, if you like.
-        </Typography>
-      </CardContent>
-      <CardActions disableSpacing>
-        <IconButton onClick={() => setFav(!fav)} aria-label="add to favorites">
-          {fav ? <StarIcon color="primary" /> : <StarIcon color="secondary" />}
-        </IconButton>
-      </CardActions>
+      <CardContent></CardContent>
+      <CardActions disableSpacing></CardActions>
     </Card>
   );
 }
