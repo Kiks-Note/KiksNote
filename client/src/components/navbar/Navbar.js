@@ -102,7 +102,7 @@ export default function MiniDrawer({ element }) {
             { id: 2, name: "Agile", route: "#", icon: <BallotIcon /> },
             { id: 3, name: "Profile", route: "#", icon: <Person2Icon /> },
             { id: 4, name: "Board", route: "/board", icon: <DashboardIcon /> },
-            { id: 5, name: "Blog", route: "/blog", icon: <AlternateEmailIcon /> },
+            { id: 5, name: "Blog", route: "#", icon: <AlternateEmailIcon /> },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
               <ListItemButton
