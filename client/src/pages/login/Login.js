@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Component } from "react";
+import React, { useState, Component } from "react";
 import "./Login.scss";
 import Divider from "@mui/material/Divider";
 import axios from "axios";
@@ -70,12 +70,6 @@ const Login = (props) => {
         console.log(err);
       });
   };
-
-  useEffect(() => {
-    getUsers();
-    console.log(users);
-  });
-
 
   // Set the initial value to input value
   const handleChange = (e) => {
