@@ -1,19 +1,8 @@
 function Confirm() {
-    const [users, setUsers] = useState([]);
-    useEffect(() => {
-        axios.get("http://localhost:5050/users").then((res) => {
-            getUsers(res.data);
-        });
-    }, []);
 
-    if ({user_id} === user_id)
-    {
-
-    }
-
-    setConfirm(() => {
-
-    });
+    const setConfirm = () => {
+        console.log("test");
+    };
 
     return (
         <div>
