@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Test from "./pages/Test";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
+import InventoryHome from "./pages/inventory/InventoryHome";
 function RoutesProvider() {
   return (
     <BrowserRouter>
@@ -17,6 +18,7 @@ function RoutesProvider() {
 
         <Route element={<PrivateRoutes />}>
           {/* <Route path="/" exact element={<Home />} /> */}
+          <Route path="/inventory" element={<InventoryHome />} />
         </Route>
       </Routes>
     </BrowserRouter>
