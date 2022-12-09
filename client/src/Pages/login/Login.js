@@ -52,6 +52,7 @@ const Login = (props) => {
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
+  const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
 
   // Set the initial value to input value
   const handleChange = (e) => {
@@ -65,6 +66,7 @@ const Login = (props) => {
     let user_captcha = document.getElementById("user_captcha_input").value;
 
     if (validateCaptcha(user_captcha) === true) {
+      setIsCaptchaVerified(true);
       alert("Captcha Matched");
       loadCaptchaEnginge(6);
       document.getElementById("user_captcha_input").value = "";
@@ -77,7 +79,7 @@ const Login = (props) => {
   };
 
   useEffect(() => {
-    if (Object.keys(formErrors).length === 0 && isSubmit) {
+    if (Object.keys(formErrors).length === 0 && isSubmit && isCaptchaVerified) {
       console.log(formValues);
       navigate("/home");
     }
