@@ -57,6 +57,7 @@ const Login = (props) => {
   const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
 
   const [users, setUsers] = useState([]);
+  
   // const [isGetData, setData] = useState(false);
 
   const getUsers = async () => {
@@ -75,6 +76,7 @@ const Login = (props) => {
     console.log(users);
   });
 
+
   // Set the initial value to input value
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -83,7 +85,10 @@ const Login = (props) => {
 
   // On submit, check the captcha and if input values are equal to database value
   const handleSubmit = (e) => {
+
     e.preventDefault();
+    getUsers()
+
     let user_captcha = document.getElementById("user_captcha_input").value;
 
     if (validateCaptcha(user_captcha) === true) {
@@ -103,6 +108,7 @@ const Login = (props) => {
     setFormErrors(verifError(formValues));
     setIsSubmit(true);
   };
+
 
   // Check if an input value isn't set or is incorrect
   const verifError = (values) => {
@@ -206,7 +212,7 @@ const Login = (props) => {
           </form>
 
           <p className="text-sm font-medium text-center m-3">
-            Pas encore de compte? Créez-en un{" "}
+            Pas encore de compte? CrÃ©ez-en un{" "}
             <a
               className="text-sm font-medium text-[#B312FF] dark:text-[#B312FF] hover:underline"
               href="/signup"
