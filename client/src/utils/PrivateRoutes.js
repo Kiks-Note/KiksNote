@@ -1,10 +1,11 @@
 import React from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import {Navigate, Outlet} from "react-router-dom";
+import MiniDrawer from "../components/navbar/Navbar";
 
 function PrivateRoutes() {
-  let auth = false;
+    let auth = true;
 
-  return auth ? <Outlet /> : <Navigate to="/login" />;
+    return auth ? <MiniDrawer element={<Outlet/>}/> : <Navigate to="/login"/>;
 }
 
 export default PrivateRoutes;
