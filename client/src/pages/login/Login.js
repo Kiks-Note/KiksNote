@@ -57,7 +57,7 @@ const Login = (props) => {
   const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
 
   const [users, setUsers] = useState([]);
-  const [isGetData, setData] = useState(false);
+  // const [isGetData, setData] = useState(false);
 
   const getUsers = async () => {
     await axios

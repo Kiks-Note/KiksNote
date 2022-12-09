@@ -1,9 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-
-import Login from "./Pages/login/Login"
-import Test from "./Pages/Test";
 import PrivateRoutes from "./utils/PrivateRoutes";
-
+import Login from "./pages/login/Login.js";
+import Test from "./pages/Test.js";
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
 
