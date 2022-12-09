@@ -1,13 +1,11 @@
 import RoutesProvider from "./Routes";
-import { AppBar } from "@mui/material";
 
 function App() {
-  return (
-    <>
-      <RoutesProvider />
-      <AppBar />
-    </>
-  );
+    return (
+        <>
+            <RoutesProvider/>
+        </>
+    );
 }
 
 export default App;
