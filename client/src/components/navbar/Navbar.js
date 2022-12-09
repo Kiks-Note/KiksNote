@@ -98,14 +98,15 @@ export default function MiniDrawer({ element }) {
         <Divider />
         <List>
           {[
-            { id: 1, name: "Accueil", route: "#", icon: <HomeIcon /> },
+            { id: 1, name: "Accueil", route: "/", icon: <HomeIcon /> },
             { id: 2, name: "Agile", route: "#", icon: <BallotIcon /> },
             { id: 3, name: "Profile", route: "#", icon: <Person2Icon /> },
-            { id: 4, name: "Board", route: "#", icon: <DashboardIcon /> },
-            { id: 5, name: "Blog", route: "#", icon: <AlternateEmailIcon /> },
+            { id: 4, name: "Board", route: "/board", icon: <DashboardIcon /> },
+            { id: 5, name: "Blog", route: "/blog", icon: <AlternateEmailIcon /> },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
               <ListItemButton
+                href={page.route}
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
@@ -123,10 +124,7 @@ export default function MiniDrawer({ element }) {
                 </ListItemIcon>
 
                 <ListItemText
-                  primary={
-                    <Link href={page.route} underline="none" color="dark">
-                      {page.name}
-                    </Link>
+                  primary={   page.name
                   }
                   sx={{ opacity: open ? 1 : 0 }}
                 />
