@@ -20,10 +20,8 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import BallotIcon from "@mui/icons-material/Ballot";
- 
 
 const drawerWidth = 240;
-
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -88,11 +86,7 @@ export default function MiniDrawer({ element }) {
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton>
-            {open ? (
-              <ChevronLeftIcon onClick={handleDrawerClose} />
-            ) : (
-              <ChevronRightIcon onClick={handleDrawerOpen} />
-            )}
+            {open ? <ChevronLeftIcon onClick={handleDrawerClose} /> : <ChevronRightIcon onClick={handleDrawerOpen} />}
           </IconButton>
         </DrawerHeader>
         <Divider />
@@ -101,7 +95,7 @@ export default function MiniDrawer({ element }) {
             { id: 1, name: "Accueil", route: "#", icon: <HomeIcon /> },
             { id: 2, name: "Agile", route: "#", icon: <BallotIcon /> },
             { id: 3, name: "Profile", route: "#", icon: <Person2Icon /> },
-            { id: 4, name: "Board", route: "#", icon: <DashboardIcon /> },
+            { id: 4, name: "Board", route: "/board", icon: <DashboardIcon /> },
             { id: 5, name: "Blog", route: "#", icon: <AlternateEmailIcon /> },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
