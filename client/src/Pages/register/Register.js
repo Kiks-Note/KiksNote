@@ -1,9 +1,9 @@
 import React, { useState , useEffect } from 'react';
 import { Link } from "react-router-dom";
+import Divider from "@mui/material/Divider";
+import sha256  from "js-sha256";
 
 const Register = () => {
-    const [isSignup, setIsSignup] = useState(true);
-
     const onSubmit = (data) => {
         const templateId = 'ConfirmMail';
         const serviceID = 'ConfirmKiks';
@@ -19,13 +19,9 @@ const Register = () => {
             .catch(err => {alert('Un problème est survenu pendant votre inscription, nous nous excusons de la gêne occasionée.')})
     }
 
-    const switchMode = () => {
-        setIsSignup((prevIsSignup) => !prevIsSignup);
-    }
-
     const initialValues = {
-        firstName: "",
-        lastName: "",
+        firstname: "",
+        lastname: "",
         password: "",
         confirmPassword: "",
         email: "",
@@ -36,6 +32,7 @@ const Register = () => {
     const [formValues, setFormValues] = useState(initialValues);
     const [formErrors, setFormErrors] = useState({});
     const [isSubmit, setIsSubmit] = useState(false);
+    // const p = "5981eda53eeb4100828394dd43631aede8015e58311c5caaa3f5c67598a327d5";
 
     const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,6 +41,10 @@ const Register = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        // console.log("Default password " + formValues.password);
+        // const encryption = sha256(formValues.password).toString();
+        // console.log("Hashing password " + encryption);
+
         setFormErrors(validate(formValues));
         setIsSubmit(true);
     };
@@ -58,20 +59,15 @@ const Register = () => {
 
     const validate = (values) => {
         const errors = {};
-        const user_regex = /^\[A-z\][A-z0-9-_]{3,23}$/;
         const pwd_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
         const email_regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
         const emailedu_regex = /^[^\s@]+@edu\.esiee-it\.fr$/;
 
         if (!values.lastname) {
             errors.lastname = "Le nom est requis!";
-        } else if(!user_regex.test(values.lastname)) {
-            errors.firstname = "Format invalide"
         }
-        if (values.firstname) {
+        if (!values.firstname) {
             errors.firstname = "Le prénom est requis!";
-        } else if(!user_regex.test(values.firstname)) {
-            errors.firstname = "Format invalide"
         }
         if (!values.email) {
             errors.email = "L'adresse mail est requis !";
@@ -105,95 +101,146 @@ const Register = () => {
     };
 
     return(
-        <div className="auth__form-container">
-            <div className="auth__form-container_fields">
-                <div className="auth__form-container_fields-content">
-                    <p>{isSignup ? 'Inscription' : 'Connexion'}</p>
-                    {Object.keys(formErrors).length === 0 && isSubmit ? (
-                        <div className="ui message success">Signed in successfully</div>
-                        )
-                        : <div className="ui message"></div>
-                        // : (<pre>{JSON.stringify(formValues, undefined, 2)}</pre>)
-                    }
-                    <form onSubmit={handleSubmit}>
-                        {isSignup && (
-                        <div className="auth__form-container_fields-content_input">
-                            <label htmlFor="lastName"></label>
+        <div className="register">
+            <div className="register-header">
+                <div className="container-register">
+                    <h1 className="text-4xl font-extrabold dark:text-white m-4 text-center">
+                        Inscription
+                    </h1>
+                    <Divider
+                        variant="middle"
+                        style={{ background: "#fff", height: "1px" }}
+                    />
+                    <form className="p-15">
+                        <div className="m-4">
+                            <label
+                                id="label-lastname"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                htmlFor="input-lastname"
+                            >
+                                Nom
+                                </label>
                             <input
+                                id="input-lastname"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="text"
                                 name="lastname"
                                 placeholder="Nom"
                                 value={formValues.lastname}
                                 onChange={handleChange}
                             />
-                            <span>{formErrors.lastname}</span>
+                            <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                                {formErrors.lastname}
+                            </span>
                         </div>
-                        )}
-                        {isSignup && (
-                        <div className="auth__form-container_fields-content_input">
-                            <label htmlFor="firstName"></label>
+                        <div className="m-4">
+                            <label
+                                id="label-firstname"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                htmlFor="input-firstname"
+                            >
+                                Prénom
+                            </label>
                             <input
+                                id="input-firstname"
                                 type="text"
                                 name="firstname"
                                 placeholder="Prénom"
                                 value={formValues.firstname}
                                 onChange={handleChange}
                             />
-                            <span>{formErrors.firstname}</span>
+                            <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                                {formErrors.firstname}
+                            </span>
                         </div>
-                        )}
-                        <div className="auth__form-container_fields-content_input">
-                            <label htmlFor="mail"></label>
+                        <div className="m-4">
+                            <label
+                                id="label-email"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                htmlFor="input-email"
+                            >
+                            </label>
                             <input
-                                type="mail"
+                                id="input-email"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                type="email"
                                 name="email"
-                                placeholder="Mail"
+                                placeholder="votrecompte@edu.esiee-it.fr"
                                 value={formValues.email}
                                 onChange={handleChange}
                             />
-                            <span>{formErrors.email}</span>
+                            <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                                {formErrors.email}
+                            </span>
                         </div>
-                        {isSignup && (
-                        <div className="auth__form-container_fields-content_input">
-                            <label htmlFor="birthdate"></label>
+                        <div className="m-4">
+                            <label
+                                id="label-birthdate"
+                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                                htmlFor="input-birthdate"
+                            >
+                            </label>
                             <input
+                                id="input-birthdate"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="birthdate"
                                 name="birthdate"
                                 placeholder="Date de Naissance"
                                 value={formValues.birthdate}
                                 onChange={handleChange}
                             />
-                            <span>{formErrors.birthdate}</span>
+                            <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                                {formErrors.birthdate}
+                            </span>
                         </div>
-                        )}
-                        <div className="auth__form-container_fields-content_input">
-                        <label htmlFor="password"></label>
+                        <div className="m-4">
+                        <label
+                            id="label-password"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            htmlFor="input-password"
+                        >
+                        </label>
                             <input
+                                id="input-password"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="password"
                                 name="password"
                                 placeholder="Mot de passe"
                                 value={formValues.password}
                                 onChange={handleChange}
                             />
-                            <span>{formErrors.password}</span>
+                            <span lassName="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                                {formErrors.password}
+                            </span>
                         </div>
-                        {isSignup && (
-                        <div className="auth__form-container_fields-content_input">
-                        <label htmlFor="confirmPassword"></label>
+                        <div className="m-4">
+                        <label 
+                            id="label-confirmpassword"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            htmlFor="input-confirmpassword"
+                        >
+                        </label>
                             <input
+                                id="input-password"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="password"
                                 name="confirmPassword"
                                 placeholder="Confirm Password"
                                 value={formValues.confirmPassword}
                                 onChange={handleChange}
                             />
-                            <span>{formErrors.confirmPassword}</span>
+                            <span lassName="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                                {formErrors.confirmPassword}
+                            </span>
                         </div>
-                        )}
-                        {isSignup && (
-                        <div className="auth__form-container_fields-content_input">
-                        <label htmlFor="status">
+                        <div className="m-4">
+                        <label 
+                            id="label-status"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            htmlFor="input-status"
+                        >
                             <select name="status"
+                                id="input-status"
                                 onChange={handleChange}>
                                 <option disabled={true} value="">
                                     --Status--
@@ -204,24 +251,25 @@ const Register = () => {
                             </select>
                         </label>
                         </div>
-                        )}
-                        <div className="auth__form-container_fields-content_button">
-                            <button>{isSignup ? "S'inscrire" : "Connexion"}</button>
+                        <div className="flex justify-center">
+                        <button
+                            id="btn-register"
+                            className="bg-[#93258c] hover:bg-[#ab278e] text-white text-base font-bold py-2 px-4 rounded "
+                            type="submit"
+                            onClick={handleSubmit}
+                        >
+                            Connexion
+                        </button>
                         </div>
                     </form>
-                <div className="auth__form-container_fields-account">
-                <p>
-                    {isSignup
-                    ? "Vous avez déjà un compte. "
-                    : "Pas encore de compte ? Créer en un "
-                    }
-                <span onClick={switchMode}>
-                    {isSignup ? 
-                    <Link to="/login">Se connecter</Link>
-                    : <Link to="/signup">ici</Link>}
-                </span>
-                </p>
-                </div>
+                    <p className="text-sm font-medium text-center m-3">
+                        Vous avez déjà un compte
+                        <Link
+                            className="text-sm font-medium text-[#B312FF] dark:text-[#B312FF] hover:underline"
+                            to="/login">
+                                Se connecter
+                        </Link>
+                    </p>
             </div>
         </div>
     </div>
