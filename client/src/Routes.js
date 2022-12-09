@@ -2,24 +2,27 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 import Login from "./Pages/login/Login"
 import Test from "./Pages/Test";
-import PrivateRoutes from "./Utils/PrivateRoutes";
+import PrivateRoutes from "./utils/PrivateRoutes";
+
+import Home from "./pages/home/Home.js";
+import Blog from "./pages/blog/Blog";
 
 function RoutesProvider() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* EXAMPLES */}
+    return (
+        <BrowserRouter>
+            <Routes>
+                <Route element={<PrivateRoutes/>}>
+                    {/* Write here route that you need to be login*/}
+                    <Route path="/test" element={<Test />} />
+                    <Route path="/login" element={<Login />} /> 
 
-        {/* <Route path="/register" element={<Register />} /> */}
-        <Route path="/test" element={<Test />} />
-        <Route path="/login" element={<Login />} /> 
+                    <Route path="/" element={<Home/>}/>
+                    <Route path="/blog" element={<Blog/>}/>
 
-        <Route element={<PrivateRoutes />}>
-          {/* <Route path="/" exact element={<Home />} /> */}
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default RoutesProvider;
