@@ -26,7 +26,7 @@ const tasks = [
   { id: "5", name: "Sprint retro", desc: "Description de la tâche" },
 ];
 const taskStatus = {
-  stories: {
+  requested: {
     name: "Stories",
     items: tasks,
   },
@@ -53,7 +53,7 @@ const taskStatus = {
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
   const { source, destination } = result;
-  if (source.droppableId !== destination.droppableId) {
+  if (source.droppableId != destination.droppableId) {
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
     const sourceItems = [...sourceColumn.items];
