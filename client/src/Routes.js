@@ -12,20 +12,6 @@ function RoutesProvider() {
         <BrowserRouter>
             <Routes>
                 {/* EXAMPLES */}
-
-        {/* <Route path="/login" element={<Login />} /> */}
-        {/* <Route path="/register" element={<Register />} /> */}
-        {/* To Use the Navbar change Test by your page
- <Route path="/test" element={<Navbar element={<Test />} />} /> */}
-        <Route path="/" element={<Navbar element={<Test />} />} />
-        <Route path="/test" element={<Navbar element={<Test />} />} />
-        <Route path="/profile" element={<Navbar element={<Profile name='Alan' />} />} />
-        <Route element={<PrivateRoutes />}>
-          {/* <Route path="/" exact element={<Home />} /> */}
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
                 {/* <Route path="/login" element={<Login />} /> */}
                 {/* <Route path="/register" element={<Register />} /> */}
                 {/* To Use the Navbar change Test by your page
@@ -43,7 +29,7 @@ function RoutesProvider() {
 
                     <Route path="/" element={<Home/>}/>
                     <Route path="/blog" element={<Blog/>}/>
-
+                    <Route path="/profile" element={<Profile/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>
