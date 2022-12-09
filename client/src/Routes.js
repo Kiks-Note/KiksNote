@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import BurnDown from "./Pages/board/BurnDown";
 import Test from "./Pages/Test";
 import PrivateRoutes from "./Utils/PrivateRoutes";
 
@@ -11,7 +12,7 @@ function RoutesProvider() {
         {/* <Route path="/login" element={<Login />} /> */}
         {/* <Route path="/register" element={<Register />} /> */}
         <Route path="/test" element={<Test />} />
-
+        <Route path="/burndown" element={< BurnDown/>} />
         <Route element={<PrivateRoutes />}>
           {/* <Route path="/" exact element={<Home />} /> */}
         </Route>
