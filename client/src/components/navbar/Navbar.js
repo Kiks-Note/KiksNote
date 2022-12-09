@@ -100,7 +100,7 @@ export default function MiniDrawer({ element }) {
           {[
             { id: 1, name: "Accueil", route: "#", icon: <HomeIcon /> },
             { id: 2, name: "Agile", route: "#", icon: <BallotIcon /> },
-            { id: 3, name: "Profile", route: "#", icon: <Person2Icon /> },
+            { id: 3, name: "Profile", route: "/profile", icon: <Person2Icon /> },
             { id: 4, name: "Board", route: "#", icon: <DashboardIcon /> },
             { id: 5, name: "Blog", route: "#", icon: <AlternateEmailIcon /> },
           ].map((page) => (
