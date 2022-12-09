@@ -28,5 +28,5 @@ const PORT = process.env.PORT || 5050;
 //       console.log(err);
 //     });
 // });
-
+require("./userInfo")(app, db)
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
