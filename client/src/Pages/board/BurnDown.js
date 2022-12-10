@@ -55,31 +55,60 @@ export default function BurnDown() {
     datasets: [
       {
         // Ideal progression Blue
-        label: "BurnDown IdealProgress",
+        label: "Avancée idéal",
         data: idealProgressLine,
-        backgroundColor: "yellow",
+        backgroundColor: "blue",
         borderColor: "blue",
         tension: 0.1,
         // https://www.chartjs.org/docs/latest/charts/line.html attributes for datasets
       },
       {
         // Team Progress Red
-        label: "BurnDown TeamProgress",
+        label: "Avancée de l'équipe",
         data: burn.TeamProgress,
         backgroundColor: "orange",
-        borderColor: "red",
+        borderColor: "orange",
         tension: 0.4,
       },
     ],
     options: {
       responsive: true,
       beginAtZero: true,
+      plugins: {
+        legend: {
+          labels: {
+            // This more specific font property overrides the global property
+            font: {
+              size: 14,
+            },
+          },
+        },
+        title: {
+          display: true,
+          text: "Burn Down",
+        },
+      },
+      scales: {
+        x: {
+          display: true,
+          title: {
+            display: true,
+            text: "Temps dans le sprint",
+          },
+        },
+        y: {
+          display: true,
+          title: {
+            display: true,
+            text: "Quantité Totale de travail",
+          },
+        },
+      },
     },
   });
 
   return (
     <div className="App">
-      <h1>BurnDown / BurnUp</h1>
       <Line
         data={data}
         options={data.options}
