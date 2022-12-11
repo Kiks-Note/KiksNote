@@ -3,21 +3,14 @@ import Test from "./pages/Test";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
 import InventoryHome from "./pages/inventory/InventoryHome";
+
 function RoutesProvider() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* EXAMPLES */}
-
-        {/* <Route path="/login" element={<Login />} /> */}
-        {/* <Route path="/register" element={<Register />} /> */}
-        {/* To Use the Navbar change Test by your page
- <Route path="/test" element={<Navbar element={<Test />} />} /> */}
-        <Route path="/" element={<Navbar element={<Test />} />} />
-        <Route path="/test" element={<Navbar element={<Test />} />} />
+        <Route path="/" element={<Test />} />
 
         <Route element={<PrivateRoutes />}>
-          {/* <Route path="/" exact element={<Home />} /> */}
           <Route path="/inventory" element={<InventoryHome />} />
         </Route>
       </Routes>
