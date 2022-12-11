@@ -2179,7 +2179,6 @@
 
 "@popperjs/core@^2.11.6":
   version "2.11.6"
-  resolved "https://registry.npmjs.org/@popperjs/core/-/core-2.11.6.tgz"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.6.tgz#cee20bd55e68a1720bdab363ecf0c821ded4cd45"
   integrity sha512-50/17A98tWUfQ176raKiOGXuYpLyyVMkxxG6oylzL3BPOlA6ADGdK7EYunSa4I064xerltq9TGXs8HmOk5E+vw==
 
@@ -2236,10 +2235,10 @@
   resolved "https://registry.npmjs.org/@protobufjs/utf8/-/utf8-1.1.0.tgz"
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
-"@remix-run/router@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.npmjs.org/@remix-run/router/-/router-1.0.4.tgz"
-  integrity sha512-gTL8H5USTAKOyVA4xczzDJnC3HMssdFa3tRlwBicXynx9XfiXwneHnYQogwSKpdCkjXISrEKSTtX62rLpNEVQg==
+"@remix-run/router@1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@remix-run/router/-/router-1.0.5.tgz#d5c65626add4c3c185a89aa5bd38b1e42daec075"
+  integrity sha512-my0Mycd+jruq/1lQuO5LBB6WTlL/e8DTCYWp44DfMTDcXz8DcTlgF0ISaLsGewt+ctHN+yA8xMq3q/N7uWJPug==
 
 "@rollup/plugin-babel@^5.2.0":
   version "5.3.1"
@@ -3735,7 +3734,6 @@ check-types@^11.1.1:
 
 cheerio-select@^2.1.0:
   version "2.1.0"
-  resolved "https://registry.npmjs.org/cheerio-select/-/cheerio-select-2.1.0.tgz"
   resolved "https://registry.yarnpkg.com/cheerio-select/-/cheerio-select-2.1.0.tgz#4d8673286b8126ca2a8e42740d5e3c4884ae21b4"
   integrity sha512-9v9kG0LvzrlcungtnJtpGNxY+fzECQKhK4EGJX2vByejiMX84MFNQw4UxPJl3bFbTMw+Dfs37XaIkCwTZfLh4g==
   dependencies:
@@ -3748,7 +3746,6 @@ cheerio-select@^2.1.0:
 
 cheerio@^1.0.0-rc.3:
   version "1.0.0-rc.12"
-  resolved "https://registry.npmjs.org/cheerio/-/cheerio-1.0.0-rc.12.tgz"
   resolved "https://registry.yarnpkg.com/cheerio/-/cheerio-1.0.0-rc.12.tgz#788bf7466506b1c6bf5fae51d24a2c4d62e47683"
   integrity sha512-VqR8m68vM46BNnuZ5NtnGBKIE/DfN0cRIzg9n40EIq9NOv90ayxLBXA8fXC5gquFRGJSTRqBq25Jt2ECLR431Q==
   dependencies:
@@ -8515,20 +8512,20 @@ react-refresh@^0.11.0:
   resolved "https://registry.npmjs.org/react-refresh/-/react-refresh-0.11.0.tgz"
   integrity sha512-F27qZr8uUqwhWZboondsPx8tnC3Ct3SxZA3V5WyEvujRyyNv0VYPhoBg1gZ8/MV5tubQp76Trw8lTv9hzRBa+A==
 
-react-router-dom@^6.4.4:
-  version "6.4.4"
-  resolved "https://registry.npmjs.org/react-router-dom/-/react-router-dom-6.4.4.tgz"
-  integrity sha512-0Axverhw5d+4SBhLqLpzPhNkmv7gahUwlUVIOrRLGJ4/uwt30JVajVJXqv2Qr/LCwyvHhQc7YyK1Do8a9Jj7qA==
+react-router-dom@^6.4.5:
+  version "6.4.5"
+  resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-6.4.5.tgz#4fdb12efef4f3848c693a76afbeaed1f6ca02047"
+  integrity sha512-a7HsgikBR0wNfroBHcZUCd9+mLRqZS8R5U1Z1mzLWxFXEkUT3vR1XXmSIVoVpxVX8Bar0nQYYYc9Yipq8dWwAA==
   dependencies:
-    "@remix-run/router" "1.0.4"
-    react-router "6.4.4"
+    "@remix-run/router" "1.0.5"
+    react-router "6.4.5"
 
-react-router@6.4.4:
-  version "6.4.4"
-  resolved "https://registry.npmjs.org/react-router/-/react-router-6.4.4.tgz"
-  integrity sha512-SA6tSrUCRfuLWeYsTJDuriRqfFIsrSvuH7SqAJHegx9ZgxadE119rU8oOX/rG5FYEthpdEaEljdjDlnBxvfr+Q==
+react-router@6.4.5:
+  version "6.4.5"
+  resolved "https://registry.yarnpkg.com/react-router/-/react-router-6.4.5.tgz#73f382af2c8b9a86d74e761a7c5fc3ce7cb0024d"
+  integrity sha512-1RQJ8bM70YEumHIlNUYc6mFfUDoWa5EgPDenK/fq0bxD8DYpQUi/S6Zoft+9DBrh2xmtg92N5HMAJgGWDhKJ5Q==
   dependencies:
-    "@remix-run/router" "1.0.4"
+    "@remix-run/router" "1.0.5"
 
 react-scripts@5.0.1:
   version "5.0.1"
@@ -9390,7 +9387,6 @@ stylehacks@^5.1.1:
 
 stylis@4.1.3:
   version "4.1.3"
-  resolved "https://registry.npmjs.org/stylis/-/stylis-4.1.3.tgz"
   resolved "https://registry.yarnpkg.com/stylis/-/stylis-4.1.3.tgz#fd2fbe79f5fed17c55269e16ed8da14c84d069f7"
   integrity sha512-GP6WDNWf+o403jrEp9c5jibKavrtLW+/qYGhFxFrG8maXhwTBI7gLLhiBb0o7uFccWN+EOS9aMO6cGHWAO07OA==
 

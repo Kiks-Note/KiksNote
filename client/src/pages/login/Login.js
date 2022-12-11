@@ -95,7 +95,6 @@ const Login = (props) => {
       document.getElementById("user_captcha_input").value = "";
     }
     if (Object.keys(formErrors).length === 0 && isSubmit && isCaptchaVerified) {
-      console.log(formValues);
       navigate("/home");
     }
 
