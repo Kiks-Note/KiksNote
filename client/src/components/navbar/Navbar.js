@@ -1,9 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
-import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -20,7 +19,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import BallotIcon from "@mui/icons-material/Ballot";
- 
+import { Stack } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -84,16 +83,28 @@ export default function MiniDrawer({ element }) {
 
   return (
     <Box sx={{ display: "flex" }}>
-      <CssBaseline />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <IconButton>
-            {open ? (
-              <ChevronLeftIcon onClick={handleDrawerClose} />
-            ) : (
-              <ChevronRightIcon onClick={handleDrawerOpen} />
-            )}
-          </IconButton>
+          {open ? (
+            <Stack
+              width={1}
+              direction="row"
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <Box>
+                <img src="logo2.png" alt="CodingLab" />
+              </Box>
+              <IconButton onClick={handleDrawerClose}>
+                <ChevronLeftIcon />{" "}
+              </IconButton>
+            </Stack>
+          ) : (
+            <IconButton onClick={handleDrawerOpen}>
+              {" "}
+              <ChevronRightIcon />
+            </IconButton>
+          )}
         </DrawerHeader>
         <Divider />
         <List>
@@ -124,8 +135,7 @@ export default function MiniDrawer({ element }) {
                 </ListItemIcon>
 
                 <ListItemText
-                  primary={   page.name
-                  }
+                  primary={page.name}
                   sx={{ opacity: open ? 1 : 0 }}
                 />
               </ListItemButton>
@@ -182,5 +192,5 @@ export default function MiniDrawer({ element }) {
 }
 
 MiniDrawer.propTypes = {
-  element: PropTypes.func,
+  element: PropTypes.any,
 };
