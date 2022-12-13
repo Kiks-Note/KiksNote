@@ -1,22 +1,87 @@
 import React from "react";
 import Modal from "@mui/material/Modal";
-import RecipeReviewCard from "./Card";
+import BoardModal from "./Card";
+import InfoIcon from "@mui/icons-material/Info";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import Typography from "@mui/material/Typography";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Chip from "@mui/material/Chip";
 
-export default function BasicModal(props) {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+export default function BoardCard(props) {
+  const [states, setStates] = React.useState({
+    open: false,
+    expanded: false,
+  });
+
+  const handleOpen = () => setStates({ open: true, expanded: false });
+
+  const handleAccordion = () => setStates({ expanded: !states.expanded });
+
+  const handleClose = () => setStates({ open: false, expanded: false });
+
   const info = props.card_info;
+
   return (
-    <div>
-      <p onClick={handleOpen}>{info.name}</p>
-      <Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+    <div
+      style={{
+        display: "flex",
+        padding: 5,
+        position: "relative",
+      }}
+    >
+      <Accordion
+        expanded={states.expanded}
+        onClick={handleAccordion}
+        style={{
+          backgroundColor: props.snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
+          boxShadow: "none",
+        }}
       >
-        <RecipeReviewCard info={info}></RecipeReviewCard>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+          <div>
+            <Chip
+              label="Feature"
+              style={{
+                backgroundColor: "#E6BE65",
+                height: "2vh",
+                margin: "2px",
+              }}
+            />
+            <Chip
+              label="Urgent"
+              style={{
+                backgroundColor: "red",
+                height: "2vh",
+                margin: "2px",
+              }}
+            />
+            <p
+              style={{
+                fontSize: "90%",
+              }}
+            >
+              {info.name}
+            </p>
+          </div>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Typography>{info.desc}</Typography>
+        </AccordionDetails>
+      </Accordion>
+
+      <InfoIcon
+        onClick={handleOpen}
+        color="primary"
+        style={{
+          position: "absolute",
+          left: "85%",
+        }}
+      ></InfoIcon>
+
+      <Modal open={states.open} onClose={handleClose}>
+        <BoardModal info={info}></BoardModal>
       </Modal>
     </div>
   );

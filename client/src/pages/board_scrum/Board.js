@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import BasicModal from "../../components/board_scrum/ModalCard";
+import BoardCard from "../../components/board_scrum/ModalCard";
 
 const style = {
   position: "absolute",
@@ -15,15 +15,71 @@ const style = {
 };
 
 const tasks = [
-  { id: "1", name: "Board EduScrum", desc: "Description de la tâche" },
+  {
+    id: "1",
+    name: "Board EduScrum",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+  },
   {
     id: "2",
-    name: "Création de sprint agile",
-    desc: "Description de la tâche",
+    name: "Création de sprint agile très très long",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
   },
-  { id: "3", name: "BurnDown chart", desc: "Description de la tâche" },
-  { id: "4", name: "Ajout du backlog", desc: "Description de la tâche" },
-  { id: "5", name: "Sprint retro", desc: "Description de la tâche" },
+  {
+    id: "3",
+    name: "BurnDown chart",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+  },
+  {
+    id: "4",
+    name: "Ajout du backlog",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+  },
+  {
+    id: "5",
+    name: "Sprint retro",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+  },
+  {
+    id: "6",
+    name: "Exemple avec un titre de carte très long pour voir si c'est moche... Finalement ça rend plutôt bien meme avec un titre de carte très long",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    id: "7",
+    name: "Sprint retro",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    id: "8",
+    name: "Sprint retro",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    id: "9",
+    name: "Sprint retro",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    id: "10",
+    name: "Sprint retro",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    id: "11",
+    name: "Sprint retro",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    id: "12",
+    name: "Sprint retro",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
+  {
+    id: "13",
+    name: "Sprint retro",
+    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+  },
 ];
 const taskStatus = {
   requested: {
@@ -118,7 +174,10 @@ function App() {
                             background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
                             padding: 4,
                             width: 250,
-                            minHeight: 500,
+                            minHeight: 140,
+                            maxHeight: 500,
+                            overflow: "auto",
+                            height: "auto",
                           }}
                         >
                           {column.items.map((item, index) => {
@@ -132,16 +191,17 @@ function App() {
                                       {...provided.dragHandleProps}
                                       style={{
                                         userSelect: "none",
-                                        padding: 16,
                                         marginBottom: 8,
                                         minHeight: "60px",
                                         borderRadius: 3,
-                                        backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
+                                        backgroundColor: snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
+                                        boxShadow:
+                                          "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
                                         color: "white",
                                         ...provided.draggableProps.style,
                                       }}
                                     >
-                                      <BasicModal card_info={item}></BasicModal>
+                                      <BoardCard card_info={item} snapshot={snapshot}></BoardCard>
                                     </div>
                                   );
                                 }}

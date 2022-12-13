@@ -1,10 +1,9 @@
 import * as React from "react";
-import { styled } from "@mui/material/styles";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
 import CardContent from "@mui/material/CardContent";
-import CardActions from "@mui/material/CardActions";
-import IconButton from "@mui/material/IconButton";
+import PersonIcon from "@mui/icons-material/Person";
+import LabelIcon from "@mui/icons-material/Label";
 import Typography from "@mui/material/Typography";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
@@ -13,72 +12,85 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
-import InboxIcon from "@mui/icons-material/Inbox";
-import DraftsIcon from "@mui/icons-material/Drafts";
+import BallotIcon from "@mui/icons-material/Ballot";
 
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? "rotate(0deg)" : "rotate(180deg)",
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
-
-export default function RecipeReviewCard(props) {
+export default function boardModal(props) {
   const style = {
     position: "absolute",
     top: "30%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 400,
+    width: 600,
     bgcolor: "background.paper",
-    border: "2px solid #000",
     boxShadow: 24,
-    padding: "2vh 10vh 0 0",
+    margin: 0,
   };
 
   const style_card = {
     display: "flex",
   };
 
+  const style_item_button = {
+    backgroundColor: "#eeeee4",
+    margin: "1vh 0 0 0vh",
+  };
+
+  const style_text = {
+    margin: "1vh 0 0 2vh",
+  };
+  const style_title = {
+    margin: "0 0 0 2vh",
+  };
+
   const info = props.info;
   return (
     <Card sx={style}>
-      <CardHeader title={info.name} />
+      <div>
+        <CardHeader title={info.name} avatar={<BallotIcon color="primary"></BallotIcon>} />
+      </div>
+
       <CardContent sx={style_card}>
-        <Typography variant="body2" color="text.secondary">
-          {info.desc}
-        </Typography>
+        <div>
+          <Typography sx={style_title}>Description</Typography>
+          <Typography variant="body2" color="text.secondary" sx={style_text}>
+            {info.desc}
+          </Typography>
+        </div>
         <List>
-          <ListItem disablePadding>
+          <ListItem disablePadding sx={style_item_button}>
             <ListItemButton>
               <ListItemIcon>
-                <InboxIcon />
+                <PersonIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary="Inbox" />
+              <ListItemText primary="Assigné" />
             </ListItemButton>
           </ListItem>
-          <ListItem disablePadding>
+          <ListItem disablePadding sx={style_item_button}>
             <ListItemButton>
               <ListItemIcon>
-                <DraftsIcon />
+                <LabelIcon color="primary" />
               </ListItemIcon>
-              <ListItemText primary="Drafts" />
+              <ListItemText primary="Etiquettes" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding sx={style_item_button}>
+            <ListItemButton>
+              <ListItemIcon>
+                <EditIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary="Modifier" />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding sx={style_item_button}>
+            <ListItemButton>
+              <ListItemIcon>
+                <DeleteIcon color="primary" />
+              </ListItemIcon>
+              <ListItemText primary="Supprimer" />
             </ListItemButton>
           </ListItem>
         </List>
       </CardContent>
-      <CardActions disableSpacing>
-        <IconButton aria-label="edit">
-          <EditIcon />
-        </IconButton>
-        <IconButton aria-label="delete">
-          <DeleteIcon />
-        </IconButton>
-      </CardActions>
     </Card>
   );
 }
