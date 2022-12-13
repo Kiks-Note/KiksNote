@@ -5,7 +5,7 @@ import Navbar from "./components/navbar/Navbar";
 
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
-import Board from "./pages/board/Board";
+import Dashboard from "./pages/board/Dashboard";
 
 function RoutesProvider() {
     return (
@@ -28,7 +28,7 @@ function RoutesProvider() {
 
             <Route path="/" element={<Home />} />
             <Route path="/blog" element={<Blog />} />
-            <Route path="/board" element={<Board />} />
+            <Route path="/dashboard" element={<Dashboard />} />
           </Route>
         </Routes>
       </BrowserRouter>
