@@ -12,9 +12,11 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Modal from "../modal/Modal";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import FavoriteBorderSharpIcon from "@mui/icons-material/FavoriteBorderSharp";
-// * Search bar with Modal for 
+import { Button } from "@mui/material";
+import { Link } from "react-router-dom";
+// * Search bar with Modal for
 function QuickSearchToolbar() {
   return (
     <>
@@ -50,7 +52,7 @@ export function SortedDescendingIcon() {
 export function SortedAscendingIcon() {
   return <ExpandLessIcon className="icon" />;
 }
-// * Pagination for the table 
+// * Pagination for the table
 function CustomPagination() {
   const apiRef = useGridApiContext();
   const page = useGridSelector(apiRef, gridPageSelector);
@@ -65,42 +67,55 @@ function CustomPagination() {
     />
   );
 }
-// * Column of table 
-  const columns = [
-    {
-      field: "sprint_name",
-      headerName: "Nom du sprint",
-      flex: 1,
-    },
-    {
-      field: "sprint_group",
-      headerName: "Groupe du sprint",
-      flex: 1,
-    },
-    {
-      field: "start",
-      headerName: "Date de début",
-      flex: 1,
-    },
-    {
-      field: "end",
-      headerName: "Date de fin",
-      flex: 1,
-    },
-    {
-      field: "favorite",
-      headerName: "Favoris",
-      flex: 1,
-      disableReorder: true,
-      type: "boolean",
-      renderCell: ({ value }) =>
-        value === true ? (
-          <FavoriteIcon color="secondary" />
-        ) : (
-          <FavoriteBorderSharpIcon  />
-        ),
-    },
-  ];
+// * Column of table
+const columns = [
+  {
+    field: "sprint_name",
+    headerName: "Nom du sprint",
+    flex: 1,
+  },
+  {
+    field: "sprint_group",
+    headerName: "Groupe du sprint",
+    flex: 1,
+  },
+  {
+    field: "start",
+    headerName: "Date de début",
+    flex: 1,
+  },
+  {
+    field: "end",
+    headerName: "Date de fin",
+    flex: 1,
+  },
+  {
+    field: "favorite",
+    headerName: "Favoris",
+    flex: 1,
+    disableReorder: true,
+    type: "boolean",
+    renderCell: ({ value }) =>
+      value === true ? (
+        <FavoriteIcon color="secondary" />
+      ) : (
+        <FavoriteBorderSharpIcon />
+      ),
+  },
+  {
+    field: "links",
+    headerName: "Actions",
+    flex: 1,
+    disableReorder: true,
+    renderCell: ({value}) => (
+      <Link
+        href={value}
+      >
+        Accéder
+      </Link>
+    ),
+  },
+];
 export default function TableBoard({ rows }) {
   return (
     <div style={{ height: 500, width: "100%" }}>

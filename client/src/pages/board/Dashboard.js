@@ -4,15 +4,16 @@ import CardBoard from "../../components/card/CardBoard";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { Typography } from "@mui/material";
+const maDate = new Date();
 
-function Board() {
+function Dashboard() {
   let dataBoard = [
     {
       id: 1,
       sprint_name: "Java",
       sprint_group: "Kiks",
-      start: "12/11/2022",
-      end: "29/11/2022",
+      start: "12/12/2022",
+      end: "29/12/2022",
       backlog: "lien",
       favorite: true,
       students: {
@@ -20,6 +21,7 @@ function Board() {
         firstname: "Chris",
       },
       picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      links: "https://mui.com/material-ui/react-button/",
     },
     {
       id: 2,
@@ -34,6 +36,7 @@ function Board() {
         firstname: "Elim",
       },
       picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      links: "https://mui.com/material-ui/react-button/",
     },
     {
       id: 3,
@@ -48,6 +51,7 @@ function Board() {
         firstname: "Elim",
       },
       picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      links: "https://mui.com/material-ui/react-button/",
     },
     {
       id: 4,
@@ -62,6 +66,7 @@ function Board() {
         firstname: "Elim",
       },
       picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      links: "https://mui.com/material-ui/react-button/",
     },
     {
       id: 5,
@@ -76,6 +81,7 @@ function Board() {
         firstname: "Elim",
       },
       picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      links: "https://mui.com/material-ui/react-button/",
     },
     {
       id: 6,
@@ -90,6 +96,7 @@ function Board() {
         firstname: "Elim",
       },
       picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      links: "https://mui.com/material-ui/react-button/",
     },
     {
       id: 7,
@@ -104,6 +111,7 @@ function Board() {
         firstname: "Elim",
       },
       picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      links: "https://mui.com/material-ui/react-button/",
     },
   ];
   const [data] = useState(dataBoard);
@@ -120,7 +128,7 @@ function Board() {
             columns={{ xs: 4, sm: 8, md: 12 }}
           >
             {dataBoard
-              .filter((person) => person.favorite === true )
+              .filter((person) => person.favorite === true)
               .map((person) => (
                 <Grid item xs={2} sm={4} md={4} key={person.uid}>
                   <CardBoard
@@ -144,7 +152,11 @@ function Board() {
             columns={{ xs: 4, sm: 8, md: 12 }}
           >
             {dataBoard
-              .filter((person) => person.end < Date())
+              .filter(
+                (person) =>
+                  person.start <= maDate.toLocaleDateString("fr") &&
+                  person.end > maDate.toLocaleDateString("fr")
+              )
               .map((person) => (
                 <Grid item xs={2} sm={4} md={4} key={person.uid}>
                   <CardBoard
@@ -166,4 +178,4 @@ function Board() {
   );
 }
 
-export default Board;
+export default Dashboard;
