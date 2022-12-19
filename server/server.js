@@ -1,7 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const { db } = require("./firebase");
+const {db} = require("./firebase");
 
 app.use(express.json());
 app.use(cors());
@@ -28,5 +28,7 @@ const PORT = process.env.PORT || 5050;
 //       console.log(err);
 //     });
 // });
+
+require("./blog_back.js")(app, db);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
