@@ -10,12 +10,12 @@ import {
 } from "@mui/x-data-grid";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Modal from "../modal/Modal";
+import Modal from "./Modal";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import StarIcon from "@mui/icons-material/Star";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { IconButton } from "@mui/material";
 // * Search bar with Modal for
 function QuickSearchToolbar() {
   return (
@@ -96,79 +96,65 @@ export default function TableBoard({ rows, addFavorite, deleteBoards }) {
       headerName: "Favoris",
       flex: 1,
       disableReorder: true,
-      type: "boolean",
-      renderCell: ({ value }) =>
-        value === true ? (
-          <IconButton>
-            <FavoriteIcon color="secondary" />
-          </IconButton>
+      type: "actions",
+      getActions: (params) => [
+        params.row.favorite === true ? (
+          <GridActionsCellItem
+            icon={<StarIcon sx={{ color: "purple" }} />}
+            onClick={addFavorite(params.id)}
+          />
         ) : (
-          <IconButton>
-            <FavoriteIcon />
-          </IconButton>
+          <GridActionsCellItem
+            icon={<StarBorderIcon sx={{ color: "purple" }} />}
+            onClick={addFavorite(params.id)}
+          />
         ),
+      ],
     },
     {
       field: "actions",
       type: "actions",
+      headerName: "Gérer",
       flex: 1,
       disableReorder: true,
       getActions: (params) => [
         <GridActionsCellItem
-          icon={<DeleteIcon />}
+          icon={<DeleteIcon sx={{ color: "red" }} />}
           label="Supprimer"
           onClick={deleteBoards(params.id)}
-          showInMenu
         />,
-
-        params.row.favorite === true ? (
-          <GridActionsCellItem
-            icon={<FavoriteIcon />}
-            label="Supprimer des favoris "
-            onClick={addFavorite(params.id)}
-            showInMenu
-          />
-        ) : (
-          <GridActionsCellItem
-            icon={<FavoriteIcon color="secondary" />}
-            label="Ajouter en favoris "
-            onClick={addFavorite(params.id)}
-            showInMenu
-          />
-        ),
       ],
     },
   ];
 
   return (
-    <div style={{ height: 500, width: "100%" }}>
-      <DataGrid
-        sx={{
-          border: "none",
-        }}
-        rows={rows}
-        columns={columns}
-        pageSize={5}
-        rowsPerPageOptions={[5]}
-        componentsProps={{
-          toolbar: {
-            showQuickFilter: true,
-            quickFilterProps: { debounceMs: 500 },
-          },
-        }}
-        components={{
-          Toolbar: QuickSearchToolbar,
-          ColumnSortedDescendingIcon: SortedDescendingIcon,
-          ColumnSortedAscendingIcon: SortedAscendingIcon,
-          Pagination: CustomPagination,
-        }}
-        disableColumnFilter
-        disableColumnSelector
-        disableDensitySelector
-        disableColumnMenu
-        isRowSelectable={() => false}
-      />
-    </div>
+    <DataGrid
+      autoHeight
+      sx={{
+        border: "none",
+      }}
+      rows={rows}
+      columns={columns}
+      pageSize={5}
+      rowsPerPageOptions={[5]}
+      componentsProps={{
+        toolbar: {
+          showQuickFilter: true,
+          quickFilterProps: { debounceMs: 500 },
+        },
+      }}
+      components={{
+        Toolbar: QuickSearchToolbar,
+        ColumnSortedDescendingIcon: SortedDescendingIcon,
+        ColumnSortedAscendingIcon: SortedAscendingIcon,
+        Pagination: CustomPagination,
+      }}
+      disableColumnFilter
+      disableColumnSelector
+      disableDensitySelector
+      disableColumnMenu
+      isRowSelectable={() => false}
+    />
   );
 }
 // * Column of table

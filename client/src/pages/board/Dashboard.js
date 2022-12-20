@@ -1,9 +1,14 @@
 import React, { useState } from "react";
-import TableBoard from "../../components/table/TableBoards";
-import CardBoard from "../../components/card/CardBoard";
+import TableBoard from "../../components/board/TableBoards";
+import CardBoard from "../../components/board/CardBoard";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { Divider, Typography } from "@mui/material";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import ViewListIcon from "@mui/icons-material/ViewList";
+import ViewModuleIcon from "@mui/icons-material/ViewModule";
 const maDate = new Date();
 
 function Dashboard() {
@@ -114,36 +119,45 @@ function Dashboard() {
       links: "https://mui.com/material-ui/react-button/",
     },
   ]);
+  const [view, setView] = useState("module");
+
+  //FUNCTION
+
+  //CHANGE THE VIEW OF THE CARD BOARD
+  const viewChange = (event, nextView) => {
+    if (nextView !== null) {
+      setView(nextView);
+    }
+  };
+  //DELETE A BOARD
   const deleteBoards = (id) => () => {
     setTimeout(() => {
       setRows((prevRows) => prevRows.filter((row) => row.id !== id));
     });
   };
-  const favorisTell = 
-    (id) => () => {
-      setRows((prevRows) =>
-        prevRows.map((row) =>
-          row.id === id ? { ...row, favorite: !row.favorite } : row,
-        ),
-      );
-    };
-
-   
-
+  //TO MAKE A BOARD IN FAVORI
+  const favorisTell = (id) => () => {
+    setRows((prevRows) =>
+      prevRows.map((row) =>
+        row.id === id ? { ...row, favorite: !row.favorite } : row
+      )
+    );
+  };
+  //DEFINE BOARDS WHO IS ACTIF
   let actif = rows.filter(
     (person) =>
       person.start <= maDate.toLocaleDateString("fr") &&
       person.end > maDate.toLocaleDateString("fr")
   );
+  //DEFINE BOARDS WHO IS IN  FAVORIS
   let favoris = rows.filter((person) => person.favorite === true);
-
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
         {favoris.length > 0 ? (
           <Box>
             <Typography variant="h6" gutterBottom>
-              Favoris
+              <StarBorderIcon /> Tableaux favoris
             </Typography>
             <Grid
               container
@@ -155,28 +169,22 @@ function Dashboard() {
                   <CardBoard
                     key={person.id}
                     picture={person.picture}
-                    firstname={person.students.firstname}
                     sprint_group={person.sprint_group}
                     fav={person.favorite}
+                    isFavoris={favorisTell(person.id)}
                   />
                 </Grid>
               ))}
             </Grid>
+            <Divider sx={{ width: " 100%", margin: 2 }} />
           </Box>
         ) : (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Aucun favoris
-            </Typography>
-          </Box>
+          <></>
         )}
-        <Box sx={{ width: " 100%", margin: 2 }}>
-          <Divider />
-        </Box>
         {actif.length > 0 ? (
           <Box>
             <Typography variant="h6" gutterBottom>
-              Board actif
+              Tableau actif
             </Typography>
             <Grid
               container
@@ -188,35 +196,65 @@ function Dashboard() {
                   <CardBoard
                     key={person.id}
                     picture={person.picture}
-                    firstname={person.students.firstname}
                     sprint_group={person.sprint_group}
                     fav={person.favorite}
+                    isFavoris={favorisTell(person.id)}
                   />
                 </Grid>
               ))}
             </Grid>
           </Box>
         ) : (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Vous n'avez pas de boards actif.
-            </Typography>
-          </Box>
+          <></>
         )}
       </Box>
-      <Box sx={{ width: " 100%", margin: 2 }}>
-        <Divider />
-      </Box>
-      <Box sx={{ width: " 100%", marginTop: 4 }}>
+      <Divider sx={{ width: " 100%", margin: 2 }} />
+      <Box>
         <Typography variant="h6" gutterBottom>
-          Mes boards
+          Mes tableaux
         </Typography>
-        <TableBoard
-          rows={rows}
-          addFavorite={favorisTell}
-          deleteBoards={deleteBoards}
-        />
+        <ToggleButtonGroup
+          value={view}
+          exclusive
+          onChange={viewChange}
+          sx={{ width: " 100%", margin: 1 }}
+        >
+          <ToggleButton value="module" aria-label="module">
+            <ViewModuleIcon />
+          </ToggleButton>
+          <ToggleButton value="list" aria-label="list">
+            <ViewListIcon />
+          </ToggleButton>
+        </ToggleButtonGroup>
       </Box>
+      {/* DISPLAY  */}
+      {view === "module" ? (
+        <Grid
+          container
+          spacing={{ xs: 2, md: 3 }}
+          columns={{ xs: 4, sm: 8, md: 12 }}
+        >
+          {rows.map((person) => (
+            <Grid item xs={2} sm={4} md={4} lg={12} key={person.id}>
+              <CardBoard
+                key={person.id}
+                picture={person.picture}
+                sprint_group={person.sprint_group}
+                fav={person.favorite}
+                isFavoris={favorisTell(person.id)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      ) : (
+        <Box sx={{ width: " 100%", marginTop: 4 }}>
+          <TableBoard
+            rows={rows}
+            addFavorite={favorisTell}
+            deleteBoards={deleteBoards}
+          />
+        </Box>
+      )}
     </>
   );
 }
