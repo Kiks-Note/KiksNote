@@ -9,7 +9,11 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
+
+import TablePagination from "@mui/material/TablePagination";
 const maDate = new Date();
+
+
 
 function Dashboard() {
   const [rows, setRows] = useState([
@@ -120,6 +124,18 @@ function Dashboard() {
     },
   ]);
   const [view, setView] = useState("module");
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   //FUNCTION
 
@@ -234,7 +250,10 @@ function Dashboard() {
           spacing={{ xs: 2, md: 3 }}
           columns={{ xs: 4, sm: 8, md: 12 }}
         >
-          {rows.map((person) => (
+          {(rowsPerPage > 0
+            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : rows
+          ).map((person) => (
             <Grid item xs={2} sm={4} md={4} lg={12} key={person.id}>
               <CardBoard
                 key={person.id}
@@ -245,6 +264,26 @@ function Dashboard() {
               />
             </Grid>
           ))}
+          <Box
+            sx={{
+              flexGrow: 1,
+              width: "100%",
+              margin: 3,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <TablePagination
+              component="div"
+              rowsPerPageOptions={[5, 10, 25, { label: "Tout", value: -1 }]}
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              labelRowsPerPage="Nombre de board par page "
+            />
+          </Box>
         </Grid>
       ) : (
         <Box sx={{ width: " 100%", marginTop: 4 }}>

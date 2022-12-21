@@ -114,7 +114,7 @@ export default function TableBoard({ rows, addFavorite, deleteBoards }) {
     {
       field: "actions",
       type: "actions",
-      headerName: "Gérer",
+      headerName: "Suppression",
       flex: 1,
       disableReorder: true,
       getActions: (params) => [

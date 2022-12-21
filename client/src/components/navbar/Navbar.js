@@ -20,7 +20,10 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import BallotIcon from "@mui/icons-material/Ballot";
- 
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import { ColorModeContext } from "../../utils/Theme";
+import { useTheme } from "@mui/material/styles";
 
 const drawerWidth = 240;
 
@@ -73,6 +76,8 @@ const Drawer = styled(MuiDrawer, {
 
 export default function MiniDrawer({ element }) {
   const [open, setOpen] = React.useState(false);
+  const colorMode = React.useContext(ColorModeContext);
+  const theme = useTheme();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -87,13 +92,15 @@ export default function MiniDrawer({ element }) {
       <CssBaseline />
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          <IconButton>
-            {open ? (
-              <ChevronLeftIcon onClick={handleDrawerClose} />
-            ) : (
-              <ChevronRightIcon onClick={handleDrawerOpen} />
-            )}
-          </IconButton>
+          {open ? (
+            <IconButton onClick={handleDrawerClose}>
+              <ChevronLeftIcon />
+            </IconButton>
+          ) : (
+            <IconButton onClick={handleDrawerOpen}>
+              <ChevronRightIcon />
+            </IconButton>
+          )}
         </DrawerHeader>
         <Divider />
         <List>
@@ -101,7 +108,12 @@ export default function MiniDrawer({ element }) {
             { id: 1, name: "Accueil", route: "/", icon: <HomeIcon /> },
             { id: 2, name: "Agile", route: "#", icon: <BallotIcon /> },
             { id: 3, name: "Profile", route: "#", icon: <Person2Icon /> },
-            { id: 4, name: "Espace de travail", route: "/dashboard", icon: <DashboardIcon /> },
+            {
+              id: 4,
+              name: "Espace de travail",
+              route: "/dashboard",
+              icon: <DashboardIcon />,
+            },
             { id: 5, name: "Blog", route: "#", icon: <AlternateEmailIcon /> },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
@@ -124,8 +136,7 @@ export default function MiniDrawer({ element }) {
                 </ListItemIcon>
 
                 <ListItemText
-                  primary={   page.name
-                  }
+                  primary={page.name}
                   sx={{ opacity: open ? 1 : 0 }}
                 />
               </ListItemButton>
@@ -171,6 +182,24 @@ export default function MiniDrawer({ element }) {
               </ListItemButton>
             </ListItem>
           ))}
+
+          {theme.mode === "dark" ? (
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
+              <Brightness7Icon />
+            </IconButton>
+          ) : (
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
+              <Brightness4Icon />
+            </IconButton>
+          )}
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
@@ -182,5 +211,5 @@ export default function MiniDrawer({ element }) {
 }
 
 MiniDrawer.propTypes = {
-  element: PropTypes.func,
+  element: PropTypes.any,
 };
