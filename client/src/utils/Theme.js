@@ -40,7 +40,7 @@ export default function ToggleColorMode() {
               }
             : {
                 primary: {
-                  main: "#9e9e9e",
+                  main: "#000",
                 },
                 text: {
                   primary: "#212121",

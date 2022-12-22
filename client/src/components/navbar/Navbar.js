@@ -13,7 +13,6 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Person2Icon from "@mui/icons-material/Person2";
-import Link from "@mui/material/Link";
 import PropTypes from "prop-types";
 import HomeIcon from "@mui/icons-material/Home";
 import DashboardIcon from "@mui/icons-material/Dashboard";
@@ -94,27 +93,47 @@ export default function MiniDrawer({ element }) {
         <DrawerHeader>
           {open ? (
             <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon />
+              <ChevronLeftIcon color="primary" fontSize="large" />
             </IconButton>
           ) : (
             <IconButton onClick={handleDrawerOpen}>
-              <ChevronRightIcon />
+              <ChevronRightIcon color="primary" fontSize="large" />
             </IconButton>
           )}
         </DrawerHeader>
         <Divider />
         <List>
           {[
-            { id: 1, name: "Accueil", route: "/", icon: <HomeIcon /> },
-            { id: 2, name: "Agile", route: "#", icon: <BallotIcon /> },
-            { id: 3, name: "Profile", route: "#", icon: <Person2Icon /> },
+            {
+              id: 1,
+              name: "Accueil",
+              route: "/",
+              icon: <HomeIcon color="primary" />,
+            },
+            {
+              id: 2,
+              name: "Agile",
+              route: "#",
+              icon: <BallotIcon color="primary" />,
+            },
+            {
+              id: 3,
+              name: "Profile",
+              route: "#",
+              icon: <Person2Icon color="primary" />,
+            },
             {
               id: 4,
               name: "Espace de travail",
               route: "/dashboard",
-              icon: <DashboardIcon />,
+              icon: <DashboardIcon color="primary" />,
             },
-            { id: 5, name: "Blog", route: "#", icon: <AlternateEmailIcon /> },
+            {
+              id: 5,
+              name: "Blog",
+              route: "#",
+              icon: <AlternateEmailIcon color="primary" />,
+            },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
               <ListItemButton
@@ -151,7 +170,7 @@ export default function MiniDrawer({ element }) {
               id: 1,
               name: "Déconnexion",
               route: "#",
-              icon: <LogoutOutlinedIcon />,
+              icon: <LogoutOutlinedIcon color="primary" />,
             },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
@@ -172,17 +191,12 @@ export default function MiniDrawer({ element }) {
                   {page.icon}
                 </ListItemIcon>
                 <ListItemText
-                  primary={
-                    <Link href={page.route} underline="none" color="dark">
-                      {page.name}
-                    </Link>
-                  }
+                  primary={page.name}
                   sx={{ opacity: open ? 1 : 0 }}
                 />
               </ListItemButton>
             </ListItem>
           ))}
-
           {theme.mode === "dark" ? (
             <IconButton
               sx={{ ml: 1 }}

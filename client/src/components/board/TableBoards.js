@@ -16,6 +16,7 @@ import Pagination from "@mui/material/Pagination";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import DeleteIcon from "@mui/icons-material/Delete";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 // * Search bar with Modal for
 function QuickSearchToolbar() {
   return (
@@ -92,37 +93,39 @@ export default function TableBoard({ rows, addFavorite, deleteBoards }) {
       flex: 1,
     },
     {
-      field: "favorite",
-      headerName: "Favoris",
+      field: "actions",
+      type: "actions",
+      headerName: "Parametres",
       flex: 1,
       disableReorder: true,
-      type: "actions",
       getActions: (params) => [
+        <GridActionsCellItem
+          color="primary"
+          icon={<OpenInNewIcon color="primary" />}
+          label="Ouvrir le board"
+          showInMenu
+        />,
+        <GridActionsCellItem
+          icon={<DeleteIcon sx={{ color: "red" }} />}
+          label="Supprimer le board"
+          onClick={deleteBoards(params.id)}
+          showInMenu
+        />,
         params.row.favorite === true ? (
           <GridActionsCellItem
             icon={<StarIcon sx={{ color: "purple" }} />}
             onClick={addFavorite(params.id)}
+            label="Supprimer un favoris "
+            showInMenu
           />
         ) : (
           <GridActionsCellItem
             icon={<StarBorderIcon sx={{ color: "purple" }} />}
             onClick={addFavorite(params.id)}
+            label="Mettre en favoris"
+            showInMenu
           />
         ),
-      ],
-    },
-    {
-      field: "actions",
-      type: "actions",
-      headerName: "Suppression",
-      flex: 1,
-      disableReorder: true,
-      getActions: (params) => [
-        <GridActionsCellItem
-          icon={<DeleteIcon sx={{ color: "red" }} />}
-          label="Supprimer"
-          onClick={deleteBoards(params.id)}
-        />,
       ],
     },
   ];
