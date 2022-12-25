@@ -10,7 +10,6 @@ import {
 } from "@mui/x-data-grid";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Modal from "./Modal";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -41,7 +40,6 @@ function QuickSearchToolbar() {
           }
           debounceMs={200} // time before applying the new quick filter value
         />
-        <Modal />
       </Stack>
     </>
   );

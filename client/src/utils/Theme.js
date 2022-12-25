@@ -26,29 +26,23 @@ export default function ToggleColorMode() {
         palette: {
           ...(mode === "dark"
             ? {
-                primary: {
-                  main: "#fff",
-                },
                 text: {
                   primary: "#fff",
                   secondary: "#9e9e9e",
                 },
                 background: {
-                  default: " #252525",
-                  paper: " #252525",
+                  default: " #4d4d4d",
+                  paper: " #404040",
                 },
               }
             : {
-                primary: {
-                  main: "#000",
-                },
                 text: {
-                  primary: "#212121",
+                  primary: "#000",
                   secondary: "#42424",
                 },
                 background: {
-                  default: "#DEDDDD",
-                  paper: "#DEDDDD",
+                  default: "#dedddd",
+                  paper: "#cdcbcb",
                 },
               }),
         },

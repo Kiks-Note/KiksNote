@@ -89,15 +89,15 @@ export default function MiniDrawer({ element }) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <Drawer variant="permanent" open={open}>
+      <Drawer variant="permanent" open={open} color="background.paper">
         <DrawerHeader>
           {open ? (
             <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon color="primary" fontSize="large" />
+              <ChevronLeftIcon htmlColor="white" fontSize="large" />
             </IconButton>
           ) : (
             <IconButton onClick={handleDrawerOpen}>
-              <ChevronRightIcon color="primary" fontSize="large" />
+              <ChevronRightIcon htmlColor="white" fontSize="large" />
             </IconButton>
           )}
         </DrawerHeader>
@@ -108,31 +108,31 @@ export default function MiniDrawer({ element }) {
               id: 1,
               name: "Accueil",
               route: "/",
-              icon: <HomeIcon color="primary" />,
+              icon: <HomeIcon  htmlColor="white" />,
             },
             {
               id: 2,
               name: "Agile",
               route: "#",
-              icon: <BallotIcon color="primary" />,
+              icon: <BallotIcon  htmlColor="white" />,
             },
             {
               id: 3,
               name: "Profile",
               route: "#",
-              icon: <Person2Icon color="primary" />,
+              icon: <Person2Icon  htmlColor="white" />,
             },
             {
               id: 4,
               name: "Espace de travail",
               route: "/dashboard",
-              icon: <DashboardIcon color="primary" />,
+              icon: <DashboardIcon  htmlColor="white" />,
             },
             {
               id: 5,
               name: "Blog",
               route: "#",
-              icon: <AlternateEmailIcon color="primary" />,
+              icon: <AlternateEmailIcon  htmlColor="white" />,
             },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
@@ -170,7 +170,7 @@ export default function MiniDrawer({ element }) {
               id: 1,
               name: "Déconnexion",
               route: "#",
-              icon: <LogoutOutlinedIcon color="primary" />,
+              icon: <LogoutOutlinedIcon  htmlColor="white" />,
             },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>

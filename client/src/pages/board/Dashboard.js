@@ -3,7 +3,7 @@ import TableBoard from "../../components/board/TableBoards";
 import CardBoard from "../../components/board/CardBoard";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import { Divider, Typography } from "@mui/material";
+import { Divider, List, ListItem, Typography } from "@mui/material";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
@@ -11,9 +11,8 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 
 import TablePagination from "@mui/material/TablePagination";
+import Modal from "../../components/board/Modal";
 const maDate = new Date();
-
-
 
 function Dashboard() {
   const [rows, setRows] = useState([
@@ -161,9 +160,9 @@ function Dashboard() {
   };
   //DEFINE BOARDS WHO IS ACTIF
   let actif = rows.filter(
-    (person) =>
-      person.start <= maDate.toLocaleDateString("fr") &&
-      person.end > maDate.toLocaleDateString("fr")
+    (board) =>
+      board.start <= maDate.toLocaleDateString("fr") &&
+      board.end > maDate.toLocaleDateString("fr")
   );
   //DEFINE BOARDS WHO IS IN  FAVORIS
   let favoris = rows.filter((person) => person.favorite === true);
@@ -175,13 +174,15 @@ function Dashboard() {
             <Typography variant="h6" gutterBottom>
               <StarBorderIcon /> Tableaux favoris
             </Typography>
-            <Grid
-              container
-              spacing={{ xs: 2, md: 3 }}
-              columns={{ xs: 4, sm: 8, md: 12 }}
+            <List
+              style={{
+                overflow: "auto",
+                display: "-webkit-inline-box",
+                width: "100%",
+              }}
             >
               {favoris.map((person) => (
-                <Grid item xs={2} sm={4} md={4} key={person.id}>
+                <ListItem key={person.id} style={{ maxWidth: "345px" }}>
                   <CardBoard
                     key={person.id}
                     picture={person.picture}
@@ -189,9 +190,9 @@ function Dashboard() {
                     fav={person.favorite}
                     isFavoris={favorisTell(person.id)}
                   />
-                </Grid>
+                </ListItem>
               ))}
-            </Grid>
+            </List>
             <Divider sx={{ width: " 100%", margin: 2 }} />
           </Box>
         ) : (
@@ -202,13 +203,15 @@ function Dashboard() {
             <Typography variant="h6" gutterBottom>
               Tableau actif
             </Typography>
-            <Grid
-              container
-              spacing={{ xs: 2, md: 3 }}
-              columns={{ xs: 4, sm: 8, md: 12 }}
+            <List
+              style={{
+                overflow: "auto",
+                display: "-webkit-inline-box",
+                width: "100%",
+              }}
             >
               {actif.map((person) => (
-                <Grid item xs={2} sm={4} md={4} key={person.id}>
+                <ListItem key={person.id} style={{ maxWidth: "345px" }}>
                   <CardBoard
                     key={person.id}
                     picture={person.picture}
@@ -216,9 +219,9 @@ function Dashboard() {
                     fav={person.favorite}
                     isFavoris={favorisTell(person.id)}
                   />
-                </Grid>
+                </ListItem>
               ))}
-            </Grid>
+            </List>
           </Box>
         ) : (
           <></>
@@ -229,19 +232,22 @@ function Dashboard() {
         <Typography variant="h6" gutterBottom>
           Mes tableaux
         </Typography>
-        <ToggleButtonGroup
-          value={view}
-          exclusive
-          onChange={viewChange}
-          sx={{ width: " 100%", margin: 1 }}
-        >
-          <ToggleButton value="module" aria-label="module">
-            <ViewModuleIcon />
-          </ToggleButton>
-          <ToggleButton value="list" aria-label="list">
-            <ViewListIcon />
-          </ToggleButton>
-        </ToggleButtonGroup>
+        <Box sx={{ width: " 100%", display: "flex" }}>
+          <ToggleButtonGroup
+            value={view}
+            exclusive
+            onChange={viewChange}
+            sx={{ width: " 100%", margin: 1 }}
+          >
+            <ToggleButton value="module" aria-label="module">
+              <ViewModuleIcon />
+            </ToggleButton>
+            <ToggleButton value="list" aria-label="list">
+              <ViewListIcon />
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <Modal />
+        </Box>
       </Box>
       {/* DISPLAY  */}
       {view === "module" ? (
