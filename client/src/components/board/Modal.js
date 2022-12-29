@@ -194,7 +194,7 @@ function ConfirmationDialogRaw(props) {
                   style={{
                     display: "flex",
                     flexDirection: "column",
-                    alignItems: " flex-end",
+                    alignItems: " center",
                   }}
                 >
                   <IconButton
@@ -204,6 +204,7 @@ function ConfirmationDialogRaw(props) {
                       cursor: "pointer",
                       color: "white",
                       backgroundColor: "black",
+                      position:"absolute",
                     }}
                   >
                     <ClearIcon />
@@ -211,7 +212,7 @@ function ConfirmationDialogRaw(props) {
                   <img
                     src={preview}
                     alt=""
-                    style={{ height: "150px", width: "100%" }}
+                    style={{ height: "150px", width: "345px" }}
                   />
                 </Box>
               )}
