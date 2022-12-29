@@ -12,7 +12,7 @@ import ViewModuleIcon from "@mui/icons-material/ViewModule";
 
 import TablePagination from "@mui/material/TablePagination";
 import Modal from "../../components/board/Modal";
-const maDate = new Date();
+let maDate = new Date();
 
 function Dashboard() {
   const [rows, setRows] = useState([
@@ -23,12 +23,13 @@ function Dashboard() {
       start: "12/12/2022",
       end: "29/12/2022",
       backlog: "lien",
-      favorite: true,
+      favorite: false,
+      favoriteDate: "",
       students: {
         student_id: "uid(student)",
         firstname: "Chris",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
       links: "https://mui.com/material-ui/react-button/",
     },
     {
@@ -39,11 +40,12 @@ function Dashboard() {
       end: "29/12/2022",
       backlog: "lien",
       favorite: false,
+      favoriteDate: "",
       students: {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
       links: "https://mui.com/material-ui/react-button/",
     },
     {
@@ -54,11 +56,12 @@ function Dashboard() {
       end: "29/12/2022",
       backlog: "lien",
       favorite: false,
+      favoriteDate: "",
       students: {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
       links: "https://mui.com/material-ui/react-button/",
     },
     {
@@ -69,11 +72,12 @@ function Dashboard() {
       end: "29/12/2022",
       backlog: "lien",
       favorite: false,
+      favoriteDate: "",
       students: {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
       links: "https://mui.com/material-ui/react-button/",
     },
     {
@@ -84,11 +88,12 @@ function Dashboard() {
       end: "29/12/2022",
       backlog: "lien",
       favorite: false,
+      favoriteDate: "",
       students: {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
       links: "https://mui.com/material-ui/react-button/",
     },
     {
@@ -99,11 +104,12 @@ function Dashboard() {
       end: "29/12/2022",
       backlog: "lien",
       favorite: false,
+      favoriteDate: "",
       students: {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
       links: "https://mui.com/material-ui/react-button/",
     },
     {
@@ -114,11 +120,12 @@ function Dashboard() {
       end: "29/12/2022",
       backlog: "lien",
       favorite: false,
+      favoriteDate: "",
       students: {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.random(),
+      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
       links: "https://mui.com/material-ui/react-button/",
     },
   ]);
@@ -154,7 +161,13 @@ function Dashboard() {
   const favorisTell = (id) => () => {
     setRows((prevRows) =>
       prevRows.map((row) =>
-        row.id === id ? { ...row, favorite: !row.favorite } : row
+        row.id === id
+          ? {
+              ...row,
+              favorite: !row.favorite,
+              favoriteDate: maDate.toLocaleDateString("fr"),
+            }
+          : row
       )
     );
   };
@@ -165,7 +178,9 @@ function Dashboard() {
       board.end > maDate.toLocaleDateString("fr")
   );
   //DEFINE BOARDS WHO IS IN  FAVORIS
-  let favoris = rows.filter((person) => person.favorite === true);
+  let favoris = rows
+    .filter((person) => person.favorite === true)
+    .sort((a, b) => a - b);
   return (
     <>
       <Box sx={{ flexGrow: 1 }}>
@@ -222,12 +237,13 @@ function Dashboard() {
                 </ListItem>
               ))}
             </List>
+            <Divider sx={{ width: " 100%", margin: 2 }} />
           </Box>
         ) : (
           <></>
         )}
       </Box>
-      <Divider sx={{ width: " 100%", margin: 2 }} />
+
       <Box>
         <Typography variant="h6" gutterBottom>
           Mes tableaux
@@ -251,16 +267,12 @@ function Dashboard() {
       </Box>
       {/* DISPLAY  */}
       {view === "module" ? (
-        <Grid
-          container
-          spacing={{ xs: 2, md: 3 }}
-          columns={{ xs: 4, sm: 8, md: 12 }}
-        >
+        <Grid container rowSpacing={2} columnSpacing={2}>
           {(rowsPerPage > 0
             ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
             : rows
           ).map((person) => (
-            <Grid item xs={2} sm={4} md={4} lg={12} key={person.id}>
+            <Grid item xs={3} key={person.id}>
               <CardBoard
                 key={person.id}
                 picture={person.picture}
