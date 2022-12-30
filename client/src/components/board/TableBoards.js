@@ -16,6 +16,7 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import DeleteIcon from "@mui/icons-material/Delete";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { Button } from "@mui/material";
 // * Search bar with Modal for
 function QuickSearchToolbar() {
   return (
@@ -99,8 +100,14 @@ export default function TableBoard({ rows, addFavorite, deleteBoards }) {
       getActions: (params) => [
         <GridActionsCellItem
           color="primary"
-          icon={<OpenInNewIcon color="primary" />}
-          label="Ouvrir le board"
+          icon={
+            <Button
+              style={{ color: "white" }}
+              href={`http://localhost:3000/${params.id}`}
+            >
+              Ouvrir le board
+            </Button>
+          }
           showInMenu
         />,
         <GridActionsCellItem

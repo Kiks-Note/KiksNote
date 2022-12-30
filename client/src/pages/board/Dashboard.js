@@ -29,8 +29,10 @@ function Dashboard() {
         student_id: "uid(student)",
         firstname: "Chris",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-      links: "https://mui.com/material-ui/react-button/",
+      picture:
+        "https://picsum.photos/500/300?random=" +
+        Math.floor(Math.random() * 100) +
+        1,
     },
     {
       id: 2,
@@ -45,8 +47,10 @@ function Dashboard() {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-      links: "https://mui.com/material-ui/react-button/",
+      picture:
+        "https://picsum.photos/500/300?random=" +
+        Math.floor(Math.random() * 100) +
+        1,
     },
     {
       id: 3,
@@ -61,8 +65,10 @@ function Dashboard() {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-      links: "https://mui.com/material-ui/react-button/",
+      picture:
+        "https://picsum.photos/500/300?random=" +
+        Math.floor(Math.random() * 100) +
+        1,
     },
     {
       id: 4,
@@ -77,8 +83,10 @@ function Dashboard() {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-      links: "https://mui.com/material-ui/react-button/",
+      picture:
+        "https://picsum.photos/500/300?random=" +
+        Math.floor(Math.random() * 100) +
+        1,
     },
     {
       id: 5,
@@ -93,8 +101,10 @@ function Dashboard() {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-      links: "https://mui.com/material-ui/react-button/",
+      picture:
+        "https://picsum.photos/500/300?random=" +
+        Math.floor(Math.random() * 100) +
+        1,
     },
     {
       id: 6,
@@ -109,8 +119,10 @@ function Dashboard() {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-      links: "https://mui.com/material-ui/react-button/",
+      picture:
+        "https://picsum.photos/500/300?random=" +
+        Math.floor(Math.random() * 100) +
+        1,
     },
     {
       id: 7,
@@ -125,8 +137,10 @@ function Dashboard() {
         student_id: "uid(student)",
         firstname: "Elim",
       },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-      links: "https://mui.com/material-ui/react-button/",
+      picture:
+        "https://picsum.photos/500/300?random=" +
+        Math.floor(Math.random() * 100) +
+        1,
     },
   ]);
   const [view, setView] = useState("module");
@@ -204,6 +218,7 @@ function Dashboard() {
                     sprint_group={person.sprint_group}
                     fav={person.favorite}
                     isFavoris={favorisTell(person.id)}
+                    id={person.id}
                   />
                 </ListItem>
               ))}
@@ -233,6 +248,7 @@ function Dashboard() {
                     sprint_group={person.sprint_group}
                     fav={person.favorite}
                     isFavoris={favorisTell(person.id)}
+                    id={person.id}
                   />
                 </ListItem>
               ))}
@@ -279,6 +295,7 @@ function Dashboard() {
                 sprint_group={person.sprint_group}
                 fav={person.favorite}
                 isFavoris={favorisTell(person.id)}
+                id={person.id}
               />
             </Grid>
           ))}

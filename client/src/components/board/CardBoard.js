@@ -5,9 +5,12 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import { Box, Button, CardActionArea, Typography } from "@mui/material";
 
-export default function CardBoard({ picture, sprint_group, fav, isFavoris }) {
+export default function CardBoard({ picture, sprint_group, fav, isFavoris,id }) {
   return (
-    <CardActionArea href="#" sx={{ height: 150, maxWidth: 345 }}>
+    <CardActionArea
+      href={`http://localhost:3000/${id}`}
+      sx={{ height: 150, maxWidth: 345 }}
+    >
       <Card
         sx={{
           height: 150,
@@ -20,7 +23,15 @@ export default function CardBoard({ picture, sprint_group, fav, isFavoris }) {
         }}
       >
         <CardContent>
-          <Typography variant="h5" sx={{ color: "white", fontWeight: "bold" }}>
+          <Typography
+            variant="h5"
+            sx={{
+              color: "white",
+              fontWeight: "bold",
+              backgroundColor: "#000000a8",
+              width: "fit-content",
+            }}
+          >
             {sprint_group}
           </Typography>
           <Box
@@ -42,7 +53,7 @@ export default function CardBoard({ picture, sprint_group, fav, isFavoris }) {
                   isFavoris();
                 }}
               >
-                <StarIcon sx={{ color: "purple" }}  />
+                <StarIcon sx={{ color: "purple" }} />
               </Button>
             ) : (
               <Button
