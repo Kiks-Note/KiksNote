@@ -316,7 +316,11 @@ function Dashboard() {
               page={page}
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
-              labelRowsPerPage="Nombre de board par page "
+              labelRowsPerPage="Par page "
+              labelDisplayedRows={({page})=>{
+                return`Page : ${page+1}`;
+              }}
+              
             />
           </Box>
         </Grid>

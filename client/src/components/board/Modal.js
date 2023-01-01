@@ -1,5 +1,6 @@
-import * as React from "react";
-import { useForm } from "react-hook-form";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useForm, Controller } from "react-hook-form";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -22,78 +23,28 @@ import Chip from "@mui/material/Chip";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import CloseIcon from "@mui/icons-material/Close";
 import ClearIcon from "@mui/icons-material/Clear";
+import Autocomplete from "@mui/material/Autocomplete";
 import { Alert, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
 function ConfirmationDialogRaw(props) {
   const { onClose, value: valueProp, open, ...other } = props;
   const [value, setValue] = React.useState(valueProp);
-  const radioGroupRef = React.useRef(null);
-
-  React.useEffect(() => {
-    if (!open) {
-      setValue(valueProp);
-    }
-  }, [valueProp, open]);
-
-  const handleEntering = () => {
-    if (radioGroupRef.current != null) {
-      radioGroupRef.current.focus();
-    }
-  };
-
-  const handleCancel = () => {
-    reset({
-      end: "",
-      start: "",
-      sprint_name: "",
-      sprint_group: "",
-      membres: "",
-      image: "",
-    });
-    onClose();
-  };
-
-  const handleOk = () => {
-    onClose(value);
-  };
-
   const [personName, setPersonName] = React.useState([]);
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
-  };
-
   const [selectedFile, setSelectedFile] = React.useState();
   const [uploadedPhotos, setUploadedPhotos] = React.useState([]);
   const [preview, setPreview] = React.useState();
-
-  const wait = function (duration = 1000) {
-    return new Promise((resolve) => {
-      window.setTimeout(resolve, duration);
-    });
-  };
 
   const {
     register,
     handleSubmit,
     reset,
+    control,
     formState,
     formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm({
     mode: "onTouched",
   });
-
-  const onSubmit = async (data) => {
-    console.log(data);
-    await wait(2000);
-    handleOk();
-  };
   React.useEffect(() => {
     if (isSubmitSuccessful) {
       reset({
@@ -118,6 +69,77 @@ function ConfirmationDialogRaw(props) {
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
+  React.useEffect(() => {
+    if (!open) {
+      setValue(valueProp);
+    }
+  }, [valueProp, open]);
+
+  const radioGroupRef = React.useRef(null);
+  const handleEntering = () => {
+    if (radioGroupRef.current != null) {
+      radioGroupRef.current.focus();
+    }
+  };
+  const handleCancel = () => {
+    reset({
+      end: "",
+      start: "",
+      sprint_name: "",
+      sprint_group: "",
+      membres: "",
+      image: "",
+    });
+    onClose();
+  };
+  const handleOk = () => {
+    setSelectedFile();
+    onClose(value);
+  };
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    console.log(value);
+    setPersonName(typeof value === "string" ? value.split(",") : value);
+    console.log(personName);
+  };
+  const wait = function (duration = 1000) {
+    return new Promise((resolve) => {
+      window.setTimeout(resolve, duration);
+    });
+  };
+  const handleDelete = (chipToDelete) => () => {
+    setPersonName((chips) =>
+      chips.filter((chip) => chip.key !== chipToDelete.key)
+    );
+  };
+  //SUBMIT FONCTION
+  const onSubmit = async (data) => {
+    console.log(data.membres);
+    const formData = {
+      sprint_name: data.sprint_name,
+      sprint_group: data.sprint_group,
+      start: data.start,
+      end: data.end,
+      favorite: false,
+      favoriteDate: "",
+      students: data.membres,
+    };
+    // try {
+    //   axios.post(`http://localhost:5050/board`, { formData }).then((res) => {
+    //     console.log(res);
+    //     console.log(res.data);
+    //   });
+    // } catch (error) {
+    //   console.log(error);
+    // }
+
+    console.log(formData);
+    await wait(2000);
+    handleOk();
+  };
+
   const removeSelectedImage = () => {
     setSelectedFile();
   };
@@ -139,16 +161,16 @@ function ConfirmationDialogRaw(props) {
   };
 
   const membres = [
-    { id: 1, name: "Oliver Hansen" },
-    { id: 2, name: "Van Henry" },
-    { id: 3, name: "April Tucker" },
-    { id: 4, name: "Ralph Hubbard" },
-    { id: 5, name: "Omar Alexander" },
-    { id: 6, name: "Carlos Abbott" },
-    { id: 7, name: "Miriam Wagner" },
-    { id: 8, name: "Bradley Wilkerson" },
-    { id: 9, name: "Virginia Andrews" },
-    { id: 10, name: "Kelly Snyder" },
+    {  student_id: 1, firstname: "Oliver ", lastname: "Hansen" },
+    {  student_id: 2, firstname: "Henry", lastname: "Van" },
+    {  student_id: 3, firstname: "April ", lastname: "Tucker" },
+    {  student_id: 4, firstname: "Ralph", lastname: "Hubbard" },
+    {  student_id: 5, firstname: "Omar", lastname: "Alexander" },
+    {  student_id: 6, firstname: "Carlos ", lastname: "Abbott" },
+    {  student_id: 7, firstname: "Miriam ", lastname: "Wagner" },
+    {  student_id: 8, firstname: "Bradley", lastname: "Wilkerson" },
+    {  student_id: 9, firstname: "Virginia ", lastname: "Andrews" },
+    {  student_id: 10, firstname: "Kelly", lastname: "Snyder" },
   ];
 
   return (
@@ -204,7 +226,7 @@ function ConfirmationDialogRaw(props) {
                       cursor: "pointer",
                       color: "white",
                       backgroundColor: "black",
-                      position:"absolute",
+                      position: "absolute",
                     }}
                   >
                     <ClearIcon />
@@ -261,45 +283,42 @@ function ConfirmationDialogRaw(props) {
               </Box>
             </Grid>
             <Grid item xs={12}>
-              <InputLabel id="demo-multiple-chip-label">Membres*</InputLabel>
-              <Select
-                labelId="demo-multiple-chip-label"
-                id="demo-multiple-chip"
-                multiple
+              <Controller
+                name="membres"
                 {...register("membres", {
                   required: true,
                   validate: {
-                    valid() {
-                      if (personName.length < 2 || personName.length > 4) {
+                    valid: (event, item) => {
+                      if (event.length < 2 || event.length > 4) {
                         return false;
                       }
                     },
                   },
                 })}
-                value={personName}
-                onChange={handleChange}
-                input={
-                  <OutlinedInput
-                    id="select-multiple-chip"
-                    label="Chip"
-                    fullWidth
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Autocomplete
+                    multiple
+                    id="tags-outlined"
+                    onChange={(event, item) => {
+                      onChange(item);
+                    }}
+                    value={value}
+                    options={membres}
+                    getOptionLabel={(option) =>
+                      `${option.firstname + option.lastname}`
+                    }
+                    filterSelectedOptions
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Membres*"
+                        placeholder="Choissisez vos partenanires"
+                      />
+                    )}
                   />
-                }
-                renderValue={(selected) => (
-                  <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                    {selected.map((value) => (
-                      <Chip key={value} label={value} />
-                    ))}
-                  </Box>
                 )}
-                MenuProps={MenuProps}
-              >
-                {membres.map((name) => (
-                  <MenuItem key={name.id} value={name.name}>
-                    {name.name}
-                  </MenuItem>
-                ))}
-              </Select>
+              />
               {errors.membres && (
                 <Typography variant="subtitle1" color="error">
                   {"Choisissez entre 2 et 4 membres"}
