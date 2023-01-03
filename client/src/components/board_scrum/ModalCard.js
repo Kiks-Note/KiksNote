@@ -42,7 +42,7 @@ export default function BoardCard(props) {
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <div>
             <Chip
-              label="Feature"
+              label={props.label ? "Feature" : ""}
               style={{
                 backgroundColor: "#E6BE65",
                 height: "2vh",
@@ -50,9 +50,9 @@ export default function BoardCard(props) {
               }}
             />
             <Chip
-              label="Urgent"
+              label={props.label ? "Urgent" : ""}
               style={{
-                backgroundColor: "red",
+                backgroundColor: "#FF0000",
                 height: "2vh",
                 margin: "2px",
               }}
@@ -76,12 +76,12 @@ export default function BoardCard(props) {
         color="primary"
         style={{
           position: "absolute",
-          left: "85%",
+          left: "82%",
         }}
       ></InfoIcon>
 
       <Modal open={states.open} onClose={handleClose}>
-        <BoardModal info={info}></BoardModal>
+        <BoardModal info={info} list_name={props.list_name}></BoardModal>
       </Modal>
     </div>
   );

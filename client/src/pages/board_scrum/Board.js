@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import BoardCard from "../../components/board_scrum/ModalCard";
+import AddIcon from "@mui/icons-material/Add";
+import { Switch } from "@mui/material";
 
 const style = {
   position: "absolute",
@@ -106,6 +108,8 @@ const taskStatus = {
   },
 };
 
+const addCard = () => {};
+
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
   const { source, destination } = result;
@@ -116,7 +120,7 @@ const onDragEnd = (result, columns, setColumns) => {
     const destItems = [...destColumn.items];
     const [removed] = sourceItems.splice(source.index, 1);
     destItems.splice(destination.index, 0, removed);
-
+    console.log(columns);
     setColumns({
       ...columns,
       [source.droppableId]: {
@@ -145,10 +149,16 @@ const onDragEnd = (result, columns, setColumns) => {
 };
 
 function App() {
+  const labelChange = () => setLabel(!label);
+
   const [columns, setColumns] = useState(taskStatus);
+  const [label, setLabel] = useState(true);
   return (
     <div>
       <h1 style={{ textAlign: "center" }}>Scrum Board</h1>
+      <Switch checked={label} onChange={labelChange} inputProps={{ "aria-label": "controlled" }} />
+      <p>Label name</p>
+
       <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
         <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
           {Object.entries(columns).map(([columnId, column], index) => {
@@ -163,7 +173,7 @@ function App() {
               >
                 {" "}
                 <h2>{column.name}</h2>
-                <div style={{ margin: 8 }}>
+                <div style={{ margin: 8, borderColor: "#e0dede", borderStyle: "solid", borderWidth: "thin" }}>
                   <Droppable droppableId={columnId} key={columnId}>
                     {(provided, snapshot) => {
                       return (
@@ -171,11 +181,11 @@ function App() {
                           {...provided.droppableProps}
                           ref={provided.innerRef}
                           style={{
-                            background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
+                            background: snapshot.isDraggingOver ? "lightblue" : "#e0dede",
                             padding: 4,
                             width: 250,
-                            minHeight: 140,
-                            maxHeight: 500,
+                            minHeight: 30,
+                            maxHeight: 350,
                             overflow: "auto",
                             height: "auto",
                           }}
@@ -201,7 +211,12 @@ function App() {
                                         ...provided.draggableProps.style,
                                       }}
                                     >
-                                      <BoardCard card_info={item} snapshot={snapshot}></BoardCard>
+                                      <BoardCard
+                                        card_info={item}
+                                        snapshot={snapshot}
+                                        label={label}
+                                        list_name={column.name}
+                                      ></BoardCard>
                                     </div>
                                   );
                                 }}
@@ -213,6 +228,18 @@ function App() {
                       );
                     }}
                   </Droppable>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      background: "#e0dede",
+                      color: "#5e5e5e",
+                      padding: "5px 5px 5px 15px",
+                    }}
+                  >
+                    <AddIcon></AddIcon>
+                    <button>Ajouter une carte</button>
+                  </div>
                 </div>
               </div>
             );

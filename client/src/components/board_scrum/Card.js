@@ -13,6 +13,7 @@ import ListItemText from "@mui/material/ListItemText";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import BallotIcon from "@mui/icons-material/Ballot";
+import CircleIcon from "@mui/icons-material/Circle";
 
 export default function boardModal(props) {
   const style = {
@@ -42,19 +43,72 @@ export default function boardModal(props) {
     margin: "0 0 0 2vh",
   };
 
+  const label = [
+    { name: "Feature", color: "#E6BE65" },
+    { name: "Urgent", color: "#FF0000" },
+  ];
+
+  const Labels = label.map((label) => (
+    <div
+      style={{
+        display: "flex",
+        backgroundColor: label.color + "A6",
+        borderColor: label.color,
+        borderStyle: "solid",
+        borderRadius: "3px",
+        marginRight: "5px",
+        fontSize: "medium",
+        padding: "3px",
+        marginBottom: "5%",
+      }}
+    >
+      <CircleIcon
+        style={{
+          color: label.color,
+        }}
+      ></CircleIcon>
+      <p style={{}}>{label.name}</p>
+    </div>
+  ));
+
   const info = props.info;
   return (
     <Card sx={style}>
-      <div>
-        <CardHeader title={info.name} avatar={<BallotIcon color="primary"></BallotIcon>} />
-      </div>
+      <CardHeader
+        title={info.name}
+        subheader={<p>In list {props.list_name}</p>}
+        avatar={
+          <BallotIcon
+            sx={{
+              fontSize: 50,
+            }}
+            color="primary"
+          ></BallotIcon>
+        }
+        titleTypographyProps={{
+          variant: "h5",
+        }}
+      />
 
       <CardContent sx={style_card}>
         <div>
-          <Typography sx={style_title}>Description</Typography>
-          <Typography variant="body2" color="text.secondary" sx={style_text}>
-            {info.desc}
-          </Typography>
+          <div>
+            <Typography sx={style_title}>Labels</Typography>
+            <Typography
+              sx={{
+                display: "flex",
+                marginLeft: "2vh",
+              }}
+            >
+              {Labels}
+            </Typography>
+          </div>
+          <div>
+            <Typography sx={style_title}>Description</Typography>
+            <Typography variant="body2" color="text.secondary" sx={style_text}>
+              <p>{info.desc}</p>
+            </Typography>
+          </div>
         </div>
         <List>
           <ListItem disablePadding sx={style_item_button}>
