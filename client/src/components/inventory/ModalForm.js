@@ -1,22 +1,23 @@
-import Box from "@mui/material/Box";
-import Drawer from "@mui/material/Drawer";
-import Button from "@mui/material/Button";
 import {
   CardMedia,
   FormControl,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
   TextField,
   Typography,
 } from "@mui/material";
-import { Fragment, useEffect, useState } from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import axios from "axios";
-import ModalNotifications from "./ModalNotifications";
+import * as React from "react";
+import { useState, useEffect } from "react";
 
-export default function TemporaryDrawer() {
-  const [state, setState] = useState({ right: false });
+export default function ModalForm() {
+  const [state, setState] = useState({
+    right: false,
+  });
   const [categories, setCategories] = useState([]);
   const [label, setLabel] = useState("");
   const [reference, setReference] = useState("");
@@ -25,15 +26,16 @@ export default function TemporaryDrawer() {
   const [status, setStatus] = useState(null);
   const [image, setImage] = useState("");
 
-  const toggleDrawer = (anchor, open) => (event) => {
+  const toggleDrawer = (ancor, open) => (event) => {
     if (
+      event &&
       event.type === "keydown" &&
       (event.key === "Tab" || event.key === "Shift")
     ) {
       return;
     }
 
-    setState({ ...state, [anchor]: open });
+    setState({ ...state, [ancor]: open });
   };
 
   const handleChange = (event) => {
@@ -78,10 +80,10 @@ export default function TemporaryDrawer() {
     getCategory();
   }, []);
 
-  const list = (anchor) => (
+  const list = () => (
     <Box
       sx={{
-        width: anchor === "top" || anchor === "bottom" ? "auto" : 350,
+        width: 350,
         p: 2,
         justifyContent: "center",
         alignItems: "center",
@@ -99,7 +101,7 @@ export default function TemporaryDrawer() {
         label="Nom du periphérique"
         type={"text"}
         name="label"
-        value={label}
+        value={label || ""}
         onChange={(e) => setLabel(e.target.value)}
         fullWidth
       />
@@ -109,7 +111,7 @@ export default function TemporaryDrawer() {
         label="Référence"
         type={"text"}
         name="reference"
-        value={reference}
+        value={reference || ""}
         onChange={(e) => setReference(e.target.value)}
         fullWidth
       />
@@ -119,7 +121,7 @@ export default function TemporaryDrawer() {
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={category}
+          value={category || ""}
           label="Catégorie"
           onChange={handleChange}
           name="category"
@@ -137,7 +139,7 @@ export default function TemporaryDrawer() {
         label="Campus"
         type={"text"}
         name="campus"
-        value={campus}
+        value={campus || ""}
         onChange={(e) => setCampus(e.target.value)}
         fullWidth
       />
@@ -146,7 +148,7 @@ export default function TemporaryDrawer() {
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={status}
+          value={status || ""}
           label="Statut"
           onChange={(e) => setStatus(e.target.value)}
           name="status"
@@ -162,7 +164,7 @@ export default function TemporaryDrawer() {
         label="Image"
         type={"text"}
         name="image"
-        value={image}
+        value={image || ""}
         onChange={(e) => setImage(e.target.value)}
         fullWidth
       />
@@ -179,7 +181,7 @@ export default function TemporaryDrawer() {
             sx={{ marginBottom: 2, borderRadius: 2 }}
             component="img"
             height="140"
-            image={image}
+            image={image || ""}
             alt=""
           />
         </>
@@ -200,16 +202,19 @@ export default function TemporaryDrawer() {
 
   return (
     <div>
-      <Fragment key={"anchor"}>
-        <Button onClick={toggleDrawer("right", true)}>{"right"}</Button>
-        <Drawer
+      <React.Fragment>
+        <Button variant="contained" onClick={toggleDrawer("right", true)}>
+          Add Device
+        </Button>
+        <SwipeableDrawer
           anchor={"right"}
           open={state["right"]}
           onClose={toggleDrawer("right", false)}
+          onOpen={toggleDrawer("right", true)}
         >
           {list("right")}
-        </Drawer>
-      </Fragment>
+        </SwipeableDrawer>
+      </React.Fragment>
     </div>
   );
 }
