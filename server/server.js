@@ -1,6 +1,5 @@
 const express = require("express");
 const cors = require("cors");
-//const mod = require("./module.mjs");
 const app = express();
 const { db } = require("./firebase");
 var nodemailer = require('nodemailer');
@@ -46,11 +45,6 @@ app.get("/resetpass", (req, res) => {
     });
   });
 
-  app.get("/!uu", (req, res) => {
-    
-  });
-
-
   app.post("/resetpass?idresetpass=id", (req, res) => {
     const itemRef = req.body.name;
     req.query.idresetpass == "ddddd";
@@ -75,14 +69,7 @@ app.get("/resetpass", (req, res) => {
 
 app.post("/sendemail", (req, res) => {
 
-  console.log("log");
-  // mod.sendAnEmail(); 
   const email = req.body.email;
-  console.log("email: " + email);
-  console.log(req);
-
-  
-
   var nodemailer = require('nodemailer');
 
   var transporter = nodemailer.createTransport({
@@ -93,11 +80,12 @@ app.post("/sendemail", (req, res) => {
     }
   });
   
+  console.log("email: " + email);
 
   var mailOptions = {
     from: 'services.kiksnote.noreply@gmail.com',
-    to: 'mohameddrame907@gmail.com',
-    subject: 'Sending Email using Node.js',
+    to: email,
+    subject: 'Récupération du mot de passe',
     text: "http://localhost:3000/resetpass"
   };
 
@@ -108,27 +96,6 @@ app.post("/sendemail", (req, res) => {
       console.log('Email sent: ' + info.response);
     }
   });
-
-//  const email = req.body.email;
-
-  // const itemRef = req.body.name;
-  // req.query.idresetpass == "ddddd";
-  // const space = " ";
-  // const newItemRef = itemRef.replace(space, "_");
-
-  // db.doc("/calls/" + newItemRef)
-  //   .set({
-  //     id_lesson: req.body.id_lesson,
-  //     qrcode: req.body.qrcode,
-  //     student_scan: req.body.student_scan,
-  //     chats: req.body.chats,
-  //   })
-  //   .then(() => {
-  //     res.send("Item added to inventory");
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //   });
 });
 
 
