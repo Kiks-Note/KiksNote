@@ -1,10 +1,10 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import PrivateRoutes from "./utils/PrivateRoutes";
 
-
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
-import Dashboard from "./pages/board/Dashboard";
+import Dashboard from "./pages/board_scrum/Dashboard";
+import Board from "./pages/board_scrum/Board"
 
 function RoutesProvider() {
     return (
@@ -28,6 +28,7 @@ function RoutesProvider() {
             <Route path="/" element={<Home />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/board/:boardId" element={<Board />} />
           </Route>
         </Routes>
       </BrowserRouter>

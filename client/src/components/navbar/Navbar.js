@@ -25,7 +25,6 @@ import { ColorModeContext } from "../../utils/Theme";
 import { useTheme } from "@mui/material/styles";
 
 const drawerWidth = 240;
-
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -89,7 +88,7 @@ export default function MiniDrawer({ element }) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <Drawer variant="permanent" open={open} color="background.paper">
+      <Drawer variant="permanent" open={open} color="primary.main">
         <DrawerHeader>
           {open ? (
             <IconButton onClick={handleDrawerClose}>
@@ -108,31 +107,31 @@ export default function MiniDrawer({ element }) {
               id: 1,
               name: "Accueil",
               route: "/",
-              icon: <HomeIcon  htmlColor="white" />,
+              icon: <HomeIcon htmlColor="white" />,
             },
             {
               id: 2,
               name: "Agile",
               route: "#",
-              icon: <BallotIcon  htmlColor="white" />,
+              icon: <BallotIcon htmlColor="white" />,
             },
             {
               id: 3,
               name: "Profile",
               route: "#",
-              icon: <Person2Icon  htmlColor="white" />,
+              icon: <Person2Icon htmlColor="white" />,
             },
             {
               id: 4,
               name: "Espace de travail",
               route: "/dashboard",
-              icon: <DashboardIcon  htmlColor="white" />,
+              icon: <DashboardIcon htmlColor="white" />,
             },
             {
               id: 5,
               name: "Blog",
               route: "#",
-              icon: <AlternateEmailIcon  htmlColor="white" />,
+              icon: <AlternateEmailIcon htmlColor="white" />,
             },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
@@ -170,7 +169,11 @@ export default function MiniDrawer({ element }) {
               id: 1,
               name: "Déconnexion",
               route: "#",
-              icon: <LogoutOutlinedIcon  htmlColor="white" />,
+              icon: (
+                <LogoutOutlinedIcon
+                  htmlColor={theme.mode === "dark" ? "white" : "black"}
+                />
+              ),
             },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
