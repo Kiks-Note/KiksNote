@@ -35,7 +35,6 @@ export default function BoardCard(props) {
         expanded={states.expanded}
         onClick={handleAccordion}
         style={{
-          backgroundColor: props.snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
           boxShadow: "none",
         }}
       >

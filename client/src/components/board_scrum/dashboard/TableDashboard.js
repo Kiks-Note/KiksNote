@@ -102,7 +102,7 @@ export default function TableBoard({ rows, addFavorite, deleteBoards }) {
           icon={
             <Button
               style={{ color: "white" }}
-              href={`http://localhost:3000/${params.id}`}
+              href={`http://localhost:3000/board/${params.id}`}
             >
               Accéder au board
             </Button>

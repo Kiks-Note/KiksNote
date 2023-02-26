@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+//import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 import PropTypes from "prop-types";
 import Box from "@mui/material/Box";
@@ -15,11 +15,7 @@ import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Chip from "@mui/material/Chip";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import CloseIcon from "@mui/icons-material/Close";
 import ClearIcon from "@mui/icons-material/Clear";
@@ -161,22 +157,38 @@ function ConfirmationDialogRaw(props) {
   };
 
   const membres = [
-    {  student_id: 1, firstname: "Oliver ", lastname: "Hansen" },
-    {  student_id: 2, firstname: "Henry", lastname: "Van" },
-    {  student_id: 3, firstname: "April ", lastname: "Tucker" },
-    {  student_id: 4, firstname: "Ralph", lastname: "Hubbard" },
-    {  student_id: 5, firstname: "Omar", lastname: "Alexander" },
-    {  student_id: 6, firstname: "Carlos ", lastname: "Abbott" },
-    {  student_id: 7, firstname: "Miriam ", lastname: "Wagner" },
-    {  student_id: 8, firstname: "Bradley", lastname: "Wilkerson" },
-    {  student_id: 9, firstname: "Virginia ", lastname: "Andrews" },
-    {  student_id: 10, firstname: "Kelly", lastname: "Snyder" },
+    { student_id: 1, firstname: "Oliver ", lastname: "Hansen" },
+    { student_id: 2, firstname: "Henry", lastname: "Van" },
+    { student_id: 3, firstname: "April ", lastname: "Tucker" },
+    { student_id: 4, firstname: "Ralph", lastname: "Hubbard" },
+    { student_id: 5, firstname: "Omar", lastname: "Alexander" },
+    { student_id: 6, firstname: "Carlos ", lastname: "Abbott" },
+    { student_id: 7, firstname: "Miriam ", lastname: "Wagner" },
+    { student_id: 8, firstname: "Bradley", lastname: "Wilkerson" },
+    { student_id: 9, firstname: "Virginia ", lastname: "Andrews" },
+    { student_id: 10, firstname: "Kelly", lastname: "Snyder" },
   ];
 
   return (
     <Dialog
-      sx={{ "& .MuiDialog-paper": { width: "80%", maxHeight: 935 } }}
-      maxWidth="xl"
+      sx={{
+        "& .MuiDialog-paper": {
+          width: "80%",
+          maxHeight: "calc(100% - 64px)",
+          margin: "32px auto",
+          overflowY: "visible",
+          overflowX: "hidden",
+          position: "fixed",
+          top: "40%",
+          left: "55%",
+          transform: "translate(-50%, -50%)",
+          "@media (max-width: 600px)": {
+            width: "100%",
+            maxHeight: "100%",
+            margin: 0,
+          },
+        },
+      }}
       TransitionProps={{ onEntering: handleEntering }}
       open={open}
       {...other}
@@ -431,7 +443,7 @@ ConfirmationDialogRaw.propTypes = {
   value: PropTypes.string.isRequired,
 };
 
-export default function Modal() {
+export default function ModalDashboard() {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("Dione");
 

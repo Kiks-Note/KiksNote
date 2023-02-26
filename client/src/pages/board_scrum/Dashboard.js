@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import TableBoard from "../../components/board/TableBoards";
-import CardBoard from "../../components/board/CardBoard";
+import TableBoard from "../../components/board_scrum/dashboard/TableDashboard";
+import CardBoard from "../../components/board_scrum/dashboard/CardDashboard";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { Divider, List, ListItem, Typography } from "@mui/material";
@@ -11,7 +11,7 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 
 import TablePagination from "@mui/material/TablePagination";
-import Modal from "../../components/board/Modal";
+import ModalDashboard from "../../components/board_scrum/dashboard/ModalDashboard";
 let maDate = new Date();
 
 function Dashboard() {
@@ -157,21 +157,21 @@ function Dashboard() {
     setPage(0);
   };
 
-  //FUNCTION
+  // * FUNCTION
 
-  //CHANGE THE VIEW OF THE CARD BOARD
+  //* CHANGE THE VIEW OF THE CARD BOARD
   const viewChange = (event, nextView) => {
     if (nextView !== null) {
       setView(nextView);
     }
   };
-  //DELETE A BOARD
+  // * DELETE A BOARD
   const deleteBoards = (id) => () => {
     setTimeout(() => {
       setRows((prevRows) => prevRows.filter((row) => row.id !== id));
     });
   };
-  //TO MAKE A BOARD IN FAVORI
+  // * TO MAKE A BOARD IN FAVORI
   const favorisTell = (id) => () => {
     setRows((prevRows) =>
       prevRows.map((row) =>
@@ -185,13 +185,13 @@ function Dashboard() {
       )
     );
   };
-  //DEFINE BOARDS WHO IS ACTIF
+  // * DEFINE BOARDS WHO IS ACTIF
   let actif = rows.filter(
     (board) =>
       board.start <= maDate.toLocaleDateString("fr") &&
       board.end > maDate.toLocaleDateString("fr")
   );
-  //DEFINE BOARDS WHO IS IN  FAVORIS
+  // * DEFINE BOARDS WHO IS IN  FAVORIS
   let favoris = rows
     .filter((person) => person.favorite === true)
     .sort((a, b) => a - b);
@@ -278,7 +278,7 @@ function Dashboard() {
               <ViewListIcon />
             </ToggleButton>
           </ToggleButtonGroup>
-          <Modal />
+          <ModalDashboard />
         </Box>
       </Box>
       {/* DISPLAY  */}
@@ -317,10 +317,9 @@ function Dashboard() {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               labelRowsPerPage="Par page "
-              labelDisplayedRows={({page})=>{
-                return`Page : ${page+1}`;
+              labelDisplayedRows={({ page }) => {
+                return `Page : ${page + 1}`;
               }}
-              
             />
           </Box>
         </Grid>

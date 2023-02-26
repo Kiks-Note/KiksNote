@@ -5,10 +5,10 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import { Box, Button, CardActionArea, Typography } from "@mui/material";
 
-export default function CardBoard({ picture, sprint_group, fav, isFavoris,id }) {
+export default function CardDashboard({ picture, sprint_group, fav, isFavoris,id }) {
   return (
     <CardActionArea
-      href={`http://localhost:3000/${id}`}
+      href={`http://localhost:3000/board/${id}`}
       sx={{ height: 150, maxWidth: 345 }}
     >
       <Card

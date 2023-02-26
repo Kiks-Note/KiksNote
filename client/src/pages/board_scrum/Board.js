@@ -1,20 +1,23 @@
 import React, { useState } from "react";
+//import { useParams } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import BoardCard from "../../components/board_scrum/ModalCard";
-import AddIcon from "@mui/icons-material/Add";
+import ModalCard from "../../components/board_scrum/ModalCard";
 import { Switch } from "@mui/material";
+import ModalAddCard from "../../components/board_scrum/ModalAddCart";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 
-const style = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: 400,
-  bgcolor: "background.paper",
-  border: "2px solid #000",
-  boxShadow: 24,
-  p: 4,
-};
+// const style = {
+//   position: "absolute",
+//   top: "50%",
+//   left: "50%",
+//   transform: "translate(-50%, -50%)",
+//   width: 400,
+//   bgcolor: "background.paper",
+//   border: "2px solid #000",
+//   boxShadow: 24,
+//   p: 4,
+// };
 
 const tasks = [
   {
@@ -86,11 +89,19 @@ const tasks = [
 const taskStatus = {
   requested: {
     name: "Stories",
-    items: tasks,
+    items: [
+      {
+        id: "1",
+        name: "Tset",
+        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      },
+    ],
+    isRequested: true,
+    isDragDisabled: true, // disable the drag on the "Stories" column
   },
   acceptance: {
     name: "Critère d'acceptation",
-    items: [],
+    items: tasks,
   },
 
   toDo: {
@@ -108,59 +119,86 @@ const taskStatus = {
   },
 };
 
-const addCard = () => {};
 
-const onDragEnd = (result, columns, setColumns) => {
-  if (!result.destination) return;
-  const { source, destination } = result;
-  if (source.droppableId != destination.droppableId) {
+
+
+function Board() {
+  const onDragEnd = (result, columns, setColumns) => {
+    if (!result.destination) return;
+
+    const source = result.source;
+    const destination = result.destination;
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
-    const sourceItems = [...sourceColumn.items];
-    const destItems = [...destColumn.items];
-    const [removed] = sourceItems.splice(source.index, 1);
-    destItems.splice(destination.index, 0, removed);
-    console.log(columns);
-    setColumns({
-      ...columns,
-      [source.droppableId]: {
-        ...sourceColumn,
-        items: sourceItems,
-      },
-      [destination.droppableId]: {
-        ...destColumn,
-        items: destItems,
-      },
-    });
-  } else {
-    const column = columns[source.droppableId];
 
-    const copiedItems = [...column.items];
-    const [removed] = copiedItems.splice(source.index, 1);
-    copiedItems.splice(destination.index, 0, removed);
-    setColumns({
-      ...columns,
-      [source.droppableId]: {
-        ...column,
-        items: copiedItems,
-      },
-    });
-  }
-};
+    // Vérifier si la colonne de destination est "requested"
+    if (destColumn.isRequested) {
+      setErrorMessage("Impossible de déplacer un élément dans cette colonne");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000); // DELETE AFTER 3 SEC
+      return; // Ne pas effectuer le mouvement si la colonne de destination est "requested"
+    }
 
-function App() {
+    if (source.droppableId !== destination.droppableId) {
+      const sourceItems = [...sourceColumn.items];
+      const destItems = [...destColumn.items];
+      const [removed] = sourceItems.splice(source.index, 1);
+      destItems.splice(destination.index, 0, removed);
+      console.log(columns);
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+        [destination.droppableId]: {
+          ...destColumn,
+          items: destItems,
+        },
+      });
+    } else {
+      const copiedItems = [...sourceColumn.items];
+      const [removed] = copiedItems.splice(source.index, 1);
+      copiedItems.splice(destination.index, 0, removed);
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: copiedItems,
+        },
+      });
+    }
+  };
+  //const { parameter } = useParams();
   const labelChange = () => setLabel(!label);
 
   const [columns, setColumns] = useState(taskStatus);
   const [label, setLabel] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
   return (
     <div>
+      {errorMessage && (
+        <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          {errorMessage}
+        </Alert>
+      )}
+
       <h1 style={{ textAlign: "center" }}>Scrum Board</h1>
-      <Switch checked={label} onChange={labelChange} inputProps={{ "aria-label": "controlled" }} />
+      <Switch
+        checked={label}
+        onChange={labelChange}
+        inputProps={{ "aria-label": "controlled" }}
+      />
       <p>Label name</p>
 
-      <div style={{ display: "flex", justifyContent: "center", height: "100%" }}>
-        <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
+      <div
+        style={{ display: "flex", justifyContent: "center", height: "100%" }}
+      >
+        <DragDropContext
+          onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+        >
           {Object.entries(columns).map(([columnId, column], index) => {
             return (
               <div
@@ -172,8 +210,15 @@ function App() {
                 key={columnId}
               >
                 {" "}
-                <h2>{column.name}</h2>
-                <div style={{ margin: 8, borderColor: "#e0dede", borderStyle: "solid", borderWidth: "thin" }}>
+                <h>{column.name}</h>
+                <div
+                  style={{
+                    margin: 8,
+                    borderColor: "#e0dede",
+                    borderStyle: "solid",
+                    borderWidth: "thin",
+                  }}
+                >
                   <Droppable droppableId={columnId} key={columnId}>
                     {(provided, snapshot) => {
                       return (
@@ -181,7 +226,9 @@ function App() {
                           {...provided.droppableProps}
                           ref={provided.innerRef}
                           style={{
-                            background: snapshot.isDraggingOver ? "lightblue" : "#e0dede",
+                            background: snapshot.isDraggingOver
+                              ? "lightblue"
+                              : "#e0dede",
                             padding: 4,
                             width: 250,
                             minHeight: 30,
@@ -192,7 +239,15 @@ function App() {
                         >
                           {column.items.map((item, index) => {
                             return (
-                              <Draggable key={item.id} draggableId={item.id} index={index}>
+                              <Draggable
+                                key={item.id}
+                                draggableId={item.id}
+                                index={index}
+                                isDragDisabled={
+                                  column.isDragDisabled &&
+                                  column.name === "Stories"
+                                } //  disable the drag on the "Stories" column
+                              >
                                 {(provided, snapshot) => {
                                   return (
                                     <div
@@ -204,19 +259,21 @@ function App() {
                                         marginBottom: 8,
                                         minHeight: "60px",
                                         borderRadius: 3,
-                                        backgroundColor: snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
+                                        backgroundColor: snapshot.isDragging
+                                          ? "#FFFFFF"
+                                          : "#FFFFFF",
                                         boxShadow:
                                           "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
                                         color: "white",
                                         ...provided.draggableProps.style,
                                       }}
                                     >
-                                      <BoardCard
+                                      <ModalCard
                                         card_info={item}
                                         snapshot={snapshot}
                                         label={label}
                                         list_name={column.name}
-                                      ></BoardCard>
+                                      ></ModalCard>
                                     </div>
                                   );
                                 }}
@@ -228,18 +285,7 @@ function App() {
                       );
                     }}
                   </Droppable>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      background: "#e0dede",
-                      color: "#5e5e5e",
-                      padding: "5px 5px 5px 15px",
-                    }}
-                  >
-                    <AddIcon></AddIcon>
-                    <button>Ajouter une carte</button>
-                  </div>
+                  <ModalAddCard />
                 </div>
               </div>
             );
@@ -249,4 +295,4 @@ function App() {
     </div>
   );
 }
-export default App;
+export default Board;

@@ -88,15 +88,21 @@ export default function MiniDrawer({ element }) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <Drawer variant="permanent" open={open} color="primary.main">
+      <Drawer variant="permanent" open={open} color="background.default">
         <DrawerHeader>
           {open ? (
             <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon htmlColor="white" fontSize="large" />
+              <ChevronLeftIcon
+                style={{ color: theme.palette.custom.iconDrawer }}
+                fontSize="large"
+              />
             </IconButton>
           ) : (
             <IconButton onClick={handleDrawerOpen}>
-              <ChevronRightIcon htmlColor="white" fontSize="large" />
+              <ChevronRightIcon
+                style={{ color: theme.palette.custom.iconDrawer }}
+                fontSize="large"
+              />
             </IconButton>
           )}
         </DrawerHeader>
@@ -107,31 +113,49 @@ export default function MiniDrawer({ element }) {
               id: 1,
               name: "Accueil",
               route: "/",
-              icon: <HomeIcon htmlColor="white" />,
+              icon: (
+                <HomeIcon style={{ color: theme.palette.custom.iconDrawer }} />
+              ),
             },
             {
               id: 2,
               name: "Agile",
               route: "#",
-              icon: <BallotIcon htmlColor="white" />,
+              icon: (
+                <BallotIcon
+                  style={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
             },
             {
               id: 3,
               name: "Profile",
               route: "#",
-              icon: <Person2Icon htmlColor="white" />,
+              icon: (
+                <Person2Icon
+                  style={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
             },
             {
               id: 4,
               name: "Espace de travail",
               route: "/dashboard",
-              icon: <DashboardIcon htmlColor="white" />,
+              icon: (
+                <DashboardIcon
+                  style={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
             },
             {
               id: 5,
               name: "Blog",
               route: "#",
-              icon: <AlternateEmailIcon htmlColor="white" />,
+              icon: (
+                <AlternateEmailIcon
+                  style={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
             },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
@@ -171,7 +195,7 @@ export default function MiniDrawer({ element }) {
               route: "#",
               icon: (
                 <LogoutOutlinedIcon
-                  htmlColor={theme.mode === "dark" ? "white" : "black"}
+                  style={{ color: theme.palette.custom.iconDrawer }}
                 />
               ),
             },
