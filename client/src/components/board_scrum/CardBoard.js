@@ -9,7 +9,7 @@ import Typography from "@mui/material/Typography";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Chip from "@mui/material/Chip";
 
-export default function BoardCard(props) {
+export default function CardBoard(props) {
   const [states, setStates] = React.useState({
     open: false,
     expanded: false,

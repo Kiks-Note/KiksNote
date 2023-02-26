@@ -2,7 +2,7 @@ import React, { useState } from "react";
 //import { useParams } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CardBoard from "../../components/board_scrum/CardBoard";
-import { Switch } from "@mui/material";
+import { Switch, Typography } from "@mui/material";
 import ModalAddCard from "../../components/board_scrum/ModalAddCart";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
@@ -185,13 +185,13 @@ function Board() {
         </Alert>
       )}
 
-      <h1 style={{ textAlign: "center" }}>Scrum Board</h1>
+      <Typography  style={{ textAlign: "center" }} variant="h5">{"Scrum Board"}</Typography>
       <Switch
         checked={label}
         onChange={labelChange}
         inputProps={{ "aria-label": "controlled" }}
       />
-      <p>Label name</p>
+      <p>Afficher les étiquettes</p>
 
       <div
         style={{ display: "flex", justifyContent: "center", height: "100%" }}
@@ -210,7 +210,7 @@ function Board() {
                 key={columnId}
               >
                 {" "}
-                <h>{column.name}</h>
+                <Typography variant="h5">{column.name}</Typography>
                 <div
                   style={{
                     margin: 8,

@@ -15,8 +15,6 @@ import ListItem from "@mui/material/ListItem";
 import BallotIcon from "@mui/icons-material/Ballot";
 import TextField from "@mui/material/TextField";
 import CircleIcon from "@mui/icons-material/Circle";
-import CloseIcon from "@mui/icons-material/Close";
-import Button from "@mui/material/Button";
 
 export default function ModalCard(props) {
   const info = props.info;
@@ -146,16 +144,11 @@ export default function ModalCard(props) {
           titleTypographyProps={{
             variant: "h5",
           }}
-          action={
-            <Button onClick={props.onClose}>
-              <CloseIcon />
-            </Button>
-          }
         />
         <CardContent sx={style_card}>
           <div style={{ width: "-webkit-fill-available" }}>
             <div>
-              <Typography sx={style_title}>Etiquettes</Typography>
+              <Typography sx={style_title}>Étiquettes</Typography>
               <Typography
                 sx={{
                   display: "flex",
