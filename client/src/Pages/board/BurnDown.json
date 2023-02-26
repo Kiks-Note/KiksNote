@@ -1,0 +1,4 @@
+{
+    "sprintTime" : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+    "TeamProgress" : [100, 80, 92, 62, 81, 62, 51, 10, 31, 23, 11, 0]
+}
