@@ -4,8 +4,9 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import BurnDown from "./BurnDown";
-import BurnUp from "./BurnUp";
+import BurnDown from "./burn_up/BurnDown";
+import BurnUp from "./burn_up/BurnUp";
+import Board from "../board_scrum/Board";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -55,14 +56,18 @@ export default function DataBoard() {
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          <Tab label="Burn Down" {...a11yProps(0)} />
-          <Tab label="Burn Up" {...a11yProps(1)} />
+          <Tab label="Board" {...a11yProps(0)} />
+          <Tab label="Burn Down" {...a11yProps(1)} />
+          <Tab label="Burn Up" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <BurnDown />
+        <Board />
       </TabPanel>
       <TabPanel value={value} index={1}>
+        <BurnDown />
+      </TabPanel>
+      <TabPanel value={value} index={2}>
         <BurnUp />
       </TabPanel>
     </Box>
