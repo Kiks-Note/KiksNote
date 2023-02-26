@@ -18,12 +18,14 @@ import Grid from "@mui/material/Grid";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Chip from "@mui/material/Chip";
+import { HexColorPicker } from "react-colorful";
 
-function ConfirmationDialogRaw(props) {
+function DialogAddCard(props) {
   const { onClose, value: valueProp, open, ...other } = props;
   const [value, setValue] = React.useState(valueProp);
-  const [label, setLabel] = useState("");
-  const [labels, setLabels] = useState([]);
+  const [etiquette, setEtiquette] = useState("");
+  const [etiquettes, setEtiquettes] = useState([]);
+  const [color, setColor] = useState("#000000"); // initial color is black
 
   const {
     register,
@@ -39,7 +41,7 @@ function ConfirmationDialogRaw(props) {
       reset({
         card_name: "",
         card_description: "",
-        labels: "",
+        etiquettes: "",
         story: "",
       });
     }
@@ -57,15 +59,15 @@ function ConfirmationDialogRaw(props) {
     }
   };
   const handleCancel = () => {
-    // TO RESET FORM 
+    // TO RESET FORM
     reset({
       card_name: "",
       card_description: "",
-      labels: "",
+      etiquettes: "",
       story: "",
     });
-    setLabel("");
-    setLabels([]);
+    setEtiquette("");
+    setEtiquettes([]);
     onClose();
   };
   const handleOk = () => {
@@ -83,8 +85,8 @@ function ConfirmationDialogRaw(props) {
     const formData = {
       card_name: data.card_name,
       card_description: data.card_description,
-      labels: labels,
-      story:data.story,
+      etiquettes: etiquettes,
+      story: data.story,
     };
     // try {
     //   axios.post(`http://localhost:5050/board`, { formData }).then((res) => {
@@ -186,38 +188,48 @@ function ConfirmationDialogRaw(props) {
                 label="Story"
               />
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <InputLabel id="label_labels">Labels</InputLabel>
-              <TextField
-                fullWidth
-                id="filled-required"
-                value={label}
-                onChange={(e) => setLabel(e.target.value)}
-              />
-              <Button
-                variant="contained"
-                onClick={() => {
-                  if (label.trim() !== "" && !labels.includes(label)) {
-                    setLabels([...labels, label]);
-                    setLabel("");
-                  }
-                }}
-              >
-                Ajouter
-              </Button>
-              <Box sx={{ mt: 2 }}>
-                {labels.map((label, index) => (
-                  <Chip
-                    key={index}
-                    label={label}
-                    onDelete={() =>
-                      setLabels((prevLabels) =>
-                        prevLabels.filter((prevLabel) => prevLabel !== label)
-                      )
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <InputLabel id="label_labels">Etiquettes</InputLabel>
+                <TextField
+                  fullWidth
+                  id="filled-required"
+                  value={etiquette}
+                  onChange={(e) => setEtiquette(e.target.value)}
+                />
+                <Button
+                  variant="text"
+                  onClick={() => {
+                    if (etiquette.trim() !== "" && !etiquettes.includes(etiquette)) {
+                      setEtiquettes([...etiquettes, { etiquette, color }]);
+                      setEtiquette("");
+                      setColor("#000000"); // reset the color picker to black
                     }
-                  />
-                ))}
-              </Box>
+                  }}
+                >
+                  Ajouter
+                </Button>
+                <Box sx={{ mt: 2 }}>
+                  {etiquettes.map((label, index) => (
+                    <Chip
+                      key={index}
+                      label={label.label}
+                      style={{ backgroundColor: label.color }}
+                      onDelete={() =>
+                        setEtiquettes((prevLabels) =>
+                          prevLabels.filter(
+                            (prevLabel) => prevLabel.label !== label.label
+                          )
+                        )
+                      }
+                    />
+                  ))}
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <InputLabel id="label_color">Couleur de l'etiquette </InputLabel>
+                <HexColorPicker color={color} onChange={setColor} />
+              </Grid>
             </Grid>
           </Grid>
           <Button
@@ -234,7 +246,7 @@ function ConfirmationDialogRaw(props) {
   );
 }
 
-ConfirmationDialogRaw.propTypes = {
+DialogAddCard.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   value: PropTypes.string.isRequired,
@@ -272,7 +284,7 @@ export default function ModalAddCart() {
       >
         Ajouter une carte
       </Button>
-      <ConfirmationDialogRaw
+      <DialogAddCard
         id="ringtone-menu"
         keepMounted
         open={open}

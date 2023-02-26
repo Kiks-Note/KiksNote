@@ -23,7 +23,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { Alert, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
 
-function ConfirmationDialogRaw(props) {
+function DialogDashbord(props) {
   const { onClose, value: valueProp, open, ...other } = props;
   const [value, setValue] = React.useState(valueProp);
   const [personName, setPersonName] = React.useState([]);
@@ -437,7 +437,7 @@ function ConfirmationDialogRaw(props) {
   );
 }
 
-ConfirmationDialogRaw.propTypes = {
+DialogDashbord.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   value: PropTypes.string.isRequired,
@@ -470,7 +470,7 @@ export default function ModalDashboard() {
         >
           <AddIcon />
         </IconButton>
-        <ConfirmationDialogRaw
+        <DialogDashbord
           id="ringtone-menu"
           keepMounted
           open={open}

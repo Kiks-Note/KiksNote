@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 //import { useParams } from "react-router-dom";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import ModalCard from "../../components/board_scrum/ModalCard";
+import CardBoard from "../../components/board_scrum/CardBoard";
 import { Switch } from "@mui/material";
 import ModalAddCard from "../../components/board_scrum/ModalAddCart";
 import Alert from "@mui/material/Alert";
@@ -137,7 +137,7 @@ function Board() {
       setTimeout(() => {
         setErrorMessage("");
       }, 3000); // DELETE AFTER 3 SEC
-      return; // Ne pas effectuer le mouvement si la colonne de destination est "requested"
+      return;
     }
 
     if (source.droppableId !== destination.droppableId) {
@@ -268,12 +268,12 @@ function Board() {
                                         ...provided.draggableProps.style,
                                       }}
                                     >
-                                      <ModalCard
+                                      <CardBoard
                                         card_info={item}
                                         snapshot={snapshot}
                                         label={label}
                                         list_name={column.name}
-                                      ></ModalCard>
+                                      ></CardBoard>
                                     </div>
                                   );
                                 }}
