@@ -133,7 +133,7 @@ function Board() {
 
     // Vérifier si la colonne de destination est "requested"
     if (destColumn.isRequested) {
-      setErrorMessage("Impossible de déplacer un élément dans cette colonne");
+      setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
       setTimeout(() => {
         setErrorMessage("");
       }, 3000); // DELETE AFTER 3 SEC
@@ -180,7 +180,7 @@ function Board() {
     <div>
       {errorMessage && (
         <Alert severity="error">
-          <AlertTitle>Error</AlertTitle>
+          <AlertTitle>Erreur</AlertTitle>
           {errorMessage}
         </Alert>
       )}
