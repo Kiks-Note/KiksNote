@@ -71,6 +71,38 @@ app.post("/sendemail", (req, res) => {
 
   const email = req.body.email;
   var nodemailer = require('nodemailer');
+  let isValidEmail = false;
+  var BreakException = {};
+
+
+  db.collection("users")
+  .get()
+  .then((snapshot) => {
+    const data = [];
+    snapshot.forEach((doc) => {
+      data.push(doc.data()["mail"]);
+      const str = doc.data()["mail"];
+      console.log(str.replace(/\s+/g, '') == email.replace(/\s+/g, ''), str.replace(/\s+/g, '')+ ":" +email);
+      if (doc.data()["mail"].replace(/\s+/g, '') == email.replace(/\s+/g, '')) {
+        isValidEmail = true;
+        throw BreakException;
+      }
+    });
+
+    console.log("**************");
+    console.log(data);
+    res.send(data);
+  })
+  .catch((err) => {
+    console.log("last catch");
+   // throw 'Error message';
+  });
+
+  if (isValidEmail == false) {
+    console.log("condition");
+    res.send("mail not there");
+    //return;
+  }
 
   var transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -80,25 +112,36 @@ app.post("/sendemail", (req, res) => {
     }
   });
   
-  console.log("email: " + email);
-
   var mailOptions = {
     from: 'services.kiksnote.noreply@gmail.com',
     to: email,
     subject: 'Récupération du mot de passe',
-    text: "http://localhost:3000/resetpass"
+    text: "http://localhost:3000/resetpass?" + makeid("test")
   };
 
-  transporter.sendMail(mailOptions, function(error, info){
-    if (error) {
-      console.log(error);
-    } else {
-      console.log('Email sent: ' + info.response);
-    }
-  });
+  // transporter.sendMail(mailOptions, function(error, info){
+  //   if (error) {
+  //     console.log(error);
+  //   } else {
+  //     console.log('Email sent: ' + info.response);
+  //   }
+  // });
 });
 
+function makeid(nickname) {
+  const length = 64;
+  const linktoresetpage = `http://localhost:3000/askresetpass`;
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-
+  var result = [];
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+      result.push(characters.charAt(Math.floor(Math.random() *
+          charactersLength)));
+  }
+  var token = result.join('');
+  console.log(`${linktoresetpage}/?token=${token}&nickname=${nickname}`);
+  return token;    
+}
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
