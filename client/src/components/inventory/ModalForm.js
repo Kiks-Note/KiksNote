@@ -1,6 +1,7 @@
 import {
   CardMedia,
   FormControl,
+  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -12,12 +13,10 @@ import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import axios from "axios";
 import * as React from "react";
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
+import CloseIcon from "@mui/icons-material/Close";
 
-export default function ModalForm() {
-  const [state, setState] = useState({
-    right: false,
-  });
+export default function ModalForm({open, toggleDrawer}) {
   const [categories, setCategories] = useState([]);
   const [label, setLabel] = useState("");
   const [reference, setReference] = useState("");
@@ -25,28 +24,6 @@ export default function ModalForm() {
   const [category, setCategory] = useState(null);
   const [status, setStatus] = useState(null);
   const [image, setImage] = useState("");
-
-  const toggleDrawer = (ancor, open) => (event) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-
-    setState({ ...state, [ancor]: open });
-  };
-
-  const handleChange = (event) => {
-    setCategory(event.target.value);
-  };
-
-  const getCategory = () => {
-    axios.get("http://localhost:5050/categories").then((res) => {
-      setCategories(res.data);
-    });
-  };
 
   const addDevice = () => {
     axios
@@ -73,12 +50,16 @@ export default function ModalForm() {
     setCampus("");
     setStatus("");
     setImage("");
-    setState({ right: false });
+    // setState({right: false});
   };
 
-  useEffect(() => {
-    getCategory();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     await axios.get("http://localhost:5050/categories").then((res) => {
+  //       setCategories(res.data);
+  //     });
+  //   })();
+  // }, []);
 
   const list = () => (
     <Box
@@ -92,11 +73,19 @@ export default function ModalForm() {
       }}
       role="presentation"
     >
-      <Typography variant="h5" sx={{ marginBottom: 2 }}>
+      <Typography variant="h5" sx={{marginBottom: 2}}>
         Ajouter un periphérique
       </Typography>
+      <IconButton
+        sx={{position: "absolute", top: 12, right: 0}}
+        onClick={(e) => {
+          toggleDrawer(e, false);
+        }}
+      >
+        <CloseIcon />
+      </IconButton>
       <TextField
-        sx={{ marginBottom: 2 }}
+        sx={{marginBottom: 2}}
         id="outlined-search"
         label="Nom du periphérique"
         type={"text"}
@@ -106,7 +95,7 @@ export default function ModalForm() {
         fullWidth
       />
       <TextField
-        sx={{ marginBottom: 2 }}
+        sx={{marginBottom: 2}}
         id="outlined-search"
         label="Référence"
         type={"text"}
@@ -116,14 +105,14 @@ export default function ModalForm() {
         fullWidth
       />
 
-      <FormControl sx={{ marginBottom: 2 }} fullWidth>
+      <FormControl sx={{marginBottom: 2}} fullWidth>
         <InputLabel id="demo-simple-select-label">Catégorie</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={category || ""}
+          // value={category || ""}
           label="Catégorie"
-          onChange={handleChange}
+          // onChange={(e) => setCategory(e.target.value)}
           name="category"
         >
           {categories.map((item, index) => (
@@ -134,7 +123,7 @@ export default function ModalForm() {
         </Select>
       </FormControl>
       <TextField
-        sx={{ marginBottom: 2 }}
+        sx={{marginBottom: 2}}
         id="outlined-search"
         label="Campus"
         type={"text"}
@@ -143,7 +132,7 @@ export default function ModalForm() {
         onChange={(e) => setCampus(e.target.value)}
         fullWidth
       />
-      <FormControl sx={{ marginBottom: 2 }} fullWidth>
+      <FormControl sx={{marginBottom: 2}} fullWidth>
         <InputLabel id="demo-simple-select-label">Statut</InputLabel>
         <Select
           labelId="demo-simple-select-label"
@@ -159,7 +148,7 @@ export default function ModalForm() {
       </FormControl>
 
       <TextField
-        sx={{ marginBottom: 2 }}
+        sx={{marginBottom: 2}}
         id="outlined-search"
         label="Image"
         type={"text"}
@@ -173,12 +162,12 @@ export default function ModalForm() {
           <Typography
             variant="subtitle2"
             color={"text.secondary"}
-            sx={{ alignSelf: "flex-start", marginBottom: 2 }}
+            sx={{alignSelf: "flex-start", marginBottom: 2}}
           >
             Aperçu de l'image :
           </Typography>
           <CardMedia
-            sx={{ marginBottom: 2, borderRadius: 2 }}
+            sx={{marginBottom: 2, borderRadius: 2}}
             component="img"
             height="140"
             image={image || ""}
@@ -189,7 +178,7 @@ export default function ModalForm() {
 
       <Button
         variant="contained"
-        sx={{ marginBottom: 2 }}
+        sx={{marginBottom: 2}}
         fullWidth
         onClick={() => {
           addDevice();
@@ -203,14 +192,14 @@ export default function ModalForm() {
   return (
     <div>
       <React.Fragment>
-        <Button variant="contained" onClick={toggleDrawer("right", true)}>
+        {/* <Button variant="contained" onClick={toggleDrawer("right", true)}>
           Add Device
-        </Button>
+        </Button> */}
         <SwipeableDrawer
           anchor={"right"}
-          open={state["right"]}
-          onClose={toggleDrawer("right", false)}
-          onOpen={toggleDrawer("right", true)}
+          open={open}
+          onClose={(e) => toggleDrawer(e, false)}
+          onOpen={(e) => toggleDrawer(e, true)}
         >
           {list("right")}
         </SwipeableDrawer>
