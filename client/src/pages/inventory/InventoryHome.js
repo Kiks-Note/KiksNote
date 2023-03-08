@@ -14,7 +14,6 @@ function InventoryHome() {
   const [openAdd, setOpenAdd] = useState(false);
   const [openRequest, setOpenResquest] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [data, setData] = useState({});
   const [clickedDevice, setClickedDevice] = useState({});
   const user = userObj;
 
