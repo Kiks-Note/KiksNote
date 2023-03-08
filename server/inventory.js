@@ -1,6 +1,6 @@
 module.exports = (app, db, user) => {
   app.get("/inventory", async (req, res) => {
-    const docRef = db.collection("inventory2");
+    const docRef = db.collection("inventory");
     const snapshot = await docRef.get();
     const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
 
@@ -9,6 +9,15 @@ module.exports = (app, db, user) => {
     } catch (err) {
       res.status(500).send(err);
     }
+  });
+
+  app.get("/inventory/:deviceId", async (req, res) => {
+    const {deviceId} = req.params;
+
+    const docRef = db.collection("inventory").doc(deviceId);
+    const doc = await docRef.get();
+
+    res.status(200).send(doc.data());
   });
 
   app.get("/categories", async (req, res) => {
@@ -26,9 +35,9 @@ module.exports = (app, db, user) => {
     const {label, reference, category, campus, status, image} = req.body;
 
     try {
-      await db.collection("inventory2").doc().set({
+      await db.collection("inventory").doc().set({
         label: label,
-        reference: reference,
+        ref: reference,
         category: category,
         campus: campus,
         status: status,
@@ -39,57 +48,28 @@ module.exports = (app, db, user) => {
     } catch (err) {
       res.status(500).send(err);
     }
-
-    // const docRef = db.collection("inventory").doc("devices");
-    // const collectionRef = docRef.collection(category);
-    // const newRef = reference.replaceAll(" ", "_");
-    // if (!collectionRef) {
-    //   // create collection if it doesn't exist
-    //   await docRef.createCollection(category);
-
-    //   await collectionRef.doc(newRef).set({
-    //     label: label,
-    //     reference: reference,
-    //     category: category,
-    //     campus: campus,
-    //     status: status,
-    //     image: image,
-    //   });
-    // } else {
-    //   // if dont doc exists, create it else return error
-    //   const doc = await collectionRef.doc(newRef).get();
-    //   if (!doc.exists) {
-    //     await collectionRef.doc(newRef).set({
-    //       label: label,
-    //       reference: reference,
-    //       category: category,
-    //       campus: campus,
-    //       status: status,
-    //       image: image,
-    //     });
-    //     console.log("Document successfully written!");
-    //     return res.send("Document successfully written!");
-    //   } else {
-    //     console.log("Document already exists!");
-    //     return;
-    //   }
-    // }
   });
 
   app.put("/inventory/makerequest/:category/:deviceId", async (req, res) => {
     const {deviceId, category} = req.params;
-    const {data} = req.body;
+    const {startDate, endDate, createdAt} = req.body;
 
     try {
       await db
-        .collection("inventory2")
+        .collection("inventory")
         .doc(deviceId)
         .collection("requests")
         .doc()
         .set({
-          status: "data.status",
-          userId: user.mail,
+          startDate: new Date(startDate),
+          endDate: new Date(endDate),
+          createdAt: new Date(createdAt),
+          user: user.ref,
         });
+
+      await db.collection("inventory").doc(deviceId).update({
+        status: "requested",
+      });
 
       res.send("Request sent");
     } catch (err) {

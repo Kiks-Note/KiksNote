@@ -11,6 +11,7 @@ const user = {
   birthdate: "28-10-2003",
   class: "L2 ALT Cergy",
   admin: false,
+  ref: "/users/ruigaspar@hotmail.com",
 };
 
 app.use(function (req, res, next) {

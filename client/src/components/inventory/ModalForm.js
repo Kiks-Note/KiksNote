@@ -16,7 +16,7 @@ import * as React from "react";
 import {useState, useEffect} from "react";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function ModalForm({open, toggleDrawer}) {
+export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
   const [categories, setCategories] = useState([]);
   const [label, setLabel] = useState("");
   const [reference, setReference] = useState("");
@@ -26,8 +26,8 @@ export default function ModalForm({open, toggleDrawer}) {
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const addDevice = () => {
-    axios
+  const addDevice = async () => {
+    await axios
       .post("http://localhost:5050/addDevice", {
         label: label,
         reference: reference,
@@ -38,6 +38,8 @@ export default function ModalForm({open, toggleDrawer}) {
       })
       .then(() => {
         resetInputs();
+        reloadData();
+        toggleDrawerAdd(false);
       })
       .catch((err) => {
         console.log(err);
@@ -54,13 +56,14 @@ export default function ModalForm({open, toggleDrawer}) {
   };
 
   useEffect(() => {
-    (async () => {
-      await axios.get("http://localhost:5050/categories").then((res) => {
-        setCategories(res.data);
-        setLoading(false);
-      });
-    })();
-  }, []);
+    open === true &&
+      (async () => {
+        await axios.get("http://localhost:5050/categories").then((res) => {
+          setCategories(res.data);
+          setLoading(false);
+        });
+      })();
+  }, [open === true]);
 
   const list = () => (
     <Box
@@ -80,7 +83,7 @@ export default function ModalForm({open, toggleDrawer}) {
       <IconButton
         sx={{position: "absolute", top: 12, right: 0}}
         onClick={(e) => {
-          toggleDrawer(e, false);
+          toggleDrawerAdd(e, false);
         }}
       >
         <CloseIcon />
@@ -91,7 +94,7 @@ export default function ModalForm({open, toggleDrawer}) {
         label="Nom du periphérique"
         type={"text"}
         name="label"
-        value={label || ""}
+        value={label ? label : ""}
         onChange={(e) => setLabel(e.target.value)}
         fullWidth
       />
@@ -101,7 +104,7 @@ export default function ModalForm({open, toggleDrawer}) {
         label="Référence"
         type={"text"}
         name="reference"
-        value={reference || ""}
+        value={reference ? reference : ""}
         onChange={(e) => setReference(e.target.value)}
         fullWidth
       />
@@ -111,7 +114,7 @@ export default function ModalForm({open, toggleDrawer}) {
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={category || ""}
+          value={category ? category : ""}
           label="Catégorie"
           onChange={(e) => setCategory(e.target.value)}
           name="category"
@@ -130,7 +133,7 @@ export default function ModalForm({open, toggleDrawer}) {
         label="Campus"
         type={"text"}
         name="campus"
-        value={campus || ""}
+        value={campus ? campus : ""}
         onChange={(e) => setCampus(e.target.value)}
         fullWidth
       />
@@ -139,13 +142,13 @@ export default function ModalForm({open, toggleDrawer}) {
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={status}
+          value={status ? status : ""}
           label="Statut"
           onChange={(e) => setStatus(e.target.value)}
           name="status"
         >
-          <MenuItem value={true}>Disponible</MenuItem>
-          <MenuItem value={false}>Indisponible</MenuItem>
+          <MenuItem value={"available"}>Disponible</MenuItem>
+          <MenuItem value={"unavailable"}>Indisponible</MenuItem>
         </Select>
       </FormControl>
 
@@ -155,7 +158,7 @@ export default function ModalForm({open, toggleDrawer}) {
         label="Image"
         type={"text"}
         name="image"
-        value={image || ""}
+        value={image ? image : ""}
         onChange={(e) => setImage(e.target.value)}
         fullWidth
       />
@@ -172,7 +175,7 @@ export default function ModalForm({open, toggleDrawer}) {
             sx={{marginBottom: 2, borderRadius: 2}}
             component="img"
             height="140"
-            image={image || ""}
+            image={image ? image : ""}
             alt=""
           />
         </>
@@ -194,14 +197,11 @@ export default function ModalForm({open, toggleDrawer}) {
   return (
     <div>
       <React.Fragment>
-        {/* <Button variant="contained" onClick={toggleDrawer("right", true)}>
-          Add Device
-        </Button> */}
         <SwipeableDrawer
           anchor={"right"}
           open={open}
-          onClose={(e) => toggleDrawer(e, false)}
-          onOpen={(e) => toggleDrawer(e, true)}
+          onClose={(e) => toggleDrawerAdd(e, false)}
+          onOpen={(e) => toggleDrawerAdd(e, true)}
         >
           {list("right")}
         </SwipeableDrawer>

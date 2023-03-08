@@ -2,19 +2,23 @@ import {Button, Grid} from "@mui/material";
 import Box from "@mui/material/Box";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
+import {Toaster} from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
 import InvBox from "../../components/inventory/InvBox";
 import ModalForm from "../../components/inventory/ModalForm";
+import SideBarRequest from "../../components/inventory/SideBarRequest";
 import userObj from "../../userObj";
 
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
+  const [openRequest, setOpenResquest] = useState(false);
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({});
+  const [clickedDevice, setClickedDevice] = useState({});
   const user = userObj;
 
-  const toogleDrawer = (event, open) => {
+  const toggleDrawerAdd = (event, open) => {
     if (
       event &&
       event.type === "keydown" &&
@@ -22,36 +26,30 @@ function InventoryHome() {
     ) {
       return;
     }
-    setOpen(open);
+    setOpenAdd(open);
+  };
+
+  const toggleDrawerRequest = (event, open) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setOpenResquest(open);
   };
 
   useEffect(() => {
-    (async () => {
-      await axios
-        .get("http://localhost:5050/inventory")
-        .then((res) => {
-          setInventory(res.data);
-          setLoading(false);
-          console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-      setLoading(false);
-    })();
+    reloadData();
   }, []);
 
-  const handleRequest = async (deviceId, category) => {
+  const reloadData = async () => {
     await axios
-      .put(
-        `http://localhost:5050/inventory/makerequest/${category}/${deviceId}`,
-        {
-          user: user,
-          status: "pending",
-        }
-      )
+      .get("http://localhost:5050/inventory")
       .then((res) => {
-        console.log(res.data);
+        setInventory(res.data);
+        setLoading(false);
       })
       .catch((err) => {
         console.log(err);
@@ -60,11 +58,21 @@ function InventoryHome() {
 
   return (
     <>
-      <ModalForm open={open} toggleDrawer={toogleDrawer} />
+      <ModalForm
+        open={openAdd}
+        toggleDrawerAdd={toggleDrawerAdd}
+        reloadData={reloadData}
+      />
+      <SideBarRequest
+        open={openRequest}
+        toggleDrawerRequest={toggleDrawerRequest}
+        deviceId={clickedDevice}
+      />
+      <Toaster position="bottom-left" />
       <Button
         variant="contained"
         sx={{marginBottom: 2}}
-        onClick={(e) => toogleDrawer(e, true)}
+        onClick={(e) => toggleDrawerAdd(e, true)}
       >
         Ajouter un appareil
       </Button>
@@ -101,8 +109,9 @@ function InventoryHome() {
                   category={item.category}
                   campus={item.campus}
                   status={item.status}
-                  onClickRequest={() => {
-                    handleRequest(item.id, item.category);
+                  onClickRequest={(e) => {
+                    setClickedDevice(item.id);
+                    toggleDrawerRequest(e, true);
                   }}
                 />
               </Grid>

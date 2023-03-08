@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 // import ReactDOM from "react-dom";
 // import { withStyles } from "@mui/material/styles";
 import {
@@ -29,6 +29,18 @@ export default function InvBox({
   status,
   onClickRequest,
 }) {
+  const [statusColor, setStatusColor] = useState("");
+
+  useEffect(() => {
+    if (status === "available") {
+      setStatusColor("#4CAF50");
+    } else if (status === "requested") {
+      setStatusColor("#FFC107");
+    } else if (status === "unavailable") {
+      setStatusColor("#E44434");
+    }
+  }, [status]);
+
   return (
     <div className="App">
       <Card
@@ -97,7 +109,7 @@ export default function InvBox({
               sx={{
                 height: 10,
                 width: 10,
-                backgroundColor: status === true ? "green" : "red",
+                backgroundColor: statusColor,
                 borderRadius: 10,
                 marginLeft: 1,
                 boxShadow: "10 0 0 1px #fff",
