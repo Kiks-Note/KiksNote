@@ -4,7 +4,7 @@ const userObj = {
   mail: "",
   birthdate: "28-10-2003",
   class: "L2 ALT Cergy",
-  admin: false,
+  admin: true,
 };
 
 export default userObj;

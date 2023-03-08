@@ -69,14 +69,15 @@ function InventoryHome() {
         deviceId={clickedDevice}
       />
       <Toaster position="bottom-left" />
-      <Button
-        variant="contained"
-        sx={{marginBottom: 2}}
-        onClick={(e) => toggleDrawerAdd(e, true)}
-      >
-        Ajouter un appareil
-      </Button>
-
+      {user.admin && (
+        <Button
+          variant="contained"
+          sx={{marginBottom: 2}}
+          onClick={(e) => toggleDrawerAdd(e, true)}
+        >
+          Ajouter un appareil
+        </Button>
+      )}
       {loading ? (
         <div
           style={{
