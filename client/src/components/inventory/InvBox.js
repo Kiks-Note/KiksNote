@@ -2,16 +2,15 @@ import React from "react";
 // import ReactDOM from "react-dom";
 // import { withStyles } from "@mui/material/styles";
 import {
-  Avatar,
-  Card,
-  CardMedia,
-  CardContent,
-  Divider,
-  Typography,
   Box,
-  Badge,
+  Card,
+  CardContent,
+  CardMedia,
+  IconButton,
+  Typography,
 } from "@mui/material";
-
+import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
+import axios from "axios";
 // import "./styles.css";
 
 const faces = [
@@ -28,6 +27,7 @@ export default function InvBox({
   category,
   campus,
   status,
+  onClickRequest,
 }) {
   return (
     <div className="App">
@@ -46,7 +46,7 @@ export default function InvBox({
       >
         <CardMedia
           className={"classes.media"}
-          style={{ paddingTop: "56.25%" }}
+          style={{paddingTop: "56.25%"}}
           image={image}
         />
         <CardContent
@@ -89,7 +89,7 @@ export default function InvBox({
           <Typography
             className={"MuiTypography--subheading"}
             variant={"caption"}
-            sx={{ display: "flex", alignItems: "center" }}
+            sx={{display: "flex", alignItems: "center"}}
             // paragraph
           >
             Status :
@@ -104,6 +104,18 @@ export default function InvBox({
               }}
             />
           </Typography>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              marginTop: 10,
+            }}
+          >
+            <IconButton onClick={onClickRequest}>
+              <AccessibilityNewIcon />
+            </IconButton>
+          </div>
         </CardContent>
       </Card>
     </div>

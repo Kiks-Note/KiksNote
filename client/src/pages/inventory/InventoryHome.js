@@ -5,11 +5,14 @@ import React, {useEffect, useState} from "react";
 import {Rings} from "react-loader-spinner";
 import InvBox from "../../components/inventory/InvBox";
 import ModalForm from "../../components/inventory/ModalForm";
+import userObj from "../../userObj";
 
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [data, setData] = useState({});
+  const user = userObj;
 
   const toogleDrawer = (event, open) => {
     if (
@@ -22,19 +25,38 @@ function InventoryHome() {
     setOpen(open);
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     await axios
-  //       .get("http://localhost:5050/inventory")
-  //       .then((res) => {
-  //         setInventory(res.data);
-  //         setLoading(false);
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      await axios
+        .get("http://localhost:5050/inventory")
+        .then((res) => {
+          setInventory(res.data);
+          setLoading(false);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      setLoading(false);
+    })();
+  }, []);
+
+  const handleRequest = async (deviceId, category) => {
+    await axios
+      .put(
+        `http://localhost:5050/inventory/makerequest/${category}/${deviceId}`,
+        {
+          user: user,
+          status: "pending",
+        }
+      )
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <>
@@ -47,7 +69,7 @@ function InventoryHome() {
         Ajouter un appareil
       </Button>
 
-      {/* {loading ? (
+      {loading ? (
         <div
           style={{
             display: "flex",
@@ -69,7 +91,6 @@ function InventoryHome() {
         </div>
       ) : (
         <Box sx={{flexGrow: 1}}>
-
           <Grid container spacing={4}>
             {inventory.map((item, index) => (
               <Grid item key={index}>
@@ -80,12 +101,15 @@ function InventoryHome() {
                   category={item.category}
                   campus={item.campus}
                   status={item.status}
+                  onClickRequest={() => {
+                    handleRequest(item.id, item.category);
+                  }}
                 />
               </Grid>
             ))}
           </Grid>
         </Box>
-      )} */}
+      )}
     </>
   );
 }

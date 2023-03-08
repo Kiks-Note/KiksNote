@@ -24,6 +24,7 @@ export default function ModalForm({open, toggleDrawer}) {
   const [category, setCategory] = useState(null);
   const [status, setStatus] = useState(null);
   const [image, setImage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const addDevice = () => {
     axios
@@ -36,30 +37,30 @@ export default function ModalForm({open, toggleDrawer}) {
         image: image,
       })
       .then(() => {
-        clearForm();
+        resetInputs();
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const clearForm = () => {
+  const resetInputs = () => {
     setLabel("");
     setReference("");
     setCategory("");
     setCampus("");
     setStatus("");
     setImage("");
-    // setState({right: false});
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     await axios.get("http://localhost:5050/categories").then((res) => {
-  //       setCategories(res.data);
-  //     });
-  //   })();
-  // }, []);
+  useEffect(() => {
+    (async () => {
+      await axios.get("http://localhost:5050/categories").then((res) => {
+        setCategories(res.data);
+        setLoading(false);
+      });
+    })();
+  }, []);
 
   const list = () => (
     <Box
@@ -110,16 +111,17 @@ export default function ModalForm({open, toggleDrawer}) {
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          // value={category || ""}
+          value={category || ""}
           label="Catégorie"
-          // onChange={(e) => setCategory(e.target.value)}
+          onChange={(e) => setCategory(e.target.value)}
           name="category"
         >
-          {categories.map((item, index) => (
-            <MenuItem key={index} value={item}>
-              {item}
-            </MenuItem>
-          ))}
+          {!loading &&
+            categories.map((item, index) => (
+              <MenuItem key={index} value={item.label}>
+                {item.label}
+              </MenuItem>
+            ))}
         </Select>
       </FormControl>
       <TextField
@@ -137,7 +139,7 @@ export default function ModalForm({open, toggleDrawer}) {
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={status || ""}
+          value={status}
           label="Statut"
           onChange={(e) => setStatus(e.target.value)}
           name="status"
