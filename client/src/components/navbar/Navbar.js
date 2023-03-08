@@ -23,8 +23,10 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { ColorModeContext } from "../../utils/Theme";
 import { useTheme } from "@mui/material/styles";
-
+import Container from "@mui/material/Container";
+/// Drawer width where is open
 const drawerWidth = 240;
+/// Drawer open style
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create("width", {
@@ -33,7 +35,7 @@ const openedMixin = (theme) => ({
   }),
   overflowX: "hidden",
 });
-
+/// Drawer close style 
 const closedMixin = (theme) => ({
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -45,7 +47,7 @@ const closedMixin = (theme) => ({
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 });
-
+/// Drawer Header style 
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "center",
@@ -54,7 +56,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
-
+/// Drawer style 
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({ theme, open }) => ({
@@ -76,11 +78,10 @@ export default function MiniDrawer({ element }) {
   const [open, setOpen] = React.useState(false);
   const colorMode = React.useContext(ColorModeContext);
   const theme = useTheme();
-
+  /// Function for open or Close Drawer
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
   const handleDrawerClose = () => {
     setOpen(false);
   };
@@ -243,10 +244,9 @@ export default function MiniDrawer({ element }) {
           )}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
-        <>{element}</>
-      </Box>
+      <Container maxWidth disableGutters={true} >
+        {element}
+      </Container>
     </Box>
   );
 }

@@ -10,11 +10,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import List from "@mui/material/List";
+import {List,Box,Button} from "@mui/material/";
 import ListItem from "@mui/material/ListItem";
 import BallotIcon from "@mui/icons-material/Ballot";
 import TextField from "@mui/material/TextField";
 import CircleIcon from "@mui/icons-material/Circle";
+import NotesIcon from '@mui/icons-material/Notes';
 
 export default function ModalCard(props) {
   const info = props.info;
@@ -33,11 +34,6 @@ export default function ModalCard(props) {
     setDescriptionValue(event.target.value);
   };
 
-  const handleDescriptionBlur = () => {
-    setIsEditingDescription(false);
-    // ! ADD CODE TO UPDATE DESCRIPTION
-  };
-
   const handleNameClick = () => {
     setIsEditingName(true);
   };
@@ -45,10 +41,15 @@ export default function ModalCard(props) {
   const handleNameChange = (event) => {
     setNameValue(event.target.value);
   };
-
-  const handleNameBlur = () => {
+   const handleSaveClick = () => {
+    setIsEditingDescription(false);
+  };
+   const handleCancelClick = () => {
+    setIsEditingDescription(false);
+  };
+  const handleNameBlur = (event) => {
+     setNameValue(event.target.value);
     setIsEditingName(false);
-    // ! ADD CODE TO UPDATE NAME
   };
   const style = {
     position: "absolute",
@@ -56,7 +57,7 @@ export default function ModalCard(props) {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 800,
-    bgcolor: "background.paper",
+    bgcolor: "#FFFFFF",
     boxShadow: 24,
     margin: 0,
   };
@@ -74,14 +75,12 @@ export default function ModalCard(props) {
   };
   const style_title = {
     margin: "0 0 0 2vh",
+    color: "text.default"
   };
 
-  const label = [
-    { name: "Feature", color: "#E6BE65" },
-    { name: "Urgent", color: "#FF0000" },
-  ];
 
-  const Labels = label.map((label) => (
+
+  const Labels = info.labels.map((label) => (
     <div
       style={{
         display: "flex",
@@ -124,15 +123,18 @@ export default function ModalCard(props) {
           title={
             isEditingName ? (
               <TextField
+              inputProps={{
+                style: { color: 'black' }
+              }}
                 value={nameValue}
                 onChange={handleNameChange}
                 onBlur={handleNameBlur}
               />
             ) : (
-              <Typography onClick={handleNameClick}>{nameValue}</Typography>
+              <Typography color="text.default" variant="h5" onClick={handleNameClick}>{nameValue}</Typography>
             )
           }
-          subheader={<p>In list {props.list_name}</p>}
+          subheader={<Typography color="text.default" >In list {props.list_name}</Typography>}
           avatar={
             <BallotIcon
               sx={{
@@ -148,41 +150,69 @@ export default function ModalCard(props) {
         <CardContent sx={style_card}>
           <div style={{ width: "-webkit-fill-available" }}>
             <div>
-              <Typography sx={style_title}>Étiquettes</Typography>
+              <Typography sx={style_title} color="text.default">  <LabelIcon  style={{ color: "gray", marginRight: "5px" }} />Étiquettes</Typography>
               <Typography
                 sx={{
                   display: "flex",
                   marginLeft: "2vh",
+                  color:"text.default"
                 }}
               >
                 {Labels}
               </Typography>
             </div>
             <div>
-              <Typography sx={style_title}>Description</Typography>
-              {isEditingDescription ? (
-                <TextField
-                  sx={{ width: "100%" }}
-                  value={descriptionValue}
-                  onChange={handleDescriptionChange}
-                  onBlur={handleDescriptionBlur}
-                  multiline
-                  maxRows={4}
-                />
-              ) : (
-                <Typography onClick={handleDescriptionClick} sx={style_text}>
-                  {descriptionValue}
-                </Typography>
-              )}
+            
+              <Typography sx={style_title}><NotesIcon
+            style={{ color: "gray", marginRight: "5px" }}
+          />Description</Typography>
+              {isEditingDescription || descriptionValue === '' ? (
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1,flexDirection: "column" }}>
+    <TextField
+      inputProps={{ style: { color: 'black' } }}
+      sx={{ width: '100%' }}
+      value={descriptionValue}
+      onChange={handleDescriptionChange}
+      placeholder="Ajouter une description…"
+      multiline
+      maxRows={4}
+    />
+   <Box style={{
+        display: "flex",
+    justifyContent: "space-evenly",
+    margin: "5px",
+    width: "100%",
+   }}>
+     <Button variant="contained" color="primary" onClick={handleSaveClick} disabled={!descriptionValue}>
+      Enregistrer
+    </Button>
+    <Button variant="outlined" color="secondary" onClick={handleCancelClick} disabled={!descriptionValue}>
+      Annuler
+    </Button>
+   </Box>
+  </Box>
+) : (
+    <Typography color="text.default" onClick={handleDescriptionClick} sx={style_text}>
+        {descriptionValue}
+    </Typography>
+)}
             </div>
           </div>
           <List>
+           <ListItem disablePadding sx={style_item_button}>
+              <ListItemButton>
+                <ListItemIcon>
+                  <PersonIcon color="primary" />
+                </ListItemIcon>
+                <ListItemText primary="Rejoindre"  primaryTypographyProps={{ color: 'text.default' }} />
+              </ListItemButton>
+            </ListItem>
             <ListItem disablePadding sx={style_item_button}>
               <ListItemButton>
                 <ListItemIcon>
                   <PersonIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Membres" />
+                <ListItemText primary="Membres"  primaryTypographyProps={{ color: 'text.default' }} />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding sx={style_item_button}>
@@ -190,7 +220,7 @@ export default function ModalCard(props) {
                 <ListItemIcon>
                   <LabelIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Etiquettes" />
+                <ListItemText primary="Etiquettes"  primaryTypographyProps={{ color: 'text.default' }}/>
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding sx={style_item_button}>
@@ -198,7 +228,7 @@ export default function ModalCard(props) {
                 <ListItemIcon>
                   <DeleteIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Supprimer" />
+                <ListItemText primary="Supprimer"  primaryTypographyProps={{ color: 'text.default' }} />
               </ListItemButton>
             </ListItem>
           </List>

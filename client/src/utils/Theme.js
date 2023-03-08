@@ -32,6 +32,7 @@ export default function ToggleColorMode() {
                 text: {
                   primary: "#fff",
                   secondary: "#9e9e9e",
+                  default:"#000",
                 },
                 background: {
                   default: "#212121",
@@ -58,6 +59,7 @@ export default function ToggleColorMode() {
                 text: {
                   primary: "#000",
                   secondary: "#424242",
+                  default:"#000",
                 },
                 background: {
                   default: "#fafafa",

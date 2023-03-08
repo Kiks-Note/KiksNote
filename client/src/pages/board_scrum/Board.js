@@ -1,89 +1,167 @@
 import React, { useState } from "react";
-//import { useParams } from "react-router-dom";
+import "./Board.scss";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import CardBoard from "../../components/board_scrum/CardBoard";
-import { Switch, Typography } from "@mui/material";
-import ModalAddCard from "../../components/board_scrum/ModalAddCart";
+import CardBoard from "../../components/board_scrum/board/CardBoard";
+import { Typography, IconButton, Menu, MenuItem } from "@mui/material";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import ButtonAddCard from "../../components/board_scrum/board/ButtonAddCard";
+import ButtonAddColumn from "../../components/board_scrum/board/ButtonAddColumn";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
+import Slide from '@mui/material/Slide';
 
-// const style = {
-//   position: "absolute",
-//   top: "50%",
-//   left: "50%",
-//   transform: "translate(-50%, -50%)",
-//   width: 400,
-//   bgcolor: "background.paper",
-//   border: "2px solid #000",
-//   boxShadow: 24,
-//   p: 4,
-// };
-
+function TransitionComponent(props) {
+  return <Slide {...props} direction="up" />;
+}
 const tasks = [
   {
     id: "1",
     name: "Board EduScrum",
-    desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    desc: "",
+    assignedTo: [
+      {
+        id: "1",
+        name: "John Doe",
+        photo: "https://example.com/photos/john.jpg"
+      },
+      {
+        id: "2",
+        name: "Jane Smith",
+        photo: "https://example.com/photos/jane.jpg"
+      },{ id: "3",
+        name: "Bob Johnson",
+        photo: "https://example.com/photos/bob.jpg"}
+    ],
+    labels: [
+      {
+        name: "Important",
+        color: "#ff0000"
+      }
+    ]
   },
   {
     id: "2",
     name: "Création de sprint agile très très long",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    assignedTo: [
+      {
+        id: "3",
+        name: "Bob Johnson",
+        photo: "https://example.com/photos/bob.jpg"
+      }
+    ],
+    labels: [
+      {
+        name: "Important",
+        color: "#ff0000"
+      }
+    ]
   },
   {
     id: "3",
     name: "BurnDown chart",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    assignedTo: [],
+    labels: [
+    ]
   },
   {
     id: "4",
     name: "Ajout du backlog",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    assignedTo: [
+      {
+        id: "2",
+        name: "Jane Smith",
+        photo: "https://example.com/photos/jane.jpg"
+      },
+      {
+        id: "3",
+        name: "Bob Johnson",
+        photo: "https://example.com/photos/bob.jpg"
+      }
+    ],
+    labels: [
+      {
+        name: "Important",
+        color: "#ff0000"
+      }
+    ]
   },
   {
     id: "5",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    assignedTo: [],
+    labels: [
+      
+    ]
   },
   {
     id: "6",
     name: "Exemple avec un titre de carte très long pour voir si c'est moche... Finalement ça rend plutôt bien meme avec un titre de carte très long",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    assignedTo: [],  labels: [
+      
+    ]
   },
   {
     id: "7",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    assignedTo: [],  labels: [
+      
+    ]
   },
   {
     id: "8",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    assignedTo: [],  labels: [
+      
+    ]
   },
   {
     id: "9",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    assignedTo: [],  labels: [
+      
+    ]
   },
   {
     id: "10",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    assignedTo: [],  labels: [
+      
+    ]
   },
   {
     id: "11",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    assignedTo: [],  labels: [
+      
+    ]
   },
   {
     id: "12",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    assignedTo: [],  labels: [
+      
+    ]
   },
   {
     id: "13",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    assignedTo: [],  labels: [
+      
+    ]
   },
 ];
 const taskStatus = {
@@ -94,6 +172,17 @@ const taskStatus = {
         id: "1",
         name: "Tset",
         desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+        assignedTo: [],  
+        labels: [
+          {
+        name: "Important",
+        color: "#ff0000"
+      }, 
+      {
+        name: "Urgent",
+        color: "#ff0000"
+      }
+        ]
       },
     ],
     isRequested: true,
@@ -105,7 +194,7 @@ const taskStatus = {
   },
 
   toDo: {
-    name: "TODO",
+    name: "To Do",
     items: [],
   },
 
@@ -119,10 +208,27 @@ const taskStatus = {
   },
 };
 
-
-
-
 function Board() {
+  const [columns, setColumns] = useState(taskStatus);
+  const [label, setLabel] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
+  const [menuColumnId, setMenuColumnId] = useState(null);
+
+  const handleMenuOpen = (event, columnId) => {
+    setMenuAnchorEl(event.currentTarget);
+    setMenuColumnId(columnId);
+  };
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    setMenuColumnId(null);
+  };
+  //delete column
+  const handleColumnDelete = (columnId) => {
+    const newColumns = { ...columns };
+    delete newColumns[columnId];
+    setColumns(newColumns);
+  };
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
 
@@ -131,7 +237,6 @@ function Board() {
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
 
-    // Vérifier si la colonne de destination est "requested"
     if (destColumn.isRequested) {
       setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
       setTimeout(() => {
@@ -171,54 +276,69 @@ function Board() {
     }
   };
   //const { parameter } = useParams();
-  const labelChange = () => setLabel(!label);
+  // const labelChange = () => setLabel(!label);
 
-  const [columns, setColumns] = useState(taskStatus);
-  const [label, setLabel] = useState(true);
-  const [errorMessage, setErrorMessage] = useState(null);
-  return (
-    <div>
+  return (<>
+    <div style={{ height: "100vh" }}>
       {errorMessage && (
-        <Alert severity="error">
-          <AlertTitle>Erreur</AlertTitle>
+        <Alert severity="warning" variant="filled" TransitionComponent={TransitionComponent}>
+          <AlertTitle>Attention</AlertTitle>
           {errorMessage}
         </Alert>
       )}
 
-      <Typography  style={{ textAlign: "center" }} variant="h5">{"Scrum Board"}</Typography>
-      <Switch
-        checked={label}
-        onChange={labelChange}
-        inputProps={{ "aria-label": "controlled" }}
-      />
-      <p>Afficher les étiquettes</p>
-
-      <div
-        style={{ display: "flex", justifyContent: "center", height: "100%" }}
-      >
+      <Typography style={{ textAlign: "center" }} variant="h4">
+        {"Scrum Board"}
+      </Typography>
+      <div className="board_container_all">
         <DragDropContext
           onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
         >
           {Object.entries(columns).map(([columnId, column], index) => {
             return (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-                key={columnId}
-              >
-                {" "}
-                <Typography variant="h5">{column.name}</Typography>
-                <div
-                  style={{
-                    margin: 8,
-                    borderColor: "#e0dede",
-                    borderStyle: "solid",
-                    borderWidth: "thin",
-                  }}
-                >
+              <div className="board_container_table" key={columnId}>
+                <div className="board_container_table_header">
+                  <div className="board_container_table_header_label">
+                    <Typography
+                      variant="body1"
+                      style={{
+                        fontWeight: "bold",
+                        color: "black",
+                        marginLeft: "5%",
+                      }}
+                    >
+                      {column.name}
+                    </Typography>
+                    <IconButton
+                      aria-label="menu"
+                      onClick={(event) => handleMenuOpen(event, columnId)}
+                    >
+                      <MoreHorizIcon />
+                    </IconButton>
+                  </div>
+                  <Menu
+                    anchorEl={menuAnchorEl}
+                    open={Boolean(menuAnchorEl)}
+                    onClose={handleMenuClose}
+                  >
+                    <MenuItem
+                      onClick={() => {
+                        handleMenuClose();
+                      }}
+                    >
+                      <AddIcon />
+                      Ajouter une carte
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        handleMenuClose();
+                      }}
+                    >
+                      <DeleteIcon color="red" />
+                      Supprimer la colonne
+                    </MenuItem>
+                  </Menu>
+
                   <Droppable droppableId={columnId} key={columnId}>
                     {(provided, snapshot) => {
                       return (
@@ -227,12 +347,12 @@ function Board() {
                           ref={provided.innerRef}
                           style={{
                             background: snapshot.isDraggingOver
-                              ? "lightblue"
-                              : "#e0dede",
+                              ? "#ed6c0247"
+                              : "#ebecf0",
                             padding: 4,
-                            width: 250,
+                            width: 260,
                             minHeight: 30,
-                            maxHeight: 350,
+                            maxHeight: "75vh",
                             overflow: "auto",
                             height: "auto",
                           }}
@@ -271,7 +391,7 @@ function Board() {
                                       <CardBoard
                                         card_info={item}
                                         snapshot={snapshot}
-                                        label={label}
+                                        label={item.labels}
                                         list_name={column.name}
                                       ></CardBoard>
                                     </div>
@@ -285,14 +405,19 @@ function Board() {
                       );
                     }}
                   </Droppable>
-                  <ModalAddCard />
+                  <ButtonAddCard />
                 </div>
               </div>
             );
           })}
         </DragDropContext>
+
+        <div className="board_container_table_add_column">
+          <ButtonAddColumn />
+        </div>
       </div>
     </div>
+    </>
   );
 }
 export default Board;
