@@ -1,17 +1,16 @@
-import React, {useEffect, useState} from "react";
-// import ReactDOM from "react-dom";
-// import { withStyles } from "@mui/material/styles";
+import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
+import CheckIcon from "@mui/icons-material/Check";
 import {
   Box,
   Card,
   CardContent,
   CardMedia,
   IconButton,
+  Tooltip,
   Typography,
 } from "@mui/material";
-import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
-import axios from "axios";
-// import "./styles.css";
+import React, {useEffect, useState} from "react";
+import ClearIcon from "@mui/icons-material/Clear";
 
 const faces = [
   "http://i.pravatar.cc/300?img=1",
@@ -28,6 +27,9 @@ export default function InvBox({
   campus,
   status,
   onClickRequest,
+  request = false,
+  acceptRequest,
+  refuseRequest,
 }) {
   const [statusColor, setStatusColor] = useState("");
 
@@ -36,7 +38,7 @@ export default function InvBox({
       setStatusColor("#4CAF50");
     } else if (status === "requested") {
       setStatusColor("#FFC107");
-    } else if (status === "unavailable") {
+    } else if (status === "unavailable" || status === "borrowed") {
       setStatusColor("#E44434");
     }
   }, [status]);
@@ -74,6 +76,7 @@ export default function InvBox({
             variant={"h6"}
             gutterBottom
             paragraph
+            sx={{fontSize: 14, fontFamily: "poppins-semibold"}}
           >
             {label}
           </Typography>
@@ -81,6 +84,7 @@ export default function InvBox({
             paragraph
             className={"MuiTypography--subheading"}
             variant={"caption"}
+            sx={{fontSize: 14, fontFamily: "poppins-regular"}}
           >
             Reference : {reference}
           </Typography>
@@ -88,6 +92,7 @@ export default function InvBox({
             className={"MuiTypography--subheading"}
             variant={"caption"}
             paragraph
+            sx={{fontSize: 14, fontFamily: "poppins-regular"}}
           >
             Categorie : {category}
           </Typography>
@@ -95,16 +100,22 @@ export default function InvBox({
             paragraph
             className={"MuiTypography--subheading"}
             variant={"caption"}
+            sx={{fontSize: 14, fontFamily: "poppins-regular"}}
           >
             Campus : {campus}
           </Typography>
           <Typography
             className={"MuiTypography--subheading"}
             variant={"caption"}
-            sx={{display: "flex", alignItems: "center"}}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              fontSize: 14,
+              fontFamily: "poppins-regular",
+            }}
             // paragraph
           >
-            Status :
+            Statut :
             <Box
               sx={{
                 height: 10,
@@ -124,9 +135,25 @@ export default function InvBox({
               marginTop: 10,
             }}
           >
-            <IconButton onClick={onClickRequest}>
-              <AccessibilityNewIcon />
-            </IconButton>
+            {onClickRequest && (
+              <IconButton onClick={onClickRequest}>
+                <AccessibilityNewIcon />
+              </IconButton>
+            )}
+            {request && (
+              <>
+                <Tooltip title="Accepter la demande">
+                  <IconButton onClick={acceptRequest}>
+                    <CheckIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Refuser la demande">
+                  <IconButton onClick={refuseRequest}>
+                    <ClearIcon />
+                  </IconButton>
+                </Tooltip>
+              </>
+            )}
           </div>
         </CardContent>
       </Card>

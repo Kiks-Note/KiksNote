@@ -55,25 +55,93 @@ module.exports = (app, db, user) => {
     const {startDate, endDate, createdAt} = req.body;
 
     try {
-      await db
+      const docRef = await db
         .collection("inventory")
         .doc(deviceId)
         .collection("requests")
-        .doc()
-        .set({
-          startDate: new Date(startDate),
-          endDate: new Date(endDate),
-          createdAt: new Date(createdAt),
-          user: user.ref,
-        });
+        .doc();
+
+      await docRef.set({
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        createdAt: new Date(createdAt),
+        user: user.ref,
+      });
 
       await db.collection("inventory").doc(deviceId).update({
         status: "requested",
+        lastRequestId: docRef.id,
       });
-
-      res.send("Request sent");
     } catch (err) {
       res.send(err);
     }
+  });
+
+  app.put("/inventory/acceptrequest/:deviceId/:requestId", async (req, res) => {
+    const {deviceId, requestId} = req.params;
+
+    try {
+      const requestRef = await db
+        .collection("inventory")
+        .doc(deviceId)
+        .collection("requests")
+        .doc(requestId);
+
+      const deviceRef = await db.collection("inventory").doc(deviceId);
+
+      await deviceRef.update({
+        status: "borrowed",
+        lastRequestId: requestId,
+      });
+
+      await requestRef.update({
+        status: "accepted",
+        acceptedAt: new Date(),
+      });
+
+      res.send("Request accepted");
+    } catch (err) {
+      res.send(err);
+    }
+  });
+
+  app.put("/inventory/refuserequest/:deviceId/:requestId", async (req, res) => {
+    const {deviceId, requestId} = req.params;
+
+    try {
+      const deviceRef = await db.collection("inventory").doc(deviceId);
+      const requestRef = await db
+        .collection("inventory")
+        .doc(deviceId)
+        .collection("requests")
+        .doc(requestId);
+
+      await deviceRef.update({
+        status: "available",
+        lastRequestId: requestId,
+      });
+
+      await requestRef.update({
+        status: "refused",
+        refusedAt: new Date(),
+      });
+
+      res.send("Request refused");
+    } catch (err) {
+      res.send(err);
+    }
+  });
+
+  app.get("/inventory/request/:deviceId/:requestId", async (req, res) => {
+    const {deviceId, requestId} = req.params;
+
+    const doc = await db
+      .collection("inventory")
+      .doc(deviceId)
+      .collection("requests")
+      .doc(requestId)
+      .get();
+
+    res.status(200).send(doc.data());
   });
 };
