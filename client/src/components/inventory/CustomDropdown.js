@@ -1,23 +1,27 @@
 import React, {useState} from "react";
 import Select from "react-dropdown-select";
 import ExpandCircleDownRoundedIcon from "@mui/icons-material/ExpandCircleDownRounded";
-
+import "../../styles/dropdown.css";
 export const CustomDropdown = ({placeholder, data = [], onChange}) => {
   const [pressed, setPressed] = useState(false);
 
   const itemRenderer = ({item, itemIndex, state, methods}) => {
     return (
       <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: 10,
-          borderRadius: 5,
-          margin: 5,
-          backgroundColor: itemIndex === state.activeCursorItem && "#F1F1F1",
-        }}
+        // style={{
+        //   display: "flex",
+        //   flexDirection: "row",
+        //   justifyContent: "flex-start",
+        //   alignItems: "center",
+        //   backgroundColor: state.cursor === itemIndex ? "#F6F6F6" : "white",
+        //   padding: 10,
+        //   width: "100%",
+        //   height: 40,
+        //   fontFamily: "poppins-regular",
+        //   fontSize: 16,
+        //   margin: 0,
+        // }}
+        className="dropdown-item"
         onClick={() => methods.addItem(item)}
         onMouseOver={() => {
           methods.activeCursorItem(itemIndex);
@@ -50,8 +54,8 @@ export const CustomDropdown = ({placeholder, data = [], onChange}) => {
       <div
         style={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
+          alignItems: "baseline",
+          justifyContent: "space-between",
           fontFamily: "poppins-regular",
         }}
       >
@@ -104,14 +108,7 @@ export const CustomDropdown = ({placeholder, data = [], onChange}) => {
       itemRenderer={itemRenderer}
       dropdownHandleRenderer={handleRenderer}
       contentRenderer={contentRenderer}
+      keepSelectedInList={true}
     />
   );
 };
-
-// const useStyles = makeStyles({
-//   select: {
-//     "&:hover": {
-//       backgroundColor: "#F6F6F6",
-//     },
-//   },
-// });

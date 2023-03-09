@@ -17,8 +17,8 @@ function InventoryHome() {
   const [loading, setLoading] = useState(true);
   const [clickedDevice, setClickedDevice] = useState({});
   const [clickedRequest, setClickedRequest] = useState({});
-  const [filter, setFilter] = useState(null);
-  const [filter2, setFilter2] = useState(null);
+  const [campusFilter, setCampusFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState(null);
   const user = userObj;
 
   const toggleDrawerAdd = (event, open) => {
@@ -53,6 +53,7 @@ function InventoryHome() {
       .then((res) => {
         setInventory(res.data);
         setLoading(false);
+        console.log(res.data);
       })
       .catch((err) => {
         console.log(err);
@@ -103,16 +104,16 @@ function InventoryHome() {
         }}
       >
         <CustomDropdown
-          placeholder="Date"
+          placeholder="Filtrer"
           data={[
-            {label: "Disponibilité", value: "statut"},
-            {label: "Date", value: "date"},
-            {label: "Categorie", value: "categorie"},
-            {label: "Disponibles", value: "disponibles"},
+            {label: "Tous", value: "all"},
+            {label: "Disponible", value: "available"},
             {label: "Emprunté", value: "borrowed"},
+            {label: "Demandés", value: "requested"},
+            {label: "Indisponibles", value: "unavailable"},
           ]}
           onChange={(e) => {
-            setFilter(e[0].value);
+            setStatusFilter(e[0].value);
           }}
         />
         <CustomDropdown
@@ -120,9 +121,10 @@ function InventoryHome() {
           data={[
             {label: "Cergy", value: "Cergy"},
             {label: "Paris", value: "Paris"},
+            {label: "Reset", value: "reset"},
           ]}
           onChange={(e) => {
-            setFilter2(e[0].value);
+            setCampusFilter(e[0].value);
           }}
         />
       </div>
@@ -150,26 +152,35 @@ function InventoryHome() {
         <Box sx={{flexGrow: 1}}>
           <Grid container spacing={4}>
             {inventory
-              .sort((a, b) =>
-                filter === "date"
-                  ? new Date(b.createdAt) - new Date(a.createdAt)
-                  : filter === "statut"
-                  ? a.status.localeCompare(b.status)
-                  : filter === "categorie"
-                  ? a.category.localeCompare(b.category)
-                  : null
-              )
-              .filter((item) =>
-                filter === "disponibles"
-                  ? item.status === "available"
-                  : filter === "borrowed"
-                  ? item.status === "borrowed"
-                  : filter2 === "Cergy"
-                  ? item.campus === "Cergy"
-                  : filter2 === "Paris"
-                  ? item.campus === "Paris"
-                  : item
-              )
+              .filter((item) => {
+                if (statusFilter === "all") {
+                  return item;
+                } else if (statusFilter === "borrowed") {
+                  return item.status === "borrowed";
+                } else if (statusFilter === "requested") {
+                  return item.status === "requested";
+                } else if (statusFilter === "unavailable") {
+                  return item.status === "unavailable";
+                } else if (statusFilter === "available") {
+                  return item.status === "available";
+                } else {
+                  return item.status === "available";
+                }
+              })
+              .filter((item) => {
+                if (campusFilter === null) {
+                  return item;
+                } else if (campusFilter === "reset") {
+                  setCampusFilter(null);
+                  return item;
+                } else {
+                  return (
+                    item.campus.charAt(0).toUpperCase() +
+                      item.campus.slice(1) ===
+                    campusFilter
+                  );
+                }
+              })
               .map((item, index) => (
                 <Grid item key={index}>
                   <InvBox
@@ -177,7 +188,9 @@ function InventoryHome() {
                     label={item.label}
                     reference={item.ref}
                     category={item.category}
-                    campus={item.campus}
+                    campus={
+                      item.campus.charAt(0).toUpperCase() + item.campus.slice(1)
+                    }
                     status={item.status}
                     onClickRequest={(e) => {
                       if (item.status === "available") {
@@ -185,9 +198,7 @@ function InventoryHome() {
                         setClickedDevice(item.id);
                       } else {
                         fetchRequests(item.id, item.lastRequestId);
-                        toast.error(
-                          "Cet appareil n'est pas disponible, veuillez consulter les demandes en cours."
-                        );
+                        toast.error("Cet appareil n'est pas disponible");
                       }
                     }}
                   />

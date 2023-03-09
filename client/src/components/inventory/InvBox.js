@@ -32,14 +32,21 @@ export default function InvBox({
   refuseRequest,
 }) {
   const [statusColor, setStatusColor] = useState("");
+  const [deviceStatus, setDeviceStatus] = useState("");
 
   useEffect(() => {
     if (status === "available") {
       setStatusColor("#4CAF50");
+      setDeviceStatus("Disponible");
     } else if (status === "requested") {
       setStatusColor("#FFC107");
-    } else if (status === "unavailable" || status === "borrowed") {
+      setDeviceStatus("Demandé");
+    } else if (status === "unavailable") {
       setStatusColor("#E44434");
+      setDeviceStatus("Indisponible");
+    } else if (status === "borrowed") {
+      setStatusColor("#2196F3");
+      setDeviceStatus("Emprunté");
     }
   }, [status]);
 
@@ -116,7 +123,21 @@ export default function InvBox({
             // paragraph
           >
             Statut :
-            <Box
+            <Typography
+              className={"MuiTypography--subheading"}
+              variant={"caption"}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                fontSize: 14,
+                fontFamily: "poppins-semibold",
+                color: statusColor,
+                marginLeft: 0.5,
+              }}
+            >
+              {deviceStatus}
+            </Typography>
+            {/* <Box
               sx={{
                 height: 10,
                 width: 10,
@@ -125,7 +146,7 @@ export default function InvBox({
                 marginLeft: 1,
                 boxShadow: "10 0 0 1px #fff",
               }}
-            />
+            /> */}
           </Typography>
           <div
             style={{

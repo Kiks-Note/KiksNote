@@ -1,7 +1,7 @@
 module.exports = (app, db, user) => {
   app.get("/inventory", async (req, res) => {
     const docRef = db.collection("inventory");
-    const snapshot = await docRef.get();
+    const snapshot = await docRef.orderBy("createdAt").get();
     const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
 
     try {
@@ -42,6 +42,8 @@ module.exports = (app, db, user) => {
         campus: campus,
         status: status,
         image: image,
+        createdAt: new Date(),
+        createdBy: user.ref,
       });
 
       res.send("Document successfully written!");
