@@ -13,7 +13,7 @@ function RoutesProvider() {
 
         <Route element={<PrivateRoutes />}>
           <Route path="/inventory" element={<InventoryHome />} />
-          <Route path="/inventoryRequests" element={<InventoryRequests />} />
+          <Route path="/inventory/requests" element={<InventoryRequests />} />
         </Route>
       </Routes>
     </BrowserRouter>

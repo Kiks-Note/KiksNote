@@ -1,0 +1,10 @@
+.buttons-wrapper {
+  position: fixed;
+  display: flex;
+  flex-direction: column-reverse;
+  justify-content: "space-between";
+  align-items: "center";
+  margin-bottom: 20px;
+  bottom: 0px;
+  right: 20px;
+}

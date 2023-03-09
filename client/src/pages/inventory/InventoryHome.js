@@ -1,4 +1,4 @@
-import {Button, Grid} from "@mui/material";
+import {Button, Fab, Grid, Tooltip} from "@mui/material";
 import Box from "@mui/material/Box";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
@@ -9,17 +9,28 @@ import InvBox from "../../components/inventory/InvBox";
 import ModalForm from "../../components/inventory/ModalForm";
 import SideBarRequest from "../../components/inventory/SideBarRequest";
 import userObj from "../../userObj";
-
+import AddIcon from "@mui/icons-material/Add";
+import AccessibilityNewRoundedIcon from "@mui/icons-material/AccessibilityNewRounded";
+import "../../styles/inventoryGlobal.css";
+import {useNavigate} from "react-router-dom";
+import SideBarModify from "../../components/inventory/SideBarModify";
+import Snackbar from "../../components/inventory/SnackBar";
+import CustomSnackbar from "../../components/inventory/SnackBar";
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
   const [openAdd, setOpenAdd] = useState(false);
   const [openRequest, setOpenResquest] = useState(false);
+  const [openModify, setOpenModify] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [clickedDevice, setClickedDevice] = useState({});
+  const [clickedDeviceId, setClickedDeviceId] = useState({});
   const [clickedRequest, setClickedRequest] = useState({});
   const [campusFilter, setCampusFilter] = useState(null);
   const [statusFilter, setStatusFilter] = useState(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
   const user = userObj;
+  const navigate = useNavigate();
 
   const toggleDrawerAdd = (event, open) => {
     if (
@@ -41,6 +52,22 @@ function InventoryHome() {
       return;
     }
     setOpenResquest(open);
+  };
+
+  const toggleDrawerModify = (event, open) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setOpenModify(open);
+  };
+
+  const handleEditClick = (e) => {
+    setIsMenuOpen(false);
+    toggleDrawerModify(e, true);
   };
 
   useEffect(() => {
@@ -71,8 +98,24 @@ function InventoryHome() {
       });
   };
 
+  const handleDeleteClick = async () => {
+    setIsMenuOpen(false);
+    setSnackBarOpen(false);
+
+    await axios
+      .delete(`http://localhost:5050/inventory/delete/${clickedDeviceId}`)
+      .then((res) => {
+        toast.success("Matériel supprimé avec succès");
+        reloadData();
+      })
+      .catch((err) => {
+        toast.error("Une erreur est survenue");
+        console.log(err);
+      });
+  };
+
   return (
-    <>
+    <div>
       <ModalForm
         open={openAdd}
         toggleDrawerAdd={toggleDrawerAdd}
@@ -81,19 +124,59 @@ function InventoryHome() {
       <SideBarRequest
         open={openRequest}
         toggleDrawerRequest={toggleDrawerRequest}
-        deviceId={clickedDevice}
+        deviceId={clickedDeviceId}
       />
-      <Toaster position="bottom-left" />
+      <SideBarModify
+        open={openModify}
+        toggleDrawerModify={toggleDrawerModify}
+        deviceId={clickedDeviceId}
+      />
+      <CustomSnackbar
+        open={snackBarOpen}
+        setOpen={setSnackBarOpen}
+        message="Voulez-vous vraiment supprimer cet appareil ?"
+        onClickCheck={() => {
+          handleDeleteClick();
+        }}
+        onClickClose={() => {
+          setSnackBarOpen(false);
+        }}
+      />
 
-      {user.admin && (
-        <Button
-          variant="contained"
-          sx={{marginBottom: 2}}
-          onClick={(e) => toggleDrawerAdd(e, true)}
-        >
-          Ajouter un appareil
-        </Button>
-      )}
+      <div className="buttons-wrapper">
+        {user.admin && (
+          <>
+            <Tooltip
+              title="Ajouter un appareil"
+              aria-label="add"
+              sx={{marginBottom: "20px"}}
+              placement="left"
+            >
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={(e) => toggleDrawerAdd(e, true)}
+              >
+                <AddIcon />
+              </Fab>
+            </Tooltip>
+            <Tooltip
+              title="Voir les demandes"
+              aria-label="add"
+              sx={{marginBottom: "20px"}}
+              placement="left"
+            >
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={() => navigate("/inventory/requests")}
+              >
+                <AccessibilityNewRoundedIcon />
+              </Fab>
+            </Tooltip>
+          </>
+        )}
+      </div>
 
       <div
         style={{
@@ -195,19 +278,34 @@ function InventoryHome() {
                     onClickRequest={(e) => {
                       if (item.status === "available") {
                         toggleDrawerRequest(e, true);
-                        setClickedDevice(item.id);
+                        setClickedDeviceId(item.id);
                       } else {
                         fetchRequests(item.id, item.lastRequestId);
                         toast.error("Cet appareil n'est pas disponible");
                       }
                     }}
+                    onEditClick={(e) => {
+                      handleEditClick(e);
+                    }}
+                    onDeleteClick={() => {
+                      setSnackBarOpen(true);
+                      setClickedDeviceId(item.id);
+                    }}
+                    isMenuOpen={isMenuOpen}
+                    onMenuClick={(e) => {
+                      setIsMenuOpen(true);
+                      setAnchorEl(e.currentTarget);
+                      setClickedDeviceId(item.id);
+                    }}
+                    onMenuClose={() => setIsMenuOpen(false)}
+                    anchorEl={anchorEl}
                   />
                 </Grid>
               ))}
           </Grid>
         </Box>
       )}
-    </>
+    </div>
   );
 }
 

@@ -108,7 +108,6 @@ export const CustomDropdown = ({placeholder, data = [], onChange}) => {
       itemRenderer={itemRenderer}
       dropdownHandleRenderer={handleRenderer}
       contentRenderer={contentRenderer}
-      keepSelectedInList={true}
     />
   );
 };

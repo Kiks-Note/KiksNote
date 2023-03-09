@@ -2,15 +2,20 @@ import AccessibilityNewIcon from "@mui/icons-material/AccessibilityNew";
 import CheckIcon from "@mui/icons-material/Check";
 import {
   Box,
+  Button,
   Card,
   CardContent,
   CardMedia,
   IconButton,
+  Menu,
+  MenuItem,
   Tooltip,
   Typography,
 } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import ClearIcon from "@mui/icons-material/Clear";
+import ModeEditIcon from "@mui/icons-material/ModeEdit";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 const faces = [
   "http://i.pravatar.cc/300?img=1",
@@ -30,9 +35,16 @@ export default function InvBox({
   request = false,
   acceptRequest,
   refuseRequest,
+  onEditClick,
+  onDeleteClick,
+  isMenuOpen,
+  onMenuClick,
+  onMenuClose,
+  anchorEl,
 }) {
   const [statusColor, setStatusColor] = useState("");
   const [deviceStatus, setDeviceStatus] = useState("");
+  const admin = true;
 
   useEffect(() => {
     if (status === "available") {
@@ -173,6 +185,48 @@ export default function InvBox({
                     <ClearIcon />
                   </IconButton>
                 </Tooltip>
+              </>
+            )}
+            {admin && (
+              <>
+                {/* <Tooltip title="Supprimer">
+                  <IconButton>
+                    <ClearIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Modifier">
+                  <IconButton>
+                    <ModeEditIcon />
+                  </IconButton>
+                </Tooltip> */}
+                <div>
+                  <Tooltip title="Plus d'options">
+                    <IconButton onClick={onMenuClick}>
+                      <MoreVertIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Menu
+                    id="basic-menu"
+                    anchorEl={anchorEl}
+                    open={isMenuOpen}
+                    onClose={onMenuClose}
+                  >
+                    <MenuItem
+                      onClick={onEditClick}
+                      style={{fontFamily: "poppins-regular"}}
+                    >
+                      <ModeEditIcon style={{marginRight: 5, width: 20}} />
+                      Modifier
+                    </MenuItem>
+                    <MenuItem
+                      onClick={onDeleteClick}
+                      style={{color: "#E44434", fontFamily: "poppins-regular"}}
+                    >
+                      <ClearIcon style={{marginRight: 5, width: 20}} />
+                      Supprimer
+                    </MenuItem>
+                  </Menu>
+                </div>
               </>
             )}
           </div>

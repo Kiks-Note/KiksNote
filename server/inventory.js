@@ -52,6 +52,44 @@ module.exports = (app, db, user) => {
     }
   });
 
+  app.put("/inventory/modify/:deviceId", async (req, res) => {
+    const {deviceId} = req.params;
+    const {label, reference, category, campus, status, image, lastModifiedBy} =
+      req.body;
+
+    console.log(req.body);
+
+    try {
+      await db.collection("inventory").doc(deviceId).update({
+        label: label,
+        ref: reference,
+        category: category,
+        campus: campus,
+        status: status,
+        image: image,
+        lastModifiedBy: lastModifiedBy,
+        lastModifiedAt: new Date(),
+      });
+
+      res.send("Document successfully updated!");
+    } catch (err) {
+      res.send(err);
+    }
+  });
+
+  app.delete("/inventory/delete/:deviceId", async (req, res) => {
+    const {deviceId} = req.params;
+
+    try {
+      await db.collection("inventory").doc(deviceId).delete();
+      res.send("Document successfully deleted!");
+    } catch (err) {
+      res.send(err);
+    }
+  });
+
+  // requests
+
   app.put("/inventory/makerequest/:category/:deviceId", async (req, res) => {
     const {deviceId, category} = req.params;
     const {startDate, endDate, createdAt} = req.body;

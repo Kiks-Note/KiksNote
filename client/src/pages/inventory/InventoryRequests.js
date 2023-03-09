@@ -1,4 +1,4 @@
-import {Box, Grid} from "@mui/material";
+import {Box, Grid, Typography} from "@mui/material";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
 import {toast, Toaster} from "react-hot-toast";
@@ -51,7 +51,9 @@ export const InventoryRequests = () => {
 
   return (
     <div>
-      <h1>Requests</h1>
+      <Typography variant="h5" sx={{marginBottom: 2}}>
+        Demandes de matériel
+      </Typography>
       <Toaster position="bottom-left" />
       {loading ? (
         <div
@@ -83,7 +85,7 @@ export const InventoryRequests = () => {
                   <InvBox
                     image={item.image}
                     label={item.label}
-                    reference={item.reference}
+                    reference={item.ref}
                     category={item.category}
                     campus={item.campus}
                     status={item.status}

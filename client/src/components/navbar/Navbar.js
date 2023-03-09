@@ -101,7 +101,7 @@ export default function MiniDrawer({element}) {
 
   return (
     <Box sx={{display: "flex"}}>
-      <CssBaseline />
+      {/* <CssBaseline /> */}
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={open ? handleDrawerClose : handleDrawerOpen}>
@@ -154,14 +154,14 @@ export default function MiniDrawer({element}) {
           ))}
         </List>
         <Divider />
-        {user.admin && (
+        {/* {user.admin && (
           <>
             <List>
               {[
                 {
                   id: 1,
                   name: "Demandes Inventaire",
-                  route: "/inventoryRequests",
+                  route: "/inventory/requests",
                   icon: <InventoryIcon />,
                 },
               ].map((page) => (
@@ -204,7 +204,7 @@ export default function MiniDrawer({element}) {
             </List>
             <Divider />
           </>
-        )}
+        )} */}
         {/* Information for List to Logout */}
         <List>
           {[
@@ -246,7 +246,6 @@ export default function MiniDrawer({element}) {
         </List>
       </Drawer>
       <Box component="main" sx={{flexGrow: 1, p: 3}}>
-        <DrawerHeader />
         <>{element}</>
       </Box>
     </Box>
