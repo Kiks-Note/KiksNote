@@ -13,7 +13,12 @@ import toast from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
 import * as locales from "react-date-range/dist/locale";
 
-export default function SideBarRequest({open, toggleDrawerRequest, deviceId}) {
+export default function SideBarRequest({
+  open,
+  toggleDrawerRequest,
+  deviceId,
+  reloadData,
+}) {
   const [device, setDevice] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectDates, setSelectedDates] = useState([
@@ -46,22 +51,31 @@ export default function SideBarRequest({open, toggleDrawerRequest, deviceId}) {
       toast.error("Veuillez choisir une date de début et de fin");
       return;
     } else {
-      await axios
-        .put(
+      toast.promise(
+        axios.put(
           `http://localhost:5050/inventory/makerequest/${category}/${deviceId}`,
           {
             startDate: selectDates[0].startDate,
             endDate: selectDates[0].endDate,
             createdAt: new Date(),
           }
-        )
-        .then((res) => {
-          toast.success("Demande envoyée avec succès !");
-          toggleDrawerRequest(false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+        ),
+        {
+          loading: () => {
+            toggleDrawerRequest(false);
+            return "Demande en cours d'envoi";
+          },
+          success: (res) => {
+            reloadData();
+            toggleDrawerRequest(false);
+            return "Demande envoyée";
+          },
+          error: (err) => {
+            toggleDrawerRequest(false);
+            return "Erreur lors de l'envoi de la demande";
+          },
+        }
+      );
     }
   };
 
@@ -147,7 +161,7 @@ export default function SideBarRequest({open, toggleDrawerRequest, deviceId}) {
             fullWidth
             onClick={(e) => {
               handleRequest();
-              // toggleDrawerRequest(e, false);
+              toggleDrawerRequest(e, false);
             }}
           >
             Confirmer
@@ -180,9 +194,6 @@ export default function SideBarRequest({open, toggleDrawerRequest, deviceId}) {
   return (
     <div>
       <React.Fragment>
-        {/* <Button variant="contained" onClick={toggleDrawerRequest("right", true)}>
-          Add Device
-        </Button> */}
         <SwipeableDrawer
           anchor={"right"}
           open={open}

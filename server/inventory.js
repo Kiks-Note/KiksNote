@@ -112,6 +112,8 @@ module.exports = (app, db, user) => {
         status: "requested",
         lastRequestId: docRef.id,
       });
+
+      res.send("Request successfully made!");
     } catch (err) {
       res.send(err);
     }

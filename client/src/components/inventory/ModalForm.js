@@ -15,6 +15,7 @@ import axios from "axios";
 import * as React from "react";
 import {useState, useEffect} from "react";
 import CloseIcon from "@mui/icons-material/Close";
+import {toast} from "react-hot-toast";
 
 export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
   const [categories, setCategories] = useState([]);
@@ -27,23 +28,36 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
   const [loading, setLoading] = useState(true);
 
   const addDevice = async () => {
-    await axios
-      .post("http://localhost:5050/addDevice", {
-        label: label,
-        reference: reference,
-        category: category,
-        campus: campus,
-        status: status,
-        image: image,
-      })
-      .then(() => {
-        resetInputs();
-        reloadData();
-        toggleDrawerAdd(false);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    if (!label || !reference || !category || !campus || !status || !image) {
+      toast.error("Veuillez remplir tous les champs");
+      return;
+    } else {
+      try {
+        await toast.promise(
+          axios.post("http://localhost:5050/addDevice", {
+            label: label,
+            reference: reference,
+            category: category,
+            campus: campus,
+            status: status,
+            image: image,
+          }),
+          {
+            success: () => {
+              resetInputs();
+              reloadData();
+              toggleDrawerAdd(false);
+              return "Le périphérique a bien été ajouté";
+            },
+            error: () => {
+              return "Une erreur est survenue";
+            },
+          }
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   const resetInputs = () => {

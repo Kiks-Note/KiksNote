@@ -14,8 +14,8 @@ import AccessibilityNewRoundedIcon from "@mui/icons-material/AccessibilityNewRou
 import "../../styles/inventoryGlobal.css";
 import {useNavigate} from "react-router-dom";
 import SideBarModify from "../../components/inventory/SideBarModify";
-import Snackbar from "../../components/inventory/SnackBar";
-import CustomSnackbar from "../../components/inventory/SnackBar";
+import Snackbar from "../../components/inventory/CustomSnackBar";
+import CustomSnackbar from "../../components/inventory/CustomSnackBar";
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
   const [openAdd, setOpenAdd] = useState(false);
@@ -102,16 +102,20 @@ function InventoryHome() {
     setIsMenuOpen(false);
     setSnackBarOpen(false);
 
-    await axios
-      .delete(`http://localhost:5050/inventory/delete/${clickedDeviceId}`)
-      .then((res) => {
-        toast.success("Matériel supprimé avec succès");
-        reloadData();
-      })
-      .catch((err) => {
-        toast.error("Une erreur est survenue");
-        console.log(err);
-      });
+    toast.promise(
+      axios.delete(`http://localhost:5050/inventory/delete/${clickedDeviceId}`),
+      {
+        loading: "Suppression en cours",
+        success: (res) => {
+          reloadData();
+          return "Matériel supprimé avec succès";
+        },
+        error: (err) => {
+          console.log(err);
+          return "Une erreur est survenue";
+        },
+      }
+    );
   };
 
   return (
@@ -125,6 +129,7 @@ function InventoryHome() {
         open={openRequest}
         toggleDrawerRequest={toggleDrawerRequest}
         deviceId={clickedDeviceId}
+        reloadData={reloadData}
       />
       <SideBarModify
         open={openModify}
@@ -142,6 +147,7 @@ function InventoryHome() {
           setSnackBarOpen(false);
         }}
       />
+      <Toaster position="bottom-left" />
 
       <div className="buttons-wrapper">
         {user.admin && (
@@ -234,74 +240,77 @@ function InventoryHome() {
       ) : (
         <Box sx={{flexGrow: 1}}>
           <Grid container spacing={4}>
-            {inventory
-              .filter((item) => {
-                if (statusFilter === "all") {
-                  return item;
-                } else if (statusFilter === "borrowed") {
-                  return item.status === "borrowed";
-                } else if (statusFilter === "requested") {
-                  return item.status === "requested";
-                } else if (statusFilter === "unavailable") {
-                  return item.status === "unavailable";
-                } else if (statusFilter === "available") {
-                  return item.status === "available";
-                } else {
-                  return item.status === "available";
-                }
-              })
-              .filter((item) => {
-                if (campusFilter === null) {
-                  return item;
-                } else if (campusFilter === "reset") {
-                  setCampusFilter(null);
-                  return item;
-                } else {
-                  return (
-                    item.campus.charAt(0).toUpperCase() +
-                      item.campus.slice(1) ===
-                    campusFilter
-                  );
-                }
-              })
-              .map((item, index) => (
-                <Grid item key={index}>
-                  <InvBox
-                    image={item.image}
-                    label={item.label}
-                    reference={item.ref}
-                    category={item.category}
-                    campus={
-                      item.campus.charAt(0).toUpperCase() + item.campus.slice(1)
-                    }
-                    status={item.status}
-                    onClickRequest={(e) => {
-                      if (item.status === "available") {
-                        toggleDrawerRequest(e, true);
-                        setClickedDeviceId(item.id);
-                      } else {
-                        fetchRequests(item.id, item.lastRequestId);
-                        toast.error("Cet appareil n'est pas disponible");
+            {!loading &&
+              inventory
+                .filter((item) => {
+                  if (statusFilter === "all") {
+                    return item;
+                  } else if (statusFilter === "borrowed") {
+                    return item.status === "borrowed";
+                  } else if (statusFilter === "requested") {
+                    return item.status === "requested";
+                  } else if (statusFilter === "unavailable") {
+                    return item.status === "unavailable";
+                  } else if (statusFilter === "available") {
+                    return item.status === "available";
+                  } else {
+                    return item.status === "available";
+                  }
+                })
+                .filter((item) => {
+                  if (campusFilter === null) {
+                    return item;
+                  } else if (campusFilter === "reset") {
+                    setCampusFilter(null);
+                    return item;
+                  } else {
+                    return (
+                      item.campus.charAt(0).toUpperCase() +
+                        item.campus.slice(1) ===
+                      campusFilter
+                    );
+                  }
+                })
+                .map((item, index) => (
+                  <Grid item key={index}>
+                    <InvBox
+                      image={item.image}
+                      label={item.label}
+                      reference={item.ref}
+                      category={item.category}
+                      campus={
+                        item.campus.charAt(0).toUpperCase() +
+                        item.campus.slice(1)
                       }
-                    }}
-                    onEditClick={(e) => {
-                      handleEditClick(e);
-                    }}
-                    onDeleteClick={() => {
-                      setSnackBarOpen(true);
-                      setClickedDeviceId(item.id);
-                    }}
-                    isMenuOpen={isMenuOpen}
-                    onMenuClick={(e) => {
-                      setIsMenuOpen(true);
-                      setAnchorEl(e.currentTarget);
-                      setClickedDeviceId(item.id);
-                    }}
-                    onMenuClose={() => setIsMenuOpen(false)}
-                    anchorEl={anchorEl}
-                  />
-                </Grid>
-              ))}
+                      status={item.status}
+                      onClickRequest={(e) => {
+                        if (item.status === "available") {
+                          toggleDrawerRequest(e, true);
+                          setClickedDeviceId(item.id);
+                        } else {
+                          fetchRequests(item.id, item.lastRequestId);
+                          toast.error("Cet appareil n'est pas disponible");
+                        }
+                      }}
+                      onEditClick={(e) => {
+                        handleEditClick(e);
+                      }}
+                      onDeleteClick={() => {
+                        setSnackBarOpen(true);
+                        setIsMenuOpen(false);
+                        setClickedDeviceId(item.id);
+                      }}
+                      isMenuOpen={isMenuOpen}
+                      onMenuClick={(e) => {
+                        setIsMenuOpen(true);
+                        setAnchorEl(e.currentTarget);
+                        setClickedDeviceId(item.id);
+                      }}
+                      onMenuClose={() => setIsMenuOpen(false)}
+                      anchorEl={anchorEl}
+                    />
+                  </Grid>
+                ))}
           </Grid>
         </Box>
       )}

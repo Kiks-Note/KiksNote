@@ -37,16 +37,16 @@ export const InventoryRequests = () => {
   };
 
   const handleRefuseRequest = async (deviceId, requestId) => {
-    await axios
-      .put(
+    toast.promise(
+      axios.put(
         `http://localhost:5050/inventory/refuserequest/${deviceId}/${requestId}`
-      )
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+      ),
+      {
+        loading: "Refus de la demande...",
+        success: "Demande refusée",
+        error: "Erreur lors du refus de la demande",
+      }
+    );
   };
 
   return (
@@ -98,9 +98,6 @@ export const InventoryRequests = () => {
                     }}
                     refuseRequest={() => {
                       handleRefuseRequest(item.id, item.lastRequestId);
-                      toast.error(
-                        "Vous avez refusé la demande " + item.lastRequestId
-                      );
                     }}
                   />
                 </Grid>

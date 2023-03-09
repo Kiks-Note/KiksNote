@@ -72,8 +72,8 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
   }, [open === true]);
 
   const handleModify = async () => {
-    await axios
-      .put(`http://localhost:5050/inventory/modify/${deviceId}`, {
+    toast.promise(
+      axios.put(`http://localhost:5050/inventory/modify/${deviceId}`, {
         label,
         reference,
         category,
@@ -81,18 +81,22 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
         status,
         image,
         lastModifiedBy: "admin",
-      })
-      .then((res) => {
-        toast.success("Matériel modifié avec succès");
-        toggleDrawerModify(null, false);
-        setLoading(true);
-      })
-      .catch((err) => {
-        toast.error("Une erreur est survenue");
-        console.log(err);
-      });
-
-    console.log(label, reference, category, campus, status, image);
+      }),
+      {
+        success: () => {
+          toggleDrawerModify(null, false);
+          return "Le périphérique a bien été modifié";
+        },
+        loading: () => {
+          toggleDrawerModify(null, false);
+          return "Modification en cours...";
+        },
+        error: () => {
+          toggleDrawerModify(null, false);
+          return "Une erreur est survenue";
+        },
+      }
+    );
   };
 
   const list = () => (
