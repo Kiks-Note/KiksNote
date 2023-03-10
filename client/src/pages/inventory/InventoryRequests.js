@@ -1,20 +1,41 @@
-import {Box, Grid, Typography} from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+import {Box, IconButton, Tooltip, Typography} from "@mui/material";
+import {DataGrid} from "@mui/x-data-grid";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
 import {toast, Toaster} from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
-import InvBox from "../../components/inventory/InvBox";
+import ClearIcon from "@mui/icons-material/Clear";
+import moment from "moment";
 
 export const InventoryRequests = () => {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // const [rows, setRows] = useState([]);
+
   useEffect(() => {
     (async () => {
       await axios
         .get("http://localhost:5050/inventory")
-        .then((res) => {
-          setRequests(res.data);
+        .then(async (inventoryRes) => {
+          const inventoryItems = inventoryRes.data;
+          const requests = [];
+          for (const item of inventoryItems) {
+            const requestId = item.lastRequestId;
+            try {
+              const requestRes = await axios.get(
+                `http://localhost:5050/inventory/request/${requestId}`
+              );
+              const request = {_device: item, _request: requestRes.data};
+              requests.push(request);
+            } catch (err) {
+              console.log(err);
+              const request = {_device: item, _request: null};
+              requests.push(request);
+            }
+          }
+          setRequests(requests);
           setLoading(false);
         })
         .catch((err) => {
@@ -43,9 +64,37 @@ export const InventoryRequests = () => {
       ),
       {
         loading: "Refus de la demande...",
-        success: "Demande refusée",
+        success: "Demande refusée" + requestId,
         error: "Erreur lors du refus de la demande",
       }
+    );
+  };
+
+  const renderActionCell = (params) => {
+    const {row} = params;
+    const deviceId = row.id;
+    const requestId = row.lastRequestId;
+
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <Tooltip title="Accepter la demande">
+          <IconButton onClick={() => handleAcceptRequest(deviceId, requestId)}>
+            <CheckIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Refuser la demande">
+          <IconButton onClick={() => handleRefuseRequest(deviceId, requestId)}>
+            <ClearIcon />
+          </IconButton>
+        </Tooltip>
+      </div>
     );
   };
 
@@ -76,33 +125,65 @@ export const InventoryRequests = () => {
           />
         </div>
       ) : (
-        <Box sx={{flexGrow: 1}}>
-          <Grid container spacing={4}>
-            {requests
-              .filter((item) => item.status === "requested")
-              .map((item, index) => (
-                <Grid item key={index}>
-                  <InvBox
-                    image={item.image}
-                    label={item.label}
-                    reference={item.ref}
-                    category={item.category}
-                    campus={item.campus}
-                    status={item.status}
-                    request={true}
-                    acceptRequest={() => {
-                      handleAcceptRequest(item.id, item.lastRequestId);
-                      toast.success(
-                        "Vous avez accepté la demande " + item.lastRequestId
-                      );
-                    }}
-                    refuseRequest={() => {
-                      handleRefuseRequest(item.id, item.lastRequestId);
-                    }}
-                  />
-                </Grid>
-              ))}
-          </Grid>
+        <Box sx={{height: 800}}>
+          {/* {console.log(requests)} */}
+          <DataGrid
+            rows={
+              requests
+                ? requests
+                    .filter((request) => request._request.status === "pending")
+                    .map((request) => {
+                      return {
+                        id: request._device.id,
+                        lastRequestId: request._device.lastRequestId,
+                        label: request._device.label,
+                        ref: request._device.ref,
+                        category: request._device.category,
+                        campus: request._device.campus,
+                        requester: request._request.requester,
+                        date: request._request
+                          ? moment(request._request.startDate).format(
+                              "DD/MM/YYYY"
+                            )
+                          : "",
+                        fin: request._request
+                          ? moment(request._request.endDate).format(
+                              "DD/MM/YYYY"
+                            )
+                          : "",
+                      };
+                    })
+                : []
+            }
+            columns={[
+              {field: "id", headerName: "Matériel ID", width: 210},
+              {field: "lastRequestId", headerName: "Demande ID", width: 210},
+              {field: "label", headerName: "Nom", width: 130},
+              {field: "ref", headerName: "Référence", width: 130},
+              {field: "category", headerName: "Catégorie", width: 130},
+              {field: "campus", headerName: "Campus", width: 130},
+              {
+                field: "requester",
+                headerName: "Demandeur",
+                width: 250,
+                resizable: true,
+              },
+              {field: "date", headerName: "Pour le", width: 130},
+              {field: "fin", headerName: "Fin le", width: 130},
+
+              {
+                field: "action",
+                headerName: "Action",
+                width: 100,
+                renderCell: renderActionCell,
+                headerAlign: "center",
+              },
+            ]}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            disableSelectionOnClick
+            style={{fontFamily: "poppins-regular"}}
+          />
         </Box>
       )}
     </div>

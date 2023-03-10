@@ -91,26 +91,25 @@ module.exports = (app, db, user) => {
   // requests
 
   app.put("/inventory/makerequest/:category/:deviceId", async (req, res) => {
-    const {deviceId, category} = req.params;
-    const {startDate, endDate, createdAt} = req.body;
+    const {deviceId} = req.params;
+    const {startDate, endDate} = req.body;
 
     try {
-      const docRef = await db
-        .collection("inventory")
-        .doc(deviceId)
-        .collection("requests")
-        .doc();
+      const deviceRef = await db.collection("inventory").doc(deviceId);
+      const requestRef = await db.collection("inventory_requests").doc();
 
-      await docRef.set({
-        startDate: new Date(startDate),
-        endDate: new Date(endDate),
-        createdAt: new Date(createdAt),
-        user: user.ref,
+      await deviceRef.update({
+        status: "requested",
+        lastRequestId: requestRef.id,
       });
 
-      await db.collection("inventory").doc(deviceId).update({
-        status: "requested",
-        lastRequestId: docRef.id,
+      await requestRef.set({
+        deviceId: deviceId,
+        startDate: startDate,
+        endDate: endDate,
+        createdAt: new Date(),
+        requester: user.ref,
+        status: "pending",
       });
 
       res.send("Request successfully made!");
@@ -123,17 +122,14 @@ module.exports = (app, db, user) => {
     const {deviceId, requestId} = req.params;
 
     try {
-      const requestRef = await db
-        .collection("inventory")
-        .doc(deviceId)
-        .collection("requests")
-        .doc(requestId);
-
       const deviceRef = await db.collection("inventory").doc(deviceId);
+      const requestRef = await db
+        .collection("inventory_requests")
+        .doc(requestId);
 
       await deviceRef.update({
         status: "borrowed",
-        lastRequestId: requestId,
+        lastRequestId: null,
       });
 
       await requestRef.update({
@@ -153,14 +149,12 @@ module.exports = (app, db, user) => {
     try {
       const deviceRef = await db.collection("inventory").doc(deviceId);
       const requestRef = await db
-        .collection("inventory")
-        .doc(deviceId)
-        .collection("requests")
+        .collection("inventory_requests")
         .doc(requestId);
 
       await deviceRef.update({
         status: "available",
-        lastRequestId: requestId,
+        lastRequestId: null,
       });
 
       await requestRef.update({
@@ -183,6 +177,14 @@ module.exports = (app, db, user) => {
       .collection("requests")
       .doc(requestId)
       .get();
+
+    res.status(200).send(doc.data());
+  });
+
+  app.get("/inventory/request/:requestId", async (req, res) => {
+    const {requestId} = req.params;
+
+    const doc = await db.collection("inventory_requests").doc(requestId).get();
 
     res.status(200).send(doc.data());
   });

@@ -24,7 +24,7 @@ const faces = [
   "http://i.pravatar.cc/300?img=4",
 ];
 
-export default function InvBox({
+export default function InvBoxRequest({
   image,
   label,
   reference,
@@ -32,12 +32,8 @@ export default function InvBox({
   campus,
   status,
   onClickRequest,
-  onEditClick,
-  onDeleteClick,
-  isMenuOpen,
-  onMenuClick,
-  onMenuClose,
-  anchorEl,
+  acceptRequest,
+  refuseRequest,
 }) {
   const [statusColor, setStatusColor] = useState("");
   const [deviceStatus, setDeviceStatus] = useState("");
@@ -121,42 +117,22 @@ export default function InvBox({
             Campus : {campus}
           </Typography>
           <Typography
+            paragraph
             className={"MuiTypography--subheading"}
             variant={"caption"}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              fontSize: 14,
-              fontFamily: "poppins-regular",
-            }}
-            // paragraph
+            sx={{fontSize: 14, fontFamily: "poppins-regular"}}
           >
-            Statut :
-            <Typography
-              className={"MuiTypography--subheading"}
-              variant={"caption"}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                fontSize: 14,
-                fontFamily: "poppins-semibold",
-                color: statusColor,
-                marginLeft: 0.5,
-              }}
-            >
-              {deviceStatus}
-            </Typography>
-            {/* <Box
-              sx={{
-                height: 10,
-                width: 10,
-                backgroundColor: statusColor,
-                borderRadius: 10,
-                marginLeft: 1,
-                boxShadow: "10 0 0 1px #fff",
-              }}
-            /> */}
+            Demandé par : Rui Gaspar
           </Typography>
+          <Typography
+            paragraph
+            className={"MuiTypography--subheading"}
+            variant={"caption"}
+            sx={{fontSize: 14, fontFamily: "poppins-regular"}}
+          >
+            Pour le : 12/12/2021
+          </Typography>
+
           <div
             style={{
               display: "flex",
@@ -170,46 +146,21 @@ export default function InvBox({
                 <AccessibilityNewIcon />
               </IconButton>
             )}
-            {admin && (
-              <>
-                <div>
-                  <Tooltip title="Plus d'options">
-                    <IconButton onClick={onMenuClick}>
-                      <MoreVertIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Menu
-                    id="basic-menu"
-                    anchorEl={anchorEl}
-                    open={isMenuOpen}
-                    onClose={onMenuClose}
-                  >
-                    <MenuItem
-                      onClick={onEditClick}
-                      style={{fontFamily: "poppins-regular"}}
-                    >
-                      <ModeEditIcon style={{marginRight: 5, width: 20}} />
-                      Modifier
-                    </MenuItem>
-                    <MenuItem
-                      onClick={onDeleteClick}
-                      style={{color: "#E44434", fontFamily: "poppins-regular"}}
-                    >
-                      <ClearIcon style={{marginRight: 5, width: 20}} />
-                      Supprimer
-                    </MenuItem>
-                  </Menu>
-                </div>
-              </>
-            )}
+            <>
+              <Tooltip title="Accepter la demande">
+                <IconButton onClick={acceptRequest}>
+                  <CheckIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Refuser la demande">
+                <IconButton onClick={refuseRequest}>
+                  <ClearIcon />
+                </IconButton>
+              </Tooltip>
+            </>
           </div>
         </CardContent>
       </Card>
     </div>
   );
 }
-
-// const WrappedApp = withStyles(styles)(InvBox);
-
-// const rootElement = document.getElementById("root");
-// ReactDOM.render(<WrappedApp />, rootElement);

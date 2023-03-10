@@ -57,7 +57,6 @@ export default function SideBarRequest({
           {
             startDate: selectDates[0].startDate,
             endDate: selectDates[0].endDate,
-            createdAt: new Date(),
           }
         ),
         {
