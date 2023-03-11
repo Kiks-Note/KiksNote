@@ -77,6 +77,36 @@ module.exports = (app, db, user) => {
     }
   });
 
+  app.put("/inventory/edit", async (req, res) => {
+    try {
+      const cells = req.body;
+
+      // Update each modified cell in Firestore
+      for (const cell of cells) {
+        console.log(cell.field, cell.value);
+        if (cell.status === "Disponible") {
+          cell.status = "available";
+        } else if (cell.status === "Indisponible") {
+          cell.status = "unavailable";
+        } else if (cell.status === "Enprunté") {
+          cell.status = "borrowed";
+        } else if (cell.status === "Demandé") {
+          cell.status = "requested";
+        }
+
+        const docRef = db.collection("inventory").doc(cell.id.toString());
+        await docRef.update({
+          [cell.field]: cell.value,
+        });
+      }
+
+      res.status(200).send("Document successfully updated!");
+    } catch (error) {
+      console.error(error);
+      res.status(500).send("Internal server error");
+    }
+  });
+
   app.delete("/inventory/delete/:deviceId", async (req, res) => {
     const {deviceId} = req.params;
 
@@ -129,7 +159,7 @@ module.exports = (app, db, user) => {
 
       await deviceRef.update({
         status: "borrowed",
-        lastRequestId: null,
+        // lastRequestId: null,
       });
 
       await requestRef.update({
@@ -186,6 +216,6 @@ module.exports = (app, db, user) => {
 
     const doc = await db.collection("inventory_requests").doc(requestId).get();
 
-    res.status(200).send(doc.data());
+    res.status(200).send({...doc.data(), id: doc.id});
   });
 };

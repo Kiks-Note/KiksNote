@@ -11,11 +11,13 @@ import SideBarRequest from "../../components/inventory/SideBarRequest";
 import userObj from "../../userObj";
 import AddIcon from "@mui/icons-material/Add";
 import AccessibilityNewRoundedIcon from "@mui/icons-material/AccessibilityNewRounded";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import "../../styles/inventoryGlobal.css";
 import {useNavigate} from "react-router-dom";
 import SideBarModify from "../../components/inventory/SideBarModify";
 import Snackbar from "../../components/inventory/CustomSnackBar";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
+
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
   const [openAdd, setOpenAdd] = useState(false);
@@ -178,6 +180,20 @@ function InventoryHome() {
                 onClick={() => navigate("/inventory/requests")}
               >
                 <AccessibilityNewRoundedIcon />
+              </Fab>
+            </Tooltip>
+            <Tooltip
+              title="Voir la liste de matériel"
+              aria-label="add"
+              sx={{marginBottom: "20px"}}
+              placement="left"
+            >
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={() => navigate("/inventory/devices")}
+              >
+                <FormatListNumberedIcon />
               </Fab>
             </Tooltip>
           </>

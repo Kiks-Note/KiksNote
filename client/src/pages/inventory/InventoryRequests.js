@@ -8,7 +8,7 @@ import {Rings} from "react-loader-spinner";
 import ClearIcon from "@mui/icons-material/Clear";
 import moment from "moment";
 
-export const InventoryRequests = () => {
+export default function InventoryRequests() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -188,4 +188,4 @@ export const InventoryRequests = () => {
       )}
     </div>
   );
-};
+}
