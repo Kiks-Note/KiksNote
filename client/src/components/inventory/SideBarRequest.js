@@ -55,8 +55,8 @@ export default function SideBarRequest({
         axios.put(
           `http://localhost:5050/inventory/makerequest/${category}/${deviceId}`,
           {
-            startDate: selectDates[0].startDate,
-            endDate: selectDates[0].endDate,
+            startDate: new Date(selectDates[0].startDate),
+            endDate: new Date(selectDates[0].endDate),
           }
         ),
         {
@@ -67,6 +67,7 @@ export default function SideBarRequest({
           success: (res) => {
             reloadData();
             toggleDrawerRequest(false);
+            console.log(res);
             return "Demande envoyée";
           },
           error: (err) => {
@@ -152,6 +153,7 @@ export default function SideBarRequest({
             moveRangeOnFirstSelection={false}
             ranges={selectDates}
             locale={locales.fr}
+            minDate={new Date()}
           />
 
           <Button

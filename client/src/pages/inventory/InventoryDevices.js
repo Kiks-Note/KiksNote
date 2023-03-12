@@ -1,10 +1,20 @@
-import {Box, Button, Typography} from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+} from "@mui/material";
 import {DataGrid, GridColDef} from "@mui/x-data-grid";
 import axios from "axios";
 import moment from "moment";
 import React, {useEffect, useState} from "react";
 import {toast, Toaster} from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
+import TestDataGrid from "../../components/TestDataGrid";
+import {TestTable} from "../../components/TestTable";
 
 export default function InventoryDevices() {
   const [data, setData] = useState([]);
@@ -167,15 +177,24 @@ export default function InventoryDevices() {
       width: 130,
       editable: admin && editMode,
       renderEditCell: (params) => (
-        <input
-          type="text"
+        <Select
+          fullWidth
+          style={{height: "100%", border: "none"}}
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
           value={changedValue}
+          displayEmpty
           onChange={(e) => {
             setChangedValue(e.target.value);
           }}
-          style={{width: "100%", height: "100%", border: "none"}}
-        />
+        >
+          <MenuItem value={"available"}>Disponible</MenuItem>
+          <MenuItem value={"unavailable"}>Indisponible</MenuItem>
+          <MenuItem value={"borrowed"}>Emprunté</MenuItem>
+          <MenuItem value={"requested"}>Demandé</MenuItem>
+        </Select>
       ),
+
       valueGetter: (params) => changedValueGetter(params),
     },
     {field: "requestID", headerName: "ID de la demande", width: 200},
@@ -249,7 +268,9 @@ export default function InventoryDevices() {
 
   return (
     <div>
-      <div
+      <TestTable />
+      {/* <TestDataGrid /> */}
+      {/* <div
         style={{
           display: "flex",
           justifyContent: "space-between",
@@ -331,7 +352,7 @@ export default function InventoryDevices() {
             onCellEditStop={(params) => handleCellEditStop(params)}
           />
         </Box>
-      )}
+      )} */}
     </div>
   );
 }

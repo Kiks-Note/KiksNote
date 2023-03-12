@@ -77,44 +77,55 @@ module.exports = (app, db, user) => {
     }
   });
 
-  app.put("/inventory/edit", async (req, res) => {
-    try {
-      const cells = req.body;
+  // app.put("/inventory/edit", async (req, res) => {
+  //   try {
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // });
 
-      // Update each modified cell in Firestore
-      for (const cell of cells) {
-        console.log(cell.field, cell.value);
-        if (cell.status === "Disponible") {
-          cell.status = "available";
-        } else if (cell.status === "Indisponible") {
-          cell.status = "unavailable";
-        } else if (cell.status === "Enprunté") {
-          cell.status = "borrowed";
-        } else if (cell.status === "Demandé") {
-          cell.status = "requested";
-        }
+  // app.delete("/inventory/delete/:deviceId", async (req, res) => {
+  //   const {deviceId} = req.params;
 
-        const docRef = db.collection("inventory").doc(cell.id.toString());
-        await docRef.update({
-          [cell.field]: cell.value,
-        });
-      }
+  //   try {
+  //     await db.collection("inventory").doc(deviceId).delete();
+  //     res.send("Document successfully deleted!");
+  //   } catch (err) {
+  //     res.send(err);
+  //   }
+  // });
 
-      res.status(200).send("Document successfully updated!");
-    } catch (error) {
-      console.error(error);
-      res.status(500).send("Internal server error");
-    }
-  });
-
-  app.delete("/inventory/delete/:deviceId", async (req, res) => {
+  app.put("/inventory/edit/:deviceId", async (req, res) => {
     const {deviceId} = req.params;
+    const {label, ref, category, campus, status, lastModifiedBy} = req.body;
+
+    let updatedStatus = status;
+    if (status === "Disponible") {
+      updatedStatus = "available";
+    } else if (status === "Emprunté") {
+      updatedStatus = "borrowed";
+    } else if (status === "En réparation") {
+      updatedStatus = "inrepair";
+    } else if (status === "Indisponible") {
+      updatedStatus = "unavailable";
+    } else if (status === "Demandé") {
+      updatedStatus = "requested";
+    }
 
     try {
-      await db.collection("inventory").doc(deviceId).delete();
-      res.send("Document successfully deleted!");
+      await db.collection("inventory").doc(deviceId).update({
+        label: label,
+        ref: ref,
+        category: category,
+        campus: campus,
+        status: updatedStatus,
+        lastModifiedBy: lastModifiedBy,
+        lastModifiedAt: new Date(),
+      });
+
+      res.send("Document successfully updated!");
     } catch (err) {
-      res.send(err);
+      console.log(err);
     }
   });
 
@@ -135,8 +146,8 @@ module.exports = (app, db, user) => {
 
       await requestRef.set({
         deviceId: deviceId,
-        startDate: startDate,
-        endDate: endDate,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
         createdAt: new Date(),
         requester: user.ref,
         status: "pending",
@@ -146,6 +157,19 @@ module.exports = (app, db, user) => {
     } catch (err) {
       res.send(err);
     }
+  });
+
+  app.get("/inventory/requests/:deviceId", async (req, res) => {
+    const {deviceId} = req.params;
+
+    const snapshot = await db
+      .collection("inventory_requests")
+      .where("deviceId", "==", deviceId)
+      .get();
+
+    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    res.status(200).send(documents);
   });
 
   app.put("/inventory/acceptrequest/:deviceId/:requestId", async (req, res) => {
@@ -215,7 +239,26 @@ module.exports = (app, db, user) => {
     const {requestId} = req.params;
 
     const doc = await db.collection("inventory_requests").doc(requestId).get();
-
+    // console.log(doc.data());
     res.status(200).send({...doc.data(), id: doc.id});
+  });
+
+  app.put("/inventory/request/:requestId", async (req, res) => {
+    const {requestId} = req.params;
+    const {returned, returnDate, admin} = req.body;
+
+    try {
+      const requestRef = await db
+        .collection("inventory_requests")
+        .doc(requestId);
+
+      await requestRef.update({
+        returned: startDate,
+        endDate: endDate,
+        admin: admin,
+      });
+    } catch (err) {
+      res.send(err);
+    }
   });
 };

@@ -7,6 +7,8 @@ import {toast, Toaster} from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
 import ClearIcon from "@mui/icons-material/Clear";
 import moment from "moment";
+import "moment/locale/fr";
+import timeConverter from "../../functions/TimeConverter";
 
 export default function InventoryRequests() {
   const [requests, setRequests] = useState([]);
@@ -141,15 +143,19 @@ export default function InventoryRequests() {
                         category: request._device.category,
                         campus: request._device.campus,
                         requester: request._request.requester,
+                        createdAt: moment(
+                          timeConverter(request._request.createdAt)
+                        ).format("DD.MM.YYYY"),
+
                         date: request._request
-                          ? moment(request._request.startDate).format(
-                              "DD/MM/YYYY"
-                            )
+                          ? moment(
+                              timeConverter(request._request.startDate)
+                            ).format("DD.MM.YYYY")
                           : "",
                         fin: request._request
-                          ? moment(request._request.endDate).format(
-                              "DD/MM/YYYY"
-                            )
+                          ? moment(
+                              timeConverter(request._request.endDate)
+                            ).format("DD.MM.YYYY")
                           : "",
                       };
                     })
@@ -168,6 +174,7 @@ export default function InventoryRequests() {
                 width: 250,
                 resizable: true,
               },
+              {field: "createdAt", headerName: "Créé le", width: 130},
               {field: "date", headerName: "Pour le", width: 130},
               {field: "fin", headerName: "Fin le", width: 130},
 
