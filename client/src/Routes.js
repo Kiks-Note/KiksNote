@@ -5,6 +5,7 @@ import Navbar from "./components/navbar/Navbar";
 import InventoryHome from "./pages/inventory/InventoryHome";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import InventoryDevices from "./pages/inventory/InventoryDevices";
+import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
 
 function RoutesProvider() {
   return (
@@ -16,6 +17,10 @@ function RoutesProvider() {
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
           <Route path="/inventory/devices" element={<InventoryDevices />} />
+          <Route
+            path="/inventory/admin/dashboard"
+            element={<InventoryAdminDashboard />}
+          />
         </Route>
       </Routes>
     </BrowserRouter>

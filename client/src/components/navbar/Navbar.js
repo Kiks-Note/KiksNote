@@ -127,7 +127,7 @@ export default function MiniDrawer({element}) {
               <ListItemButton
                 sx={{
                   minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
+                  justifyContent: "center",
                   px: 2.5,
                 }}
               >
@@ -245,7 +245,10 @@ export default function MiniDrawer({element}) {
           ))}
         </List>
       </Drawer>
-      <Box component="main" sx={{flexGrow: 1, p: 3}}>
+      <Box
+        component="main"
+        sx={{flexGrow: 1, p: 3, backgroundColor: "#1A2035"}}
+      >
         <>{element}</>
       </Box>
     </Box>

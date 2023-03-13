@@ -19,6 +19,7 @@ import {useEffect, useState} from "react";
 import {Rings} from "react-loader-spinner";
 import "../../App.css";
 import timeConverter from "../../functions/TimeConverter";
+import {toast} from "react-hot-toast";
 
 export default function SideBarModifyRequest({
   open,
@@ -57,13 +58,13 @@ export default function SideBarModifyRequest({
   const handleModify = async () => {
     toast.promise(
       axios.put(`http://localhost:5050/inventory/request/${requestId}`, {
-        label,
-        reference,
-        category,
-        campus,
-        status,
-        image,
-        lastModifiedBy: "admin",
+        // label,
+        // reference,
+        // category,
+        // campus,
+        // status,
+        // image,
+        // lastModifiedBy: "admin",
       }),
       {
         success: () => {
