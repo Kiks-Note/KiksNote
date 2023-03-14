@@ -19,6 +19,7 @@ import BallotIcon from "@mui/icons-material/Ballot";
 import {Link, useNavigate} from "react-router-dom";
 import Person2Icon from "@mui/icons-material/Person2";
 import InventoryIcon from "@mui/icons-material/Inventory";
+import {Box} from "@mui/system";
 
 let drawerWidth = "15.625rem";
 const drawerHeight = 1000;
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     width: 300,
     zIndex: 1000,
-    backgroundColor: "rgb(31, 40, 62)",
+    backgroundColor: "#1A2027",
     boxShadow: "rgb(0 0 0 / 5%) 0rem 1.25rem 1.6875rem 0rem",
     display: "block",
     flexShrink: 0,
@@ -110,7 +111,7 @@ function FloatingSidebar({element}) {
         height: "100%",
         display: "flex",
         padding: 10,
-        backgroundColor: "rgb(26, 32, 53)",
+        backgroundColor: "#11151a",
       }}
     >
       <div
@@ -215,20 +216,20 @@ function FloatingSidebar({element}) {
         </List>
       </div>
 
-      <div
+      <Box
         style={{
           width: "100%",
-          height: "100%",
+          // height: "100%",
           display: "flex",
           flexDirection: "column",
+          backgroundColor: "#11151a",
           padding: 10,
-          backgroundColor: "rgb(26, 32, 53)",
           marginLeft: open ? "16.85rem" : 85,
           transition: "margin-left 0.5s",
         }}
       >
         {element}
-      </div>
+      </Box>
     </div>
   );
 }

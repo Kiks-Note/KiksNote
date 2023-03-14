@@ -8,3 +8,59 @@
   bottom: 0px;
   right: 20px;
 }
+
+/* SideBarModify */
+.inputLabel {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+
+.input {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+
+#demo-simple-select {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+
+#demo-simple-select-label {
+  border-color: #ffffff !important;
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+
+.MuiMenu-list {
+  background-color: #11151a !important;
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+
+.MuiMenuItem-root {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+  margin: 10px !important;
+}
+
+.MuiMenuItem-root:hover {
+  background-color: #ffffff !important;
+  color: #11151a !important;
+  margin: 10px !important;
+  border-radius: 10px !important;
+}
+
+.Mui-selected {
+  background-color: #1a2027 !important;
+  color: #ffffff !important;
+  margin: 10px !important;
+  border-radius: 10px !important;
+}
+
+.MuiDrawer-paper {
+  background-color: #1a2027 !important;
+  font-family: "poppins-regular" !important;
+}

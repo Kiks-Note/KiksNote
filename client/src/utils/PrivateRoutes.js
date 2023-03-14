@@ -6,11 +6,7 @@ import MiniDrawer from "../components/navbar/Navbar";
 function PrivateRoutes() {
   let auth = true;
 
-  return auth ? (
-    <FloatingSidebar element={<Outlet />} />
-  ) : (
-    <Navigate to="/login" />
-  );
+  return auth ? <MiniDrawer element={<Outlet />} /> : <Navigate to="/login" />;
 }
 
 export default PrivateRoutes;

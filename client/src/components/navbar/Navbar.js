@@ -1,35 +1,37 @@
-import * as React from "react";
-import {styled} from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import MuiDrawer from "@mui/material/Drawer";
-import List from "@mui/material/List";
-import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import BallotIcon from "@mui/icons-material/Ballot";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import HomeIcon from "@mui/icons-material/Home";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import Person2Icon from "@mui/icons-material/Person2";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import MuiDrawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
+import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import Person2Icon from "@mui/icons-material/Person2";
-import Link from "@mui/material/Link";
+import {styled} from "@mui/material/styles";
 import PropTypes from "prop-types";
-import HomeIcon from "@mui/icons-material/Home";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
-import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import BallotIcon from "@mui/icons-material/Ballot";
-import userObj from "../../userObj";
+import * as React from "react";
 import {useNavigate} from "react-router-dom";
-import InventoryIcon from "@mui/icons-material/Inventory";
+import userObj from "../../userObj";
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
+  backgroundColor: "#1A2027",
+  margin: 15,
+  borderRadius: 15,
+  height: "97%",
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
+    duration: 400,
   }),
   overflowX: "hidden",
 });
@@ -37,10 +39,14 @@ const openedMixin = (theme) => ({
 const closedMixin = (theme) => ({
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
+    duration: 400,
   }),
+  margin: 15,
+  borderRadius: 15,
+  backgroundColor: "#1A2027",
   overflowX: "hidden",
-  width: `calc(${theme.spacing(7)} + 1px)`,
+  // width: `calc(${theme.spacing(7)} + 1px)`,
+  height: "97%",
   [theme.breakpoints.up("sm")]: {
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
@@ -50,6 +56,7 @@ const DrawerHeader = styled("div")(({theme}) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-end",
+  backgroundColor: "#1A2027",
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
@@ -62,6 +69,8 @@ const Drawer = styled(MuiDrawer, {
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
+  borderRadius: 15,
+  backgroundColor: "#1A2027",
   ...(open && {
     ...openedMixin(theme),
     "& .MuiDrawer-paper": openedMixin(theme),
@@ -73,16 +82,41 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 const userRoutes = [
-  {id: 1, name: "Accueil", route: "#", icon: <HomeIcon />},
-  {id: 2, name: "Agile", route: "#", icon: <BallotIcon />},
-  {id: 3, name: "Profile", route: "#", icon: <Person2Icon />},
-  {id: 4, name: "Board", route: "#", icon: <DashboardIcon />},
-  {id: 5, name: "Blog", route: "#", icon: <AlternateEmailIcon />},
+  {
+    id: 1,
+    name: "Accueil",
+    route: "#",
+    icon: <HomeIcon style={{color: "white"}} />,
+  },
+  {
+    id: 2,
+    name: "Agile",
+    route: "#",
+    icon: <BallotIcon style={{color: "white"}} />,
+  },
+  {
+    id: 3,
+    name: "Profile",
+    route: "#",
+    icon: <Person2Icon style={{color: "white"}} />,
+  },
+  {
+    id: 4,
+    name: "Board",
+    route: "#",
+    icon: <DashboardIcon style={{color: "white"}} />,
+  },
+  {
+    id: 5,
+    name: "Blog",
+    route: "#",
+    icon: <AlternateEmailIcon style={{color: "white"}} />,
+  },
   {
     id: 6,
     name: "Inventaire",
     route: "/inventory",
-    icon: <InventoryIcon />,
+    icon: <InventoryIcon style={{color: "white"}} />,
   },
 ];
 
@@ -100,7 +134,14 @@ export default function MiniDrawer({element}) {
   };
 
   return (
-    <Box sx={{display: "flex"}}>
+    <Box
+      sx={{
+        display: "flex",
+        backgroundColor: "#11151a",
+        minHeight: "100vh",
+        // width: "100%",
+      }}
+    >
       {/* <CssBaseline /> */}
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
@@ -109,11 +150,26 @@ export default function MiniDrawer({element}) {
               sx={{
                 transform: open ? "rotate(0deg)" : "rotate(180deg)",
                 transition: "transform 0.3s ease-in-out",
+                color: "white",
               }}
             />
           </IconButton>
         </DrawerHeader>
-        <Divider />
+        <Divider
+          sx={{
+            backgroundColor: "transparent",
+            flexShrink: 0,
+            borderTop: "0px solid rgba(255, 255, 255, 0.12)",
+            borderRight: "0px solid rgba(255, 255, 255, 0.12)",
+            borderLeft: "0px solid rgba(255, 255, 255, 0.12)",
+            borderBottom: "none",
+            height: "0.0625rem",
+            margin: "1rem 0",
+            opacity: 0.25,
+            backgroundImage:
+              "linear-gradient(to right, rgba(52, 71, 103, 0), rgb(255, 255, 255), rgba(52, 71, 103, 0)) !important",
+          }}
+        />
         <List>
           {userRoutes.map((page) => (
             <ListItem
@@ -134,7 +190,8 @@ export default function MiniDrawer({element}) {
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : "auto",
+                    mr: open ? 3 : 0,
+                    transition: "all 0.3s ease-in-out",
                     justifyContent: "center",
                   }}
                 >
@@ -143,68 +200,32 @@ export default function MiniDrawer({element}) {
 
                 <ListItemText
                   primary={
-                    <Link underline="none" color="dark">
+                    <Link
+                      underline="none"
+                      style={{
+                        color: "white",
+                        fontFamily: "poppins-regular",
+                        fontSize: 16,
+                        textDecoration: "none",
+                        opacity: open ? 1 : 0,
+                        transition: "all 0.3s ease-in-out",
+                      }}
+                    >
                       {page.name}
                     </Link>
                   }
-                  sx={{opacity: open ? 1 : 0}}
+                  sx={{
+                    opacity: open ? 1 : 0,
+                    // transition: "opacity 0.3s ease-in-out",
+                    color: "white",
+                  }}
                 />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
         <Divider />
-        {/* {user.admin && (
-          <>
-            <List>
-              {[
-                {
-                  id: 1,
-                  name: "Demandes Inventaire",
-                  route: "/inventory/requests",
-                  icon: <InventoryIcon />,
-                },
-              ].map((page) => (
-                <ListItem
-                  onClick={() => {
-                    navigate(page.route);
-                  }}
-                  key={page.id}
-                  disablePadding
-                  sx={{display: "block"}}
-                >
-                  <ListItemButton
-                    sx={{
-                      minHeight: 48,
-                      justifyContent: open ? "initial" : "center",
-                      px: 2.5,
-                    }}
-                  >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        mr: open ? 3 : "auto",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {page.icon}
-                    </ListItemIcon>
 
-                    <ListItemText
-                      primary={
-                        <Link underline="none" color="dark">
-                          {page.name}
-                        </Link>
-                      }
-                      sx={{opacity: open ? 1 : 0}}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ))}
-            </List>
-            <Divider />
-          </>
-        )} */}
         {/* Information for List to Logout */}
         <List>
           {[
@@ -212,43 +233,63 @@ export default function MiniDrawer({element}) {
               id: 1,
               name: "Déconnexion",
               route: "#",
-              icon: <LogoutOutlinedIcon />,
+              icon: <LogoutOutlinedIcon style={{color: "white"}} />,
             },
           ].map((page) => (
-            <ListItem key={page.id} disablePadding sx={{display: "block"}}>
+            <ListItem
+              onClick={() => {
+                navigate(page.route, {replace: true});
+              }}
+              key={page.id}
+              disablePadding
+              sx={{display: "block"}}
+            >
               <ListItemButton
                 sx={{
                   minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
+                  justifyContent: "center",
                   px: 2.5,
                 }}
               >
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : "auto",
+                    mr: open ? 3 : 0,
+                    transition: "all 0.3s ease-in-out",
                     justifyContent: "center",
                   }}
                 >
                   {page.icon}
                 </ListItemIcon>
+
                 <ListItemText
                   primary={
-                    <Link href={page.route} underline="none" color="dark">
+                    <Link
+                      underline="none"
+                      style={{
+                        color: "white",
+                        fontFamily: "poppins-regular",
+                        fontSize: 16,
+                        textDecoration: "none",
+                        opacity: open ? 1 : 0,
+                        transition: "all 0.3s ease-in-out",
+                      }}
+                    >
                       {page.name}
                     </Link>
                   }
-                  sx={{opacity: open ? 1 : 0}}
+                  sx={{
+                    opacity: open ? 1 : 0,
+                    // transition: "opacity 0.3s ease-in-out",
+                    color: "white",
+                  }}
                 />
               </ListItemButton>
             </ListItem>
           ))}
         </List>
       </Drawer>
-      <Box
-        component="main"
-        sx={{flexGrow: 1, p: 3, backgroundColor: "#1A2035"}}
-      >
+      <Box component="main" sx={{flexGrow: 1, p: 3}}>
         <>{element}</>
       </Box>
     </Box>

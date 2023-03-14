@@ -13,20 +13,6 @@ export default function CustomSnackbar({
   onClickCheck,
   onClickClose,
 }) {
-  //   const [open, setOpen] = React.useState(false);
-
-  //   const handleClick = () => {
-  //     setOpen(true);
-  //   };
-
-  //   const handleClose = (event, reason) => {
-  //     if (reason === "clickaway") {
-  //       return;
-  //     }
-
-  //     setOpen(false);
-  //   };
-
   const action = (
     <React.Fragment>
       <IconButton
@@ -34,7 +20,7 @@ export default function CustomSnackbar({
         onClick={onClickCheck}
         className="snackbar-button-green"
       >
-        <CheckIcon fontSize="small" />
+        <CheckIcon fontSize="medium" />
       </IconButton>
       <IconButton
         size="small"
@@ -42,7 +28,7 @@ export default function CustomSnackbar({
         onClick={onClickClose}
         className="snackbar-button-red"
       >
-        <CloseIcon fontSize="small" />
+        <CloseIcon fontSize="medium" />
       </IconButton>
     </React.Fragment>
   );

@@ -1,4 +1,4 @@
-module.exports = (app, db, user) => {
+module.exports = (app, db, user, ws) => {
   app.get("/inventory", async (req, res) => {
     const docRef = db.collection("inventory");
     const snapshot = await docRef.orderBy("createdAt").get();
@@ -84,16 +84,16 @@ module.exports = (app, db, user) => {
   //   }
   // });
 
-  // app.delete("/inventory/delete/:deviceId", async (req, res) => {
-  //   const {deviceId} = req.params;
+  app.delete("/inventory/delete/:deviceId", async (req, res) => {
+    const {deviceId} = req.params;
 
-  //   try {
-  //     await db.collection("inventory").doc(deviceId).delete();
-  //     res.send("Document successfully deleted!");
-  //   } catch (err) {
-  //     res.send(err);
-  //   }
-  // });
+    try {
+      await db.collection("inventory").doc(deviceId).delete();
+      res.send("Document successfully deleted!");
+    } catch (err) {
+      res.send(err);
+    }
+  });
 
   app.put("/inventory/edit/:deviceId", async (req, res) => {
     const {deviceId} = req.params;
@@ -260,5 +260,30 @@ module.exports = (app, db, user) => {
     } catch (err) {
       res.send(err);
     }
+  });
+
+  ws.on("request", function (request) {
+    const connection = request.accept(null, request.origin);
+
+    connection
+      ? console.log("WebSocket admin inventory open")
+      : console.log("error");
+
+    db.collection("inventory").onSnapshot(
+      (snapshot) => {
+        const documents = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        connection.sendUTF(JSON.stringify(documents));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
+
+    connection.on("close", function () {
+      console.log("WebSocket admin inventory closed");
+    });
   });
 };

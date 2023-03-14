@@ -3,6 +3,9 @@ const cors = require("cors");
 const app = express();
 const {db} = require("./firebase");
 const bodyParser = require("body-parser");
+const webSocketServer = require("websocket").server;
+const http = require("http");
+const PORT = process.env.PORT || 5050;
 
 const user = {
   firstname: "Rui",
@@ -13,6 +16,14 @@ const user = {
   admin: false,
   ref: "/users/ruigaspar@hotmail.com",
 };
+
+const server = http.createServer(app);
+server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+
+const ws = new webSocketServer({
+  httpServer: server,
+  autoAcceptConnections: false,
+});
 
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -33,8 +44,6 @@ app.use(
 );
 app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 5050;
+require("./inventory")(app, db, user, ws);
 
-require("./inventory")(app, db, user);
-
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

@@ -15,23 +15,23 @@ import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import axios from "axios";
 import * as React from "react";
 import {useEffect, useState} from "react";
-import {DateRange} from "react-date-range";
-import "react-date-range/dist/styles.css"; // main css file
-import "react-date-range/dist/theme/default.css"; // theme css file
 import toast from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
-import * as locales from "react-date-range/dist/locale";
+import styled from "styled-components";
+import theme from "../../theme";
+import "../../styles/inventoryGlobal.css";
 
 export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
   // const [device, setDevice] = useState({});
   const [loading, setLoading] = useState(true);
-  const [categories, setCategories] = useState([]);
+  // const [categories, setCategories] = useState([]);
   const [label, setLabel] = useState("");
   const [reference, setReference] = useState("");
   const [campus, setCampus] = useState(null);
   const [category, setCategory] = useState(null);
   const [status, setStatus] = useState(null);
   const [image, setImage] = useState("");
+  const [data, setData] = useState([]);
   const [selectDates, setSelectedDates] = useState([
     {
       startDate: new Date(),
@@ -53,25 +53,28 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
             setStatus(res.data.status);
             setImage(res.data.image);
             setLoading(false);
+            setData(res.data);
           })
           .catch((err) => {
             console.log(err);
           });
       })();
-    console.log(deviceId);
-  }, [open === true]);
-
-  useEffect(() => {
-    open === true &&
-      (async () => {
-        await axios.get("http://localhost:5050/categories").then((res) => {
-          setCategories(res.data);
-          setLoading(false);
-        });
-      })();
   }, [open === true]);
 
   const handleModify = async () => {
+    if (!label || !reference || !category || !campus || !status || !image) {
+      return toast.error("Veuillez remplir tous les champs");
+    } else if (
+      label === data.label &&
+      reference === data.ref &&
+      category === data.category &&
+      campus === data.campus &&
+      status === data.status &&
+      image === data.image
+    ) {
+      return toast.error("Aucune modification n'a été effectuée");
+    }
+
     toast.promise(
       axios.put(`http://localhost:5050/inventory/modify/${deviceId}`, {
         label,
@@ -108,14 +111,27 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
         alignItems: "center",
         display: "flex",
         flexDirection: "column",
+        backgroundColor: theme.colors.components.dark,
       }}
       role="presentation"
     >
-      <Typography variant="h5" sx={{marginBottom: 2}}>
+      <Typography
+        variant="h6"
+        sx={{
+          marginBottom: 4,
+          color: theme.colors.components.light,
+          fontFamily: theme.fonts.regular,
+        }}
+      >
         Modification de matériel
       </Typography>
       <IconButton
-        sx={{position: "absolute", top: 12, right: 0}}
+        sx={{
+          position: "absolute",
+          top: 12,
+          right: 5,
+          color: theme.colors.components.light,
+        }}
         onClick={(e) => {
           toggleDrawerModify(e, false);
         }}
@@ -133,6 +149,8 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
             value={label}
             onChange={(e) => setLabel(e.target.value)}
             fullWidth
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
           />
           <TextField
             sx={{marginBottom: 2}}
@@ -143,27 +161,22 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
             value={reference}
             onChange={(e) => setReference(e.target.value)}
             fullWidth
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
           />
 
-          <FormControl sx={{marginBottom: 2}} fullWidth>
-            <InputLabel id="demo-simple-select-label">Catégorie</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={category ? category : ""}
-              label="Catégorie"
-              onChange={(e) => setCategory(e.target.value)}
-              name="category"
-            >
-              {!loading &&
-                categories.map((item, index) => (
-                  <MenuItem key={index} value={item.label}>
-                    {item.label}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
-
+          <TextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
+            name="category"
+            label="Campus"
+            value={category ? category : ""}
+            onChange={(e) => setCategory(e.target.value)}
+            fullWidth
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
+          />
           <TextField
             sx={{marginBottom: 2}}
             id="outlined-search"
@@ -173,6 +186,8 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
             value={campus}
             onChange={(e) => setCampus(e.target.value)}
             fullWidth
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
           />
           <FormControl sx={{marginBottom: 2}} fullWidth>
             <InputLabel id="demo-simple-select-label">Statut</InputLabel>
@@ -198,13 +213,20 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
             value={image}
             onChange={(e) => setImage(e.target.value)}
             fullWidth
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
           />
           {image && (
             <>
               <Typography
                 variant="subtitle2"
                 color={"text.secondary"}
-                sx={{alignSelf: "flex-start", marginBottom: 2}}
+                sx={{
+                  alignSelf: "flex-start",
+                  marginBottom: 2,
+                  fontFamily: theme.fonts.regular,
+                  color: theme.colors.components.light,
+                }}
               >
                 Aperçu de l'image :
               </Typography>

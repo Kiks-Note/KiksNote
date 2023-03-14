@@ -121,11 +121,7 @@ function InventoryHome() {
   };
 
   return (
-    <div
-      style={{
-        height: "110vh",
-      }}
-    >
+    <div>
       <ModalForm
         open={openAdd}
         toggleDrawerAdd={toggleDrawerAdd}
