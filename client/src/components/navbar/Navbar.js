@@ -21,7 +21,8 @@ import PropTypes from "prop-types";
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
 import userObj from "../../userObj";
-const drawerWidth = 240;
+const drawerWidth = 275;
+const admin = true;
 
 const openedMixin = (theme) => ({
   width: drawerWidth,
@@ -117,6 +118,15 @@ const userRoutes = [
     name: "Inventaire",
     route: "/inventory",
     icon: <InventoryIcon style={{color: "white"}} />,
+  },
+];
+
+const adminRoutes = [
+  {
+    id: 1,
+    name: "Inventaire Dashboard",
+    route: "/inventory/admin/dashboard",
+    icon: <DashboardIcon style={{color: "white"}} />,
   },
 ];
 
@@ -224,7 +234,94 @@ export default function MiniDrawer({element}) {
             </ListItem>
           ))}
         </List>
-        <Divider />
+        {admin && (
+          <>
+            <Divider
+              sx={{
+                backgroundColor: "transparent",
+                flexShrink: 0,
+                borderTop: "0px solid rgba(255, 255, 255, 0.12)",
+                borderRight: "0px solid rgba(255, 255, 255, 0.12)",
+                borderLeft: "0px solid rgba(255, 255, 255, 0.12)",
+                borderBottom: "none",
+                height: "0.0625rem",
+                margin: "0.5rem 0",
+                opacity: 0.25,
+                backgroundImage:
+                  "linear-gradient(to right, rgba(52, 71, 103, 0), rgb(255, 255, 255), rgba(52, 71, 103, 0)) !important",
+              }}
+            />
+            <List>
+              {adminRoutes.map((page) => (
+                <ListItem
+                  onClick={() => {
+                    navigate(page.route, {replace: true});
+                  }}
+                  key={page.id}
+                  disablePadding
+                  sx={{display: "block"}}
+                >
+                  <ListItemButton
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: "center",
+                      px: 2.5,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : 0,
+                        transition: "all 0.3s ease-in-out",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {page.icon}
+                    </ListItemIcon>
+
+                    <ListItemText
+                      primary={
+                        <Link
+                          underline="none"
+                          style={{
+                            color: "white",
+                            fontFamily: "poppins-regular",
+                            fontSize: 16,
+                            textDecoration: "none",
+                            opacity: open ? 1 : 0,
+                            transition: "all 0.3s ease-in-out",
+                          }}
+                        >
+                          {page.name}
+                        </Link>
+                      }
+                      sx={{
+                        opacity: open ? 1 : 0,
+                        // transition: "opacity 0.3s ease-in-out",
+                        color: "white",
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </List>
+          </>
+        )}
+        <Divider
+          sx={{
+            backgroundColor: "transparent",
+            flexShrink: 0,
+            borderTop: "0px solid rgba(255, 255, 255, 0.12)",
+            borderRight: "0px solid rgba(255, 255, 255, 0.12)",
+            borderLeft: "0px solid rgba(255, 255, 255, 0.12)",
+            borderBottom: "none",
+            height: "0.0625rem",
+            margin: "0.5rem 0",
+            opacity: 0.25,
+            backgroundImage:
+              "linear-gradient(to right, rgba(52, 71, 103, 0), rgb(255, 255, 255), rgba(52, 71, 103, 0)) !important",
+          }}
+        />
 
         {/* Information for List to Logout */}
         <List>

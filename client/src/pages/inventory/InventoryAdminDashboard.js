@@ -1,13 +1,16 @@
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
+  Box,
   Container,
   Grid,
+  IconButton,
   styled,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
@@ -110,7 +113,7 @@ const InventoryAdminDashboard = () => {
           columnSpacing={{xs: 1, sm: 2, md: 3}}
           direction="row"
         >
-          <Grid item xs={12} md={12} lg={6}>
+          <Grid item xs={12} md={12} lg={6} sx={{mt: 2.5}}>
             <Item
               style={{
                 backgroundColor: "#1A2027",
@@ -118,6 +121,38 @@ const InventoryAdminDashboard = () => {
                 boxShadow: "0px 5px 10px 0px rgba(0,0,0,0.26)",
               }}
             >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#11151a",
+                  height: 50,
+                  borderRadius: 5,
+                  px: 2,
+                  width: "40%",
+                  position: "relative",
+                  top: -40,
+                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "poppins-semibold",
+                    color: "#fff",
+                    fontSize: 18,
+                  }}
+                >
+                  Liste des appareils
+                </Typography>
+                <Tooltip title="Voir plus" placement="top" arrow>
+                  <IconButton
+                    sx={{color: "#fff", cursor: "pointer", padding: 0}}
+                  >
+                    <VisibilityIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -220,7 +255,7 @@ const InventoryAdminDashboard = () => {
               </Table>
             </Item>
           </Grid>
-          <Grid item xs={12} md={12} lg={6}>
+          <Grid item xs={12} md={12} lg={6} sx={{mt: 2.5}}>
             <Item
               style={{
                 backgroundColor: "#1A2027",
@@ -228,6 +263,38 @@ const InventoryAdminDashboard = () => {
                 minHeight: 450,
               }}
             >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#11151a",
+                  height: 50,
+                  borderRadius: 5,
+                  px: 2,
+                  width: "40%",
+                  position: "relative",
+                  top: -40,
+                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "poppins-semibold",
+                    color: "#fff",
+                    fontSize: 18,
+                  }}
+                >
+                  Demandes d'emprunt
+                </Typography>
+                <Tooltip title="Voir plus" placement="top" arrow>
+                  <IconButton
+                    sx={{color: "#fff", cursor: "pointer", padding: 0}}
+                  >
+                    <VisibilityIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -326,7 +393,7 @@ const InventoryAdminDashboard = () => {
               </Table>
             </Item>
           </Grid>
-          <Grid item xs={12} md={12} lg={6}>
+          <Grid item xs={12} md={12} lg={6} sx={{mt: 2.5}}>
             <Item
               style={{
                 backgroundColor: "#1A2027",
@@ -334,6 +401,38 @@ const InventoryAdminDashboard = () => {
                 minHeight: 450,
               }}
             >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#11151a",
+                  height: 50,
+                  borderRadius: 5,
+                  px: 2,
+                  width: "40%",
+                  position: "relative",
+                  top: -40,
+                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "poppins-semibold",
+                    color: "#fff",
+                    fontSize: 18,
+                  }}
+                >
+                  Appareils empruntés
+                </Typography>
+                <Tooltip title="Voir plus" placement="top" arrow>
+                  <IconButton
+                    sx={{color: "#fff", cursor: "pointer", padding: 0}}
+                  >
+                    <VisibilityIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -432,7 +531,7 @@ const InventoryAdminDashboard = () => {
               </Table>
             </Item>
           </Grid>
-          <Grid item xs={12} md={12} lg={6}>
+          <Grid item xs={12} md={12} lg={6} sx={{mt: 2.5}}>
             <Item
               style={{
                 minHeight: 450,
@@ -440,6 +539,38 @@ const InventoryAdminDashboard = () => {
                 boxShadow: "0px 5px 10px 0px rgba(0,0,0,0.26)",
               }}
             >
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  backgroundColor: "#11151a",
+                  height: 50,
+                  borderRadius: 5,
+                  px: 2,
+                  width: "40%",
+                  position: "relative",
+                  top: -40,
+                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                }}
+              >
+                <Typography
+                  sx={{
+                    fontFamily: "poppins-semibold",
+                    color: "#fff",
+                    fontSize: 18,
+                  }}
+                >
+                  Suggestions
+                </Typography>
+                <Tooltip title="Voir plus" placement="top" arrow>
+                  <IconButton
+                    sx={{color: "#fff", cursor: "pointer", padding: 0}}
+                  >
+                    <VisibilityIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
               <Typography
                 variant="h6"
                 sx={{color: "black", fontFamily: "poppins-semibold"}}
