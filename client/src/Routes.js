@@ -5,6 +5,7 @@ import Navbar from "./components/navbar/Navbar";
 
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
+import Login from "./pages/login/Login.js";
 
 function RoutesProvider() {
     return (
@@ -12,7 +13,7 @@ function RoutesProvider() {
             <Routes>
                 {/* EXAMPLES */}
 
-                {/* <Route path="/login" element={<Login />} /> */}
+                <Route path="/login" element={<Login />} />
                 {/* <Route path="/register" element={<Register />} /> */}
                 {/* To Use the Navbar change Test by your page
                 <Route path="/test" element={<Navbar element={<Test />} />} /> */}
