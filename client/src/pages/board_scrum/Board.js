@@ -16,6 +16,13 @@ const style = {
   p: 4,
 };
 
+const LabelList = [
+  { name: "Feature", color: "#E6BE65" },
+  { name: "Urgent", color: "#FF0000" },
+  { name: "Fix", color: "#6c25be" },
+  { name: "Documentation", color: "#2596be" },
+];
+
 const stories = [
   {
     id: "1",
@@ -54,41 +61,49 @@ const tasks = [
     id: "6",
     name: "Exemple avec un titre de carte très long pour voir si c'est moche... Finalement ça rend plutôt bien meme avec un titre de carte très long",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    labels: ["documentation", "urgent"],
   },
   {
     id: "7",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    labels: ["feature", "urgent"],
   },
   {
     id: "8",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    labels: ["documentation", "fix"],
   },
   {
     id: "9",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    labels: ["documentation"],
   },
   {
     id: "10",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    labels: ["feature", "urgent"],
   },
   {
     id: "11",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    labels: ["fix"],
   },
   {
     id: "12",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    labels: ["feature", "urgent"],
   },
   {
     id: "13",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
+    labels: ["feature"],
   },
 ];
 
@@ -229,10 +244,11 @@ function App() {
                                       }}
                                     >
                                       <BoardCard
+                                        labelList={LabelList}
                                         card_info={item}
                                         snapshot={snapshot}
-                                        label={label}
                                         list_name={column.name}
+                                        label={label}
                                       ></BoardCard>
                                     </div>
                                   );

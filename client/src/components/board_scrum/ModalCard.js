@@ -23,6 +23,31 @@ export default function BoardCard(props) {
 
   const info = props.card_info;
 
+  var Labels = null;
+
+  var Label = null;
+
+  if (info.labels != null) {
+    Label = info.labels.map((label) => {
+      for (const labelProps of props.labelList) {
+        if (labelProps.name.toLowerCase() == label.toLowerCase()) {
+          return labelProps;
+        }
+      }
+    });
+
+    Labels = Label.map((label) => (
+      <Chip
+        label={props.label ? label.name : ""}
+        style={{
+          backgroundColor: label.color,
+          height: "2vh",
+          margin: "2px",
+        }}
+      />
+    ));
+  }
+
   return (
     <div
       style={{
@@ -41,22 +66,7 @@ export default function BoardCard(props) {
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
           <div>
-            <Chip
-              label={props.label ? "Feature" : ""}
-              style={{
-                backgroundColor: "#E6BE65",
-                height: "2vh",
-                margin: "2px",
-              }}
-            />
-            <Chip
-              label={props.label ? "Urgent" : ""}
-              style={{
-                backgroundColor: "#FF0000",
-                height: "2vh",
-                margin: "2px",
-              }}
-            />
+            {Labels}
             <p
               style={{
                 fontSize: "90%",
@@ -81,7 +91,7 @@ export default function BoardCard(props) {
       ></InfoIcon>
 
       <Modal open={states.open} onClose={handleClose}>
-        <BoardModal info={info} list_name={props.list_name}></BoardModal>
+        <BoardModal info={info} list_name={props.list_name} Label={Label}></BoardModal>
       </Modal>
     </div>
   );

@@ -14,7 +14,6 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import BallotIcon from "@mui/icons-material/Ballot";
 import CircleIcon from "@mui/icons-material/Circle";
-import { red } from "@mui/material/colors";
 
 export default function boardModal(props) {
   const style = {
@@ -44,33 +43,32 @@ export default function boardModal(props) {
     margin: "0 0 0 2vh",
   };
 
-  const label = [
-    { name: "Feature", color: "#E6BE65" },
-    { name: "Urgent", color: "#FF0000" },
-  ];
+  var Labels = null;
 
-  const Labels = label.map((label) => (
-    <div
-      style={{
-        display: "flex",
-        backgroundColor: label.color + "A6",
-        borderColor: label.color,
-        borderStyle: "solid",
-        borderRadius: "3px",
-        marginRight: "5px",
-        fontSize: "medium",
-        padding: "3px",
-        marginBottom: "5%",
-      }}
-    >
-      <CircleIcon
+  if (props.Label != null) {
+    Labels = props.Label.map((label) => (
+      <div
         style={{
-          color: label.color,
+          display: "flex",
+          backgroundColor: label.color + "A6",
+          borderColor: label.color,
+          borderStyle: "solid",
+          borderRadius: "3px",
+          marginRight: "5px",
+          fontSize: "medium",
+          padding: "3px",
+          marginBottom: "5%",
         }}
-      ></CircleIcon>
-      <p style={{}}>{label.name}</p>
-    </div>
-  ));
+      >
+        <CircleIcon
+          style={{
+            color: label.color,
+          }}
+        ></CircleIcon>
+        <p style={{}}>{label.name}</p>
+      </div>
+    ));
+  }
 
   const info = props.info;
   return (
@@ -93,17 +91,19 @@ export default function boardModal(props) {
 
       <CardContent sx={style_card}>
         <div>
-          <div>
-            <Typography sx={style_title}>Labels</Typography>
-            <Typography
-              sx={{
-                display: "flex",
-                marginLeft: "2vh",
-              }}
-            >
-              {Labels}
-            </Typography>
-          </div>
+          {props.Label != null ? (
+            <div>
+              <Typography sx={style_title}>Labels</Typography>
+              <Typography
+                sx={{
+                  display: "flex",
+                  marginLeft: "2vh",
+                }}
+              >
+                {Labels}
+              </Typography>
+            </div>
+          ) : null}
           <div>
             <Typography sx={style_title}>Description</Typography>
             <Typography variant="body2" color="text.secondary" sx={style_text}>
