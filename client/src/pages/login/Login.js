@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 import "./Login.scss";
@@ -19,6 +20,17 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
+  const onSubmit = (e) => {
+    e.preventDefault();
+    axios
+      .post("http://localhost:5050/auth/login", {
+        email,
+        password,
+      })
+      .then((res) => console.log(res.data), navigate("/"))
+      .catch((err) => console.log(err));
+  };
+
   return (
     <div className="Login">
       <div className="Login-header">
@@ -26,7 +38,7 @@ const Login = () => {
           <h1 className="text-4xl font-extrabold dark:text-white m-4 text-center">
             Connexion
           </h1>
-          <form className="p-15">
+          <form className="p-15" onSubmit={onSubmit}>
             {/* mail adress label and input */}
             <div className="m-4">
               <label
