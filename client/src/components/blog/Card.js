@@ -14,28 +14,35 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Comment from "./Comment";
 
-export default function ImgMediaCard({ id }) {
+export default function ImgMediaCard({
+  image,
+  title,
+  description,
+  like,
+  dislike,
+  id,
+}) {
   // console.log(id);
 
-  const [tuto, setTuto] = useState([]);
-  // const [comments, setComments] = useState([]);
-
-  const getTuto = async () => {
-    const response = await axios.get(`http://localhost:5050/tuto/${id}`);
-    setTuto(response.data);
-    // console.log(response.data);
-  };
-
-  // const getComments = async () => {
-  //     const response = await axios.get(`http://localhost:5050/tuto/${id}/comments`);
-  //     setComments(response.data);
-  //     console.log(response.data);
-  // }
-
-  useEffect(() => {
-    getTuto();
-    // getComments();
-  }, []);
+  // const [tuto, setTuto] = useState([]);
+  // // const [comments, setComments] = useState([]);
+  //
+  // const getTuto = async () => {
+  //   const response = await axios.get(`http://localhost:5050/tuto/${id}`);
+  //   setTuto(response.data);
+  //   // console.log(response.data);
+  // };
+  //
+  // // const getComments = async () => {
+  // //     const response = await axios.get(`http://localhost:5050/tuto/${id}/comments`);
+  // //     setComments(response.data);
+  // //     console.log(response.data);
+  // // }
+  //
+  // useEffect(() => {
+  //   getTuto();
+  //   // getComments();
+  // }, []);
 
   return (
     <Grid item xs={2} sm={4} md={5}>
@@ -44,27 +51,27 @@ export default function ImgMediaCard({ id }) {
           component="img"
           // alt="green iguana"
           height="10"
-          image={tuto.photo}
+          image={image}
           // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
           // sx={{maxHeight: 250}}
         />
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {tuto.title}
+            {title}
             {/*yo*/}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {tuto.description}
+            {description}
             {/*sisi*/}
           </Typography>
         </CardContent>
         <CardActions>
-          {tuto.like}
+          {like}
           <Checkbox
             icon={<ThumbUpOffAltIcon />}
             checkedIcon={<ThumbUpIcon />}
           />
-          {tuto.dislike}
+          {dislike}
           <Checkbox
             icon={<ThumbDownOffAltIcon />}
             checkedIcon={<ThumbDownAltIcon color={"error"} />}

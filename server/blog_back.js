@@ -1,4 +1,4 @@
-module.exports = (app, db) => {
+module.exports = (app, db, ws) => {
     // app.get("/blogs", (req, res) => {
     //     const docs = [];
     //     const comments = [];
@@ -20,33 +20,62 @@ module.exports = (app, db) => {
     //     })
     // })
 
+    ws.on("request", (request) => {
+        const connection = request.accept(null, request.origin);
+
+        connection
+            ? console.log("connection ok")
+            : console.log("connection failed");
+
+        db.collection("blog_tutos").onSnapshot(
+            (snapshot) => {
+                const documents = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                connection.sendUTF(JSON.stringify(documents));
+            },
+            (err) => {
+                console.log(err);
+            }
+        );
+    });
 
     // get all tutos
-    app.get("/tutos", async (req, res) => {
-        const snapshot = await db.collection('blog_tutos').get();
-        res.send(snapshot.docs.map(doc => doc.data()));
-        // return snapshot.docs.map(doc => doc.data());
-    });
+    // app.get("/tutos", async (req, res) => {
+    //   const snapshot = await db.collection("blog_tutos").get();
+    //   res.send(snapshot.docs.map((doc) => doc.data()));
+    //   // return snapshot.docs.map(doc => doc.data());
+    // });
 
     //get all tutos id
     app.get("/tutos/id", async (req, res) => {
-        const snapshot = await db.collection('blog_tutos').get();
-        res.send(snapshot.docs.map(doc => doc.id));
+        const snapshot = await db.collection("blog_tutos").get();
+        res.send(snapshot.docs.map((doc) => doc.id));
         // return snapshot.docs.map(doc => doc.data());
     });
 
-
     // get tutos by id
     app.get("/tuto/:id", async (req, res) => {
-        const snapshot = await db.collection('blog_tutos').doc(req.params.id).get();
+        const snapshot = await db.collection("blog_tutos").doc(req.params.id).get();
         res.send(snapshot.data());
     });
 
     // get all comments by tutos id
     app.get("/tuto/:id/comments", async (req, res) => {
-        const snapshot = await db.collection('blog_tutos').doc(req.params.id).collection("comment").get();
-        res.send(snapshot.docs.map(doc => doc.data()));
+        const snapshot = await db
+            .collection("blog_tutos")
+            .doc(req.params.id)
+            .collection("comment")
+            .get();
+        res.send(snapshot.docs.map((doc) => doc.data()));
     });
+
+    // app.post("/blog/:id/comments", async (req, res) => {
+    //     const snapshot = await db.collection('blog_tutos').doc(req.params.id).collection("comment").add(req.body);
+    //     res.send(snapshot.data());
+    // });
+
 
     app.post("/tutos/newtutos", async (req, res) => {
         const { title, description, photo } = req.body;
@@ -79,10 +108,4 @@ module.exports = (app, db) => {
     });
 
 
-
-    // app.post("/blog/:id/comments", async (req, res) => {
-    //     const snapshot = await db.collection('blog_tutos').doc(req.params.id).collection("comment").add(req.body);
-    //     res.send(snapshot.data());
-    // });
-
-}
+};
