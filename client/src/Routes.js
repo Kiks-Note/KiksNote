@@ -4,7 +4,7 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
 import Dashboard from "./pages/board/Dashboard";
 import Board from "./pages/board/Board";
-import Home from "./pages/home/";
+import Home from "./pages/home/Home";
 
 function RoutesProvider() {
   return (
