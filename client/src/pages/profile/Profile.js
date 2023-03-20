@@ -17,14 +17,26 @@ import axios from 'axios';
 
   constructor(props){
     super(props);
-    console.log("ffe")
     this.state = {
-      data:[],
-      isLoading:true,
-      error: null
-    }
+      data: [],
+      isLoading: true,
+      error: null,
+      formValue: {
+        dateBirthday: new Date().toISOString().substring(0, 10),
+        job: '',
+        linkedin: '',
+        gitLink: '',
+        compagny: '',
+        classe: '',
+        programmationLanguage: '',
+        discordName: '',
+        phoneNumber: '',
+      },
+      image: null,
+      pictureToUpload: null,
+    };
   }
-
+  
   componentDidMount(){
     axios.get("http://localhost:5050/profile/getUser").then(
       res => {
