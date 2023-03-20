@@ -48,6 +48,38 @@ module.exports = (app, db) => {
         res.send(snapshot.docs.map(doc => doc.data()));
     });
 
+    app.post("/tutos/newtutos", async (req, res) => {
+        const { title, description, photo } = req.body;
+
+
+        if (title == null || title == "") {
+            return res.status(400).send("Title is required");
+        }
+        if (description == null || description == "") {
+            return res.status(400).send("Description is required");
+        }
+        if (photo == null || photo == "") {
+            return res.status(400).send("Photo is required");
+        }
+
+
+        try {
+            await db.collection("blog_tutos").doc().set({
+
+                title: title,
+                description: description,
+                photo: photo,
+
+            });
+            res.send("Document successfully written!");
+
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    });
+
+
+
     // app.post("/blog/:id/comments", async (req, res) => {
     //     const snapshot = await db.collection('blog_tutos').doc(req.params.id).collection("comment").add(req.body);
     //     res.send(snapshot.data());
