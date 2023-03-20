@@ -3,6 +3,9 @@ const cors = require("cors");
 const app = express();
 const { db } = require("./firebase");
 var nodemailer = require('nodemailer');
+const bcrypt = require('bcrypt');
+const saltRounds = 12;
+
 
 app.use(express.json());
 app.use(cors());
@@ -30,81 +33,37 @@ app.get("/users", (req, res) => {
     });
 });
 
-app.get("/resetpass", (req, res) => {
-  db.collection("users")
-    .get()
-    .then((snapshot) => {
-      const data = [];
-      snapshot.forEach((doc) => {
-        data.push(doc.data());
-      });
-      res.send(data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  });
 
-  app.post("/resetpass?idresetpass=id", (req, res) => {
-    const itemRef = req.body.name;
-    req.query.idresetpass == "ddddd";
-    const space = " ";
-    const newItemRef = itemRef.replace(space, "_");
-  
-    db.doc("/calls/" + newItemRef)
-      .set({
-        id_lesson: req.body.id_lesson,
-        qrcode: req.body.qrcode,
-        student_scan: req.body.student_scan,
-        chats: req.body.chats,
-      })
-      .then(() => {
-        res.send("Item added to inventory");
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  });
-
+  app.post("/resetpass", (req, res) => {
+    const newPassword = req.body.newPassword;
+    const confirmedPassword = req.body.confirmedPassword;
+    console.log(newPassword, confirmedPassword);
+    newPasswordHash = bcrypt.hashSync(newPassword, saltRounds);
+    console.log(newPasswordHash);
+  })
 
 app.post("/sendemail", (req, res) => {
 
   const email = req.body.email;
   var nodemailer = require('nodemailer');
   let isValidEmail = false;
-  var BreakException = {};
-
 
   db.collection("users")
   .get()
   .then((snapshot) => {
     const data = [];
-    console.log("**************");
     snapshot.forEach((doc) => {
       data.push(doc.data()["email"]);
       const str = doc.data()["email"];
-      console.log(str);
-      console.log(str.replace(/\s+/g, '') == email.replace(/\s+/g, ''), str.replace(/\s+/g, '')+ ":" +email);
       if (doc.data()["email"].replace(/\s+/g, '') == email.replace(/\s+/g, '')) {
         console.log("is valid mail condtion " + isValidEmail);
-        //res.send("mail there")
           isValidEmail = true      
-          console.log("is valid mail condtion after " + isValidEmail);
       }
     });
-
-    console.log(data);
-    //res.send(data);
   }).then(
     () => {
-      console.log("isValidEmail "+ isValidEmail);
-
-      console.log("$$$$$$$$$$$$$$$$$$$$$$");
-       
       if (isValidEmail == true) {
-        console.log("mail there");
         res.send("mail there");
-
         var transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {
@@ -117,7 +76,7 @@ app.post("/sendemail", (req, res) => {
           from: 'services.kiksnote.noreply@gmail.com',
           to: email,
           subject: 'Récupération du mot de passe',
-          text: "http://localhost:3000/resetpass?" + makeid("test")
+          text: "http://localhost:3000/resetpass?" + makeid()
         };
     
         transporter.sendMail(mailOptions, function(error, info){
@@ -127,26 +86,19 @@ app.post("/sendemail", (req, res) => {
               console.log('Email sent: ' + info.response);
             }
         });   
-      
-        //return;
       } else {
-        console.log("unvalid");
-        console.log(isValidEmail);
         res.send("mail not there");
       }
-
-      console.log("$$$$$$$$$$$$$$$$$$$$$$");
     }
   )
   .catch((err) => {
-    console.log("last catch", err);
-   // throw 'Error message';
+    console.error(err);
   });
 
  
 });
 
-function makeid(nickname) {
+function makeid() {
   const length = 64;
   const linktoresetpage = `http://localhost:3000/askresetpass`;
   var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -158,7 +110,6 @@ function makeid(nickname) {
           charactersLength)));
   }
   var token = result.join('');
-  console.log(`${linktoresetpage}/?token=${token}&nickname=${nickname}`);
   return token;    
 }
 
