@@ -17,6 +17,13 @@ module.exports = (app, db) => {
       });
   });
 
-
+// API for updating user information
+  app.post(`/profile/:userId/updateUser`, (req, res) => {
+    const {userId} = req.params;
+    const data = req.body;
+    db.collection("users").add(data);
+    res.status(200).send({ message: "User updated successfully" });
+  }
+  );
   
 };
