@@ -37,15 +37,15 @@ module.exports = (app, db, jwt, bcrypt) => {
     };
 
     if (!userEmail || !userPassword) {
-      res.status(401).send("Email and password is required to login");
+      return res.status(401).send("Email and password is required to login");
     }
 
     if (userEmail != emailDatabase) {
-      res.status(401).send("Email is not found to login");
+      return res.status(401).send("Email is not found to login");
     }
 
     if (!(await bcrypt.compare(userPassword, hashed_password))) {
-      res.status(401).send({ error: "Wrong password" });
+      return res.status(401).send({ error: "Wrong password" });
     } else {
       const accessToken = generateAccessToken(user);
       const refreshToken = generateRefreshToken(user);
@@ -76,7 +76,7 @@ module.exports = (app, db, jwt, bcrypt) => {
       delete user.iat;
       delete user.exp;
       const refreshedToken = generateAccessToken(user);
-      res.status(200).send({
+      return res.status(200).send({
         accessToken: refreshedToken,
       });
     });
@@ -100,6 +100,6 @@ module.exports = (app, db, jwt, bcrypt) => {
   }
   
   app.get('/auth/me', authenticateToken, (req, res) => {
-    res.status(200).send(req.user);
+    return res.status(200).send(req.user);
   });
 };
