@@ -17,7 +17,7 @@ module.exports = (app, db) => {
       });
   });
 
-  app.put("/profile/user", (req, res) => {
+  app.put("/profile/updateUser", (req, res) => {
     db.collection("users")
     .put()
     .then((snapshot) => {
@@ -25,7 +25,7 @@ module.exports = (app, db) => {
       snapshot.forEach((doc) => {
         data.push(doc.data());
       });
-      res.send(data);
+      res.status(200).send(data);
     })
     .catch((err) => {
       console.log(err);

@@ -110,7 +110,7 @@ const { data, isLoading, error,formValue,image,pictureToUpload } = this.state;
     const mustLanguage = ['PHP', 'Java', 'Ruby', 'Javascript', 'Python']
     const mustJob = ['Intégrateur', 'Back-End', 'Front-end', 'FullStack']
     const sendData = () => {
-      axios.put("http://localhost:5050/profile/user", formValue )
+      axios.put("http://localhost:5050/profile/updateUser", formValue )
     }
     const convertToBase64 = (file) => {
       return new Promise((resolve, reject) => {
