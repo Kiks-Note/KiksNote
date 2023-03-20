@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import "./Board.scss";
-import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CardBoard from "../../components/board_scrum/board/CardBoard";
 import { Typography, IconButton, Menu, MenuItem } from "@mui/material";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import ButtonAddCard from "../../components/board_scrum/board/ButtonAddCard";
-import ButtonAddColumn from "../../components/board_scrum/board/ButtonAddColumn";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import Slide from '@mui/material/Slide';
@@ -223,12 +221,6 @@ function Board() {
     setMenuAnchorEl(null);
     setMenuColumnId(null);
   };
-  //delete column
-  const handleColumnDelete = (columnId) => {
-    const newColumns = { ...columns };
-    delete newColumns[columnId];
-    setColumns(newColumns);
-  };
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
 
@@ -329,14 +321,6 @@ function Board() {
                       <AddIcon />
                       Ajouter une carte
                     </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        handleMenuClose();
-                      }}
-                    >
-                      <DeleteIcon color="red" />
-                      Supprimer la colonne
-                    </MenuItem>
                   </Menu>
 
                   <Droppable droppableId={columnId} key={columnId}>
@@ -411,10 +395,6 @@ function Board() {
             );
           })}
         </DragDropContext>
-
-        <div className="board_container_table_add_column">
-          <ButtonAddColumn />
-        </div>
       </div>
     </div>
     </>
