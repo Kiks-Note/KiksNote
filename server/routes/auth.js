@@ -102,4 +102,12 @@ module.exports = (app, db, jwt, bcrypt) => {
   app.get('/auth/me', authenticateToken, (req, res) => {
     return res.status(200).send(req.user);
   });
+
+  app.get("/auth/users", async (req,res) => {
+    const docRef = await db.collection("users");
+    const snapshot = await docRef.get();
+    const users = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    return res.status(200).send(users);
+  }) 
 };
