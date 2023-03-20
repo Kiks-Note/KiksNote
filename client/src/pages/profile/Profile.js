@@ -36,7 +36,7 @@ import axios from 'axios';
       pictureToUpload: null,
     };
   }
-  
+
   componentDidMount(){
     axios.get("http://localhost:5050/profile/getUser").then(
       res => {
@@ -76,7 +76,7 @@ const { data, isLoading, error } = this.state;
     const mustLanguage = ['PHP', 'Java', 'Ruby', 'Javascript', 'Python']
     const mustJob = ['Intégrateur', 'Back-End', 'Front-end', 'FullStack']
     
-    handleChange = (event) => {
+    function handleChange (event){
       const { name, value } = event.target;
       console.log(name + value)
       setFormValue((prevState) => {
