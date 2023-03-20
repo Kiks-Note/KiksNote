@@ -1,24 +1,34 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Test from "./pages/Test";
 import PrivateRoutes from "./utils/PrivateRoutes";
-import Navbar from "./components/navbar/Navbar";
-import Dashboard from "./pages/board/Dashboard";
-import Board from "./pages/board/Board";
-import Home from "./pages/home/Home";
+
+import Home from "./pages/home/Home.js";
+import Blog from "./pages/blog/Blog";
+import Dashboard from "./pages/board_scrum/Dashboard";
+import Board from "./pages/board_scrum/Board";
 
 function RoutesProvider() {
   return (
     <BrowserRouter>
       <Routes>
         {/* EXAMPLES */}
+
         {/* <Route path="/login" element={<Login />} /> */}
         {/* <Route path="/register" element={<Register />} /> */}
-        {/* To Use the Navbar change Test by your page <Route path="/test" element={<Navbar element={<Test />} />} />*/}
-        <Route path="/" element={<Navbar element={<Test />} />} />
-        <Route element={<PrivateRoutes element />}>
+        {/* To Use the Navbar change Test by your page
+                <Route path="/test" element={<Navbar element={<Test />} />} /> */}
+
+        {/*<Route path="/" element={<Navbar element={<Test/>}/>}/>*/}
+        {/*<Route path="/test" element={<Navbar element={<Test/>}/>}/>*/}
+
+        {/* Write here route that you don't need to be login*/}
+
+        <Route element={<PrivateRoutes />}>
+          {/* Write here route that you need to be login*/}
+
+          <Route path="/" element={<Home />} />
+          <Route path="/blog" element={<Blog />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/board" element={<Board />} />
-          {<Route path="/" exact element={<Home />} />}
+          <Route path="/board/:boardId" element={<Board />} />
         </Route>
       </Routes>
     </BrowserRouter>
