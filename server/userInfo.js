@@ -1,7 +1,7 @@
 module.exports = (app, db) => {
 
 
-//getting users' info from db
+//API for getting users' info from db
   app.get("/profile/getUser", (req, res) => {
     db.collection("users")
       .get()
@@ -10,13 +10,12 @@ module.exports = (app, db) => {
         snapshot.forEach((doc) => {
           data.push(doc.data());
         });
-        res.send(data);
+        res.status(200).send(data);
       })
       .catch((err) => {
         console.log(err);
       });
   });
-
 
 
   
