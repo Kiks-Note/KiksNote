@@ -85,25 +85,42 @@ export default function ModalCard(props) {
       <div
         style={{
           display: "flex",
-          backgroundColor: label.color + "A6",
-          borderColor: label.color,
+          backgroundColor: label.color + "40",
+          borderColor: label.color + "30",
           borderStyle: "solid",
           borderRadius: "3px",
-          marginRight: "5px",
-          fontSize: "medium",
-          padding: "3px",
-          marginBottom: "5%",
+          marginRight: "2%",
+          width: "fit-content",
+          minWidth: "100px",
+          paddingRight: "3%",
+          paddingLeft: "1%",
         }}
       >
-        <CircleIcon
-          style={{
-            color: label.color,
-          }}
-        ></CircleIcon>
-        <p style={{}}>{label.name}</p>
+        <div style={{ display: "flex", paddingTop: "5%" }}>
+          <CircleIcon
+            style={{
+              flexDirection: "column",
+              justifyContent: "center",
+              color: label.color,
+              height: "80%",
+            }}
+          ></CircleIcon>
+          <p
+            style={{
+              flexDirection: "column",
+              justifyContent: "center",
+              height: "80%",
+              fontSize: "small",
+            }}
+          >
+            {label.name}
+          </p>
+        </div>
       </div>
     ));
   }
+
+  Labels.push(<Button>+</Button>);
 
   const deleteCard = () => {
     // axios
@@ -138,7 +155,7 @@ export default function ModalCard(props) {
               </Typography>
             )
           }
-          subheader={<Typography color="text.default">In list {props.list_name}</Typography>}
+          subheader={<Typography color="text.default">Dans {props.list_name}</Typography>}
           avatar={
             <BallotIcon
               sx={{

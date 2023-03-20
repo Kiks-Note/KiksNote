@@ -2,9 +2,8 @@ import React from "react";
 import Modal from "@mui/material/Modal";
 import ModalCard from "./ModalCard";
 import InfoIcon from "@mui/icons-material/Info";
-import { Chip, Typography, Avatar, Box } from "@mui/material";
+import { Chip, Typography, Avatar, Box, Button } from "@mui/material";
 import Stack from "@mui/material/Stack";
-import NotesIcon from "@mui/icons-material/Notes";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
@@ -48,7 +47,7 @@ export default function CardBoard(props) {
     );
   }
 
-  var Labels = null;
+  var Labels = [];
 
   var Label = null;
 
@@ -94,33 +93,47 @@ export default function CardBoard(props) {
           position: "relative",
         }}
       >
-        <Accordion
-          expanded={states.expanded}
-          onClick={handleAccordion}
-          style={{
-            backgroundColor: props.snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
-            boxShadow: "none",
-          }}
-        >
-          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-            <div>
-              <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
-              <Typography variant="body1" color="black">
-                {info.name}
+        {info.desc != "" ? (
+          <Accordion
+            expanded={states.expanded}
+            onClick={handleAccordion}
+            style={{
+              backgroundColor: props.snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
+              boxShadow: "none",
+              marginTop: "5%",
+            }}
+          >
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+              <div>
+                <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
+                <Typography variant="body1" color="black">
+                  {info.name}
+                </Typography>
+              </div>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography
+                style={{
+                  color: "black",
+                }}
+              >
+                {info.desc}
               </Typography>
-            </div>
-          </AccordionSummary>
-          <AccordionDetails>
-            <Typography
-              style={{
-                color: "black",
-              }}
-            >
-              {info.desc}
+            </AccordionDetails>
+          </Accordion>
+        ) : (
+          <div>
+            <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
+            <Typography variant="body1" color="black">
+              {info.name}
             </Typography>
-          </AccordionDetails>
-        </Accordion>
-        <InfoIcon onClick={handleOpen} color="primary" style={{ marginLeft: "0.5rem" }} />
+          </div>
+        )}
+        <InfoIcon
+          onClick={handleOpen}
+          color="primary"
+          style={{ marginLeft: "0.5rem", position: "absolute", right: "6%", top: "5%" }}
+        />
       </div>
       <Box style={{ display: "flex", alignItems: "center", justifyContent: " space-between" }}>
         <Stack direction="row" spacing={1} width={"100%"} justifyContent={"flex-end"}>

@@ -149,20 +149,20 @@ const taskStatus = {
     name: "Stories",
     items: [
       {
-        id: "1",
+        id: "14",
         name: "Tset",
         desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
         assignedTo: [],
+        labels: [],
       },
       {
-        id: "2",
+        id: "15",
         name: "Do all",
         desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
         assignedTo: [],
+        labels: [],
       },
     ],
-    isRequested: true,
-    isDragDisabled: true, // disable the drag on the "Stories" column
   },
   acceptance: {
     name: "Critère d'acceptation",
@@ -199,19 +199,27 @@ function Board() {
   };
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
+    console.log(result.destination.droppableId);
+    console.log(result.source.droppableId);
 
-    const source = result.source;
-    const destination = result.destination;
-    const sourceColumn = columns[source.droppableId];
-    const destColumn = columns[destination.droppableId];
-
-    if (destColumn.isRequested) {
+    if (result.destination.droppableId == "requested" && result.source.droppableId != "requested") {
       setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
       setTimeout(() => {
         setErrorMessage("");
       }, 3000); // DELETE AFTER 3 SEC
       return;
+    } else if (result.destination.droppableId != "requested" && result.source.droppableId == "requested") {
+      setErrorMessage("Impossible de déplacer une storie dans une autre colonne");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000); // DELETE AFTER 3 SEC
+      return;
     }
+
+    const source = result.source;
+    const destination = result.destination;
+    const sourceColumn = columns[source.droppableId];
+    const destColumn = columns[destination.droppableId];
 
     if (source.droppableId !== destination.droppableId) {
       const sourceItems = [...sourceColumn.items];
