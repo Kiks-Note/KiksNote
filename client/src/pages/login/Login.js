@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+
+import { accountAuthService } from "../../services/accountAuth";
+
 import { useNavigate } from "react-router-dom";
 
 import "./Login.scss";
@@ -27,7 +30,10 @@ const Login = () => {
         email,
         password,
       })
-      .then((res) => console.log(res.data), navigate("/"))
+      .then(res => {
+        accountAuthService.saveTokens(res.data.access_token,res.data.refreshToken);
+        navigate('/');
+      })
       .catch((err) => console.log(err));
   };
 
