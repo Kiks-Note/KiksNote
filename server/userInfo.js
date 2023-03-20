@@ -17,7 +17,25 @@ module.exports = (app, db) => {
       });
   });
 
+  app.put("/profile/user", (req, res) => {
+    db.collection("users")
+    .put()
+    .then((snapshot) => {
+      const data = [];
+      snapshot.forEach((doc) => {
+        data.push(doc.data());
+      });
+      res.send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+  console.log(req.body)
+  })
 
+  
+
+ 
 
   
 };
