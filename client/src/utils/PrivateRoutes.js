@@ -4,6 +4,7 @@ import MiniDrawer from "../components/navbar/Navbar";
 
 function PrivateRoutes() {
   let auth = true;
+
   return auth ? <MiniDrawer element={<Outlet />} /> : <Navigate to="/login" />;
 }
 

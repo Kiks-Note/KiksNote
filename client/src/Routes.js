@@ -2,7 +2,9 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Test from "./pages/Test";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
-import Board from "./pages/board_scrum/Board";
+import Dashboard from "./pages/board/Dashboard";
+import Board from "./pages/board/Board";
+
 function RoutesProvider() {
   return (
     <BrowserRouter>
@@ -15,6 +17,7 @@ function RoutesProvider() {
         <Route path="/test" element={<Navbar element={<Test />} />} /> */}
         <Route path="/" element={<Navbar element={<Test />} />} />
         <Route element={<PrivateRoutes element />}>
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/board" element={<Board />} />
 
           {/* <Route path="/" exact element={<Home />} /> */}
