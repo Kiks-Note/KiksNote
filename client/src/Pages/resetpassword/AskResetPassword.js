@@ -42,12 +42,18 @@ function ResetPassword() {
 
     const form = useRef();
 
+    function handleSubmit(e) {
+        sendEmailFromFront();
+        e.preventDefault(); 
+        form.current.reset();
+    }
+
     return (
         <div className="form-reset-with-mail-container">
             <Box sx={{ boxShadow: 5 }} style={{ width: "50%", padding: "15px" }} className="box-form-reset-with-mail">
                 <h1 style={{ margin: 10, fontSize: "2vw" }}>Réinitialiser le mot de passe</h1>
                 <Divider variant="middle" style={{ background: "#000", height: "1px", width: "50%" }} className="divider-form-reset-with-mail" />
-                <form className='form-ask-reset' ref={form} onSubmit={(e) => {sendEmailFromFront(); e.preventDefault();}}  style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <form className='form-ask-reset' ref={form} onSubmit={(e) => handleSubmit(e)}  style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <label>Email</label>
                     <input placeholder="Mail" required id="my-mail-id" type="email" name="user_email" onInput={e => setMail(e.target.value)} style={{ backgroundColor: "#fff", width: "80%", marginTop: "10%" }} />
                     <input id='submit-email' type="submit" variant="contained" style={{ backgroundColor: "#fff", color: "black", fontWeight: "bold", textTransform: 'none', margin: 10, marginTop: "10%" }}  value="Envoyer" />
