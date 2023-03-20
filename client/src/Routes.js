@@ -5,6 +5,7 @@ import Navbar from "./components/navbar/Navbar";
 
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
+import Agile from "./pages/agile/Agile";
 
 function RoutesProvider() {
     return (
@@ -29,6 +30,7 @@ function RoutesProvider() {
 
                     <Route path="/" element={<Home/>}/>
                     <Route path="/blog" element={<Blog/>}/>
+                    <Route path="/analyse-agile" element={<Agile />} />
 
                 </Route>
             </Routes>
