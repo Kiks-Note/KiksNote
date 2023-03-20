@@ -211,15 +211,13 @@ function Board() {
   const [label, setLabel] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [menuAnchorEl, setMenuAnchorEl] = useState(null);
-  const [menuColumnId, setMenuColumnId] = useState(null);
+
 
   const handleMenuOpen = (event, columnId) => {
     setMenuAnchorEl(event.currentTarget);
-    setMenuColumnId(columnId);
   };
   const handleMenuClose = () => {
     setMenuAnchorEl(null);
-    setMenuColumnId(null);
   };
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
