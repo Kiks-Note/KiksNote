@@ -1,4 +1,3 @@
-import Tile from "../../components/blog/Tile";
 import {useEffect, useState} from "react";
 import axios from "axios";
 import ImgMediaCard from "../../components/blog/Card";
@@ -12,15 +11,23 @@ import SearchBar from "../../components/blog/SearchBar";
 function Blog() {
 
     const [tutos, setTutos] = useState([]);
+    const [tutosId, setTutosId] = useState([]);
 
     const getTutos = async () => {
         const response = await axios.get("http://localhost:5050/tutos");
         setTutos(response.data);
-        console.log(response.data);
+        // console.log(response.data);
+    }
+
+    const getTutosId = async () => {
+        const response = await axios.get("http://localhost:5050/tutos/id");
+        setTutosId(response.data);
+        // console.log(response.data);
     }
 
     useEffect(() => {
         getTutos();
+        getTutosId();
     }, []);
     // <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
     //     <Grid item xs={4}>
@@ -46,18 +53,23 @@ function Blog() {
                 >
 
                     <Grid container direction={"column"} rowSpacing={1} columnSpacing={{xs: 1, sm: 2, md: 3}}>
-                        <Grid item xs={1}>
-                            <SearchBar title={tutos}/>
+                        <Grid container item>
+                            <Grid item xs={10}>
+                                <SearchBar title={tutos}/>
+                            </Grid>
+                            <Grid item xs={2}>
+                                dds
+                            </Grid>
                         </Grid>
 
                         <Grid container item xs={10} justifyContent="center" alignItems="flex-start"
                             // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
                         >
 
-                            {tutos.length > 0 ?
-                                tutos.map((blog) => (
+                            {tutosId.length > 0 ?
+                                tutosId.map((blogId) => (
                                     <ImgMediaCard
-                                        blog={blog}
+                                        id={blogId}
                                     />
                                 ))
                                 :
