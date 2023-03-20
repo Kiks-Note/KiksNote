@@ -22,6 +22,10 @@ let getAccessToken = () => {
   return localStorage.getItem(TOKEN_KEY);
 };
 
+let setToken = (token) => {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
 let getRefreshToken = () => {
   return localStorage.getItem(REFRESH_TOKEN_KEY);
 };
@@ -43,6 +47,7 @@ export const accountAuthService = {
   isLogged,
   logout,
   getAccessToken,
+  setToken,
   getRefreshToken,
   isAccessTokenExpired
 };

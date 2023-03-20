@@ -34,7 +34,7 @@ const Login = () => {
         accountAuthService.saveTokens(res.data.access_token,res.data.refreshToken);
         navigate('/');
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.log(err.response));
   };
 
   return (
