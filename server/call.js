@@ -9,11 +9,7 @@ app.use(cors());
 const PORT = process.env.PORT || 4000;
 
 app.post("/callAdd", (req, res) => {
-  const itemRef = req.body.name;
-  const space = " ";
-  const newItemRef = itemRef.replace(space, "_");
-
-  db.doc("/calls/" + newItemRef)
+  db.ref("calls")
     .set({
       id_lesson: req.body.id_lesson,
       qrcode: req.body.qrcode,
