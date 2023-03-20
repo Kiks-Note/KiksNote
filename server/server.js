@@ -79,53 +79,71 @@ app.post("/sendemail", (req, res) => {
   .get()
   .then((snapshot) => {
     const data = [];
+    console.log("**************");
     snapshot.forEach((doc) => {
-      data.push(doc.data()["mail"]);
-      const str = doc.data()["mail"];
+      data.push(doc.data()["email"]);
+      const str = doc.data()["email"];
+      console.log(str);
       console.log(str.replace(/\s+/g, '') == email.replace(/\s+/g, ''), str.replace(/\s+/g, '')+ ":" +email);
-      if (doc.data()["mail"].replace(/\s+/g, '') == email.replace(/\s+/g, '')) {
-        isValidEmail = true;
-        throw BreakException;
+      if (doc.data()["email"].replace(/\s+/g, '') == email.replace(/\s+/g, '')) {
+        console.log("is valid mail condtion " + isValidEmail);
+        //res.send("mail there")
+          isValidEmail = true      
+          console.log("is valid mail condtion after " + isValidEmail);
       }
     });
 
-    console.log("**************");
     console.log(data);
-    res.send(data);
-  })
+    //res.send(data);
+  }).then(
+    () => {
+      console.log("isValidEmail "+ isValidEmail);
+
+      console.log("$$$$$$$$$$$$$$$$$$$$$$");
+       
+      if (isValidEmail == true) {
+        console.log("mail there");
+        res.send("mail there");
+
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'services.kiksnote.noreply@gmail.com', 
+            pass: "njujpddhfbazaifo" 
+          }
+        });
+        
+        var mailOptions = {
+          from: 'services.kiksnote.noreply@gmail.com',
+          to: email,
+          subject: 'Récupération du mot de passe',
+          text: "http://localhost:3000/resetpass?" + makeid("test")
+        };
+    
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+              console.log(error);
+            } else {
+              console.log('Email sent: ' + info.response);
+            }
+        });   
+      
+        //return;
+      } else {
+        console.log("unvalid");
+        console.log(isValidEmail);
+        res.send("mail not there");
+      }
+
+      console.log("$$$$$$$$$$$$$$$$$$$$$$");
+    }
+  )
   .catch((err) => {
-    console.log("last catch");
+    console.log("last catch", err);
    // throw 'Error message';
   });
 
-  if (isValidEmail == false) {
-    console.log("condition");
-    res.send("mail not there");
-    //return;
-  }
-
-  var transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'services.kiksnote.noreply@gmail.com', 
-      pass: "njujpddhfbazaifo" 
-    }
-  });
-  
-  var mailOptions = {
-    from: 'services.kiksnote.noreply@gmail.com',
-    to: email,
-    subject: 'Récupération du mot de passe',
-    text: "http://localhost:3000/resetpass?" + makeid("test")
-  };
-
-  // transporter.sendMail(mailOptions, function(error, info){
-  //   if (error) {
-  //     console.log(error);
-  //   } else {
-  //     console.log('Email sent: ' + info.response);
-  //   }
-  // });
+ 
 });
 
 function makeid(nickname) {
