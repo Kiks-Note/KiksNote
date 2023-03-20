@@ -5,6 +5,11 @@ import InfoIcon from "@mui/icons-material/Info";
 import { Chip, Typography, Avatar, Box } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import NotesIcon from "@mui/icons-material/Notes";
+import Accordion from "@mui/material/Accordion";
+import AccordionSummary from "@mui/material/AccordionSummary";
+import AccordionDetails from "@mui/material/AccordionDetails";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
 export default function CardBoard(props) {
   const [states, setStates] = React.useState({
     open: false,
@@ -14,6 +19,8 @@ export default function CardBoard(props) {
   const handleOpen = () => setStates({ open: true, expanded: false });
 
   const handleClose = () => setStates({ open: false, expanded: false });
+
+  const handleAccordion = () => setStates({ expanded: !states.expanded });
 
   const info = props.card_info;
 
@@ -80,19 +87,42 @@ export default function CardBoard(props) {
         position: "relative",
       }}
     >
-      <Box style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div>
-          <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
-          <Typography variant="body1" color="black">
-            {info.name}
-          </Typography>
-        </div>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <InfoIcon onClick={handleOpen} color="primary" style={{ marginLeft: "0.5rem" }} />
-        </div>
-      </Box>
+      <div
+        style={{
+          display: "flex",
+          padding: "5",
+          position: "relative",
+        }}
+      >
+        <Accordion
+          expanded={states.expanded}
+          onClick={handleAccordion}
+          style={{
+            backgroundColor: props.snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
+            boxShadow: "none",
+          }}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+            <div>
+              <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
+              <Typography variant="body1" color="black">
+                {info.name}
+              </Typography>
+            </div>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography
+              style={{
+                color: "black",
+              }}
+            >
+              {info.desc}
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <InfoIcon onClick={handleOpen} color="primary" style={{ marginLeft: "0.5rem" }} />
+      </div>
       <Box style={{ display: "flex", alignItems: "center", justifyContent: " space-between" }}>
-        {info.desc && <NotesIcon style={{ color: "gray" }} />}
         <Stack direction="row" spacing={1} width={"100%"} justifyContent={"flex-end"}>
           {assignedToAvatars}
           {moreAvatar}
