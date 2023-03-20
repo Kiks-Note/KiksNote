@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import BoardCard from "../../components/board_scrum/ModalCard";
+import BoardCard from "../../components/board/ModalCard";
 import AddIcon from "@mui/icons-material/Add";
 import { Switch } from "@mui/material";
 
@@ -200,7 +200,6 @@ function App() {
                 }}
                 key={columnId}
               >
-                {" "}
                 <h2>{column.name}</h2>
                 <div style={{ margin: 8, borderColor: "#e0dede", borderStyle: "solid", borderWidth: "thin" }}>
                   <Droppable droppableId={columnId} key={columnId}>

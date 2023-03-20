@@ -75,7 +75,7 @@ export default function boardModal(props) {
     <Card sx={style}>
       <CardHeader
         title={info.name}
-        subheader={<p>In list {props.list_name}</p>}
+        subheader={<p>Dans {props.list_name}</p>}
         avatar={
           <BallotIcon
             sx={{
