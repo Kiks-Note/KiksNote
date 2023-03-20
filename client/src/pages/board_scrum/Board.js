@@ -16,32 +16,40 @@ const style = {
   p: 4,
 };
 
-const tasks = [
+const stories = [
   {
     id: "1",
     name: "Board EduScrum",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    color: "red",
   },
   {
     id: "2",
     name: "Création de sprint agile très très long",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    color: "blue",
   },
   {
     id: "3",
     name: "BurnDown chart",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    color: "yellow",
   },
   {
     id: "4",
     name: "Ajout du backlog",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    color: "brown",
   },
   {
     id: "5",
     name: "Sprint retro",
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+    color: "pink",
   },
+];
+
+const tasks = [
   {
     id: "6",
     name: "Exemple avec un titre de carte très long pour voir si c'est moche... Finalement ça rend plutôt bien meme avec un titre de carte très long",
@@ -83,14 +91,15 @@ const tasks = [
     desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
   },
 ];
+
 const taskStatus = {
   requested: {
     name: "Stories",
-    items: tasks,
+    items: stories,
   },
   acceptance: {
     name: "Critère d'acceptation",
-    items: [],
+    items: tasks,
   },
 
   toDo: {
@@ -112,6 +121,12 @@ const addCard = () => {};
 
 const onDragEnd = (result, columns, setColumns) => {
   if (!result.destination) return;
+  if (
+    (result.source.droppableId == "requested" && result.destination.droppableId != "requested") ||
+    (result.source.droppableId != "requested" && result.destination.droppableId == "requested")
+  ) {
+    return;
+  }
   const { source, destination } = result;
   if (source.droppableId != destination.droppableId) {
     const sourceColumn = columns[source.droppableId];
@@ -120,7 +135,6 @@ const onDragEnd = (result, columns, setColumns) => {
     const destItems = [...destColumn.items];
     const [removed] = sourceItems.splice(source.index, 1);
     destItems.splice(destination.index, 0, removed);
-    console.log(columns);
     setColumns({
       ...columns,
       [source.droppableId]: {
@@ -205,6 +219,9 @@ function App() {
                                         minHeight: "60px",
                                         borderRadius: 3,
                                         backgroundColor: snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
+                                        borderWidth: "1px",
+                                        borderStyle: "solid",
+                                        borderColor: "red",
                                         boxShadow:
                                           "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
                                         color: "white",

@@ -14,6 +14,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import BallotIcon from "@mui/icons-material/Ballot";
 import CircleIcon from "@mui/icons-material/Circle";
+import { red } from "@mui/material/colors";
 
 export default function boardModal(props) {
   const style = {
