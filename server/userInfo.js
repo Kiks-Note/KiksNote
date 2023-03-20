@@ -1,41 +1,27 @@
 module.exports = (app, db) => {
+  //API for getting users' info from db
+  app.get("/profile/getUser/:userId", async (req, res) => {
+    const { userId } = req.params;
 
-
-//API for getting users' info from db
-  app.get("/profile/getUser", (req, res) => {
-    db.collection("users")
-      .get()
-      .then((snapshot) => {
-        const data = [];
-        snapshot.forEach((doc) => {
-          data.push(doc.data());
-        });
-        res.status(200).send(data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const docRef = db.collection("users").doc(userId);
+    const doc = await docRef.get();
+    console.log(doc.data());
+    res.status(200).send(doc.data());
   });
 
   app.put("/profile/user", (req, res) => {
+    const userId = req.body.userId;
+    const userDataToUpdate = req.body.userDataToUpdate;
+
     db.collection("users")
-    .put()
-    .then((snapshot) => {
-      const data = [];
-      snapshot.forEach((doc) => {
-        data.push(doc.data());
+      .doc(userId)
+      .update(userDataToUpdate)
+      .then(() => {
+        res.send("User data updated successfully.");
+      })
+      .catch((err) => {
+        console.log(err);
+        res.send("Error updating user data.");
       });
-      res.send(data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  console.log(req.body)
-  })
-
-  
-
- 
-
-  
+  });
 };
