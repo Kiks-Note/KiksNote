@@ -1,14 +1,23 @@
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require('body-parser');
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const dotenv = require("dotenv");
 const app = express();
 const { db } = require("./firebase");
 const WebSocket = require("ws");
 
+dotenv.config({ path: "./.env.login" });
+
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 4000;
 
+require("./routes/auth")(app, db, jwt, bcrypt);
 const wss = new WebSocket.Server({ port: 4050 });
 
 let currentData;
