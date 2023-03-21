@@ -14,7 +14,6 @@ function App() {
     <>
       <RoutesProvider />
       <AppBar />
-      <Call />
     </>
   );
 }
