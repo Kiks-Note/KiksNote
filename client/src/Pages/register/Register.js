@@ -1,15 +1,65 @@
 import React, { useState , useEffect } from 'react';
 import { Link } from "react-router-dom";
 import Divider from "@mui/material/Divider";
-import sha256  from "js-sha256";
+// import axios from 'axios';
+import { toast, ToastContainer } from 'react-toastify';
+// import sha256  from "js-sha256";
 
 const Register = () => {
-    const onSubmit = (data) => {
-        const templateId = 'ConfirmMail';
-        const serviceID = 'ConfirmKiks';
-        sendConfirm(serviceID, templateId, { to_name: data.lastname+" "+data.firstname,from_name: "Kik's Note", message_html: "http://localhost:3000/Confirmation/0", to_email: data.email })
+
+    const options = {
+        autoClose: 2000,
+        className: '',
+        position: toast.POSITION.TOP_RIGHT,
+    };
+
+    const toastSuccess = message => {
+        toast.success(message, options);
     }
-    const sendConfirm = (serviceID, templateId, variables) => {
+
+    const toastFail = message => {
+        toast.error(message, options);
+    }
+
+    const onSubmit = (data) => {
+        var user = {
+            dateofbirth: data.birthdate,
+            email: data.email,
+            firstname: data.firstname,
+            hashed_password: data.password,
+            lastname: data.lastname,
+            status: data.status
+        }
+        addUser(user)
+    }
+    async function addUser(user)  {
+        await axios.post("http://localhost:5050/addUser", {
+            user: user
+        }).then( (response) => {
+            if (response.data === "User created successfully") {
+                toastSuccess("Utilisateur bien enregistré");
+                sendEmailFromFront()
+            } else {
+                toastFail("Utilisateur non enregistré");
+            }
+        }).catch((err) => {
+            console.warn("error : ", err);
+        });
+    }
+    async function sendEmailFromFront()  {
+        await axios.post("http://localhost:5050/sendemail", {
+            email: mail
+        }).then( (response) => {
+            if (response.data === "mail there") {
+                toastSuccess("Mail enregistré");
+            } else {
+                toastFail("Mail non enregistré");
+            }
+        }).catch((err) => {
+            console.warn("error : ", err);
+        });
+    }
+    /* const sendConfirm = (serviceID, templateId, variables) => {
         window.emailjs.send(
             serviceID, templateId,
             variables
@@ -17,7 +67,7 @@ const Register = () => {
             alert('Vérifier votre adresse mail pour finaliser votre inscription.')
         })
             .catch(err => {alert('Un problème est survenu pendant votre inscription, nous nous excusons de la gêne occasionée.')})
-    }
+    } */
 
     const initialValues = {
         firstname: "",
@@ -143,6 +193,7 @@ const Register = () => {
                             </label>
                             <input
                                 id="input-firstname"
+                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="text"
                                 name="firstname"
                                 placeholder="Prénom"
@@ -209,7 +260,7 @@ const Register = () => {
                                 value={formValues.password}
                                 onChange={handleChange}
                             />
-                            <span lassName="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                            <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                                 {formErrors.password}
                             </span>
                         </div>
@@ -229,7 +280,7 @@ const Register = () => {
                                 value={formValues.confirmPassword}
                                 onChange={handleChange}
                             />
-                            <span lassName="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                            <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                                 {formErrors.confirmPassword}
                             </span>
                         </div>
@@ -272,6 +323,7 @@ const Register = () => {
                     </p>
             </div>
         </div>
+        <ToastContainer></ToastContainer>
     </div>
     )
 }
