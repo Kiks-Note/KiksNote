@@ -46,7 +46,7 @@ const Register = () => {
             console.warn("error : ", err);
         });
     }
-    async function sendEmailFromFront()  {
+    async function sendEmailFromFront(mail)  {
         await axios.post("http://localhost:5050/sendemail", {
             email: mail
         }).then( (response) => {
