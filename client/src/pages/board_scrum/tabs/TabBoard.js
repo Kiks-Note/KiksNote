@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import TabsDemo from "./Tabs";
 import Board from "../Board";
 import Dashboard from "../Dashboard";
+import OverView from "../overview/OverView";
 
 export default function TabBoard() {
   var [activeTab, setActiveTab] = useState(0);
@@ -46,7 +47,7 @@ export default function TabBoard() {
           component = <Board></Board>;
           break;
         case "overView":
-          component = <p>overview</p>;
+          component = <OverView/>;
           break;
         default:
           component = <p>default</p>;

@@ -15,7 +15,7 @@ export default function CardDashboard({ picture, sprint_group, fav, isFavoris, i
       }
     }
     if (push) {
-      x.push({ id: id, type: "board", label: sprint_group });
+      x.push({ id: id, type: "overView", label: `OverView ${sprint_group}` });
       localStorage.setItem("tabs", JSON.stringify(x));
     }
     localStorage.setItem("activeTab", JSON.stringify(id));
