@@ -198,6 +198,8 @@ function Board() {
     setMenuAnchorEl(null);
   };
   const onDragEnd = (result, columns, setColumns) => {
+    console.log(columns);
+
     if (!result.destination) return;
     console.log(result.destination.droppableId);
     console.log(result.source.droppableId);
@@ -212,7 +214,7 @@ function Board() {
       setErrorMessage("Impossible de déplacer une storie dans une autre colonne");
       setTimeout(() => {
         setErrorMessage("");
-      }, 5000); // DELETE AFTER 3 SEC
+      }, 5000); // DELETE AFTER 5 SEC
       return;
     }
 

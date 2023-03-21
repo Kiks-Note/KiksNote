@@ -16,6 +16,7 @@ import BallotIcon from "@mui/icons-material/Ballot";
 import TextField from "@mui/material/TextField";
 import CircleIcon from "@mui/icons-material/Circle";
 import NotesIcon from "@mui/icons-material/Notes";
+import AddIcon from "@mui/icons-material/Add";
 
 export default function ModalCard(props) {
   const info = props.info;
@@ -91,12 +92,11 @@ export default function ModalCard(props) {
           borderRadius: "3px",
           marginRight: "2%",
           width: "fit-content",
-          minWidth: "100px",
           paddingRight: "3%",
           paddingLeft: "1%",
         }}
       >
-        <div style={{ display: "flex", paddingTop: "5%" }}>
+        <div style={{ display: "flex", paddingTop: "5%", width: "fit-content" }}>
           <CircleIcon
             style={{
               flexDirection: "column",
@@ -110,7 +110,11 @@ export default function ModalCard(props) {
               flexDirection: "column",
               justifyContent: "center",
               height: "80%",
+              paddingLeft: "5%",
               fontSize: "small",
+              minWidth: "70px",
+              height: "25px",
+              paddingTop: "5%",
             }}
           >
             {label.name}
@@ -120,7 +124,11 @@ export default function ModalCard(props) {
     ));
   }
 
-  Labels.push(<Button>+</Button>);
+  Labels.push(
+    <Button>
+      <AddIcon></AddIcon>
+    </Button>
+  );
 
   const deleteCard = () => {
     // axios
