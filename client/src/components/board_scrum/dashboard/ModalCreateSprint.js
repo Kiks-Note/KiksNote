@@ -106,9 +106,7 @@ function DialogDashbord(props) {
     });
   };
   const handleDelete = (chipToDelete) => () => {
-    setPersonName((chips) =>
-      chips.filter((chip) => chip.key !== chipToDelete.key)
-    );
+    setPersonName((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
   };
   //SUBMIT FONCTION
   const onSubmit = async (data) => {
@@ -200,18 +198,8 @@ function DialogDashbord(props) {
       </DialogActions>
       <DialogTitle>Création d'un sprint</DialogTitle>
       <DialogContent dividers>
-        <Box
-          component="form"
-          noValidate
-          sx={{ mt: 3 }}
-          autoComplete="off"
-          onSubmit={handleSubmit(onSubmit)}
-        >
-          {isSubmitSuccessful && (
-            <Alert severity="success">
-              Votre sprint a été enregrister avec succés
-            </Alert>
-          )}
+        <Box component="form" noValidate sx={{ mt: 3 }} autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
+          {isSubmitSuccessful && <Alert severity="success">Votre sprint a été enregrister avec succés</Alert>}
 
           <Grid container spacing={2}>
             <Grid
@@ -243,11 +231,7 @@ function DialogDashbord(props) {
                   >
                     <ClearIcon />
                   </IconButton>
-                  <img
-                    src={preview}
-                    alt=""
-                    style={{ height: "150px", width: "345px" }}
-                  />
+                  <img src={preview} alt="" style={{ height: "150px", width: "345px" }} />
                 </Box>
               )}
               {!selectedFile && (
@@ -258,17 +242,12 @@ function DialogDashbord(props) {
                     flexDirection: "column",
                   }}
                 >
-                  <IconButton
-                    color="primary"
-                    aria-label="upload picture"
-                    component="label"
-                  >
+                  <IconButton color="primary" aria-label="upload picture" component="label">
                     <input
                       hidden
                       {...register("image", {
                         validate: {
-                          lessThan10MB: (files) =>
-                            files[0]?.size < 30000 || "Max 30kb",
+                          lessThan10MB: (files) => files[0]?.size < 30000 || "Max 30kb",
                         },
                       })}
                       type="file"
@@ -317,16 +296,10 @@ function DialogDashbord(props) {
                     }}
                     value={value}
                     options={membres}
-                    getOptionLabel={(option) =>
-                      `${option.firstname + option.lastname}`
-                    }
+                    getOptionLabel={(option) => `${option.firstname + option.lastname}`}
                     filterSelectedOptions
                     renderInput={(params) => (
-                      <TextField
-                        {...params}
-                        label="Membres*"
-                        placeholder="Choissisez vos partenanires"
-                      />
+                      <TextField {...params} label="Membres*" placeholder="Choissisez vos partenanires" />
                     )}
                   />
                 )}
@@ -423,12 +396,7 @@ function DialogDashbord(props) {
               </LocalizationProvider>
             </Grid>
           </Grid>
-          <Button
-            variant="contained"
-            type="submit"
-            disabled={isSubmitting}
-            sx={{ mt: 3, mb: 2 }}
-          >
+          <Button variant="contained" type="submit" disabled={isSubmitting} sx={{ mt: 3, mb: 2 }}>
             Sauvegarder
           </Button>
         </Box>
@@ -443,7 +411,7 @@ DialogDashbord.propTypes = {
   value: PropTypes.string.isRequired,
 };
 
-export default function ModalDashboard() {
+export default function ModalCreateSprint() {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("Dione");
 
@@ -462,21 +430,10 @@ export default function ModalDashboard() {
   return (
     <Box>
       <List component="div" role="group">
-        <IconButton
-          aria-label="delete"
-          onClick={handleClickListItem}
-          size="large"
-          color="primary"
-        >
+        <IconButton aria-label="delete" onClick={handleClickListItem} size="large" color="primary">
           <AddIcon />
         </IconButton>
-        <DialogDashbord
-          id="ringtone-menu"
-          keepMounted
-          open={open}
-          onClose={handleClose}
-          value={value}
-        />
+        <DialogDashbord id="ringtone-menu" keepMounted open={open} onClose={handleClose} value={value} />
       </List>
     </Box>
   );

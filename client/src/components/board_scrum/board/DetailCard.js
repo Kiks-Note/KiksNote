@@ -25,7 +25,7 @@ import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
 import AddIcon from "@mui/icons-material/Add";
 
-export default function ModalCard(props) {
+export default function DetailCard(props) {
   const info = props.info;
   //NAME LISTENER
   const [isEditingName, setIsEditingName] = useState(false);
@@ -36,7 +36,6 @@ export default function ModalCard(props) {
   // MODAL SETTINGS
   const [open, setOpen] = useState(false);
 
-  
   const handleOpen = () => {
     setOpen(true);
   };
@@ -79,17 +78,16 @@ export default function ModalCard(props) {
     boxShadow: 24,
     margin: 0,
   };
-   const style_child_modal = {
-     position: "absolute",
-     top: "30%",
-     left: "71%",
-     transform: "translate(-50%, -50%)",
-     height:"28vh",
-     bgcolor: "#FFFFFF",
-     boxShadow: 24,
-     margin: 0,
-   };
-
+  const style_child_modal = {
+    position: "absolute",
+    top: "30%",
+    left: "71%",
+    transform: "translate(-50%, -50%)",
+    height: "28vh",
+    bgcolor: "#FFFFFF",
+    boxShadow: 24,
+    margin: 0,
+  };
 
   const style_card = {
     display: "flex",
@@ -186,18 +184,12 @@ export default function ModalCard(props) {
                 onBlur={handleNameBlur}
               />
             ) : (
-              <Typography
-                color="text.default"
-                variant="h5"
-                onClick={handleNameClick}
-              >
+              <Typography color="text.default" variant="h5" onClick={handleNameClick}>
                 {nameValue}
               </Typography>
             )
           }
-          subheader={
-            <Typography color="text.default">Dans {props.list_name}</Typography>
-          }
+          subheader={<Typography color="text.default">Dans {props.list_name}</Typography>}
           avatar={
             <BallotIcon
               sx={{
@@ -259,12 +251,7 @@ export default function ModalCard(props) {
                       width: "100%",
                     }}
                   >
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleSaveClick}
-                      disabled={!descriptionValue}
-                    >
+                    <Button variant="contained" color="primary" onClick={handleSaveClick} disabled={!descriptionValue}>
                       Enregistrer
                     </Button>
                     <Button
@@ -278,11 +265,7 @@ export default function ModalCard(props) {
                   </Box>
                 </Box>
               ) : (
-                <Typography
-                  color="text.default"
-                  onClick={handleDescriptionClick}
-                  sx={style_text}
-                >
+                <Typography color="text.default" onClick={handleDescriptionClick} sx={style_text}>
                   {descriptionValue}
                 </Typography>
               )}
@@ -322,7 +305,7 @@ export default function ModalCard(props) {
                   autoComplete="off"
                   //onSubmit={handleSubmit(onSubmit)}
                 >
-                  <Card  sx={style}>
+                  <Card sx={style}>
                     <div>
                       <h2 id="modal-title">On va ajouter des étiquettes ici</h2>
                       <p id="modal-description">Contenu de la modale</p>
@@ -330,11 +313,7 @@ export default function ModalCard(props) {
                     </div>
                   </Card>
 
-                  <Button
-                    variant="contained"
-                    onClick={handleClose}
-                    sx={{ mt: 3, mb: 2 }}
-                  >
+                  <Button variant="contained" onClick={handleClose} sx={{ mt: 3, mb: 2 }}>
                     Sauvegarder
                   </Button>
                 </Box>
@@ -345,10 +324,7 @@ export default function ModalCard(props) {
                 <ListItemIcon>
                   <PersonIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText
-                  primary="Rejoindre"
-                  primaryTypographyProps={{ color: "text.default" }}
-                />
+                <ListItemText primary="Rejoindre" primaryTypographyProps={{ color: "text.default" }} />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding sx={style_item_button}>
@@ -356,25 +332,15 @@ export default function ModalCard(props) {
                 <ListItemIcon>
                   <PersonIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText
-                  primary="Membres"
-                  primaryTypographyProps={{ color: "text.default" }}
-                />
+                <ListItemText primary="Membres" primaryTypographyProps={{ color: "text.default" }} />
               </ListItemButton>
             </ListItem>
-            <ListItem
-              onClick={handleOpen}
-              disablePadding
-              sx={style_item_button}
-            >
+            <ListItem onClick={handleOpen} disablePadding sx={style_item_button}>
               <ListItemButton>
                 <ListItemIcon>
                   <LabelIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText
-                  primary="Etiquettes"
-                  primaryTypographyProps={{ color: "text.default" }}
-                />
+                <ListItemText primary="Etiquettes" primaryTypographyProps={{ color: "text.default" }} />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding sx={style_item_button}>
@@ -382,10 +348,7 @@ export default function ModalCard(props) {
                 <ListItemIcon>
                   <DeleteIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText
-                  primary="Supprimer"
-                  primaryTypographyProps={{ color: "text.default" }}
-                />
+                <ListItemText primary="Supprimer" primaryTypographyProps={{ color: "text.default" }} />
               </ListItemButton>
             </ListItem>
           </List>

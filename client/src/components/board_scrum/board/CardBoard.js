@@ -1,6 +1,6 @@
 import React from "react";
 import Modal from "@mui/material/Modal";
-import ModalCard from "./ModalCard";
+import DetailCard from "./DetailCard";
 import InfoIcon from "@mui/icons-material/Info";
 import { Chip, Typography, Avatar, Box, Button } from "@mui/material";
 import Stack from "@mui/material/Stack";
@@ -142,7 +142,7 @@ export default function CardBoard(props) {
         </Stack>
       </Box>
       <Modal open={states.open} onClose={handleClose}>
-        <ModalCard info={info} list_name={props.list_name} Label={Label}></ModalCard>
+        <DetailCard info={info} list_name={props.list_name} Label={Label}></DetailCard>
       </Modal>
     </div>
   );
