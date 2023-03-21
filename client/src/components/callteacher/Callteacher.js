@@ -17,7 +17,7 @@ function AppelProf() {
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
-  const ws = new WebSocket(`ws://192.168.1.45:4050`);
+  const ws = new WebSocket(`ws://[::1]:4050`);
 
   useEffect(() => {
     if (dataFetchedRef.current) {
@@ -27,6 +27,7 @@ function AppelProf() {
     // addCall();
     getCall();
     getUsers();
+    getIP();
     ws.onmessage = (event) => {
       setCall(JSON.parse(event.data));
       console.log(JSON.parse(event.data));
@@ -65,9 +66,15 @@ function AppelProf() {
     });
   };
 
+  const getIP = () => {
+    axios.get("http://localhost:4000/api/server-address").then((res) => {
+      console.log(res.data);
+    });
+  };
+
   const GenerateQrcode = () => {
     QRCode.toDataURL(
-      `http://192.168.1.45:3000/Presence/${tempCall.id}`,
+      `http://10.57.29.159:3000/Presence/${tempCall.id}`,
       {
         width: 800,
         margin: 2,
