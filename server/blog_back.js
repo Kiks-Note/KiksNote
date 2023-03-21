@@ -71,11 +71,15 @@ module.exports = (app, db, ws) => {
         res.send(snapshot.docs.map((doc) => doc.data()));
     });
 
-    // app.post("/blog/:id/comments", async (req, res) => {
-    //     const snapshot = await db.collection('blog_tutos').doc(req.params.id).collection("comment").add(req.body);
-    //     res.send(snapshot.data());
-    // });
-
+    //post a new comment on a tutorial
+    app.post("/blog/:id/comments", async (req) => {
+        await db.collection('blog_tutos').doc(req.params.id).collection('comment').add({
+            'content': req.body.message,
+            'date': new Date(),
+            'user_id': 12,
+            'user_status': 'etudiant'
+        });
+    });
 
     app.post("/tutos/newtutos", async (req, res) => {
         const { title, description, photo } = req.body;
@@ -106,6 +110,4 @@ module.exports = (app, db, ws) => {
             res.status(500).send(err);
         }
     });
-
-
 };

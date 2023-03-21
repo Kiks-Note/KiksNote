@@ -5,12 +5,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import DisplayComment from "./DisplayComment";
 import CreateComment from "./CreateComment";
 
-export default function Comment({tutoId}) {
+export default function Comment({ tutoId }) {
     const [open, setOpen] = useState(false);
     const [scroll, setScroll] = useState('paper');
     const [allComments, setAllComments] = useState([]);
@@ -35,7 +35,7 @@ export default function Comment({tutoId}) {
     useEffect(() => {
         if (open) {
             getComments();
-            const {current: descriptionElement} = descriptionElementRef;
+            const { current: descriptionElement } = descriptionElementRef;
             if (descriptionElement !== null) {
                 descriptionElement.focus();
             }
@@ -63,13 +63,13 @@ export default function Comment({tutoId}) {
                         tabIndex={-1}
                     >
                         {allComments.map((comment) => (
-                            <DisplayComment comment={comment}/>
+                            <DisplayComment comment={comment} />
                         ))}
 
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <CreateComment tutoId={tutoId}/>
+                    <CreateComment tutoId={tutoId} />
                     <Button variant="outlined" onClick={handleClose}>Fermer</Button>
                 </DialogActions>
             </Dialog>
