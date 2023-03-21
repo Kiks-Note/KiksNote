@@ -1,11 +1,13 @@
 import React, { useState , useEffect } from 'react';
 import { Link } from "react-router-dom";
 import Divider from "@mui/material/Divider";
-// import axios from 'axios';
+import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
-// import sha256  from "js-sha256";
+import sha256  from "js-sha256";
 
 const Register = () => {
+
+    var encryption = "";
 
     const options = {
         autoClose: 2000,
@@ -22,14 +24,18 @@ const Register = () => {
     }
 
     const onSubmit = (data) => {
+        console.log("Default password " + formValues.password);
+        encryption = sha256(data.password).toString();
+        console.log("Hashing password " + encryption);
         var user = {
-            dateofbirth: data.birthdate,
+            dateofbirth: new Date(data.birthdate),
             email: data.email,
             firstname: data.firstname,
-            hashed_password: data.password,
+            hashed_password: encryption,
             lastname: data.lastname,
             status: data.status
         }
+        console.log(user)
         addUser(user)
     }
     async function addUser(user)  {
@@ -38,7 +44,6 @@ const Register = () => {
         }).then( (response) => {
             if (response.data === "User created successfully") {
                 toastSuccess("Utilisateur bien enregistré");
-                sendEmailFromFront()
             } else {
                 toastFail("Utilisateur non enregistré");
             }
@@ -46,7 +51,7 @@ const Register = () => {
             console.warn("error : ", err);
         });
     }
-    async function sendEmailFromFront(mail)  {
+    /* async function sendEmailFromFront(mail)  {
         await axios.post("http://localhost:5050/sendemail", {
             email: mail
         }).then( (response) => {
@@ -58,15 +63,6 @@ const Register = () => {
         }).catch((err) => {
             console.warn("error : ", err);
         });
-    }
-    /* const sendConfirm = (serviceID, templateId, variables) => {
-        window.emailjs.send(
-            serviceID, templateId,
-            variables
-        ).then(res => {
-            alert('Vérifier votre adresse mail pour finaliser votre inscription.')
-        })
-            .catch(err => {alert('Un problème est survenu pendant votre inscription, nous nous excusons de la gêne occasionée.')})
     } */
 
     const initialValues = {
@@ -91,9 +87,6 @@ const Register = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // console.log("Default password " + formValues.password);
-        // const encryption = sha256(formValues.password).toString();
-        // console.log("Hashing password " + encryption);
 
         setFormErrors(validate(formValues));
         setIsSubmit(true);
@@ -234,7 +227,7 @@ const Register = () => {
                             <input
                                 id="input-birthdate"
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                                type="birthdate"
+                                type="date"
                                 name="birthdate"
                                 placeholder="Date de Naissance"
                                 value={formValues.birthdate}
@@ -293,6 +286,7 @@ const Register = () => {
                             <select name="status"
                                 id="input-status"
                                 onChange={handleChange}>
+                                value=""
                                 <option disabled={true} value="">
                                     --Status--
                                 </option>
