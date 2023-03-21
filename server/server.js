@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const app = express();
 const WebSocket = require("ws");
+const http = require("http");
 const { db, auth } = require("./firebase");
 const { signInWithEmailAndPassword } = require("./firebase_auth");
 
@@ -17,10 +18,13 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5050;
 
+const server = http.createServer(app);
+
+const wss = new WebSocket.Server({ server });
+require("./routes/call")(app, wss, db);
 require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
-const wss = new WebSocket.Server({ port: 4050 });
 
 let currentData;
 
@@ -61,62 +65,8 @@ app.get("/users", (req, res) => {
       console.log(err);
     });
 });
-app.post("/callAdd", (req, res) => {
-  db.collection("calls")
-    .add({
-      id_lesson: req.body.id_lesson,
-      qrcode: req.body.qrcode,
-      student_scan: req.body.student_scan,
-      chats: req.body.chats,
-    })
-    .then(() => {
-      res.send("Item added to inventory");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
 
-app.get("/calls", (req, res) => {
-  db.collection("calls")
-    .get()
-    .then((snapshot) => {
-      let item = {};
-      const data = [];
-      snapshot.forEach((doc) => {
-        item = doc.data();
-        item["id"] = doc.id;
-        data.push(item);
-      });
-      res.send(data);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-app.get("/getcall", (req, res) => {
-  db.collection("calls")
-    .doc(req.query.id)
-    .get()
-    .then((data) => {
-      res.send(data.data());
-    });
-});
-
-app.post("/updatecall", (req, res) => {
-  db.collection("calls")
-    .doc(req.body.id)
-    .update(req.body.object)
-    .then(() => {
-      res.send("modification effectué");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
-
-const server = app.listen(PORT, () => {
-  const adress = server.address();
-  console.log(`Listening on port ${PORT} + ${adress.address}`);
+server.listen(PORT, () => {
+  // const adress = server.address();
+  console.log(`Listening on port ${PORT}`);
 });

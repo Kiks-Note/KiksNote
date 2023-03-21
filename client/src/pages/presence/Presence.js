@@ -5,7 +5,7 @@ import axios from "axios";
 function Presence() {
   const { id } = useParams();
   const dataFetchedRef = useRef(false);
-  const ws = new WebSocket(`ws://10.57.29.159:4050`);
+  const ws = new WebSocket(`ws://10.57.29.159:5050`);
   let tempCall;
   const [call, setCall] = useState();
 
@@ -15,15 +15,14 @@ function Presence() {
     }
     dataFetchedRef.current = true;
     ws.onmessage = (event) => {
-      console.log(JSON.parse(event.data));
+      tempCall = JSON.parse(event.data);
     };
-    getCall();
   });
 
   const updateCall = async () => {
     console.log(tempCall.id);
     const res = await axios
-      .post(`http://10.57.29.159:4000/updatecall`, {
+      .post(`http://10.57.29.159:5050/updatecall`, {
         id: tempCall.id,
         object: tempCall,
       })
@@ -31,16 +30,6 @@ function Presence() {
         console.log(res);
       });
     ws.send(JSON.stringify(tempCall));
-  };
-
-  const getCall = () => {
-    axios
-      .get(`http://10.57.29.159:4000/getcall`, { params: { id: id } })
-      .then((res) => {
-        console.log(res.data);
-        tempCall = res.data;
-        setCall(call);
-      });
   };
 
   return (

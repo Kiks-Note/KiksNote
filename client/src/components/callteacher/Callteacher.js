@@ -17,7 +17,7 @@ function AppelProf() {
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
-  const ws = new WebSocket(`ws://[::1]:4050`);
+  const ws = new WebSocket(`ws://10.57.29.159:5050`);
 
   useEffect(() => {
     if (dataFetchedRef.current) {
@@ -27,7 +27,6 @@ function AppelProf() {
     // addCall();
     getCall();
     getUsers();
-    getIP();
     ws.onmessage = (event) => {
       setCall(JSON.parse(event.data));
       console.log(JSON.parse(event.data));
@@ -40,7 +39,7 @@ function AppelProf() {
 
   const addCall = async () => {
     const res = await axios
-      .post("http://localhost:4000/callAdd", {
+      .post("http://localhost:5050/callAdd", {
         id_lesson: "",
         qrcode: "",
         student_scan: [],
@@ -53,21 +52,15 @@ function AppelProf() {
   };
 
   const getCall = () => {
-    axios.get("http://localhost:4000/calls").then((res) => {
+    axios.get("http://localhost:5050/calls").then((res) => {
       tempCall = res.data.at(-1);
       GenerateQrcode();
     });
   };
 
   const getUsers = () => {
-    axios.get("http://localhost:4000/users").then((res) => {
+    axios.get("http://localhost:5050/users").then((res) => {
       setUsers(res.data);
-      console.log(res.data);
-    });
-  };
-
-  const getIP = () => {
-    axios.get("http://localhost:4000/api/server-address").then((res) => {
       console.log(res.data);
     });
   };
@@ -91,7 +84,7 @@ function AppelProf() {
 
   const updateCall = async () => {
     const res = await axios
-      .post("http://localhost:4000/updatecall", { id: call.id, object: call })
+      .post("http://localhost:5050/updatecall", { id: call.id, object: call })
       .then((res) => {
         console.log(res);
       });
