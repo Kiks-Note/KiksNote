@@ -13,6 +13,8 @@ const Register = () => {
     const [ userPassword, setUserPassword] = useState("")
     const [ userConfirmPassword, setUserConfirmPassword] = useState("")
     const [ userStatus, setUserStatus] = useState("")
+    const [formErrors, setFormErrors] = useState({});
+    const [isSubmit, setIsSubmit] = useState(false);
 
     const options = {
         autoClose: 2000,
@@ -28,18 +30,20 @@ const Register = () => {
         toast.error(message, options);
     }
 
-    /*const onSubmit = (data) => {
-        var user = {
-            dateofbirth: new Date(data.birthdate),
-            email: data.email,
-            firstname: data.firstname,
-            password: data.password,
-            lastname: data.lastname,
-            status: data.status
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        setFormErrors(validate());
+        setIsSubmit(true);
+    }
+
+    useEffect(() => {
+        console.log(formErrors);
+        if (Object.keys(formErrors).length === 0 && isSubmit) {
+            register()
         }
-        register(user)
-    }*/
-    const handleSubmit = async () => {
+    });
+
+    const register = async () => {
         await axios.post("http://localhost:5050/register", {
             userEmail,
             userPassword,
@@ -47,86 +51,52 @@ const Register = () => {
             userLastName,
             userBirthDate,
             userStatus
-        }).then((res) => {console.log(res)}).catch((err) => {console.log(err)})
-    }
-
-    /* async function register()  {
-        await axios.post("http://localhost:5050/register", {
-            email: userEmail,
-            password: userPassword
-        }).then( (response) => {
-            if (response.data === "User created successfully") {
-                toastSuccess("Utilisateur bien enregistré");
+        }).then((res) => {
+            if (res.data.message === "User created successfully") {
+                toastSuccess("Utilisateur enregistré");
             } else {
                 toastFail("Utilisateur non enregistré");
             }
         }).catch((err) => {
-            console.warn("error : ", err);
-        });
-    } */
+            toastFail("Erreur pendant l'enregistrement");
+            console.log(err)
+        })
+    }
 
-    // const [formValues, setFormValues] = useState(initialValues);
-    const [formErrors, setFormErrors] = useState({});
-    const [isSubmit, setIsSubmit] = useState(false);
-    // const p = "5981eda53eeb4100828394dd43631aede8015e58311c5caaa3f5c67598a327d5";
-
-    /*const handleChange = (e) => {
-     const { name, value } = e.target;
-        setFormValues({ ...formValues, [name]: value });
-    }; */
-
-    /* const handleSubmit = (e) => {
-        e.preventDefault();
-
-         setFormErrors(validate(formValues));
-        setIsSubmit(true);
-    }; */
-
-    /* useEffect(() => {
-       console.log(formErrors);
-       if (Object.keys(formErrors).length === 0 && isSubmit) {
-          console.log(formValues);
-           onSubmit(formValues);
-        }
-    }); */
-
-    const validate = (values) => {
+    const validate = () => {
         const errors = {};
-        const pwd_regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
         const email_regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
         const emailedu_regex = /^[^\s@]+@edu\.esiee-it\.fr$/;
 
-        if (!values.lastname) {
+        if (userLastName === "") {
             errors.lastname = "Le nom est requis!";
         }
-        if (!values.firstname) {
+        if (userFirstName === "") {
             errors.firstname = "Le prénom est requis!";
         }
-        if (!values.email) {
+        if (userEmail === "") {
             errors.email = "L'adresse mail est requis !";
-        } else if (!email_regex.test(values.email)) {
+        } else if (!email_regex.test(userEmail)) {
             errors.email = "Ce n'est pas un format d'e-mail valide !";
         }
-        if (!values.password) {
+        if (userPassword === "") {
             errors.password = "Mot de passe requis";
-        } else if (!pwd_regex) {
-            errors.password = "Format mot de passe invalide";
-        } else if (values.password.length < 4) {
-            errors.password = "Le mot de passe doit comporter plus de 4 caractères";
-        } else if (values.password.length > 10) {
-            errors.password = "Le mot de passe ne peut pas dépasser plus de 10 caractères";
+        } else if (userPassword.length < 6) {
+            errors.password = "Le mot de passe doit comporter plus de 6 caractères";
+        } else if (userPassword.length > 24) {
+            errors.password = "Le mot de passe ne peut pas dépasser plus de 24 caractères";
         }
-        if(!values.confirmPassword) {
+        if(userConfirmPassword === "") {
             errors.confirmPassword = "Confirmez le mot de passe";
-        } else if(values.password !== values.confirmPassword) {
+        } else if(userPassword !== userConfirmPassword) {
             errors.confirmPassword = "Le mot de passe ne correspond pas";
         }
-        if(!values.status) {
+        if(userStatus === "") {
             errors.status = "Choisissez le statut"
-        } else if(values.status === "etudiant" && !emailedu_regex.test(values.email)) {
+        } else if(userStatus === "etudiant" && !emailedu_regex.test(userEmail)) {
             errors.email = "Courriel edu introuvable";
         }
-        if(!values.birthdate) {
+        if(userBirthDate === "") {
             errors.birthdate = "Remplir";
         }
 
@@ -290,7 +260,7 @@ const Register = () => {
                             id="btn-register"
                             className="bg-[#93258c] hover:bg-[#ab278e] text-white text-base font-bold py-2 px-4 rounded "
                             type="submit"
-                            onClick={() => {handleSubmit()}}
+                            onClick={handleSubmit}
                         >
                             Connexion
                         </button>
