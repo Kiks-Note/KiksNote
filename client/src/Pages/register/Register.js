@@ -6,6 +6,14 @@ import { toast, ToastContainer } from 'react-toastify';
 
 const Register = () => {
 
+    const [ userFirstName, setUserFirstName] = useState("")
+    const [ userLastName, setUserLastName] = useState("")
+    const [ userEmail, setUserEmail] = useState("")
+    const [ userBirthDate, setUserBirthDate] = useState("")
+    const [ userPassword, setUserPassword] = useState("")
+    const [ userConfirmPassword, setUserConfirmPassword] = useState("")
+    const [ userStatus, setUserStatus] = useState("")
+
     const options = {
         autoClose: 2000,
         className: '',
@@ -20,20 +28,32 @@ const Register = () => {
         toast.error(message, options);
     }
 
-    const onSubmit = (data) => {
+    /*const onSubmit = (data) => {
         var user = {
             dateofbirth: new Date(data.birthdate),
             email: data.email,
             firstname: data.firstname,
-            hashed_password: data.password,
+            password: data.password,
             lastname: data.lastname,
             status: data.status
         }
         register(user)
-    }
-    async function register(user)  {
+    }*/
+    const handleSubmit = async () => {
         await axios.post("http://localhost:5050/register", {
-            user: user
+            userEmail,
+            userPassword,
+            userFirstName,
+            userLastName,
+            userBirthDate,
+            userStatus
+        }).then((res) => {console.log(res)}).catch((err) => {console.log(err)})
+    }
+
+    /* async function register()  {
+        await axios.post("http://localhost:5050/register", {
+            email: userEmail,
+            password: userPassword
         }).then( (response) => {
             if (response.data === "User created successfully") {
                 toastSuccess("Utilisateur bien enregistré");
@@ -43,55 +63,32 @@ const Register = () => {
         }).catch((err) => {
             console.warn("error : ", err);
         });
-    }
-    /* async function sendEmailFromFront(mail)  {
-        await axios.post("http://localhost:5050/sendemail", {
-            email: mail
-        }).then( (response) => {
-            if (response.data === "mail there") {
-                toastSuccess("Mail enregistré");
-            } else {
-                toastFail("Mail non enregistré");
-            }
-        }).catch((err) => {
-            console.warn("error : ", err);
-        });
     } */
 
-    const initialValues = {
-        firstname: "",
-        lastname: "",
-        password: "",
-        confirmPassword: "",
-        email: "",
-        birthdate: "",
-        status: ""
-    };
-
-    const [formValues, setFormValues] = useState(initialValues);
+    // const [formValues, setFormValues] = useState(initialValues);
     const [formErrors, setFormErrors] = useState({});
     const [isSubmit, setIsSubmit] = useState(false);
     // const p = "5981eda53eeb4100828394dd43631aede8015e58311c5caaa3f5c67598a327d5";
 
-    const handleChange = (e) => {
-    const { name, value } = e.target;
+    /*const handleChange = (e) => {
+     const { name, value } = e.target;
         setFormValues({ ...formValues, [name]: value });
-    };
+    }; */
 
-    const handleSubmit = (e) => {
+    /* const handleSubmit = (e) => {
         e.preventDefault();
 
-        setFormErrors(validate(formValues));
+         setFormErrors(validate(formValues));
         setIsSubmit(true);
-    };
+    }; */
 
-    useEffect(() => {
-        console.log(formErrors);
-        if (Object.keys(formErrors).length === 0 && isSubmit) {
-            console.log(formValues);
-            onSubmit(formValues);
+    /* useEffect(() => {
+       console.log(formErrors);
+       if (Object.keys(formErrors).length === 0 && isSubmit) {
+          console.log(formValues);
+           onSubmit(formValues);
         }
-    });
+    }); */
 
     const validate = (values) => {
         const errors = {};
@@ -162,8 +159,8 @@ const Register = () => {
                                 type="text"
                                 name="lastname"
                                 placeholder="Nom"
-                                value={formValues.lastname}
-                                onChange={handleChange}
+                                value={userLastName}
+                                onChange={(e) => setUserLastName(e.target.value)}
                             />
                             <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                                 {formErrors.lastname}
@@ -183,8 +180,8 @@ const Register = () => {
                                 type="text"
                                 name="firstname"
                                 placeholder="Prénom"
-                                value={formValues.firstname}
-                                onChange={handleChange}
+                                value={userFirstName}
+                                onChange={(e) => setUserFirstName(e.target.value)}
                             />
                             <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                                 {formErrors.firstname}
@@ -203,8 +200,8 @@ const Register = () => {
                                 type="email"
                                 name="email"
                                 placeholder="votrecompte@edu.esiee-it.fr"
-                                value={formValues.email}
-                                onChange={handleChange}
+                                value={userEmail}
+                                onChange={(e) => setUserEmail(e.target.value)}
                             />
                             <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                                 {formErrors.email}
@@ -223,8 +220,8 @@ const Register = () => {
                                 type="date"
                                 name="birthdate"
                                 placeholder="Date de Naissance"
-                                value={formValues.birthdate}
-                                onChange={handleChange}
+                                value={userBirthDate}
+                                onChange={(e) => setUserBirthDate(e.target.value)}
                             />
                             <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                                 {formErrors.birthdate}
@@ -243,8 +240,8 @@ const Register = () => {
                                 type="password"
                                 name="password"
                                 placeholder="Mot de passe"
-                                value={formValues.password}
-                                onChange={handleChange}
+                                value={userPassword}
+                                onChange={(e) => setUserPassword(e.target.value)}
                             />
                             <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                                 {formErrors.password}
@@ -258,13 +255,13 @@ const Register = () => {
                         >
                         </label>
                             <input
-                                id="input-password"
+                                id="input-confirmpassword"
                                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="password"
                                 name="confirmPassword"
                                 placeholder="Confirm Password"
-                                value={formValues.confirmPassword}
-                                onChange={handleChange}
+                                value={userConfirmPassword}
+                                onChange={(e) => setUserConfirmPassword(e.target.value)}
                             />
                             <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                                 {formErrors.confirmPassword}
@@ -278,8 +275,7 @@ const Register = () => {
                         >
                             <select name="status"
                                 id="input-status"
-                                onChange={handleChange}>
-                                value=""
+                                onChange={(e)=>setUserStatus(e.target.value)}>
                                 <option disabled={true} value="">
                                     --Status--
                                 </option>
@@ -294,7 +290,7 @@ const Register = () => {
                             id="btn-register"
                             className="bg-[#93258c] hover:bg-[#ab278e] text-white text-base font-bold py-2 px-4 rounded "
                             type="submit"
-                            onClick={handleSubmit}
+                            onClick={() => {handleSubmit()}}
                         >
                             Connexion
                         </button>

@@ -1,30 +1,31 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
-const { db } = require("./firebase");
+const { db, auth } = require("./firebase");
 
 app.use(express.json());
 app.use(cors());
 
 const PORT = process.env.PORT || 5050;
 
-app.post('/register', async(req, res) => {
-    try {
-        const {email, password} = req.body.user;
-        db.auth().createUserWithEmailAndPassword(email, password)
-            .then((userCredential) => {
-                var user = userCredential.user;
-                console.log(user);
-            })
-            .catch((error) => {
-                var errorCode = error.code;
-                var errorMessage = error.message;
-                console.log(error);
-            });
+app.post('/register', (req, res) => {
+    const {userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus} = req.body;
+    auth.createUser({
+        email: userEmail,
+        password: userPassword,
+    }).then((user) => {
+        db.collection("users").doc(userEmail).set({
+            firstname: userFirstName,
+            lastname: userLastName,
+            password: userPassword,
+            dateofbirth : new Date(userBirthDate),
+            status: userStatus,
+            email: userEmail
+        })
         res.send({ message: "User created successfully" })
-    } catch(e) {
-
-    }
+    }).catch((err)=>{
+        console.log(err);
+    })
 })
 
 app.post("/addUser", (req, res) => {
