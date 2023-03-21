@@ -1,183 +1,176 @@
-module.exports = (app, db, ws) => {
-    // app.get("/blogs", (req, res) => {
-    //     const docs = [];
-    //     const comments = [];
-    //     res.setHeader("Access-Control-Allow-Origin", "*");
-    //     db.collection("blog_tutos").get().then((snapshot) => {
-    //         snapshot.forEach((doc) => {
-    //             docs.push(doc.data());
-    //             res.send(docs);
-    //             doc.ref.collection("comment").get().then((snap) => {
-    //                 snap.forEach((com) => {
-    //                     comments.push(com.data());
-    //                     // res.send(comments);
-    //                     // console.log(comments);
-    //                 })
-    //             }).catch((err) => {
-    //                 console.log(err);
-    //             });
-    //         })
-    //     })
-    // })
+module.exports = (app, db, ws, parse) => {
+  // app.get("/blogs", (req, res) => {
+  //     const docs = [];
+  //     const comments = [];
+  //     res.setHeader("Access-Control-Allow-Origin", "*");
+  //     db.collection("blog_tutos").get().then((snapshot) => {
+  //         snapshot.forEach((doc) => {
+  //             docs.push(doc.data());
+  //             res.send(docs);
+  //             doc.ref.collection("comment").get().then((snap) => {
+  //                 snap.forEach((com) => {
+  //                     comments.push(com.data());
+  //                     // res.send(comments);
+  //                     // console.log(comments);
+  //                 })
+  //             }).catch((err) => {
+  //                 console.log(err);
+  //             });
+  //         })
+  //     })
+  // })
 
-    ws.on("request", (request) => {
-        const connection = request.accept(null, request.origin);
+  ws.on("request", (request) => {
+    const connection = request.accept(null, request.origin);
+    const { pathname } = parse(request.httpRequest.url);
+    console.log("request.httpServer => ", request);
+    console.log("request.url => ", request.pathname);
+    console.log("pathname => ", pathname);
+    connection
+      ? console.log("connection ok")
+      : console.log("connection failed");
 
-        connection
-            ? console.log("connection ok")
-            : console.log("connection failed");
-
-        db.collection("blog_evenements").onSnapshot(
-            (snapshot) => {
-                const documents = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                connection.sendUTF(JSON.stringify(documents));
-            },
-            (err) => {
-                console.log(err);
-            }
-        );
-
-        // db.collection("blog_evenements").onSnapshot(
-        //     (snapshot) => {
-        //         const documents = snapshot.docs.map((doc) => ({
-        //             id: doc.id,
-        //             ...doc.data(),
-        //         }));
-        //         connection.sendUTF(JSON.stringify(documents));
-        //     },
-        //     (err) => {
-        //         console.log(err);
-        //     }
-        // );
-    });
-
-
-    ws.on("blogRequest", (request) => {
-        const connection = request.accept(null, request.origin);
-
-        connection
-            ? console.log("connection ok")
-            : console.log("connection failed");
-
-        db.collection("blog_tutos").onSnapshot(
-            (snapshot) => {
-                const documents = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                }));
-                connection.sendUTF(JSON.stringify(documents));
-            },
-            (err) => {
-                console.log(err);
-            }
-        );
-
-    });
-
-
-
-    // get all tutos
-    // app.get("/tutos", async (req, res) => {
-    //   const snapshot = await db.collection("blog_tutos").get();
-    //   res.send(snapshot.docs.map((doc) => doc.data()));
-    //   // return snapshot.docs.map(doc => doc.data());
-    // });
-
-    //get all tutos id
-    app.get("/tutos/id", async (req, res) => {
-        const snapshot = await db.collection("blog_tutos").get();
-        res.send(snapshot.docs.map((doc) => doc.id));
-        // return snapshot.docs.map(doc => doc.data());
-    });
-
-    // get tutos by id
-    app.get("/tuto/:id", async (req, res) => {
-        const snapshot = await db.collection("blog_tutos").doc(req.params.id).get();
-        res.send(snapshot.data());
-    });
-
-    // get all comments by tutos id
-    app.get("/tuto/:id/comments", async (req, res) => {
-        const snapshot = await db
-            .collection("blog_tutos")
-            .doc(req.params.id)
-            .collection("comment")
-            .get();
-        res.send(snapshot.docs.map((doc) => doc.data()));
-    });
-
-    //post a new comment on a tutorial
-    app.post("/blog/:id/comments", async (req) => {
-        await db.collection('blog_tutos').doc(req.params.id).collection('comment').add({
-            'content': req.body.message,
-            'date': new Date(),
-            'user_id': 12,
-            'user_status': 'etudiant'
-        });
-    });
-
-    app.post("/tutos/newtutos", async (req, res) => {
-        const { title, description, photo } = req.body;
-
-
-        if (title == null || title == "") {
-            return res.status(400).send("Title is required");
+    if (pathname === "/blog") {
+      db.collection("blog_evenements").onSnapshot(
+        (snapshot) => {
+          const documents = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          connection.sendUTF(JSON.stringify(documents));
+        },
+        (err) => {
+          console.log(err);
         }
-        if (description == null || description == "") {
-            return res.status(400).send("Description is required");
+      );
+    } else if (pathname === "/tuto") {
+      db.collection("blog_tutos").onSnapshot(
+        (snapshot) => {
+          const documents = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          connection.sendUTF(JSON.stringify(documents));
+        },
+        (err) => {
+          console.log(err);
         }
-        if (photo == null || photo == "") {
-            return res.status(400).send("Photo is required");
-        }
+      );
+    }
+  });
 
+  // ws.on("blogRequest", (request) => {
+  //   const connection = request.accept(null, request.origin);
+  //
+  //   connection
+  //       ? console.log("connection ok")
+  //       : console.log("connection failed");
+  //
+  //   db.collection("blog_evenements").onSnapshot(
+  //       (snapshot) => {
+  //         const documents = snapshot.docs.map((doc) => ({
+  //           id: doc.id,
+  //           ...doc.data(),
+  //         }));
+  //         connection.sendUTF(JSON.stringify(documents));
+  //       },
+  //       (err) => {
+  //         console.log(err);
+  //       }
+  //   );
+  // });
 
-        try {
-            await db.collection("blog_tutos").doc().set({
+  // get all tutos
+  app.get("/tutos", async (req, res) => {
+    const snapshot = await db.collection("blog_tutos").get();
+    res.send(snapshot.docs.map((doc) => doc.data()));
+    // return snapshot.docs.map(doc => doc.data());
+  });
 
-                title: title,
-                description: description,
-                photo: photo,
+  //get all tutos id
+  app.get("/tutos/id", async (req, res) => {
+    const snapshot = await db.collection("blog_tutos").get();
+    res.send(snapshot.docs.map((doc) => doc.id));
+    // return snapshot.docs.map(doc => doc.data());
+  });
 
-            });
-            res.send("Document successfully written!");
+  // get tutos by id
+  app.get("/tuto/:id", async (req, res) => {
+    const snapshot = await db.collection("blog_tutos").doc(req.params.id).get();
+    res.send(snapshot.data());
+  });
 
-        } catch (err) {
-            res.status(500).send(err);
-        }
-    });
+  // get all comments by tutos id
+  app.get("/tuto/:id/comments", async (req, res) => {
+    const snapshot = await db
+      .collection("blog_tutos")
+      .doc(req.params.id)
+      .collection("comment")
+      .get();
+    res.send(snapshot.docs.map((doc) => doc.data()));
+  });
 
+  //post a new comment on a tutorial
+  app.post("/blog/:id/comments", async (req) => {
+    await db
+      .collection("blog_tutos")
+      .doc(req.params.id)
+      .collection("comment")
+      .add({
+        content: req.body.message,
+        date: new Date(),
+        user_id: 12,
+        user_status: "etudiant",
+      });
+  });
 
-    app.post("/blog/newblog", async (req, res) => {
-        const { title, description, photo } = req.body;
+  app.post("/tutos/newtutos", async (req, res) => {
+    const { title, description, photo } = req.body;
 
+    if (title == null || title == "") {
+      return res.status(400).send("Title is required");
+    }
+    if (description == null || description == "") {
+      return res.status(400).send("Description is required");
+    }
+    if (photo == null || photo == "") {
+      return res.status(400).send("Photo is required");
+    }
 
-        if (title == null || title == "") {
-            return res.status(400).send("Title is required");
-        }
-        if (description == null || description == "") {
-            return res.status(400).send("Description is required");
-        }
-        if (photo == null || photo == "") {
-            return res.status(400).send("Photo is required");
-        }
+    try {
+      await db.collection("blog_tutos").doc().set({
+        title: title,
+        description: description,
+        photo: photo,
+      });
+      res.send("Document successfully written!");
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  });
 
+  app.post("/blog/newblog", async (req, res) => {
+    const { title, description, photo } = req.body;
 
-        try {
-            await db.collection("blog_evenements").doc().set({
+    if (title == null || title == "") {
+      return res.status(400).send("Title is required");
+    }
+    if (description == null || description == "") {
+      return res.status(400).send("Description is required");
+    }
+    if (photo == null || photo == "") {
+      return res.status(400).send("Photo is required");
+    }
 
-                title: title,
-                description: description,
-                photo: photo,
-
-            });
-            res.send("Document successfully written!");
-
-        } catch (err) {
-            res.status(500).send(err);
-        }
-    });
-
+    try {
+      await db.collection("blog_evenements").doc().set({
+        title: title,
+        description: description,
+        photo: photo,
+      });
+      res.send("Document successfully written!");
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  });
 };

@@ -4,6 +4,7 @@ const app = express();
 const { db } = require("./firebase");
 const webSocketServer = require("websocket").server;
 const http = require("http");
+const { parse } = require("url");
 
 app.use(express.json());
 app.use(cors());
@@ -37,6 +38,6 @@ const ws = new webSocketServer({
 //     });
 // });
 
-require("./blog_back.js")(app, db, ws);
+require("./blog_back.js")(app, db, ws, parse);
 
 // app.listen(PORT, () => console.log(`Listening on port ${PORT}`));

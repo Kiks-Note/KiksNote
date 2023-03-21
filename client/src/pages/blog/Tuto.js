@@ -19,8 +19,9 @@ function Tuto() {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050");
-      ws.onmessage = (message) => {
+      const wsTutos = new w3cwebsocket("ws://localhost:5050/tuto");
+
+      wsTutos.onmessage = (message) => {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
         setTutos(dataFromServer);
