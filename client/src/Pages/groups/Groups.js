@@ -1,19 +1,7 @@
 
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-
-
-const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 400,
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-};
+import "./Groups.scss"
 
 const tasks = [
     {
@@ -24,6 +12,90 @@ const tasks = [
         id: "2",
         name: "Celian",
     },
+    {
+        id: "3",
+        name: "Killian",
+    },
+    {
+        id: "4",
+        name: "Antoine",
+    },
+    {
+        id: "5",
+        name: "Johan",
+    },
+    {
+        id: "6",
+        name: "Rui",
+    },
+    {
+        id: "7",
+        name: "Louis",
+    },
+    {
+        id: "8",
+        name: "Jules",
+    },
+    {
+        id: "9",
+        name: "Mohammed",
+    },
+    {
+        id: "10",
+        name: "Eddy",
+    },
+    {
+        id: "11",
+        name: "Lucas",
+    },
+    {
+        id: "12",
+        name: "Alan",
+    },
+    {
+        id: "13",
+        name: "Etienne",
+    },
+    {
+        id: "14",
+        name: "Adrien",
+    },
+/*     {
+        id: "15",
+        name: "Ilan",
+    },
+    {
+        id: "16",
+        name: "Guillaume",
+    },
+    {
+        id: "17",
+        name: "Theo",
+    },
+    {
+        id: "18",
+        name: "Julien",
+    },
+    {
+        id: "19",
+        name: "Jerance",
+    },
+    {
+        id: "20",
+        name: "Maxime",
+    },
+    {
+        id: "21",
+        name: "Florian",
+    },
+    {
+        id: "22",
+        name: "Xavier",
+    },
+    {
+        id: "23",
+        name: "Thomas",
+    }, */
 ];
 const taskStatus = {
     students: {
@@ -88,14 +160,28 @@ const onDragEnd = (result, columns, setColumns) => {
     }
 };
 
-function App() {
+let colorIndex = 0;
+let pastelColours = ['#FF4747', '#FFA333', '#faff70', '#99ff85', '#5cf1ff', '#70a7ff', '#745cff', '#FF99FF'];
+
+function getColorBackground() {
+    var color = pastelColours[colorIndex];
+    if (colorIndex >= pastelColours.length - 1) {
+        colorIndex = 0;
+    }
+    else {
+        colorIndex++;
+    }
+    return color;
+}
+
+function Groups() {
     const [columns, setColumns] = useState(taskStatus);
     return (
         <div>
             <h1 style={{ textAlign: "center" }}>Board</h1>
             <div style={{
                 display: "flex", justifyContent: "space-around", height: "100%",
-                margin: "1%", flexWrap: "wrap"
+                margin: "1%", flexWrap: "wrap", width: "100%"
             }}>
                 <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
                     {Object.entries(columns).map(([columnId, column], index) => {
@@ -112,9 +198,8 @@ function App() {
                                     key={columnId}
                                 >
                                     {" "}
-                                    <h2>{column.name}</h2>
-                                    <div style={{ margin: 8 }}>
-                                        <Droppable droppableId={columnId} key={columnId}>
+                                    <div style={{ margin: 8, width: "100%", display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
+                                        <Droppable droppableId={columnId} key={columnId} >
                                             {(provided, snapshot) => {
                                                 return (
                                                     <div
@@ -123,14 +208,21 @@ function App() {
                                                         style={{
                                                             background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
                                                             padding: 4,
-                                                            width: 250,
+                                                            width: "100%",
                                                             minHeight: 140,
                                                             maxHeight: 500,
                                                             overflow: "auto",
                                                             height: "auto",
+                                                            display: "flex",
+                                                            flexDirection: "row",
+                                                            justifyContent: "center",
+                                                            flexWrap: "wrap",
+                                                            alignItems: "center"
                                                         }}
+
                                                     >
                                                         {column.items.map((item, index) => {
+                                                            const color = getColorBackground();
                                                             return (
                                                                 <Draggable key={item.id} draggableId={item.id} index={index}>
                                                                     {(provided, snapshot) => {
@@ -139,16 +231,8 @@ function App() {
                                                                                 ref={provided.innerRef}
                                                                                 {...provided.draggableProps}
                                                                                 {...provided.dragHandleProps}
-                                                                                style={{
-                                                                                    userSelect: "none",
-                                                                                    padding: 16,
-                                                                                    marginBottom: 8,
-                                                                                    minHeight: "60px",
-                                                                                    borderRadius: 3,
-                                                                                    backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
-                                                                                    color: "white",
-                                                                                    ...provided.draggableProps.style,
-                                                                                }}
+                                                                                style={{ backgroundColor: color}}
+                                                                                className="post-it"
                                                                             >
                                                                                 <p>{item.name}</p>
                                                                             </div>
@@ -174,7 +258,6 @@ function App() {
                                         display: "flex",
                                         flexDirection: "column",
                                         alignItems: "center",
-
                                         width: "30%"
                                     }}
                                     key={columnId}
@@ -196,6 +279,11 @@ function App() {
                                                             maxHeight: 500,
                                                             overflow: "auto",
                                                             height: "auto",
+                                                            display: "flex",
+                                                            flexDirection: "row",
+                                                            justifyContent: "space-around",
+                                                            flexWrap: "wrap",
+                                                            alignItems: "center"
                                                         }}
                                                     >
                                                         {column.items.map((item, index) => {
@@ -208,15 +296,10 @@ function App() {
                                                                                 {...provided.draggableProps}
                                                                                 {...provided.dragHandleProps}
                                                                                 style={{
-                                                                                    userSelect: "none",
-                                                                                    padding: 16,
-                                                                                    marginBottom: 8,
-                                                                                    minHeight: "60px",
-                                                                                    borderRadius: 3,
-                                                                                    backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
-                                                                                    color: "white",
-                                                                                    ...provided.draggableProps.style,
+                                                                                    backgroundColor: getColorBackground()
                                                                                 }}
+
+                                                                                className="post-it"
                                                                             >
                                                                                 <p>{item.name}</p>
                                                                             </div>
@@ -240,4 +323,4 @@ function App() {
         </div >
     );
 }
-export default App;
+export default Groups;
