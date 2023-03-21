@@ -1,4 +1,14 @@
 import React, { useState, useEffect } from "react";
+import {
+  TextField,
+  Typography,
+  Container,
+  Box,
+  Button,
+  Link,
+  Grid
+} from "@mui/material";
+
 import axios from "axios";
 
 import { accountAuthService } from "../../services/accountAuth";
@@ -46,92 +56,74 @@ const Login = () => {
 
   return (
     <div className="Login">
-      <div className="Login-header">
-        <div className="container-login">
-          <h1 className="text-4xl font-extrabold dark:text-white m-4 text-center">
-            Connexion
-          </h1>
-          <form className="p-15" onSubmit={onSubmit}>
-            {/* mail adress label and input */}
-            <div className="m-4">
-              <label
-                id="label-email"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                htmlFor="input-email"
-              >
-                Adresse mail
-              </label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                id="input-email"
-                type="email"
-                name="email"
-                value={email}
-                onChange={onChangeEmail}
-                placeholder="votrecompte@edu.esiee-it.fr"
-              />
-              { errorMessage === "Incorrect email" && (
-                <span className="flex mt-1 text-sm text-red-600 dark:text-red-500 font-bold">
-                  L'email est incorrecte
-                </span>
-              )}
-            </div>
-            {/* password label and input */}
-            <div className="m-4">
-              <label
-                id="label-password"
-                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                htmlFor="input-password"
-              >
-                Mot de passe
-              </label>
-              <input
-                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                id="input-password"
-                type="password"
-                name="password"
-                value={password}
-                onChange={onChangePassword}
-                placeholder="votre mot de passe"
-              />
-              {errorMessage === "Wrong password" && (
-                <span>Le mot de passe est incorrect</span>
-              )}
-              {errorMessage === "Email and password is required to login" && (
-                <span className="flex mt-1 text-sm text-red-600 dark:text-red-500 font-bold">
-                  Il manque l'email ou le mot de passe
-                </span>
-              )}
+      <Grid container spacing={0} direction="column" alignItems="center" justify="center" className="login-page">
+        <Grid item xs={6}>
+        <div className="Login-header">
+          <div className="container-login">
+            <Typography component="h1" className="text-4xl font-extrabold m-4 text-center">
+              Connexion
+            </Typography>
+            <form className="p-15" onSubmit={onSubmit}>
+              {/* mail adress label and input */}
+              <Container fixed className="textfield-box-login">
+                <TextField
+                  variant="standard"
+                  fullWidth
+                  className="textfield-login"
+                  label="Adresse mail"
+                  // className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  id="input-email"
+                  defaultValue={email}
+                  onChange={onChangeEmail}
+                />
+                {errorMessage === "Incorrect email" && (
+                  <Typography sx={{fontWeight: 'bold'}} className="error-text-login">
+                    L'email est incorrecte
+                  </Typography>
+                )}
+              </Container>
+              {/* password label and input */}
+              <Container fixed className="textfield-box-login">
+                <TextField
+                  type="password"
+                  variant="standard"
+                  fullWidth
+                  label="Mot de passe"
+                  // className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  id="input-password"
+                  defaultValue={password}
+                  onChange={onChangePassword}
+                />
+                {errorMessage === "Wrong password" && (
+                  <Typography sx={{fontWeight: 'bold'}} className="error-text-login">Le mot de passe est incorrect</Typography>
+                )}
+                {errorMessage === "Email and password is required to login" && (
+                  <Typography sx={{fontWeight: 'bold'}} className="error-text-login">
+                    Il manque l'email ou le mot de passe
+                  </Typography>
+                )}
 
-              <a
-                className="flex text-sm text-[#B312FF] dark:text-[#B312FF] hover:underline"
-                href="/askresetpass"
-              >
-                Mot de passe oublie ?
-              </a>
-            </div>
-            <div className="flex justify-center">
-              <button
-                id="btn-login"
-                className="bg-[#93258c] hover:bg-[#ab278e] text-white text-base font-bold py-2 px-4 rounded "
-                type="submit"
-              >
-                Connexion
-              </button>
-            </div>
-          </form>
+                <Link href="/askresetpass">Mot de passe oublie ?</Link>
+              </Container>
+              <Box textAlign='center' className="button-box-login">
+                <Button type="submit" variant="contained">
+                  Connexion
+                </Button>
+              </Box>
+            </form>
 
-          <p className="text-sm font-medium text-center m-3">
-            Pas encore de compte? Créez-en un{" "}
-            <a
-              className="text-sm font-medium text-[#B312FF] dark:text-[#B312FF] hover:underline"
-              href="/signup"
-            >
-              ici
-            </a>
-          </p>
+            <p className="text-sm font-medium text-center m-3">
+              Pas encore de compte? Créez-en un{" "}
+              <Link
+                href="/signup"
+              >
+                ici
+              </Link>
+            </p>
+          </div>
         </div>
-      </div>
+       </Grid>
+      </Grid>
     </div>
   );
 };
