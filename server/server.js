@@ -22,12 +22,10 @@ const broadcastData = (data) => {
 };
 
 // Handle incoming connections from clients
-wss.on("connection", (ws) => {
+wss.on("connection", (ws, req) => {
   // Send the current data to the new client
   ws.send(currentData);
-
   console.log(ws.eventNames());
-
   ws.onmessage = (event) => {
     console.log("test");
     currentData = event.data;
@@ -41,20 +39,20 @@ wss.on("connection", (ws) => {
 //   res.send({ message: "User created successfully" });
 // });
 //
-// app.get("/users", (req, res) => {
-//   db.collection("users")
-//     .get()
-//     .then((snapshot) => {
-//       const data = [];
-//       snapshot.forEach((doc) => {
-//         data.push(doc.data());
-//       });
-//       res.send(data);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
+app.get("/users", (req, res) => {
+  db.collection("users")
+    .get()
+    .then((snapshot) => {
+      const data = [];
+      snapshot.forEach((doc) => {
+        data.push(doc.data());
+      });
+      res.send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+});
 app.post("/callAdd", (req, res) => {
   db.collection("calls")
     .add({

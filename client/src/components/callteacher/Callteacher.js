@@ -12,11 +12,12 @@ function AppelProf() {
     student_scan: [],
     chats: [],
   });
+  const [users, setUsers] = useState([]);
   const [Chats, setChats] = useState([]);
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
-  const ws = new WebSocket("ws://192.168.1.16:4050");
+  const ws = new WebSocket(`ws://192.168.1.45:4050`);
 
   useEffect(() => {
     if (dataFetchedRef.current) {
@@ -25,7 +26,7 @@ function AppelProf() {
     dataFetchedRef.current = true;
     // addCall();
     getCall();
-
+    getUsers();
     ws.onmessage = (event) => {
       setCall(JSON.parse(event.data));
       console.log(JSON.parse(event.data));
@@ -35,15 +36,6 @@ function AppelProf() {
   useEffect(() => {
     if (generated.current);
   }, [call]);
-
-  const users = [
-    { id: 1, username: "jules" },
-    { id: 2, username: "celian" },
-    { id: 3, username: "lucas" },
-    { id: 4, username: "mohamed" },
-    { id: 5, username: "jerance" },
-    { id: 6, username: "rui" },
-  ];
 
   const addCall = async () => {
     const res = await axios
@@ -61,15 +53,21 @@ function AppelProf() {
 
   const getCall = () => {
     axios.get("http://localhost:4000/calls").then((res) => {
-      console.log(res.data.at(-1));
       tempCall = res.data.at(-1);
       GenerateQrcode();
     });
   };
 
+  const getUsers = () => {
+    axios.get("http://localhost:4000/users").then((res) => {
+      setUsers(res.data);
+      console.log(res.data);
+    });
+  };
+
   const GenerateQrcode = () => {
     QRCode.toDataURL(
-      `http://192.168.1.16:3000/presence/${tempCall.id}`,
+      `http://192.168.1.45:3000/Presence/${tempCall.id}`,
       {
         width: 800,
         margin: 2,
@@ -108,7 +106,7 @@ function AppelProf() {
               {users.map((user) => {
                 return (
                   <span key={user.id} className="UserItem">
-                    {user.username}
+                    {user.firstname}
                   </span>
                 );
               })}
@@ -119,7 +117,7 @@ function AppelProf() {
               {users.map((user) => {
                 return (
                   <span key={user.id} className="UserItem">
-                    {user.username}
+                    {user.firstname}
                   </span>
                 );
               })}
