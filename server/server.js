@@ -17,7 +17,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 5050;
-
 const server = http.createServer(app);
 
 const wss = new WebSocket.Server({ server });
