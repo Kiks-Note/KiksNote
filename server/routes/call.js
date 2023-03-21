@@ -7,8 +7,8 @@ module.exports = (app, wss, db) => {
         student_scan: req.body.student_scan,
         chats: req.body.chats,
       })
-      .then(() => {
-        res.send("Item added to inventory");
+      .then((doc) => {
+        res.send(doc.id);
       })
       .catch((err) => {
         console.log(err);

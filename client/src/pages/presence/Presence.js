@@ -17,6 +17,7 @@ function Presence() {
     ws.onmessage = (event) => {
       tempCall = JSON.parse(event.data);
     };
+    getCall();
   });
 
   const updateCall = async () => {
@@ -32,15 +33,23 @@ function Presence() {
     ws.send(JSON.stringify(tempCall));
   };
 
+  const getCall = () => {
+    axios
+      .get(`http://10.57.29.159:5050/getcall`, { params: { id: id } })
+      .then((res) => {
+        tempCall = res.data;
+        setCall(call);
+      });
+  };
+
   return (
     <div>
-      <span>{id}</span>
       <button
         onClick={() => {
           updateCall();
         }}
       >
-        test
+        Présent
       </button>
     </div>
   );

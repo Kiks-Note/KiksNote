@@ -2,6 +2,7 @@ import QRCode from "qrcode";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import "./Callteacher.scss";
+import Countdown from "react-countdown";
 
 function AppelProf() {
   // const [url, setUrl] = useState("");
@@ -18,6 +19,13 @@ function AppelProf() {
   const generated = useRef(false);
   let tempCall;
   const ws = new WebSocket(`ws://10.57.29.159:5050`);
+  const renderer = ({ minutes, seconds }) => {
+    return (
+      <span>
+        {minutes}:{seconds}
+      </span>
+    );
+  };
 
   useEffect(() => {
     if (dataFetchedRef.current) {
@@ -94,7 +102,13 @@ function AppelProf() {
   return (
     <div className="ContentProf">
       <div className="Timer">
-        <h1>15:00</h1>
+        <Countdown
+          date={Date.now() + 900000}
+          renderer={renderer}
+          onComplete={() => {
+            document.getElementsByClassName("DivQr")[0].style.display = "none";
+          }}
+        />
       </div>
       <div className="ContentInfo">
         <div className="DivQr">
@@ -145,17 +159,6 @@ function AppelProf() {
               );
             })}
           </div>
-        </div>
-        <div>
-          <button onClick={updateCall}>modification</button>
-          <button onClick={addCall}>add</button>
-          <button
-            onClick={() => {
-              console.log(call);
-            }}
-          >
-            call
-          </button>
         </div>
       </div>
     </div>
