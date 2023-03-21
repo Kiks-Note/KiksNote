@@ -125,7 +125,7 @@ export default function MiniDrawer({ element }) {
             {
               id: 4,
               name: "Espace de travail",
-              route: "/dashboard",
+              route: "/tabList",
               icon: <DashboardIcon style={{ color: theme.palette.custom.iconDrawer }} />,
             },
             {

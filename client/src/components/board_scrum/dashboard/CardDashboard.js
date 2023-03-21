@@ -5,12 +5,23 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import { Box, Button, CardActionArea, Typography } from "@mui/material";
 
-export default function CardDashboard({ picture, sprint_group, fav, isFavoris,id }) {
+export default function CardDashboard({ picture, sprint_group, fav, isFavoris, id }) {
+  const moveToOverView = () => {
+    var x = JSON.parse(localStorage.getItem("tabs")) || [];
+    var push = true;
+    for (var tab of x) {
+      if (tab.id === id) {
+        push = false;
+      }
+    }
+    if (push) {
+      x.push({ id: id, type: "board", label: sprint_group });
+      localStorage.setItem("tabs", JSON.stringify(x));
+    }
+    localStorage.setItem("activeTab", JSON.stringify(id));
+  };
   return (
-    <CardActionArea
-      href={`http://localhost:3000/board/${id}`}
-      sx={{ height: 150, maxWidth: 345 }}
-    >
+    <CardActionArea onClick={moveToOverView} sx={{ height: 150, maxWidth: 345 }}>
       <Card
         sx={{
           height: 150,

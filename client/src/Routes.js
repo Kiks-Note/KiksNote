@@ -4,6 +4,7 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
 import Dashboard from "./pages/board_scrum/Dashboard";
+import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Board from "./pages/board_scrum/Board";
 
 function RoutesProvider() {
@@ -27,8 +28,7 @@ function RoutesProvider() {
 
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/board/:boardId" element={<Board />} />
+          <Route path="/tabList" element={<TabList />} />
         </Route>
       </Routes>
     </BrowserRouter>

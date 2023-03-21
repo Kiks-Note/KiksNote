@@ -23,14 +23,14 @@ const tasks = [
       {
         id: "1",
         name: "John Doe",
-        photo: "https://example.com/photos/john.jpg",
+        photo: "https://picsum.photos/500/300?random=45",
       },
       {
         id: "2",
         name: "Jane Smith",
-        photo: "https://example.com/photos/jane.jpg",
+        photo: "https://picsum.photos/500/300?random=67",
       },
-      { id: "3", name: "Bob Johnson", photo: "https://example.com/photos/bob.jpg" },
+      { id: "3", name: "Bob Johnson", photo: "https://picsum.photos/500/300?random=89" },
     ],
     labels: ["Urgent", "Fix", "Feature"],
   },
@@ -42,7 +42,7 @@ const tasks = [
       {
         id: "3",
         name: "Bob Johnson",
-        photo: "https://example.com/photos/bob.jpg",
+        photo: "https://picsum.photos/500/300?random=3",
       },
     ],
     labels: ["Urgent"],
@@ -62,12 +62,12 @@ const tasks = [
       {
         id: "2",
         name: "Jane Smith",
-        photo: "https://example.com/photos/jane.jpg",
+        photo: "https://picsum.photos/500/300?random=1",
       },
       {
         id: "3",
         name: "Bob Johnson",
-        photo: "https://example.com/photos/bob.jpg",
+        photo: "https://picsum.photos/500/300?random=2",
       },
     ],
     labels: ["Feature", "Urgent"],
@@ -260,26 +260,18 @@ function Board() {
     <>
       <div>
         {errorMessage && (
-          <Alert
-            severity="warning"
-            variant="filled"
-            TransitionComponent={TransitionComponent}
-          >
+          <Alert severity="warning" variant="filled" TransitionComponent={TransitionComponent}>
             <AlertTitle>Attention</AlertTitle>
             {errorMessage}
           </Alert>
         )}
-        <Typography style={{ textAlign: "center" }} variant="h5">Scrum Board</Typography>
-        <Switch
-          checked={label}
-          onChange={labelChange}
-          inputProps={{ "aria-label": "controlled" }}
-        />
+        <Typography style={{ textAlign: "center" }} variant="h5">
+          Scrum Board
+        </Typography>
+        <Switch checked={label} onChange={labelChange} inputProps={{ "aria-label": "controlled" }} />
         <p>Label name</p>
         <div className="board_container_all">
-          <DragDropContext
-            onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
-          >
+          <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
             {Object.entries(columns).map(([columnId, column], index) => {
               return (
                 <div className="board_container_table" key={columnId}>
@@ -295,18 +287,11 @@ function Board() {
                       >
                         {column.name}
                       </Typography>
-                      <IconButton
-                        aria-label="menu"
-                        onClick={(event) => handleMenuOpen(event, columnId)}
-                      >
+                      <IconButton aria-label="menu" onClick={(event) => handleMenuOpen(event, columnId)}>
                         <MoreHorizIcon />
                       </IconButton>
                     </div>
-                    <Menu
-                      anchorEl={menuAnchorEl}
-                      open={Boolean(menuAnchorEl)}
-                      onClose={handleMenuClose}
-                    >
+                    <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleMenuClose}>
                       <MenuItem
                         onClick={() => {
                           handleMenuClose();
@@ -324,9 +309,7 @@ function Board() {
                             {...provided.droppableProps}
                             ref={provided.innerRef}
                             style={{
-                              background: snapshot.isDraggingOver
-                                ? "#ed6c0247"
-                                : "#ebecf0",
+                              background: snapshot.isDraggingOver ? "#ed6c0247" : "#ebecf0",
                               padding: 4,
                               width: 260,
                               minHeight: 30,
@@ -341,10 +324,7 @@ function Board() {
                                   key={item.id}
                                   draggableId={item.id}
                                   index={index}
-                                  isDragDisabled={
-                                    column.isDragDisabled &&
-                                    column.name === "Stories"
-                                  } //  disable the drag on the "Stories" column
+                                  isDragDisabled={column.isDragDisabled && column.name === "Stories"} //  disable the drag on the "Stories" column
                                 >
                                   {(provided, snapshot) => {
                                     return (
@@ -357,9 +337,7 @@ function Board() {
                                           marginBottom: 8,
                                           minHeight: "60px",
                                           borderRadius: 3,
-                                          backgroundColor: snapshot.isDragging
-                                            ? "#FFFFFF"
-                                            : "#FFFFFF",
+                                          backgroundColor: snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
                                           boxShadow:
                                             "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
                                           color: "white",
