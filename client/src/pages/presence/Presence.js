@@ -5,7 +5,7 @@ import axios from "axios";
 function Presence() {
   const { id } = useParams();
   const dataFetchedRef = useRef(false);
-  const ws = new WebSocket(`ws://192.168.1.45:4050`);
+  const ws = new WebSocket(`ws://10.57.29.159:4050`);
   let tempCall;
   const [call, setCall] = useState();
 
@@ -23,7 +23,7 @@ function Presence() {
   const updateCall = async () => {
     console.log(tempCall.id);
     const res = await axios
-      .post(`http://192.168.1.45:4000/updatecall`, {
+      .post(`http://10.57.29.159:4000/updatecall`, {
         id: tempCall.id,
         object: tempCall,
       })
@@ -35,7 +35,7 @@ function Presence() {
 
   const getCall = () => {
     axios
-      .get(`http://192.168.1.45:4000/getcall`, { params: { id: id } })
+      .get(`http://10.57.29.159:4000/getcall`, { params: { id: id } })
       .then((res) => {
         console.log(res.data);
         tempCall = res.data;

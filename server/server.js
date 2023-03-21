@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
@@ -31,14 +31,11 @@ const broadcastData = (data) => {
     }
   });
 };
-
 // Handle incoming connections from clients
 wss.on("connection", (ws, req) => {
   // Send the current data to the new client
   ws.send(currentData);
-  console.log(ws.eventNames());
   ws.onmessage = (event) => {
-    console.log("test");
     currentData = event.data;
     broadcastData(event.data);
   };
@@ -119,4 +116,7 @@ app.post("/updatecall", (req, res) => {
     });
 });
 
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+const server = app.listen(PORT, () => {
+  const adress = server.address();
+  console.log(`Listening on port ${PORT} + ${adress.address}`);
+});
