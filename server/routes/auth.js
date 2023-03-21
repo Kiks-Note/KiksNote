@@ -39,13 +39,12 @@ module.exports = (app, db, jwt, bcrypt) => {
     if (!userEmail || !userPassword) {
       return res.status(401).send("Email and password is required to login");
     }
-
     if (userEmail != emailDatabase) {
-      return res.status(401).send("Email is not found to login");
+      return res.status(401).send("Incorrect email");
     }
 
     if (!(await bcrypt.compare(userPassword, hashed_password))) {
-      return res.status(401).send({ error: "Wrong password" });
+      return res.status(401).send("Wrong password" );
     } else {
       const accessToken = generateAccessToken(user);
       const refreshToken = generateRefreshToken(user);

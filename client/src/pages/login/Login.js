@@ -10,6 +10,7 @@ import "./Login.scss";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setMessageError] = useState("");
 
   const navigate = useNavigate();
 
@@ -23,18 +24,24 @@ const Login = () => {
     setPassword(e.target.value);
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    axios
+    await axios
       .post("http://localhost:5050/auth/login", {
         email,
         password,
       })
-      .then(res => {
-        accountAuthService.saveTokens(res.data.access_token,res.data.refreshToken);
-        navigate('/');
+      .then((res) => {
+        accountAuthService.saveTokens(
+          res.data.access_token,
+          res.data.refreshToken
+        );
+        navigate("/");
       })
-      .catch((err) => console.log(err.response));
+      .catch(
+        (err) => setMessageError(err.response.data),
+        console.log(errorMessage)
+      );
   };
 
   return (
@@ -63,6 +70,11 @@ const Login = () => {
                 onChange={onChangeEmail}
                 placeholder="votrecompte@edu.esiee-it.fr"
               />
+              { errorMessage === "Incorrect email" && (
+                <span className="flex mt-1 text-sm text-red-600 dark:text-red-500 font-bold">
+                  L'email est incorrecte
+                </span>
+              )}
             </div>
             {/* password label and input */}
             <div className="m-4">
@@ -82,6 +94,15 @@ const Login = () => {
                 onChange={onChangePassword}
                 placeholder="votre mot de passe"
               />
+              {errorMessage === "Wrong password" && (
+                <span>Le mot de passe est incorrect</span>
+              )}
+              {errorMessage === "Email and password is required to login" && (
+                <span className="flex mt-1 text-sm text-red-600 dark:text-red-500 font-bold">
+                  Il manque l'email ou le mot de passe
+                </span>
+              )}
+
               <a
                 className="flex text-sm text-[#B312FF] dark:text-[#B312FF] hover:underline"
                 href="/askresetpass"
