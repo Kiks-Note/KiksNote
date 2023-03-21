@@ -202,13 +202,13 @@ function Board() {
     console.log(result.destination.droppableId);
     console.log(result.source.droppableId);
 
-    if (result.destination.droppableId == "requested" && result.source.droppableId != "requested") {
+    if (result.destination.droppableId === "requested" && result.source.droppableId !== "requested") {
       setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
       setTimeout(() => {
         setErrorMessage("");
       }, 3000); // DELETE AFTER 3 SEC
       return;
-    } else if (result.destination.droppableId != "requested" && result.source.droppableId == "requested") {
+    } else if (result.destination.droppableId !== "requested" && result.source.droppableId === "requested") {
       setErrorMessage("Impossible de déplacer une storie dans une autre colonne");
       setTimeout(() => {
         setErrorMessage("");
