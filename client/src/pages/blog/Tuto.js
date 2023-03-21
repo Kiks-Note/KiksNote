@@ -133,6 +133,7 @@ function Tuto() {
                         id={blog.id}
                         like={blog.like}
                         dislike={blog.dislike}
+                        type="tuto"
                       />
                     ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}

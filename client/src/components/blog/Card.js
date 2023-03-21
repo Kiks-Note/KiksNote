@@ -21,6 +21,7 @@ export default function ImgMediaCard({
   like,
   dislike,
   id,
+  type,
 }) {
   // console.log(id);
 
@@ -45,41 +46,47 @@ export default function ImgMediaCard({
   // }, []);
 
   return (
-    <Grid item xs={2} sm={4} md={5}>
-      <Card sx={{ maxWidth: 380, m: 2 }}>
-        <CardMedia
-          component="img"
-          // alt="green iguana"
-          height="10"
-          image={image}
-          // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
-          // sx={{maxHeight: 250}}
-        />
-        <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {title}
-            {/*yo*/}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {description}
-            {/*sisi*/}
-          </Typography>
-        </CardContent>
-        <CardActions>
-          {like}
-          <Checkbox
-            icon={<ThumbUpOffAltIcon />}
-            checkedIcon={<ThumbUpIcon />}
-          />
-          {dislike}
-          <Checkbox
-            icon={<ThumbDownOffAltIcon />}
-            checkedIcon={<ThumbDownAltIcon color={"error"} />}
-          />
-          <Comment tutoId={id} />
-          <Button size="small">Commencer</Button>
-        </CardActions>
-      </Card>
-    </Grid>
+    <>
+      {type === "tuto" ? (
+        <Grid item xs={2} sm={4} md={5}>
+          <Card sx={{ maxWidth: 380, m: 2 }}>
+            <CardMedia
+              component="img"
+              // alt="green iguana"
+              height="10"
+              image={image}
+              // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
+              // sx={{maxHeight: 250}}
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                {title}
+                {/*yo*/}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {description}
+                {/*sisi*/}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              {like}
+              <Checkbox
+                icon={<ThumbUpOffAltIcon />}
+                checkedIcon={<ThumbUpIcon />}
+              />
+              {dislike}
+              <Checkbox
+                icon={<ThumbDownOffAltIcon />}
+                checkedIcon={<ThumbDownAltIcon color={"error"} />}
+              />
+              <Comment tutoId={id} />
+              <Button size="small">Commencer</Button>
+            </CardActions>
+          </Card>
+        </Grid>
+      ) : (
+        <h1>Blog</h1>
+      )}
+    </>
   );
 }
