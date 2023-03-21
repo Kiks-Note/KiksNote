@@ -1,7 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Test from "./pages/Test";
-import Register from "./pages/register/Register"
-import Login from "./pages/login/Login"
+import Test from "./Pages/Test";
+import Register from "./Pages/register/Register"
+import Login from "./Pages/login/Login"
 import PrivateRoutes from "./Utils/PrivateRoutes";
 
 function RoutesProvider() {

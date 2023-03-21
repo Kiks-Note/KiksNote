@@ -3,11 +3,8 @@ import { Link } from "react-router-dom";
 import Divider from "@mui/material/Divider";
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
-import sha256  from "js-sha256";
 
 const Register = () => {
-
-    var encryption = "";
 
     const options = {
         autoClose: 2000,
@@ -24,22 +21,18 @@ const Register = () => {
     }
 
     const onSubmit = (data) => {
-        console.log("Default password " + formValues.password);
-        encryption = sha256(data.password).toString();
-        console.log("Hashing password " + encryption);
         var user = {
             dateofbirth: new Date(data.birthdate),
             email: data.email,
             firstname: data.firstname,
-            hashed_password: encryption,
+            hashed_password: data.password,
             lastname: data.lastname,
             status: data.status
         }
-        console.log(user)
-        addUser(user)
+        register(user)
     }
-    async function addUser(user)  {
-        await axios.post("http://localhost:5050/addUser", {
+    async function register(user)  {
+        await axios.post("http://localhost:5050/register", {
             user: user
         }).then( (response) => {
             if (response.data === "User created successfully") {
