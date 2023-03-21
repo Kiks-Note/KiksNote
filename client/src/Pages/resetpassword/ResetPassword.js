@@ -8,52 +8,46 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-
 const options = {
     autoClose: 2000,
     className: '',
     position: toast.POSITION.TOP_RIGHT,
-  };
-  
- export const toastSuccess = message => {
-    toast.success(message, options);
-  }
+};
 
-  export const toastFail = message => {
+export const toastSuccess = message => {
+    toast.success(message, options);
+}
+
+export const toastFail = message => {
     toast.error(message, options);
-  }
+}
 
 function ResetPassword() {
     const form = useRef();
-
-    
-    
-    const [newUserPassword, setnNewUserPassword] = useState(''); 
-    const [confirmedUserPassword, setConfirmedUserPassword] = useState(''); 
-
-    const resetUserPassword = async (email) => {
-        console.log("front");
-        localStorage.setItem("dszff", "fefeefefefefe")
-        const res = await axios
-            .post("http://localhost:5050/resetpass", {
-                newPassword: newUserPassword,
-                confirmedPassword: confirmedUserPassword
+    const [newUserPassword, setnNewUserPassword] = useState('');
+    const [confirmedUserPassword, setConfirmedUserPassword] = useState('');
+    const queryParams = new URLSearchParams(window.location.search);
+    const token = queryParams.get('token');
+    const resetUserPassword = async () => {
+        await axios
+            .post("http://localhost:5050/auth/resetpassword", {
+                password: newUserPassword,
+                confirmPassword: confirmedUserPassword,
+                token: token
             })
     };
 
 
     function handleSubmitPassword(e) {
         resetUserPassword();
-        e.preventDefault(); 
-        if (newUserPassword == confirmedUserPassword) {
-            console.log("yes");
+        e.preventDefault();
+        if (newUserPassword === confirmedUserPassword) {
             form.current.reset();
             toastSuccess("Mot de passe modifié")
         } else {
-            console.log("nope");
             toastFail("Mot de passe différent");
         }
-        
+
     }
 
 
