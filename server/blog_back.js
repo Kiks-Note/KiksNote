@@ -27,6 +27,41 @@ module.exports = (app, db, ws) => {
             ? console.log("connection ok")
             : console.log("connection failed");
 
+        db.collection("blog_evenements").onSnapshot(
+            (snapshot) => {
+                const documents = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }));
+                connection.sendUTF(JSON.stringify(documents));
+            },
+            (err) => {
+                console.log(err);
+            }
+        );
+
+        // db.collection("blog_evenements").onSnapshot(
+        //     (snapshot) => {
+        //         const documents = snapshot.docs.map((doc) => ({
+        //             id: doc.id,
+        //             ...doc.data(),
+        //         }));
+        //         connection.sendUTF(JSON.stringify(documents));
+        //     },
+        //     (err) => {
+        //         console.log(err);
+        //     }
+        // );
+    });
+
+
+    ws.on("blogRequest", (request) => {
+        const connection = request.accept(null, request.origin);
+
+        connection
+            ? console.log("connection ok")
+            : console.log("connection failed");
+
         db.collection("blog_tutos").onSnapshot(
             (snapshot) => {
                 const documents = snapshot.docs.map((doc) => ({
@@ -39,7 +74,10 @@ module.exports = (app, db, ws) => {
                 console.log(err);
             }
         );
+
     });
+
+
 
     // get all tutos
     // app.get("/tutos", async (req, res) => {
@@ -107,5 +145,35 @@ module.exports = (app, db, ws) => {
         }
     });
 
+
+    app.post("/blog/newblog", async (req, res) => {
+        const { title, description, photo } = req.body;
+
+
+        if (title == null || title == "") {
+            return res.status(400).send("Title is required");
+        }
+        if (description == null || description == "") {
+            return res.status(400).send("Description is required");
+        }
+        if (photo == null || photo == "") {
+            return res.status(400).send("Photo is required");
+        }
+
+
+        try {
+            await db.collection("blog_evenements").doc().set({
+
+                title: title,
+                description: description,
+                photo: photo,
+
+            });
+            res.send("Document successfully written!");
+
+        } catch (err) {
+            res.status(500).send(err);
+        }
+    });
 
 };
