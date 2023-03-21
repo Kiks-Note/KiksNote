@@ -1,0 +1,41 @@
+.listRow{
+    display: flex;
+}
+.center{
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+.paddingRow{
+    padding-right: 2vw;
+    .btnClass{
+        width: 22vw;
+        border: solid black 2px;
+        box-shadow: 10px 10px 10px gray;
+        text-align: center;
+        justify-content: center;
+        align-items: center;
+    }
+}
+.able{
+    background-color: green;
+}
+.disable{
+    background-color: red;
+}
+
+.dot{
+    height: 1.5vw;
+    display: flex;
+}
+.addBtn{
+    width: 20vw;
+    border-radius:2vw;
+    background-color:  rgba(195, 25, 93, 0.5) ;
+}
+.formDevice{
+    padding-bottom: 0.5vw;
+}
+input{
+    border: solid 2px;
+}

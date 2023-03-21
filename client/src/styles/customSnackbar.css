@@ -1,0 +1,18 @@
+.snackbar-button-green {
+  color: #4caf50;
+  margin-right: 10px;
+}
+
+.snackbar-button-green:hover {
+  color: #388e3c;
+  background-color: #ffffff1a;
+}
+
+.snackbar-button-red {
+  color: #f44336;
+}
+
+.snackbar-button-red:hover {
+  color: #d32f2f;
+  background-color: #ffffff1a;
+}
