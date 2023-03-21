@@ -36,8 +36,10 @@ function AppelProf() {
     getCall();
     getUsers();
     ws.onmessage = (event) => {
-      setCall(JSON.parse(event.data));
-      console.log(JSON.parse(event.data));
+      if (typeof event.data == "string") {
+        setCall(JSON.parse(event.data));
+        console.log(JSON.parse(event.data));
+      }
     };
   }, []);
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
 
@@ -6,8 +6,7 @@ function Presence() {
   const { id } = useParams();
   const dataFetchedRef = useRef(false);
   const ws = new WebSocket(`ws://10.57.29.159:5050`);
-  let tempCall;
-  const [call, setCall] = useState();
+  let tempCall = useRef();
 
   useEffect(() => {
     if (dataFetchedRef.current) {
@@ -15,7 +14,7 @@ function Presence() {
     }
     dataFetchedRef.current = true;
     ws.onmessage = (event) => {
-      tempCall = JSON.parse(event.data);
+      tempCall.current = JSON.parse(event.data);
     };
     getCall();
   });
@@ -24,8 +23,8 @@ function Presence() {
     console.log(tempCall.id);
     const res = await axios
       .post(`http://10.57.29.159:5050/updatecall`, {
-        id: tempCall.id,
-        object: tempCall,
+        id: tempCall.current.id,
+        object: tempCall.current,
       })
       .then((res) => {
         console.log(res);
@@ -37,8 +36,7 @@ function Presence() {
     axios
       .get(`http://10.57.29.159:5050/getcall`, { params: { id: id } })
       .then((res) => {
-        tempCall = res.data;
-        setCall(call);
+        tempCall.current = res.data;
       });
   };
 

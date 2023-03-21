@@ -55,9 +55,12 @@ app.get("/users", (req, res) => {
   db.collection("users")
     .get()
     .then((snapshot) => {
+      let item = {};
       const data = [];
       snapshot.forEach((doc) => {
-        data.push(doc.data());
+        item = doc.data();
+        item["id"] = doc.id;
+        data.push(item);
       });
       res.send(data);
     })
