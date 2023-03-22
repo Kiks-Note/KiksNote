@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import CachedIcon from '@mui/icons-material/Cached';
+import LockIcon from '@mui/icons-material/Lock';
+import CasinoIcon from '@mui/icons-material/Casino';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import "./Groups.scss";
 
 const tasks = [
@@ -101,37 +105,21 @@ const colContent = {
         name: "Students",
         items: tasks,
     },
-    g1: {
-        name: "Groupe 1",
-        items: [],
-    },
-
-    g2: {
-        name: "Groupe 2",
-        items: [],
-    },
-
-    g3: {
-        name: "Groupe 3",
-        items: [],
-    },
-    g4: {
-        name: "Groupe 4",
-        items: [],
-    },
 };
 
 
 function App() {
     const [columns, setColumns] = useState(colContent);
+
     function addStudent(columnId, student, columns) {
         columns[columnId].items.push(student);
         setColumns({ ...columns });
     }
 
-    const onDragEnd = (result, columns, setColumns) => {
+    const onDragEnd = (result) => {
         if (!result.destination) return;
         const { source, destination } = result;
+        if (source.droppableId === destination.droppableId) return;
         if (source.droppableId !== destination.droppableId) {
             const sourceColumn = columns[source.droppableId];
             const destColumn = columns[destination.droppableId];
@@ -151,7 +139,7 @@ function App() {
                     items: destItems,
                 },
             });
-        } else {
+        } else if (source.index !== destination.index) {
             const column = columns[source.droppableId];
             const copiedItems = [...column.items];
             const [removed] = copiedItems.splice(source.index, 1);
@@ -172,11 +160,112 @@ function App() {
         }
     };
 
+
+    function resetButton() {
+        setColumns(colContent);
+    }
+
+    function generateGroupCase(event) {
+        if (!isNaN(event.target.value) && event.target.value) {
+            const number = event.target.value;
+            const numberOfStudents = columns.students.items.length; //TODO update in function of BDD link
+
+            let copiedColContent = { ...colContent };
+
+            let numberOfCase = Math.floor(numberOfStudents / number);
+
+            if (numberOfStudents % number !== 0) {
+                numberOfCase++;
+            }
+
+            for (let index = 1; index < numberOfCase + 1; index++) {
+                copiedColContent[`g${index}`] = {
+                    name: `Group ${index}`,
+                    items: []
+                };
+            }
+
+            setColumns(copiedColContent);
+        }
+        else {
+            //TODO make a toast here
+            setColumns(colContent);
+        }
+    }
+    function shuffle(array) {
+        let currentIndex = array.length, randomIndex;
+
+        // While there remain elements to shuffle.
+        while (currentIndex !== 0) {
+
+            // Pick a remaining element.
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex], array[currentIndex]];
+        }
+
+        return array;
+    }
+
+    function divideArray(arr, size) {
+        const subarrays = [];
+        let i = 0;
+
+        while (i < arr.length) {
+            subarrays.push(arr.slice(i, i + size));
+            i += size;
+        }
+
+        return subarrays;
+    }
+
+    function randomGeneration() {
+        let nsgp = document.querySelector('input[type="text"]').value // Number of students per groups
+        if (!nsgp) { alert("Merci de renseigner d'abords le nombre de groupe d'élèves par groupe souhaité") }
+        else {
+            var studentsArrayRandom = shuffle(columns.students.items);
+
+            var subArray = divideArray(studentsArrayRandom, nsgp);
+            
+            subArray.forEach(element => {
+                console.log(element);
+            });
+              columns.students.items.forEach(element => {
+
+             });
+ 
+             for (const key in columns) {
+                 if (key.startsWith('g')) {
+                     const updatedGroup = {
+                         ...columns[key],
+                         updatedProperty: 'new value'
+                     };
+                     columns[key] = updatedGroup;
+                 }
+             } 
+
+        }
+    }
+
     return (
         <div>
-            <h1 style={{ textAlign: "center" }}>Creation de Groupes</h1>
+            <h1 style={{ textAlign: "center" }}>Création de Groupes</h1>
+            <div className="groups-inputs">
+                <input type="text" list="students-list" placeholder="Eleves/groupes" onChange={generateGroupCase} />
+                <datalist id="students-list">
+                    <option value={3}></option>
+                    <option value={4}></option>
+                    <option value={5}></option>
+                </datalist>
+                <button className="input-button" onClick={resetButton}><CachedIcon className="icon-svg" /></button>
+                <button className="input-button" onClick={randomGeneration}><CasinoIcon className="icon-svg" /></button>
+                <button className="input-button"><LockOpenIcon className="icon-svg" /></button>
+            </div>
             <div style={{ display: "flex", justifyContent: "center", height: "100%", flexWrap: "wrap" }}>
-                <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
+                <DragDropContext onDragEnd={onDragEnd}>
                     {Object.entries(columns).map(([columnId, column], index) => {
                         if (index === 0) {
                             return (
@@ -189,7 +278,7 @@ function App() {
                                     }}
                                     key={columnId}
                                 >
-                                    <div style={{ margin: 8 }}>
+                                    <div style={{ margin: 8 }} className="group-div">
                                         <Droppable droppableId={columnId} key={columnId}>
                                             {(provided, snapshot) => {
                                                 return (
@@ -200,16 +289,12 @@ function App() {
                                                             background: snapshot.isDraggingOver ? "#e697b3" : "#252525",
                                                             padding: 4,
                                                             width: "100%",
-                                                            display: "flex",
-                                                            flexDirection: "row",
-                                                            justifyContent: "space-around",
-                                                            alignItems: "center",
-                                                            flexWrap: "wrap",
                                                             minHeight: 140,
                                                             maxHeight: 500,
                                                             overflow: "auto",
                                                             height: "auto",
                                                         }}
+                                                        className="group"
                                                     >
                                                         {column.items.map((item, index) => {
                                                             return (
@@ -277,6 +362,7 @@ function App() {
                                                             overflow: "auto",
                                                             height: "auto",
                                                         }}
+                                                        className="group"
                                                         onClick={() => {
                                                             if (columns.students.items.length > 0) {
                                                                 const student = columns.students.items.pop();
