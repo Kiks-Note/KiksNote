@@ -6,7 +6,7 @@ function Retrospective() {
     const [data, setData] = useState([]);
     const useMountEffect = fun => useEffect(fun, [])
     useMountEffect(() => {
-        setData([{name: "Like", postit: [{content:"React est facile"},{content:"Play Robocraft"}]}, {name:"Lacked", postit: [{content:"La BDD"}]}, {name:"Learned", postit: [{content:"Mieux renseigner le fonctionnement des requêtes avec la techno utilisé pour la bdd et l'appel de la bdd"}]}, {name:"Longed for", postit: [{content:"La BDD"}]}])
+        setData([{name: "Like", postit: []}, {name:"Lacked", postit: []}, {name:"Learned", postit: []}, {name:"Longed for", postit: []}])
     })
 
     const tx = document.getElementsByTagName("textarea");
