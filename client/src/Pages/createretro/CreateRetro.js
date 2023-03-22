@@ -1,12 +1,38 @@
 import React, {useEffect, useState} from "react";
+import axios from "axios";
 
 function CreateRetro() {
 
     const initialValues = {
-        title: "",
+        name: "",
         cours: "",
         type: ""
     };
+
+    const categoriesCreation = () => {
+        var newRetro;
+        if (formValues.type === "gms") {
+            newRetro = {...formValues,Glad:[],Mad:[],Sad:[]}
+        }
+        else if (initialValues.type === "pna") {
+            newRetro = {...formValues,Positif:[],Negatif:[],Amelioration:[]}
+        }
+        else {
+            newRetro = {...formValues,Like:[],Learned:[],Lacked:[],Longed:[]}
+        }
+        newRetroRequest(newRetro)
+    }
+
+    const newRetroRequest = async (newRetro) => {
+        await axios.post("http://localhost:5050/newRetro", {
+            retro:newRetro
+        }).then((res) => {
+            console.log(res.data)
+            useNavigate().navigate("/");
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
 
     const [formValues, setFormValues] = useState(initialValues);
     const [formErrors, setFormErrors] = useState({});
@@ -24,17 +50,16 @@ function CreateRetro() {
     };
 
     useEffect(() => {
-        console.log(formErrors);
         if (Object.keys(formErrors).length === 0 && isSubmit) {
-            console.log(formValues);
+            categoriesCreation();
         }
     });
 
     const validate = (values) => {
         const errors = {};
 
-        if (!values.title) {
-            errors.title = "Un titre est requis!";
+        if (!values.name) {
+            errors.name = "Un titre est requis!";
         }
         if(!values.cours || values.cours === "") {
             errors.cours = "Choisissez le cours lié à cette rétrospective";
@@ -62,12 +87,12 @@ function CreateRetro() {
                                 <label htmlFor="Title"></label>
                                 <input
                                     type="text"
-                                    name="title"
+                                    name="name"
                                     placeholder="Titre"
-                                    value={formValues.Title}
+                                    value={formValues.Name}
                                     onChange={handleChange}
                                 />
-                                <span>{formErrors.title}</span>
+                                <span>{formErrors.name}</span>
                             </div>
                             <div className="auth__form-container_fields-content_input">
                                 <label htmlFor="cours">
