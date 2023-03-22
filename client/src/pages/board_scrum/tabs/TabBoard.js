@@ -66,12 +66,7 @@ export default function TabBoard() {
           case "settings":
             component = <p>settings</p>;
             break;
-          case "burndown":
-            component = <p>burndown</p>;
-            break;
-          case "burnup":
-            component = <p>burnup</p>;
-            break;
+
           default:
             component = <p>default</p>;
             break;
