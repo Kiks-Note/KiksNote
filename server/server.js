@@ -15,7 +15,7 @@ app.post('/register', (req, res) => {
         password: userPassword,
     }).then((user) => {
         if (userClass === "") {
-            db.collection("users").doc(userEmail).set({
+            db.collection("users").doc(user.uid).set({
                 firstname: userFirstName,
                 lastname: userLastName,
                 password: userPassword,
@@ -24,7 +24,7 @@ app.post('/register', (req, res) => {
                 email: userEmail
             })
         } else {
-            db.collection("users").doc(userEmail).set({
+            db.collection("users").doc(user.uid).set({
                 firstname: userFirstName,
                 lastname: userLastName,
                 password: userPassword,
