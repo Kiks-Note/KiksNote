@@ -16,19 +16,18 @@ function Retrospective() {
         this.style.height = (this.scrollHeight) + "px";
     }
 
-    function AddPostIt(Categorie)
+    void function AddPostIt(Categorie)
     {
         console.log("add");
         for (const retro in data) {
             if (retro.name === Categorie){
                 retro.postit.push({content:""})
                 console.log(retro.toString())
-                return;
             }
         }
     }
 
-    function DeletePostIt(Categorie, Content)
+    void function DeletePostIt(Categorie, Content)
     {
         console.log("delete");
         for (const retro in data) {
@@ -41,15 +40,31 @@ function Retrospective() {
                     }
                     i++;
                 }
-                return;
             }
         }
     }
 
     return(
         <div id="Retrospective">
-            <img id="Tableau" src={require("../../img/Tableau.png")}/>
-            {data.map(retro => <div className="Categorie"><div className="CategorieType"><img src={require(`../../img/${retro.name}.png`)}/><p>{`${retro.name}`}</p></div><div className="PostSpace">{retro.postit.map(postit => <div><TextareaAutosize className="PostIt">{`${postit.content}`}</TextareaAutosize><button onClick={DeletePostIt(retro.name,postit.content)} className="PostitFlip"><img src={require("../../img/PostitFlip.png")}/></button></div>)}<button onClick={AddPostIt(retro.name)}>Coller un post-it</button></div></div>)}
+            <img id="Tableau" src={require("../../img/Tableau.png")} alt="image de tableau"/>
+            {data.map(retro =>
+                <div key={retro.name + "-C"} className="Categorie">
+                    <div key={retro.name + "-CT"} className="CategorieType">
+                        <img key={retro.name + "-I"} src={require(`../../img/${retro.name}.png`)} alt={retro.name}/>
+                        <p key={retro.name + "-N"}>{`${retro.name}`}</p>
+                    </div>
+                    <div key={retro.name + "-PS"} className="PostSpace">
+                        {retro.postit.map((postit, index) =>
+                        <div key={retro.name + "-" + index + "-P"}>
+                            <TextareaAutosize key={retro.name + "-" + index + "-PI"} className="PostIt" value={postit.content}></TextareaAutosize>
+                            <button key={retro.name + "-" + index + "-PF"} onClick={DeletePostIt(retro.name,postit.content)} className="PostitFlip">
+                                <img key={retro.name + "-" + index + "-I"} src={require("../../img/PostitFlip.png")} alt="Coin décollé"/>
+                            </button>
+                        </div>)}
+                        <button key={retro.name + "-A"} onClick={AddPostIt(retro.name)}>Coller un post-it</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
