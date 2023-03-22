@@ -3,6 +3,7 @@ import TabsDemo from "./Tabs";
 import Board from "../Board";
 import Dashboard from "../Dashboard";
 import OverView from "../overview/OverView";
+import PdfView from "../overview/PdfView";
 
 export default function TabBoard() {
   var [activeTab, setActiveTab] = useState(0);
@@ -61,7 +62,7 @@ export default function TabBoard() {
             component = <OverView />;
             break;
           case "pdf":
-            component = <p>pdf</p>;
+            component = <PdfView />;
             break;
           case "settings":
             component = <p>settings</p>;

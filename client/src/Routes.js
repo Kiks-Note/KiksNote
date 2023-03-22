@@ -6,6 +6,7 @@ import Blog from "./pages/blog/Blog";
 import Dashboard from "./pages/board_scrum/Dashboard";
 import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Board from "./pages/board_scrum/Board";
+import PdfView from "./pages/board_scrum/overview/PdfView";
 
 function RoutesProvider() {
   return (
@@ -29,6 +30,7 @@ function RoutesProvider() {
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tabList" element={<TabList />} />
+          <Route path="/pdf" element={<PdfView />} />
         </Route>
       </Routes>
     </BrowserRouter>

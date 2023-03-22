@@ -11,6 +11,7 @@ import ViewModuleIcon from "@mui/icons-material/ViewModule";
 
 import TablePagination from "@mui/material/TablePagination";
 import ModalCreateSprint from "../../components/board_scrum/dashboard/ModalCreateSprint";
+
 let maDate = new Date();
 
 function Dashboard() {
@@ -120,6 +121,21 @@ function Dashboard() {
       },
       picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
     },
+    {
+      id: 8,
+      sprint_name: "Hello",
+      sprint_group: "Zizou",
+      start: "22/03/2023",
+      end: "03/04/2023",
+      backlog: "lien",
+      favorite: false,
+      favoriteDate: "",
+      students: {
+        student_id: "uid(student)",
+        firstname: "Elim",
+      },
+      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
+    }
   ]);
   const [view, setView] = useState("module");
   const [page, setPage] = React.useState(0);
@@ -253,11 +269,13 @@ function Dashboard() {
             labelRowsPerPage="Par page"
             labelDisplayedRows={({ from, to, count }) => `${from} - ${to} sur ${count}`}
           />
+
         </Box>
       ) : (
         <></>
       )}
     </div>
+    
   );
 }
 
