@@ -1,7 +1,6 @@
-
 import React, { useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import "./Groups.scss"
+import "./Groups.scss";
 
 const tasks = [
     {
@@ -60,44 +59,44 @@ const tasks = [
         id: "14",
         name: "Adrien",
     },
-/*     {
-        id: "15",
-        name: "Ilan",
-    },
-    {
-        id: "16",
-        name: "Guillaume",
-    },
-    {
-        id: "17",
-        name: "Theo",
-    },
-    {
-        id: "18",
-        name: "Julien",
-    },
-    {
-        id: "19",
-        name: "Jerance",
-    },
-    {
-        id: "20",
-        name: "Maxime",
-    },
-    {
-        id: "21",
-        name: "Florian",
-    },
-    {
-        id: "22",
-        name: "Xavier",
-    },
-    {
-        id: "23",
-        name: "Thomas",
-    }, */
+    /*     {
+            id: "15",
+            name: "Ilan",
+        },
+        {
+            id: "16",
+            name: "Guillaume",
+        },
+        {
+            id: "17",
+            name: "Theo",
+        },
+        {
+            id: "18",
+            name: "Julien",
+        },
+        {
+            id: "19",
+            name: "Jerance",
+        },
+        {
+            id: "20",
+            name: "Maxime",
+        },
+        {
+            id: "21",
+            name: "Florian",
+        },
+        {
+            id: "22",
+            name: "Xavier",
+        },
+        {
+            id: "23",
+            name: "Thomas",
+        }, */
 ];
-const taskStatus = {
+const colContent = {
     students: {
         name: "Students",
         items: tasks,
@@ -160,29 +159,12 @@ const onDragEnd = (result, columns, setColumns) => {
     }
 };
 
-let colorIndex = 0;
-let pastelColours = ['#FF4747', '#FFA333', '#faff70', '#99ff85', '#5cf1ff', '#70a7ff', '#745cff', '#FF99FF'];
-
-function getColorBackground() {
-    var color = pastelColours[colorIndex];
-    if (colorIndex >= pastelColours.length - 1) {
-        colorIndex = 0;
-    }
-    else {
-        colorIndex++;
-    }
-    return color;
-}
-
-function Groups() {
-    const [columns, setColumns] = useState(taskStatus);
+function App() {
+    const [columns, setColumns] = useState(colContent);
     return (
         <div>
-            <h1 style={{ textAlign: "center" }}>Board</h1>
-            <div style={{
-                display: "flex", justifyContent: "space-around", height: "100%",
-                margin: "1%", flexWrap: "wrap", width: "100%"
-            }}>
+            <h1 style={{ textAlign: "center" }}>Scrum Board</h1>
+            <div style={{ display: "flex", justifyContent: "center", height: "100%", flexWrap: "wrap" }}>
                 <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
                     {Object.entries(columns).map(([columnId, column], index) => {
                         if (index === 0) {
@@ -192,73 +174,7 @@ function Groups() {
                                         display: "flex",
                                         flexDirection: "column",
                                         alignItems: "center",
-                                        width: "100%",
-
-                                    }}
-                                    key={columnId}
-                                >
-                                    {" "}
-                                    <div style={{ margin: 8, width: "100%", display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-                                        <Droppable droppableId={columnId} key={columnId} >
-                                            {(provided, snapshot) => {
-                                                return (
-                                                    <div
-                                                        {...provided.droppableProps}
-                                                        ref={provided.innerRef}
-                                                        style={{
-                                                            background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
-                                                            padding: 4,
-                                                            width: "100%",
-                                                            minHeight: 140,
-                                                            maxHeight: 500,
-                                                            overflow: "auto",
-                                                            height: "auto",
-                                                            display: "flex",
-                                                            flexDirection: "row",
-                                                            justifyContent: "center",
-                                                            flexWrap: "wrap",
-                                                            alignItems: "center"
-                                                        }}
-
-                                                    >
-                                                        {column.items.map((item, index) => {
-                                                            const color = getColorBackground();
-                                                            return (
-                                                                <Draggable key={item.id} draggableId={item.id} index={index}>
-                                                                    {(provided, snapshot) => {
-                                                                        return (
-                                                                            <div
-                                                                                ref={provided.innerRef}
-                                                                                {...provided.draggableProps}
-                                                                                {...provided.dragHandleProps}
-                                                                                style={{ backgroundColor: color}}
-                                                                                className="post-it"
-                                                                            >
-                                                                                <p>{item.name}</p>
-                                                                            </div>
-                                                                        );
-                                                                    }}
-                                                                </Draggable>
-                                                            );
-                                                        })}
-                                                        {provided.placeholder}
-                                                    </div>
-                                                );
-                                            }}
-                                        </Droppable>
-                                    </div>
-                                </div>
-                            )
-
-                        }
-                        else {
-                            return (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        width: "30%"
+                                        width: "100%"
                                     }}
                                     key={columnId}
                                 >
@@ -274,16 +190,16 @@ function Groups() {
                                                         style={{
                                                             background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
                                                             padding: 4,
-                                                            width: 500,
+                                                            width: "100%",
+                                                            display: "flex",
+                                                            flexDirection: "row",
+                                                            justifyContent: "space-around",
+                                                            alignItems: "center",
+                                                            flexWrap: "wrap",
                                                             minHeight: 140,
                                                             maxHeight: 500,
                                                             overflow: "auto",
                                                             height: "auto",
-                                                            display: "flex",
-                                                            flexDirection: "row",
-                                                            justifyContent: "space-around",
-                                                            flexWrap: "wrap",
-                                                            alignItems: "center"
                                                         }}
                                                     >
                                                         {column.items.map((item, index) => {
@@ -296,9 +212,15 @@ function Groups() {
                                                                                 {...provided.draggableProps}
                                                                                 {...provided.dragHandleProps}
                                                                                 style={{
-                                                                                    backgroundColor: getColorBackground()
+                                                                                    userSelect: "none",
+                                                                                    padding: 16,
+                                                                                    marginBottom: 8,
+                                                                                    minHeight: "60px",
+                                                                                    borderRadius: 3,
+                                                                                    backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
+                                                                                    color: "white",
+                                                                                    ...provided.draggableProps.style,
                                                                                 }}
-
                                                                                 className="post-it"
                                                                             >
                                                                                 <p>{item.name}</p>
@@ -315,12 +237,80 @@ function Groups() {
                                         </Droppable>
                                     </div>
                                 </div>
-                            )
-                        };
+                            );
+                        }
+                        else {
+                            return (
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        width: "45 %"
+                                    }}
+                                    key={columnId}
+                                >
+                                    {" "}
+                                    <h2>{column.name}</h2>
+                                    <div style={{ margin: 8 }}>
+                                        <Droppable droppableId={columnId} key={columnId}>
+                                            {(provided, snapshot) => {
+                                                return (
+                                                    <div
+                                                        {...provided.droppableProps}
+                                                        ref={provided.innerRef}
+                                                        style={{
+                                                            background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
+                                                            padding: 4,
+                                                            width: 250,
+                                                            minHeight: 140,
+                                                            maxHeight: 500,
+                                                            overflow: "auto",
+                                                            height: "auto",
+                                                        }}
+                                                    >
+                                                        {column.items.map((item, index) => {
+                                                            return (
+                                                                <Draggable key={item.id} draggableId={item.id} index={index}>
+                                                                    {(provided, snapshot) => {
+                                                                        return (
+                                                                            <div
+                                                                                ref={provided.innerRef}
+                                                                                {...provided.draggableProps}
+                                                                                {...provided.dragHandleProps}
+                                                                                style={{
+                                                                                    userSelect: "none",
+                                                                                    padding: 16,
+                                                                                    marginBottom: 8,
+                                                                                    minHeight: "60px",
+                                                                                    borderRadius: 3,
+                                                                                    backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
+                                                                                    color: "white",
+                                                                                    ...provided.draggableProps.style,
+                                                                                }}
+                                                                                className="post-it"
+
+                                                                            >
+                                                                                <p>{item.name}</p>
+                                                                            </div>
+                                                                        );
+                                                                    }}
+                                                                </Draggable>
+                                                            );
+                                                        })}
+                                                        {provided.placeholder}
+                                                    </div>
+                                                );
+                                            }}
+                                        </Droppable>
+                                    </div>
+                                </div>
+                            );
+                        }
                     })}
-                </DragDropContext >
-            </div >
-        </div >
+                </DragDropContext>
+            </div>
+        </div>
     );
 }
-export default Groups;
+export default App;

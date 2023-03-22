@@ -1,5 +1,14 @@
 @import url(https://fonts.googleapis.com/css?family=Permanent+Marker);
 
+h1 {
+  font-weight: bold;
+  font-size: 40px;
+}
+
+h2 {
+  font-weight: bold;
+  font-size: 20px;
+}
 .post-it {
   width: 150px;
   height: 150px;
@@ -15,4 +24,13 @@
   align-items: center;
   font-size: 25px;
   color: white;
+  overflow: hidden;
+  text-shadow: rgb(41, 41, 41) 1px 0 5px;
+  p {
+    white-space: break-spaces;
+    word-wrap: break-word;
+    width: 100%;
+    text-align: center;
+    margin: 10px;
+  }
 }
