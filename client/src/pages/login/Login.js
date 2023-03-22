@@ -72,34 +72,51 @@ const Login = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        userCredential.user.getIdToken().then(async (idToken) => {
-          console.log(userCredential.user);
-          await axios
+    await axios
             .post("http://localhost:5050/auth/login", {
-              idToken,
+              email,
+              password
             })
             .then((res) => {
               accountAuthService.saveTokens(
                 res.data.token,
-                userCredential.user.stsTokenManager.refreshToken
+                res.data.refreshToken
               );
-              localStorage.setItem('user_uid', userCredential.user.uid)
               navigate("/");
             })
             .catch(
               (err) => setMessageError(err.response.data),
               console.log(errorMessage)
             );
-        });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-      });
+    // signInWithEmailAndPassword(auth, email, password)
+    //   .then((userCredential) => {
+    //     userCredential.user.getIdToken().then(async (idToken) => {
+    //       console.log(userCredential.user);
+    //       await axios
+    //         .post("http://localhost:5050/auth/login", {
+    //           email,
+    //           password
+    //         })
+    //         .then((res) => {
+    //           accountAuthService.saveTokens(
+    //             res.data.token,
+    //             userCredential.user.stsTokenManager.refreshToken
+    //           );
+    //           localStorage.setItem('user_uid', userCredential.user.uid)
+    //           navigate("/");
+    //         })
+    //         .catch(
+    //           (err) => setMessageError(err.response.data),
+    //           console.log(errorMessage)
+    //         );
+    //     });
+    //   })
+    //   .catch((error) => {
+    //     const errorCode = error.code;
+    //     const errorMessage = error.message;
+    //     console.log(errorCode);
+    //     console.log(errorMessage);
+    //   });
   };
 
   return (
