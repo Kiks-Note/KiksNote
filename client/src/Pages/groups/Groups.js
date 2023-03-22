@@ -121,49 +121,62 @@ const colContent = {
     },
 };
 
-const onDragEnd = (result, columns, setColumns) => {
-    if (!result.destination) return;
-    const { source, destination } = result;
-    if (source.droppableId !== destination.droppableId) {
-        const sourceColumn = columns[source.droppableId];
-        const destColumn = columns[destination.droppableId];
-        const sourceItems = [...sourceColumn.items];
-        const destItems = [...destColumn.items];
-        const [removed] = sourceItems.splice(source.index, 1);
-        destItems.splice(destination.index, 0, removed);
 
-        setColumns({
-            ...columns,
-            [source.droppableId]: {
-                ...sourceColumn,
-                items: sourceItems,
-            },
-            [destination.droppableId]: {
-                ...destColumn,
-                items: destItems,
-            },
-        });
-    } else {
-        const column = columns[source.droppableId];
 
-        const copiedItems = [...column.items];
-        const [removed] = copiedItems.splice(source.index, 1);
-        copiedItems.splice(destination.index, 0, removed);
-        setColumns({
-            ...columns,
-            [source.droppableId]: {
-                ...column,
-                items: copiedItems,
-            },
-        });
-    }
-};
 
 function App() {
     const [columns, setColumns] = useState(colContent);
+    function addStudent(columnId, student, columns) {
+        columns[columnId].items.push(student);
+        setColumns({ ...columns });
+    }
+
+    const onDragEnd = (result, columns, setColumns) => {
+        if (!result.destination) return;
+        const { source, destination } = result;
+        if (source.droppableId !== destination.droppableId) {
+            const sourceColumn = columns[source.droppableId];
+            const destColumn = columns[destination.droppableId];
+            const sourceItems = [...sourceColumn.items];
+            const destItems = [...destColumn.items];
+            const [removed] = sourceItems.splice(source.index, 1);
+            destItems.splice(destination.index, 0, removed);
+
+            setColumns({
+                ...columns,
+                [source.droppableId]: {
+                    ...sourceColumn,
+                    items: sourceItems,
+                },
+                [destination.droppableId]: {
+                    ...destColumn,
+                    items: destItems,
+                },
+            });
+        } else {
+            const column = columns[source.droppableId];
+            const copiedItems = [...column.items];
+            const [removed] = copiedItems.splice(source.index, 1);
+            copiedItems.splice(destination.index, 0, removed);
+
+            setColumns({
+                ...columns,
+                [source.droppableId]: {
+                    ...column,
+                    items: copiedItems,
+                },
+            });
+
+            // move the item directly to the clicked column
+            const columnId = destination.droppableId;
+            const student = columns[columnId].items[destination.index];
+            addStudent(columnId, student, columns);
+        }
+    };
+
     return (
         <div>
-            <h1 style={{ textAlign: "center" }}>Scrum Board</h1>
+            <h1 style={{ textAlign: "center" }}>Creation de Groupes</h1>
             <div style={{ display: "flex", justifyContent: "center", height: "100%", flexWrap: "wrap" }}>
                 <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
                     {Object.entries(columns).map(([columnId, column], index) => {
@@ -178,8 +191,6 @@ function App() {
                                     }}
                                     key={columnId}
                                 >
-                                    {" "}
-                                    <h2>{column.name}</h2>
                                     <div style={{ margin: 8 }}>
                                         <Droppable droppableId={columnId} key={columnId}>
                                             {(provided, snapshot) => {
@@ -267,6 +278,13 @@ function App() {
                                                             maxHeight: 500,
                                                             overflow: "auto",
                                                             height: "auto",
+                                                        }}
+                                                        onClick={() => {
+                                                            if (columns.students.items.length > 0) {
+                                                                const student = columns.students.items.pop();
+                                                                addStudent(columnId, student, columns);
+                                                                setColumns({ ...columns });
+                                                            }
                                                         }}
                                                     >
                                                         {column.items.map((item, index) => {
