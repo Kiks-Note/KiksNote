@@ -1,18 +1,28 @@
-module.exports = (app, db, jwt, auth) => {
+module.exports = (
+  app,
+  db,
+  jwt,
+  auth,
+  authClient,
+  signInWithEmailAndPassword
+) => {
   app.post("/auth/login", async (req, res) => {
-    const idToken = req.body.idToken;
-
-    try{
-      const decodedToken = await auth.verifyIdToken(idToken);
-      console.log(decodedToken);
-      const customToken = await auth.createCustomToken(decodedToken.uid);
-      console.log("custom : " , customToken);
-      res.status(200).send({token : customToken});
+    const { email, password } = req.body;
+    try {
+      signInWithEmailAndPassword(authClient, email, password).then(
+        (userCredential) => {
+          userCredential.user.getIdToken().then(async (idToken) => {
+            const decodedToken = await auth.verifyIdToken(idToken);
+            console.log(decodedToken);
+            const customToken = await auth.createCustomToken(decodedToken.uid);
+            console.log("custom : ", customToken);
+            res.status(200).send({ token: customToken , refreshToken : userCredential.user.stsTokenManager.refreshToken });
+          });
+        }
+      );
+    } catch (err) {
+      res.status(401).send(err);
     }
-    catch(err){
-      res.status(401).send(err)
-    }
-
   });
 
   app.post("/auth/refreshToken", async (req, res) => {

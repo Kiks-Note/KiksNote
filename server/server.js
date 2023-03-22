@@ -3,13 +3,11 @@ const cors = require("cors");
 const bodyParser = require('body-parser');
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const dotenv = require("dotenv");
+const dotenv = require('dotenv').config();
 const app = express();
 const { db, auth } = require("./firebase");
-const { signInWithEmailAndPassword } = require("./firebase_auth");
 
-dotenv.config({ path: "./.env.login" });
-dotenv.config({ path: "./.env" });
+const { signInWithEmailAndPassword, authClient } = require("./firebase_auth");
 
 app.use(express.json());
 app.use(cors());
@@ -18,6 +16,6 @@ app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 5050;
 
-require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
+require("./routes/auth")(app, db, jwt, auth, authClient, signInWithEmailAndPassword);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));

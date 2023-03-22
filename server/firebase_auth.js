@@ -1,5 +1,5 @@
 const {initializeApp} = require("firebase/app");
-const {signInWithEmailAndPassword } = require("firebase/auth");
+const { signInWithEmailAndPassword, getAuth } = require("firebase/auth");
 
 initializeApp({
   apiKey: process.env.REACT_APP_APIKEY,
@@ -11,5 +11,6 @@ initializeApp({
   measurementId: process.env.REACT_APP_MEASUREMENTID,
 });
 
+const authClient = getAuth() 
 
-module.exports = {signInWithEmailAndPassword};
+module.exports = {signInWithEmailAndPassword , authClient};
