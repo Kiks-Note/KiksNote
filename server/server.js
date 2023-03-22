@@ -8,18 +8,20 @@ app.use(cors());
 
 const PORT = process.env.PORT || 5050;
 
-app.post("/addUser", (req, res) => {
+// exemple
+/* app.post("/addUser", (req, res) => {
   const data = req.body;
   db.collection("users").add(data);
   res.send({ message: "User created successfully" });
-});
+}); */
 app.post("/newRetro", (req, res) => {
     const data = req.body;
     db.collection("retro").doc(data.retro.name+"-"+data.retro.cours).set(data);
     res.send({ message: "Retrospective created successfully" });
 });
 
-app.get("/users", (req, res) => {
+// exemple
+/* app.get("/users", (req, res) => {
   db.collection("users")
     .get()
     .then((snapshot) => {
@@ -32,6 +34,6 @@ app.get("/users", (req, res) => {
     .catch((err) => {
       console.log(err);
     });
-});
+}); */
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
