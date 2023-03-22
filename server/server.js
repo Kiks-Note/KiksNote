@@ -13,6 +13,11 @@ app.post("/addUser", (req, res) => {
   db.collection("users").add(data);
   res.send({ message: "User created successfully" });
 });
+app.post("/newRetro", (req, res) => {
+    const data = req.body;
+    db.collection("retro").doc(data.retro.name+"-"+data.retro.cours).set(data);
+    res.send({ message: "Retrospective created successfully" });
+});
 
 app.get("/users", (req, res) => {
   db.collection("users")
