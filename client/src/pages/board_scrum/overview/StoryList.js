@@ -43,15 +43,11 @@ function TextList({ stories, sprints }) {
   };
 
   return (
-    <div
-      style={{
-        width: "30%",
-      }}
-    >
+    <div>
       <div
         style={{
-          minHeight: "75vh",
-          maxHeight: "80vh",
+          minHeight: "70vh",
+          maxHeight: "75vh",
           display: "flex",
           borderStyle: "solid",
           borderColor: "white",
@@ -61,10 +57,9 @@ function TextList({ stories, sprints }) {
           overflow: "auto",
           borderRadius: "5%",
           marginLeft: "5%",
-          marginTop: "8%",
+          marginTop: "3%",
         }}
       >
-        <Typography variant="h4">Stories</Typography>
         <div
           style={{
             height: "fit-content",
@@ -75,55 +70,64 @@ function TextList({ stories, sprints }) {
           }}
         >
           <div style={{ width: "80%" }}>
-            {story.slice(page * storyPerPage, page * storyPerPage + storyPerPage).map((items, index) => (
-              <div key={index} style={{ marginBottom: "2vh" }}>
-                <Accordion expanded={expanded === index} onChange={handleChange(index)}>
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    aria-controls="panel1bh-content"
-                    id="panel1bh-header"
+            {story
+              .slice(page * storyPerPage, page * storyPerPage + storyPerPage)
+              .map((items, index) => (
+                <div key={index} style={{ marginBottom: "2vh" }}>
+                  <Accordion
+                    expanded={expanded === index}
+                    onChange={handleChange(index)}
                   >
-                    <Typography sx={{ width: "90%", flexShrink: 0 }}>
-                      {items.name}{" "}
-                      <IconButton aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuOpen}>
-                        <MoreVertIcon />
-                      </IconButton>{" "}
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls="panel1bh-content"
+                      id="panel1bh-header"
+                    >
+                      <Typography sx={{ width: "90%", flexShrink: 0 }}>
+                        {items.name}{" "}
+                        <IconButton
+                          aria-controls="simple-menu"
+                          aria-haspopup="true"
+                          onClick={handleMenuOpen}
+                        >
+                          <MoreVertIcon />
+                        </IconButton>{" "}
+                      </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <Typography>{items.desc}</Typography>
+                    </AccordionDetails>
+                  </Accordion>
+                  <Menu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleMenuClose}
+                  >
+                    <Typography variant="subtitle1" color="textSecondary">
+                      Ajouter à un sprint
                     </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Typography>{items.desc}</Typography>
-                  </AccordionDetails>
-                </Accordion>
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchorEl}
-                  keepMounted
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                >
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Ajouter à un sprint
-                  </Typography>
 
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Nom de la release 1
-                  </Typography>
-                  {sprint.map((item, index) => (
-                    <MenuItem key={index} onClick={handleMenuClose}>
-                      {item.sprint_name}
-                    </MenuItem>
-                  ))}
-                  <Typography variant="subtitle1" color="textSecondary">
-                    Nom de la release 2
-                  </Typography>
-                  {sprint.map((item, index) => (
-                    <MenuItem key={index} onClick={handleMenuClose}>
-                      {item.sprint_name}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </div>
-            ))}
+                    <Typography variant="subtitle1" color="textSecondary">
+                      Nom de la release 1
+                    </Typography>
+                    {sprint.map((item, index) => (
+                      <MenuItem key={index} onClick={handleMenuClose}>
+                        {item.sprint_name}
+                      </MenuItem>
+                    ))}
+                    <Typography variant="subtitle1" color="textSecondary">
+                      Nom de la release 2
+                    </Typography>
+                    {sprint.map((item, index) => (
+                      <MenuItem key={index} onClick={handleMenuClose}>
+                        {item.sprint_name}
+                      </MenuItem>
+                    ))}
+                  </Menu>
+                </div>
+              ))}
           </div>
         </div>
       </div>
@@ -137,7 +141,9 @@ function TextList({ stories, sprints }) {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeStoryPerPage}
           labelRowsPerPage="Par page"
-          labelDisplayedRows={({ from, to, count }) => `${from} - ${to} sur ${count}`}
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from} - ${to} sur ${count}`
+          }
         />
       </Box>
     </div>

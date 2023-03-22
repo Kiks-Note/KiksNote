@@ -1,27 +1,21 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Divider, List, ListItem, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  List,
+  ListItem,
+  Typography,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import CardSprint from "../../../components/board_scrum/overview/CardSprint";
+import StatTab from "../../../components/board_scrum/overview/StatTab";
 import TextList from "./StoryList";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
+import Grid from "@mui/material/Grid";
 
 function OverView() {
-  ChartJS.register(ArcElement, Tooltip, Legend);
-
-  const data = {
-    labels: ["To Do", "In Progress", "Done"],
-    datasets: [
-      {
-        label: "nombre de tâches",
-        data: [12, 19, 3],
-        backgroundColor: ["rgba(255, 99, 132, 0.2)", "rgba(255, 206, 86, 0.2)", "rgba(75, 192, 192, 0.2)"],
-        borderColor: ["rgba(255, 99, 132, 1)", "rgba(255, 206, 86, 1)", "rgba(75, 192, 192, 1)"],
-        borderWidth: 1,
-      },
-    ],
-  };
   const stories = [
     {
       id: "1",
@@ -191,62 +185,116 @@ function OverView() {
   };*/
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <TextList stories={stories} sprints={sprint}></TextList>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          alignContent: "center",
-          alignItems: "center",
-          width: "35%",
-        }}
-      >
-        <Typography variant="h4">Statistiques</Typography>
-        <Doughnut data={data} />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-around",
-            minWidth: "100%",
-            marginTop: "5vh",
-          }}
-        >
-          <Button variant="contained">BurnDown</Button>
-          <Button variant="contained">BurnUp</Button>
-        </div>
-      </div>
-      <Box style={{ width: "30%" }}>
-        <Button
-          variant="contained"
-          //</Box>onClick={moveToPdf(999)}
-        >
-          Backlog
-        </Button>
-        <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
-          Sprint
-        </Typography>
-        {sprint.map((person) => (
-          <ListItem key={person.id}>
-            <CardSprint
-              key={person.id}
-              picture={person.picture}
-              sprint_group={person.sprint_group}
-              fav={person.favorite}
-              id={person.id}
-            />
-          </ListItem>
-        ))}
-      </Box>
-    </div>
+    <Box sx={{ flexGrow: 1 }}>
+      <Grid container spacing={2} sx={{ m: 2 }}>
+        <Grid item xs={12} md={4}>
+          <Typography variant="h4">Stories</Typography>
+          <TextList stories={stories} sprints={sprint} />
+        </Grid>
+        <Grid item xs={12} md={4}>
+          <StatTab />
+        </Grid>
+        <Grid item xs={12} md={3}>
+          <Box>
+            <Button
+              variant="contained"
+              //onClick={moveToPdf(999)}
+            >
+              Backlog
+            </Button>
+            <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
+              Release / Sprint
+            </Typography>
+            <List
+              style={{
+                minHeight: "70vh",
+                maxHeight: "75vh",
+                display: "flex",
+                borderStyle: "solid",
+                borderColor: "white",
+                borderWidth: "1px",
+                flexDirection: "column",
+                alignItems: "center",
+                overflow: "auto",
+                borderRadius: "5%",
+                marginLeft: "5%",
+                marginTop: "8%",
+              }}
+            >
+              {sprint.map((person) => (
+                <ListItem key={person.id}>
+                  <Box sx={{ width: "100%" }}>
+                    <Accordion>
+                      <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                      >
+                        <Typography>{person.sprint_group}</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails sx={{ width: "100%" }}>
+                        <Box sx={{ width: "100%" }}>
+                          <CardSprint
+                            picture={person.picture}
+                            sprint_group={person.sprint_group}
+                            fav={person.favorite}
+                            id={person.id}
+                          />
+                        </Box>
+                      </AccordionDetails>
+                    </Accordion>
+                  </Box>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+    // <div
+    //   style={{
+    //     display: "flex",
+    //     justifyContent: "space-between",
+    //     alignContent: "center",
+    //     alignItems: "center",
+    //   }}
+    // >
+    //   <TextList stories={stories} sprints={sprint}/>
+    //   <Box
+    //     style={{
+    //       display: "flex",
+    //       flexDirection: "column",
+    //       justifyContent: "space-between",
+    //       alignContent: "center",
+    //       alignItems: "center",
+    //       width: "35%",
+    //     }}
+    //   >
+    //     <StatTab/>
+    //   </Box>
+    //   <Box style={{ width: "30%" }}>
+    //     <Button
+    //       variant="contained"
+    //       //</Box>onClick={moveToPdf(999)}
+    //     >
+    //       Backlog
+    //     </Button>
+    //     <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
+    //       Sprint
+    //     </Typography>
+    //     {sprint.map((person) => (
+    //       <ListItem key={person.id}>
+    //         <CardSprint
+    //           key={person.id}
+    //           picture={person.picture}
+    //           sprint_group={person.sprint_group}
+    //           fav={person.favorite}
+    //           id={person.id}
+    //         />
+    //       </ListItem>
+    //     ))}
+    //   </Box>
+    // </div>
   );
 }
 export default OverView;
