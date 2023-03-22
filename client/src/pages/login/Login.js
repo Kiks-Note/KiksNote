@@ -9,6 +9,9 @@ import {
   Grid
 } from "@mui/material";
 import { createTheme } from '@mui/material/styles';
+import MailIcon from '@mui/icons-material/Mail';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import LockIcon from '@mui/icons-material/Lock';
 
 import axios from "axios";
 
@@ -95,7 +98,16 @@ const Login = () => {
           </Typography>
           <form className="p-15" onSubmit={onSubmit}>
             {/* mail adress label and input */}
-            <Container fixed maxWidth="lg" className="textfield-box-login">
+            <Container fixed maxWidth="lg" sx={{
+              padding: "10px",
+              display: "flex",
+              flexDirection: "row", 
+            }}>
+              <MailIcon sx={{
+                marginTop: "20px",
+                marginRight: "10px",
+                color: "#7a52e1",
+              }}/>
               <TextField
                 variant="standard"
                 fullWidth
@@ -113,7 +125,16 @@ const Login = () => {
               )}
             </Container>
             {/* password label and input */}
-            <Container fixed maxWidth="xl" className="textfield-box-login">
+            <Container fixed maxWidth="xl" sx={{
+              padding: "10px",
+              display: "flex",
+              flexDirection: "row", 
+            }}>
+              <LockIcon sx={{
+                marginTop: "20px",
+                marginRight: "10px",
+                color: "#7a52e1",
+              }}/>
               <TextField
                 type="password"
                 variant="standard"
