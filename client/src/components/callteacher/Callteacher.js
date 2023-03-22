@@ -5,7 +5,6 @@ import "./Callteacher.scss";
 import Countdown from "react-countdown";
 
 function AppelProf() {
-  // const [url, setUrl] = useState("");
   const [qrcode, setQrcode] = useState("");
   const [call, setCall] = useState({
     id_lesson: "",
@@ -13,12 +12,77 @@ function AppelProf() {
     student_scan: [],
     chats: [],
   });
+  const ip = process.env.REACT_APP_IP;
   const [users, setUsers] = useState([]);
-  const [Chats, setChats] = useState([]);
+  const [Chats, setChats] = useState([
+    {
+      id: 1,
+      date: "07/12/2022 14:40",
+      username: "jules",
+      content: "msg.current.value",
+      isGif: false,
+    },
+    {
+      id: 2,
+      date: "07/12/2022 14:41",
+      username: "jules",
+      content: "msg.current.value",
+      isGif: false,
+    },
+    {
+      id: 3,
+      date: "07/12/2022 14:42",
+      username: "jules",
+      content: "msg.current.value",
+      isGif: false,
+    },
+    {
+      id: 4,
+      date: "07/12/2022 14:43",
+      username: "jules",
+      content: "msg.current.value",
+      isGif: false,
+    },
+    {
+      id: 4,
+      date: "07/12/2022 14:43",
+      username: "jules",
+      content: "msg.current.value",
+      isGif: false,
+    },
+    {
+      id: 4,
+      date: "07/12/2022 14:43",
+      username: "jules",
+      content: "msg.current.value",
+      isGif: false,
+    },
+    {
+      id: 4,
+      date: "07/12/2022 14:43",
+      username: "jules",
+      content: "msg.current.value",
+      isGif: false,
+    },
+    {
+      id: 4,
+      date: "07/12/2022 14:43",
+      username: "jules",
+      content: "msg.current.value",
+      isGif: false,
+    },
+    {
+      id: 4,
+      date: "07/12/2022 14:43",
+      username: "jules",
+      content: "msg.current.value",
+      isGif: false,
+    },
+  ]);
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
-  const ws = new WebSocket(`ws://10.57.29.159:5050`);
+  const ws = new WebSocket(`ws://${ip}:5050`);
   const renderer = ({ minutes, seconds }) => {
     return (
       <span>
@@ -77,7 +141,7 @@ function AppelProf() {
 
   const GenerateQrcode = () => {
     QRCode.toDataURL(
-      `http://10.57.29.159:3000/Presence/${tempCall.id}`,
+      `http://${ip}:3000/Presence/${tempCall.id}`,
       {
         width: 800,
         margin: 2,
@@ -132,7 +196,7 @@ function AppelProf() {
             <div className="ListUser">
               {users.map((user) => {
                 return (
-                  <span key={user.id} className="UserItem">
+                  <span key={user.id} className="UserItemPresent">
                     {user.firstname}
                   </span>
                 );

@@ -10,7 +10,7 @@
 }
 
 .Timer {
-  height: 20%;
+  height: 10%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -45,20 +45,28 @@
   flex-wrap: wrap;
 }
 
-.UserItem {
+.UserItem,
+.UserItemPresent {
   width: 20%;
   margin: 0.5rem;
   flex: 1;
   text-align: center;
 }
 
+.UserItem {
+  color: red;
+}
+.UserItemPresent {
+  color: green;
+}
 .Chat {
   width: 100%;
   height: 100%;
-  // border: 0.1em;
-  // border-radius: 8px;
-  // border-color: black;
-  // border-style: solid ;
+  padding: 0.4em;
+  border: 0.1em;
+  border-radius: 8px;
+  border-color: black;
+  border-style: solid;
   overflow-y: scroll;
 }
 
@@ -74,7 +82,8 @@
   display: flex;
   flex-direction: column;
   border: 0.1em;
-  margin: 0.2em;
+  margin-top: 0.3em;
+  margin-bottom: 0.3em;
   padding: 0.2em;
   border-radius: 8px;
   border-color: black;
