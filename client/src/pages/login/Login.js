@@ -6,7 +6,7 @@ import {
   Box,
   Button,
   Link,
-  Grid
+  Grid,
 } from "@mui/material";
 import { createTheme } from '@mui/material/styles';
 import MailIcon from '@mui/icons-material/Mail';
@@ -18,6 +18,10 @@ import axios from "axios";
 import { accountAuthService } from "../../services/accountAuth";
 
 import { useNavigate } from "react-router-dom";
+
+import { initializeApp } from "firebase/app";
+
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
 import "./Login.scss";
 import imgLogin from "./../../assets/img/login_img.svg";
@@ -35,10 +39,24 @@ const theme = createTheme({
   },
 });
 
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_APIKEY,
+  authDomain: process.env.REACT_APP_AUTHDOMAIN,
+  projectId: process.env.REACT_APP_PROJECTID,
+  storageBucket: process.env.REACT_APP_STORAGEBUKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGINGSENDERID,
+  appId: process.env.REACT_APP_APPID,
+  measurementId: process.env.REACT_APP_MEASUREMENTID,
+};
+
+initializeApp(firebaseConfig);
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setMessageError] = useState("");
+
+  const auth = getAuth();
 
   const navigate = useNavigate();
 
@@ -54,22 +72,34 @@ const Login = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    await axios
-      .post("http://localhost:5050/auth/login", {
-        email,
-        password,
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        userCredential.user.getIdToken().then(async (idToken) => {
+          console.log(userCredential.user);
+          await axios
+            .post("http://localhost:5050/auth/login", {
+              idToken,
+            })
+            .then((res) => {
+              accountAuthService.saveTokens(
+                res.data.token,
+                userCredential.user.stsTokenManager.refreshToken
+              );
+              localStorage.setItem('user_uid', userCredential.user.uid)
+              navigate("/");
+            })
+            .catch(
+              (err) => setMessageError(err.response.data),
+              console.log(errorMessage)
+            );
+        });
       })
-      .then((res) => {
-        accountAuthService.saveTokens(
-          res.data.access_token,
-          res.data.refreshToken
-        );
-        navigate("/");
-      })
-      .catch(
-        (err) => setMessageError(err.response.data),
-        console.log(errorMessage)
-      );
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
+        console.log(errorMessage);
+      });
   };
 
   return (
