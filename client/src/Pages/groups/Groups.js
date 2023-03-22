@@ -122,8 +122,6 @@ const colContent = {
 };
 
 
-
-
 function App() {
     const [columns, setColumns] = useState(colContent);
     function addStudent(columnId, student, columns) {
@@ -199,7 +197,7 @@ function App() {
                                                         {...provided.droppableProps}
                                                         ref={provided.innerRef}
                                                         style={{
-                                                            background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
+                                                            background: snapshot.isDraggingOver ? "#e697b3" : "#252525",
                                                             padding: 4,
                                                             width: "100%",
                                                             display: "flex",
@@ -228,7 +226,7 @@ function App() {
                                                                                     marginBottom: 8,
                                                                                     minHeight: "60px",
                                                                                     borderRadius: 3,
-                                                                                    backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
+                                                                                    backgroundColor: snapshot.isDragging ? "#7d0229" : "#f50057",
                                                                                     color: "white",
                                                                                     ...provided.draggableProps.style,
                                                                                 }}
@@ -271,7 +269,7 @@ function App() {
                                                         {...provided.droppableProps}
                                                         ref={provided.innerRef}
                                                         style={{
-                                                            background: snapshot.isDraggingOver ? "lightblue" : "lightgrey",
+                                                            background: snapshot.isDraggingOver ? "#e697b3" : "#252525",
                                                             padding: 4,
                                                             width: 250,
                                                             minHeight: 140,
@@ -302,7 +300,7 @@ function App() {
                                                                                     marginBottom: 8,
                                                                                     minHeight: "60px",
                                                                                     borderRadius: 3,
-                                                                                    backgroundColor: snapshot.isDragging ? "#263B4A" : "#456C86",
+                                                                                    backgroundColor: snapshot.isDragging ? "#7d0229" : "#f50057",
                                                                                     color: "white",
                                                                                     ...provided.draggableProps.style,
                                                                                 }}
