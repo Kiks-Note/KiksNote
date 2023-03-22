@@ -67,6 +67,7 @@ const Login = () => {
                 res.data.token,
                 userCredential.user.stsTokenManager.refreshToken
               );
+              localStorage.setItem('user_uid', userCredential.user.uid)
               navigate("/");
             })
             .catch(
