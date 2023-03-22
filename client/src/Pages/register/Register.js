@@ -13,6 +13,7 @@ const Register = () => {
     const [ userPassword, setUserPassword] = useState("")
     const [ userConfirmPassword, setUserConfirmPassword] = useState("")
     const [ userStatus, setUserStatus] = useState("")
+    const [ userClass, setUserClass] = useState("")
     const [formErrors, setFormErrors] = useState({});
     const [isSubmit, setIsSubmit] = useState(false);
 
@@ -50,7 +51,8 @@ const Register = () => {
             userFirstName,
             userLastName,
             userBirthDate,
-            userStatus
+            userStatus,
+            userClass
         }).then((res) => {
             if (res.data.message === "User created successfully") {
                 toastSuccess("Utilisateur enregistré");
@@ -95,6 +97,9 @@ const Register = () => {
             errors.status = "Choisissez le statut"
         } else if(userStatus === "etudiant" && !emailedu_regex.test(userEmail)) {
             errors.email = "Courriel edu introuvable";
+        }
+        if (userStatus === "etudiant" && userClass === "") {
+            errors.class = "Indiquez votre classe";
         }
         if(userBirthDate === "") {
             errors.birthdate = "Remplir";
@@ -254,6 +259,31 @@ const Register = () => {
                                 <option value="pedago">Pedago</option>
                             </select>
                         </label>
+                        { userStatus === "etudiant" ?
+                        <label
+                            id="label-class"
+                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            htmlFor="input-class"
+                        >
+                            <select name="status"
+                                    id="input-class"
+                                    onChange={(e)=>setUserClass(e.target.value)}>
+                                <option disabled={true} value="">
+                                    --Classe--
+                                </option>
+                                <option value="L1-paris">L1-Paris</option>
+                                <option value="L1-cergy">L1-Cergy</option>
+                                <option value="L2-paris">L2-Paris</option>
+                                <option value="L2-cergy">L2-Cergy</option>
+                                <option value="L3-paris">L3-Paris</option>
+                                <option value="L3-cergy">L3-Cergy</option>
+                                <option value="M1-lead">M1-LeadDev</option>
+                                <option value="M1-gaming">M1-Gaming</option>
+                                <option value="M2-lead">M2-LeadDev</option>
+                                <option value="M2-gaming">M2-Gaming</option>
+                            </select>
+                        </label> : <div></div>
+                        }
                         </div>
                         <div className="flex justify-center">
                         <button

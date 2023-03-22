@@ -9,19 +9,31 @@ app.use(cors());
 const PORT = process.env.PORT || 5050;
 
 app.post('/register', (req, res) => {
-    const {userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus} = req.body;
+    const {userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass} = req.body;
     auth.createUser({
         email: userEmail,
         password: userPassword,
     }).then((user) => {
-        db.collection("users").doc(userEmail).set({
-            firstname: userFirstName,
-            lastname: userLastName,
-            password: userPassword,
-            dateofbirth : new Date(userBirthDate),
-            status: userStatus,
-            email: userEmail
-        })
+        if (userClass === "") {
+            db.collection("users").doc(userEmail).set({
+                firstname: userFirstName,
+                lastname: userLastName,
+                password: userPassword,
+                dateofbirth: new Date(userBirthDate),
+                status: userStatus,
+                email: userEmail
+            })
+        } else {
+            db.collection("users").doc(userEmail).set({
+                firstname: userFirstName,
+                lastname: userLastName,
+                password: userPassword,
+                dateofbirth: new Date(userBirthDate),
+                status: userStatus,
+                email: userEmail,
+                class: userClass
+            })
+        }
         res.send({ message: "User created successfully" })
     }).catch((err)=>{
         console.log(err);
