@@ -15,7 +15,8 @@ function Retrospective() {
         tx[i].addEventListener("input", OnInput, false);
     }
 
-    function OnInput() {
+    function OnInput()
+    {
         this.style.height = 0;
         this.style.height = (this.scrollHeight) + "px";
     }
