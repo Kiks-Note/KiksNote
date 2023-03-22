@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const { db, auth } = require("./firebase");
+const bcrypt = require('bcrypt');
+const saltRounds = 12;
 
 app.use(express.json());
 app.use(cors());
@@ -18,7 +20,7 @@ app.post('/register', (req, res) => {
             db.collection("users").doc(user.uid).set({
                 firstname: userFirstName,
                 lastname: userLastName,
-                password: userPassword,
+                password: bcrypt.hashSync(userPassword, saltRounds),
                 dateofbirth: new Date(userBirthDate),
                 status: userStatus,
                 email: userEmail
@@ -27,7 +29,7 @@ app.post('/register', (req, res) => {
             db.collection("users").doc(user.uid).set({
                 firstname: userFirstName,
                 lastname: userLastName,
-                password: userPassword,
+                password: bcrypt.hashSync(userPassword, saltRounds),
                 dateofbirth: new Date(userBirthDate),
                 status: userStatus,
                 email: userEmail,
