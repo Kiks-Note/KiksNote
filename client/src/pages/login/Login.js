@@ -8,6 +8,7 @@ import {
   Link,
   Grid
 } from "@mui/material";
+import { createTheme } from '@mui/material/styles';
 
 import axios from "axios";
 
@@ -16,6 +17,20 @@ import { accountAuthService } from "../../services/accountAuth";
 import { useNavigate } from "react-router-dom";
 
 import "./Login.scss";
+import imgLogin from "./../../assets/img/login_img.svg";
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#7a52e1',
+      darker: '#7a52e1',
+    },
+    neutral: {
+      main: '#341a9f',
+      contrastText: '#fff',
+    },
+  },
+});
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -35,36 +50,47 @@ const Login = () => {
   };
 
   const onSubmit = async (e) => {
-    // e.preventDefault();
-    // await axios
-    //   .post("http://localhost:5050/auth/login", {
-    //     email,
-    //     password,
-    //   })
-    //   .then((res) => {
-    //     accountAuthService.saveTokens(
-    //       res.data.access_token,
-    //       res.data.refreshToken
-    //     );
-    //     navigate("/");
-    //   })
-    //   .catch(
-    //     (err) => setMessageError(err.response.data),
-    //     console.log(errorMessage)
-    //   );
-    setMessageError("Wrong password");
-    console.log(errorMessage);
+    e.preventDefault();
+    await axios
+      .post("http://localhost:5050/auth/login", {
+        email,
+        password,
+      })
+      .then((res) => {
+        accountAuthService.saveTokens(
+          res.data.access_token,
+          res.data.refreshToken
+        );
+        navigate("/");
+      })
+      .catch(
+        (err) => setMessageError(err.response.data),
+        console.log(errorMessage)
+      );
   };
 
   return (
     <div className="login">
-      <div className="login-image-box">
-        {/* Replace test.png by a square image in public folder */}
-        <img className="login-image" src="/test.png" />
-      </div>
+      <Container className="login-image-box" sx={{
+        backgroundImage: `url(${imgLogin})`,
+        width: "60%",
+        borderRadius: "25px 0px 0px 25px",
+        objectFit: "scale-down",
+        backgroundColor: "#7a52e1"
+      }}>
+      </Container>
       <div className="login-header">
-        <div className="container-login">
-          <Typography component="h1" className="text-4xl font-extrabold m-4 text-center">
+        <Container sx={{
+          marginTop: "20%",
+          marginBottom: "20%",
+          width: "90%",
+        }}>
+          <Typography component="h1" sx={{
+            fontSize: 30,
+            fontWeight: "bold",
+            marginBottom: "20px",
+            textAlign: "center",
+          }}>
             Connexion
           </Typography>
           <form className="p-15" onSubmit={onSubmit}>
@@ -108,11 +134,19 @@ const Login = () => {
               )}
               
             </Container>
-            <Container>
-              <Link href="/askresetpass">Mot de passe oublie ?</Link>
+            <Container sx={{
+              textAlign: "right",
+              marginBottom: "20px",
+            }}>
+              <Link href="/askresetpass" sx={{
+                color: "#7a52e1",
+                textDecoration: "none",
+              }}>Mot de passe oublie ?</Link>
             </Container>
             <Box textAlign='center' className="button-box-login">
-              <Button type="submit" variant="contained">
+              <Button type="submit" className="login-button" sx={{
+                backgroundColor: "#7a52e1",
+              }} variant="contained">
                 Connexion
               </Button>
             </Box>
@@ -122,11 +156,16 @@ const Login = () => {
             Pas encore de compte? Créez-en un{" "}
             <Link
               href="/signup"
+              sx={{
+                color: "#7a52e1",
+                textDecoration: "none",
+                fontWeight: "bold",
+              }}
             >
               ici
             </Link>
           </p>
-        </div>
+        </Container>
       </div>
     </div>
   );
