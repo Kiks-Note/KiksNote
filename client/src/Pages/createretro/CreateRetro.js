@@ -1,7 +1,9 @@
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import {useNavigate} from "react-router-dom";
 
 function CreateRetro() {
+    const navigate = useNavigate();
 
     const initialValues = {
         name: "",
@@ -14,10 +16,10 @@ function CreateRetro() {
         if (formValues.type === "gms") {
             newRetro = {...formValues,Glad:[],Mad:[],Sad:[]}
         }
-        else if (initialValues.type === "pna") {
+        else if (formValues.type === "pna") {
             newRetro = {...formValues,Positif:[],Negatif:[],Amelioration:[]}
         }
-        else {
+        else if (formValues.type === "4l"){
             newRetro = {...formValues,Like:[],Learned:[],Lacked:[],Longed:[]}
         }
         newRetroRequest(newRetro)
@@ -28,7 +30,7 @@ function CreateRetro() {
             retro:newRetro
         }).then((res) => {
             console.log(res.data)
-            useNavigate().navigate("/");
+            navigate("/retrospective/"+newRetro.name+"-"+newRetro.cours);
         }).catch((err) => {
             console.log(err)
         })
@@ -114,7 +116,7 @@ function CreateRetro() {
                                             --Type--
                                         </option>
                                         <option value="gms">GMS</option>
-                                        <option value="4l'">4L</option>
+                                        <option value="4l">4L</option>
                                         <option value="pna">PNA</option>
                                     </select>
                                 </label>
@@ -122,13 +124,6 @@ function CreateRetro() {
                             </div>
                         <div className="auth__form-container_fields-content_button">
                             <button>Création</button>
-                            <p>Lien vers la rétro : </p>
-                            {Object.keys(formErrors).length === 0 && isSubmit ? (
-                                <a href="http://localhost:3000/retrospective/0">
-                                http://localhost:3000/retrospective/0
-                                </a>
-                            ) : <a></a>
-                            }
                         </div>
                     </form>
                 </div>
