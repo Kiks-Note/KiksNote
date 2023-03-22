@@ -201,12 +201,12 @@ function Dashboard() {
   }
   return (
     <div style={{ marginLeft: "1%", marginTop: "1%" }}>
-      {favoris.length > 0 && renderList(favoris, "Vos favoris")}
-      {actif.length > 0 && renderList(actif, "Tableau actif")}
+      {favoris.length > 0 && renderList(favoris, "Espace de travail favoris")}
+      {actif.length > 0 && renderList(actif, "Espace de travail actif")}
 
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
         <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
-          Mes tableaux
+          Mon espace de travail
         </Typography>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <ToggleButtonGroup value={view} exclusive onChange={viewChange} sx={{ margin: 1 }}>

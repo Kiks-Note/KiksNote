@@ -198,11 +198,7 @@ function Board() {
     setMenuAnchorEl(null);
   };
   const onDragEnd = (result, columns, setColumns) => {
-    console.log(columns);
-
     if (!result.destination) return;
-    console.log(result.destination.droppableId);
-    console.log(result.source.droppableId);
 
     if (result.destination.droppableId === "requested" && result.source.droppableId !== "requested") {
       setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
@@ -228,7 +224,7 @@ function Board() {
       const destItems = [...destColumn.items];
       const [removed] = sourceItems.splice(source.index, 1);
       destItems.splice(destination.index, 0, removed);
-      console.log(columns);
+
       setColumns({
         ...columns,
         [source.droppableId]: {

@@ -96,9 +96,8 @@ function DialogDashbord(props) {
     const {
       target: { value },
     } = event;
-    console.log(value);
+
     setPersonName(typeof value === "string" ? value.split(",") : value);
-    console.log(personName);
   };
   const wait = function (duration = 1000) {
     return new Promise((resolve) => {
@@ -129,7 +128,6 @@ function DialogDashbord(props) {
     //   console.log(error);
     // }
 
-    console.log(formData);
     await wait(2000);
     handleOk();
   };

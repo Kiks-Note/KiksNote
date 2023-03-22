@@ -4,14 +4,14 @@ import { withStyles } from "@material-ui/core/styles";
 import { Tabs, Tab, IconButton } from "@material-ui/core";
 import CloseIcon from "@mui/icons-material/Clear";
 import TabContainer from "./TabContainer";
-
+import "./Tab.scss";
 const styles = (theme) => ({
   root: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.paper,
   },
   colorPrimary: {
-    color: "red",
+    color: "green",
   },
 });
 

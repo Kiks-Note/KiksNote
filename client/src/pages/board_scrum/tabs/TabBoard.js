@@ -6,6 +6,7 @@ import OverView from "../overview/OverView";
 
 export default function TabBoard() {
   var [activeTab, setActiveTab] = useState(0);
+  var [storedTabs, setStoredTabs] = useState([]);
 
   var [tabs, setData] = useState([
     {
@@ -17,7 +18,7 @@ export default function TabBoard() {
   ]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    var interval = setInterval(() => {
       fetchData();
     }, 500);
 
@@ -25,63 +26,90 @@ export default function TabBoard() {
   }, []);
 
   function fetchData() {
-    const storageTab = JSON.parse(localStorage.getItem("tabs")) || false;
-    //localStorage.setItem("tabs", JSON.stringify([]));
-    //localStorage.setItem("activeTab", JSON.stringify(0));
-    var newActiveTab = JSON.parse(localStorage.getItem("activeTab"));
-    console.log(localStorage.getItem("activeTab", JSON.stringify(0)));
+    //[storageTab] is variable to get tabs on localStorage
+    const storageTab = JSON.parse(localStorage.getItem("tabs")) || [];
+    var tabsIndex = localStorage.getItem("tabsIndex");
 
-    const newTabs = [];
-    newTabs.push({
-      id: 0,
-      label: "Dashboard",
-      component: <Dashboard />,
-      closeable: false,
-    });
-
-    for (var i = 0; i < storageTab.length; i++) {
-      var exists = false;
-      var component;
-      switch (storageTab[i].type) {
-        case "board":
-          component = <Board></Board>;
-          break;
-        case "overView":
-          component = <OverView/>;
-          break;
-        default:
-          component = <p>default</p>;
-          break;
-      }
-      for (var j = 0; j < newTabs.length; j++) {
-        if (newTabs[j].id === storageTab[i].id) {
-          exists = true;
-          break;
-        }
-      }
-      if (!exists) {
-        newTabs.push({
-          id: storageTab[i].id,
-          label: storageTab[i].label,
-          component: component,
-          closeable: true,
-        });
-      }
+    if (storageTab.length == 0) {
+      localStorage.setItem("tabsIndex", 0);
     }
 
-    setData(newTabs);
+    if (storedTabs.length != storageTab.length) {
+      storedTabs = storageTab;
+      setStoredTabs(storageTab);
+      //localStorage.setItem("tabs", JSON.stringify([]));
+      //localStorage.setItem("tabsIndex", JSON.stringify(null));
+      //localStorage.setItem("activeTab", JSON.stringify(0));
+
+      const newTabs = [];
+      newTabs.push({
+        id: 0,
+        idDb: 0,
+        label: "Dashboard",
+        component: <Dashboard />,
+        closeable: false,
+      });
+
+      for (var i = 0; i < storageTab.length; i++) {
+        var exists = false;
+        var component;
+        switch (storageTab[i].type) {
+          case "board":
+            component = <Board />;
+            break;
+          case "overView":
+            component = <OverView />;
+            break;
+          case "pdf":
+            component = <p>pdf</p>;
+            break;
+          case "settings":
+            component = <p>settings</p>;
+            break;
+          case "burndown":
+            component = <p>burndown</p>;
+            break;
+          case "burnup":
+            component = <p>burnup</p>;
+            break;
+          default:
+            component = <p>default</p>;
+            break;
+        }
+        //Check if the new element is already exist
+        for (var j = 0; j < newTabs.length; j++) {
+          if (newTabs[j].id === storageTab[i].id) {
+            exists = true;
+            break;
+          }
+        }
+        // If the element not exist push
+        if (!exists) {
+          newTabs.push({
+            id: storageTab[i].id,
+            idDb: storageTab[i].idDb,
+            label: storageTab[i].label,
+            component: component,
+            closeable: true,
+          });
+        }
+      }
+      setData(newTabs);
+    }
+    var newActiveTab = JSON.parse(localStorage.getItem("activeTab"));
     for (var tab of storageTab) {
       if (tab.id == newActiveTab) {
-        console.log(tab.label);
+        //Define Active tab for Tabbar with the new element
         setActiveTab(newActiveTab);
         localStorage.setItem("activeTab", newActiveTab);
         break;
       } else {
+        //Define Active tab for Tabbar with Dashboard
         setActiveTab(0);
         localStorage.setItem("activeTab", JSON.stringify(0));
       }
     }
-    if (storageTab.length == 0) {
+    if (storageTab.length == 0 && activeTab != 0) {
       setActiveTab(0);
       localStorage.setItem("activeTab", JSON.stringify(0));
     }

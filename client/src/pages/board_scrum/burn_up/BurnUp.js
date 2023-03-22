@@ -13,20 +13,10 @@ import {
 import React, { useState } from "react";
 import burn from "./BurnUp.json";
 
-ChartJS.register(
-  Title,
-  Tooltip,
-  LineElement,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Filler
-);
+ChartJS.register(Title, Tooltip, LineElement, Legend, CategoryScale, LinearScale, PointElement, Filler);
 function createDataPlannedCompletion() {
   // Average for IdealProgressLine
-  const average =
-    Math.max(...burn.teamProgress) / (burn.sprintNumber.length - 1);
+  const average = Math.max(...burn.teamProgress) / (burn.sprintNumber.length - 1);
   //Max of story point
   const max = Math.max(...burn.teamProgress);
   //Min of story point
@@ -43,7 +33,7 @@ function createDataPlannedCompletion() {
 function TotalPoint() {
   //Max of story point
   const max = Math.max(...burn.teamProgress);
-  console.log(max);
+
   var storyPoint = [];
   for (let i = 0; i < burn.sprintNumber.length; i++) {
     storyPoint.push(max);
@@ -55,7 +45,6 @@ export default function BurnUp() {
   const plannedCompletionLine = createDataPlannedCompletion();
   const allPoint = TotalPoint();
   const teamProgress = burn.teamProgress.sort((a, b) => a - b);
-  console.log(teamProgress);
 
   const [data] = useState({
     labels: burn.sprintNumber, // BurnDown.sprintNumber Json data
@@ -128,11 +117,7 @@ export default function BurnUp() {
 
   return (
     <div className="App">
-      <Line
-        data={data}
-        options={data.options}
-        style={{ width: "1000px", height: "1000px" }}
-      >
+      <Line data={data} options={data.options} style={{ width: "1000px", height: "1000px" }}>
         Hello
       </Line>
     </div>
