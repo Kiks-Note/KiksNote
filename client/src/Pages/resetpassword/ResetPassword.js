@@ -14,6 +14,8 @@ const options = {
     position: toast.POSITION.TOP_RIGHT,
 };
 
+var passwordcanbechanged = false;
+
 export const toastSuccess = message => {
     toast.success(message, options);
 }
@@ -34,6 +36,10 @@ function ResetPassword() {
                 password: newUserPassword,
                 confirmPassword: confirmedUserPassword,
                 token: token
+            }).then((response) => {
+                console.log(response)
+                console.log(response.data)
+                passwordcanbechanged = response.data
             })
     };
 
@@ -43,9 +49,18 @@ function ResetPassword() {
         e.preventDefault();
         if (newUserPassword === confirmedUserPassword) {
             form.current.reset();
-            toastSuccess("Mot de passe modifié")
+            if (passwordcanbechanged) {
+                toastSuccess("Mot de passe modifié")
+            } else {
+                toastFail("Le lien est invalide ou a expiré")
+            }
+
         } else {
-            toastFail("Mot de passe différent");
+            // if (passwordcanbechanged) {
+            toastFail("Mot de passe différents");
+            // } else {
+            //     toastFail("Le lien est invalide ou a expiré")
+            // }
         }
 
     }

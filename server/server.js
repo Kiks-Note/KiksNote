@@ -62,7 +62,6 @@ app.post("/sendemail", (req, res) => {
         data.push(doc.data()["email"]);
         const str = doc.data()["email"];
         if (doc.data()["email"].replace(/\s+/g, '') == email.replace(/\s+/g, '')) {
-          console.log("is valid mail condtion " + isValidEmail);
           isValidEmail = true
         }
       });

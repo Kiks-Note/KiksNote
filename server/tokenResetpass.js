@@ -51,5 +51,4 @@ module.exports = (app, db, jwt, bcrypt) => {
 
         return res.status(200).send("Mot de passe modifié correctement modifié.");
     });
-
 }
