@@ -7,7 +7,7 @@ const dotenv = require('dotenv').config();
 const app = express();
 const { db, auth } = require("./firebase");
 
-const { signInWithEmailAndPassword, authClient } = require("./firebase_auth");
+const { signInWithEmailAndPassword, sendPasswordResetEmail, authClient } = require("./firebase_auth");
 
 app.use(express.json());
 app.use(cors());
@@ -17,5 +17,6 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 5050;
 
 require("./routes/auth")(app, db, jwt, auth, authClient, signInWithEmailAndPassword);
+require("./routes/resetpass")(app, db, bcrypt, auth, authClient, sendPasswordResetEmail);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
