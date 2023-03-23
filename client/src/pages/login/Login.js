@@ -26,7 +26,7 @@ const Login = () => {
   const onSubmit = (e) => {
     e.preventDefault();
     axios
-      .post("http://10.57.29.159:5050/auth/login", {
+      .post("http://10.57.29.236:5050/auth/login", {
         email,
         password,
       })

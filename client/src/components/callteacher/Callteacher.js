@@ -17,7 +17,7 @@ function AppelProf() {
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
-  const ws = new WebSocket(`ws://10.57.29.159:5050`);
+  const ws = new WebSocket(`ws://10.57.29.236:5050`);
 
   useEffect(() => {
     if (dataFetchedRef.current) {
@@ -67,7 +67,7 @@ function AppelProf() {
 
   const GenerateQrcode = () => {
     QRCode.toDataURL(
-      `http://10.57.29.159:3000/Presence/${tempCall.id}`,
+      `http://10.57.29.236:3000/Presence/${tempCall.id}`,
       {
         width: 800,
         margin: 2,

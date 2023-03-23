@@ -3,7 +3,7 @@ import AppelEleve from "../../components/callstudent/Callstudent";
 import { useEffect, useState, useRef } from "react";
 
 function Appel() {
-  const admin = true;
+  const admin = false;
   // Préparer une constante `ip` avec des données vides par défaut
   const [ip, setIp] = useState();
 

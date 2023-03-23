@@ -14,7 +14,7 @@ function RoutesProvider() {
             <Routes>
                 {/* EXAMPLES */}
 
-                <Route path="/login" element={<Login />} />
+                {/*<Route path="/login" element={<Login />} />*/}
                 {/* <Route path="/register" element={<Register />} /> */}
                 {/* To Use the Navbar change Test by your page
                 <Route path="/test" element={<Navbar element={<Test />} />} /> */}

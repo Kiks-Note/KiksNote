@@ -42,6 +42,37 @@ module.exports = (app, wss, db) => {
       });
   });
 
+
+  app.get("/chats", (req, res) => {
+    db.collection("calls")
+       // .doc(req.query.id)
+      .get()
+      .then((snapshot) => {
+      const data1 = [];
+      snapshot.forEach((doc) => {
+          item = doc.data();
+          item["id"] = doc.id;
+          data1.push(item);
+      });
+      res.send(data1[data1.length - 1]);
+
+        //res.send(data1.data);
+      });
+  });
+
+
+  app.post("/addChat", (req, res) => {
+      console.log("*********")
+      console.log(req.body)
+      console.log("*********")
+      db.collection("calls")
+          .doc("yk7atyTe9HNKNICvfHwo")
+          .update({chats: req.body.object})
+          .then( () => {
+              res.send("add chat ");
+          })
+  });
+
   app.post("/updatecall", (req, res) => {
     db.collection("calls")
       .doc(req.body.id)
