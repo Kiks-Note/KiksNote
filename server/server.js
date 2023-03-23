@@ -3,13 +3,13 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const dotenv = require("dotenv");
+const dotenv = require('dotenv').config();
 const app = express();
-const { db } = require("./firebase");
+const { db , auth } = require("./firebase");
 const WebSocket = require("ws");
 const http = require("http");
 
-dotenv.config({ path: "./.env.login" });
+const { signInWithEmailAndPassword, authClient } = require("./firebase_auth");
 
 app.use(express.json());
 app.use(cors());
@@ -20,8 +20,8 @@ const PORT = process.env.PORT || 5050;
 const server = http.createServer(app);
 
 const wss = new WebSocket.Server({ server });
-require("./routes/auth")(app, db, jwt, bcrypt);
 require("./routes/call")(app, wss, db);
+require("./routes/auth")(app, db, jwt, auth, authClient, signInWithEmailAndPassword);
 
 let currentData;
 
