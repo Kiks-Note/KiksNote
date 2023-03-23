@@ -201,6 +201,9 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
             >
               <MenuItem value={"available"}>Disponible</MenuItem>
               <MenuItem value={"unavailable"}>Indisponible</MenuItem>
+              <MenuItem value={"borrowed"}>Emprunté</MenuItem>
+              <MenuItem value={"repair"}>Reparation</MenuItem>
+              <MenuItem value={"requested"}>Demandé</MenuItem>
             </Select>
           </FormControl>
 

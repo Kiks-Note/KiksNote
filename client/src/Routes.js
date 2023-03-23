@@ -6,6 +6,8 @@ import InventoryHome from "./pages/inventory/InventoryHome";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import InventoryDevices from "./pages/inventory/InventoryDevices";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
+import InventoryList from "./pages/inventory/InventoryList";
+import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 
 function RoutesProvider() {
   return (
@@ -20,6 +22,11 @@ function RoutesProvider() {
           <Route
             path="/inventory/admin/dashboard"
             element={<InventoryAdminDashboard />}
+          />
+          <Route path="/inventory/admin/list" element={<InventoryList />} />
+          <Route
+            path="/inventory/admin/borrowed"
+            element={<InventoryListBorrowed />}
           />
         </Route>
       </Routes>

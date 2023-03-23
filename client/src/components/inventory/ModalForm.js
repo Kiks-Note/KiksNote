@@ -40,9 +40,18 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
   const addDevice = async () => {
-    if (!label || !price || !acquisitiondate || !image || !storage || !condition || !description || !campus /*|| !category*/ || !status) {
+    if (
+      !label ||
+      !price ||
+      !acquisitiondate ||
+      !image ||
+      !storage ||
+      !condition ||
+      !description ||
+      !campus /*|| !category*/ ||
+      !status
+    ) {
       toast.error("Veuillez remplir tous les champs");
       return;
     } else {
@@ -51,7 +60,7 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
           axios.post("http://localhost:5050/addDevice", {
             label: label,
             reference: price,
-            category: acquisitiondate,
+            acquisitiondate: acquisitiondate,
             campus: image,
             status: storage,
             image: condition,
@@ -151,7 +160,7 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         type={"text"}
         name="label"
         value={description ? description : ""}
-        onChange={(e) => setLabel(e.target.value)}
+        onChange={(e) => setDescription(e.target.value)}
         fullWidth
       />
 
@@ -181,7 +190,6 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
           <MenuItem value={"unavailable"}>Pontoise</MenuItem>
         </Select>
       </FormControl>
-      
 
       <TextField
         sx={{marginBottom: 2}}
@@ -193,7 +201,6 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         onChange={(e) => setStorage(e.target.value)}
         fullWidth
       />
-
 
       <FormControl sx={{marginBottom: 2}} fullWidth>
         <InputLabel id="demo-simple-select-label">Etat</InputLabel>

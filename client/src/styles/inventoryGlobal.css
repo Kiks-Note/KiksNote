@@ -64,3 +64,78 @@
   background-color: #1a2027 !important;
   font-family: "poppins-regular" !important;
 }
+.MuiDataGrid-menuList {
+  background-color: #1a2027 !important;
+  border-radius: 10px !important;
+}
+.css-1ps6pg7-MuiPaper-root {
+  background-color: #1a2027 !important;
+  border-radius: 10px !important;
+}
+
+.MuiDataGrid-columnHeaderTitle {
+  color: #1a2027 !important;
+  font-family: "poppins-semibold" !important;
+}
+
+/* 
+
+.MuiDataGrid-filterForm {
+  background-color: #1a2027 !important;
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+
+.MuiFormControl-root {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+
+.MuiSvgIcon-root {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+.MuiTouchRipple-root {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+.MuiNativeSelect-select {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+.MuiNativeSelect-icon {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+.MuiNativeSelect-root {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+.MuiTextField-root {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+  border-color: #ffffff !important;
+}
+.MuiInputBase-input {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+  border-color: #ffffff !important;
+}
+.MuiFormLabel-root {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+  border-color: #ffffff !important;
+}
+.css-1dmqq7i-MuiNativeSelect-select-MuiInputBase-input-MuiInput-input:not(
+    [multiple]
+  )
+  option,
+.css-1dmqq7i-MuiNativeSelect-select-MuiInputBase-input-MuiInput-input:not(
+    [multiple]
+  )
+  optgroup {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+  border-color: #ffffff !important;
+  background-color: #1a2027 !important;
+} */

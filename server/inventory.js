@@ -1,4 +1,4 @@
-module.exports = (app, db, user, ws) => {
+module.exports = (app, db, user, ws, parse) => {
   app.get("/inventory", async (req, res) => {
     const docRef = db.collection("inventory");
     const snapshot = await docRef.orderBy("createdAt").get();
@@ -32,7 +32,16 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.post("/addDevice", async (req, res) => {
-    const {label, price, acquisitiondate, campus, storage, image, condition, description} = req.body;
+    const {
+      label,
+      price,
+      acquisitiondate,
+      campus,
+      storage,
+      image,
+      condition,
+      description,
+    } = req.body;
 
     try {
       await db.collection("inventory").doc().set({
@@ -56,8 +65,17 @@ module.exports = (app, db, user, ws) => {
 
   app.put("/inventory/modify/:deviceId", async (req, res) => {
     const {deviceId} = req.params;
-    const {label, price, acquisitiondate, campus, storage, image, condition, description, lastModifiedBy} =
-      req.body;
+    const {
+      label,
+      price,
+      acquisitiondate,
+      campus,
+      storage,
+      image,
+      condition,
+      description,
+      lastModifiedBy,
+    } = req.body;
 
     console.log(req.body);
 
@@ -101,7 +119,16 @@ module.exports = (app, db, user, ws) => {
 
   app.put("/inventory/edit/:deviceId", async (req, res) => {
     const {deviceId} = req.params;
-    const {label, price, acquisitiondate, campus, storage, condition, description, lastModifiedBy} = req.body;
+    const {
+      label,
+      price,
+      acquisitiondate,
+      campus,
+      storage,
+      condition,
+      description,
+      lastModifiedBy,
+    } = req.body;
 
     let updatedStatus = status;
     if (status === "Disponible") {
@@ -270,26 +297,68 @@ module.exports = (app, db, user, ws) => {
 
   ws.on("request", function (request) {
     const connection = request.accept(null, request.origin);
+    const {pathname} = parse(request.httpRequest.url);
 
-    connection
-      ? console.log("WebSocket admin inventory open")
-      : console.log("error");
+    connection ? console.log("WebSocket admin open") : console.log("error");
 
-    db.collection("inventory").onSnapshot(
-      (snapshot) => {
-        const documents = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        connection.sendUTF(JSON.stringify(documents));
-      },
-      (err) => {
-        console.log(`Encountered error: ${err}`);
-      }
-    );
+    if (pathname === "/adminInventory") {
+      db.collection("inventory").onSnapshot(
+        (snapshot) => {
+          const documents = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          connection.sendUTF(JSON.stringify(documents));
+        },
+        (err) => {
+          console.log(`Encountered error: ${err}`);
+        }
+      );
+    }
+    if (pathname === "/adminBorrowedList") {
+      db.collection("inventory")
+        .where("status", "==", "borrowed")
+        .onSnapshot(
+          (snapshot) => {
+            const documents = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+
+            db.collection("inventory_requests")
+              .where("status", "==", "accepted")
+              .onSnapshot(
+                (snapshot) => {
+                  const requests = snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                  }));
+
+                  // const borrowed = documents.filter(
+                  //   (doc) => doc.status === "borrowed"
+                  // );
+                  const borrowedWithRequests = documents.map((doc) => {
+                    const request = requests.find(
+                      (request) => request.deviceId === doc.id
+                    );
+                    return {device: doc, request: request};
+                  });
+
+                  connection.sendUTF(JSON.stringify(borrowedWithRequests));
+                },
+                (err) => {
+                  console.log(`Encountered error: ${err}`);
+                }
+              );
+          },
+          (err) => {
+            console.log(`Encountered error: ${err}`);
+          }
+        );
+    }
 
     connection.on("close", function () {
-      console.log("WebSocket admin inventory closed");
+      console.log("WebSocket admin closed");
     });
   });
 };

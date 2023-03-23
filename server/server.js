@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const webSocketServer = require("websocket").server;
 const http = require("http");
 const PORT = process.env.PORT || 5050;
+const {parse} = require("url");
 
 const user = {
   firstname: "Rui",
@@ -18,7 +19,6 @@ const user = {
 };
 
 const server = http.createServer(app);
-server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 
 const ws = new webSocketServer({
   httpServer: server,
@@ -44,6 +44,6 @@ app.use(
 );
 app.use(bodyParser.json());
 
-require("./inventory")(app, db, user, ws);
+require("./inventory")(app, db, user, ws, parse);
 
-// app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

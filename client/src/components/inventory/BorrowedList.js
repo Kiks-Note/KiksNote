@@ -10,8 +10,9 @@ import SideBarModify from "./SideBarModify";
 import CustomSnackbar from "./CustomSnackBar";
 import axios from "axios";
 import {toast, Toaster} from "react-hot-toast";
+import {UserListDialog} from "./UserListDialog";
 
-export default function TestDataGrid() {
+export default function BorrowedList() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pageSize, setPageSize] = useState(15);
@@ -19,13 +20,16 @@ export default function TestDataGrid() {
   const [clickedDeviceId, setClickedDeviceId] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [openModify, setOpenModify] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [groupeEmails, setGroupeEmails] = useState([]);
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/adminInventory");
+      const ws = new w3cwebsocket("ws://localhost:5050/adminBorrowedList");
       ws.onmessage = (message) => {
         const data = JSON.parse(message.data);
         setData(data);
+        console.log(data);
         setLoading(false);
       };
     })();
@@ -40,6 +44,17 @@ export default function TestDataGrid() {
       return;
     }
     setOpenModify(open);
+  };
+
+  const toogleDialog = (event, open) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setOpenDialog(open);
   };
 
   const handleDeleteClick = async () => {
@@ -69,19 +84,38 @@ export default function TestDataGrid() {
     {field: "ref", headerName: "Référence", width: 175},
     {field: "category", headerName: "Catégorie", width: 150},
     {field: "campus", headerName: "Campus", width: 100},
-    {field: "date", headerName: "Date", width: 130},
-    {field: "status", headerName: "Statut", width: 130},
+    {field: "requester", headerName: "Demandeur", width: 250},
+    {field: "startDate", headerName: "Debut", width: 130},
+    {field: "endDate", headerName: "Fin", width: 130},
     {
-      field: "action",
-      headerName: "Action",
-      width: 150,
+      field: "groupe",
+      headerName: "Groupe",
+      width: 130,
       renderCell: (params) => {
         return (
           <div
             style={{
               display: "flex",
               width: "100%",
-              // justifyContent: "space-between",
+              cursor: "pointer",
+            }}
+            onClick={() => setOpenDialog(true)}
+          >
+            {params.row.groupe && <p>{params.row.groupe}</p>}
+          </div>
+        );
+      },
+    },
+    {
+      field: "action",
+      headerName: "Action",
+      width: 100,
+      renderCell: (params) => {
+        return (
+          <div
+            style={{
+              display: "flex",
+              width: "100%",
             }}
           >
             <EditRoundedIcon
@@ -92,14 +126,6 @@ export default function TestDataGrid() {
                 toggleDrawerModify(e, true);
               }}
             />
-            <DeleteIcon
-              style={{color: "#de2828", cursor: "pointer"}}
-              onClick={() => {
-                setSnackBarOpen(true);
-                setIsMenuOpen(false);
-                setClickedDeviceId(params.row.deviceId);
-              }}
-            />
           </div>
         );
       },
@@ -107,26 +133,26 @@ export default function TestDataGrid() {
   ];
 
   const rows = data
-    .sort((a, b) => timeConverter(b.createdAt) - timeConverter(a.createdAt))
+    .sort(
+      (a, b) =>
+        timeConverter(b.device.createdAt) - timeConverter(a.device.createdAt)
+    )
     .map((item, i) => {
       return {
         id: i,
-        deviceId: item.id,
-        label: item.label,
-        ref: item.ref,
-        category: item.category,
-        campus: item.campus,
-        status:
-          item.status === "available"
-            ? "Disponible"
-            : item.status === "requested"
-            ? "Demandé"
-            : item.status === "unavailable"
-            ? "Indisponible"
-            : item.status === "borrowed"
-            ? "Emprunté"
-            : "Inconnu",
-        date: moment(timeConverter(item.createdAt)).format("DD.MM.YYYY"),
+        deviceId: item.device.id,
+        label: item.device.label,
+        ref: item.device.ref,
+        category: item.device.category,
+        campus: item.device.campus,
+        requester: item.request.requester,
+        startDate: moment(timeConverter(item.request.startDate)).format(
+          "DD.MM.YYYY"
+        ),
+        endDate: moment(timeConverter(item.request.endDate)).format(
+          "DD.MM.YYYY"
+        ),
+        groupe: item.request.groupe ? item.request.groupe : "Aucun",
       };
     });
 
@@ -136,6 +162,11 @@ export default function TestDataGrid() {
         <p>Loading...</p>
       ) : (
         <>
+          <UserListDialog
+            open={openDialog}
+            toogleDialog={toogleDialog}
+            emails={groupeEmails}
+          />
           <SideBarModify
             open={openModify}
             toggleDrawerModify={toggleDrawerModify}
