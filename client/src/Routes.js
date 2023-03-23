@@ -1,9 +1,7 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Test from "./pages/Test";
 import PrivateRoutes from "./utils/PrivateRoutes";
-import Navbar from "./components/navbar/Navbar";
-import CreateRetro from "./Pages/createretro/CreateRetro.js";
-import Retrospective from "./Pages/retrospective/Retrospective.js";
+import CreateRetro from "./pages/createretro/CreateRetro.js";
+import Retrospective from "./pages/retrospective/Retrospective.js";
 
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
