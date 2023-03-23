@@ -65,14 +65,21 @@ function AppelEleve() {
     });
   };
 
-    //seeChats();
 
     useEffect( () => {
-      const token = "yk7atyTe9HNKNICvfHwo"
-      console.log("posting...");
-      postChat(token);
-      // console.log("trop petit " + ChatsEleve);
-      console.log(ChatsEleve);
+      console.log("$$$$$;");
+      seeChats();
+    }, [])
+
+    useEffect( () => {
+      if (ChatsEleve.length > 0) {
+        const token = "yk7atyTe9HNKNICvfHwo"
+        console.log("posting...");
+        postChat(token);
+        // console.log("trop petit " + ChatsEleve);
+        console.log(ChatsEleve);
+      }
+      
     });
 
   return (
