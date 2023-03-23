@@ -22,29 +22,8 @@ export default function InvBox({
   reference,
   category,
   campus,
-  status,
   onClickRequest,
 }) {
-  const [statusColor, setStatusColor] = useState("");
-  const [deviceStatus, setDeviceStatus] = useState("");
-  const admin = true;
-
-  useEffect(() => {
-    if (status === "available") {
-      setStatusColor("#4CAF50");
-      setDeviceStatus("Disponible");
-    } else if (status === "requested") {
-      setStatusColor("#FFC107");
-      setDeviceStatus("Demandé");
-    } else if (status === "unavailable") {
-      setStatusColor("#E44434");
-      setDeviceStatus("Indisponible");
-    } else if (status === "borrowed") {
-      setStatusColor("#2196F3");
-      setDeviceStatus("Emprunté");
-    }
-  }, [status]);
-
   return (
     <div className="App">
       <Card
@@ -62,7 +41,7 @@ export default function InvBox({
       >
         <CardMedia
           className={"classes.media"}
-          style={{paddingTop: "56.25%"}}
+          style={{paddingTop: "56.25%", resizeMode: "contain"}}
           image={image}
         />
         <CardContent
@@ -88,7 +67,7 @@ export default function InvBox({
             variant={"caption"}
             sx={{fontSize: 14, fontFamily: "poppins-regular"}}
           >
-            Reference : {reference}
+            Ref : {reference}
           </Typography>
           <Typography
             className={"MuiTypography--subheading"}
@@ -105,43 +84,6 @@ export default function InvBox({
             sx={{fontSize: 14, fontFamily: "poppins-regular"}}
           >
             Campus : {campus}
-          </Typography>
-          <Typography
-            className={"MuiTypography--subheading"}
-            variant={"caption"}
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              fontSize: 14,
-              fontFamily: "poppins-regular",
-            }}
-            // paragraph
-          >
-            Statut :
-            <Typography
-              className={"MuiTypography--subheading"}
-              variant={"caption"}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                fontSize: 14,
-                fontFamily: "poppins-semibold",
-                color: statusColor,
-                marginLeft: 0.5,
-              }}
-            >
-              {deviceStatus}
-            </Typography>
-            {/* <Box
-              sx={{
-                height: 10,
-                width: 10,
-                backgroundColor: statusColor,
-                borderRadius: 10,
-                marginLeft: 1,
-                boxShadow: "10 0 0 1px #fff",
-              }}
-            /> */}
           </Typography>
           <div
             style={{
@@ -162,8 +104,3 @@ export default function InvBox({
     </div>
   );
 }
-
-// const WrappedApp = withStyles(styles)(InvBox);
-
-// const rootElement = document.getElementById("root");
-// ReactDOM.render(<WrappedApp />, rootElement);

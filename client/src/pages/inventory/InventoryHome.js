@@ -209,19 +209,6 @@ function InventoryHome() {
         }}
       >
         <CustomDropdown
-          placeholder="Filtrer"
-          data={[
-            {label: "Tous", value: "all"},
-            {label: "Disponible", value: "available"},
-            {label: "Emprunté", value: "borrowed"},
-            {label: "Demandés", value: "requested"},
-            {label: "Indisponibles", value: "unavailable"},
-          ]}
-          onChange={(e) => {
-            setStatusFilter(e[0].value);
-          }}
-        />
-        <CustomDropdown
           placeholder="Campus"
           data={[
             {label: "Cergy", value: "Cergy"},
@@ -259,19 +246,7 @@ function InventoryHome() {
             {!loading &&
               inventory
                 .filter((item) => {
-                  if (statusFilter === "all") {
-                    return item;
-                  } else if (statusFilter === "borrowed") {
-                    return item.status === "borrowed";
-                  } else if (statusFilter === "requested") {
-                    return item.status === "requested";
-                  } else if (statusFilter === "unavailable") {
-                    return item.status === "unavailable";
-                  } else if (statusFilter === "available") {
-                    return item.status === "available";
-                  } else {
-                    return item.status === "available";
-                  }
+                  return item.status === "available";
                 })
                 .filter((item) => {
                   if (campusFilter === null) {
