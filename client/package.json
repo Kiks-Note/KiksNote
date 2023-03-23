@@ -34,6 +34,7 @@
     "react-pdf": "^6.2.2",
     "react-router-dom": "^6.4.4",
     "react-scripts": "5.0.1",
+    "react-timestamp": "^6.0.0",
     "react-trello": "^2.2.11",
     "replace-in-file": "^6.3.5",
     "sass": "^1.56.1",

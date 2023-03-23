@@ -1,142 +1,21 @@
 import React, { useState } from "react";
+import axios from "axios";
 import TableBoard from "../../components/board_scrum/dashboard/TableDashboard";
 import CardBoard from "../../components/board_scrum/dashboard/CardDashboard";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import { Divider, List, ListItem, Typography } from "@mui/material";
+import { Divider, List, ListItem, Typography, Button } from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
-
 import TablePagination from "@mui/material/TablePagination";
 import ModalCreateSprint from "../../components/board_scrum/dashboard/ModalCreateSprint";
 
 let maDate = new Date();
 
 function Dashboard() {
-  const [rows, setRows] = useState([
-    {
-      id: 1,
-      sprint_name: "Java",
-      sprint_group: "Kiks",
-      start: "01/03/2023",
-      end: "15/03/2023",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Chris",
-      },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-    },
-    {
-      id: 2,
-      sprint_name: "Php",
-      sprint_group: "Kiks2",
-      start: "22/12/2022",
-      end: "29/12/2022",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Elim",
-      },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-    },
-    {
-      id: 3,
-      sprint_name: "JavaScript",
-      sprint_group: "TheVie",
-      start: "22/12/2022",
-      end: "29/12/2022",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Elim",
-      },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-    },
-    {
-      id: 4,
-      sprint_name: "Symfony",
-      sprint_group: "SMS",
-      start: "22/12/2022",
-      end: "29/12/2022",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Elim",
-      },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-    },
-    {
-      id: 5,
-      sprint_name: "Python",
-      sprint_group: "BoaTeam",
-      start: "22/12/2022",
-      end: "29/12/2022",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Elim",
-      },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-    },
-    {
-      id: 6,
-      sprint_name: "Php",
-      sprint_group: "Farid",
-      start: "22/12/2022",
-      end: "29/12/2022",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Elim",
-      },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-    },
-    {
-      id: 7,
-      sprint_name: "Php",
-      sprint_group: "Storm",
-      start: "22/12/2022",
-      end: "29/12/2022",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Elim",
-      },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-    },
-    {
-      id: 8,
-      sprint_name: "Hello",
-      sprint_group: "Zizou",
-      start: "22/03/2023",
-      end: "03/04/2023",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Elim",
-      },
-      picture: "https://picsum.photos/500/300?random=" + Math.floor(Math.random() * 100) + 1,
-    }
-  ]);
+  const [rows, setRows] = useState([]);
   const [view, setView] = useState("module");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -179,11 +58,65 @@ function Dashboard() {
     );
   };
   // * DEFINE BOARDS WHO IS ACTIF
-  let actif = rows.filter(
-    (board) => board.start <= maDate.toLocaleDateString("fr") && board.end > maDate.toLocaleDateString("fr")
-  );
+  let actif = rows.filter((board) => {
+    const startDate = new Date(board.start);
+    const endDate = new Date(board.end);
+    const maDateValue = maDate.valueOf();
+    return startDate.valueOf() <= maDateValue && maDateValue <= endDate.valueOf();
+  });
+
   // * DEFINE BOARDS WHO IS IN  FAVORIS
   let favoris = rows.filter((person) => person.favorite === true).sort((a, b) => a - b);
+
+  const connectedStudent = "nFVLL3s1TYtZsjFZPnmw";
+
+  async function callBack() {
+    await axios
+      .get(`http://localhost:5050/dashboard/` + connectedStudent)
+      .then((res) => {
+        console.log(res.data);
+        var dashboards = res.data;
+        var listDashboards = [];
+        dashboards.forEach((dashboard) => {
+          const startDate = new Date(
+            res.data[0]["starting_date"]._seconds * 1000 + res.data[0]["starting_date"]._nanoseconds / 100000
+          ).toLocaleDateString("fr");
+
+          const endDate = new Date(
+            res.data[0]["ending_date"] * 1000 + res.data[0]["ending_date"]._nanoseconds / 100000
+          ).toLocaleDateString("fr");
+
+          var dashboardFront = {
+            id: dashboard.id,
+            sprint_name: dashboard.sprint_name,
+            sprint_group: dashboard.group_name,
+            start: startDate,
+            end: endDate,
+            backlog: "lien",
+            favorite: dashboard.favorite,
+            favoriteDate: "",
+            students: dashboard.students,
+            picture: dashboard.image,
+          };
+          listDashboards.push(dashboardFront);
+        });
+        setRows(listDashboards);
+      })
+      .catch(function (error) {
+        if (error.response) {
+          // Request made and server responded
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.log(error.request);
+        } else {
+          // Something happened in setting up the request that triggered an Error
+          console.log("Error", error.message);
+        }
+      });
+  }
 
   function renderList(list, name) {
     return (
@@ -217,6 +150,7 @@ function Dashboard() {
   }
   return (
     <div style={{ marginLeft: "1%", marginTop: "1%" }}>
+      <Button onClick={callBack}> log back </Button>
       {favoris.length > 0 && renderList(favoris, "Espace de travail favoris")}
       {actif.length > 0 && renderList(actif, "Espace de travail actif")}
 
@@ -240,14 +174,14 @@ function Dashboard() {
 
       {view === "module" ? (
         <Grid container spacing={2}>
-          {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((person) => (
-            <Grid item xs={3} key={person.id}>
+          {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((dashboard) => (
+            <Grid item xs={3} key={dashboard.id}>
               <CardBoard
-                picture={person.picture}
-                sprint_group={person.sprint_group}
-                fav={person.favorite}
-                isFavoris={favorisTell(person.id)}
-                id={person.id}
+                picture={dashboard.picture}
+                sprint_group={dashboard.sprint_group}
+                fav={dashboard.favorite}
+                isFavoris={favorisTell(dashboard.id)}
+                id={dashboard.id}
               />
             </Grid>
           ))}
@@ -269,13 +203,11 @@ function Dashboard() {
             labelRowsPerPage="Par page"
             labelDisplayedRows={({ from, to, count }) => `${from} - ${to} sur ${count}`}
           />
-
         </Box>
       ) : (
         <></>
       )}
     </div>
-    
   );
 }
 
