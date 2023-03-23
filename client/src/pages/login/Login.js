@@ -37,6 +37,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setMessageError] = useState("");
+  const ip = process.env.REACT_APP_IP;
 
   const auth = getAuth();
 
@@ -59,7 +60,7 @@ const Login = () => {
         userCredential.user.getIdToken().then(async (idToken) => {
           console.log(userCredential.user);
           await axios
-            .post("http://localhost:5050/auth/login", {
+            .post(`http://${ip}:5050/auth/login`, {
               idToken,
             })
             .then((res) => {
@@ -67,7 +68,7 @@ const Login = () => {
                 res.data.token,
                 userCredential.user.stsTokenManager.refreshToken
               );
-              localStorage.setItem('user_uid', userCredential.user.uid)
+              localStorage.setItem("user_uid", userCredential.user.uid);
               navigate("/");
             })
             .catch(

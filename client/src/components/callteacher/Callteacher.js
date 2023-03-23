@@ -14,71 +14,7 @@ function AppelProf() {
   });
   const ip = process.env.REACT_APP_IP;
   const [users, setUsers] = useState([]);
-  const [Chats, setChats] = useState([
-    {
-      id: 1,
-      date: "07/12/2022 14:40",
-      username: "jules",
-      content: "msg.current.value",
-      isGif: false,
-    },
-    {
-      id: 2,
-      date: "07/12/2022 14:41",
-      username: "jules",
-      content: "msg.current.value",
-      isGif: false,
-    },
-    {
-      id: 3,
-      date: "07/12/2022 14:42",
-      username: "jules",
-      content: "msg.current.value",
-      isGif: false,
-    },
-    {
-      id: 4,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "msg.current.value",
-      isGif: false,
-    },
-    {
-      id: 4,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "msg.current.value",
-      isGif: false,
-    },
-    {
-      id: 4,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "msg.current.value",
-      isGif: false,
-    },
-    {
-      id: 4,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "msg.current.value",
-      isGif: false,
-    },
-    {
-      id: 4,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "msg.current.value",
-      isGif: false,
-    },
-    {
-      id: 4,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "msg.current.value",
-      isGif: false,
-    },
-  ]);
+  const [Chats, setChats] = useState([]);
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;

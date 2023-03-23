@@ -45,12 +45,6 @@ wss.on("connection", (ws, req) => {
   };
 });
 
-// app.post("/addUser", (req, res) => {
-//   const data = req.body;
-//   db.collection("users").add(data);
-//   res.send({ message: "User created successfully" });
-// });
-//
 app.get("/users", (req, res) => {
   db.collection("users")
     .get()
@@ -69,7 +63,17 @@ app.get("/users", (req, res) => {
     });
 });
 
+app.get("/user", (req, res) => {
+  db.collection("users")
+    .doc(req.query.id)
+    .get()
+    .then((data) => {
+      console.log(req.query.id);
+      console.log(data.data());
+      res.send(data.data());
+    });
+});
+
 server.listen(PORT, () => {
-  // const adress = server.address();
   console.log(`Listening on port ${PORT}`);
 });
