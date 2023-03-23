@@ -4,6 +4,7 @@ import CardContent from "@mui/material/CardContent";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import { Box, Button, CardActionArea, Typography } from "@mui/material";
+import { PropTypes } from "prop-types";
 
 export default function CardDashboard({ picture, sprint_group, fav, isFavoris, id }) {
   const moveToOverView = () => {
@@ -67,7 +68,7 @@ export default function CardDashboard({ picture, sprint_group, fav, isFavoris, i
                 onClick={(event) => {
                   event.stopPropagation();
                   event.preventDefault();
-                  isFavoris();
+                  isFavoris(id, !fav);
                 }}
               >
                 <StarIcon sx={{ color: "purple" }} />
@@ -80,7 +81,7 @@ export default function CardDashboard({ picture, sprint_group, fav, isFavoris, i
                 onClick={(event) => {
                   event.stopPropagation();
                   event.preventDefault();
-                  isFavoris();
+                  isFavoris(id, !fav);
                 }}
               >
                 <StarBorderIcon sx={{ color: "purple" }} />
@@ -91,4 +92,19 @@ export default function CardDashboard({ picture, sprint_group, fav, isFavoris, i
       </Card>
     </CardActionArea>
   );
+  CardDashboard.propTypes = {
+    picture: PropTypes.string.isRequired,
+    sprint_group: PropTypes.string.isRequired,
+    fav: PropTypes.bool.isRequired,
+    isFavoris: PropTypes.func.isRequired,
+    id: PropTypes.string.isRequired,
+  };
+  CardDashboard.defaultProps = {
+    isFavoris: () => {},
+  };
+
+  isFavoris.propTypes = {
+    id: PropTypes.string.isRequired,
+    favorite: PropTypes.bool.isRequired,
+  };
 }

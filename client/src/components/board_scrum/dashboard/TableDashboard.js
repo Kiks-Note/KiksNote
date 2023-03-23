@@ -72,7 +72,7 @@ export default function TableBoard({ rows, addFavorite, deleteBoards }) {
         params.row.favorite === true ? (
           <GridActionsCellItem
             icon={<StarIcon sx={{ color: "purple" }} />}
-            onClick={addFavorite(params.id)}
+            onClick={addFavorite(params.id, params.favorite)}
             label="Supprimer un favoris "
             showInMenu
           />

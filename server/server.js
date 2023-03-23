@@ -2,32 +2,21 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const { db } = require("./firebase");
+const webSocketServer = require("websocket").server;
+const http = require("http");
+const { parse } = require("url");
 
 app.use(express.json());
 app.use(cors());
 
 const PORT = process.env.PORT || 5050;
 
-// app.post("/addUser", (req, res) => {
-//   const data = req.body;
-//   db.collection("users").add(data);
-//   res.send({ message: "User created successfully" });
-// });
-//
-// app.get("/users", (req, res) => {
-//   db.collection("users")
-//     .get()
-//     .then((snapshot) => {
-//       const data = [];
-//       snapshot.forEach((doc) => {
-//         data.push(doc.data());
-//       });
-//       res.send(data);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
+const server = http.createServer(app);
 
-require("./dashboard")(app, db);
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+const ws = new webSocketServer({
+  httpServer: server,
+  autoAcceptConnections: false,
+});
+
+require("./dashboard")(app, db, ws, parse);
+server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

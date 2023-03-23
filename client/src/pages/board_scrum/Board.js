@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Board.scss";
 import AddIcon from "@mui/icons-material/Add";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
@@ -183,6 +183,49 @@ const taskStatus = {
     items: [],
   },
 };
+
+// useEffect(() => {
+//   (async () => {
+//     const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
+
+//     wsComments.onopen = function (e) {
+//       console.log("[open] Connection established");
+//       console.log("Sending to server");
+//       console.log("tutoId", connectedStudent);
+//       wsComments.send(JSON.stringify(connectedStudent));
+//     };
+
+//     wsComments.onmessage = (message) => {
+//       const data = JSON.parse(message.data);
+//       var dashboards = data;
+//       var listDashboards = [];
+//       dashboards.forEach((dashboard) => {
+//         const startDate = new Date(
+//           dashboard.starting_date._seconds * 1000 + dashboard.starting_date._nanoseconds / 100000
+//         ).toLocaleDateString("fr");
+
+//         const endDate = new Date(
+//           dashboard.ending_date._seconds * 1000 + dashboard.ending_date._nanoseconds / 100000
+//         ).toLocaleDateString("fr");
+
+//         var dashboardFront = {
+//           id: dashboard.id,
+//           sprint_name: dashboard.sprint_name,
+//           sprint_group: dashboard.group_name,
+//           start: startDate,
+//           end: endDate,
+//           backlog: "lien",
+//           favorite: dashboard.favorite,
+//           favoriteDate: "",
+//           students: dashboard.students,
+//           picture: dashboard.image,
+//         };
+//         listDashboards.push(dashboardFront);
+//       });
+//       setRows(listDashboards);
+//     };
+//   })();
+// }, []);
 
 function Board() {
   const labelChange = () => setLabel(!label);

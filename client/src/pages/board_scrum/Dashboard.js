@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableBoard from "../../components/board_scrum/dashboard/TableDashboard";
 import CardBoard from "../../components/board_scrum/dashboard/CardDashboard";
@@ -11,6 +11,7 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import TablePagination from "@mui/material/TablePagination";
 import ModalCreateSprint from "../../components/board_scrum/dashboard/ModalCreateSprint";
+import { w3cwebsocket } from "websocket";
 
 let maDate = new Date();
 
@@ -44,19 +45,10 @@ function Dashboard() {
     });
   };
   // * TO MAKE A BOARD IN FAVORI
-  const favorisTell = (id) => () => {
-    setRows((prevRows) =>
-      prevRows.map((row) =>
-        row.id === id
-          ? {
-              ...row,
-              favorite: !row.favorite,
-              favoriteDate: maDate.toLocaleDateString("fr"),
-            }
-          : row
-      )
-    );
-  };
+  async function favorisTell(id, favorite) {
+    await axios.put(`http://localhost:5050/dashboard/` + id + "/" + favorite);
+  }
+
   // * DEFINE BOARDS WHO IS ACTIF
   let actif = rows.filter((board) => {
     const startDate = new Date(board.start);
@@ -70,21 +62,31 @@ function Dashboard() {
 
   const connectedStudent = "nFVLL3s1TYtZsjFZPnmw";
 
-  async function callBack() {
-    await axios
-      .get(`http://localhost:5050/dashboard/` + connectedStudent)
-      .then((res) => {
-        console.log(res.data);
-        var dashboards = res.data;
+  useEffect(() => {
+    (async () => {
+      const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
+
+      wsComments.onopen = function (e) {
+        console.log("[open] Connection established");
+        console.log("Sending to server");
+        console.log("tutoId", connectedStudent);
+        wsComments.send(JSON.stringify(connectedStudent));
+      };
+
+      wsComments.onmessage = (message) => {
+        const data = JSON.parse(message.data);
+        var dashboards = data;
         var listDashboards = [];
         dashboards.forEach((dashboard) => {
           const startDate = new Date(
-            res.data[0]["starting_date"]._seconds * 1000 + res.data[0]["starting_date"]._nanoseconds / 100000
+            dashboard.starting_date._seconds * 1000 + dashboard.starting_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
 
           const endDate = new Date(
-            res.data[0]["ending_date"] * 1000 + res.data[0]["ending_date"]._nanoseconds / 100000
+            dashboard.ending_date._seconds * 1000 + dashboard.ending_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
+
+          let favorite = dashboard.favorite === "true";
 
           var dashboardFront = {
             id: dashboard.id,
@@ -93,7 +95,7 @@ function Dashboard() {
             start: startDate,
             end: endDate,
             backlog: "lien",
-            favorite: dashboard.favorite,
+            favorite: favorite,
             favoriteDate: "",
             students: dashboard.students,
             picture: dashboard.image,
@@ -101,22 +103,9 @@ function Dashboard() {
           listDashboards.push(dashboardFront);
         });
         setRows(listDashboards);
-      })
-      .catch(function (error) {
-        if (error.response) {
-          // Request made and server responded
-          console.log(error.response.data);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-        } else if (error.request) {
-          // The request was made but no response was received
-          console.log(error.request);
-        } else {
-          // Something happened in setting up the request that triggered an Error
-          console.log("Error", error.message);
-        }
-      });
-  }
+      };
+    })();
+  }, []);
 
   function renderList(list, name) {
     return (
@@ -138,7 +127,7 @@ function Dashboard() {
                 picture={person.picture}
                 sprint_group={person.sprint_group}
                 fav={person.favorite}
-                isFavoris={favorisTell(person.id)}
+                isFavoris={favorisTell}
                 id={person.id}
               />
             </ListItem>
@@ -150,7 +139,6 @@ function Dashboard() {
   }
   return (
     <div style={{ marginLeft: "1%", marginTop: "1%" }}>
-      <Button onClick={callBack}> log back </Button>
       {favoris.length > 0 && renderList(favoris, "Espace de travail favoris")}
       {actif.length > 0 && renderList(actif, "Espace de travail actif")}
 
@@ -180,7 +168,7 @@ function Dashboard() {
                 picture={dashboard.picture}
                 sprint_group={dashboard.sprint_group}
                 fav={dashboard.favorite}
-                isFavoris={favorisTell(dashboard.id)}
+                isFavoris={favorisTell}
                 id={dashboard.id}
               />
             </Grid>
