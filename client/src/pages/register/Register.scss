@@ -7,18 +7,21 @@
   justify-content: center;
 }
 .register-header {
+  position: relative;
+  left: -2%;
   background-color: white;
   display: flex;
   font-size: calc(10px + 2vmin);
   color: black;
   width: 80%;
-  border-radius: 32px;
+  height: 60%;
+  border-radius: 20px;
 }
   
 .container-register {
   display: flex;
   flex-direction: column;
-  width: 35%;
+  width: 50%;
   align-items: center;
   justify-content: center;
 }
@@ -29,10 +32,22 @@
 
 .select-div {
   display: flex;
+  justify-content: center;
 }
 
 .input {
   border-bottom:1px solid grey;
+}
+.image-container {
+  height: 100%;
+  width: 95%;
+  background-color: #7751d9;
+}
+.image {
+  height: 100%;
+  width: 105%;
+  background-color: #7751d9;
+  border-radius: 20px;
 }
   
 #reload_href{
