@@ -18,17 +18,31 @@ import CloseIcon from "@mui/icons-material/Close";
 import {toast} from "react-hot-toast";
 
 export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
-  const [categories, setCategories] = useState([]);
+  /*const [categories, setCategories] = useState([]);
   const [label, setLabel] = useState("");
   const [reference, setReference] = useState("");
   const [campus, setCampus] = useState(null);
   const [category, setCategory] = useState(null);
   const [status, setStatus] = useState(null);
   const [image, setImage] = useState("");
+  const [loading, setLoading] = useState(true);*/
+
+  const [categories, setCategories] = useState([]);
+  const [label, setLabel] = useState("");
+  const [price, setPrice] = useState("");
+  const [acquisitiondate, setAcquisitiondate] = useState(null);
+  const [image, setImage] = useState(null);
+  const [storage, setStorage] = useState(null);
+  const [condition, setCondition] = useState("");
+  const [description, setDescription] = useState("");
+  const [campus, setCampus] = useState(null);
+  //const [category, setCategory] = useState(null);
+  const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
   const addDevice = async () => {
-    if (!label || !reference || !category || !campus || !status || !image) {
+    if (!label || !price || !acquisitiondate || !image || !storage || !condition || !description || !campus /*|| !category*/ || !status) {
       toast.error("Veuillez remplir tous les champs");
       return;
     } else {
@@ -36,16 +50,19 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         await toast.promise(
           axios.post("http://localhost:5050/addDevice", {
             label: label,
-            reference: reference,
-            category: category,
-            campus: campus,
+            reference: price,
+            category: acquisitiondate,
+            campus: image,
+            status: storage,
+            image: condition,
+            description: description,
             status: status,
-            image: image,
+            campus: campus,
+            //category: category
           }),
           {
             success: () => {
               resetInputs();
-              reloadData();
               toggleDrawerAdd(false);
               return "Le périphérique a bien été ajouté";
             },
@@ -62,11 +79,15 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
 
   const resetInputs = () => {
     setLabel("");
-    setReference("");
-    setCategory("");
-    setCampus("");
-    setStatus("");
+    setPrice("");
+    setAcquisitiondate("");
     setImage("");
+    setStorage("");
+    setCondition("");
+    setDescription("");
+    setCampus("");
+    //setCategory("");
+    setStatus("");
   };
 
   useEffect(() => {
@@ -115,42 +136,80 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
       <TextField
         sx={{marginBottom: 2}}
         id="outlined-search"
-        label="Référence"
+        label="Prix"
         type={"text"}
-        name="reference"
-        value={reference ? reference : ""}
-        onChange={(e) => setReference(e.target.value)}
+        name="price"
+        value={price ? price : ""}
+        onChange={(e) => setPrice(e.target.value)}
+        fullWidth
+      />
+
+      <TextField
+        sx={{marginBottom: 2}}
+        id="outlined-search"
+        label="Desription"
+        type={"text"}
+        name="label"
+        value={description ? description : ""}
+        onChange={(e) => setLabel(e.target.value)}
+        fullWidth
+      />
+
+      <TextField
+        sx={{marginBottom: 2}}
+        id="outlined-search"
+        label="Date d'acquisition"
+        type={"text"}
+        name="label"
+        value={acquisitiondate ? acquisitiondate : ""}
+        onChange={(e) => setAcquisitiondate(e.target.value)}
         fullWidth
       />
 
       <FormControl sx={{marginBottom: 2}} fullWidth>
-        <InputLabel id="demo-simple-select-label">Catégorie</InputLabel>
+        <InputLabel id="demo-simple-select-label">Campus</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={category ? category : ""}
-          label="Catégorie"
-          onChange={(e) => setCategory(e.target.value)}
-          name="category"
+          value={campus ? campus : ""}
+          label="Date d'acquisition"
+          onChange={(e) => setCampus(e.target.value)}
+          name="campus"
         >
-          {!loading &&
-            categories.map((item, index) => (
-              <MenuItem key={index} value={item.label}>
-                {item.label}
-              </MenuItem>
-            ))}
+          <MenuItem value={"available"}>Cergy</MenuItem>
+          <MenuItem value={"unavailable"}>Paris</MenuItem>
+          <MenuItem value={"unavailable"}>Pontoise</MenuItem>
         </Select>
       </FormControl>
+      
+
       <TextField
         sx={{marginBottom: 2}}
         id="outlined-search"
-        label="Campus"
+        label="Armoire de stockage"
         type={"text"}
-        name="campus"
-        value={campus ? campus : ""}
-        onChange={(e) => setCampus(e.target.value)}
+        name="label"
+        value={storage ? storage : ""}
+        onChange={(e) => setStorage(e.target.value)}
         fullWidth
       />
+
+
+      <FormControl sx={{marginBottom: 2}} fullWidth>
+        <InputLabel id="demo-simple-select-label">Etat</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={condition ? condition : ""}
+          label="Date d'acquisition"
+          onChange={(e) => setCondition(e.target.value)}
+          name="condition"
+        >
+          <MenuItem value={"available"}>Bon état</MenuItem>
+          <MenuItem value={"unavailable"}>Mauvais état</MenuItem>
+        </Select>
+      </FormControl>
+
       <FormControl sx={{marginBottom: 2}} fullWidth>
         <InputLabel id="demo-simple-select-label">Statut</InputLabel>
         <Select

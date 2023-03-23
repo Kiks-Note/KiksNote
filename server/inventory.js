@@ -32,16 +32,18 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.post("/addDevice", async (req, res) => {
-    const {label, reference, category, campus, status, image} = req.body;
+    const {label, price, acquisitiondate, campus, storage, image, condition, description} = req.body;
 
     try {
       await db.collection("inventory").doc().set({
         label: label,
-        ref: reference,
-        category: category,
+        price: price,
+        acquisitiondate: acquisitiondate,
         campus: campus,
-        status: status,
+        storage: storage,
         image: image,
+        condition: condition,
+        description: description,
         createdAt: new Date(),
         createdBy: user.ref,
       });
@@ -54,7 +56,7 @@ module.exports = (app, db, user, ws) => {
 
   app.put("/inventory/modify/:deviceId", async (req, res) => {
     const {deviceId} = req.params;
-    const {label, reference, category, campus, status, image, lastModifiedBy} =
+    const {label, price, acquisitiondate, campus, storage, image, condition, description, lastModifiedBy} =
       req.body;
 
     console.log(req.body);
@@ -62,11 +64,13 @@ module.exports = (app, db, user, ws) => {
     try {
       await db.collection("inventory").doc(deviceId).update({
         label: label,
-        ref: reference,
-        category: category,
+        price: price,
+        acquisitiondate: acquisitiondate,
         campus: campus,
-        status: status,
+        storage: storage,
         image: image,
+        condition: condition,
+        description: description,
         lastModifiedBy: lastModifiedBy,
         lastModifiedAt: new Date(),
       });
@@ -97,7 +101,7 @@ module.exports = (app, db, user, ws) => {
 
   app.put("/inventory/edit/:deviceId", async (req, res) => {
     const {deviceId} = req.params;
-    const {label, ref, category, campus, status, lastModifiedBy} = req.body;
+    const {label, price, acquisitiondate, campus, storage, condition, description, lastModifiedBy} = req.body;
 
     let updatedStatus = status;
     if (status === "Disponible") {
@@ -115,10 +119,12 @@ module.exports = (app, db, user, ws) => {
     try {
       await db.collection("inventory").doc(deviceId).update({
         label: label,
-        ref: ref,
-        category: category,
+        price: price,
+        acquisitiondate: acquisitiondate,
         campus: campus,
-        status: updatedStatus,
+        storage: storage,
+        condition: condition,
+        description: description,
         lastModifiedBy: lastModifiedBy,
         lastModifiedAt: new Date(),
       });
