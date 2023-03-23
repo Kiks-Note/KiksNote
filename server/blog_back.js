@@ -23,8 +23,7 @@ module.exports = (app, db, ws, parse) => {
   ws.on("request", (request) => {
     const connection = request.accept(null, request.origin);
     const { pathname } = parse(request.httpRequest.url);
-    // console.log("request.httpServer => ", request);
-    // console.log("request.httpServer id => ", request.id);
+    console.log("request.httpServer => ", request);
     console.log("request.url => ", request.pathname);
     console.log("pathname => ", pathname);
     connection
@@ -147,8 +146,23 @@ module.exports = (app, db, ws, parse) => {
       });
   });
 
-  app.post("/tutos/newtutos", async (req, res) => {
-    const { title, description, photo } = req.body;
+    //update tutorial likes and dislikes
+    app.put("/blog/:id/likes", async (req) => {
+        await db.collection('blog_tutos').doc(req.params.id).update({
+            'like': req.body.like,
+            'dislike': req.body.dislike
+        });
+    })
+
+    //update tutorial visibility
+    app.put("/blog/:id/visibility", async (req) => {
+        await db.collection('blog_tutos').doc(req.params.id).update({
+            'visibility': req.body.visibility
+        });
+    })
+
+    app.post("/tutos/newtutos", async (req, res) => {
+        const { title, description, photo } = req.body;
 
     if (title == null || title == "") {
       return res.status(400).send("Title is required");
