@@ -1,12 +1,13 @@
 const express = require("express");
 const cors = require("cors");
 const app = express();
+const dotenv = require('dotenv').config();
 const { db } = require("./firebase");
 
 app.use(express.json());
 app.use(cors());
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5050;
 
 // app.post("/addUser", (req, res) => {
 //   const data = req.body;
@@ -28,5 +29,7 @@ const PORT = process.env.PORT || 4000;
 //       console.log(err);
 //     });
 // });
+
+require("./routes/groupscreation")
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));

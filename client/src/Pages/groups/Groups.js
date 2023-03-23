@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from 'axios';
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CachedIcon from '@mui/icons-material/Cached';
 import LockIcon from '@mui/icons-material/Lock';
@@ -64,6 +65,8 @@ const tasks = [
         name: "Adrien",
     },
 ];
+
+
 const colContent = {
     students: {
         name: "Students",
@@ -73,12 +76,21 @@ const colContent = {
 
 
 function App() {
+    const getUsers = () => {
+        axios.get("http://localhost:4000/users").then((res) => {
+            return res.data
+        });
+    }
+
     const [columns, setColumns] = useState(colContent);
+    const [students, setStudents] = useState(getUsers());
 
     function addStudent(columnId, student, columns) {
         columns[columnId].items.push(student);
         setColumns({ ...columns });
     }
+
+    console.log(students);
 
     const onDragEnd = (result) => {
         if (!result.destination) return;
