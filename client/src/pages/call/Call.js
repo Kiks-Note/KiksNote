@@ -1,11 +1,9 @@
-import AppelProf from "../../components/callteacher/Callteacher";
-import AppelEleve from "../../components/callstudent/Callstudent";
+import CallProf from "../../components/callteacher/Callteacher";
+import CallEleve from "../../components/callstudent/Callstudent";
 
-function Appel() {
+function Call() {
   const admin = true;
-  return (
-    <div>{admin ? <AppelProf></AppelProf> : <AppelEleve></AppelEleve>}</div>
-  );
+  return <div>{admin ? <CallProf></CallProf> : <CallEleve></CallEleve>}</div>;
 }
 
-export default Appel;
+export default Call;

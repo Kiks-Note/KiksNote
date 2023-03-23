@@ -1,8 +1,9 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Appel from "./pages/call/Call";
-import Test from "./pages/Test";
+import Call from "./Pages/call/Call";
+import Groups from "./Pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
+
 function RoutesProvider() {
   return (
     <BrowserRouter>
@@ -11,13 +12,10 @@ function RoutesProvider() {
 
         {/* <Route path="/login" element={<Login />} /> */}
         {/* <Route path="/register" element={<Register />} /> */}
-        {/* To Use the Navbar change Test by your page
- <Route path="/test" element={<Navbar element={<Test />} />} /> */}
-        <Route path="/" element={<Navbar element={<Test />} />} />
-        <Route path="/test" element={<Navbar element={<Test />} />} />
 
         <Route element={<PrivateRoutes />}>
-          <Route path="/appel" element={<Appel />} />
+          <Route path="/call" element={<Navbar element={<Call />} />} />
+          <Route path="/groups" element={<Navbar element={<Groups />} />} />
           {/* <Route path="/" exact element={<Home />} /> */}
         </Route>
       </Routes>
