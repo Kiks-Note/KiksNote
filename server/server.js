@@ -19,7 +19,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 5050;
+const PORT = process.env.PORT || 4000;
 
 const server = http.createServer(app);
 

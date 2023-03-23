@@ -1,13 +1,14 @@
 import { BrowserRouter, Route, Routes, useParams } from "react-router-dom";
 import Appel from "./pages/call/Call";
 import Test from "./pages/Test";
-import PrivateRoutes from "./utils/PrivateRoutes";
-import Navbar from "./components/navbar/Navbar";
-import Presence from "./pages/presence/Presence";
 
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
 import Login from "./pages/login/Login.js";
+
+import Groups from "./Pages/groups/Groups";
+import PrivateRoutes from "./utils/PrivateRoutes";
+import Navbar from "./components/navbar/Navbar";
 
 function RoutesProvider() {
     return (
@@ -22,13 +23,17 @@ function RoutesProvider() {
                 
                 {/*<Route path="/" element={<Navbar element={<Test/>}/>}/>*/}
                 {/*<Route path="/test" element={<Navbar element={<Test/>}/>}/>*/}
+          
+        {/* <Route path="/register" element={<Register />} /> */}
 
         <Route element={<PrivateRoutes />}>
-          <Route path="/appel" element={<Navbar element={<Appel />} />} />
+        <Route path="/appel" element={<Navbar element={<Appel />} />} />
           <Route
             path="/presence/:id"
             element={<Navbar element={<Presence />} />}
           />
+          <Route path="/call" element={<Navbar element={<Call />} />} />
+          <Route path="/groups" element={<Navbar element={<Groups />} />} />
           {/* <Route path="/" exact element={<Home />} /> */}
                               <Route path="/" element={<Home/>}/>
                     <Route path="/blog" element={<Blog/>}/>

@@ -123,6 +123,7 @@ function AppelProf() {
           <h1>Chat</h1>
           <div className="Chat">
             {call.chats.map((chat) => {
+
               return (
                 <div className="ChatContent">
                   <div className="ChatContentHeader">
