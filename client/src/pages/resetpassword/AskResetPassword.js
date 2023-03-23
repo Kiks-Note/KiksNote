@@ -3,7 +3,7 @@ import React, { useRef, useState } from 'react'
 import "./AskResetPassword.scss"
 import Divider from '@mui/material/Divider';
 import axios from 'axios';
-import { Box } from "@mui/material";
+import { Box, TextField, Button } from "@mui/material";
 
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -31,10 +31,10 @@ function AskResetPassword() {
         await axios.post("http://localhost:5050/sendemail", {
             email: mail
         }).then((response) => {
-            if (response.data === "mail there") {
-                toastSuccess("Mail enregistré");
+            if (response.status === 200) {
+                toastSuccess("Mail envoyé");
             } else {
-                toastFail("Mail non enregistré");
+                toastFail("Mail non valide");
             }
         }).catch((err) => {
             console.warn("error : ", err);
@@ -56,8 +56,8 @@ function AskResetPassword() {
                 <Divider variant="middle" style={{ background: "#000", height: "1px", width: "50%" }} className="divider-form-reset-with-mail" />
                 <form className='form-ask-reset' ref={form} onSubmit={(e) => handleSubmit(e)} style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <label>Email</label>
-                    <input placeholder="Mail" required id="my-mail-id" type="email" name="user_email" onInput={e => setMail(e.target.value)} style={{ backgroundColor: "#fff", width: "80%", marginTop: "10%" }} />
-                    <input id='submit-email' type="submit" variant="contained" style={{ backgroundColor: "#fff", color: "black", fontWeight: "bold", textTransform: 'none', margin: 10, marginTop: "10%" }} value="Envoyer" />
+                    <TextField placeholder="Mail" required id="my-mail-id" type="email" name="user_email" onInput={e => setMail(e.target.value)} style={{ backgroundColor: "#fff", width: "80%", marginTop: "10%" }} />
+                    <Button id='submit-email' type="submit" variant="contained" style={{ backgroundColor: "#fff", color: "black", fontWeight: "bold", textTransform: 'none', margin: 10, marginTop: "10%" }}>Envoyer</Button>
                 </form>
             </Box>
             <ToastContainer></ToastContainer>

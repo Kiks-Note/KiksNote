@@ -225,7 +225,7 @@ const Login = () => {
               }}
             >
               <Link
-                href="/askresetpass"
+                href="/askresetpassword"
                 sx={{
                   color: "#7a52e1",
                   textDecoration: "none",
