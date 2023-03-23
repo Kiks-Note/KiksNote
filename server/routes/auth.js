@@ -13,10 +13,10 @@ module.exports = (
         (userCredential) => {
           userCredential.user.getIdToken().then(async (idToken) => {
             const decodedToken = await auth.verifyIdToken(idToken);
-            console.log(decodedToken);
             const customToken = await auth.createCustomToken(decodedToken.uid);
-            console.log("custom : ", customToken);
-            res.status(200).send({ token: customToken , refreshToken : userCredential.user.stsTokenManager.refreshToken });
+            const docRef = await db.collection("users");
+            const snapshot = await docRef.doc(userCredential.user.uid).get();
+            res.status(200).send({ token: customToken , refreshToken : userCredential.user.stsTokenManager.refreshToken, user : snapshot.data()});
           });
         }
       );
