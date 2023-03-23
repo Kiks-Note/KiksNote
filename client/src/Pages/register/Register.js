@@ -113,7 +113,7 @@ const Register = () => {
         <div className="register">
             <div className="register-header">
                 <div className="container-register">
-                    <h1 className="text-4xl font-extrabold dark:text-white m-4 text-center">
+                    <h1 className="text-4xl font-extrabold m-4 text-center">
                         Inscription
                     </h1>
                     <Divider
@@ -124,7 +124,7 @@ const Register = () => {
                         <div className="m-4">
                             <input
                                 id="input-lastname"
-                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="text"
                                 name="lastname"
                                 placeholder="Nom"
@@ -138,7 +138,7 @@ const Register = () => {
                         <div className="m-4">
                             <input
                                 id="input-firstname"
-                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="text"
                                 name="firstname"
                                 placeholder="Prénom"
@@ -152,7 +152,7 @@ const Register = () => {
                         <div className="m-4">
                             <input
                                 id="input-email"
-                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="email"
                                 name="email"
                                 placeholder="votrecompte@edu.esiee-it.fr"
@@ -166,7 +166,7 @@ const Register = () => {
                         <div className="m-4">
                             <input
                                 id="input-birthdate"
-                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="date"
                                 name="birthdate"
                                 placeholder="Date de Naissance"
@@ -180,7 +180,7 @@ const Register = () => {
                         <div className="m-4">
                             <input
                                 id="input-password"
-                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="password"
                                 name="password"
                                 placeholder="Mot de passe"
@@ -194,7 +194,7 @@ const Register = () => {
                         <div className="m-4">
                             <input
                                 id="input-confirmpassword"
-                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="password"
                                 name="confirmPassword"
                                 placeholder="Confirm Password"
@@ -208,7 +208,7 @@ const Register = () => {
                         <div className="m-4 select-div">
                         <label 
                             id="label-status"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            className="block mb-2 text-sm font-medium text-gray-900"
                             htmlFor="input-status"
                         >
                             <select name="status"
@@ -225,7 +225,7 @@ const Register = () => {
                         { userStatus === "etudiant" ?
                         <label
                             id="label-class"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                            className="block mb-2 text-sm font-medium text-gray-900"
                             htmlFor="input-class"
                         >
                             <select name="status"
