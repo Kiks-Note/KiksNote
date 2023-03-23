@@ -11,7 +11,6 @@ function AppelEleve() {
   const msg = useRef();
 
   const addGif = (gif) => {
-    console.log(gif);
     const chatCopy = [...ChatsEleve];
     chatCopy.unshift({
       id: ChatsEleve.length + 1,

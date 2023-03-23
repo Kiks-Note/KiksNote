@@ -7,7 +7,7 @@
 }
 
 .ChatEleve {
-  width: 82%;
+  width: 100%;
   height: 100%;
   border: 0.1em;
   border-radius: 8px;
@@ -15,14 +15,12 @@
   border-style: solid;
   overflow-y: scroll;
 }
-
 .DivChatEleve {
   width: 100%;
   height: 80%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 2rem;
 }
 
 .ChatContentEleve {
@@ -55,12 +53,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 85%;
+  width: 90%;
 }
 
 .ButtonAddMsg {
   border-radius: 3px;
   height: 90%;
+  margin-right: 0.25em;
+  margin-left: 0.25em;
   width: 3%;
 }
 
@@ -83,4 +83,12 @@
 }
 [data-popup="tooltip"].popup-overlay {
   background: transparent;
+}
+@media only screen and (max-width: 600px) {
+  .InputChat {
+    width: 90%;
+  }
+  .ButtonAddMsg {
+    width: 10%;
+  }
 }

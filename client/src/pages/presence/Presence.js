@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Presence() {
   const { id } = useParams();
@@ -8,66 +9,68 @@ function Presence() {
   const dataFetchedRef = useRef(false);
   const ws = new WebSocket(`ws://${ip}:5050`);
   const tempCall = useRef();
-  const user = useRef();
   const userID = localStorage.getItem("user_uid");
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (dataFetchedRef.current) {
       return;
     }
     dataFetchedRef.current = true;
     ws.onmessage = (event) => {
-      tempCall.current = JSON.parse(event.data);
+      if (typeof event.data == "string") {
+        tempCall.current = JSON.parse(event.data);
+      }
     };
     getCall();
-    // getUsers();
   });
 
   const updateCall = async () => {
-    console.log(tempCall.id);
     const res = await axios
       .post(`http://${ip}:5050/updatecall`, {
-        id: tempCall.current.id,
+        id: id,
         object: tempCall.current,
       })
       .then((res) => {
         console.log(res);
       });
-    ws.send(JSON.stringify(tempCall));
+    ws.send(JSON.stringify(tempCall.current));
+    navigate("/appel");
   };
 
   const getCall = () => {
+    console.log(id);
     axios
       .get(`http://${ip}:5050/getcall`, { params: { id: id } })
       .then((res) => {
+        console.log(res.data);
         tempCall.current = res.data;
+        getUsers();
       });
   };
   const getUsers = () => {
     axios
       .get(`http://${ip}:5050/user`, { params: { id: userID } })
       .then((res) => {
-        console.log(res.data);
-        user.current = res.data;
         const scanEleveCopy = [...tempCall.current.student_scan];
-        scanEleveCopy.push(user.current.firstname);
-        console.log(scanEleveCopy);
+        const userItem = {
+          firstname: res.data.firstname,
+          id: res.data.id,
+        };
+        if (
+          scanEleveCopy.some(
+            (element) => element.firstname === userItem.firstname
+          )
+        ) {
+          navigate("/appel");
+        } else {
+          scanEleveCopy.push(userItem);
+        }
 
         tempCall.current.student_scan = scanEleveCopy;
-        console.log(tempCall.current.student_scan);
+        updateCall();
       });
   };
-
-  return (
-    <div>
-      <button
-        onClick={() => {
-          updateCall();
-        }}
-      >
-        Présent
-      </button>
-    </div>
-  );
 }
 
 export default Presence;

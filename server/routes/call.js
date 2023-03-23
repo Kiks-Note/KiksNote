@@ -1,4 +1,6 @@
-module.exports = (app, wss, db) => {
+const WebSocket = require("ws");
+
+module.exports = (app, wss, db, parse) => {
   app.post("/callAdd", (req, res) => {
     db.collection("calls")
       .add({
@@ -52,5 +54,24 @@ module.exports = (app, wss, db) => {
       .catch((err) => {
         console.log(err);
       });
+  });
+
+  let currentData;
+
+  const broadcastData = (data) => {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(data);
+      }
+    });
+  };
+  // Handle incoming connections from clients
+  wss.on("connection", (ws, req) => {
+    // Send the current data to the new client
+    ws.send(currentData);
+    ws.onmessage = (event) => {
+      currentData = event.data;
+      broadcastData(event.data);
+    };
   });
 };

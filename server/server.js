@@ -9,6 +9,7 @@ const WebSocket = require("ws");
 const http = require("http");
 const { db, auth } = require("./firebase");
 const { signInWithEmailAndPassword } = require("./firebase_auth");
+const { parse } = require("url");
 
 dotenv.config({ path: "./.env.login" });
 dotenv.config({ path: "./.env" });
@@ -23,27 +24,8 @@ const PORT = process.env.PORT || 5050;
 const server = http.createServer(app);
 
 const wss = new WebSocket.Server({ server });
-require("./routes/call")(app, wss, db);
+require("./routes/call")(app, wss, db, parse);
 require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
-
-let currentData;
-
-const broadcastData = (data) => {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(data);
-    }
-  });
-};
-// Handle incoming connections from clients
-wss.on("connection", (ws, req) => {
-  // Send the current data to the new client
-  ws.send(currentData);
-  ws.onmessage = (event) => {
-    currentData = event.data;
-    broadcastData(event.data);
-  };
-});
 
 app.get("/users", (req, res) => {
   db.collection("users")
@@ -68,9 +50,10 @@ app.get("/user", (req, res) => {
     .doc(req.query.id)
     .get()
     .then((data) => {
-      console.log(req.query.id);
-      console.log(data.data());
-      res.send(data.data());
+      let item = {};
+      item = data.data();
+      item["id"] = data.id;
+      res.send(item);
     });
 });
 

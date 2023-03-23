@@ -2,7 +2,7 @@ import QRCode from "qrcode";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import "./Callteacher.scss";
-import Countdown from "react-countdown";
+import Timer from "../timer/Timer";
 
 function AppelProf() {
   const [qrcode, setQrcode] = useState("");
@@ -14,18 +14,12 @@ function AppelProf() {
   });
   const ip = process.env.REACT_APP_IP;
   const [users, setUsers] = useState([]);
+  const [usersPresent, setUsersPresent] = useState([]);
   const [Chats, setChats] = useState([]);
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
   const ws = new WebSocket(`ws://${ip}:5050`);
-  const renderer = ({ minutes, seconds }) => {
-    return (
-      <span>
-        {minutes}:{seconds}
-      </span>
-    );
-  };
 
   useEffect(() => {
     if (dataFetchedRef.current) {
@@ -44,22 +38,22 @@ function AppelProf() {
   }, []);
 
   useEffect(() => {
-    if (generated.current);
-  }, [call]);
+    if (generated.current) {
+      setUsersPresent(call.student_scan);
+      const usersCopy = [...users];
+      console.log(usersCopy);
 
-  const addCall = async () => {
-    const res = await axios
-      .post("http://localhost:5050/callAdd", {
-        id_lesson: "",
-        qrcode: "",
-        student_scan: [],
-        chats: [],
-      })
-      .then((res) => {
-        console.log(res);
-        getCall();
-      });
-  };
+      const filteredUsers = usersCopy.filter(
+        (element1) =>
+          !call.student_scan.some(
+            (element2) => element2["firstname"] === element1["firstname"]
+          )
+      );
+
+      console.log(filteredUsers);
+      setUsers(filteredUsers);
+    }
+  }, [call]);
 
   const getCall = () => {
     axios.get("http://localhost:5050/calls").then((res) => {
@@ -92,25 +86,10 @@ function AppelProf() {
     );
   };
 
-  const updateCall = async () => {
-    const res = await axios
-      .post("http://localhost:5050/updatecall", { id: call.id, object: call })
-      .then((res) => {
-        console.log(res);
-      });
-    ws.send(JSON.stringify(call));
-  };
-
   return (
     <div className="ContentProf">
       <div className="Timer">
-        <Countdown
-          date={Date.now() + 900000}
-          renderer={renderer}
-          onComplete={() => {
-            document.getElementsByClassName("DivQr")[0].style.display = "none";
-          }}
-        />
+        <Timer />
       </div>
       <div className="ContentInfo">
         <div className="DivQr">
@@ -130,7 +109,7 @@ function AppelProf() {
           </div>
           <div>
             <div className="ListUser">
-              {users.map((user) => {
+              {usersPresent.map((user) => {
                 return (
                   <span key={user.id} className="UserItemPresent">
                     {user.firstname}
@@ -143,7 +122,7 @@ function AppelProf() {
         <div className="DivChat">
           <h1>Chat</h1>
           <div className="Chat">
-            {Chats.map((chat) => {
+            {call.chats.map((chat) => {
               return (
                 <div className="ChatContent">
                   <div className="ChatContentHeader">
