@@ -23,7 +23,8 @@ module.exports = (app, db, ws, parse) => {
   ws.on("request", (request) => {
     const connection = request.accept(null, request.origin);
     const { pathname } = parse(request.httpRequest.url);
-    console.log("request.httpServer => ", request);
+    // console.log("request.httpServer => ", request);
+    // console.log("request.httpServer id => ", request.id);
     console.log("request.url => ", request.pathname);
     console.log("pathname => ", pathname);
     connection
@@ -31,6 +32,7 @@ module.exports = (app, db, ws, parse) => {
       : console.log("connection failed");
 
     if (pathname === "/blog") {
+      console.log("je suis dans blog");
       db.collection("blog_evenements").onSnapshot(
         (snapshot) => {
           const documents = snapshot.docs.map((doc) => ({
@@ -43,7 +45,9 @@ module.exports = (app, db, ws, parse) => {
           console.log(err);
         }
       );
-    } else if (pathname === "/tuto") {
+    }
+    if (pathname === "/tuto") {
+      console.log("je suis dans tuto");
       db.collection("blog_tutos").onSnapshot(
         (snapshot) => {
           const documents = snapshot.docs.map((doc) => ({
@@ -56,6 +60,25 @@ module.exports = (app, db, ws, parse) => {
           console.log(err);
         }
       );
+    }
+    if (pathname === "/tutos/comments") {
+      console.log("je suis dans /tutos/comments");
+
+      connection.on("message", (message) => {
+        console.log("message => ", message);
+        console.log("message.utf8Data => ", message.utf8Data);
+        const docId = JSON.parse(message.utf8Data);
+        db.collection("blog_tutos")
+          .doc(docId)
+          .collection("comment")
+          .onSnapshot((snapshot) => {
+            const documents = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            connection.sendUTF(JSON.stringify(documents));
+          });
+      });
     }
   });
 
