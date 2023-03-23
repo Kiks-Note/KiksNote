@@ -63,42 +63,6 @@ const tasks = [
         id: "14",
         name: "Adrien",
     },
-    /*     {
-            id: "15",
-            name: "Ilan",
-        },
-        {
-            id: "16",
-            name: "Guillaume",
-        },
-        {
-            id: "17",
-            name: "Theo",
-        },
-        {
-            id: "18",
-            name: "Julien",
-        },
-        {
-            id: "19",
-            name: "Jerance",
-        },
-        {
-            id: "20",
-            name: "Maxime",
-        },
-        {
-            id: "21",
-            name: "Florian",
-        },
-        {
-            id: "22",
-            name: "Xavier",
-        },
-        {
-            id: "23",
-            name: "Thomas",
-        }, */
 ];
 const colContent = {
     students: {
