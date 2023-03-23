@@ -7,6 +7,7 @@ const webSocketServer = require("websocket").server;
 const http = require("http");
 const PORT = process.env.PORT || 5050;
 const {parse} = require("url");
+const fs = require("fs");
 
 const user = {
   firstname: "Rui",
@@ -44,6 +45,6 @@ app.use(
 );
 app.use(bodyParser.json());
 
-require("./inventory")(app, db, user, ws, parse);
+require("./inventory")(app, db, user, ws, parse, fs);
 
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

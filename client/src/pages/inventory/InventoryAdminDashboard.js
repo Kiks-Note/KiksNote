@@ -3,29 +3,37 @@ import {
   Box,
   Button,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Grid,
   IconButton,
+  Input,
+  List,
   styled,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
-import React, {useEffect, useState} from "react";
-import {w3cwebsocket} from "websocket";
-import "./inventory.css";
-import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import SideBarModify from "../../components/inventory/SideBarModify";
-import {toast, Toaster} from "react-hot-toast";
-import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import React, {useEffect, useState} from "react";
+import {toast, Toaster} from "react-hot-toast";
+import {useNavigate} from "react-router";
+import {w3cwebsocket} from "websocket";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
 import ModalForm from "../../components/inventory/ModalForm";
-import {useNavigate} from "react-router";
+import SideBarModify from "../../components/inventory/SideBarModify";
+import "./inventory.css";
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DeleteIcon from "@mui/icons-material/Delete";
+import theme from "../../theme";
 
 const Item = styled(Paper)(({theme}) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -35,6 +43,152 @@ const Item = styled(Paper)(({theme}) => ({
   color: theme.palette.text.secondary,
 }));
 
+const CategoryDialog = ({open, setDialogOpen}) => {
+  const [category, setCategory] = useState("");
+  const [categoryValue, setCategoryValue] = useState("");
+
+  const writeJson = () => {
+    axios
+      .post("http://localhost:5050/write-to-file", {
+        label: category,
+        value: categoryValue,
+      })
+      .then((res) => {
+        console.log(res);
+        setDialogOpen(false);
+        setCategory("");
+        setCategoryValue("");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  return (
+    <Dialog open={open} onClose={() => setDialogOpen(false)}>
+      <DialogTitle>Ajouter une catégorie</DialogTitle>
+      <DialogContent>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="name"
+          label="Categorie Label"
+          fullWidth
+          variant="outlined"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        />
+        <TextField
+          autoFocus
+          margin="dense"
+          id="name"
+          label="Categorie Value"
+          fullWidth
+          variant="outlined"
+          value={categoryValue}
+          onChange={(e) => setCategoryValue(e.target.value)}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={() => setDialogOpen(false)}>Annuler</Button>
+        <Button onClick={() => writeJson()}>Ajouter</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+const CategoriesList = ({open, setCategoriesListOpen}) => {
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    open &&
+      (async () => {
+        const ws = new w3cwebsocket("ws://localhost:5050/categories");
+
+        ws.onopen = () => {
+          console.log("connected");
+        };
+
+        ws.onmessage = (e) => {
+          const data = JSON.parse(e.data);
+          setCategories(data);
+          setLoading(false);
+        };
+      })();
+  }, [open]);
+
+  const deleteCategory = (id) => {
+    axios
+      .delete(`http://localhost:5050/delete-from-file/${id}`)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  return (
+    <Dialog open={open} onClose={() => setCategoriesListOpen(false)}>
+      <DialogTitle>Liste des catégories</DialogTitle>
+      <DialogContent>
+        {loading ? (
+          <Typography variant="h6">Chargement...</Typography>
+        ) : (
+          <List>
+            {categories.map((category) => (
+              <Item
+                key={category.value}
+                sx={{
+                  mb: 1,
+                  display: "flex",
+                  justifyContent: "space-between",
+                  width: 400,
+                }}
+              >
+                <div>
+                  <span style={{fontFamily: "poppins-semibold", fontSize: 16}}>
+                    Label:{" "}
+                  </span>
+                  <span style={{fontFamily: "poppins-regular", fontSize: 16}}>
+                    {category.label}
+                  </span>
+                  <br />
+                  <span style={{fontFamily: "poppins-semibold", fontSize: 16}}>
+                    Value:{" "}
+                  </span>
+                  <span style={{fontFamily: "poppins-regular", fontSize: 16}}>
+                    {category.value}
+                  </span>
+                </div>
+                <div>
+                  <Tooltip title="Modifier">
+                    <IconButton
+                      onClick={() => {}}
+                      sx={{color: theme.colors.components.dark}}
+                    >
+                      <EditRoundedIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Supprimer">
+                    <IconButton
+                      onClick={() => deleteCategory(category.id)}
+                      sx={{color: "#FF0000"}}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              </Item>
+            ))}
+          </List>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 const InventoryAdminDashboard = () => {
   const [devices, setDevices] = useState([]);
   const [openModify, setOpenModify] = useState(false);
@@ -42,6 +196,8 @@ const InventoryAdminDashboard = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [openAdd, setOpenAdd] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [categoriesListOpen, setCategoriesListOpen] = useState(false);
   const navigate = useNavigate();
 
   const toggleDrawerAdd = (event, open) => {
@@ -66,16 +222,16 @@ const InventoryAdminDashboard = () => {
     setOpenModify(open);
   };
 
-  useEffect(() => {
-    (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050");
+  // useEffect(() => {
+  //   (async () => {
+  //     const ws = new w3cwebsocket("ws://localhost:5050");
 
-      ws.onmessage = (message) => {
-        const data = JSON.parse(message.data);
-        setDevices(data);
-      };
-    })();
-  }, []);
+  //     ws.onmessage = (message) => {
+  //       const data = JSON.parse(message.data);
+  //       setDevices(data);
+  //     };
+  //   })();
+  // }, []);
 
   const handleDeleteClick = async () => {
     setIsMenuOpen(false);
@@ -99,6 +255,11 @@ const InventoryAdminDashboard = () => {
   return (
     <>
       <Toaster position="bottom-left" />
+      <CategoryDialog open={dialogOpen} setDialogOpen={setDialogOpen} />
+      <CategoriesList
+        open={categoriesListOpen}
+        setCategoriesListOpen={setCategoriesListOpen}
+      />
       <CustomSnackbar
         open={snackBarOpen}
         setOpen={setSnackBarOpen}
@@ -162,9 +323,35 @@ const InventoryAdminDashboard = () => {
               </Button>
               <Button
                 variant="contained"
+                onClick={() => setDialogOpen(true)}
+                sx={{
+                  backgroundColor: "#ffffff",
+                  color: "#1A2027",
+                  fontFamily: "poppins-semibold",
+                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                  ml: 2,
+                }}
+              >
+                Ajouter une categorie
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => setCategoriesListOpen(true)}
+                sx={{
+                  backgroundColor: "#ffffff",
+                  color: "#1A2027",
+                  fontFamily: "poppins-semibold",
+                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                  ml: 2,
+                }}
+              >
+                Liste des categories
+              </Button>
+              <Button
+                variant="contained"
                 onClick={() => navigate("/inventory/admin/list")}
                 sx={{
-                  ml: 2,
+                  mt: 2,
                   backgroundColor: "#ffffff",
                   color: "#1A2027",
                   fontFamily: "poppins-semibold",
@@ -177,11 +364,12 @@ const InventoryAdminDashboard = () => {
                 variant="contained"
                 onClick={() => navigate("/inventory/admin/borrowed")}
                 sx={{
-                  ml: 2,
                   backgroundColor: "#ffffff",
                   color: "#1A2027",
                   fontFamily: "poppins-semibold",
                   boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                  mt: 2,
+                  ml: 2,
                 }}
               >
                 Liste des peripheriques empruntés

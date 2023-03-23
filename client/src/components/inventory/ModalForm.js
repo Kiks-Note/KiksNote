@@ -16,17 +16,9 @@ import * as React from "react";
 import {useState, useEffect} from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import {toast} from "react-hot-toast";
+import {w3cwebsocket} from "websocket";
 
-export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
-  /*const [categories, setCategories] = useState([]);
-  const [label, setLabel] = useState("");
-  const [reference, setReference] = useState("");
-  const [campus, setCampus] = useState(null);
-  const [category, setCategory] = useState(null);
-  const [status, setStatus] = useState(null);
-  const [image, setImage] = useState("");
-  const [loading, setLoading] = useState(true);*/
-
+export default function ModalForm({open, toggleDrawerAdd}) {
   const [categories, setCategories] = useState([]);
   const [label, setLabel] = useState("");
   const [price, setPrice] = useState("");
@@ -36,7 +28,7 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
   const [condition, setCondition] = useState("");
   const [description, setDescription] = useState("");
   const [campus, setCampus] = useState(null);
-  //const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState(null);
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -95,17 +87,24 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
     setCondition("");
     setDescription("");
     setCampus("");
-    //setCategory("");
+    setCategory("");
     setStatus("");
   };
 
   useEffect(() => {
     open === true &&
       (async () => {
-        await axios.get("http://localhost:5050/categories").then((res) => {
-          setCategories(res.data);
+        const ws = new w3cwebsocket("ws://localhost:5050/categories");
+
+        // ws.onopen = () => {
+        //   console.log("connected");
+        // };
+
+        ws.onmessage = (e) => {
+          const data = JSON.parse(e.data);
+          setCategories(data);
           setLoading(false);
-        });
+        };
       })();
   }, [open === true]);
 
@@ -121,11 +120,11 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
       }}
       role="presentation"
     >
-      <Typography variant="h5" sx={{marginBottom: 2}}>
+      <Typography variant="h5" sx={{marginBottom: 2, color: "white"}}>
         Ajouter un periphérique
       </Typography>
       <IconButton
-        sx={{position: "absolute", top: 12, right: 0}}
+        sx={{position: "absolute", top: 12, right: 0, color: "white"}}
         onClick={(e) => {
           toggleDrawerAdd(e, false);
         }}
@@ -141,6 +140,8 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         value={label ? label : ""}
         onChange={(e) => setLabel(e.target.value)}
         fullWidth
+        InputLabelProps={{className: "inputLabel"}}
+        InputProps={{className: "input"}}
       />
       <TextField
         sx={{marginBottom: 2}}
@@ -151,6 +152,8 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         value={price ? price : ""}
         onChange={(e) => setPrice(e.target.value)}
         fullWidth
+        InputLabelProps={{className: "inputLabel"}}
+        InputProps={{className: "input"}}
       />
 
       <TextField
@@ -162,6 +165,8 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         value={description ? description : ""}
         onChange={(e) => setDescription(e.target.value)}
         fullWidth
+        InputLabelProps={{className: "inputLabel"}}
+        InputProps={{className: "input"}}
       />
 
       <TextField
@@ -173,6 +178,8 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         value={acquisitiondate ? acquisitiondate : ""}
         onChange={(e) => setAcquisitiondate(e.target.value)}
         fullWidth
+        InputLabelProps={{className: "inputLabel"}}
+        InputProps={{className: "input"}}
       />
 
       <FormControl sx={{marginBottom: 2}} fullWidth>
@@ -200,7 +207,25 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         value={storage ? storage : ""}
         onChange={(e) => setStorage(e.target.value)}
         fullWidth
+        InputLabelProps={{className: "inputLabel"}}
+        InputProps={{className: "input"}}
       />
+
+      <FormControl sx={{marginBottom: 2}} fullWidth>
+        <InputLabel id="demo-simple-select-label">Catégorie</InputLabel>
+        <Select
+          labelId="demo-simple-select-label"
+          id="demo-simple-select"
+          value={category ? category : ""}
+          label="Date d'acquisition"
+          onChange={(e) => setCategory(e.target.value)}
+          name="condition"
+        >
+          {categories.map((category) => (
+            <MenuItem value={category.value}>{category.label}</MenuItem>
+          ))}
+        </Select>
+      </FormControl>
 
       <FormControl sx={{marginBottom: 2}} fullWidth>
         <InputLabel id="demo-simple-select-label">Etat</InputLabel>
@@ -241,6 +266,8 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         value={image ? image : ""}
         onChange={(e) => setImage(e.target.value)}
         fullWidth
+        InputLabelProps={{className: "inputLabel"}}
+        InputProps={{className: "input"}}
       />
       {image && (
         <>

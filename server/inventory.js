@@ -1,4 +1,4 @@
-module.exports = (app, db, user, ws, parse) => {
+module.exports = (app, db, user, ws, parse, fs) => {
   app.get("/inventory", async (req, res) => {
     const docRef = db.collection("inventory");
     const snapshot = await docRef.orderBy("createdAt").get();
@@ -295,9 +295,75 @@ module.exports = (app, db, user, ws, parse) => {
     }
   });
 
+  app.post("/write-to-file", (req, res) => {
+    const data = require("./categories.json");
+    const {label, value} = req.body;
+
+    const updatedData = [
+      ...data,
+      {
+        id: data[data.length - 1].id + 1,
+        label: label,
+        value: value,
+      },
+    ];
+
+    fs.writeFile("./categories.json", JSON.stringify(updatedData), (err) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log("Successfully Written to File.");
+    });
+    res.json({message: "Successfully Written to File."});
+  });
+
+  app.post("/modify-file", (req, res) => {
+    const data = require("./categories.json");
+    const {id, label, value} = req.body;
+
+    const updatedData = data.map((item) => {
+      if (item.id === id) {
+        return {
+          ...item,
+          label: label,
+          value: value,
+        };
+      }
+      return item;
+    });
+
+    fs.writeFile("./categories.json", JSON.stringify(updatedData), (err) => {
+      if (err) {
+        console.log(err);
+      }
+      console.log("Successfully Written to File.");
+    });
+    res.json({message: "Successfully Written to File."});
+  });
+
+  app.delete("/delete-from-file/:id", (req, res) => {
+    const data = require("./categories.json");
+    const {id} = req.params;
+
+    const findIndex = data.findIndex((item) => item.id === parseInt(id));
+
+    if (findIndex !== -1) {
+      data.splice(findIndex, 1);
+
+      fs.writeFile("./categories.json", JSON.stringify(data), (err) => {
+        if (err) {
+          console.log(err);
+        }
+        console.log("Successfully Written to File.");
+      });
+    }
+  });
+
   ws.on("request", function (request) {
     const connection = request.accept(null, request.origin);
     const {pathname} = parse(request.httpRequest.url);
+
+    console.log(pathname);
 
     connection ? console.log("WebSocket admin open") : console.log("error");
 
@@ -355,6 +421,10 @@ module.exports = (app, db, user, ws, parse) => {
             console.log(`Encountered error: ${err}`);
           }
         );
+    }
+    if (pathname === "/categories") {
+      const data = require("./categories.json");
+      connection.sendUTF(JSON.stringify(data));
     }
 
     connection.on("close", function () {
