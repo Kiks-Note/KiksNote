@@ -49,6 +49,10 @@ function Dashboard() {
     await axios.put(`http://localhost:5050/dashboard/` + id + "/" + favorite);
   }
 
+  async function board() {
+    await axios.post(`http://localhost:5050/board/JUnEQaGjoiSvGZvGfElf`);
+  }
+
   // * DEFINE BOARDS WHO IS ACTIF
   let actif = rows.filter((board) => {
     const startDate = new Date(board.start);
@@ -146,6 +150,7 @@ function Dashboard() {
         <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
           Mon espace de travail
         </Typography>
+        <Button onClick={board}> board </Button>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <ToggleButtonGroup value={view} exclusive onChange={viewChange} sx={{ margin: 1 }}>
             <ToggleButton value="module" aria-label="module">

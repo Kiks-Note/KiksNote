@@ -38,9 +38,9 @@ export default function TabBoard() {
     if (storedTabs.length != storageTab.length) {
       storedTabs = storageTab;
       setStoredTabs(storageTab);
-      //localStorage.setItem("tabs", JSON.stringify([]));
-      //localStorage.setItem("tabsIndex", JSON.stringify(null));
-      //localStorage.setItem("activeTab", JSON.stringify(0));
+      // localStorage.setItem("tabs", JSON.stringify([]));
+      // localStorage.setItem("tabsIndex", JSON.stringify(null));
+      // localStorage.setItem("activeTab", JSON.stringify(0));
 
       const newTabs = [];
       newTabs.push({

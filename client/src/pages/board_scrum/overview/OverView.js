@@ -1,12 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  List,
-  ListItem,
-  Typography,
-} from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -169,20 +162,26 @@ function OverView() {
       picture: "https://picsum.photos/500/300?random=" + 2,
     },
   ];
-  /*const moveToPdf = (id) => {
+  const moveToOverView = () => {
     var x = JSON.parse(localStorage.getItem("tabs")) || [];
     var push = true;
     for (var tab of x) {
-      if (tab.id === id) {
+      if (tab.id === -1) {
         push = false;
       }
     }
     if (push) {
-      x.push({ id: id, type: "pdf", label: "nom du pdf" });
+      var tabsIndex = localStorage.getItem("tabsIndex");
+
+      var newIndex = parseInt(tabsIndex) + 1;
+
+      var tabsIndex = localStorage.setItem("tabsIndex", newIndex);
+
+      x.push({ id: newIndex, idDb: -1, type: "pdf", label: "pdf" });
       localStorage.setItem("tabs", JSON.stringify(x));
     }
-    localStorage.setItem("activeTab", JSON.stringify(id));
-  };*/
+    localStorage.setItem("activeTab", JSON.stringify(newIndex));
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -196,10 +195,7 @@ function OverView() {
         </Grid>
         <Grid item xs={12} md={3}>
           <Box>
-            <Button
-              variant="contained"
-              //onClick={moveToPdf(999)}
-            >
+            <Button variant="contained" onClick={moveToOverView}>
               Backlog
             </Button>
             <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
@@ -251,50 +247,6 @@ function OverView() {
         </Grid>
       </Grid>
     </Box>
-    // <div
-    //   style={{
-    //     display: "flex",
-    //     justifyContent: "space-between",
-    //     alignContent: "center",
-    //     alignItems: "center",
-    //   }}
-    // >
-    //   <TextList stories={stories} sprints={sprint}/>
-    //   <Box
-    //     style={{
-    //       display: "flex",
-    //       flexDirection: "column",
-    //       justifyContent: "space-between",
-    //       alignContent: "center",
-    //       alignItems: "center",
-    //       width: "35%",
-    //     }}
-    //   >
-    //     <StatTab/>
-    //   </Box>
-    //   <Box style={{ width: "30%" }}>
-    //     <Button
-    //       variant="contained"
-    //       //</Box>onClick={moveToPdf(999)}
-    //     >
-    //       Backlog
-    //     </Button>
-    //     <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
-    //       Sprint
-    //     </Typography>
-    //     {sprint.map((person) => (
-    //       <ListItem key={person.id}>
-    //         <CardSprint
-    //           key={person.id}
-    //           picture={person.picture}
-    //           sprint_group={person.sprint_group}
-    //           fav={person.favorite}
-    //           id={person.id}
-    //         />
-    //       </ListItem>
-    //     ))}
-    //   </Box>
-    // </div>
   );
 }
 export default OverView;
