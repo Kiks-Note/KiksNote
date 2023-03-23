@@ -210,45 +210,44 @@ function App() {
         return array;
     }
 
-    function divideArray(arr, size) {
-        const subarrays = [];
-        let i = 0;
-
-        while (i < arr.length) {
-            subarrays.push(arr.slice(i, i + size));
-            i += size;
-        }
-
-        return subarrays;
-    }
-
     function randomGeneration() {
-        let nsgp = document.querySelector('input[type="text"]').value // Number of students per groups
+        let nsgp = parseInt(document.querySelector('input[type="text"]').value) // Number of students per groups
         if (!nsgp) { alert("Merci de renseigner d'abords le nombre de groupe d'élèves par groupe souhaité") }
         else {
             var studentsArrayRandom = shuffle(columns.students.items);
+            var groups = Object.keys(columns).filter(key => key.startsWith('g'));
+            var groupIndex = 0;
 
-            var subArray = divideArray(studentsArrayRandom, nsgp);
-            
-            subArray.forEach(element => {
-                console.log(element);
-            });
-              columns.students.items.forEach(element => {
+            var numberGroup = groups.length;
 
-             });
- 
-             for (const key in columns) {
-                 if (key.startsWith('g')) {
-                     const updatedGroup = {
-                         ...columns[key],
-                         updatedProperty: 'new value'
-                     };
-                     columns[key] = updatedGroup;
-                 }
-             } 
+            var nbNotFull = (numberGroup * nsgp) - studentsArrayRandom.length;
 
+            for (var i = 0; i < studentsArrayRandom.length; i += nsgp) {
+                const groupKey = groups[groupIndex];
+                var groupItems = [];
+                if (nbNotFull > 0) {
+                    groupItems = studentsArrayRandom.slice(i, (i + nsgp) - 1);
+                    i = i - 1;
+                    nbNotFull -= 1;
+                }
+                else {
+                    groupItems = studentsArrayRandom.slice(i, i + nsgp);
+
+                }
+                console.log(nbNotFull)
+                const updatedGroup = {
+                    ...columns[groupKey],
+                    items: groupItems
+                };
+                columns[groupKey] = updatedGroup;
+
+                groupIndex++;
+            }
+            setColumns({ ...columns });
+            console.log(columns);
         }
     }
+
 
     return (
         <div>
