@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Divider from "@mui/material/Divider";
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
+import "./Register.scss"
 
 const Register = () => {
 
@@ -119,18 +120,11 @@ const Register = () => {
                         variant="middle"
                         style={{ background: "#fff", height: "1px" }}
                     />
-                    <form className="p-15">
+                    <form className="p-15 form">
                         <div className="m-4">
-                            <label
-                                id="label-lastname"
-                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                htmlFor="input-lastname"
-                            >
-                                Nom
-                                </label>
                             <input
                                 id="input-lastname"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="text"
                                 name="lastname"
                                 placeholder="Nom"
@@ -142,16 +136,9 @@ const Register = () => {
                             </span>
                         </div>
                         <div className="m-4">
-                            <label
-                                id="label-firstname"
-                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                htmlFor="input-firstname"
-                            >
-                                Prénom
-                            </label>
                             <input
                                 id="input-firstname"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="text"
                                 name="firstname"
                                 placeholder="Prénom"
@@ -163,15 +150,9 @@ const Register = () => {
                             </span>
                         </div>
                         <div className="m-4">
-                            <label
-                                id="label-email"
-                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                htmlFor="input-email"
-                            >
-                            </label>
                             <input
                                 id="input-email"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="email"
                                 name="email"
                                 placeholder="votrecompte@edu.esiee-it.fr"
@@ -183,15 +164,9 @@ const Register = () => {
                             </span>
                         </div>
                         <div className="m-4">
-                            <label
-                                id="label-birthdate"
-                                className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                                htmlFor="input-birthdate"
-                            >
-                            </label>
                             <input
                                 id="input-birthdate"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="date"
                                 name="birthdate"
                                 placeholder="Date de Naissance"
@@ -203,15 +178,9 @@ const Register = () => {
                             </span>
                         </div>
                         <div className="m-4">
-                        <label
-                            id="label-password"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            htmlFor="input-password"
-                        >
-                        </label>
                             <input
                                 id="input-password"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="password"
                                 name="password"
                                 placeholder="Mot de passe"
@@ -223,15 +192,9 @@ const Register = () => {
                             </span>
                         </div>
                         <div className="m-4">
-                        <label 
-                            id="label-confirmpassword"
-                            className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                            htmlFor="input-confirmpassword"
-                        >
-                        </label>
                             <input
                                 id="input-confirmpassword"
-                                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                className="input bg-gray-50 text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                 type="password"
                                 name="confirmPassword"
                                 placeholder="Confirm Password"
@@ -242,7 +205,7 @@ const Register = () => {
                                 {formErrors.confirmPassword}
                             </span>
                         </div>
-                        <div className="m-4">
+                        <div className="m-4 select-div">
                         <label 
                             id="label-status"
                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -288,7 +251,7 @@ const Register = () => {
                         <div className="flex justify-center">
                         <button
                             id="btn-register"
-                            className="bg-[#93258c] hover:bg-[#ab278e] text-white text-base font-bold py-2 px-4 rounded "
+                            className="bg-[#7751d9] hover:bg-[#ab278e] text-white text-base font-bold py-2 px-4 rounded "
                             type="submit"
                             onClick={handleSubmit}
                         >
@@ -296,14 +259,14 @@ const Register = () => {
                         </button>
                         </div>
                     </form>
-                    <p className="text-sm font-medium text-center m-3">
-                        Vous avez déjà un compte
+                    <div className="text-sm font-medium text-center m-3">
+                        <p>Vous avez déjà un compte</p>
                         <Link
                             className="text-sm font-medium text-[#B312FF] dark:text-[#B312FF] hover:underline"
                             to="/login">
                                 Se connecter
                         </Link>
-                    </p>
+                    </div>
             </div>
         </div>
         <ToastContainer></ToastContainer>
