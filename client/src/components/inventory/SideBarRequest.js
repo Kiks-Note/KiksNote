@@ -21,6 +21,8 @@ export default function SideBarRequest({
 }) {
   const [device, setDevice] = useState({});
   const [loading, setLoading] = useState(true);
+  const [requestReason, setRequestReason] = useState(true);
+  const [persons, setPersons] = useState(true);
   const [selectDates, setSelectedDates] = useState([
     {
       startDate: new Date(),
@@ -104,6 +106,24 @@ export default function SideBarRequest({
       </IconButton>
       {!loading ? (
         <>
+          <TextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
+            name="raison"
+            defaultValue={device.requestReason}
+            disabled
+            fullWidth
+          />
+          <TextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
+            name="Personnes concernées"
+            defaultValue={device.setPersons}
+            disabled
+            fullWidth
+          />
           <TextField
             sx={{marginBottom: 2}}
             id="outlined-search"

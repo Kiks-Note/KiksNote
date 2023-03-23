@@ -16,6 +16,8 @@ import * as React from "react";
 import {useState, useEffect} from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import {toast} from "react-hot-toast";
+import Datetime from 'react-datetime';
+import "react-datetime/css/react-datetime.css";
 
 export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
   /*const [categories, setCategories] = useState([]);
@@ -50,11 +52,11 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         await toast.promise(
           axios.post("http://localhost:5050/addDevice", {
             label: label,
-            reference: price,
-            category: acquisitiondate,
-            campus: image,
+            price: price,
+            acquisitiondate: acquisitiondate,
+            image: image,
             status: storage,
-            image: condition,
+            condition: condition,
             description: description,
             status: status,
             campus: campus,
@@ -164,7 +166,11 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         value={acquisitiondate ? acquisitiondate : ""}
         onChange={(e) => setAcquisitiondate(e.target.value)}
         fullWidth
+        Datetime
       />
+
+      <Datetime />;
+
 
       <FormControl sx={{marginBottom: 2}} fullWidth>
         <InputLabel id="demo-simple-select-label">Campus</InputLabel>

@@ -7,6 +7,7 @@ import {Rings} from "react-loader-spinner";
 import {CustomDropdown} from "../../components/inventory/CustomDropdown";
 import InvBox from "../../components/inventory/InvBox";
 import ModalForm from "../../components/inventory/ModalForm";
+import LoanRequestForm from "../../components/inventory/LoanRequestForm";
 import SideBarRequest from "../../components/inventory/SideBarRequest";
 import userObj from "../../userObj";
 import AddIcon from "@mui/icons-material/Add";
@@ -17,10 +18,12 @@ import {useNavigate} from "react-router-dom";
 import SideBarModify from "../../components/inventory/SideBarModify";
 import Snackbar from "../../components/inventory/CustomSnackBar";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
   const [openAdd, setOpenAdd] = useState(false);
+  const [openDemand, setOpenDemand] = useState(false);
   const [openRequest, setOpenResquest] = useState(false);
   const [openModify, setOpenModify] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -43,6 +46,17 @@ function InventoryHome() {
       return;
     }
     setOpenAdd(open);
+  };
+
+  const toggleDrawerDemand = (event, open) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setOpenDemand(open);
   };
 
   const toggleDrawerRequest = (event, open) => {
@@ -127,6 +141,11 @@ function InventoryHome() {
         toggleDrawerAdd={toggleDrawerAdd}
         reloadData={reloadData}
       />
+      <LoanRequestForm
+        open={openDemand}
+        toggleDrawerAdd={toggleDrawerDemand}
+        reloadData={reloadData}
+      />
       <SideBarRequest
         open={openRequest}
         toggleDrawerRequest={toggleDrawerRequest}
@@ -154,6 +173,20 @@ function InventoryHome() {
       <div className="buttons-wrapper">
         {user.admin && (
           <>
+            <Tooltip
+              title="Demander un emprunt"
+              aria-label="add"
+              sx={{marginBottom: "20px"}}
+              placement="left"
+            >
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={(e) => toggleDrawerDemand(e, true)}
+              >
+                <AddCircleIcon />
+              </Fab>
+            </Tooltip>
             <Tooltip
               title="Ajouter un appareil"
               aria-label="add"
