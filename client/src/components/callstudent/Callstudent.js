@@ -16,7 +16,7 @@ function AppelEleve() {
       id: ChatsEleve.length + 1,
       date: "07/12/2022 14:43",
       username: "jules",
-      content: gif.images.downsized_medium.url,
+      content: gif.images.fixed_height_small.url,
       isGif: true,
     });
     setChats(chatCopy);

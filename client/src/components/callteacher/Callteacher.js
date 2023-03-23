@@ -1,87 +1,77 @@
-import "./Callteacher.scss";
 import QRCode from "qrcode";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import "./Callteacher.scss";
+import Timer from "../timer/Timer";
 
 function AppelProf() {
-  const [url, setUrl] = useState("");
   const [qrcode, setQrcode] = useState("");
-
-  const users = [
-    { id: 1, username: "jules" },
-    { id: 2, username: "celian" },
-    { id: 3, username: "lucas" },
-    { id: 4, username: "mohamed" },
-    { id: 5, username: "jerance" },
-    { id: 6, username: "rui" },
-  ];
-
-  const [Chats, setChats] = useState([
-    {
-      id: 1,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content:
-        "https://media2.giphy.com/media/8L00JcT3slsmfVYldi/giphy.gif?cid=e8452e68e80occrhiho8lvwha7tl3mgvjkp9ry9294msfys2&rid=giphy.gif&ct=g",
-      isGif: true,
-    },
-    {
-      id: 2,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "🐑",
-      isGif: false,
-    },
-    {
-      id: 3,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 4,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 5,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 6,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 7,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-    {
-      id: 8,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: "trop bien",
-      isGif: false,
-    },
-  ]);
+  const [call, setCall] = useState({
+    id_lesson: "",
+    qrcode: "",
+    student_scan: [],
+    chats: [],
+  });
+  const ip = process.env.REACT_APP_IP;
+  const [users, setUsers] = useState([]);
+  const [usersPresent, setUsersPresent] = useState([]);
+  const [Chats, setChats] = useState([]);
+  const dataFetchedRef = useRef(false);
+  const generated = useRef(false);
+  let tempCall;
+  const ws = new WebSocket(`ws://${ip}:5050`);
 
   useEffect(() => {
-    GenerateQrcode();
+    if (dataFetchedRef.current) {
+      return;
+    }
+    dataFetchedRef.current = true;
+    // addCall();
+    getCall();
+    getUsers();
+    ws.onmessage = (event) => {
+      if (typeof event.data == "string") {
+        setCall(JSON.parse(event.data));
+        console.log(JSON.parse(event.data));
+      }
+    };
   }, []);
+
+  useEffect(() => {
+    if (generated.current) {
+      setUsersPresent(call.student_scan);
+      const usersCopy = [...users];
+      console.log(usersCopy);
+
+      const filteredUsers = usersCopy.filter(
+        (element1) =>
+          !call.student_scan.some(
+            (element2) => element2["firstname"] === element1["firstname"]
+          )
+      );
+
+      console.log(filteredUsers);
+      setUsers(filteredUsers);
+    }
+  }, [call]);
+
+  const getCall = () => {
+    axios.get("http://localhost:5050/calls").then((res) => {
+      tempCall = res.data.at(-1);
+      GenerateQrcode();
+    });
+  };
+
+  const getUsers = () => {
+    axios.get("http://localhost:5050/users").then((res) => {
+      setUsers(res.data);
+      console.log(res.data);
+    });
+  };
 
   const GenerateQrcode = () => {
     QRCode.toDataURL(
-      "https://www.google.com/",
+      `http://${ip}:3000/Presence/${tempCall.id}`,
       {
         width: 800,
         margin: 2,
@@ -89,6 +79,9 @@ function AppelProf() {
       (err, url) => {
         if (err) return console.log(err);
         setQrcode(url);
+        tempCall.qrcode = url;
+        setCall(tempCall);
+        generated.current = true;
       }
     );
   };
@@ -96,7 +89,7 @@ function AppelProf() {
   return (
     <div className="ContentProf">
       <div className="Timer">
-        <h1>15:00</h1>
+        <Timer />
       </div>
       <div className="ContentInfo">
         <div className="DivQr">
@@ -108,7 +101,7 @@ function AppelProf() {
               {users.map((user) => {
                 return (
                   <span key={user.id} className="UserItem">
-                    {user.username}
+                    {user.firstname}
                   </span>
                 );
               })}
@@ -116,10 +109,10 @@ function AppelProf() {
           </div>
           <div>
             <div className="ListUser">
-              {users.map((user) => {
+              {usersPresent.map((user) => {
                 return (
-                  <span key={user.id} className="UserItem">
-                    {user.username}
+                  <span key={user.id} className="UserItemPresent">
+                    {user.firstname}
                   </span>
                 );
               })}
@@ -129,7 +122,8 @@ function AppelProf() {
         <div className="DivChat">
           <h1>Chat</h1>
           <div className="Chat">
-            {Chats.map((chat) => {
+            {call.chats.map((chat) => {
+
               return (
                 <div className="ChatContent">
                   <div className="ChatContentHeader">

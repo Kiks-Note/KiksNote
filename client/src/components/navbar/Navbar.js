@@ -20,7 +20,9 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import BallotIcon from "@mui/icons-material/Ballot";
- 
+
+import { accountAuthService } from "../../services/accountAuth";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -73,6 +75,7 @@ const Drawer = styled(MuiDrawer, {
 
 export default function MiniDrawer({ element }) {
   const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -80,6 +83,12 @@ export default function MiniDrawer({ element }) {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleLogout = () => {
+    accountAuthService.logout();
+    localStorage.removeItem('user_uid');
+    navigate('/login');
   };
 
   return (
@@ -152,6 +161,7 @@ export default function MiniDrawer({ element }) {
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 }}
+                onClick={handleLogout}
               >
                 <ListItemIcon
                   sx={{
@@ -176,7 +186,6 @@ export default function MiniDrawer({ element }) {
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <DrawerHeader />
         <>{element}</>
       </Box>
     </Box>
