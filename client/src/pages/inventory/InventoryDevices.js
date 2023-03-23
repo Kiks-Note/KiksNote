@@ -13,8 +13,8 @@ import moment from "moment";
 import React, {useEffect, useState} from "react";
 import {toast, Toaster} from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
-import TestDataGrid from "../../components/TestDataGrid";
-import {TestTable} from "../../components/TestTable";
+import TestDataGrid from "../../components/inventory/TestDataGrid";
+import {TableWithHistory} from "../../components/inventory/TableWithHistory";
 
 export default function InventoryDevices() {
   const [data, setData] = useState([]);
@@ -268,7 +268,7 @@ export default function InventoryDevices() {
 
   return (
     <div>
-      <TestTable />
+      <TableWithHistory />
       {/* <TestDataGrid /> */}
       {/* <div
         style={{

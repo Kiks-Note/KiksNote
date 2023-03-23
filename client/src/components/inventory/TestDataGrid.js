@@ -4,7 +4,7 @@ import {DataGrid, gridClasses} from "@mui/x-data-grid";
 import axios from "axios";
 import moment from "moment";
 import React, {useEffect, useMemo, useState} from "react";
-import DeviceActions from "./inventory/DeviceActions";
+import DeviceActions from "./DeviceActions";
 
 export default function TestDataGrid() {
   const [data, setData] = useState([]);

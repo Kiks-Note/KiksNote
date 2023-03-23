@@ -151,7 +151,7 @@ function InventoryHome() {
       />
       <Toaster position="bottom-left" />
 
-      <div className="buttons-wrapper">
+      {/* <div className="buttons-wrapper">
         {user.admin && (
           <>
             <Tooltip
@@ -198,7 +198,7 @@ function InventoryHome() {
             </Tooltip>
           </>
         )}
-      </div>
+      </div> */}
 
       <div
         style={{

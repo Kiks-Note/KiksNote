@@ -21,9 +21,9 @@ import axios from "axios";
 import moment from "moment";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteRoundedIcon from "@mui/icons-material/DeleteRounded";
-import SideBarModify from "./inventory/SideBarModify";
-import SideBarModifyRequest from "./inventory/SideBarModifyRequest";
-import timeConverter from "../functions/TimeConverter";
+import SideBarModify from "./SideBarModify";
+import SideBarModifyRequest from "./SideBarModifyRequest";
+import timeConverter from "../../functions/TimeConverter";
 
 function Row(props) {
   const {row, edit, onEditClick} = props;
@@ -335,7 +335,7 @@ function Row(props) {
   );
 }
 
-export const TestTable = () => {
+export const TableWithHistory = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState(false);
