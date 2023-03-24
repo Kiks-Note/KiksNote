@@ -368,18 +368,20 @@ module.exports = (app, db, user, ws, parse, fs, moment) => {
     connection ? console.log("WebSocket admin open") : console.log("error");
 
     if (pathname === "/adminInventory") {
-      db.collection("inventory").onSnapshot(
-        (snapshot) => {
-          const documents = snapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          connection.sendUTF(JSON.stringify(documents));
-        },
-        (err) => {
-          console.log(`Encountered error: ${err}`);
-        }
-      );
+      db.collection("inventory")
+        .orderBy("createdAt", "desc")
+        .onSnapshot(
+          (snapshot) => {
+            const documents = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            connection.sendUTF(JSON.stringify(documents));
+          },
+          (err) => {
+            console.log(`Encountered error: ${err}`);
+          }
+        );
     }
 
     if (pathname === "/todayRequests") {

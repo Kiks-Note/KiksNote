@@ -25,6 +25,7 @@ export default function TestDataGrid() {
       const ws = new w3cwebsocket("ws://localhost:5050/adminInventory");
       ws.onmessage = (message) => {
         const data = JSON.parse(message.data);
+        console.log(data);
         setData(data);
         setLoading(false);
       };
@@ -106,29 +107,27 @@ export default function TestDataGrid() {
     },
   ];
 
-  const rows = data
-    .sort((a, b) => timeConverter(b.createdAt) - timeConverter(a.createdAt))
-    .map((item, i) => {
-      return {
-        id: i,
-        deviceId: item.id,
-        label: item.label,
-        ref: item.ref,
-        category: item.category,
-        campus: item.campus,
-        status:
-          item.status === "available"
-            ? "Disponible"
-            : item.status === "requested"
-            ? "Demandé"
-            : item.status === "unavailable"
-            ? "Indisponible"
-            : item.status === "borrowed"
-            ? "Emprunté"
-            : "Inconnu",
-        date: moment(timeConverter(item.createdAt)).format("DD.MM.YYYY"),
-      };
-    });
+  const rows = data.map((item, i) => {
+    return {
+      id: i,
+      deviceId: item.id,
+      label: item.label,
+      ref: item.ref,
+      category: item.category,
+      campus: item.campus,
+      status:
+        item.status === "available"
+          ? "Disponible"
+          : item.status === "requested"
+          ? "Demandé"
+          : item.status === "unavailable"
+          ? "Indisponible"
+          : item.status === "borrowed"
+          ? "Emprunté"
+          : "Inconnu",
+      date: moment(timeConverter(item.createdAt)).format("DD.MM.YYYY"),
+    };
+  });
 
   return (
     <div>
