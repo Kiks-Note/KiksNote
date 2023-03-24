@@ -1,32 +1,19 @@
 const express = require("express");
 const cors = require("cors");
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv').config();
 const app = express();
-const { db } = require("./firebase");
+const { db, auth } = require("./firebase");
+
+const { signInWithEmailAndPassword, authClient } = require("./firebase_auth");
 
 app.use(express.json());
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 5050;
 
-// app.post("/addUser", (req, res) => {
-//   const data = req.body;
-//   db.collection("users").add(data);
-//   res.send({ message: "User created successfully" });
-// });
-//
-// app.get("/users", (req, res) => {
-//   db.collection("users")
-//     .get()
-//     .then((snapshot) => {
-//       const data = [];
-//       snapshot.forEach((doc) => {
-//         data.push(doc.data());
-//       });
-//       res.send(data);
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
+require("./routes/auth")(app, db, auth, authClient, signInWithEmailAndPassword);
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
