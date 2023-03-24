@@ -13,6 +13,8 @@ import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Comment from "./Comment";
+import { useNavigate } from "react-router-dom";
+
 
 export default function ImgMediaCard({
   image,
@@ -22,7 +24,13 @@ export default function ImgMediaCard({
   dislike,
   id,
   type,
+
+
 }) {
+
+
+  const navigate = useNavigate(); function handleClick() { navigate(`/blog/${id}`); }
+
   // console.log(id);
 
   // const [tuto, setTuto] = useState([]);
@@ -55,8 +63,8 @@ export default function ImgMediaCard({
               // alt="green iguana"
               height="10"
               image={image}
-              // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
-              // sx={{maxHeight: 250}}
+            // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
+            // sx={{maxHeight: 250}}
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
@@ -85,8 +93,51 @@ export default function ImgMediaCard({
           </Card>
         </Grid>
       ) : (
-        <h1>Blog</h1>
+        <Grid item xs={2} sm={4} md={5}>
+          <Card sx={{ maxWidth: 380, m: 2 }}>
+            <CardMedia
+              component="img"
+              // alt="green iguana"
+              height="10"
+              image={image}
+            // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
+            // sx={{maxHeight: 250}}
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                {title}
+                {/*yo*/}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {description}
+                {/*sisi*/}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              {like}
+              <Checkbox
+                icon={<ThumbUpOffAltIcon />}
+                checkedIcon={<ThumbUpIcon />}
+              />
+              {dislike}
+              <Checkbox
+                icon={<ThumbDownOffAltIcon />}
+                checkedIcon={<ThumbDownAltIcon color={"error"} />}
+              />
+
+              <Button size="small">Commencer</Button>
+              <Button size="small"
+
+                onClick={handleClick}
+
+              >Ouvrir</Button>
+
+            </CardActions>
+          </Card>
+        </Grid>
       )}
     </>
   );
 }
+
+

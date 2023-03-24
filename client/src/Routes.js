@@ -6,6 +6,8 @@ import Navbar from "./components/navbar/Navbar";
 import Home from "./pages/home/Home.js";
 import Tuto from "./pages/blog/Tuto";
 import Blog from "./pages/blog/Blog";
+import ImgMediaCard from "./components/blog/Card";
+import PreviewBlog from "./components/blog/PreviewBlog";
 
 
 function RoutesProvider() {
@@ -30,6 +32,8 @@ function RoutesProvider() {
                     <Route path="/" element={<Home />} />
                     <Route path="/tuto" element={<Tuto />} />
                     <Route path="/blog" element={<Blog />} />
+                    <Route path="/blog/:id" element={<PreviewBlog />} />
+
                 </Route>
             </Routes>
         </BrowserRouter>

@@ -151,7 +151,7 @@ module.exports = (app, db, ws) => {
 
 
     app.post("/blog/newblog", async (req, res) => {
-        const { title, description, photo } = req.body;
+        const { title, description, photo, inputEditorState } = req.body;
 
 
         if (title == null || title == "") {
@@ -165,12 +165,16 @@ module.exports = (app, db, ws) => {
         }
 
 
+
+
+
         try {
             await db.collection("blog_evenements").doc().set({
 
                 title: title,
                 description: description,
                 photo: photo,
+                inputEditorState: inputEditorState,
 
             });
             res.send("Document successfully written!");
@@ -179,5 +183,10 @@ module.exports = (app, db, ws) => {
             res.status(500).send(err);
         }
     });
+
+    app.get("/blog_event/:id", async (req, res) => {
+        const snapshot = await db.collection("blog_evenements").doc(req.params.id).get();
+        res.send(snapshot.data());
+    })
 
 };

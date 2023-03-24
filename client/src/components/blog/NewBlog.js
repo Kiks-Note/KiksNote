@@ -17,16 +17,34 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw } from "draft-js";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from "draftjs-to-html";
+
+
 export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState("");
   const [image, setImage] = useState("");
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [inputEditorState, setInputEditorState] = useState("");
+
+
+  const handleEditorChange = (e) => {
+    setEditorState(e);
+    setInputEditorState(draftToHtml(convertToRaw(e.getCurrentContent())));
+
+  }
+
+  console.log(inputEditorState);
 
   const newBlog = async (e) => {
     e.preventDefault();
 
-    if (!title || !description || !photo) {
+    if (!title || !description || !photo || !editorState || !inputEditorState) {
+      console.log(title, description, photo, editorState);
       toast.error("Veuillez remplir tous les champs");
       return;
     }
@@ -35,6 +53,10 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
       title,
       description,
       photo,
+      editorState,
+      inputEditorState
+
+
     };
     try {
       const response = await axios.post(
@@ -52,9 +74,10 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
 
   const list = () => (
     <>
+
       <Box
         sx={{
-          width: 350,
+          width: 1450,
           p: 2,
           justifyContent: "center",
           alignItems: "center",
@@ -63,6 +86,8 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
         }}
         role="presentation"
       >
+
+
         <Typography
           variant="h6"
           sx={{
@@ -70,7 +95,31 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
           }}
         >
           Ajout d'un nouveau blog
+
+          <div>
+            <Editor
+
+              placeholder='Write your blog here...'
+
+              editorState={editorState}
+
+              toolbarClassName="toolbarClassName"
+              wrapperClassName="wrapperClassName"
+              editorClassName="editorClassName"
+              onEditorStateChange={handleEditorChange}
+              editorStyle={{ border: "1px solid black", minHeight: "180px", padding: "10px", borderRadius: "5px", boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)" }}
+
+            />
+
+            <textarea disabled value={
+              draftToHtml(convertToRaw(editorState.getCurrentContent()))
+
+            }>
+
+            </textarea>
+          </div>
         </Typography>
+
         <IconButton
           sx={{
             position: "absolute",
@@ -83,7 +132,10 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
         >
           <CloseIcon />
         </IconButton>
+
         <>
+
+
           <TextField
             sx={{ marginBottom: 2 }}
             id="outlined-search"
@@ -96,7 +148,9 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             InputLabelProps={{ className: "inputLabel" }}
             InputProps={{ className: "input" }}
           />
+
           <TextField
+
             sx={{ marginBottom: 2 }}
             id="outlined-search"
             type={"text"}
@@ -107,7 +161,9 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             fullWidth
             InputLabelProps={{ className: "inputLabel" }}
             InputProps={{ className: "input" }}
-          />
+          >
+
+          </TextField >
 
           <TextField
             sx={{ marginBottom: 2 }}
@@ -140,6 +196,8 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
                 image={photo ? photo : ""}
                 alt=""
               />
+
+
             </>
           )}
 
@@ -174,3 +232,5 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
     </div>
   );
 }
+
+
