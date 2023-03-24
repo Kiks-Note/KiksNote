@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-//import axios from "axios";
+import axios from "axios";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import TextField from "@mui/material/TextField";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function ButtonAddCart() {
+export default function ButtonAddCart(props) {
   const [showTextField, setShowTextField] = useState(false);
   const [cardTitle, setCardTitle] = useState("");
   const handleClickAddButton = () => {
@@ -22,9 +22,22 @@ export default function ButtonAddCart() {
   };
 
   const handleAddCard = () => {
-    // axios.post("/api/cards", { title: cardTitle }).then(() => {
-    //   handleCloseTextField();
-    // });
+    console.log(cardTitle);
+    console.log(props.columnId);
+    if (cardTitle != "") {
+      axios
+        .put(
+          "http://localhost:5050/dashboard/JUnEQaGjoiSvGZvGfElf/board/HCmKbXNmFtGYn3m6UbFt/column/" +
+            props.columnId +
+            "/addCard",
+          {
+            title: cardTitle,
+          }
+        )
+        .then(() => {
+          handleCloseTextField();
+        });
+    }
   };
 
   return (
@@ -41,7 +54,6 @@ export default function ButtonAddCart() {
         <>
           <TextField
             variant="outlined"
-            onBlur={handleCloseTextField}
             autoFocus
             value={cardTitle}
             onChange={handleChange}
@@ -60,12 +72,8 @@ export default function ButtonAddCart() {
               marginTop: "10px",
             }}
           >
-            <Button
-              variant="contained"
-              onClick={handleAddCard}
-              disabled={!cardTitle}
-            >
-              Ajouter 
+            <Button variant="contained" onClick={() => handleAddCard()} disabled={!cardTitle}>
+              Ajouter
             </Button>
             <Button startIcon={<CloseIcon />} onClick={handleCloseTextField}>
               Annuler
@@ -73,11 +81,7 @@ export default function ButtonAddCart() {
           </div>
         </>
       ) : (
-        <Button
-          onClick={handleClickAddButton}
-          variant="text"
-          startIcon={<AddIcon />}
-        >
+        <Button onClick={handleClickAddButton} variant="text" startIcon={<AddIcon />}>
           Ajouter une carte
         </Button>
       )}

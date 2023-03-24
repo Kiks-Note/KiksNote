@@ -73,7 +73,7 @@ function Dashboard() {
       wsComments.onopen = function (e) {
         console.log("[open] Connection established");
         console.log("Sending to server");
-        console.log("tutoId", connectedStudent);
+        console.log("student", connectedStudent);
         wsComments.send(JSON.stringify(connectedStudent));
       };
 

@@ -16,177 +16,12 @@ import { w3cwebsocket } from "websocket";
 function TransitionComponent(props) {
   return <Slide {...props} direction="up" />;
 }
-
 const LabelList = [
   { name: "Feature", color: "#E6BE65" },
   { name: "Urgent", color: "#FF0000" },
   { name: "Fix", color: "#6c25be" },
   { name: "Documentation", color: "#2596be" },
 ];
-/*
-const taskStatus = {
-  requested: {
-    name: "Stories",
-    items: [
-      {
-        id: "14",
-        name: "Tset",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-        assignedTo: [],
-        labels: [],
-      },
-      {
-        id: "15",
-        name: "Do all",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-        assignedTo: [],
-        labels: [],
-      },
-    ],
-  },
-  acceptance: {
-    name: "Critère d'acceptation",
-    items: [
-      {
-        id: "7",
-        name: "Sprint retro",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        assignedTo: [],
-        labels: [],
-      },
-      {
-        id: "8",
-        name: "Sprint retro",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        assignedTo: [],
-        labels: [],
-      },
-      {
-        id: "9",
-        name: "Sprint retro",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        assignedTo: [],
-        labels: [],
-      },
-      {
-        id: "10",
-        name: "Sprint retro",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        assignedTo: [],
-        labels: [],
-      },
-      {
-        id: "11",
-        name: "Sprint retro",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        assignedTo: [],
-        labels: [],
-      },
-      {
-        id: "12",
-        name: "Sprint retro",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        assignedTo: [],
-        labels: [],
-      },
-      {
-        id: "13",
-        name: "Sprint retro",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        assignedTo: [],
-        labels: [],
-      },
-    ],
-  },
-
-  toDo: {
-    name: "To Do",
-    items: [
-      {
-        id: "1",
-        name: "Board EduScrum",
-        desc: "",
-        assignedTo: [
-          {
-            id: "1",
-            name: "John Doe",
-            photo: "https://picsum.photos/500/300?random=45",
-          },
-          {
-            id: "2",
-            name: "Jane Smith",
-            photo: "https://picsum.photos/500/300?random=67",
-          },
-          { id: "3", name: "Bob Johnson", photo: "https://picsum.photos/500/300?random=89" },
-        ],
-        labels: ["Urgent", "Fix", "Feature"],
-      },
-      {
-        id: "2",
-        name: "Création de sprint agile très très long",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-        assignedTo: [
-          {
-            id: "3",
-            name: "Bob Johnson",
-            photo: "https://picsum.photos/500/300?random=3",
-          },
-        ],
-        labels: ["Urgent"],
-      },
-      {
-        id: "3",
-        name: "BurnDown chart",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-        assignedTo: [],
-        labels: ["Documentation", "Fix"],
-      },
-      {
-        id: "4",
-        name: "Ajout du backlog",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-        assignedTo: [
-          {
-            id: "2",
-            name: "Jane Smith",
-            photo: "https://picsum.photos/500/300?random=1",
-          },
-          {
-            id: "3",
-            name: "Bob Johnson",
-            photo: "https://picsum.photos/500/300?random=2",
-          },
-        ],
-        labels: ["Feature", "Urgent"],
-      },
-      {
-        id: "5",
-        name: "Sprint retro",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-        assignedTo: [],
-        labels: [],
-      },
-      {
-        id: "6",
-        name: "Exemple avec un titre de carte très long pour voir si c'est moche... Finalement ça rend plutôt bien meme avec un titre de carte très long",
-        desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-        assignedTo: [],
-        labels: [],
-      },
-    ],
-  },
-
-  inProgress: {
-    name: "In progress",
-    items: [],
-  },
-  done: {
-    name: "Done",
-    items: [],
-  },
-};
-*/
-
 const taskStatus = {
   requested: {
     name: "Stories",
@@ -228,21 +63,8 @@ function Board() {
         console.log("Sending to server");
         wsComments.send(JSON.stringify({ dashboardId: "JUnEQaGjoiSvGZvGfElf", boardId: "HCmKbXNmFtGYn3m6UbFt" }));
       };
-
       wsComments.onmessage = (message) => {
         const data = JSON.parse(message.data);
-
-        /*console.log("loop");
-        for (var x in data) {
-          var list = data[x];
-          var arr = Array(list.items.length).fill(1);
-          for (var y of list.items) {
-            arr[y.index] = y;
-          }
-          data[x].items = arr;
-        }
-        console.log("loop end");
-*/
         setColumns({
           ...data,
         });
@@ -251,9 +73,11 @@ function Board() {
   }, []);
 
   async function changeCardIndex(newColumns) {
-    await axios.put("http://localhost:5050/board/JUnEQaGjoiSvGZvGfElf/HCmKbXNmFtGYn3m6UbFt/", newColumns);
+    await axios.put(
+      "http://localhost:5050/dashboard/JUnEQaGjoiSvGZvGfElf/board/HCmKbXNmFtGYn3m6UbFt/setCards",
+      newColumns
+    );
   }
-
   const handleMenuOpen = (event, columnId) => {
     setMenuAnchorEl(event.currentTarget);
   };
@@ -262,63 +86,42 @@ function Board() {
   };
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
-
-    if (result.destination.droppableId === "requested" && result.source.droppableId !== "requested") {
+    if (result.destination.droppableId === "0" && result.source.droppableId !== "0") {
       setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
       setTimeout(() => {
         setErrorMessage("");
       }, 3000); // DELETE AFTER 3 SEC
       return;
-    } else if (result.destination.droppableId !== "requested" && result.source.droppableId === "requested") {
+    } else if (result.destination.droppableId !== "0" && result.source.droppableId === "0") {
       setErrorMessage("Impossible de déplacer une storie dans une autre colonne");
       setTimeout(() => {
         setErrorMessage("");
       }, 5000); // DELETE AFTER 5 SEC
       return;
     }
-
+    console.log(result.destination.droppableId);
+    if (result.destination.droppableId === "1" && result.source.droppableId !== "1") {
+      setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 3000); // DELETE AFTER 3 SEC
+      return;
+    } else if (result.destination.droppableId !== "1" && result.source.droppableId === "1") {
+      setErrorMessage("Impossible de déplacer un critère d'acceptation dans une autre colonne");
+      setTimeout(() => {
+        setErrorMessage("");
+      }, 5000); // DELETE AFTER 5 SEC
+      return;
+    }
     const source = result.source;
     const destination = result.destination;
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
-
     if (source.droppableId !== destination.droppableId) {
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
       const [removed] = sourceItems.splice(source.index, 1);
       destItems.splice(destination.index, 0, removed);
-
-      /*var lastIndex = -1;
-      var increment = false;
-      var newDestItem = destItems;
-      var index = 0;
-      destItems.forEach((item) => {
-        if (!increment) {
-          if (lastIndex != -1) {
-            var newIndex = item.index;
-            if (newIndex == lastIndex) {
-              increment = true;
-            }
-            lastIndex = item.index;
-          } else {
-            lastIndex = item.index;
-          }
-        }
-
-        if (increment) {
-          item.index += 1;
-
-          newDestItem[index] = item;
-        } else {
-          newDestItem[index] = item;
-        }
-
-        index++;
-      });
-
-      newDestItem.forEach((item) => {
-        console.log(item.index);
-      });*/
       changeCardIndex({
         ...columns,
         [source.droppableId]: {
@@ -330,7 +133,6 @@ function Board() {
           items: destItems,
         },
       });
-
       setColumns({
         ...columns,
         [source.droppableId]: {
@@ -353,7 +155,6 @@ function Board() {
           items: copiedItems,
         },
       });
-
       setColumns({
         ...columns,
         [source.droppableId]: {
@@ -363,8 +164,6 @@ function Board() {
       });
     }
   };
-  //const { parameter } = useParams();
-  // const labelChange = () => setLabel(!label);
 
   return (
     <>
@@ -411,7 +210,6 @@ function Board() {
                         Ajouter une carte
                       </MenuItem>
                     </Menu>
-
                     <Droppable droppableId={columnId} key={columnId}>
                       {(provided, snapshot) => {
                         return (
@@ -460,6 +258,7 @@ function Board() {
                                           snapshot={snapshot}
                                           label={label}
                                           list_name={column.name}
+                                          columnId={columnId}
                                         ></CardBoard>
                                       </div>
                                     );
@@ -472,7 +271,7 @@ function Board() {
                         );
                       }}
                     </Droppable>
-                    <ButtonAddCard />
+                    <ButtonAddCard columnId={columnId} />
                   </div>
                 </div>
               );

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Modal from "@mui/material/Modal";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Card from "@mui/material/Card";
@@ -65,9 +64,45 @@ export default function DetailCard(props) {
     setIsEditingDescription(false);
   };
   const handleNameBlur = (event) => {
+    saveName(event.target.value);
     setNameValue(event.target.value);
     setIsEditingName(false);
   };
+
+  const saveName = (title) => {
+    axios
+      .put(
+        "http://localhost:5050/dashboard/JUnEQaGjoiSvGZvGfElf/board/HCmKbXNmFtGYn3m6UbFt/column/" +
+          props.columndId +
+          "/editCard",
+        {
+          id: info.id,
+          title: title,
+          desc: info.desc,
+        }
+      )
+      .then(() => {
+        //handleCloseTextField();
+      });
+  };
+
+  const saveDesc = (desc) => {
+    axios
+      .put(
+        "http://localhost:5050/dashboard/JUnEQaGjoiSvGZvGfElf/board/HCmKbXNmFtGYn3m6UbFt/column/" +
+          props.columndId +
+          "/editCard",
+        {
+          id: info.id,
+          title: info.title,
+          desc: desc,
+        }
+      )
+      .then(() => {
+        //handleCloseTextField();
+      });
+  };
+
   const style = {
     position: "absolute",
     top: "30%",
@@ -312,7 +347,6 @@ export default function DetailCard(props) {
                       <Button onClick={handleClose}>Fermer la modale</Button>
                     </div>
                   </Card>
-
                   <Button variant="contained" onClick={handleClose} sx={{ mt: 3, mb: 2 }}>
                     Sauvegarder
                   </Button>

@@ -142,7 +142,7 @@ export default function CardBoard(props) {
         </Stack>
       </Box>
       <Modal open={states.open} onClose={handleClose}>
-        <DetailCard info={info} list_name={props.list_name} Label={Label}></DetailCard>
+        <DetailCard info={info} list_name={props.list_name} Label={Label} columnId={props.columnId}></DetailCard>
       </Modal>
     </div>
   );
