@@ -20,7 +20,8 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import BallotIcon from "@mui/icons-material/Ballot";
-
+import { accountAuthService } from "../../services/accountAuth";
+import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -71,115 +72,122 @@ const Drawer = styled(MuiDrawer, {
     }),
 }));
 
-export default function MiniDrawer({element}) {
-    const [open, setOpen] = React.useState(false);
+export default function MiniDrawer({ element }) {
+  const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate();
 
-    const handleDrawerOpen = () => {
-        setOpen(true);
-    };
+  const handleDrawerOpen = () => {
+      setOpen(true);
+  };
 
-    const handleDrawerClose = () => {
-        setOpen(false);
-    };
+  const handleDrawerClose = () => {
+      setOpen(false);
+  };
 
-    return (
-        <Box sx={{display: "flex"}}>
-            <CssBaseline/>
-            <Drawer variant="permanent" open={open}>
-                <DrawerHeader>
-                    <IconButton>
-                        {open ? (
-                            <ChevronLeftIcon onClick={handleDrawerClose}/>
-                        ) : (
-                            <ChevronRightIcon onClick={handleDrawerOpen}/>
-                        )}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider/>
-                <List>
-                    {[
-                        {id: 1, name: "Accueil", route: "#", icon: <HomeIcon/>},
-                        {id: 2, name: "Agile", route: "#", icon: <BallotIcon/>},
-                        {id: 3, name: "Profile", route: "#", icon: <Person2Icon/>},
-                        {id: 4, name: "Board", route: "#", icon: <DashboardIcon/>},
-                        {id: 5, name: "Blog", route: "blog", icon: <AlternateEmailIcon/>},
-                    ].map((page) => (
-                        <ListItem key={page.id} disablePadding sx={{display: "block"}}>
-                            <ListItemButton
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? "initial" : "center",
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : "auto",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    {page.icon}
-                                </ListItemIcon>
+  const handleLogout = () => {
+    accountAuthService.logout();
+    navigate('/login');
+  };
 
-                                <ListItemText
-                                    primary={
-                                        <Link href={page.route} underline="none" color="dark">
-                                            {page.name}
-                                        </Link>
-                                    }
-                                    sx={{opacity: open ? 1 : 0}}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider/>
-                {/* Information for List to Logout */}
-                <List>
-                    {[
-                        {
-                            id: 1,
-                            name: "Déconnexion",
-                            route: "#",
-                            icon: <LogoutOutlinedIcon/>,
-                        },
-                    ].map((page) => (
-                        <ListItem key={page.id} disablePadding sx={{display: "block"}}>
-                            <ListItemButton
-                                sx={{
-                                    minHeight: 48,
-                                    justifyContent: open ? "initial" : "center",
-                                    px: 2.5,
-                                }}
-                            >
-                                <ListItemIcon
-                                    sx={{
-                                        minWidth: 0,
-                                        mr: open ? 3 : "auto",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    {page.icon}
-                                </ListItemIcon>
-                                <ListItemText
-                                    primary={
-                                        <Link href={page.route} underline="none" color="dark">
-                                            {page.name}
-                                        </Link>
-                                    }
-                                    sx={{opacity: open ? 1 : 0}}
-                                />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-            </Drawer>
-            <Box component="main" sx={{flexGrow: 1, p: 3}}>
-                <>{element}</>
-            </Box>
-        </Box>
-    );
+  return (
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <Drawer variant="permanent" open={open}>
+        <DrawerHeader>
+          <IconButton>
+            {open ? (
+              <ChevronLeftIcon onClick={handleDrawerClose} />
+            ) : (
+              <ChevronRightIcon onClick={handleDrawerOpen} />
+            )}
+          </IconButton>
+        </DrawerHeader>
+        <Divider />
+        <List>
+          {[
+            { id: 1, name: "Accueil", route: "#", icon: <HomeIcon /> },
+            { id: 2, name: "Agile", route: "#", icon: <BallotIcon /> },
+            { id: 3, name: "Profile", route: "#", icon: <Person2Icon /> },
+            { id: 4, name: "Board", route: "#", icon: <DashboardIcon /> },
+            { id: 5, name: "Blog", route: "#", icon: <AlternateEmailIcon /> },
+          ].map((page) => (
+            <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  {page.icon}
+                </ListItemIcon>
+
+                <ListItemText
+                  primary={
+                    <Link href={page.route} underline="none" color="dark">
+                      {page.name}
+                    </Link>
+                  }
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        {/* Information for List to Logout */}
+        <List>
+          {[
+            {
+              id: 1,
+              name: "Déconnexion",
+              route: "#",
+              icon: <LogoutOutlinedIcon />,
+            },
+          ].map((page) => (
+            <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
+              <ListItemButton
+                sx={{
+                  minHeight: 48,
+                  justifyContent: open ? "initial" : "center",
+                  px: 2.5,
+                }}
+                onClick={handleLogout}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: open ? 3 : "auto",
+                    justifyContent: "center",
+                  }}
+                >
+                  {page.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={
+                    <Link href={page.route} underline="none" color="dark">
+                      {page.name}
+                    </Link>
+                  }
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Drawer>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <>{element}</>
+      </Box>
+    </Box>
+  );
 }
 
 MiniDrawer.propTypes = {

@@ -1,0 +1,92 @@
+@import url(https://fonts.googleapis.com/css?family=Permanent+Marker);
+
+h1 {
+  font-weight: bold;
+  font-size: 40px;
+}
+
+h2 {
+  font-weight: bold;
+  font-size: 20px;
+}
+.post-it {
+  width: 150px;
+  height: 80px;
+  margin: 30px auto;
+  padding: 20px;
+  box-shadow: inset 0 -40px 40px rgba(0, 0, 0, 0.2),
+    inset 0 25px 10px rgba(0, 0, 0, 0.2), 0 5px 6px 5px rgba(0, 0, 0, 0.2);
+  font-family: "Permanent Marker", cursive;
+  line-height: 1.7em;
+  font-size: 19px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  color: white;
+  overflow: hidden;
+  text-shadow: rgb(41, 41, 41) 1px 0 5px;
+  p {
+    white-space: break-spaces;
+    word-wrap: break-word;
+    width: 100%;
+    text-align: center;
+    margin: 10px;
+  }
+}
+
+.group {
+  border-radius: 10px;
+  display: flex;
+  flex-flow: row wrap;
+  border: 1px solid rgb(190, 190, 190);
+}
+
+.groups-inputs{
+  width: fit-content;
+  display: flex;
+  flex-flow: row wrap;
+  position: absolute;
+  justify-content: space-around;
+  top: 10px;
+  right: 10px;
+
+  input[type="text"]{
+    text-align: center;
+    margin-right: 10px;
+    border-radius: 5px;
+        background-color: #252525;
+        color: white;
+  }
+
+  datalist{
+    width: 100%;
+    background-color: #252525;
+    color: white;
+  }
+  option{
+    width: 100%;
+    background-color: #252525;
+    color: white;
+  }
+
+  .icon-svg{
+    color:white;
+    fill:white;
+  }
+
+  .input-button {
+    width: 40px;
+    height: 40px;
+    background-color: #f50057;
+    border-radius: 5px;
+    transition: all 500ms ease-in-out;
+    margin: 0px 5px;
+  }
+  
+  .resetButton:active,
+  .resetButton:hover {
+    background-color: #7d0229;
+  }
+}
+
