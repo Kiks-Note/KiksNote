@@ -21,6 +21,8 @@ export default function SideBarRequest({
 }) {
   const [device, setDevice] = useState({});
   const [loading, setLoading] = useState(true);
+  const [requestReason, setRequestReason] = useState(true);
+  const [persons, setPersons] = useState(true);
   const [selectDates, setSelectedDates] = useState([
     {
       startDate: new Date(),
@@ -108,6 +110,24 @@ export default function SideBarRequest({
             sx={{marginBottom: 2}}
             id="outlined-search"
             type={"text"}
+            name="raison"
+            defaultValue={device.requestReason}
+            disabled
+            fullWidth
+          />
+          <TextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
+            name="Personnes concernées"
+            defaultValue={device.setPersons}
+            disabled
+            fullWidth
+          />
+          <TextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
             disabled
             name="label"
             defaultValue={device.label}
@@ -145,7 +165,7 @@ export default function SideBarRequest({
           <Typography variant="h6" sx={{marginBottom: 2}}>
             Choisissez les dates
           </Typography>
-          <DateRange
+           <DateRange
             editableDateInputs={true}
             onChange={(item) => {
               setSelectedDates([item.selection]);
@@ -155,7 +175,6 @@ export default function SideBarRequest({
             locale={locales.fr}
             minDate={new Date()}
           />
-
           <Button
             variant="contained"
             sx={{marginBottom: 2}}

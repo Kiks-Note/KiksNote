@@ -139,3 +139,13 @@
   border-color: #ffffff !important;
   background-color: #1a2027 !important;
 } */
+
+/*.MuiInputBase-root {
+  background-color: black !important;
+  font-family: "poppins-regular" !important;
+}*/
+
+.demo-simple-select-label {
+  background-color: black !important;
+  font-family: "poppins-regular" !important;
+}

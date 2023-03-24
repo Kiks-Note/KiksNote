@@ -183,6 +183,7 @@ module.exports = (app, db, pathname, connection, user, fs) => {
         endDate: new Date(endDate),
         createdAt: new Date(),
         requester: user.ref,
+        reason: new Text(),
         status: "pending",
       });
 

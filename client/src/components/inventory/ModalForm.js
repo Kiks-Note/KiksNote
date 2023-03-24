@@ -17,6 +17,8 @@ import {useState, useEffect} from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import {toast} from "react-hot-toast";
 import {w3cwebsocket} from "websocket";
+import Datetime from "react-datetime";
+import "react-datetime/css/react-datetime.css";
 
 export default function ModalForm({open, toggleDrawerAdd}) {
   const [categories, setCategories] = useState([]);
@@ -51,11 +53,11 @@ export default function ModalForm({open, toggleDrawerAdd}) {
         await toast.promise(
           axios.post("http://localhost:5050/addDevice", {
             label: label,
-            reference: price,
+            price: price,
             acquisitiondate: acquisitiondate,
-            campus: image,
+            image: image,
             status: storage,
-            image: condition,
+            condition: condition,
             description: description,
             status: status,
             campus: campus,
