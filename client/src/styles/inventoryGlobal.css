@@ -64,3 +64,16 @@
   background-color: #1a2027 !important;
   font-family: "poppins-regular" !important;
 }
+
+
+/*.MuiInputBase-root {
+  background-color: black !important;
+  font-family: "poppins-regular" !important;
+}*/
+
+.demo-simple-select-label {
+  background-color: black !important;
+  font-family: "poppins-regular" !important;
+}
+
+

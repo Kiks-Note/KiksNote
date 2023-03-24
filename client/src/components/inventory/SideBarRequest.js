@@ -165,7 +165,7 @@ export default function SideBarRequest({
           <Typography variant="h6" sx={{marginBottom: 2}}>
             Choisissez les dates
           </Typography>
-          <DateRange
+           <DateRange
             editableDateInputs={true}
             onChange={(item) => {
               setSelectedDates([item.selection]);
@@ -175,7 +175,6 @@ export default function SideBarRequest({
             locale={locales.fr}
             minDate={new Date()}
           />
-
           <Button
             variant="contained"
             sx={{marginBottom: 2}}

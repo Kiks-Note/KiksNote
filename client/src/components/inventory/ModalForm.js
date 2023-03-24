@@ -166,6 +166,7 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         value={acquisitiondate ? acquisitiondate : ""}
         onChange={(e) => setAcquisitiondate(e.target.value)}
         fullWidth
+
       />
 
 
