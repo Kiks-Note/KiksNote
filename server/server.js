@@ -26,6 +26,7 @@ const ws = new webSocketServer({
     httpServer: server,
     autoAcceptConnections: false,
 });
+require("./routes/groupscreation")(app, db);
 
 ws.on("request", (request) => {
     const connection = request.accept(null, request.origin);
