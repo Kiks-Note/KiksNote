@@ -150,7 +150,7 @@ function Dashboard() {
         <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
           Mon espace de travail
         </Typography>
-        <Button onClick={board}> board </Button>
+        {/* <Button onClick={board}> board </Button> */}
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <ToggleButtonGroup value={view} exclusive onChange={viewChange} sx={{ margin: 1 }}>
             <ToggleButton value="module" aria-label="module">
@@ -180,23 +180,25 @@ function Dashboard() {
           ))}
         </Grid>
       ) : (
-        <TableBoard rows={rows} addFavorite={favorisTell} deleteBoards={deleteBoards} />
+        rows.length > 0 && <TableBoard rows={rows} addFavorite={favorisTell} deleteBoards={deleteBoards} />
       )}
 
       {view === "module" ? (
-        <Box sx={{ flexGrow: 1, marginTop: 3, display: "flex", justifyContent: "center" }}>
-          <TablePagination
-            component="div"
-            rowsPerPageOptions={[5, 10, 25, { label: "Tout", value: -1 }]}
-            count={rows.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onPageChange={handleChangePage}
-            onRowsPerPageChange={handleChangeRowsPerPage}
-            labelRowsPerPage="Par page"
-            labelDisplayedRows={({ from, to, count }) => `${from} - ${to} sur ${count}`}
-          />
-        </Box>
+        rows.length > 0 && (
+          <Box sx={{ flexGrow: 1, marginTop: 3, display: "flex", justifyContent: "center" }}>
+            <TablePagination
+              component="div"
+              rowsPerPageOptions={[5, 10, 25, { label: "Tout", value: -1 }]}
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              onPageChange={handleChangePage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              labelRowsPerPage="Par page"
+              labelDisplayedRows={({ from, to, count }) => `${from} - ${to} sur ${count}`}
+            />
+          </Box>
+        )
       ) : (
         <></>
       )}

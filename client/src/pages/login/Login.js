@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import {
-  TextField,
-  Typography,
-  Container,
-  Box,
-  Button,
-  Link,
-  IconButton,
-  InputAdornment,
-} from "@mui/material";
+import { TextField, Typography, Container, Box, Button, Link, IconButton, InputAdornment } from "@mui/material";
 import MailIcon from "@mui/icons-material/Mail";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LockIcon from "@mui/icons-material/Lock";
@@ -26,9 +17,12 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setMessageError] = useState("");
-  const ip = process.env.REACT_APP_IP;
-
-  const auth = getAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [errorPassword, setErrorPassword] = useState(false);
+  const [messageEmail, setMessageEmail] = useState("");
+  const [messagePassword, setMessagePassword] = useState("");
+  const regex = /@edu\.esiee-it\.fr/;
 
   const navigate = useNavigate();
 
@@ -50,8 +44,6 @@ const Login = () => {
     event.preventDefault();
   };
 
-
-
   const login = async (email, password) => {
     await axios
       .post("http://localhost:5050/auth/login", {
@@ -59,75 +51,42 @@ const Login = () => {
         password,
       })
       .then((res) => {
-        console.log(res.data.userUid)
-        localStorage.setItem("userUid", res.data.userUid)
-        localStorage.setItem("user", JSON.stringify(res.data.user))
+        console.log(res.data.userUid);
+        localStorage.setItem("userUid", res.data.userUid);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
         accountAuthService.saveTokens(res.data.token, res.data.refreshToken);
         navigate("/");
       })
-      .catch(
-        (err) => setMessageError(err.response.data),
-        console.log(errorMessage)
-      );
-  }
+      .catch((err) => setMessageError(err.response.data), console.log(errorMessage));
+  };
 
   const verifInputErrors = (email, password) => {
     if (email === "") {
       setErrorEmail(true);
       setMessageEmail("Email requis");
-    }
-    else if (regex.test(email)) {
+    } else if (regex.test(email)) {
       setErrorEmail(false);
       setMessageEmail("");
-    }
-    else {
+    } else {
       setErrorEmail(true);
       setMessageEmail("L'email doit finir par @edu.esiee-it.fr");
     }
     if (password === "") {
       setErrorPassword(true);
       setMessagePassword("Password requis");
-    }
-    else if (password.length >= 6) {
+    } else if (password.length >= 6) {
       setErrorPassword(false);
       setMessagePassword("");
-    }
-    else {
+    } else {
       setErrorPassword(true);
       setMessagePassword("Le mot de passe est incorrect");
     }
-  }
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        userCredential.user.getIdToken().then(async (idToken) => {
-          console.log(userCredential.user);
-          await axios
-            .post(`http://${ip}:5050/auth/login`, {
-              idToken,
-            })
-            .then((res) => {
-              accountAuthService.saveTokens(
-                res.data.token,
-                userCredential.user.stsTokenManager.refreshToken
-              );
-              localStorage.setItem("user_uid", userCredential.user.uid);
-              navigate("/");
-            })
-            .catch(
-              (err) => setMessageError(err.response.data),
-              console.log(errorMessage)
-            );
-        });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-      });
+    login(email, password);
+    verifInputErrors(email, password);
   };
 
   return (
@@ -222,16 +181,8 @@ const Login = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton
-                          onClick={handleClickShowPassword}
-                          onMouseDown={handleMouseDownPassword}
-                          edge="end"
-                        >
-                          {showPassword ? (
-                            <VisibilityOff />
-                          ) : (
-                            <Visibility style={{ color: "#7a52e1" }} />
-                          )}
+                        <IconButton onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword} edge="end">
+                          {showPassword ? <VisibilityOff /> : <Visibility style={{ color: "#7a52e1" }} />}
                         </IconButton>
                       </InputAdornment>
                     ),
@@ -269,7 +220,7 @@ const Login = () => {
             </form>
 
             <p className="text-sm font-medium text-center m-3">
-              Pas encore de compte? Créez-en un{" "}
+              Pas encore de compte? CrÃ©ez-en un{" "}
               <Link
                 href="/signup"
                 sx={{
