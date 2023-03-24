@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -27,17 +27,26 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setMessageError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errorEmail, setErrorEmail] = useState(true);
+  const regex = /@edu\.esiee-it\.fr/;
 
   const navigate = useNavigate();
 
   const onChangeEmail = (e) => {
     e.preventDefault();
     setEmail(e.target.value);
+    if(regex.test(email)){
+      setErrorEmail(false);
+    }
+    else{
+      setErrorEmail(true);
+    }
   };
 
   const onChangePassword = (e) => {
     e.preventDefault();
     setPassword(e.target.value);
+    console.log(password);
   };
 
   const handleClickShowPassword = () => {
@@ -56,6 +65,7 @@ const Login = () => {
         password,
       })
       .then((res) => {
+        console.log(res.data.user)
         accountAuthService.saveTokens(res.data.token, res.data.refreshToken);
         navigate("/");
       })
@@ -123,15 +133,16 @@ const Login = () => {
                   id="input-email"
                   defaultValue={email}
                   onChange={onChangeEmail}
+                  error={errorEmail}
                 />
-                {errorMessage === "Incorrect email" && (
+                {/* {showError && (
                   <Typography
                     sx={{ fontWeight: "bold" }}
                     className="error-text-login"
                   >
                     L'email est incorrecte
                   </Typography>
-                )}
+                )} */}
               </Container>
               {/* password label and input */}
               <Container
@@ -176,22 +187,22 @@ const Login = () => {
                     ),
                   }}
                 />
-                {errorMessage === "Wrong password" && (
+                {/* {errorMessage === "Wrong password" && (
                   <Typography
                     sx={{ fontWeight: "bold" }}
                     className="error-text-login"
                   >
                     Le mot de passe est incorrect
                   </Typography>
-                )}
-                {errorMessage === "Email and password is required to login" && (
+                )} */}
+                {/* {showError && (
                   <Typography
                     sx={{ fontWeight: "bold" }}
                     className="error-text-login"
                   >
-                    Il manque l'email ou le mot de passe
+                    L'email ou le mot de passe est incorrect
                   </Typography>
-                )}
+                )} */}
               </Container>
               <Container
                 sx={{
