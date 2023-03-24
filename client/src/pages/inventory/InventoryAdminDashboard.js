@@ -21,6 +21,8 @@ import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import SideBarModify from "../../components/inventory/SideBarModify";
 import {toast, Toaster} from "react-hot-toast";
 import DeleteIcon from "@mui/icons-material/Delete";
+import CancelIcon from '@mui/icons-material/Cancel';
+import DoneIcon from '@mui/icons-material/Done';
 import axios from "axios";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
 
@@ -38,6 +40,7 @@ const InventoryAdminDashboard = () => {
   const [clickedDeviceId, setClickedDeviceId] = useState();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
 
   const toggleDrawerModify = (event, open) => {
     if (
@@ -57,9 +60,19 @@ const InventoryAdminDashboard = () => {
       ws.onmessage = (message) => {
         const data = JSON.parse(message.data);
         setDevices(data);
-      };
+      }; 
     })();
   }, []);
+
+  useEffect(() => {
+    (async () => {
+      await axios.get("http://localhost:5050/inventory/suggestions").then((res)=>
+      setSuggestions(res.data)
+      ).catch((err)=>console.log(err))
+      
+    })();
+  }, []);
+
 
   const handleDeleteClick = async () => {
     setIsMenuOpen(false);
@@ -79,6 +92,15 @@ const InventoryAdminDashboard = () => {
       }
     );
   };
+
+
+  const handleAccepteSuggestion = async () =>{
+    
+  }
+  
+  const handleRefuseSuggestion = async () =>{
+
+  }
 
   return (
     <>
@@ -574,18 +596,95 @@ const InventoryAdminDashboard = () => {
                   </IconButton>
                 </Tooltip>
               </Box>
-              <Typography
-                variant="h6"
-                sx={{color: "black", fontFamily: "poppins-semibold"}}
-              >
-                Total Devices Requestes
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{color: "black", fontFamily: "poppins-semibold"}}
-              >
-                {devices.length}
-              </Typography>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell
+                      sx={{color: "white", fontFamily: "poppins-semibold"}}
+                    >
+                      Appareil
+                    </TableCell>
+                    <TableCell
+                      sx={{color: "white", fontFamily: "poppins-semibold"}}
+                    >
+                      Description
+                    </TableCell>
+                    <TableCell
+                      sx={{color: "white", fontFamily: "poppins-semibold"}}
+                    >
+                      Lien
+                    </TableCell>
+                    <TableCell
+                      sx={{color: "white", fontFamily: "poppins-semibold"}}
+                    >
+                      Price
+                    </TableCell>
+                    <TableCell
+                      sx={{color: "white", fontFamily: "poppins-semibold"}}
+                    >
+                      Motivation
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {suggestions
+                    .map((suggestions) => (
+                      <TableRow key={suggestions.id}>
+                        <TableCell
+                          sx={{color: "white", fontFamily: "poppins-regular"}}
+                        >
+                          {suggestions.id}
+                        </TableCell>
+                        <TableCell
+                          sx={{color: "white", fontFamily: "poppins-regular"}}
+                        >
+                          {suggestions.description}
+                        </TableCell>
+                        <TableCell
+                          sx={{color: "white", fontFamily: "poppins-regular"}}
+                        >
+                          {suggestions.link}
+                        </TableCell>
+                        <TableCell
+                          sx={{color: "white", fontFamily: "poppins-regular"}}
+                        >
+                          {suggestions.statut === "available"
+                            ? "Disponible"
+                            : suggestions.statut === "borrowed"
+                            ? "Emprunté"
+                            : suggestions.statut === "inrepair"
+                            ? "En réparation"
+                            : suggestions.statut === "requested"
+                            ? "Demandé"
+                            : "Non connu"}
+                        </TableCell>
+                        <TableCell>
+                          <VisibilityIcon
+                            style={{color: "white", cursor: "pointer"}}
+                            onClick={() => {}}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <DoneIcon
+                            style={{color: "#57D53B", cursor: "pointer", mr: 10}}
+                            onClick={(e) => {
+                              setClickedDeviceId(suggestions.id);
+                              toggleDrawerModify(e, true);
+                            }}
+                          />
+                          <CancelIcon
+                            style={{color: "#de2828", cursor: "pointer"}}
+                            onClick={(e) => {
+                              setSnackBarOpen(true);
+                              setIsMenuOpen(false);
+                              setClickedDeviceId(suggestions.id);
+                            }}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
             </Item>
           </Grid>
         </Grid>

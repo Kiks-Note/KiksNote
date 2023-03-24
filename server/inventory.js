@@ -11,6 +11,18 @@ module.exports = (app, db, user, ws) => {
     }
   });
 
+  app.get("/inventory/suggestions", async (req, res) => {
+    const docRef = db.collection("devices_ideas").limit(3);
+    const snapshot = await docRef.get();
+    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    try {
+      res.status(200).send(documents);
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  });
+
   app.get("/inventory/:deviceId", async (req, res) => {
     const {deviceId} = req.params;
 
@@ -44,6 +56,27 @@ module.exports = (app, db, user, ws) => {
         image: image,
         createdAt: new Date(),
         createdBy: user.ref,
+      });
+
+      res.send("Document successfully written!");
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  });
+
+  app.post("/addSuggestion", async (req, res) => {
+    const {link, motivation, price, label, description} = req.body;
+
+    try {
+      await db.collection("devices_ideas").doc().set({
+        link: link,
+        motivation: motivation,
+        price: price,
+        label: label,
+        description: description,
+        createdAt: new Date(),
+        createdBy: user.ref,
+
       });
 
       res.send("Document successfully written!");
@@ -171,6 +204,51 @@ module.exports = (app, db, user, ws) => {
 
     res.status(200).send(documents);
   });
+
+  // Accepté
+  // 1 - recuperer l'id de la suggestion
+  // 2 - chercher dans la colletion la doc avec l'id 
+  // 3 - update la doc avec le nouveau status - try and catch
+  app.put("//inventory/suggestions/:deviceId", async (req, res) => {
+    const {deviceId} = req.params;
+    const {status} = req.body;
+
+    let updatedStatus = status;
+    if (status === "Disponible") {
+      updatedStatus = "available";
+    } else if (status === "Emprunté") {
+      updatedStatus = "borrowed";
+    } else if (status === "En réparation") {
+      updatedStatus = "inrepair";
+    } else if (status === "Indisponible") {
+      updatedStatus = "unavailable";
+    } else if (status === "Demandé") {
+      updatedStatus = "requested";
+    }
+
+    try {
+      await db.collection("inventory").doc(deviceId).update({
+        label: label,
+        ref: ref,
+        category: category,
+        campus: campus,
+        status: updatedStatus,
+        lastModifiedBy: lastModifiedBy,
+        lastModifiedAt: new Date(),
+      });
+
+      res.send("Document successfully updated!");
+    } catch (err) {
+      console.log(err);
+    }
+  });
+
+  // Refusé
+  // 1 - recuperer l'id de la suggestion
+  // 2 - chercher dans la colletion la doc avec l'id 
+  // 3 - update la doc avec le nouveau status - try and catch
+
+
 
   app.put("/inventory/acceptrequest/:deviceId/:requestId", async (req, res) => {
     const {deviceId, requestId} = req.params;

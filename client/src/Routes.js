@@ -1,5 +1,5 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Test from "./pages/Test";
+
 import PrivateRoutes from "./utils/PrivateRoutes";
 import InventoryHome from "./pages/inventory/InventoryHome";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
@@ -11,7 +11,7 @@ function RoutesProvider() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Test />} />
+
 
         <Route element={<PrivateRoutes />}>
           <Route path="/inventory" element={<InventoryHome />} />

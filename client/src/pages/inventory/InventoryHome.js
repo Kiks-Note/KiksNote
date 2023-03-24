@@ -17,6 +17,7 @@ import {useNavigate} from "react-router-dom";
 import SideBarModify from "../../components/inventory/SideBarModify";
 import Snackbar from "../../components/inventory/CustomSnackBar";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
+import SideBarSuggestion from "../../components/inventory/SideBarSuggestion";
 
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
@@ -31,6 +32,7 @@ function InventoryHome() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [openSuggestion, setOpenSuggestion] = useState(false);
   const user = userObj;
   const navigate = useNavigate();
 
@@ -74,6 +76,17 @@ function InventoryHome() {
       return;
     }
     setOpenModify(open);
+  };
+
+  const toggleDrawerSuggestion = (event, open) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setOpenSuggestion(open);
   };
 
   const handleEditClick = (e) => {
@@ -147,6 +160,11 @@ function InventoryHome() {
         toggleDrawerModify={toggleDrawerModify}
         deviceId={clickedDeviceId}
       />
+      <SideBarSuggestion
+      open={openSuggestion}
+      toggleDrawerSuggestion={toggleDrawerSuggestion}
+      deviceId={clickedDeviceId}
+      />
       <CustomSnackbar
         open={snackBarOpen}
         setOpen={setSnackBarOpen}
@@ -173,6 +191,21 @@ function InventoryHome() {
                 color="primary"
                 aria-label="add"
                 onClick={(e) => toggleDrawerAdd(e, true)}
+              >
+                <AddIcon />
+              </Fab>
+            </Tooltip>
+
+            <Tooltip
+              title="Ajouter une suggestion"
+              aria-label="add"
+              sx={{marginBottom: "20px"}}
+              placement="left"
+            >
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={(e) => toggleDrawerSuggestion(e, true)}
               >
                 <AddIcon />
               </Fab>
