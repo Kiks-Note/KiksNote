@@ -11,19 +11,20 @@ import Button from "@mui/material/Button";
 import SideBarModify from "../../components/blog/NewBlog.js";
 import { Toaster } from "react-hot-toast";
 
-function Blog() {
-  const [blog, setBlog] = useState([]);
-  const [blogId, setBlogId] = useState([]);
+function Tuto() {
+  const [tutos, setTutos] = useState([]);
+  const [tutosId, setTutosId] = useState([]);
   const [loading, setLoading] = useState(true);
   const [openModify, setOpenModify] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/blog");
-      ws.onmessage = (message) => {
+      const wsTutos = new w3cwebsocket("ws://localhost:5050/tuto");
+
+      wsTutos.onmessage = (message) => {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
-        setBlog(dataFromServer);
+        setTutos(dataFromServer);
         setLoading(false);
       };
     })();
@@ -60,7 +61,7 @@ function Blog() {
             >
               <Grid container item>
                 <Grid item xs={10}>
-                  <SearchBar title={blog} />
+                  <SearchBar title={tutos} />
                 </Grid>
                 <Grid item xs={2}>
                   <Button
@@ -84,8 +85,9 @@ function Blog() {
                 justifyContent="center"
                 alignItems="flex-start"
               >
+
                 {!loading
-                  ? blog.map((blog) => (
+                  ? tutos.map((blog) => (
                       <ImgMediaCard
                         image={blog.photo}
                         title={blog.title}
@@ -94,6 +96,7 @@ function Blog() {
                         id={blog.id}
                         like={blog.like}
                         dislike={blog.dislike}
+                        type="tuto"
                       />
                     ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}
@@ -106,4 +109,4 @@ function Blog() {
   );
 }
 
-export default Blog;
+export default Tuto;
