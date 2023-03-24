@@ -30,11 +30,7 @@ function CreateRetro() {
             retro:newRetro
         }).then((res) => {
             console.log(res.data)
-<<<<<<< Updated upstream
-            navigate("/retrospective/"+newRetro.name+"-"+newRetro.cours);
-=======
             // useNavigate().navigate("/");
->>>>>>> Stashed changes
         }).catch((err) => {
             console.log(err)
         })
