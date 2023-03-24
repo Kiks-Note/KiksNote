@@ -3,7 +3,12 @@ import { createSlice } from '@reduxjs/toolkit';
 //This is the redux store, this will help to store our impact mapping card
 const impactMappingSlice = createSlice({
     name: 'impactMapping',
-    initialState:[],
+    initialState:{
+        goal:[],
+        actors:[],
+        impacts:[],
+        deliverables:[]
+},
     reducers: {
         addImpactMapping: (state, action) => {
             state.push(action.payload);
