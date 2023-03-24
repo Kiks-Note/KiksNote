@@ -12,8 +12,7 @@ const { db, auth } = require("./firebase");
 const { signInWithEmailAndPassword } = require("./firebase_auth");
 const { parse } = require("url");
 
-dotenv.config({ path: "./.env.login" });
-dotenv.config({ path: "./.env" });
+const { signInWithEmailAndPassword, authClient } = require("./firebase_auth");
 
 app.use(express.json());
 app.use(cors());
