@@ -26,12 +26,9 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setMessageError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [errorEmail, setErrorEmail] = useState(false);
-  const [errorPassword, setErrorPassword] = useState(false);
-  const [messageEmail, setMessageEmail] = useState("");
-  const [messagePassword, setMessagePassword] = useState("");
-  const regex = /@edu\.esiee-it\.fr/;
+  const ip = process.env.REACT_APP_IP;
+
+  const auth = getAuth();
 
   const navigate = useNavigate();
 
@@ -101,8 +98,34 @@ const Login = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    login(email, password);
-    verifInputErrors(email, password);
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        userCredential.user.getIdToken().then(async (idToken) => {
+          console.log(userCredential.user);
+          await axios
+            .post(`http://${ip}:5050/auth/login`, {
+              idToken,
+            })
+            .then((res) => {
+              accountAuthService.saveTokens(
+                res.data.token,
+                userCredential.user.stsTokenManager.refreshToken
+              );
+              localStorage.setItem("user_uid", userCredential.user.uid);
+              navigate("/");
+            })
+            .catch(
+              (err) => setMessageError(err.response.data),
+              console.log(errorMessage)
+            );
+        });
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode);
+        console.log(errorMessage);
+      });
   };
 
   return (
