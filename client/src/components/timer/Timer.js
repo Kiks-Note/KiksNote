@@ -1,5 +1,4 @@
-import Countdown from "react-countdown";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 function Timer() {
   let minutes = 15;
