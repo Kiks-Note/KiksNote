@@ -16,19 +16,16 @@ function AppelProf() {
   const ip = process.env.REACT_APP_IP;
   const [users, setUsers] = useState([]);
   const [usersPresent, setUsersPresent] = useState([]);
-  const [Chats, setChats] = useState([]);
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
-  // const ws = new WebSocket(`ws://${ip}:5050`);
 
   useEffect(() => {
-    if (dataFetchedRef.current) {
-      return;
+    if (!dataFetchedRef.current) {
+      dataFetchedRef.current = true;
+      getCall();
+      getUsers();
     }
-    dataFetchedRef.current = true;
-    getCall();
-    getUsers();
   }, []);
 
   useEffect(() => {
@@ -49,7 +46,7 @@ function AppelProf() {
     axios.get("http://localhost:5050/calls").then((res) => {
       tempCall = res.data.at(-1);
       GenerateQrcode();
-      (async () => {
+      (() => {
         const wsComments = new w3cwebsocket(`ws://${ip}:5050/Call`);
 
         wsComments.onopen = function (e) {
@@ -59,7 +56,6 @@ function AppelProf() {
         };
         wsComments.onmessage = (message) => {
           const data = JSON.parse(message.data);
-          console.log(data);
           setCall(data);
         };
       })();
@@ -84,7 +80,6 @@ function AppelProf() {
         setQrcode(url);
         tempCall.qrcode = url;
         setCall(tempCall);
-        generated.current = true;
       }
     );
   };

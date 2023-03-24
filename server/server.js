@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv").config();
 const app = express();
-const WebSocket = require("ws");
 const webSocketServer = require("websocket").server;
 const http = require("http");
 const {db, auth} = require("./firebase");
@@ -39,34 +38,4 @@ ws.on("request", (request) => {
     require("./blog_back.js")(app, pathname, db, connection);
     require("./routes/call")(app, db, connection, pathname);
     require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
-});
-
-app.get("/users", (req, res) => {
-    db.collection("users")
-        .get()
-        .then((snapshot) => {
-            let item = {};
-            const data = [];
-            snapshot.forEach((doc) => {
-                item = doc.data();
-                item["id"] = doc.id;
-                data.push(item);
-            });
-            res.send(data);
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-});
-
-app.get("/user", (req, res) => {
-    db.collection("users")
-        .doc(req.query.id)
-        .get()
-        .then((data) => {
-            let item = {};
-            item = data.data();
-            item["id"] = data.id;
-            res.send(item);
-        });
 });
