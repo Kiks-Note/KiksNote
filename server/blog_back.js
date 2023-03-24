@@ -23,12 +23,12 @@ module.exports = (app, db, ws, parse) => {
   ws.on("request", (request) => {
     const connection = request.accept(null, request.origin);
     const { pathname } = parse(request.httpRequest.url);
-    console.log("request.httpServer => ", request);
+    /*console.log("request.httpServer => ", request);
     console.log("request.url => ", request.pathname);
     console.log("pathname => ", pathname);
     connection
       ? console.log("connection ok")
-      : console.log("connection failed");
+      : console.log("connection failed");*/
 
     if (pathname === "/blog") {
       console.log("je suis dans blog");
@@ -146,23 +146,30 @@ module.exports = (app, db, ws, parse) => {
       });
   });
 
-    //update tutorial likes and dislikes
-    app.put("/blog/:id/likes", async (req) => {
-        await db.collection('blog_tutos').doc(req.params.id).update({
-            'like': req.body.like,
-            'dislike': req.body.dislike
-        });
-    })
+  //update tutorial likes and dislikes
+  app.put("/blog/:id/likes", async (req) => {
+    await db.collection('blog_tutos').doc(req.params.id).update({
+      'like': req.body.like,
+      'dislike': req.body.dislike
+    });
+  })
 
-    //update tutorial visibility
-    app.put("/blog/:id/visibility", async (req) => {
-        await db.collection('blog_tutos').doc(req.params.id).update({
-            'visibility': req.body.visibility
-        });
-    })
+  //update tutorial visibility
+  app.put("/blog/:id/visibility", async (req) => {
+    if (req.body.limited != null || undefined) {
+      await db.collection('blog_tutos').doc(req.params.id).update({
+        'visible': req.body.visible,
+        'limited': req.body.limited
+      });
+    } else {
+      await db.collection('blog_tutos').doc(req.params.id).update({
+        'visible': req.body.visible        
+      });
+    }
+  })
 
-    app.post("/tutos/newtutos", async (req, res) => {
-        const { title, description, photo } = req.body;
+  app.post("/tutos/newtutos", async (req, res) => {
+    const { title, description, photo } = req.body;
 
     if (title == null || title == "") {
       return res.status(400).send("Title is required");
@@ -179,6 +186,11 @@ module.exports = (app, db, ws, parse) => {
         title: title,
         description: description,
         photo: photo,
+        date: new Date(),
+        like: 0,
+        dislike: 0,
+        visible: false,
+        limited: true
       });
       res.send("Document successfully written!");
     } catch (err) {

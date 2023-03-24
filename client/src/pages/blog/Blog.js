@@ -125,30 +125,19 @@ function Blog() {
 
                 {!loading
                   ? blog.map((blog) => (
-                      <ImgMediaCard
-                        image={blog.photo}
-                        title={blog.title}
-                        description={blog.description}
-                        key={blog.id}
-                        id={blog.id}
-                        like={blog.like}
-                        dislike={blog.dislike}
-                      />
-                    ))
+                    <ImgMediaCard
+                      image={blog.photo}
+                      title={blog.title}
+                      description={blog.description}
+                      key={blog.id}
+                      id={blog.id}
+                      like={blog.like}
+                      dislike={blog.dislike}
+                      visible={blog.visible}
+                      date={blog.date}
+                    />
+                  ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}
-
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<TutoSkeleton/>*/}
               </Grid>
             </Grid>
           </Grid>

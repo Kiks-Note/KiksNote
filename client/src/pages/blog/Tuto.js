@@ -17,6 +17,8 @@ function Tuto() {
   const [loading, setLoading] = useState(true);
   const [openModify, setOpenModify] = useState(false);
 
+  const tmpAdmin = true;
+
   useEffect(() => {
     (async () => {
       const wsTutos = new w3cwebsocket("ws://localhost:5050/tuto");
@@ -24,6 +26,21 @@ function Tuto() {
       wsTutos.onmessage = (message) => {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
+
+        dataFromServer.map(tuto => {
+          const date = new Date(tuto.date._seconds * 1000 + tuto.date._nanoseconds / 1000000)
+          const date1 = new Date()
+
+          if (tmpAdmin && tuto.limited && !tuto.visible && (date.getTime() - date1.setDate(date1.getDate() - 14) < 0)) {
+            //set visibility to true, then set limited to false
+
+            axios.put(`http://localhost:5050/blog/${tuto.id}/visibility`, {
+              'visible': true,
+              'limited': false
+            })
+          }
+        })
+
         setTutos(dataFromServer);
         setLoading(false);
       };
@@ -84,8 +101,8 @@ function Tuto() {
           <Grid
             item
             xs={10}
-            // justifyContent="center" alignItems="flex-start"
-            // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
+          // justifyContent="center" alignItems="flex-start"
+          // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
           >
             <Grid
               container
@@ -118,7 +135,7 @@ function Tuto() {
                 xs={10}
                 justifyContent="center"
                 alignItems="flex-start"
-                // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
+              // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
               >
                 {/*{tutosId.length > 0*/}
                 {/*  ? tutosId.map((blogId) => <ImgMediaCard id={blogId} />)*/}
@@ -126,31 +143,20 @@ function Tuto() {
 
                 {!loading
                   ? tutos.map((blog) => (
-                      <ImgMediaCard
-                        image={blog.photo}
-                        title={blog.title}
-                        description={blog.description}
-                        key={blog.id}
-                        id={blog.id}
-                        like={blog.like}
-                        dislike={blog.dislike}
-                        type="tuto"
-                      />
-                    ))
+                    <ImgMediaCard
+                      image={blog.photo}
+                      title={blog.title}
+                      description={blog.description}
+                      key={blog.id}
+                      id={blog.id}
+                      like={blog.like}
+                      dislike={blog.dislike}
+                      visible={blog.visible}
+                      limited={blog.limited}
+                      type="tuto"
+                    />
+                  ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}
-
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<TutoSkeleton/>*/}
               </Grid>
             </Grid>
           </Grid>

@@ -21,8 +21,9 @@ export default function ImgMediaCard({
   like,
   dislike,
   id,
-  type,
-  visibility
+  visible,
+  limited,
+  type
 }) {
   // console.log(id);
 
@@ -46,12 +47,9 @@ export default function ImgMediaCard({
   //   // getComments();
   // }, []);
 
+  const tmpAdmin = true;
   const [liked, setLiked] = useState(false);
   const [disliked, setDisliked] = useState(false);
-
-  const Item = styled(Paper)(({ theme }) => ({
-    padding: theme.spacing(1)
-  }));
 
   const handleLike = (e) => {
     like = (e.target.checked) ? like + 1 : like - 1
@@ -86,16 +84,16 @@ export default function ImgMediaCard({
   };
 
   const handleVisilibity = () => {
-    visibility = !visibility
+    visible = !visible
 
     axios.put(`http://localhost:5050/blog/${id}/visibility`, {
-      visibility
+      visible
     })
   }
 
   return (
     <>
-      {type === "tuto" ? (
+      {type === "tuto" && (visible && !tmpAdmin || tmpAdmin) ? (
         <Grid item xs={2} sm={4} md={5}>
           <Card sx={{ maxWidth: 380, m: 2 }}>
             <CardMedia
@@ -139,15 +137,17 @@ export default function ImgMediaCard({
                     label={dislike}
                   />
                 </Stack>
-                <Stack paddingLeft='10px'>
-                  <FormControlLabel control={
-                    <Checkbox
-                      onClick={handleVisilibity}
-                      checked={visibility}
-                    />}
-                    label='Visible pour tous'
-                  />
-                </Stack>
+                {tmpAdmin &&
+                  <Stack paddingLeft='10px'>
+                    <FormControlLabel control={
+                      <Checkbox
+                        onClick={handleVisilibity}
+                        checked={visible}
+                      />}
+                      label='Visible pour tous'
+                    />
+                  </Stack>
+                }
               </Stack>
             </CardActions>
           </Card>
