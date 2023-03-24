@@ -6,7 +6,8 @@ import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
-
+import Register from "./pages/register/Register";
+import Login from "./pages/login/Login";
 function RoutesProvider() {
   return (
     <BrowserRouter>
@@ -22,6 +23,8 @@ function RoutesProvider() {
           <Route path="/groups" element={<Navbar element={<Groups />} />} />
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Register />} />
         </Route>
       </Routes>
     </BrowserRouter>
