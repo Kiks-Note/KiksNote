@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import "./Callteacher.scss";
 import Timer from "../timer/Timer";
+import { w3cwebsocket } from "websocket";
 
 function AppelProf() {
   const [qrcode, setQrcode] = useState("");
@@ -19,38 +20,27 @@ function AppelProf() {
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
-  const ws = new WebSocket(`ws://${ip}:5050`);
+  // const ws = new WebSocket(`ws://${ip}:5050`);
 
   useEffect(() => {
     if (dataFetchedRef.current) {
       return;
     }
     dataFetchedRef.current = true;
-    // addCall();
     getCall();
     getUsers();
-    ws.onmessage = (event) => {
-      if (typeof event.data == "string") {
-        setCall(JSON.parse(event.data));
-        console.log(JSON.parse(event.data));
-      }
-    };
   }, []);
 
   useEffect(() => {
     if (generated.current) {
       setUsersPresent(call.student_scan);
       const usersCopy = [...users];
-      console.log(usersCopy);
-
       const filteredUsers = usersCopy.filter(
         (element1) =>
           !call.student_scan.some(
             (element2) => element2["firstname"] === element1["firstname"]
           )
       );
-
-      console.log(filteredUsers);
       setUsers(filteredUsers);
     }
   }, [call]);
@@ -59,13 +49,26 @@ function AppelProf() {
     axios.get("http://localhost:5050/calls").then((res) => {
       tempCall = res.data.at(-1);
       GenerateQrcode();
+      (async () => {
+        const wsComments = new w3cwebsocket(`ws://${ip}:5050/Call`);
+
+        wsComments.onopen = function (e) {
+          console.log("[open] Connection established");
+          console.log("Sending to server");
+          wsComments.send(JSON.stringify({ CallId: tempCall.id }));
+        };
+        wsComments.onmessage = (message) => {
+          const data = JSON.parse(message.data);
+          console.log(data);
+          setCall(data);
+        };
+      })();
     });
   };
 
   const getUsers = () => {
     axios.get("http://localhost:5050/users").then((res) => {
       setUsers(res.data);
-      console.log(res.data);
     });
   };
 
@@ -123,7 +126,6 @@ function AppelProf() {
           <h1>Chat</h1>
           <div className="Chat">
             {call.chats.map((chat) => {
-
               return (
                 <div className="ChatContent">
                   <div className="ChatContentHeader">

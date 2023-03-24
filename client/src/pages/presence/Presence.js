@@ -7,7 +7,7 @@ function Presence() {
   const { id } = useParams();
   const ip = process.env.REACT_APP_IP;
   const dataFetchedRef = useRef(false);
-  const ws = new WebSocket(`ws://${ip}:5050`);
+  // const ws = new WebSocket(`ws://${ip}:5050`);
   const tempCall = useRef();
   const userID = localStorage.getItem("user_uid");
   const navigate = useNavigate();
@@ -17,11 +17,6 @@ function Presence() {
       return;
     }
     dataFetchedRef.current = true;
-    ws.onmessage = (event) => {
-      if (typeof event.data == "string") {
-        tempCall.current = JSON.parse(event.data);
-      }
-    };
     getCall();
   });
 
@@ -34,7 +29,6 @@ function Presence() {
       .then((res) => {
         console.log(res);
       });
-    ws.send(JSON.stringify(tempCall.current));
     navigate("/appel");
   };
 
@@ -49,6 +43,7 @@ function Presence() {
       });
   };
   const getUsers = () => {
+    console.log(userID);
     axios
       .get(`http://${ip}:5050/user`, { params: { id: userID } })
       .then((res) => {

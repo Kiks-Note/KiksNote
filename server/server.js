@@ -6,6 +6,7 @@ const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const app = express();
 const WebSocket = require("ws");
+const webSocketServer = require("websocket").server;
 const http = require("http");
 const { db, auth } = require("./firebase");
 const { signInWithEmailAndPassword } = require("./firebase_auth");
@@ -22,9 +23,13 @@ app.use(bodyParser.json());
 const PORT = process.env.PORT || 5050;
 
 const server = http.createServer(app);
+const ws = new webSocketServer({
+  httpServer: server,
+  autoAcceptConnections: false,
+});
 
-const wss = new WebSocket.Server({ server });
-require("./routes/call")(app, wss, db, parse);
+// const wss = new WebSocket.Server({ server });
+require("./routes/call")(app, ws, db, parse);
 require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
 
 app.get("/users", (req, res) => {
