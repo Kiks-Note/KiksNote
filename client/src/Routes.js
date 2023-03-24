@@ -1,11 +1,13 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Test from "./pages/Test";
 import PrivateRoutes from "./utils/PrivateRoutes";
+
+
 import Navbar from "./components/navbar/Navbar";
 import Profile from "./pages/profile/Profile";
-
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
+import Agile from "./pages/agile/Agile";
 
 function RoutesProvider() {
     return (
@@ -30,6 +32,7 @@ function RoutesProvider() {
                     <Route path="/" element={<Home/>}/>
                     <Route path="/blog" element={<Blog/>}/>
                     <Route path="/profile" element={<Profile/>}/>
+                    <Route path="/agile" element={<Agile/>}/>
                 </Route>
             </Routes>
         </BrowserRouter>
