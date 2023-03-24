@@ -1,4 +1,5 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
 import Blog from "./pages/blog/Blog";
@@ -8,6 +9,8 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
+import Tuto from "./pages/blog/Tuto";
+
 function RoutesProvider() {
   return (
     <BrowserRouter>
@@ -25,6 +28,7 @@ function RoutesProvider() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
+          <Route path="/tuto" element={<Tuto />} />
         </Route>
       </Routes>
     </BrowserRouter>
