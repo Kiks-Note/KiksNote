@@ -26,7 +26,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setMessageError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
+  const ip = process.env.REACT_APP_IP;
 
   const navigate = useNavigate();
 
@@ -50,10 +50,27 @@ const Login = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    await axios
-      .post("http://localhost:5050/auth/login", {
-        email,
-        password,
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        userCredential.user.getIdToken().then(async (idToken) => {
+          console.log(userCredential.user);
+          await axios
+            .post(`http://${ip}:5050/auth/login`, {
+              idToken,
+            })
+            .then((res) => {
+              accountAuthService.saveTokens(
+                res.data.token,
+                userCredential.user.stsTokenManager.refreshToken
+              );
+              localStorage.setItem("user_uid", userCredential.user.uid);
+              navigate("/");
+            })
+            .catch(
+              (err) => setMessageError(err.response.data),
+              console.log(errorMessage)
+            );
+        });
       })
       .then((res) => {
         accountAuthService.saveTokens(res.data.token, res.data.refreshToken);

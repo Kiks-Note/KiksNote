@@ -1,25 +1,29 @@
 import AppelProf from "../../components/callteacher/Callteacher";
 import AppelEleve from "../../components/callstudent/Callstudent";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import axios from "axios";
 
 function Appel() {
-  const admin = false;
-  // Préparer une constante `ip` avec des données vides par défaut
-  const [ip, setIp] = useState();
-
-  const getIp = async () => {
-    // Connecter ipapi.co avec fetch()
-    const response = await fetch("https://ipapi.co/json/");
-    const data = await response.json();
-    // Définir l'adresse IP avec la constante `ip`.
-    setIp(data.ip);
-  };
-
-  // Exécutez la fonction `getIP` ci-dessus une seule fois lorsque la page est rendue.
+  const userID = localStorage.getItem("user_uid");
+  const ip = process.env.REACT_APP_IP;
+  const user = useRef();
+  const [admin, setAdmin] = useState(false);
+  let generated = false;
   useEffect(() => {
-    getIp();
+    if (!generated) {
+      getUsers();
+      generated = true;
+    }
   }, []);
 
+  const getUsers = () => {
+    axios
+      .get(`http://${ip}:5050/user`, { params: { id: userID } })
+      .then((res) => {
+        user.current = res.data;
+        user.current.status == "po" ? setAdmin(true) : setAdmin(false);
+      });
+  };
   return (
     <div>
       {admin ? <AppelProf ip={ip}></AppelProf> : <AppelEleve></AppelEleve>}

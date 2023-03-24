@@ -2,9 +2,9 @@ import QRCode from "qrcode";
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import "./Callteacher.scss";
+import Timer from "../timer/Timer";
 
 function AppelProf() {
-  // const [url, setUrl] = useState("");
   const [qrcode, setQrcode] = useState("");
   const [call, setCall] = useState({
     id_lesson: "",
@@ -12,12 +12,14 @@ function AppelProf() {
     student_scan: [],
     chats: [],
   });
+  const ip = process.env.REACT_APP_IP;
   const [users, setUsers] = useState([]);
+  const [usersPresent, setUsersPresent] = useState([]);
   const [Chats, setChats] = useState([]);
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
-  const ws = new WebSocket(`ws://10.57.29.236:5050`);
+  const ws = new WebSocket(`ws://${ip}:5050`);
 
   useEffect(() => {
     if (dataFetchedRef.current) {
@@ -28,28 +30,30 @@ function AppelProf() {
     getCall();
     getUsers();
     ws.onmessage = (event) => {
-      setCall(JSON.parse(event.data));
-      console.log(JSON.parse(event.data));
+      if (typeof event.data == "string") {
+        setCall(JSON.parse(event.data));
+        console.log(JSON.parse(event.data));
+      }
     };
   }, []);
 
   useEffect(() => {
-    if (generated.current);
-  }, [call]);
+    if (generated.current) {
+      setUsersPresent(call.student_scan);
+      const usersCopy = [...users];
+      console.log(usersCopy);
 
-  const addCall = async () => {
-    const res = await axios
-      .post("http://localhost:5050/callAdd", {
-        id_lesson: "",
-        qrcode: "",
-        student_scan: [],
-        chats: [],
-      })
-      .then((res) => {
-        console.log(res);
-        getCall();
-      });
-  };
+      const filteredUsers = usersCopy.filter(
+        (element1) =>
+          !call.student_scan.some(
+            (element2) => element2["firstname"] === element1["firstname"]
+          )
+      );
+
+      console.log(filteredUsers);
+      setUsers(filteredUsers);
+    }
+  }, [call]);
 
   const getCall = () => {
     axios.get("http://localhost:5050/calls").then((res) => {
@@ -67,7 +71,7 @@ function AppelProf() {
 
   const GenerateQrcode = () => {
     QRCode.toDataURL(
-      `http://10.57.29.236:3000/Presence/${tempCall.id}`,
+      `http://${ip}:3000/Presence/${tempCall.id}`,
       {
         width: 800,
         margin: 2,
@@ -94,7 +98,7 @@ function AppelProf() {
   return (
     <div className="ContentProf">
       <div className="Timer">
-        <h1>15:00</h1>
+        <Timer />
       </div>
       <div className="ContentInfo">
         <div className="DivQr">
@@ -114,9 +118,9 @@ function AppelProf() {
           </div>
           <div>
             <div className="ListUser">
-              {users.map((user) => {
+              {usersPresent.map((user) => {
                 return (
-                  <span key={user.id} className="UserItem">
+                  <span key={user.id} className="UserItemPresent">
                     {user.firstname}
                   </span>
                 );
@@ -127,7 +131,8 @@ function AppelProf() {
         <div className="DivChat">
           <h1>Chat</h1>
           <div className="Chat">
-            {Chats.map((chat) => {
+            {call.chats.map((chat) => {
+
               return (
                 <div className="ChatContent">
                   <div className="ChatContentHeader">

@@ -5,9 +5,10 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const dotenv = require('dotenv').config();
 const app = express();
-const { db , auth } = require("./firebase");
 const WebSocket = require("ws");
 const http = require("http");
+const { db, auth } = require("./firebase");
+const { parse } = require("url");
 
 const { signInWithEmailAndPassword, authClient } = require("./firebase_auth");
 
@@ -17,44 +18,23 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 5050;
+
 const server = http.createServer(app);
 
 const wss = new WebSocket.Server({ server });
-require("./routes/call")(app, wss, db);
-require("./routes/auth")(app, db, jwt, auth, authClient, signInWithEmailAndPassword);
+require("./routes/call")(app, wss, db, parse);
+require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
 
-let currentData;
-
-const broadcastData = (data) => {
-  wss.clients.forEach((client) => {
-    if (client.readyState === WebSocket.OPEN) {
-      client.send(data);
-    }
-  });
-};
-// Handle incoming connections from clients
-wss.on("connection", (ws, req) => {
-  // Send the current data to the new client
-  ws.send(currentData);
-  ws.onmessage = (event) => {
-    currentData = event.data;
-    broadcastData(event.data);
-  };
-});
-
-// app.post("/addUser", (req, res) => {
-//   const data = req.body;
-//   db.collection("users").add(data);
-//   res.send({ message: "User created successfully" });
-// });
-//
 app.get("/users", (req, res) => {
   db.collection("users")
     .get()
     .then((snapshot) => {
+      let item = {};
       const data = [];
       snapshot.forEach((doc) => {
-        data.push(doc.data());
+        item = doc.data();
+        item["id"] = doc.id;
+        data.push(item);
       });
       res.send(data);
     })
@@ -63,7 +43,18 @@ app.get("/users", (req, res) => {
     });
 });
 
+app.get("/user", (req, res) => {
+  db.collection("users")
+    .doc(req.query.id)
+    .get()
+    .then((data) => {
+      let item = {};
+      item = data.data();
+      item["id"] = data.id;
+      res.send(item);
+    });
+});
+
 server.listen(PORT, () => {
-  // const adress = server.address();
   console.log(`Listening on port ${PORT}`);
 });
