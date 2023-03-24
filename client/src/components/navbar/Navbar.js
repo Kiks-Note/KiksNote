@@ -21,28 +21,15 @@ import PropTypes from "prop-types";
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
 import userObj from "../../userObj";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import {useTheme} from "@mui/material/styles";
+import {ColorModeContext} from "../../utils/Theme";
+import {accountAuthService} from "../../services/accountAuth";
+
 const drawerWidth = 275;
 const admin = true;
 
-import Person2Icon from "@mui/icons-material/Person2";
-import PropTypes from "prop-types";
-import HomeIcon from "@mui/icons-material/Home";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
-import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import BallotIcon from "@mui/icons-material/Ballot";
-
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import {ColorModeContext} from "../../utils/Theme";
-import {useTheme} from "@mui/material/styles";
-import Container from "@mui/material/Container";
-/// Drawer width where is open
-
-import {accountAuthService} from "../../services/accountAuth";
-import {useNavigate} from "react-router-dom";
-
-const drawerWidth = 240;
 /// Drawer open style
 const openedMixin = (theme) => ({
   width: drawerWidth,

@@ -95,17 +95,12 @@ export default function ModalForm({open, toggleDrawerAdd}) {
   useEffect(() => {
     open === true &&
       (async () => {
-        const ws = new w3cwebsocket("ws://localhost:5050/categories");
-
-        // ws.onopen = () => {
-        //   console.log("connected");
-        // };
-
-        ws.onmessage = (e) => {
-          const data = JSON.parse(e.data);
-          setCategories(data);
-          setLoading(false);
-        };
+        await axios
+          .get("http://localhost:5050/categoriesInventory")
+          .then((res) => {
+            setCategories(res.data);
+            setLoading(false);
+          });
       })();
   }, [open === true]);
 

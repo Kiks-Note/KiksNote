@@ -1,14 +1,23 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import {useNavigate} from "react-router-dom";
 
-import { TextField, Typography, Container, Box, Button, Link, IconButton, InputAdornment } from "@mui/material";
+import {
+  TextField,
+  Typography,
+  Container,
+  Box,
+  Button,
+  Link,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
 import MailIcon from "@mui/icons-material/Mail";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 import LockIcon from "@mui/icons-material/Lock";
 
 import axios from "axios";
 
-import { accountAuthService } from "../../services/accountAuth";
+import {accountAuthService} from "../../services/accountAuth";
 
 import "./Login.scss";
 import imgLogin from "./../../assets/img/login_img.svg";
@@ -57,7 +66,10 @@ const Login = () => {
         accountAuthService.saveTokens(res.data.token, res.data.refreshToken);
         navigate("/");
       })
-      .catch((err) => setMessageError(err.response.data), console.log(errorMessage));
+      .catch(
+        (err) => setMessageError(err.response.data),
+        console.log(errorMessage)
+      );
   };
 
   const verifInputErrors = (email, password) => {
@@ -181,8 +193,16 @@ const Login = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton onClick={handleClickShowPassword} onMouseDown={handleMouseDownPassword} edge="end">
-                          {showPassword ? <VisibilityOff /> : <Visibility style={{ color: "#7a52e1" }} />}
+                        <IconButton
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? (
+                            <VisibilityOff />
+                          ) : (
+                            <Visibility style={{color: "#7a52e1"}} />
+                          )}
                         </IconButton>
                       </InputAdornment>
                     ),
@@ -220,7 +240,7 @@ const Login = () => {
             </form>
 
             <p className="text-sm font-medium text-center m-3">
-              Pas encore de compte? CrÃ©ez-en un{" "}
+              Pas encore de compte? Creez-en un{" "}
               <Link
                 href="/signup"
                 sx={{

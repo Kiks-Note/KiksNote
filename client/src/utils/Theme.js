@@ -1,7 +1,7 @@
 import * as React from "react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import {ThemeProvider, createTheme} from "@mui/material/styles";
 import App from "../App";
-import { frFR } from "@mui/material/locale";
+import {frFR} from "@mui/material/locale";
 import useMediaQuery from "@mui/material/useMediaQuery";
 
 export const ColorModeContext = React.createContext();
@@ -19,7 +19,7 @@ export default function ToggleColorMode() {
     }),
     []
   );
-  // ? TO ADD COLOR AND USE 
+  // ? TO ADD COLOR AND USE
   // THIS THE PALETTE OF THE APP IF YOU CHANGE WANT TO ADD COLOR SPECIFIC ADD A ITEM IN CUSTOM
   // EXEMPLE WITH iconDrawer TO USE ON THE CODE  -->    style={{ color: theme.palette.custom.iconDrawer }}
 
@@ -32,7 +32,7 @@ export default function ToggleColorMode() {
                 text: {
                   primary: "#fff",
                   secondary: "#9e9e9e",
-                  default:"#000",
+                  default: "#000",
                 },
                 background: {
                   default: "#212121",
@@ -59,7 +59,7 @@ export default function ToggleColorMode() {
                 text: {
                   primary: "#000",
                   secondary: "#424242",
-                  default:"#000",
+                  default: "#000",
                 },
                 background: {
                   default: "#fafafa",

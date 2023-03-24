@@ -22,7 +22,7 @@ function RoutesProvider() {
     <BrowserRouter>
       <Routes>
         {/* EXAMPLES */}
-        <Route path="/login" element={<Login></Login>}></Route>
+        <Route path="/login" element={<Login />}></Route>
         <Route path="/signup" element={<Register />} />
 
         <Route element={<PrivateRoutes />}>

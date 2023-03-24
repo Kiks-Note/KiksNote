@@ -29,6 +29,8 @@ const ws = new webSocketServer({
   autoAcceptConnections: false,
 });
 require("./routes/groupscreation")(app, db);
+require("./routes/call")(app, ws, db, parse);
+require("./routes/auth")(app, db, auth, authClient, signInWithEmailAndPassword);
 
 ws.on("request", (request) => {
   const connection = request.accept(null, request.origin);
@@ -40,8 +42,14 @@ ws.on("request", (request) => {
 
   require("./blog_back.js")(app, pathname, db, connection);
   require("./routes/call")(app, db, connection, pathname);
-  require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
-  require("./dashboard")(app, db, ws, parse);
+  // require("./routes/auth")(
+  //   app,
+  //   db,
+  //   auth,
+  //   authClient,
+  //   signInWithEmailAndPassword
+  // );
+  require("./dashboard")(app, db, ws, parse, connection, pathname);
   require("./inventory")(app, db, pathname, connection, fs);
 });
 
@@ -93,5 +101,3 @@ app.post("/register", (req, res) => {
 });
 
 // const wss = new WebSocket.Server({ server });
-require("./routes/call")(app, ws, db, parse);
-require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);

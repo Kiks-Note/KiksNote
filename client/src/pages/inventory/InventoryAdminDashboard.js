@@ -107,12 +107,14 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
   useEffect(() => {
     open &&
       (async () => {
-        const ws = new w3cwebsocket("ws://localhost:5050/categories");
+        const ws = new w3cwebsocket("ws://localhost:5050/categoriesInventory");
 
-        ws.onmessage = (e) => {
-          const data = JSON.parse(e.data);
-          setCategories(data);
-          setLoading(false);
+        ws.onopen = () => {
+          ws.onmessage = (e) => {
+            const data = JSON.parse(e.data);
+            setCategories(data);
+            setLoading(false);
+          };
         };
       })();
   }, [open]);

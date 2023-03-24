@@ -44,7 +44,7 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
   useEffect(() => {
     open === true &&
       (async () => {
-        const ws = new w3cwebsocket("ws://localhost:5050/categories");
+        const ws = new w3cwebsocket("ws://localhost:5050/categoriesInventory");
 
         ws.onmessage = (e) => {
           const data = JSON.parse(e.data);

@@ -1,4 +1,4 @@
-module.exports = (app, db, pathname, connection, user, fs) => {
+module.exports = (app, db, pathname, connection, fs) => {
   app.get("/inventory", async (req, res) => {
     const docRef = db.collection("inventory");
     const snapshot = await docRef.orderBy("createdAt").get();
@@ -20,15 +20,9 @@ module.exports = (app, db, pathname, connection, user, fs) => {
     res.status(200).send(doc.data());
   });
 
-  app.get("/categories", async (req, res) => {
-    const snapshot = await db.collection("inventoryCategories").get();
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
-
-    try {
-      res.status(200).send(documents);
-    } catch (err) {
-      res.status(500).send(err);
-    }
+  app.get("/categoriesInventory", async (req, res) => {
+    const data = require("./categories.json");
+    connection.sendUTF(JSON.stringify(data));
   });
 
   app.post("/addDevice", async (req, res) => {
@@ -61,7 +55,7 @@ module.exports = (app, db, pathname, connection, user, fs) => {
           createdAt: new Date(),
           category: category,
           reference: reference,
-          createdBy: user.ref,
+          createdBy: "user.ref",
           status: "available",
         });
 
@@ -185,7 +179,7 @@ module.exports = (app, db, pathname, connection, user, fs) => {
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         createdAt: new Date(),
-        requester: user.ref,
+        requester: "user.ref",
         reason: new Text(),
         status: "pending",
       });
@@ -460,7 +454,7 @@ module.exports = (app, db, pathname, connection, user, fs) => {
         }
       );
   }
-  if (pathname === "/categories") {
+  if (pathname === "/categoriesInventory") {
     const data = require("./categories.json");
     connection.sendUTF(JSON.stringify(data));
   }
