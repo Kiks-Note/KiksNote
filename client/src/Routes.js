@@ -1,8 +1,9 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import CreateRetro from "./pages/createretro/CreateRetro.js";
+// import Register from "./pages/register/Register.js";
+// import Confirm from "./pages/confirm/Confirm.js";
 import Retrospective from "./pages/retrospective/Retrospective.js";
-
 import Home from "./pages/home/Home.js";
 import Blog from "./pages/blog/Blog";
 

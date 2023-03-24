@@ -1,8 +1,19 @@
-function Confirm() {
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
-    const setConfirm = () => {
+const Confirm = () => {
+    const [users, setUsers] = useState([]);
+    useEffect(() => {
+        axios.get("http://localhost:5050/users")
+        .then((res) => {
+            // ...
+        });
+    }, []);
+
+    function setConfirm()
+    {
         console.log("test");
-    };
+    }
 
     return (
         <div>
