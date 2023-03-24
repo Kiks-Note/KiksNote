@@ -32,7 +32,6 @@ function Retrospective() {
     function AddPostIt()
     {
         let postitContent = document.querySelector('#postitContent').value;
-        console.log(postitContent);
         for (let i = 0; i < data.length; i++) {
             if (data[i].name === selectedRetro) {
                 var dataClone = [...data]
@@ -61,7 +60,6 @@ function Retrospective() {
     function postitFillerSwitchDisplay(show)
     {
         let postitFiller = document.querySelector('#PostItFiller');
-        console.log(show);
         if(show)
             postitFiller.style.display = "flex";
         else
