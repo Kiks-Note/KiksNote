@@ -1,12 +1,17 @@
 module.exports = (app, db, ws, parse) => {
   app.put("/dashboard/:dashboardId/:favorite", async (req, res) => {
-    await db.collection("dashboard").doc(req.params.dashboardId).update({ favorite: req.params.favorite });
+    await db
+      .collection("dashboard")
+      .doc(req.params.dashboardId)
+      .update({ favorite: req.params.favorite });
   });
 
   ws.on("request", (request) => {
     const connection = request.accept(null, request.origin);
     const { pathname } = parse(request.httpRequest.url);
-    connection ? console.log("connection ok") : console.log("connection failed");
+    connection
+      ? console.log("connection ok")
+      : console.log("connection failed");
 
     if (pathname === "/dashboard") {
       console.log("je suis dans /dashboard");
@@ -47,7 +52,13 @@ module.exports = (app, db, ws, parse) => {
             (snapshot) => {
               const data = snapshot.data();
               connection.sendUTF(
-                JSON.stringify([data.requested, data.acceptance, data.toDo, data.inProgress, data.done])
+                JSON.stringify([
+                  data.requested,
+                  data.acceptance,
+                  data.toDo,
+                  data.inProgress,
+                  data.done,
+                ])
               );
             },
             (err) => {
@@ -58,15 +69,24 @@ module.exports = (app, db, ws, parse) => {
     }
   });
 
-  app.put("/dashboard/:dashboardId/board/:boardId/setCards", async (req, res) => {
-    var data = req.body;
-    await db
-      .collection("dashboard")
-      .doc(req.params.dashboardId)
-      .collection("board")
-      .doc(req.params.boardId)
-      .update({ requested: data[0], acceptance: data[1], toDo: data[2], inProgress: data[3], done: data[4] });
-  });
+  app.put(
+    "/dashboard/:dashboardId/board/:boardId/setCards",
+    async (req, res) => {
+      var data = req.body;
+      await db
+        .collection("dashboard")
+        .doc(req.params.dashboardId)
+        .collection("board")
+        .doc(req.params.boardId)
+        .update({
+          requested: data[0],
+          acceptance: data[1],
+          toDo: data[2],
+          inProgress: data[3],
+          done: data[4],
+        });
+    }
+  );
 
   app.post("/board/:dashboardId", async (req, res) => {
     await db
@@ -152,7 +172,11 @@ module.exports = (app, db, ws, parse) => {
                   name: "Jane Smith",
                   photo: "https://picsum.photos/500/300?random=67",
                 },
-                { id: "3", name: "Bob Johnson", photo: "https://picsum.photos/500/300?random=89" },
+                {
+                  id: "3",
+                  name: "Bob Johnson",
+                  photo: "https://picsum.photos/500/300?random=89",
+                },
               ],
               labels: ["Urgent", "Fix", "Feature"],
             },
@@ -210,131 +234,122 @@ module.exports = (app, db, ws, parse) => {
       });
   });
 
-  app.put("/dashboard/:dashboardId/board/:boardId/column/:columnId/addCard", async (req, res) => {
-    const data = req.body;
-    await db
-      .collection("dashboard")
-      .doc(req.params.dashboardId)
-      .collection("board")
-      .doc(req.params.boardId)
-      .onSnapshot((snapshot) => {
-        var column = [];
-        var columnId = req.params.columnId;
-        var higherId = 0;
-        for (var col in snapshot.data()) {
-          for (var items of snapshot.data()[col].items) {
-            if (higherId < items.id) {
-              higherId = items.id;
-            }
-          }
-        }
-        if (columnId == 0) {
-          snapshot.data().requested.items.push({
-            id: higherId + 1,
-            name: data.title,
-            desc: "",
-            assignedTo: [],
-            labels: [],
-          });
-        }
-        if (columnId == 1) {
-          snapshot.data().acceptance.items.push({
-            id: higherId + 1,
-            name: data.title,
-            desc: "",
-            assignedTo: [],
-            labels: [],
-          });
-        }
-        if (columnId == 2) {
-          snapshot.data().toDo.items.push({
-            id: higherId + 1,
-            name: data.title,
-            desc: "",
-            assignedTo: [],
-            labels: [],
-          });
-        }
-        if (columnId == 3) {
-          snapshot.data().inProgress.items.push({
-            id: higherId + 1,
-            name: data.title,
-            desc: "",
-            assignedTo: [],
-            labels: [],
-          });
-        }
-        if (columnId == 4) {
-          snapshot.data().done.items.push({
-            id: higherId + 1,
-            name: data.title,
-            desc: "",
-            assignedTo: [],
-            labels: [],
-          });
+  app.put(
+    "/dashboard/:dashboardId/board/:boardId/column/:columnId/addCard",
+    async (req, res) => {
+      try {
+        const data = req.body;
+        const dashboardRef = db
+          .collection("dashboard")
+          .doc(req.params.dashboardId);
+        const boardRef = dashboardRef
+          .collection("board")
+          .doc(req.params.boardId);
+        const snapshot = await boardRef.get();
+        const columns = snapshot.data();
+
+        let column;
+        let columnName;
+        switch (req.params.columnId) {
+          case "0":
+            column = columns.requested;
+            columnName = "requested";
+            break;
+          case "1":
+            column = columns.acceptance;
+            columnName = "acceptance";
+            break;
+          case "2":
+            column = columns.toDo;
+            columnName = "toDo";
+            break;
+          case "3":
+            column = columns.inProgress;
+            columnName = "inProgress";
+            break;
+          case "4":
+            column = columns.done;
+            columnName = "done";
+            break;
+          default:
+            res.status(400).send({ message: "Invalid column id" });
+            return;
         }
 
-        var columns = snapshot.data();
-        db.collection("dashboard").doc(req.params.dashboardId).collection("board").doc(req.params.boardId).update({
-          requested: columns.requested,
-          acceptance: columns.acceptance,
-          toDo: columns.toDo,
-          inProgress: columns.inProgress,
-          done: columns.done,
-        });
-      });
-    res.send({ message: "card created succesfully" });
-  });
+        const cards = column.items || [];
+        const highestId = Math.max(...cards.map((card) => card.id), 0);
+        const newCard = {
+          id: highestId + 1,
+          name: data.title,
+          desc: "",
+          assignedTo: [],
+          labels: [],
+        };
+        column.items = [...cards, newCard];
 
-  app.put("/dashboard/:dashboardId/board/:boardId/column/:columnId/editCard", async (req, res) => {
-    const data = req.body;
-    const columnId = req.params.columnId;
-    console.log("columnId:", columnId);
-    try {
-      const boardRef = db
-        .collection("dashboard")
-        .doc(req.params.dashboardId)
-        .collection("board")
-        .doc(req.params.boardId);
-      const boardSnapshot = await boardRef.get();
-
-      const columns = boardSnapshot.data();
-
-      let updatedItems;
-
-      switch (columnId.toString()) {
-        case "0":
-          updatedItems = updateColumnItems(columns.requested.items, data);
-          break;
-        case "1":
-          updatedItems = updateColumnItems(columns.acceptance.items, data);
-          break;
-        case "2":
-          updatedItems = updateColumnItems(columns.toDo.items, data);
-          break;
-        case "3":
-          updatedItems = updateColumnItems(columns.inProgress.items, data);
-          break;
-        case "4":
-          updatedItems = updateColumnItems(columns.done.items, data);
-          break;
-        default:
-          throw new Error("Invalid column ID");
+        await boardRef.update({ [columnName]: column });
+        res.send({ message: "Card created successfully" });
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: "Server error" });
       }
-
-      await boardRef.update({
-        [getColumnField(columnId)]: {
-          items: updatedItems,
-        },
-      });
-
-      console.log("card edited");
-      res.send({ message: "Card edited successfully" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send({ error: "An error occurred while editing the card" });
     }
-  });
+  );
+
+  app.put(
+    "/dashboard/:dashboardId/board/:boardId/column/:columnId/editCard",
+    async (req, res) => {
+      const data = req.body;
+      const columnId = req.params.columnId;
+      console.log("columnId:", columnId);
+      try {
+        const boardRef = db
+          .collection("dashboard")
+          .doc(req.params.dashboardId)
+          .collection("board")
+          .doc(req.params.boardId);
+        const boardSnapshot = await boardRef.get();
+
+        const columns = boardSnapshot.data();
+
+        let updatedItems;
+
+        switch (columnId.toString()) {
+          case "0":
+            updatedItems = updateColumnItems(columns.requested.items, data);
+            break;
+          case "1":
+            updatedItems = updateColumnItems(columns.acceptance.items, data);
+            break;
+          case "2":
+            updatedItems = updateColumnItems(columns.toDo.items, data);
+            break;
+          case "3":
+            updatedItems = updateColumnItems(columns.inProgress.items, data);
+            break;
+          case "4":
+            updatedItems = updateColumnItems(columns.done.items, data);
+            break;
+          default:
+            throw new Error("Invalid column ID");
+        }
+
+        await boardRef.update({
+          [getColumnField(columnId)]: {
+            items: updatedItems,
+          },
+        });
+
+        console.log("card edited");
+        res.send({ message: "Card edited successfully" });
+      } catch (error) {
+        console.error(error);
+        res
+          .status(500)
+          .send({ error: "An error occurred while editing the card" });
+      }
+    }
+  );
 
   function getColumnField(columnId) {
     console.log(columnId);

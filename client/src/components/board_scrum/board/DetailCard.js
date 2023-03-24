@@ -73,7 +73,7 @@ export default function DetailCard(props) {
     axios
       .put(
         "http://localhost:5050/dashboard/JUnEQaGjoiSvGZvGfElf/board/HCmKbXNmFtGYn3m6UbFt/column/" +
-          props.columndId +
+          props.columnId +
           "/editCard",
         {
           id: info.id,
@@ -157,7 +157,9 @@ export default function DetailCard(props) {
           paddingLeft: "1%",
         }}
       >
-        <div style={{ display: "flex", paddingTop: "5%", width: "fit-content" }}>
+        <div
+          style={{ display: "flex", paddingTop: "5%", width: "fit-content" }}
+        >
           <CircleIcon
             style={{
               flexDirection: "column",
@@ -219,12 +221,18 @@ export default function DetailCard(props) {
                 onBlur={handleNameBlur}
               />
             ) : (
-              <Typography color="text.default" variant="h5" onClick={handleNameClick}>
+              <Typography
+                color="text.default"
+                variant="h5"
+                onClick={handleNameClick}
+              >
                 {nameValue}
               </Typography>
             )
           }
-          subheader={<Typography color="text.default">Dans {props.list_name}</Typography>}
+          subheader={
+            <Typography color="text.default">Dans {props.list_name}</Typography>
+          }
           avatar={
             <BallotIcon
               sx={{
@@ -286,7 +294,12 @@ export default function DetailCard(props) {
                       width: "100%",
                     }}
                   >
-                    <Button variant="contained" color="primary" onClick={handleSaveClick} disabled={!descriptionValue}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSaveClick}
+                      disabled={!descriptionValue}
+                    >
                       Enregistrer
                     </Button>
                     <Button
@@ -300,7 +313,11 @@ export default function DetailCard(props) {
                   </Box>
                 </Box>
               ) : (
-                <Typography color="text.default" onClick={handleDescriptionClick} sx={style_text}>
+                <Typography
+                  color="text.default"
+                  onClick={handleDescriptionClick}
+                  sx={style_text}
+                >
                   {descriptionValue}
                 </Typography>
               )}
@@ -347,7 +364,11 @@ export default function DetailCard(props) {
                       <Button onClick={handleClose}>Fermer la modale</Button>
                     </div>
                   </Card>
-                  <Button variant="contained" onClick={handleClose} sx={{ mt: 3, mb: 2 }}>
+                  <Button
+                    variant="contained"
+                    onClick={handleClose}
+                    sx={{ mt: 3, mb: 2 }}
+                  >
                     Sauvegarder
                   </Button>
                 </Box>
@@ -358,7 +379,10 @@ export default function DetailCard(props) {
                 <ListItemIcon>
                   <PersonIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Rejoindre" primaryTypographyProps={{ color: "text.default" }} />
+                <ListItemText
+                  primary="Rejoindre"
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding sx={style_item_button}>
@@ -366,15 +390,25 @@ export default function DetailCard(props) {
                 <ListItemIcon>
                   <PersonIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Membres" primaryTypographyProps={{ color: "text.default" }} />
+                <ListItemText
+                  primary="Membres"
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
               </ListItemButton>
             </ListItem>
-            <ListItem onClick={handleOpen} disablePadding sx={style_item_button}>
+            <ListItem
+              onClick={handleOpen}
+              disablePadding
+              sx={style_item_button}
+            >
               <ListItemButton>
                 <ListItemIcon>
                   <LabelIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Etiquettes" primaryTypographyProps={{ color: "text.default" }} />
+                <ListItemText
+                  primary="Etiquettes"
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding sx={style_item_button}>
@@ -382,7 +416,10 @@ export default function DetailCard(props) {
                 <ListItemIcon>
                   <DeleteIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Supprimer" primaryTypographyProps={{ color: "text.default" }} />
+                <ListItemText
+                  primary="Supprimer"
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
               </ListItemButton>
             </ListItem>
           </List>
