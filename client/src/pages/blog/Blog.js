@@ -43,13 +43,7 @@ function Blog() {
   return (
     <>
       <Toaster />
-      <Box
-        sx={
-          {
-            // display: 'flex', flexWrap: 'wrap', justifyContent: 'center'
-          }
-        }
-      >
+      <Box>
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid item xs={2}>
             <TagFilter />
@@ -89,9 +83,7 @@ function Blog() {
                 xs={10}
                 justifyContent="center"
                 alignItems="flex-start"
-                // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
               >
-
                 {!loading
                   ? blog.map((blog) => (
                       <ImgMediaCard
