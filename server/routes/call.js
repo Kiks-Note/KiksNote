@@ -1,6 +1,4 @@
-const WebSocket = require("ws");
-
-module.exports = (app, ws, db, parse) => {
+module.exports = (app, db, connection, pathname) => {
   app.post("/callAdd", (req, res) => {
     db.collection("calls")
       .add({
@@ -56,52 +54,25 @@ module.exports = (app, ws, db, parse) => {
       });
   });
 
-  // let currentData;
+  if (pathname === "/Call") {
+    console.log("je suis dans /Call");
 
-  // const broadcastData = (data) => {
-  //   wss.clients.forEach((client) => {
-  //     if (client.readyState === WebSocket.OPEN) {
-  //       client.send(data);
-  //     }
-  //   });
-  // };
-  // // Handle incoming connections from clients
-  // wss.on("connection", (ws, req) => {
-  //   // Send the current data to the new client
-  //   ws.send(currentData);
-  //   ws.onmessage = (event) => {
-  //     currentData = event.data;
-  //     broadcastData(event.data);
-  //   };
-  // });
-
-  ws.on("request", (request) => {
-    const connection = request.accept(null, request.origin);
-    const { pathname } = parse(request.httpRequest.url);
-    connection
-      ? console.log("connection ok")
-      : console.log("connection failed");
-
-    if (pathname === "/Call") {
-      console.log("je suis dans /Call");
-
-      connection.on("message", (message) => {
-        const callId = JSON.parse(message.utf8Data);
-        db.collection("calls").onSnapshot(
-          (snapshot) => {
-            let data;
-            snapshot.forEach((doc) => {
-              if (doc.id == callId.CallId) {
-                data = doc.data();
-              }
-            });
-            connection.sendUTF(JSON.stringify(data));
-          },
-          (err) => {
-            console.log(`Encountered error: ${err}`);
-          }
-        );
-      });
-    }
-  });
+    connection.on("message", (message) => {
+      const callId = JSON.parse(message.utf8Data);
+      db.collection("calls").onSnapshot(
+        (snapshot) => {
+          let data;
+          snapshot.forEach((doc) => {
+            if (doc.id == callId.CallId) {
+              data = doc.data();
+            }
+          });
+          connection.sendUTF(JSON.stringify(data));
+        },
+        (err) => {
+          console.log(`Encountered error: ${err}`);
+        }
+      );
+    });
+  }
 };
