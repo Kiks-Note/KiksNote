@@ -87,6 +87,8 @@ export default function MiniDrawer({ element }) {
 
   const handleLogout = () => {
     accountAuthService.logout();
+    localStorage.removeItem("userUid")
+    localStorage.removeItem("user")
     navigate('/login');
   };
 

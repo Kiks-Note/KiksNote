@@ -8,6 +8,13 @@ function App() {
     setInterval(refreshToken, 3600000);
   }, []);
 
+  // exemple get data authentificate user 
+  /* 
+    const test = localStorage.getItem("user");
+    const testParsed = JSON.parse(test);
+    // firstname of user --> testParsed.firstname
+  */
+
   return (
     <>
       <RoutesProvider />
