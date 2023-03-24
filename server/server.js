@@ -57,8 +57,4 @@ app.get("/user", (req, res) => {
     });
 });
 
-server.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
-
 require("./blog_back.js")(app, db, ws, parse);
