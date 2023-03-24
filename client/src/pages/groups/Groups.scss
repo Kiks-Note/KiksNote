@@ -42,7 +42,7 @@ h2 {
   border: 1px solid rgb(190, 190, 190);
 }
 
-.groups-inputs{
+.groups-inputs {
   width: fit-content;
   display: flex;
   flex-flow: row wrap;
@@ -51,28 +51,28 @@ h2 {
   top: 10px;
   right: 10px;
 
-  input[type="text"]{
+  input[type="text"] {
     text-align: center;
     margin-right: 10px;
     border-radius: 5px;
-        background-color: #252525;
-        color: white;
-  }
-
-  datalist{
-    width: 100%;
-    background-color: #252525;
-    color: white;
-  }
-  option{
-    width: 100%;
     background-color: #252525;
     color: white;
   }
 
-  .icon-svg{
-    color:white;
-    fill:white;
+  datalist {
+    width: 100%;
+    background-color: #252525;
+    color: white;
+  }
+  option {
+    width: 100%;
+    background-color: #252525;
+    color: white;
+  }
+
+  .icon-svg {
+    color: white;
+    fill: white;
   }
 
   .input-button {
@@ -83,10 +83,9 @@ h2 {
     transition: all 500ms ease-in-out;
     margin: 0px 5px;
   }
-  
+
   .resetButton:active,
   .resetButton:hover {
     background-color: #7d0229;
   }
 }
-
