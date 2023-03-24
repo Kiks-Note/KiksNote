@@ -8,6 +8,8 @@ import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
 import Tuto from "./pages/blog/Tuto";
+import Ressources from "./pages/ressources/Ressources";
+import CreateCard from "./pages/ressources/CreateCard";
 
 function RoutesProvider() {
   return (
@@ -25,6 +27,8 @@ function RoutesProvider() {
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
+          <Route path="/ressources" element={<Ressources />} />
+          <Route path="/createCard" element={<CreateCard />} />
         </Route>
       </Routes>
     </BrowserRouter>
