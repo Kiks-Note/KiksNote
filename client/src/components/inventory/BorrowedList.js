@@ -145,14 +145,15 @@ export default function BorrowedList() {
         ref: item.device.ref,
         category: item.device.category,
         campus: item.device.campus,
-        requester: item.request.requester,
-        startDate: moment(timeConverter(item.request.startDate)).format(
-          "DD.MM.YYYY"
-        ),
-        endDate: moment(timeConverter(item.request.endDate)).format(
-          "DD.MM.YYYY"
-        ),
-        groupe: item.request.groupe ? item.request.groupe : "Aucun",
+        requester: item.request && item.request.requester,
+        startDate:
+          item.request &&
+          moment(timeConverter(item.request.startDate)).format("DD.MM.YYYY"),
+        endDate: moment(
+          item.request && timeConverter(item.request.endDate)
+        ).format("DD.MM.YYYY"),
+        groupe:
+          item.request && item.request.groupe ? item.request.groupe : "Aucun",
       };
     });
 

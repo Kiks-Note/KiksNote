@@ -27,6 +27,16 @@ const ws = new webSocketServer({
   autoAcceptConnections: false,
 });
 
+ws.on("request", (request) => {
+  const connection = request.accept(null, request.origin);
+  const {pathname} = parse(request.httpRequest.url);
+  // console.log("request.httpServer => ", request);
+  // console.log("request.url => ", request.pathname);
+  console.log("pathname => ", pathname);
+  connection ? console.log("connection ok") : console.log("connection failed");
+  require("./inventory")(app, db, pathname, connection, user, fs);
+});
+
 app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -46,6 +56,6 @@ app.use(
 );
 app.use(bodyParser.json());
 
-require("./inventory")(app, db, user, ws, parse, fs, moment);
+// require("./inventory")(app, db, ws, parse, fs, moment);
 
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

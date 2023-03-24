@@ -1,4 +1,4 @@
-module.exports = (app, db, user, ws, parse, fs, moment) => {
+module.exports = (app, db, pathname, connection, user, fs) => {
   app.get("/inventory", async (req, res) => {
     const docRef = db.collection("inventory");
     const snapshot = await docRef.orderBy("createdAt").get();
@@ -359,109 +359,110 @@ module.exports = (app, db, user, ws, parse, fs, moment) => {
     }
   });
 
-  ws.on("request", function (request) {
-    const connection = request.accept(null, request.origin);
-    const {pathname} = parse(request.httpRequest.url);
+  // ws.on("request", function (request) {
+  //   const connection = request.accept(null, request.origin);
+  //   const {pathname} = parse(request.httpRequest.url);
 
-    console.log(pathname);
+  //   console.log(pathname);
 
-    connection ? console.log("WebSocket admin open") : console.log("error");
+  //   connection ? console.log("WebSocket admin open") : console.log("error");
 
-    if (pathname === "/adminInventory") {
-      db.collection("inventory")
-        .orderBy("createdAt", "desc")
-        .onSnapshot(
-          (snapshot) => {
-            const documents = snapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }));
-            connection.sendUTF(JSON.stringify(documents));
-          },
-          (err) => {
-            console.log(`Encountered error: ${err}`);
-          }
-        );
-    }
+  if (pathname === "/adminInventory") {
+    db.collection("inventory")
+      .orderBy("createdAt", "desc")
+      .onSnapshot(
+        (snapshot) => {
+          const documents = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          console.log("hello");
+          connection.sendUTF(JSON.stringify(documents));
+        },
+        (err) => {
+          console.log(`Encountered error: ${err}`);
+        }
+      );
+  }
 
-    if (pathname === "/todayRequests") {
-      db.collection("inventory_requests")
-        .where("createdAt", "<=", new Date())
-        .where("status", "==", "pending")
-        .onSnapshot(
-          (snapshot) => {
-            const request = snapshot.docs.map((doc) => ({
-              id: doc.id,
-              ...doc.data(),
-            }));
+  if (pathname === "/todayRequests") {
+    db.collection("inventory_requests")
+      .where("createdAt", "<=", new Date())
+      .where("status", "==", "pending")
+      .onSnapshot(
+        (snapshot) => {
+          const request = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
 
-            db.collection("inventory").onSnapshot((snapshot) => {
-              const borrowed = snapshot.docs.map((doc) => ({
-                id: doc.id,
-                ...doc.data(),
-              }));
-
-              const todayRequests = request.map((req) => {
-                const device = borrowed.find(
-                  (device) => device.id === req.deviceId
-                );
-                return {request: req, device: device};
-              });
-
-              connection.sendUTF(JSON.stringify(todayRequests));
-            });
-          },
-          (err) => {
-            console.log(`Encountered error: ${err}`);
-          }
-        );
-    }
-
-    if (pathname === "/adminBorrowedList") {
-      db.collection("inventory")
-        .where("status", "==", "borrowed")
-        .onSnapshot(
-          (snapshot) => {
-            const documents = snapshot.docs.map((doc) => ({
+          db.collection("inventory").onSnapshot((snapshot) => {
+            const borrowed = snapshot.docs.map((doc) => ({
               id: doc.id,
               ...doc.data(),
             }));
 
-            db.collection("inventory_requests")
-              .where("status", "==", "accepted")
-              .onSnapshot(
-                (snapshot) => {
-                  const requests = snapshot.docs.map((doc) => ({
-                    id: doc.id,
-                    ...doc.data(),
-                  }));
-
-                  const borrowedWithRequests = documents.map((doc) => {
-                    const request = requests.find(
-                      (request) => request.deviceId === doc.id
-                    );
-                    return {device: doc, request: request};
-                  });
-
-                  connection.sendUTF(JSON.stringify(borrowedWithRequests));
-                },
-                (err) => {
-                  console.log(`Encountered error: ${err}`);
-                }
+            const todayRequests = request.map((req) => {
+              const device = borrowed.find(
+                (device) => device.id === req.deviceId
               );
-          },
-          (err) => {
-            console.log(`Encountered error: ${err}`);
-          }
-        );
-    }
-    if (pathname === "/categories") {
-      const data = require("./categories.json");
-      connection.sendUTF(JSON.stringify(data));
-    }
+              return {request: req, device: device};
+            });
 
-    connection.on("close", function () {
-      console.log("WebSocket admin closed");
-    });
-  });
+            connection.sendUTF(JSON.stringify(todayRequests));
+          });
+        },
+        (err) => {
+          console.log(`Encountered error: ${err}`);
+        }
+      );
+  }
+
+  if (pathname === "/adminBorrowedList") {
+    db.collection("inventory")
+      .where("status", "==", "borrowed")
+      .onSnapshot(
+        (snapshot) => {
+          const documents = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+
+          db.collection("inventory_requests")
+            .where("status", "==", "accepted")
+            .onSnapshot(
+              (snapshot) => {
+                const requests = snapshot.docs.map((doc) => ({
+                  id: doc.id,
+                  ...doc.data(),
+                }));
+
+                const borrowedWithRequests = documents.map((doc) => {
+                  const request = requests.find(
+                    (request) => request.deviceId === doc.id
+                  );
+                  return {device: doc, request: request};
+                });
+
+                connection.sendUTF(JSON.stringify(borrowedWithRequests));
+              },
+              (err) => {
+                console.log(`Encountered error: ${err}`);
+              }
+            );
+        },
+        (err) => {
+          console.log(`Encountered error: ${err}`);
+        }
+      );
+  }
+  if (pathname === "/categories") {
+    const data = require("./categories.json");
+    connection.sendUTF(JSON.stringify(data));
+  }
+
+  // connection.on("close", function () {
+  //   console.log("WebSocket admin closed");
+  // });
+  // });
 };
