@@ -1,24 +1,4 @@
 module.exports = (app, db, ws, parse) => {
-  // app.get("/blogs", (req, res) => {
-  //     const docs = [];
-  //     const comments = [];
-  //     res.setHeader("Access-Control-Allow-Origin", "*");
-  //     db.collection("blog_tutos").get().then((snapshot) => {
-  //         snapshot.forEach((doc) => {
-  //             docs.push(doc.data());
-  //             res.send(docs);
-  //             doc.ref.collection("comment").get().then((snap) => {
-  //                 snap.forEach((com) => {
-  //                     comments.push(com.data());
-  //                     // res.send(comments);
-  //                     // console.log(comments);
-  //                 })
-  //             }).catch((err) => {
-  //                 console.log(err);
-  //             });
-  //         })
-  //     })
-  // })
 
   ws.on("request", (request) => {
     const connection = request.accept(null, request.origin);
@@ -80,27 +60,6 @@ module.exports = (app, db, ws, parse) => {
       });
     }
   });
-
-  // ws.on("blogRequest", (request) => {
-  //   const connection = request.accept(null, request.origin);
-  //
-  //   connection
-  //       ? console.log("connection ok")
-  //       : console.log("connection failed");
-  //
-  //   db.collection("blog_evenements").onSnapshot(
-  //       (snapshot) => {
-  //         const documents = snapshot.docs.map((doc) => ({
-  //           id: doc.id,
-  //           ...doc.data(),
-  //         }));
-  //         connection.sendUTF(JSON.stringify(documents));
-  //       },
-  //       (err) => {
-  //         console.log(err);
-  //       }
-  //   );
-  // });
 
   // get all tutos
   app.get("/tutos", async (req, res) => {
