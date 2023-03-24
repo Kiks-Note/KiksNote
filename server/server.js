@@ -11,7 +11,6 @@ const http = require("http");
 const { db, auth } = require("./firebase");
 const { signInWithEmailAndPassword } = require("./firebase_auth");
 const { parse } = require("url");
-
 const { signInWithEmailAndPassword, authClient } = require("./firebase_auth");
 
 app.use(express.json());
@@ -20,14 +19,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 5050;
-
 const server = http.createServer(app);
+server.listen(PORT, () => console.log(`Listening on port ${PORT}`));
 const ws = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
 
-// const wss = new WebSocket.Server({ server });
 require("./routes/call")(app, ws, db, parse);
 require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
 
@@ -64,3 +62,5 @@ app.get("/user", (req, res) => {
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
+
+require("./blog_back.js")(app, db, ws, parse);
