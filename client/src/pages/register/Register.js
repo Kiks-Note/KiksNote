@@ -16,8 +16,8 @@ const Register = () => {
     const [ userConfirmPassword, setUserConfirmPassword] = useState("")
     const [ userStatus, setUserStatus] = useState("")
     const [ userClass, setUserClass] = useState("")
-    const [formErrors, setFormErrors] = useState({});
-    const [isSubmit, setIsSubmit] = useState(false);
+    const [formErrors, setFormErrors] = useState({})
+    const [isSubmit, setIsSubmit] = useState(false)
 
     const options = {
         autoClose: 2000,
@@ -43,6 +43,7 @@ const Register = () => {
         console.log(formErrors);
         if (Object.keys(formErrors).length === 0 && isSubmit) {
             register()
+            setIsSubmit(false)
         }
     });
 
