@@ -14,11 +14,18 @@ import Typography from "@mui/material/Typography";
 import {blue} from "@mui/material/colors";
 
 export function UserListDialog({open, toogleDialog, emails}) {
+  const [_emails, setEmails] = React.useState([]);
+
+  React.useEffect(() => {
+    open === true && setEmails(emails.flat());
+    console.log(emails);
+  }, [emails, open === true]);
+
   return (
     <Dialog open={open} onClose={() => toogleDialog(false)}>
       <DialogTitle>Liste du groupe</DialogTitle>
       <List sx={{pt: 0}}>
-        {emails.map((email) => (
+        {_emails.map((email) => (
           <ListItem key={email}>
             <ListItemAvatar>
               <Avatar sx={{bgcolor: blue[100], color: blue[600]}}>

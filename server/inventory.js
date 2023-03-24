@@ -1,4 +1,4 @@
-module.exports = (app, db, user, ws, parse, fs) => {
+module.exports = (app, db, user, ws, parse, fs, moment) => {
   app.get("/inventory", async (req, res) => {
     const docRef = db.collection("inventory");
     const snapshot = await docRef.orderBy("createdAt").get();
@@ -381,6 +381,40 @@ module.exports = (app, db, user, ws, parse, fs) => {
         }
       );
     }
+
+    if (pathname === "/todayRequests") {
+      db.collection("inventory_requests")
+        .where("createdAt", "<=", new Date())
+        .where("status", "==", "pending")
+        .onSnapshot(
+          (snapshot) => {
+            const request = snapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+
+            db.collection("inventory").onSnapshot((snapshot) => {
+              const borrowed = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+              }));
+
+              const todayRequests = request.map((req) => {
+                const device = borrowed.find(
+                  (device) => device.id === req.deviceId
+                );
+                return {request: req, device: device};
+              });
+
+              connection.sendUTF(JSON.stringify(todayRequests));
+            });
+          },
+          (err) => {
+            console.log(`Encountered error: ${err}`);
+          }
+        );
+    }
+
     if (pathname === "/adminBorrowedList") {
       db.collection("inventory")
         .where("status", "==", "borrowed")
@@ -400,9 +434,6 @@ module.exports = (app, db, user, ws, parse, fs) => {
                     ...doc.data(),
                   }));
 
-                  // const borrowed = documents.filter(
-                  //   (doc) => doc.status === "borrowed"
-                  // );
                   const borrowedWithRequests = documents.map((doc) => {
                     const request = requests.find(
                       (request) => request.deviceId === doc.id

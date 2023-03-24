@@ -34,6 +34,9 @@ import "./inventory.css";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteIcon from "@mui/icons-material/Delete";
 import theme from "../../theme";
+import timeConverter from "../../functions/TimeConverter";
+import moment from "moment";
+import {UserListDialog} from "../../components/inventory/UserListDialog";
 
 const Item = styled(Paper)(({theme}) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -106,10 +109,6 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
       (async () => {
         const ws = new w3cwebsocket("ws://localhost:5050/categories");
 
-        ws.onopen = () => {
-          console.log("connected");
-        };
-
         ws.onmessage = (e) => {
           const data = JSON.parse(e.data);
           setCategories(data);
@@ -118,8 +117,8 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
       })();
   }, [open]);
 
-  const deleteCategory = (id) => {
-    axios
+  const deleteCategory = async (id) => {
+    await axios
       .delete(`http://localhost:5050/delete-from-file/${id}`)
       .then((res) => {
         console.log(res);
@@ -198,6 +197,8 @@ const InventoryAdminDashboard = () => {
   const [openAdd, setOpenAdd] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [categoriesListOpen, setCategoriesListOpen] = useState(false);
+  const [todayRequests, setTodayRequests] = useState([]);
+  const [emailsDialogOpen, setEmailsDialogOpen] = useState(false);
   const navigate = useNavigate();
 
   const toggleDrawerAdd = (event, open) => {
@@ -222,16 +223,16 @@ const InventoryAdminDashboard = () => {
     setOpenModify(open);
   };
 
-  // useEffect(() => {
-  //   (async () => {
-  //     const ws = new w3cwebsocket("ws://localhost:5050");
+  useEffect(() => {
+    (async () => {
+      const ws = new w3cwebsocket("ws://localhost:5050/todayRequests");
 
-  //     ws.onmessage = (message) => {
-  //       const data = JSON.parse(message.data);
-  //       setDevices(data);
-  //     };
-  //   })();
-  // }, []);
+      ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        setTodayRequests(data);
+      };
+    })();
+  }, []);
 
   const handleDeleteClick = async () => {
     setIsMenuOpen(false);
@@ -277,6 +278,15 @@ const InventoryAdminDashboard = () => {
         deviceId={clickedDeviceId}
       />
       <ModalForm open={openAdd} toggleDrawerAdd={toggleDrawerAdd} />
+      <UserListDialog
+        open={emailsDialogOpen}
+        toogleDialog={setEmailsDialogOpen}
+        emails={
+          todayRequests.map((request) => {
+            return request.request.groupe;
+          }) || []
+        }
+      />
       <Container style={{padding: 0, margin: 0, minWidth: "100%"}}>
         <Typography
           variant="h5"
@@ -285,6 +295,78 @@ const InventoryAdminDashboard = () => {
         >
           Inventaire Admin Dashboard
         </Typography>
+        <div
+          style={{
+            gap: 10,
+            boxShadow: "none",
+            backgroundColor: "transparent",
+            // minHeight: 150,
+            paddingBottom: 50,
+            flexWrap: "wrap",
+            display: "flex",
+          }}
+        >
+          <Button
+            variant="contained"
+            onClick={(e) => toggleDrawerAdd(e, true)}
+            sx={{
+              backgroundColor: "#ffffff",
+              color: "#1A2027",
+              fontFamily: "poppins-semibold",
+              boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            }}
+          >
+            Ajouter un peripherique
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setDialogOpen(true)}
+            sx={{
+              backgroundColor: "#ffffff",
+              color: "#1A2027",
+              fontFamily: "poppins-semibold",
+              boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            }}
+          >
+            Ajouter une categorie
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setCategoriesListOpen(true)}
+            sx={{
+              backgroundColor: "#ffffff",
+              color: "#1A2027",
+              fontFamily: "poppins-semibold",
+              boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            }}
+          >
+            Liste des categories
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/inventory/admin/list")}
+            sx={{
+              backgroundColor: "#ffffff",
+              color: "#1A2027",
+              fontFamily: "poppins-semibold",
+              boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            }}
+          >
+            Liste des peripheriques
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/inventory/admin/borrowed")}
+            sx={{
+              backgroundColor: "#ffffff",
+              color: "#1A2027",
+              fontFamily: "poppins-semibold",
+              boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            }}
+          >
+            Liste des peripheriques empruntés
+          </Button>
+        </div>
         <Grid
           container
           rowSpacing={{xs: 1, sm: 2, md: 3}}
@@ -297,85 +379,11 @@ const InventoryAdminDashboard = () => {
             md={12}
             lg={6}
             sx={{
-              mt: 2.5,
               display: "flex",
               justifyContent: "flex-start",
             }}
-          >
-            <Item
-              sx={{
-                boxShadow: "none",
-                backgroundColor: "transparent",
-                minHeight: 450,
-              }}
-            >
-              <Button
-                variant="contained"
-                onClick={(e) => toggleDrawerAdd(e, true)}
-                sx={{
-                  backgroundColor: "#ffffff",
-                  color: "#1A2027",
-                  fontFamily: "poppins-semibold",
-                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                }}
-              >
-                Ajouter un peripherique
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => setDialogOpen(true)}
-                sx={{
-                  backgroundColor: "#ffffff",
-                  color: "#1A2027",
-                  fontFamily: "poppins-semibold",
-                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                  ml: 2,
-                }}
-              >
-                Ajouter une categorie
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => setCategoriesListOpen(true)}
-                sx={{
-                  backgroundColor: "#ffffff",
-                  color: "#1A2027",
-                  fontFamily: "poppins-semibold",
-                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                  ml: 2,
-                }}
-              >
-                Liste des categories
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => navigate("/inventory/admin/list")}
-                sx={{
-                  mt: 2,
-                  backgroundColor: "#ffffff",
-                  color: "#1A2027",
-                  fontFamily: "poppins-semibold",
-                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                }}
-              >
-                Liste des peripheriques
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => navigate("/inventory/admin/borrowed")}
-                sx={{
-                  backgroundColor: "#ffffff",
-                  color: "#1A2027",
-                  fontFamily: "poppins-semibold",
-                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                  mt: 2,
-                  ml: 2,
-                }}
-              >
-                Liste des peripheriques empruntés
-              </Button>
-            </Item>
-          </Grid>
+            style={{gap: 3}}
+          ></Grid>
           <Grid item xs={12} md={12} lg={6} sx={{mt: 2.5}}>
             <Item
               style={{
@@ -416,7 +424,14 @@ const InventoryAdminDashboard = () => {
                   </IconButton>
                 </Tooltip>
               </Box>
-              <Table>
+              <Table
+                sx={{
+                  overflow: "auto",
+                  "&::-webkit-scrollbar": {
+                    width: 0,
+                  },
+                }}
+              >
                 <TableHead>
                   <TableRow>
                     <TableCell
@@ -447,182 +462,56 @@ const InventoryAdminDashboard = () => {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {/* {devices
-                    .filter((device) => device.status === "requested")
-                    .slice(0, 5)
-                    .map((device) => ( */}
-                  <TableRow>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-regular"}}
-                    >
-                      1dsqgfds123&&&dsq
-                    </TableCell>
+                  {todayRequests.slice(0, 5).map((r) => (
+                    <TableRow>
+                      <TableCell
+                        sx={{color: "white", fontFamily: "poppins-regular"}}
+                      >
+                        {r.request.deviceId}
+                      </TableCell>
 
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-regular"}}
-                    >
-                      Rui gaspar
-                    </TableCell>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-regular"}}
-                    >
-                      Mac
-                    </TableCell>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-regular"}}
-                    >
-                      12/12/2021
-                    </TableCell>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-regular"}}
-                    >
-                      17/12/2021
-                    </TableCell>
-                  </TableRow>
-                  {/* ))} */}
+                      <TableCell
+                        sx={{color: "white", fontFamily: "poppins-regular"}}
+                      >
+                        {r.request.requester}
+                      </TableCell>
+                      <TableCell
+                        sx={{color: "white", fontFamily: "poppins-regular"}}
+                      >
+                        {moment(timeConverter(r.request.startDate)).format(
+                          "DD.MM.YYYY"
+                        )}
+                      </TableCell>
+                      <TableCell
+                        sx={{color: "white", fontFamily: "poppins-regular"}}
+                      >
+                        {moment(timeConverter(r.request.endDate)).format(
+                          "DD.MM.YYYY"
+                        )}
+                      </TableCell>
+                      <TableCell
+                        sx={{
+                          color: "white",
+                          fontFamily: "poppins-regular",
+                          cursor: "pointer",
+                        }}
+                        onClick={() =>
+                          r.request.group &&
+                          r.request?.group.length > 0 &&
+                          setEmailsDialogOpen(true)
+                        }
+                      >
+                        {r.request.group && r.request?.group.length > 0
+                          ? r.request.group
+                          : "Seul"}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </Item>
           </Grid>
           {/* <Grid item xs={12} md={12} lg={6} sx={{mt: 2.5}}>
-            <Item
-              style={{
-                backgroundColor: "#1A2027",
-                boxShadow: "0px 5px 10px 0px rgba(0,0,0,0.26)",
-                minHeight: 450,
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  backgroundColor: "#11151a",
-                  height: 50,
-                  borderRadius: 5,
-                  px: 2,
-                  width: "40%",
-                  position: "relative",
-                  top: -40,
-                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: "poppins-semibold",
-                    color: "#fff",
-                    fontSize: 18,
-                  }}
-                >
-                  Appareils empruntés
-                </Typography>
-                <Tooltip title="Voir plus" placement="top" arrow>
-                  <IconButton
-                    sx={{color: "#fff", cursor: "pointer", padding: 0}}
-                  >
-                    <VisibilityIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-semibold"}}
-                    >
-                      Id
-                    </TableCell>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-semibold"}}
-                    >
-                      Device
-                    </TableCell>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-semibold"}}
-                    >
-                      Categorie
-                    </TableCell>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-semibold"}}
-                    >
-                      Status
-                    </TableCell>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-semibold"}}
-                    >
-                      Historique
-                    </TableCell>
-                    <TableCell
-                      sx={{color: "white", fontFamily: "poppins-semibold"}}
-                    >
-                      Actions
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {devices
-                    .filter((device) => device.status === "borrowed")
-                    .slice(0, 5)
-                    .map((device) => (
-                      <TableRow key={device.id}>
-                        <TableCell
-                          sx={{color: "white", fontFamily: "poppins-regular"}}
-                        >
-                          {device.id}
-                        </TableCell>
-                        <TableCell
-                          sx={{color: "white", fontFamily: "poppins-regular"}}
-                        >
-                          {device.label}
-                        </TableCell>
-                        <TableCell
-                          sx={{color: "white", fontFamily: "poppins-regular"}}
-                        >
-                          {device.category}
-                        </TableCell>
-                        <TableCell
-                          sx={{color: "white", fontFamily: "poppins-regular"}}
-                        >
-                          {device.status === "available"
-                            ? "Disponible"
-                            : device.status === "borrowed"
-                            ? "Emprunté"
-                            : device.status === "inrepair"
-                            ? "En réparation"
-                            : device.status === "requested"
-                            ? "Demandé"
-                            : "Non connu"}
-                        </TableCell>
-                        <TableCell>
-                          <VisibilityIcon
-                            style={{color: "white", cursor: "pointer"}}
-                            onClick={() => {}}
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <EditRoundedIcon
-                            style={{color: "white", cursor: "pointer", mr: 10}}
-                            onClick={(e) => {
-                              setClickedDeviceId(device.id);
-                              toggleDrawerModify(e, true);
-                            }}
-                          />
-                          <DeleteIcon
-                            style={{color: "#de2828", cursor: "pointer"}}
-                            onClick={(e) => {
-                              setSnackBarOpen(true);
-                              setIsMenuOpen(false);
-                              setClickedDeviceId(device.id);
-                            }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                </TableBody>
-              </Table>
-            </Item>
-          </Grid> */}
-          <Grid item xs={12} md={12} lg={6} sx={{mt: 2.5}}>
             <Item
               style={{
                 minHeight: 450,
@@ -675,7 +564,7 @@ const InventoryAdminDashboard = () => {
                 {devices.length}
               </Typography>
             </Item>
-          </Grid>
+          </Grid> */}
         </Grid>
       </Container>
     </>

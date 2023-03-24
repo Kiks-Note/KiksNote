@@ -8,6 +8,7 @@ const http = require("http");
 const PORT = process.env.PORT || 5050;
 const {parse} = require("url");
 const fs = require("fs");
+const moment = require("moment");
 
 const user = {
   firstname: "Rui",
@@ -45,6 +46,6 @@ app.use(
 );
 app.use(bodyParser.json());
 
-require("./inventory")(app, db, user, ws, parse, fs);
+require("./inventory")(app, db, user, ws, parse, fs, moment);
 
 server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

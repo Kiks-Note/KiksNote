@@ -1,6 +1,5 @@
 import React from "react";
 import {Navigate, Outlet} from "react-router-dom";
-import FloatingSidebar from "../components/navbar/FloatingSidebar";
 import MiniDrawer from "../components/navbar/Navbar";
 
 function PrivateRoutes() {
