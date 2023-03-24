@@ -56,8 +56,8 @@
 .Mui-selected {
   background-color: #1a2027 !important;
   color: #ffffff !important;
-  margin: 10px !important;
-  border-radius: 10px !important;
+  /* margin: 10px !important; */
+  /* border-radius: 10px !important; */
 }
 
 .MuiDrawer-paper {

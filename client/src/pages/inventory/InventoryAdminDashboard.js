@@ -138,7 +138,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
           <List>
             {categories.map((category) => (
               <Item
-                key={category.value}
+                key={category.i}
                 sx={{
                   mb: 1,
                   display: "flex",
@@ -146,19 +146,18 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
                   width: 400,
                 }}
               >
-                <div>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
                   <span style={{fontFamily: "poppins-semibold", fontSize: 16}}>
                     Label:{" "}
                   </span>
                   <span style={{fontFamily: "poppins-regular", fontSize: 16}}>
                     {category.label}
-                  </span>
-                  <br />
-                  <span style={{fontFamily: "poppins-semibold", fontSize: 16}}>
-                    Value:{" "}
-                  </span>
-                  <span style={{fontFamily: "poppins-regular", fontSize: 16}}>
-                    {category.value}
                   </span>
                 </div>
                 <div>
@@ -373,23 +372,12 @@ const InventoryAdminDashboard = () => {
           columnSpacing={{xs: 1, sm: 2, md: 3}}
           direction="row"
         >
-          <Grid
-            item
-            xs={12}
-            md={12}
-            lg={6}
-            sx={{
-              display: "flex",
-              justifyContent: "flex-start",
-            }}
-            style={{gap: 3}}
-          ></Grid>
-          <Grid item xs={12} md={12} lg={6} sx={{mt: 2.5}}>
+          <Grid item xs={12} md={12} lg={12} sx={{mt: 2.5}}>
             <Item
               style={{
                 backgroundColor: "#1A2027",
                 boxShadow: "0px 5px 10px 0px rgba(0,0,0,0.26)",
-                minHeight: 450,
+                minHeight: 550,
               }}
             >
               <Box
@@ -401,7 +389,7 @@ const InventoryAdminDashboard = () => {
                   height: 50,
                   borderRadius: 5,
                   px: 2,
-                  width: "40%",
+                  width: "25%",
                   position: "relative",
                   top: -40,
                   boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
@@ -511,60 +499,6 @@ const InventoryAdminDashboard = () => {
               </Table>
             </Item>
           </Grid>
-          {/* <Grid item xs={12} md={12} lg={6} sx={{mt: 2.5}}>
-            <Item
-              style={{
-                minHeight: 450,
-                backgroundColor: "#1A2027",
-                boxShadow: "0px 5px 10px 0px rgba(0,0,0,0.26)",
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  backgroundColor: "#11151a",
-                  height: 50,
-                  borderRadius: 5,
-                  px: 2,
-                  width: "40%",
-                  position: "relative",
-                  top: -40,
-                  boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                }}
-              >
-                <Typography
-                  sx={{
-                    fontFamily: "poppins-semibold",
-                    color: "#fff",
-                    fontSize: 18,
-                  }}
-                >
-                  Suggestions
-                </Typography>
-                <Tooltip title="Voir plus" placement="top" arrow>
-                  <IconButton
-                    sx={{color: "#fff", cursor: "pointer", padding: 0}}
-                  >
-                    <VisibilityIcon />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-              <Typography
-                variant="h6"
-                sx={{color: "black", fontFamily: "poppins-semibold"}}
-              >
-                Total Devices Requestes
-              </Typography>
-              <Typography
-                variant="h6"
-                sx={{color: "black", fontFamily: "poppins-semibold"}}
-              >
-                {devices.length}
-              </Typography>
-            </Item>
-          </Grid> */}
         </Grid>
       </Container>
     </>

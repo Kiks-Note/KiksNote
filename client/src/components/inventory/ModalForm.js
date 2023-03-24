@@ -1,3 +1,4 @@
+import CloseIcon from "@mui/icons-material/Close";
 import {
   CardMedia,
   FormControl,
@@ -11,14 +12,13 @@ import {
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import {DatePicker} from "@mui/x-date-pickers";
 import axios from "axios";
 import * as React from "react";
-import {useState, useEffect} from "react";
-import CloseIcon from "@mui/icons-material/Close";
+import {useEffect, useState} from "react";
+import "react-datetime/css/react-datetime.css";
 import {toast} from "react-hot-toast";
 import {w3cwebsocket} from "websocket";
-import Datetime from "react-datetime";
-import "react-datetime/css/react-datetime.css";
 
 export default function ModalForm({open, toggleDrawerAdd}) {
   const [categories, setCategories] = useState([]);
@@ -31,7 +31,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
   const [description, setDescription] = useState("");
   const [campus, setCampus] = useState(null);
   const [category, setCategory] = useState(null);
-  const [status, setStatus] = useState(null);
+  const [reference, setReference] = useState("");
   const [loading, setLoading] = useState(true);
 
   const addDevice = async () => {
@@ -43,8 +43,8 @@ export default function ModalForm({open, toggleDrawerAdd}) {
       !storage ||
       !condition ||
       !description ||
-      !campus /*|| !category*/ ||
-      !status
+      !campus ||
+      !category
     ) {
       toast.error("Veuillez remplir tous les champs");
       return;
@@ -55,13 +55,13 @@ export default function ModalForm({open, toggleDrawerAdd}) {
             label: label,
             price: price,
             acquisitiondate: acquisitiondate,
+            campus: campus,
+            storage: storage,
             image: image,
-            status: storage,
             condition: condition,
             description: description,
-            status: status,
-            campus: campus,
-            //category: category
+            category: category,
+            reference: reference,
           }),
           {
             success: () => {
@@ -90,7 +90,6 @@ export default function ModalForm({open, toggleDrawerAdd}) {
     setDescription("");
     setCampus("");
     setCategory("");
-    setStatus("");
   };
 
   useEffect(() => {
@@ -138,7 +137,6 @@ export default function ModalForm({open, toggleDrawerAdd}) {
         id="outlined-search"
         label="Nom du periphérique"
         type={"text"}
-        name="label"
         value={label ? label : ""}
         onChange={(e) => setLabel(e.target.value)}
         fullWidth
@@ -149,39 +147,24 @@ export default function ModalForm({open, toggleDrawerAdd}) {
         sx={{marginBottom: 2}}
         id="outlined-search"
         label="Prix"
-        type={"text"}
-        name="price"
+        type={"number"}
         value={price ? price : ""}
         onChange={(e) => setPrice(e.target.value)}
         fullWidth
         InputLabelProps={{className: "inputLabel"}}
         InputProps={{className: "input"}}
+        inputProps={{min: 0, step: 0.01}}
       />
 
-      <TextField
-        sx={{marginBottom: 2}}
-        id="outlined-search"
-        label="Desription"
-        type={"text"}
-        name="label"
-        value={description ? description : ""}
-        onChange={(e) => setDescription(e.target.value)}
+      <DatePicker
         fullWidth
-        InputLabelProps={{className: "inputLabel"}}
-        InputProps={{className: "input"}}
-      />
-
-      <TextField
-        sx={{marginBottom: 2}}
-        id="outlined-search"
         label="Date d'acquisition"
-        type={"text"}
-        name="label"
-        value={acquisitiondate ? acquisitiondate : ""}
-        onChange={(e) => setAcquisitiondate(e.target.value)}
-        fullWidth
-        InputLabelProps={{className: "inputLabel"}}
-        InputProps={{className: "input"}}
+        value={acquisitiondate}
+        onChange={(newValue) => {
+          setAcquisitiondate(newValue);
+        }}
+        sx={{marginBottom: 2, width: "100%"}}
+        renderInput={(params) => <TextField {...params} />}
       />
 
       <FormControl sx={{marginBottom: 2}} fullWidth>
@@ -190,22 +173,31 @@ export default function ModalForm({open, toggleDrawerAdd}) {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={campus ? campus : ""}
-          label="Date d'acquisition"
+          label="Campus"
           onChange={(e) => setCampus(e.target.value)}
-          name="campus"
         >
-          <MenuItem value={"available"}>Cergy</MenuItem>
-          <MenuItem value={"unavailable"}>Paris</MenuItem>
-          <MenuItem value={"unavailable"}>Pontoise</MenuItem>
+          <MenuItem value={"Cergy"}>Cergy</MenuItem>
+          <MenuItem value={"Paris"}>Paris</MenuItem>
+          <MenuItem value={"Pontoise"}>Pontoise</MenuItem>
         </Select>
       </FormControl>
 
       <TextField
         sx={{marginBottom: 2}}
         id="outlined-search"
+        label="Référence"
+        type={"text"}
+        value={reference ? reference : ""}
+        onChange={(e) => setReference(e.target.value)}
+        fullWidth
+        InputLabelProps={{className: "inputLabel"}}
+        InputProps={{className: "input"}}
+      />
+      <TextField
+        sx={{marginBottom: 2}}
+        id="outlined-search"
         label="Armoire de stockage"
         type={"text"}
-        name="label"
         value={storage ? storage : ""}
         onChange={(e) => setStorage(e.target.value)}
         fullWidth
@@ -219,12 +211,11 @@ export default function ModalForm({open, toggleDrawerAdd}) {
           labelId="demo-simple-select-label"
           id="demo-simple-select"
           value={category ? category : ""}
-          label="Date d'acquisition"
+          label="Catégorie"
           onChange={(e) => setCategory(e.target.value)}
-          name="condition"
         >
           {categories.map((category) => (
-            <MenuItem value={category.value}>{category.label}</MenuItem>
+            <MenuItem value={category.label}>{category.label}</MenuItem>
           ))}
         </Select>
       </FormControl>
@@ -237,34 +228,33 @@ export default function ModalForm({open, toggleDrawerAdd}) {
           value={condition ? condition : ""}
           label="Date d'acquisition"
           onChange={(e) => setCondition(e.target.value)}
-          name="condition"
         >
-          <MenuItem value={"available"}>Bon état</MenuItem>
-          <MenuItem value={"unavailable"}>Mauvais état</MenuItem>
-        </Select>
-      </FormControl>
-
-      <FormControl sx={{marginBottom: 2}} fullWidth>
-        <InputLabel id="demo-simple-select-label">Statut</InputLabel>
-        <Select
-          labelId="demo-simple-select-label"
-          id="demo-simple-select"
-          value={status ? status : ""}
-          label="Statut"
-          onChange={(e) => setStatus(e.target.value)}
-          name="status"
-        >
-          <MenuItem value={"available"}>Disponible</MenuItem>
-          <MenuItem value={"unavailable"}>Indisponible</MenuItem>
+          <MenuItem value={"new"}>Neuf</MenuItem>
+          <MenuItem value={"good"}>Bon état</MenuItem>
+          <MenuItem value={"used"}>Usagé</MenuItem>
+          <MenuItem value={"bad"}>Mauvais état</MenuItem>
+          <MenuItem value={"broken"}>Cassé</MenuItem>
+          <MenuItem value={"lost"}>Perdu</MenuItem>
         </Select>
       </FormControl>
 
       <TextField
         sx={{marginBottom: 2}}
         id="outlined-search"
+        label="Description"
+        type={"text"}
+        value={description ? description : ""}
+        onChange={(e) => setDescription(e.target.value)}
+        fullWidth
+        InputLabelProps={{className: "inputLabel"}}
+        InputProps={{className: "input"}}
+      />
+
+      <TextField
+        sx={{marginBottom: 2}}
+        id="outlined-search"
         label="Image"
         type={"text"}
-        name="image"
         value={image ? image : ""}
         onChange={(e) => setImage(e.target.value)}
         fullWidth

@@ -1,22 +1,64 @@
-/* .inventory-admin-dashboard-title {
-  font-family: "poppins-semibold";
-  color: #000000;
-  margin-bottom: 0.5em;
-} */
-
-/* .MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation1.css-1m7qhau-MuiPaper-root {
-  width: 100%;
-  height: 100%;
+/* .css-cwhad8-MuiDateCalendar-root {
+  background-color: #11151a !important;
 }
 
+.css-dplwbx-MuiPickersCalendarHeader-label,
+.css-1tkx1wf-MuiSvgIcon-root-MuiPickersCalendarHeader-switchViewIcon,
+.css-rhmlg1-MuiTypography-root-MuiDayCalendar-weekDayLabel,
+.css-154cs8t-MuiPickersYear-root {
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+} */
 
+/* .css-156tkzh-MuiButtonBase-root-MuiPickersDay-root {
+  background-color: #1a2027 !important;
+  font-family: "poppins-regular" !important;
+  color: #ffffff !important;
+} */
 
-.inventory-admin-dashboard-box {
-  background-color: #ffffff;
-  border-radius: 10px;
-  padding: 1em;
-  margin-bottom: 1em;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.16);
-  width: 100%;
-  height: 100%;
+/* .css-156tkzh-MuiButtonBase-root-MuiPickersDay-root:hover {
+  background-color: #66666686 !important;
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+
+.css-1hiwve1-MuiButtonBase-root-MuiPickersDay-root.Mui-selected {
+  background-color: #ffffff !important;
+  color: #1a2027 !important;
+  font-family: "poppins-regular" !important;
+} */
+
+/* .css-1hiwve1-MuiButtonBase-root-MuiPickersDay-root.Mui-selected:hover {
+  background-color: #ffffff !important;
+  color: #1a2027 !important;
+} */
+
+/* .css-1hiwve1-MuiButtonBase-root-MuiPickersDay-root.Mui-selected:hover {
+  border-radius: 50%;
+}
+
+.css-1beqopj-MuiPickersYear-yearButton:hover {
+  background-color: #66666686 !important;
+  color: #ffffff !important;
+}
+
+.css-1beqopj-MuiPickersYear-yearButton {
+  background-color: #1a2027 !important;
+  font-family: "poppins-regular" !important;
+}
+
+.css-1beqopj-MuiPickersYear-yearButton.Mui-selected {
+  background-color: #ffffff !important;
+  color: #1a2027 !important;
+}
+
+.css-156tkzh-MuiButtonBase-root-MuiPickersDay-root.Mui-selected {
+  background-color: #27292b !important;
+  color: #ffffff !important;
+  font-family: "poppins-regular" !important;
+}
+
+.css-1hiwve1-MuiButtonBase-root-MuiPickersDay-root.Mui-selected:hover {
+  background-color: #ffffff !important;
+  color: #1a2027 !important;
 } */

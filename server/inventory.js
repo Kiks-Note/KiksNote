@@ -41,21 +41,29 @@ module.exports = (app, db, pathname, connection, user, fs) => {
       image,
       condition,
       description,
+      reference,
+      category,
     } = req.body;
 
     try {
-      await db.collection("inventory").doc().set({
-        label: label,
-        price: price,
-        acquisitiondate: acquisitiondate,
-        campus: campus,
-        storage: storage,
-        image: image,
-        condition: condition,
-        description: description,
-        createdAt: new Date(),
-        createdBy: user.ref,
-      });
+      await db
+        .collection("inventory")
+        .doc()
+        .set({
+          label: label,
+          price: parseFloat(price),
+          acquisitiondate: new Date(acquisitiondate),
+          campus: campus,
+          storage: storage,
+          image: image,
+          condition: condition,
+          description: description,
+          createdAt: new Date(),
+          category: category,
+          reference: reference,
+          createdBy: user.ref,
+          status: "available",
+        });
 
       res.send("Document successfully written!");
     } catch (err) {
@@ -68,27 +76,33 @@ module.exports = (app, db, pathname, connection, user, fs) => {
     const {
       label,
       price,
-      acquisitiondate,
+      // acquisitiondate,
       campus,
       storage,
       image,
       condition,
       description,
+      reference,
+      category,
+      status,
       lastModifiedBy,
     } = req.body;
 
-    console.log(req.body);
+    // console.log(req.body);
 
     try {
       await db.collection("inventory").doc(deviceId).update({
         label: label,
         price: price,
-        acquisitiondate: acquisitiondate,
+        // acquisitiondate: new Date(acquisitiondate),
         campus: campus,
         storage: storage,
         image: image,
         condition: condition,
         description: description,
+        reference: reference,
+        category: category,
+        status: status,
         lastModifiedBy: lastModifiedBy,
         lastModifiedAt: new Date(),
       });
@@ -127,21 +141,9 @@ module.exports = (app, db, pathname, connection, user, fs) => {
       storage,
       condition,
       description,
+      status,
       lastModifiedBy,
     } = req.body;
-
-    let updatedStatus = status;
-    if (status === "Disponible") {
-      updatedStatus = "available";
-    } else if (status === "Emprunté") {
-      updatedStatus = "borrowed";
-    } else if (status === "En réparation") {
-      updatedStatus = "inrepair";
-    } else if (status === "Indisponible") {
-      updatedStatus = "unavailable";
-    } else if (status === "Demandé") {
-      updatedStatus = "requested";
-    }
 
     try {
       await db.collection("inventory").doc(deviceId).update({
@@ -152,6 +154,7 @@ module.exports = (app, db, pathname, connection, user, fs) => {
         storage: storage,
         condition: condition,
         description: description,
+        status: status,
         lastModifiedBy: lastModifiedBy,
         lastModifiedAt: new Date(),
       });

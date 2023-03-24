@@ -20,25 +20,39 @@ import {Rings} from "react-loader-spinner";
 import styled from "styled-components";
 import theme from "../../theme";
 import "../../styles/inventoryGlobal.css";
+import {w3cwebsocket} from "websocket";
+import {DatePicker} from "@mui/x-date-pickers";
+import timeConverter from "../../functions/TimeConverter";
+import moment from "moment";
 
 export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
-  // const [device, setDevice] = useState({});
   const [loading, setLoading] = useState(true);
-  // const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [label, setLabel] = useState("");
+  const [price, setPrice] = useState("");
+  const [acquisitiondate, setAcquisitiondate] = useState(null);
+  const [image, setImage] = useState("");
+  const [storage, setStorage] = useState(null);
+  const [condition, setCondition] = useState("");
+  const [description, setDescription] = useState("");
   const [reference, setReference] = useState("");
   const [campus, setCampus] = useState(null);
   const [category, setCategory] = useState(null);
   const [status, setStatus] = useState(null);
-  const [image, setImage] = useState("");
   const [data, setData] = useState([]);
-  const [selectDates, setSelectedDates] = useState([
-    {
-      startDate: new Date(),
-      endDate: null,
-      key: "selection",
-    },
-  ]);
+
+  useEffect(() => {
+    open === true &&
+      (async () => {
+        const ws = new w3cwebsocket("ws://localhost:5050/categories");
+
+        ws.onmessage = (e) => {
+          const data = JSON.parse(e.data);
+          setCategories(data);
+          setLoading(false);
+        };
+      })();
+  }, [open === true]);
 
   useEffect(() => {
     open === true &&
@@ -47,11 +61,16 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
           .get(`http://localhost:5050/inventory/${deviceId}`)
           .then((res) => {
             setLabel(res.data.label);
-            setReference(res.data.ref);
+            setReference(res.data.reference);
             setCategory(res.data.category);
             setCampus(res.data.campus);
             setStatus(res.data.status);
             setImage(res.data.image);
+            setAcquisitiondate(timeConverter(res.data.acquisitiondate));
+            setPrice(res.data.price);
+            setStorage(res.data.storage);
+            setCondition(res.data.condition);
+            setDescription(res.data.description);
             setLoading(false);
             setData(res.data);
           })
@@ -70,7 +89,13 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
       category === data.category &&
       campus === data.campus &&
       status === data.status &&
-      image === data.image
+      image === data.image &&
+      acquisitiondate === data.acquisitiondate &&
+      price === data.price &&
+      storage === data.storage &&
+      condition === data.condition &&
+      description === data.description &&
+      status === data.status
     ) {
       return toast.error("Aucune modification n'a été effectuée");
     }
@@ -83,6 +108,11 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
         campus,
         status,
         image,
+        // acquisitiondate: moment(acquisitiondate).format("YYYY-MM-DD"),
+        price,
+        storage,
+        condition,
+        description,
         lastModifiedBy: "admin",
       }),
       {
@@ -143,10 +173,9 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
           <TextField
             sx={{marginBottom: 2}}
             id="outlined-search"
-            type={"text"}
-            name="label"
             label="Nom du periphérique"
-            value={label}
+            type={"text"}
+            value={label ? label : ""}
             onChange={(e) => setLabel(e.target.value)}
             fullWidth
             InputLabelProps={{className: "inputLabel"}}
@@ -155,49 +184,106 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
           <TextField
             sx={{marginBottom: 2}}
             id="outlined-search"
+            label="Prix"
+            type={"number"}
+            value={price ? price : ""}
+            onChange={(e) => setPrice(e.target.value)}
+            fullWidth
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
+            inputProps={{min: 0, step: 0.01}}
+          />
+          <TextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            label="Date d'acquisition"
             type={"text"}
-            name="reference"
+            value={
+              acquisitiondate
+                ? moment(acquisitiondate).format("DD/MM/YYYY")
+                : ""
+            }
+            onChange={(e) => setAcquisitiondate(e.target.value)}
+            fullWidth
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
+            // disabled
+          />
+          {/* 
+          <DatePicker
+            fullWidth
+            label="Date d'acquisition"
+            format="DD/MM/YYYY"
+            defaultDate={acquisitiondate}
+            value={acquisitiondate ? acquisitiondate : null}
+            onChange={(newValue) => {
+              setAcquisitiondate(newValue);
+            }}
+            sx={{marginBottom: 2, width: "100%"}}
+            renderInput={(params) => <TextField {...params} />}
+          /> */}
+
+          <FormControl sx={{marginBottom: 2}} fullWidth>
+            <InputLabel id="demo-simple-select-label">Campus</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={campus ? campus : ""}
+              label="Campus"
+              onChange={(e) => setCampus(e.target.value)}
+            >
+              <MenuItem value={"Cergy"}>Cergy</MenuItem>
+              <MenuItem value={"Paris"}>Paris</MenuItem>
+              <MenuItem value={"Pontoise"}>Pontoise</MenuItem>
+            </Select>
+          </FormControl>
+
+          <TextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
             label="Référence"
-            value={reference}
+            type={"text"}
+            value={reference ? reference : ""}
             onChange={(e) => setReference(e.target.value)}
             fullWidth
             InputLabelProps={{className: "inputLabel"}}
             InputProps={{className: "input"}}
           />
+          <TextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            label="Armoire de stockage"
+            type={"text"}
+            value={storage ? storage : ""}
+            onChange={(e) => setStorage(e.target.value)}
+            fullWidth
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
+          />
 
-          <TextField
-            sx={{marginBottom: 2}}
-            id="outlined-search"
-            type={"text"}
-            name="category"
-            label="Campus"
-            value={category ? category : ""}
-            onChange={(e) => setCategory(e.target.value)}
-            fullWidth
-            InputLabelProps={{className: "inputLabel"}}
-            InputProps={{className: "input"}}
-          />
-          <TextField
-            sx={{marginBottom: 2}}
-            id="outlined-search"
-            type={"text"}
-            name="campus"
-            label="Campus"
-            value={campus}
-            onChange={(e) => setCampus(e.target.value)}
-            fullWidth
-            InputLabelProps={{className: "inputLabel"}}
-            InputProps={{className: "input"}}
-          />
+          <FormControl sx={{marginBottom: 2}} fullWidth>
+            <InputLabel id="demo-simple-select-label">Catégorie</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={category ? category : ""}
+              label="Catégorie"
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {categories.map((category) => (
+                <MenuItem value={category.label}>{category.label}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
           <FormControl sx={{marginBottom: 2}} fullWidth>
             <InputLabel id="demo-simple-select-label">Statut</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={status}
+              value={status ? status : ""}
               label="Statut"
               onChange={(e) => setStatus(e.target.value)}
-              name="status"
             >
               <MenuItem value={"available"}>Disponible</MenuItem>
               <MenuItem value={"unavailable"}>Indisponible</MenuItem>
@@ -207,13 +293,42 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
             </Select>
           </FormControl>
 
+          <FormControl sx={{marginBottom: 2}} fullWidth>
+            <InputLabel id="demo-simple-select-label">Etat</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={condition ? condition : ""}
+              label="Date d'acquisition"
+              onChange={(e) => setCondition(e.target.value)}
+            >
+              <MenuItem value={"new"}>Neuf</MenuItem>
+              <MenuItem value={"good"}>Bon état</MenuItem>
+              <MenuItem value={"used"}>Usagé</MenuItem>
+              <MenuItem value={"bad"}>Mauvais état</MenuItem>
+              <MenuItem value={"broken"}>Cassé</MenuItem>
+              <MenuItem value={"lost"}>Perdu</MenuItem>
+            </Select>
+          </FormControl>
+
+          <TextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            label="Description"
+            type={"text"}
+            value={description ? description : ""}
+            onChange={(e) => setDescription(e.target.value)}
+            fullWidth
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
+          />
+
           <TextField
             sx={{marginBottom: 2}}
             id="outlined-search"
             label="Image"
             type={"text"}
-            name="image"
-            value={image}
+            value={image ? image : ""}
             onChange={(e) => setImage(e.target.value)}
             fullWidth
             InputLabelProps={{className: "inputLabel"}}
@@ -224,12 +339,7 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
               <Typography
                 variant="subtitle2"
                 color={"text.secondary"}
-                sx={{
-                  alignSelf: "flex-start",
-                  marginBottom: 2,
-                  fontFamily: theme.fonts.regular,
-                  color: theme.colors.components.light,
-                }}
+                sx={{alignSelf: "flex-start", marginBottom: 2}}
               >
                 Aperçu de l'image :
               </Typography>

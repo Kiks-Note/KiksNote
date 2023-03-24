@@ -10,6 +10,7 @@ import SideBarModify from "./SideBarModify";
 import CustomSnackbar from "./CustomSnackBar";
 import axios from "axios";
 import {toast, Toaster} from "react-hot-toast";
+import {Avatar, Typography} from "@mui/material";
 
 export default function TestDataGrid() {
   const [data, setData] = useState([]);
@@ -64,14 +65,135 @@ export default function TestDataGrid() {
   };
 
   const columns = [
-    {field: "id", headerName: "ID", width: 100},
-    {field: "deviceId", headerName: "Matériel ID", width: 225},
-    {field: "label", headerName: "Nom", width: 200},
-    {field: "ref", headerName: "Référence", width: 175},
-    {field: "category", headerName: "Catégorie", width: 150},
-    {field: "campus", headerName: "Campus", width: 100},
-    {field: "date", headerName: "Date", width: 130},
-    {field: "status", headerName: "Statut", width: 130},
+    {
+      field: "id",
+      headerName: "ID",
+      width: 100,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-semibold"}}>
+            {params.row.id}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "image",
+      headerName: "Image",
+      width: 100,
+      renderCell: (params) => {
+        return <Avatar src={params.row.image} sx={{width: 50, height: 50}} />;
+      },
+    },
+    {
+      field: "deviceId",
+      headerName: "Matériel ID",
+      width: 225,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-regular"}}>
+            {params.row.deviceId}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "label",
+      headerName: "Nom",
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-regular"}}>
+            {params.row.label}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "reference",
+      headerName: "Référence",
+      width: 175,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-regular"}}>
+            {params.row.reference}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "category",
+      headerName: "Catégorie",
+      width: 150,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-regular"}}>
+            {params.row.category}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "campus",
+      headerName: "Campus",
+      width: 100,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-regular"}}>
+            {params.row.campus}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "status",
+      headerName: "Statut",
+      width: 130,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-regular"}}>
+            {params.row.status}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "condition",
+      headerName: "Etat",
+      width: 130,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-regular"}}>
+            {params.row.condition}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "date",
+      headerName: "Ajouté le",
+      width: 130,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-regular"}}>
+            {params.row.date}
+          </Typography>
+        );
+      },
+    },
+    {
+      field: "acquisitiondate",
+      headerName: "Acquis le",
+      width: 130,
+      renderCell: (params) => {
+        return (
+          <Typography sx={{fontFamily: "poppins-regular"}}>
+            {params.row.acquisitiondate}
+          </Typography>
+        );
+      },
+    },
+
     {
       field: "action",
       headerName: "Action",
@@ -110,9 +232,10 @@ export default function TestDataGrid() {
   const rows = data.map((item, i) => {
     return {
       id: i,
+      image: item.image,
       deviceId: item.id,
       label: item.label,
-      ref: item.ref,
+      reference: item.reference,
       category: item.category,
       campus: item.campus,
       status:
@@ -125,7 +248,27 @@ export default function TestDataGrid() {
           : item.status === "borrowed"
           ? "Emprunté"
           : "Inconnu",
+      condition:
+        item.condition === "new"
+          ? "Neuf"
+          : item.condition === "used"
+          ? "Usagé"
+          : item.condition === "broken"
+          ? "Cassé"
+          : item.condition === "lost"
+          ? "Perdu"
+          : item.condition === "missing"
+          ? "Manquant"
+          : item.condition === "good"
+          ? "Bon état"
+          : item.condition === "bad"
+          ? "Mauvais état"
+          : "Inconnu",
+
       date: moment(timeConverter(item.createdAt)).format("DD.MM.YYYY"),
+      acquisitiondate: moment(timeConverter(item.acquisitiondate)).format(
+        "DD.MM.YYYY"
+      ),
     };
   });
 
@@ -157,6 +300,7 @@ export default function TestDataGrid() {
               columns={columns}
               rows={rows}
               pageSize={pageSize}
+              rowHeight={60}
               onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
               rowsPerPageOptions={[15, 30, 50]}
               // sx={{background: "white"}}
