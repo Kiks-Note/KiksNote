@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -27,7 +27,10 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [errorMessage, setMessageError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [errorEmail, setErrorEmail] = useState(true);
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [errorPassword, setErrorPassword] = useState(false);
+  const [messageEmail, setMessageEmail] = useState("");
+  const [messagePassword, setMessagePassword] = useState("");
   const regex = /@edu\.esiee-it\.fr/;
 
   const navigate = useNavigate();
@@ -35,18 +38,11 @@ const Login = () => {
   const onChangeEmail = (e) => {
     e.preventDefault();
     setEmail(e.target.value);
-    if(regex.test(email)){
-      setErrorEmail(false);
-    }
-    else{
-      setErrorEmail(true);
-    }
   };
 
   const onChangePassword = (e) => {
     e.preventDefault();
     setPassword(e.target.value);
-    console.log(password);
   };
 
   const handleClickShowPassword = () => {
@@ -57,8 +53,9 @@ const Login = () => {
     event.preventDefault();
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
+
+
+  const login = async (email, password) => {
     await axios
       .post("http://localhost:5050/auth/login", {
         email,
@@ -73,6 +70,39 @@ const Login = () => {
         (err) => setMessageError(err.response.data),
         console.log(errorMessage)
       );
+  }
+
+  const verifInputErrors = (email, password) => {
+    if (email === "") {
+      setErrorEmail(true);
+      setMessageEmail("Email requis");
+    }
+    else if (regex.test(email)) {
+      setErrorEmail(false);
+      setMessageEmail("");
+    }
+    else {
+      setErrorEmail(true);
+      setMessageEmail("L'email doit finir par @edu.esiee-it.fr");
+    }
+    if (password === "") {
+      setErrorPassword(true);
+      setMessagePassword("Password requis");
+    }
+    else if (password.length >= 6) {
+      setErrorPassword(false);
+      setMessagePassword("");
+    }
+    else {
+      setErrorPassword(true);
+      setMessagePassword("Le mot de passe est incorrect");
+    }
+  }
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    login(email, password);
+    verifInputErrors(email, password);
   };
 
   return (
@@ -134,15 +164,8 @@ const Login = () => {
                   defaultValue={email}
                   onChange={onChangeEmail}
                   error={errorEmail}
+                  helperText={messageEmail}
                 />
-                {/* {showError && (
-                  <Typography
-                    sx={{ fontWeight: "bold" }}
-                    className="error-text-login"
-                  >
-                    L'email est incorrecte
-                  </Typography>
-                )} */}
               </Container>
               {/* password label and input */}
               <Container
@@ -169,6 +192,8 @@ const Login = () => {
                   id="input-password"
                   defaultValue={password}
                   onChange={onChangePassword}
+                  error={errorPassword}
+                  helperText={messagePassword}
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -187,22 +212,6 @@ const Login = () => {
                     ),
                   }}
                 />
-                {/* {errorMessage === "Wrong password" && (
-                  <Typography
-                    sx={{ fontWeight: "bold" }}
-                    className="error-text-login"
-                  >
-                    Le mot de passe est incorrect
-                  </Typography>
-                )} */}
-                {/* {showError && (
-                  <Typography
-                    sx={{ fontWeight: "bold" }}
-                    className="error-text-login"
-                  >
-                    L'email ou le mot de passe est incorrect
-                  </Typography>
-                )} */}
               </Container>
               <Container
                 sx={{
@@ -211,7 +220,7 @@ const Login = () => {
                 }}
               >
                 <Link
-                  href="/askresetpass"
+                  href="/askresetpassword"
                   sx={{
                     color: "#7a52e1",
                     textDecoration: "none",
