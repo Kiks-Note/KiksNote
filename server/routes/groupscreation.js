@@ -1,5 +1,5 @@
-module.exports = () => {
-    app.get("/users", (res) => {
+module.exports = (app, db) => {
+    app.get("/users", (req, res) => {
         db.collection("users")
             .get()
             .then((snapshot) => {

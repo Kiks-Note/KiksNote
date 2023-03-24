@@ -7,90 +7,34 @@ import CasinoIcon from '@mui/icons-material/Casino';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import "./Groups.scss";
 
-const tasks = [
-    {
-        id: "1",
-        name: "Lucie",
-    },
-    {
-        id: "2",
-        name: "Celian",
-    },
-    {
-        id: "3",
-        name: "Killian",
-    },
-    {
-        id: "4",
-        name: "Antoine",
-    },
-    {
-        id: "5",
-        name: "Johan",
-    },
-    {
-        id: "6",
-        name: "Rui",
-    },
-    {
-        id: "7",
-        name: "Louis",
-    },
-    {
-        id: "8",
-        name: "Jules",
-    },
-    {
-        id: "9",
-        name: "Mohammed",
-    },
-    {
-        id: "10",
-        name: "Eddy",
-    },
-    {
-        id: "11",
-        name: "Lucas",
-    },
-    {
-        id: "12",
-        name: "Alan",
-    },
-    {
-        id: "13",
-        name: "Etienne",
-    },
-    {
-        id: "14",
-        name: "Adrien",
-    },
-];
 
-
-const colContent = {
-    students: {
-        name: "Students",
-        items: tasks,
-    },
-};
 
 
 function App() {
-    const getUsers = () => {
-        axios.get("http://localhost:4000/users").then((res) => {
+    // For PO view
+    const getStudents = (classStudents) => {
+        axios.get("http://localhost:5050/users").then((res) => {
+            const students = [];
+            res.data.user.forEach(element => {
+                if (element.class === classStudents) students.push(element);
+            });
             return res.data
         });
     }
 
-    const [columns, setColumns] = useState(colContent);
-    const [students, setStudents] = useState(getUsers());
+    const colContent = {
+        students: {
+            name: "Students",
+            items: getStudents("L2-paris"),
+        },
+    };
 
-    function addStudent(columnId, student, columns) {
+    const [columns, setColumns] = useState(colContent);
+
+    function moveOnClick(columnId, student, columns) {
         columns[columnId].items.push(student);
         setColumns({ ...columns });
     }
-
-    console.log(students);
 
     const onDragEnd = (result) => {
         if (!result.destination) return;
@@ -132,7 +76,7 @@ function App() {
             // move the item directly to the clicked column
             const columnId = destination.droppableId;
             const student = columns[columnId].items[destination.index];
-            addStudent(columnId, student, columns);
+            moveOnClick(columnId, student, columns);
         }
     };
 
@@ -341,7 +285,7 @@ function App() {
                                                         onClick={() => {
                                                             if (columns.students.items.length > 0) {
                                                                 const student = columns.students.items.pop();
-                                                                addStudent(columnId, student, columns);
+                                                                moveOnClick(columnId, student, columns);
                                                                 setColumns({ ...columns });
                                                             }
                                                         }}
