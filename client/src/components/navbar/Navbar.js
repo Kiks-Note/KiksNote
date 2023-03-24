@@ -1,5 +1,5 @@
 import * as React from "react";
-import { styled } from "@mui/material/styles";
+import {styled} from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
@@ -19,34 +19,41 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import BallotIcon from "@mui/icons-material/Ballot";
+
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { ColorModeContext } from "../../utils/Theme";
 import { useTheme } from "@mui/material/styles";
 import Container from "@mui/material/Container";
 /// Drawer width where is open
+
+import { accountAuthService } from "../../services/accountAuth";
+import { useNavigate } from "react-router-dom";
+
+
 const drawerWidth = 240;
 /// Drawer open style
 const openedMixin = (theme) => ({
-  width: drawerWidth,
-  transition: theme.transitions.create("width", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflowX: "hidden",
+    width: drawerWidth,
+    transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.enteringScreen,
+    }),
+    overflowX: "hidden",
 });
 /// Drawer close style
 const closedMixin = (theme) => ({
-  transition: theme.transitions.create("width", {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  overflowX: "hidden",
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up("sm")]: {
-    width: `calc(${theme.spacing(8)} + 1px)`,
-  },
+    transition: theme.transitions.create("width", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen,
+    }),
+    overflowX: "hidden",
+    width: `calc(${theme.spacing(7)} + 1px)`,
+    [theme.breakpoints.up("sm")]: {
+        width: `calc(${theme.spacing(8)} + 1px)`,
+    },
 });
+
 /// Drawer Header style
 const DrawerHeader = styled("div")(({ theme }) => ({
   display: "flex",
@@ -55,23 +62,24 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
+
 }));
 /// Drawer style
 const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  width: drawerWidth,
-  flexShrink: 0,
-  whiteSpace: "nowrap",
-  boxSizing: "border-box",
-  ...(open && {
-    ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
-  }),
-  ...(!open && {
-    ...closedMixin(theme),
-    "& .MuiDrawer-paper": closedMixin(theme),
-  }),
+    shouldForwardProp: (prop) => prop !== "open",
+})(({theme, open}) => ({
+    width: drawerWidth,
+    flexShrink: 0,
+    whiteSpace: "nowrap",
+    boxSizing: "border-box",
+    ...(open && {
+        ...openedMixin(theme),
+        "& .MuiDrawer-paper": openedMixin(theme),
+    }),
+    ...(!open && {
+        ...closedMixin(theme),
+        "& .MuiDrawer-paper": closedMixin(theme),
+    }),
 }));
 
 export default function MiniDrawer({ element }) {
@@ -79,11 +87,20 @@ export default function MiniDrawer({ element }) {
   const colorMode = React.useContext(ColorModeContext);
   const theme = useTheme();
   /// Function for open or Close Drawer
+  const navigate = useNavigate();
+
   const handleDrawerOpen = () => {
-    setOpen(true);
+      setOpen(true);
   };
   const handleDrawerClose = () => {
-    setOpen(false);
+      setOpen(false);
+  };
+
+  const handleLogout = () => {
+    accountAuthService.logout();
+    localStorage.removeItem("userUid")
+    localStorage.removeItem("user")
+    navigate('/login');
   };
 
   return (
@@ -177,6 +194,7 @@ export default function MiniDrawer({ element }) {
                   justifyContent: open ? "initial" : "center",
                   px: 2.5,
                 }}
+                onClick={handleLogout}
               >
                 <ListItemIcon
                   sx={{
@@ -202,13 +220,13 @@ export default function MiniDrawer({ element }) {
           )}
         </List>
       </Drawer>
-      <Container maxWidth disableGutters={true}>
-        {element}
-      </Container>
+      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+        <>{element}</>
+      </Box>
     </Box>
   );
 }
 
 MiniDrawer.propTypes = {
-  element: PropTypes.any,
+    element: PropTypes.func,
 };
