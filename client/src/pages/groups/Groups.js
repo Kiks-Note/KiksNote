@@ -4,7 +4,7 @@ import CachedIcon from "@mui/icons-material/Cached";
 import LockIcon from "@mui/icons-material/Lock";
 import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
-import "./groups.scss";
+import "./Groups.scss";
 
 const tasks = [
   {
