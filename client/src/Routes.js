@@ -16,15 +16,19 @@ function RoutesProvider() {
     <BrowserRouter>
       <Routes>
         {/* EXAMPLES */}
-        <Route path="/login" element={<Login></Login>}></Route>
-        <Route path="/signup" element={<Register />} />
+
+        {/* <Route path="/login" element={<Login />} /> */}
+        {/* <Route path="/register" element={<Register />} /> */}
+        <Route path="/register" element={<Register />} />
 
         <Route element={<PrivateRoutes />}>
           <Route path="/appel" element={<Navbar element={<Appel />} />} />
-          <Route path="/presence/:id" element={<Navbar element={<Presence />} />} />
+          <Route
+            path="/presence/:id"
+            element={<Navbar element={<Presence />} />}
+          />
           <Route path="/groups" element={<Navbar element={<Groups />} />} />
           <Route path="/" element={<Home />} />
-          <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
         </Route>
