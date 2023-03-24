@@ -26,6 +26,7 @@ const ws = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
+require("./routes/groupscreation")(app, db);
 
 // const wss = new WebSocket.Server({ server });
 require("./routes/call")(app, ws, db, parse);
