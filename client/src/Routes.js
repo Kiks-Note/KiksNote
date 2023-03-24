@@ -1,8 +1,12 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import PrivateRoutes from "./Utils/PrivateRoutes";
+import Navbar from "./components/navbar/Navbar";
+
+import Home from "./pages/home/Home.js";
+import Blog from "./pages/blog/Blog";
 import Test from "./Pages/Test";
 import Register from "./Pages/register/Register"
 import Login from "./Pages/login/Login"
-import PrivateRoutes from "./Utils/PrivateRoutes";
 
 function RoutesProvider() {
   return (
@@ -14,12 +18,16 @@ function RoutesProvider() {
         <Route path="/signup" element={<Register />} />
         <Route path="/test" element={<Test />} />
 
-        <Route element={<PrivateRoutes />}>
-          {/* <Route path="/" exact element={<Home />} /> */}
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+                <Route element={<PrivateRoutes/>}>
+                    {/* Write here route that you need to be login*/}
+
+                    <Route path="/" element={<Home/>}/>
+                    <Route path="/blog" element={<Blog/>}/>
+
+                </Route>
+            </Routes>
+        </BrowserRouter>
+    );
 }
 
 export default RoutesProvider;

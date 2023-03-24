@@ -1,7 +1,11 @@
 import RoutesProvider from "./Routes";
 
 function App() {
-  return <RoutesProvider />;
+    return (
+        <>
+            <RoutesProvider/>
+        </>
+    );
 }
 
 export default App;
