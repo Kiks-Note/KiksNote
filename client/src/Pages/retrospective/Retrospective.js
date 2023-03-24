@@ -2,6 +2,8 @@ import './Retrospective.scss';
 import TextareaAutosize from 'react-textarea-autosize';
 import {useEffect, useState} from "react";
 
+var selectedRetro = null;
+
 function Retrospective() {
     const [data, setData] = useState([]);
     const useMountEffect = fun => useEffect(fun, [])
@@ -21,30 +23,49 @@ function Retrospective() {
         this.style.height = (this.scrollHeight) + "px";
     }
 
-    function AddPostIt(Categorie)
+    function loadPostitFiller(retroName)
+    {
+        postitFillerSwitchDisplay(true);
+        selectedRetro = retroName;
+    }
+
+    function AddPostIt()
+    {
+        let postitContent = document.querySelector('#postitContent').value;
+        console.log(postitContent);
+        for (let i = 0; i < data.length; i++) {
+            if (data[i].name === selectedRetro) {
+                var dataClone = [...data]
+                dataClone[i].postit = [...dataClone[i].postit,{content:postitContent}]
+                setData(dataClone)
+                break;
+            }
+        }
+        postitFillerSwitchDisplay(false);
+        document.querySelector('#postitContent').value = null
+        selectedRetro = null;
+    }
+
+    function DeletePostIt(retroName, Index)
     {
         for (let i = 0; i < data.length; i++) {
-            if (data[i].name === Categorie){
+            if (data[i].name === retroName){
                 var dataClone = [...data]
-                dataClone[i].postit = [...dataClone[i].postit,{content:""}]
+                dataClone[i].postit.splice(Index,1)
                 setData(dataClone)
-                console.log(data[i])
                 return undefined
             }
         }
     }
 
-    function DeletePostIt(Categorie, Index)
+    function postitFillerSwitchDisplay(show)
     {
-        for (let i = 0; i < data.length; i++) {
-            if (data[i].name === Categorie){
-                var dataClone = [...data]
-                dataClone[i].postit.splice(Index,1)
-                setData(dataClone)
-                console.log(data[i])
-                return undefined
-            }
-        }
+        let postitFiller = document.querySelector('#PostItFiller');
+        console.log(show);
+        if(show)
+            postitFiller.style.display = "flex";
+        else
+            postitFiller.style.display = "none";
     }
 
     return(
@@ -65,10 +86,16 @@ function Retrospective() {
                             </button>
                         </div>
                         )}
-                        <button key={retro.name + "-A"} onClick={AddPostIt.bind(this,retro.name)}>Coller un post-it</button>
+                        <button id="AddPostItBtn"
+                        onClick={loadPostitFiller.bind(this, retro.name)}>+</button>
                     </div>
                 </div>
             )}
+            <div id="PostItFiller">
+                <input id="postitContent" placeholder='Écrire un nouveau postit ...' type='text'/>
+                <button id="validate" onClick={AddPostIt}>Valider</button>
+                <button id="close" onClick={postitFillerSwitchDisplay.bind(this, false)}>X</button>
+            </div>
         </div>
     );
 }

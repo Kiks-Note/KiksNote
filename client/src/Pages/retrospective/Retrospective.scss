@@ -1,16 +1,18 @@
-#Retrospective{
+#Retrospective {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100vw;
   height: 100vh;
-  #Tableau{
+
+  #Tableau {
     position: absolute;
     z-index: -1;
     width: 90vw;
     height: 90vh;
   }
-  .Categorie{
+
+  .Categorie {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,28 +21,33 @@
     border: solid;
     border-color: black;
     border-radius: 1px;
+
     .CategorieType {
       display: flex;
       align-items: center;
       flex-direction: column;
       width: 100%;
       border-bottom: solid black;
-      img{
+
+      img {
         height: 64px;
         width: 64px;
       }
+
       p {
         text-align: center;
       }
     }
-    .PostSpace{
+
+    .PostSpace {
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: center;
       height: 100%;
       width: 100%;
-      div{
+
+      div {
         display: flex;
         flex-direction: column;
         width: 90%;
@@ -49,21 +56,75 @@
         background-size: 100%;
         box-shadow: black 1px 2.5px 2.5px;
         margin: 5px;
-        .PostIt{
-          background-color: rgba(0,0,0,0);
+
+        .PostIt {
+          background-color: rgba(0, 0, 0, 0);
           width: 100%;
           resize: none;
           outline: none;
           text-align: center;
         }
-        .PostitFlip{
-          background-color: rgba(0,0,0,0);
+
+        .PostitFlip {
+          background-color: rgba(0, 0, 0, 0);
           position: relative;
           width: 10%;
           height: fit-content;
           left: 90.1%;
         }
       }
+    }
+  }
+
+  #AddPostItBtn {
+    font-size: 40px;
+    position: absolute;
+    bottom: 10px;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    background-color: blue;
+    margin: 5px;
+  }
+
+  #AddPostItBtn:hover {
+    background-color: rgb(0,0,200);
+  }
+
+  #PostItFiller {
+    // display: flex;
+    display: none;
+    flex-direction: column;
+    position: absolute;
+    margin: auto;
+    height: 250px;
+    width: 500px;
+    border-radius: 30px;
+    box-shadow: 2px 2px 7px;
+    border: 6px double black;
+    background-color: white;
+    z-index: 5;
+
+    input {
+      border: 1px solid black;
+      border-radius: 7px;
+      height: 150px;
+      margin: 10px;
+      text-align: center;
+    }
+
+    #validate {
+      margin: auto;
+      background-color: lightgray;
+      border: 1px solid black;
+      border-radius: 15px;
+      width: 90px;
+    }
+
+    #close {
+      position: absolute;
+      right: -30px;
+      top: -30px;
     }
   }
 }
