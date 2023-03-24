@@ -207,57 +207,57 @@ const Register = () => {
                             </span>
                         </div>
                         <div className="m-4 select-div">
-                        <label 
-                            id="label-status"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                            htmlFor="input-status"
-                        >
-                            <select name="status"
-                                id="input-status"
-                                onChange={(e)=>setUserStatus(e.target.value)}>
-                                <option disabled={true} value="">
-                                    --Status--
-                                </option>
-                                <option value="etudiant">Étudiant</option>
-                                <option value="po">PO</option>
-                                <option value="pedago">Pedago</option>
-                            </select>
-                        </label>
-                        { userStatus === "etudiant" ?
-                        <label
-                            id="label-class"
-                            className="block mb-2 text-sm font-medium text-gray-900"
-                            htmlFor="input-class"
-                        >
-                            <select name="status"
-                                    id="input-class"
-                                    onChange={(e)=>setUserClass(e.target.value)}>
-                                <option disabled={true} value="">
-                                    --Classe--
-                                </option>
-                                <option value="L1-paris">L1-Paris</option>
-                                <option value="L1-cergy">L1-Cergy</option>
-                                <option value="L2-paris">L2-Paris</option>
-                                <option value="L2-cergy">L2-Cergy</option>
-                                <option value="L3-paris">L3-Paris</option>
-                                <option value="L3-cergy">L3-Cergy</option>
-                                <option value="M1-lead">M1-LeadDev</option>
-                                <option value="M1-gaming">M1-Gaming</option>
-                                <option value="M2-lead">M2-LeadDev</option>
-                                <option value="M2-gaming">M2-Gaming</option>
-                            </select>
-                        </label> : <div></div>
-                        }
+                            <label
+                                id="label-status"
+                                className="block mb-2 text-sm font-medium text-gray-900"
+                                htmlFor="input-status"
+                            >
+                                <select name="status"
+                                        id="input-status"
+                                        onChange={(e)=>setUserStatus(e.target.value)}>
+                                    <option disabled={true} value="">
+                                        --Status--
+                                    </option>
+                                    <option value="etudiant">Étudiant</option>
+                                    <option value="po">PO</option>
+                                    <option value="pedago">Pedago</option>
+                                </select>
+                            </label>
+                            { userStatus === "etudiant" ?
+                                <label
+                                    id="label-class"
+                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                    htmlFor="input-class"
+                                >
+                                    <select name="status"
+                                            id="input-class"
+                                            onChange={(e)=>setUserClass(e.target.value)}>
+                                        <option disabled={true} value="">
+                                            --Classe--
+                                        </option>
+                                        <option value="L1-paris">L1-Paris</option>
+                                        <option value="L1-cergy">L1-Cergy</option>
+                                        <option value="L2-paris">L2-Paris</option>
+                                        <option value="L2-cergy">L2-Cergy</option>
+                                        <option value="L3-paris">L3-Paris</option>
+                                        <option value="L3-cergy">L3-Cergy</option>
+                                        <option value="M1-lead">M1-LeadDev</option>
+                                        <option value="M1-gaming">M1-Gaming</option>
+                                        <option value="M2-lead">M2-LeadDev</option>
+                                        <option value="M2-gaming">M2-Gaming</option>
+                                    </select>
+                                </label> : <div></div>
+                            }
                         </div>
                         <div className="flex justify-center">
-                        <button
-                            id="btn-register"
-                            className="bg-[#7751d9] hover:bg-[#ab278e] text-white text-sm font-base py-1 px-3 rounded "
-                            type="submit"
-                            onClick={handleSubmit}
-                        >
-                            S'inscrire
-                        </button>
+                            <button
+                                id="btn-register"
+                                className="bg-[#7751d9] hover:bg-[#ab278e] text-white text-sm font-base py-1 px-3 rounded "
+                                type="submit"
+                                onClick={handleSubmit}
+                            >
+                                S'inscrire
+                            </button>
                         </div>
                     </form>
                     <div className="text-xs font-medium text-center m-3">
@@ -265,16 +265,16 @@ const Register = () => {
                         <Link
                             className="text-xs font-medium text-[#B312FF] dark:text-[#B312FF] hover:underline"
                             to="/login">
-                                Se connecter
+                            Se connecter
                         </Link>
                     </div>
-            </div>
+                </div>
                 <div className="image-container">
                     <ReactLogo className="image py-3"></ReactLogo>
                 </div>
+            </div>
+            <ToastContainer></ToastContainer>
         </div>
-        <ToastContainer></ToastContainer>
-    </div>
     )
 }
 

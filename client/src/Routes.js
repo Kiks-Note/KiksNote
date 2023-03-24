@@ -2,8 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PrivateRoutes from "./Utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
 
-import Home from "./pages/home/Home.js";
-import Blog from "./pages/blog/Blog";
+import Home from "./Pages/home/Home.js";
+import Blog from "./Pages/blog/Blog.js";
 import Test from "./Pages/Test";
 import Register from "./Pages/register/Register"
 import Login from "./Pages/login/Login"
