@@ -12,6 +12,7 @@ const {db, auth} = require("./firebase");
 const {signInWithEmailAndPassword} = require("./firebase_auth");
 const {parse} = require("url");
 
+
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -39,6 +40,8 @@ ws.on("request", (request) => {
     require("./blog_back.js")(app, pathname, db, connection);
     require("./routes/call")(app, db, connection, pathname);
     require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
+    require("./dashboard")(app, db, ws, parse);
+
 });
 
 app.get("/users", (req, res) => {
