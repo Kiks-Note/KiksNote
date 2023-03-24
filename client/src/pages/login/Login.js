@@ -59,7 +59,9 @@ const Login = () => {
         password,
       })
       .then((res) => {
-        console.log(res.data.user)
+        console.log(res.data.userUid)
+        localStorage.setItem("userUid", res.data.userUid)
+        localStorage.setItem("user", JSON.stringify(res.data.user))
         accountAuthService.saveTokens(res.data.token, res.data.refreshToken);
         navigate("/");
       })
