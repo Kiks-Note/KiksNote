@@ -29,12 +29,6 @@ function Blog() {
     })();
   }, []);
 
-  // const getTutos = async () => {
-  //   const response = await axios.get("http://localhost:5050/tutos");
-  //   setTutos(response.data);
-  //   // console.log(response.data);
-  // };
-
   const toggleDrawerModify = (event, open) => {
     if (
       event &&
@@ -45,26 +39,6 @@ function Blog() {
     }
     setOpenModify(open);
   };
-
-  // const getTutosId = async () => {
-  //   const response = await axios.get("http://localhost:5050/tutos/id");
-  //   setTutosId(response.data);
-  //   // console.log(response.data);
-  // };
-
-  // useEffect(() => {
-  //   getTutos();
-  //   getTutosId();
-  // }, []);
-  // <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-  //     <Grid item xs={4}>
-  //         <Item>1</Item>
-  //     </Grid>
-  //     <Grid item xs={8}>
-  //         <Item>2</Item>
-  //     </Grid>
-  //
-  // </Grid>
 
   return (
     <>
@@ -83,8 +57,6 @@ function Blog() {
           <Grid
             item
             xs={10}
-            // justifyContent="center" alignItems="flex-start"
-            // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
           >
             <Grid
               container
@@ -119,9 +91,6 @@ function Blog() {
                 alignItems="flex-start"
                 // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
               >
-                {/*{tutosId.length > 0*/}
-                {/*  ? tutosId.map((blogId) => <ImgMediaCard id={blogId} />)*/}
-                {/*  : Array.from(new Array(9)).map(() => <TutoSkeleton />)}*/}
 
                 {!loading
                   ? blog.map((blog) => (
@@ -136,19 +105,6 @@ function Blog() {
                       />
                     ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}
-
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<TutoSkeleton/>*/}
               </Grid>
             </Grid>
           </Grid>
