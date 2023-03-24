@@ -23,7 +23,6 @@ const ws = new webSocketServer({
   autoAcceptConnections: false,
 });
 require("./routes/groupscreation")(app, db);
-
 require("./routes/call")(app, ws, db, parse);
 require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
 
