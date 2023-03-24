@@ -153,7 +153,7 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         type={"text"}
         name="label"
         value={description ? description : ""}
-        onChange={(e) => setLabel(e.target.value)}
+        onChange={(e) => setDescription(e.target.value)}
         fullWidth
       />
 
@@ -166,10 +166,7 @@ export default function ModalForm({open, toggleDrawerAdd, reloadData}) {
         value={acquisitiondate ? acquisitiondate : ""}
         onChange={(e) => setAcquisitiondate(e.target.value)}
         fullWidth
-        Datetime
       />
-
-      <Datetime />;
 
 
       <FormControl sx={{marginBottom: 2}} fullWidth>
