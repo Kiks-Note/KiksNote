@@ -24,6 +24,26 @@ import userObj from "../../userObj";
 const drawerWidth = 275;
 const admin = true;
 
+import Person2Icon from "@mui/icons-material/Person2";
+import PropTypes from "prop-types";
+import HomeIcon from "@mui/icons-material/Home";
+import DashboardIcon from "@mui/icons-material/Dashboard";
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
+import BallotIcon from "@mui/icons-material/Ballot";
+
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import {ColorModeContext} from "../../utils/Theme";
+import {useTheme} from "@mui/material/styles";
+import Container from "@mui/material/Container";
+/// Drawer width where is open
+
+import {accountAuthService} from "../../services/accountAuth";
+import {useNavigate} from "react-router-dom";
+
+const drawerWidth = 240;
+/// Drawer open style
 const openedMixin = (theme) => ({
   width: drawerWidth,
   backgroundColor: "#1A2027",
@@ -36,7 +56,7 @@ const openedMixin = (theme) => ({
   }),
   overflowX: "hidden",
 });
-
+/// Drawer close style
 const closedMixin = (theme) => ({
   transition: theme.transitions.create("width", {
     easing: theme.transitions.easing.sharp,
@@ -53,6 +73,7 @@ const closedMixin = (theme) => ({
   },
 });
 
+/// Drawer Header style
 const DrawerHeader = styled("div")(({theme}) => ({
   display: "flex",
   alignItems: "center",
@@ -62,7 +83,7 @@ const DrawerHeader = styled("div")(({theme}) => ({
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
 }));
-
+/// Drawer style
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== "open",
 })(({theme, open}) => ({
@@ -133,14 +154,23 @@ const adminRoutes = [
 export default function MiniDrawer({element}) {
   const [open, setOpen] = React.useState(false);
   const user = userObj;
+  const colorMode = React.useContext(ColorModeContext);
+  const theme = useTheme();
+  /// Function for open or Close Drawer
   const navigate = useNavigate();
 
   const handleDrawerOpen = () => {
     setOpen(true);
   };
-
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const handleLogout = () => {
+    accountAuthService.logout();
+    localStorage.removeItem("userUid");
+    localStorage.removeItem("user");
+    navigate("/login");
   };
 
   return (
@@ -181,16 +211,55 @@ export default function MiniDrawer({element}) {
           }}
         />
         <List>
-          {userRoutes.map((page) => (
-            <ListItem
-              onClick={() => {
-                navigate(page.route, {replace: true});
-              }}
-              key={page.id}
-              disablePadding
-              sx={{display: "block"}}
-            >
+          {[
+            {
+              id: 1,
+              name: "Accueil",
+              route: "/",
+              icon: (
+                <HomeIcon style={{color: theme.palette.custom.iconDrawer}} />
+              ),
+            },
+            {
+              id: 2,
+              name: "Agile",
+              route: "#",
+              icon: (
+                <BallotIcon style={{color: theme.palette.custom.iconDrawer}} />
+              ),
+            },
+            {
+              id: 3,
+              name: "Profil",
+              route: "#",
+              icon: (
+                <Person2Icon style={{color: theme.palette.custom.iconDrawer}} />
+              ),
+            },
+            {
+              id: 4,
+              name: "Espace de travail",
+              route: "/tabList",
+              icon: (
+                <DashboardIcon
+                  style={{color: theme.palette.custom.iconDrawer}}
+                />
+              ),
+            },
+            {
+              id: 5,
+              name: "Blog",
+              route: "/blog",
+              icon: (
+                <AlternateEmailIcon
+                  style={{color: theme.palette.custom.iconDrawer}}
+                />
+              ),
+            },
+          ].map((page) => (
+            <ListItem key={page.id} disablePadding sx={{display: "block"}}>
               <ListItemButton
+                href={page.route}
                 sx={{
                   minHeight: 48,
                   justifyContent: "center",
@@ -330,7 +399,11 @@ export default function MiniDrawer({element}) {
               id: 1,
               name: "Déconnexion",
               route: "#",
-              icon: <LogoutOutlinedIcon style={{color: "white"}} />,
+              icon: (
+                <LogoutOutlinedIcon
+                  style={{color: theme.palette.custom.iconDrawer}}
+                />
+              ),
             },
           ].map((page) => (
             <ListItem
@@ -347,6 +420,7 @@ export default function MiniDrawer({element}) {
                   justifyContent: "center",
                   px: 2.5,
                 }}
+                onClick={handleLogout}
               >
                 <ListItemIcon
                   sx={{
@@ -384,6 +458,23 @@ export default function MiniDrawer({element}) {
               </ListItemButton>
             </ListItem>
           ))}
+          {theme.mode === "dark" ? (
+            <IconButton
+              sx={{ml: 1}}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
+              <Brightness7Icon />
+            </IconButton>
+          ) : (
+            <IconButton
+              sx={{ml: 1}}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
+              <Brightness4Icon />
+            </IconButton>
+          )}
         </List>
       </Drawer>
       <Box component="main" sx={{flexGrow: 1, p: 3}}>

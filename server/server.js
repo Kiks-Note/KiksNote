@@ -1,61 +1,97 @@
 const express = require("express");
 const cors = require("cors");
-const app = express();
-const {db} = require("./firebase");
 const bodyParser = require("body-parser");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const dotenv = require("dotenv").config();
+const app = express();
 const webSocketServer = require("websocket").server;
 const http = require("http");
-const PORT = process.env.PORT || 5050;
+const {db, auth} = require("./firebase");
 const {parse} = require("url");
+const saltRounds = 12;
 const fs = require("fs");
-const moment = require("moment");
 
-const user = {
-  firstname: "Rui",
-  lastname: "Gaspar",
-  mail: "ruigaspar@hotmail.com",
-  birthdate: "28-10-2003",
-  class: "L2 ALT Cergy",
-  admin: false,
-  ref: "/users/ruigaspar@hotmail.com",
-};
+const {signInWithEmailAndPassword, authClient} = require("./firebase_auth");
 
+app.use(express.json());
+app.use(cors());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+const PORT = process.env.PORT || 5050;
 const server = http.createServer(app);
-
+server.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
+});
 const ws = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
+require("./routes/groupscreation")(app, db);
 
 ws.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const {pathname} = parse(request.httpRequest.url);
-  // console.log("request.httpServer => ", request);
-  // console.log("request.url => ", request.pathname);
+  console.log("request.httpServer => ", request);
+  console.log("request.url => ", request.pathname);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
-  require("./inventory")(app, db, pathname, connection, user, fs);
+
+  require("./blog_back.js")(app, pathname, db, connection);
+  require("./routes/call")(app, db, connection, pathname);
+  require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
+  require("./dashboard")(app, db, ws, parse);
+  require("./inventory")(app, db, pathname, connection, fs);
 });
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
+app.post("/register", (req, res) => {
+  const {
+    userEmail,
+    userPassword,
+    userFirstName,
+    userLastName,
+    userBirthDate,
+    userStatus,
+    userClass,
+  } = req.body;
+  auth
+    .createUser({
+      email: userEmail,
+      password: userPassword,
+    })
+    .then((user) => {
+      if (userClass === "") {
+        db.collection("users")
+          .doc(user.uid)
+          .set({
+            firstname: userFirstName,
+            lastname: userLastName,
+            password: bcrypt.hashSync(userPassword, saltRounds),
+            dateofbirth: new Date(userBirthDate),
+            status: userStatus,
+            email: userEmail,
+          });
+      } else {
+        db.collection("users")
+          .doc(user.uid)
+          .set({
+            firstname: userFirstName,
+            lastname: userLastName,
+            password: bcrypt.hashSync(userPassword, saltRounds),
+            dateofbirth: new Date(userBirthDate),
+            status: userStatus,
+            email: userEmail,
+            class: userClass,
+          });
+      }
+      res.send({message: "User created successfully"});
+    })
+    .catch((err) => {
+      console.log(err);
+    });
 });
-app.use(express.json());
-app.use(
-  cors({
-    origin: ["http://localhost:3000"],
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true,
-    exposedHeaders: ["set-cookie"],
-  })
-);
-app.use(bodyParser.json());
 
-// require("./inventory")(app, db, ws, parse, fs, moment);
-
-server.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+// const wss = new WebSocket.Server({ server });
+require("./routes/call")(app, ws, db, parse);
+require("./routes/auth")(app, db, jwt, auth, signInWithEmailAndPassword);
