@@ -6,7 +6,7 @@ import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
-import Navbar from "./components/navbar/Navbar";
+import MiniDrawerNotConnected from "./components/drawer/MiniDrawerNotConnected";
 import Register from "./pages/register/Register";
 import Tuto from "./pages/blog/Tuto";
 import Login from "./pages/login/Login";
@@ -16,14 +16,21 @@ function RoutesProvider() {
     <BrowserRouter>
       <Routes>
         {/* EXAMPLES */}
-        <Route path="/login" element={<Login></Login>}></Route>
-        <Route path="/signup" element={<Register />} />
 
+        <Route
+          path="/login"
+          element={<MiniDrawerNotConnected element={<Login />} />}
+        />
+        <Route
+          path="/signup"
+          element={<MiniDrawerNotConnected element={<Register />} />}
+        />
+        {/* {Route} */}
         <Route element={<PrivateRoutes />}>
-          <Route path="/appel" element={<Navbar element={<Appel />} />} />
-          <Route path="/presence/:id" element={<Navbar element={<Presence />} />} />
-          <Route path="/groups" element={<Navbar element={<Groups />} />} />
           <Route path="/" element={<Home />} />
+          <Route path="/appel" element={<Appel />} />
+          <Route path="/presence/:id" element={<Presence />} />
+          <Route path="/groups" element={<Groups />} />
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
