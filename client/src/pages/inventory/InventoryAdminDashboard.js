@@ -615,7 +615,7 @@ const InventoryAdminDashboard = () => {
                       Lien
                     </TableCell>
                     <TableCell
-                      sx={{color: "white", fontFamily: "poppins-semibold"}}
+                      sx={{color: "white", fontFamily: "poppins-semibold", width:"10vw"}}
                     >
                       Price
                     </TableCell>
@@ -623,6 +623,11 @@ const InventoryAdminDashboard = () => {
                       sx={{color: "white", fontFamily: "poppins-semibold"}}
                     >
                       Motivation
+                    </TableCell>
+                    <TableCell
+                      sx={{color: "white", fontFamily: "poppins-semibold"}}
+                    >
+                      status
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -648,16 +653,25 @@ const InventoryAdminDashboard = () => {
                         <TableCell
                           sx={{color: "white", fontFamily: "poppins-regular"}}
                         >
-                          {suggestions.statut === "available"
-                            ? "Disponible"
-                            : suggestions.statut === "borrowed"
-                            ? "Emprunté"
-                            : suggestions.statut === "inrepair"
-                            ? "En réparation"
-                            : suggestions.statut === "requested"
-                            ? "Demandé"
+                          {suggestions.price}
+                        </TableCell>
+                        <TableCell
+                          sx={{color: "white", fontFamily: "poppins-regular"}}
+                        >
+                          {suggestions.motivation}
+                        </TableCell>
+                        <TableCell
+                          sx={{color: "white", fontFamily: "poppins-regular"}}
+                        >
+                          {suggestions.status === "waiting"
+                            ? "en attente"
+                            : suggestions.status === "accepted"
+                            ? "accepté"
+                            : suggestions.status === "refused"
+                            ? "Refusé"
                             : "Non connu"}
                         </TableCell>
+                        
                         <TableCell>
                           <VisibilityIcon
                             style={{color: "white", cursor: "pointer"}}

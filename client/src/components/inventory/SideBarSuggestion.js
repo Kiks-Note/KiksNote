@@ -20,6 +20,7 @@ export default function ModalForm({open, toggleDrawerSuggestion}) {
   const [link,  setLink] = useState("");
   const [motivation, setMotivation] = useState("");
   const [price, setPrice] = useState("");
+  const [status, setStatus] = useState("");
 
   const addSuggestion = async () => {
     if (!link || !motivation || !price || !label || !description) {
@@ -34,6 +35,7 @@ export default function ModalForm({open, toggleDrawerSuggestion}) {
             price: price,
             label: label,
             description: description,
+            status: status,
           }),
           {
             success: () => {
@@ -141,6 +143,7 @@ export default function ModalForm({open, toggleDrawerSuggestion}) {
         sx={{marginBottom: 2}}
         fullWidth
         onClick={() => {
+          setStatus("waiting")
           addSuggestion();
         }}
       >

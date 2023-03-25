@@ -65,7 +65,7 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.post("/addSuggestion", async (req, res) => {
-    const {link, motivation, price, label, description} = req.body;
+    const {link, motivation, price, label, description, status} = req.body;
 
     try {
       await db.collection("devices_ideas").doc().set({
@@ -76,6 +76,7 @@ module.exports = (app, db, user, ws) => {
         description: description,
         createdAt: new Date(),
         createdBy: user.ref,
+        status : status,
 
       });
 
@@ -209,39 +210,7 @@ module.exports = (app, db, user, ws) => {
   // 1 - recuperer l'id de la suggestion
   // 2 - chercher dans la colletion la doc avec l'id 
   // 3 - update la doc avec le nouveau status - try and catch
-  app.put("//inventory/suggestions/:deviceId", async (req, res) => {
-    const {deviceId} = req.params;
-    const {status} = req.body;
-
-    let updatedStatus = status;
-    if (status === "Disponible") {
-      updatedStatus = "available";
-    } else if (status === "Emprunté") {
-      updatedStatus = "borrowed";
-    } else if (status === "En réparation") {
-      updatedStatus = "inrepair";
-    } else if (status === "Indisponible") {
-      updatedStatus = "unavailable";
-    } else if (status === "Demandé") {
-      updatedStatus = "requested";
-    }
-
-    try {
-      await db.collection("inventory").doc(deviceId).update({
-        label: label,
-        ref: ref,
-        category: category,
-        campus: campus,
-        status: updatedStatus,
-        lastModifiedBy: lastModifiedBy,
-        lastModifiedAt: new Date(),
-      });
-
-      res.send("Document successfully updated!");
-    } catch (err) {
-      console.log(err);
-    }
-  });
+  
 
   // Refusé
   // 1 - recuperer l'id de la suggestion
