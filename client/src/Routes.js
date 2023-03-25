@@ -10,6 +10,8 @@ import Navbar from "./components/navbar/Navbar";
 import Tuto from "./pages/blog/Tuto";
 import Ressources from "./pages/ressources/Ressources";
 import CreateCard from "./pages/ressources/CreateCard";
+import PDFBacklogCartView from "./pages/ressources/PDFBacklogCardView";
+import PDFSupport from "./pages/ressources/PDFSupportCardView";
 
 function RoutesProvider() {
   return (
@@ -29,6 +31,8 @@ function RoutesProvider() {
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/ressources" element={<Ressources />} />
           <Route path="/createCard" element={<CreateCard />} />
+          <Route path="/pdfbacklog" element={<PDFBacklogCartView />} />
+          <Route path="/pdfsupport" element={<PDFSupport />} />
         </Route>
       </Routes>
     </BrowserRouter>
