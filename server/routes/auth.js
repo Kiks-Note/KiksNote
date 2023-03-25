@@ -15,7 +15,7 @@ module.exports = (
             const customToken = await auth.createCustomToken(decodedToken.uid);
             const docRef = await db.collection("users");
             const snapshot = await docRef.doc(userCredential.user.uid).get();
-            return res.status(200).send({ token: customToken, refreshToken: userCredential.user.stsTokenManager.refreshToken, user: snapshot.data(), userUid : userCredential.user.uid });
+            return res.status(200).send({ token: customToken, refreshToken: userCredential.user.stsTokenManager.refreshToken, user: snapshot.data(), userUid: userCredential.user.uid });
           });
         }
       ).catch((error) => {
