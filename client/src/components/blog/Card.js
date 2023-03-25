@@ -59,6 +59,7 @@ export default function ImgMediaCard({
         <Grid item xs={2} sm={4} md={5}>
           <Card sx={{ maxWidth: 380, m: 2 }}>
             <CardMedia
+
               component="img"
               // alt="green iguana"
               height="10"

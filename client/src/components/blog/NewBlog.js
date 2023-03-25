@@ -111,12 +111,12 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
 
             />
 
-            <textarea disabled value={
+            {/* <textarea  disabled value={
               draftToHtml(convertToRaw(editorState.getCurrentContent()))
 
             }>
 
-            </textarea>
+            </textarea> */}
           </div>
         </Typography>
 
