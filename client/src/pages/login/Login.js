@@ -165,6 +165,9 @@ const Login = () => {
                   id="input-email"
                   defaultValue={email}
                   onChange={onChangeEmail}
+                  sx={{
+                    input: { color: 'black' }
+                  }}
                   error={errorEmail}
                   helperText={messageEmail}
                 />
@@ -194,6 +197,9 @@ const Login = () => {
                   id="input-password"
                   defaultValue={password}
                   onChange={onChangePassword}
+                  sx={{
+                    input: { color: 'black' }
+                  }}
                   error={errorPassword}
                   helperText={messagePassword}
                   InputProps={{
@@ -237,6 +243,7 @@ const Login = () => {
                   className="login-button"
                   sx={{
                     backgroundColor: "#7a52e1",
+                    color: "white",
                   }}
                   variant="contained"
                 >
