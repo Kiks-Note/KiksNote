@@ -26,6 +26,7 @@ import Brightness7Icon from "@mui/icons-material/Brightness7";
 import {useTheme} from "@mui/material/styles";
 import {ColorModeContext} from "../../utils/Theme";
 import {accountAuthService} from "../../services/accountAuth";
+import axios from "axios";
 
 const drawerWidth = 275;
 const admin = true;
@@ -154,10 +155,13 @@ export default function MiniDrawer({element}) {
   };
 
   const handleLogout = () => {
-    accountAuthService.logout();
-    localStorage.removeItem("userUid");
-    localStorage.removeItem("user");
-    navigate("/login");
+    axios.post("http://localhost:5050/auth/logout").then((res) => {
+      console.log(res);
+      accountAuthService.logout();
+      localStorage.removeItem("userUid");
+      localStorage.removeItem("user");
+      navigate("/login");
+    });
   };
 
   return (

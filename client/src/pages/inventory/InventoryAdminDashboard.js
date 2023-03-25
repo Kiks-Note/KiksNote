@@ -37,6 +37,7 @@ import theme from "../../theme";
 import timeConverter from "../../functions/TimeConverter";
 import moment from "moment";
 import {UserListDialog} from "../../components/inventory/UserListDialog";
+import useAuth from "../../hooks/useAuth";
 
 const Item = styled(Paper)(({theme}) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -201,6 +202,7 @@ const InventoryAdminDashboard = () => {
   const [todayRequests, setTodayRequests] = useState([]);
   const [emailsDialogOpen, setEmailsDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const {user} = useAuth();
 
   const toggleDrawerAdd = (event, open) => {
     if (
@@ -227,6 +229,8 @@ const InventoryAdminDashboard = () => {
   useEffect(() => {
     (async () => {
       const ws = new w3cwebsocket("ws://localhost:5050/todayRequests");
+
+      console.log(user);
 
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
