@@ -1,11 +1,24 @@
 import * as React from "react";
-import { DataGrid, GridToolbarQuickFilter } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridToolbarQuickFilter,
+  gridPageCountSelector,
+  gridPageSelector,
+  useGridApiContext,
+  useGridSelector,
+} from "@mui/x-data-grid";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Modal from "../modal/Modal";
 import Stack from "@mui/material/Stack";
+import Pagination from "@mui/material/Pagination";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderSharpIcon from "@mui/icons-material/FavoriteBorderSharp";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
-// Search bar
+// * Search bar with Modal for
+
 function QuickSearchToolbar() {
   return (
     <>
@@ -20,33 +33,94 @@ function QuickSearchToolbar() {
           pb: 0,
         }}
       >
-        <GridToolbarQuickFilter />
+        <GridToolbarQuickFilter
+          quickFilterParser={(searchInput) =>
+            searchInput
+              .split(",")
+              .map((value) => value.trim())
+              .filter((value) => value !== "")
+          }
+        />
         <Modal />
       </Stack>
     </>
   );
 }
-// Icon for the column
+
+// * Icon for the column
 export function SortedDescendingIcon() {
   return <ExpandMoreIcon className="icon" />;
 }
-// Icon for the column
+//*  Icon for the column
 export function SortedAscendingIcon() {
   return <ExpandLessIcon className="icon" />;
 }
+// * Pagination for the table
+function CustomPagination() {
+  const apiRef = useGridApiContext();
+  const page = useGridSelector(apiRef, gridPageSelector);
+  const pageCount = useGridSelector(apiRef, gridPageCountSelector);
 
-export default function TableBoard({ rows, columns }) {
   return (
-    <div style={{ height: 400, width: "100%" }}>
+    <Pagination
+      color="primary"
+      count={pageCount}
+      page={page + 1}
+      onChange={(event, value) => apiRef.current.setPage(value - 1)}
+    />
+  );
+}
+
+function Action() {
+  const navigate = useNavigate();
+  navigate("/board");
+}
+// * Column of table
+const columns = [
+  {
+    field: "sprint_name",
+    headerName: "Nom du sprint",
+    flex: 1,
+  },
+  {
+    field: "sprint_group",
+    headerName: "Groupe du sprint",
+    flex: 1,
+  },
+  {
+    field: "start",
+    headerName: "Date de début",
+    flex: 1,
+  },
+  {
+    field: "end",
+    headerName: "Date de fin",
+    flex: 1,
+  },
+  {
+    field: "favorite",
+    headerName: "Favoris",
+    flex: 1,
+    disableReorder: true,
+    type: "boolean",
+    renderCell: ({ value }) => (value === true ? <FavoriteIcon color="secondary" /> : <FavoriteBorderSharpIcon />),
+  },
+  {
+    field: "links",
+    headerName: "Actions",
+    flex: 1,
+    disableReorder: true,
+    onclick: Action,
+    renderCell: ({ value }) => <Link href={value}>Accéder</Link>,
+  },
+];
+export default function TableBoard({ rows }) {
+  return (
+    <div style={{ height: 500, width: "100%" }}>
       <DataGrid
         sx={{
-          margin: 4,
-          boxShadow: 2,
-          border: 2,
-          borderColor: "primary.light",
-          "& .MuiDataGrid-cell:hover": {
-            color: "primary.main",
-          },
+          boxShadow: 1,
+          border: 1,
         }}
         rows={rows}
         columns={columns}
@@ -62,11 +136,13 @@ export default function TableBoard({ rows, columns }) {
           Toolbar: QuickSearchToolbar,
           ColumnSortedDescendingIcon: SortedDescendingIcon,
           ColumnSortedAscendingIcon: SortedAscendingIcon,
+          Pagination: CustomPagination,
         }}
         disableColumnFilter
         disableColumnSelector
         disableDensitySelector
         disableColumnMenu
+        isRowSelectable={() => false}
       />
     </div>
   );
