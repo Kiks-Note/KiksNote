@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React,{useState, useEffect} from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -8,23 +8,44 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
+import { useSelector, useDispatch } from "react-redux";
+
 
 import Card from './Card';
 
+
 const ImpactMapping = () => {
+
+    const impactMapping = useSelector((state) => state.impactMapping);
+
+    const [showCard, setShowCard] = useState(false);
+    const [columnIndex, setColumnIndex] = useState('');
+
     const [cardObjectif, setCardObjectif] = useState([]);
     const [cardActors, setCardActors] = useState([]);
     const [cardImpacts, setCardImpacts] = useState([]);
     const [cardDeliverables, setCardDeliverables] = useState([]);
 
-  const addCard = () => {
+
+    useEffect(() => {
+        console.log('impact', impactMapping);
+        setCardObjectif(impactMapping.goal);
+        setCardActors(impactMapping.actors);
+        setCardImpacts(impactMapping.impacts);
+        setCardDeliverables(impactMapping.deliverables);
+    }, [impactMapping]);
+
+  const addCard = (index) => {
     console.log("addCard");
-    setCardObjectif([...cardObjectif, <Card title="Adrien" type="card"/>]);
+    setShowCard(true);
+    setColumnIndex(index.toString());
   };
 
-  const confirmCard = () =>{
-    console.log("confirmCard");
+  const handleConfirmForm = () => {
+    setShowCard(false);
+    setColumnIndex('');
   };
+
   return (
       <TableContainer component={Paper}>
         <Table>
@@ -39,28 +60,57 @@ const ImpactMapping = () => {
           <TableBody>
             <TableRow>
               <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-                {cardObjectif}
+                {cardObjectif.map((texte)=>{
+                    return <Card type="card" texte={texte} key={texte}/>
+                })}
+                {showCard && columnIndex === '0' && (
+                    <Card type="form" column={0} onConfirmForm={handleConfirmForm}/>
+                )}
+                <IconButton
+                    aria-label="add"
+                    onClick={() => addCard(0)}
+                >
+                  <AddIcon />
+                </IconButton>
+              </TableCell>
 
-                <IconButton aria-label="add" onClick={addCard}>
-                  <AddIcon />
-                </IconButton>
-              </TableCell>
               <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-              <Card title="Adrien" type="form"/>
-                <IconButton aria-label="add" onClick={addCard}>
+              {cardActors.map((texte)=>{
+                    return <Card type="card" texte={texte} key={texte}/>
+                })}
+              {showCard && columnIndex === '1' && (
+                    <Card type="form" column={1} onConfirmForm={handleConfirmForm}/>
+                )}
+                <IconButton aria-label="add"  onClick={() => addCard(1)}>
                   <AddIcon />
                 </IconButton>
               </TableCell>
+
               <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-                <IconButton aria-label="add" onClick={addCard}>
+              {cardImpacts.map((texte)=>{
+                    return <Card type="card" texte={texte} key={texte}/>
+                })}
+                {showCard && columnIndex === '2' && (
+                    <Card type="form" column={2} onConfirmForm={handleConfirmForm}/>
+                )}
+                <IconButton aria-label="add"  onClick={() => addCard(2)}>
                   <AddIcon />
                 </IconButton>
               </TableCell>
+
               <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-                <IconButton aria-label="add" onClick={addCard}>
+              {cardDeliverables.map((texte)=>{
+                    return <Card type="card" texte={texte} key={texte}/>
+                })}
+                
+              {showCard && columnIndex === '3' && (
+                    <Card type="form" column={3} onConfirmForm={handleConfirmForm}/>
+                )}
+                <IconButton aria-label="add"  onClick={() => addCard(3)}>
                   <AddIcon />
                 </IconButton>
               </TableCell>
+              
             </TableRow>
           </TableBody>
         </Table>
