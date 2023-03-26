@@ -7,7 +7,6 @@ function Presence() {
   const { id } = useParams();
   const ip = process.env.REACT_APP_IP;
   const dataFetchedRef = useRef(false);
-  // const ws = new WebSocket(`ws://${ip}:5050`);
   const tempCall = useRef();
   const userID = localStorage.getItem("user_uid");
   const navigate = useNavigate();
@@ -61,7 +60,6 @@ function Presence() {
         } else {
           scanEleveCopy.push(userItem);
         }
-
         tempCall.current.student_scan = scanEleveCopy;
         updateCall();
       });

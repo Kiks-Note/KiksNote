@@ -16,17 +16,19 @@ function Appel() {
     }
   }, []);
 
-  const getUsers = () => {
-    axios
+  const getUsers = async () => {
+    await axios
       .get(`http://${ip}:5050/user`, { params: { id: userID } })
       .then((res) => {
         user.current = res.data;
         user.current.status == "po" ? setAdmin(true) : setAdmin(false);
+        return (
+          <div>
+            {admin ? <AppelProf></AppelProf> : <AppelEleve></AppelEleve>}
+          </div>
+        );
       });
   };
-  return (
-    <div>{admin ? <AppelProf></AppelProf> : <AppelEleve></AppelEleve>}</div>
-  );
 }
 
 export default Appel;
