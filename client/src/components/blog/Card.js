@@ -24,9 +24,19 @@ export default function ImgMediaCard({
   dislike,
   id,
   type,
+  event,
 
 
 }) {
+
+  const deleteBlog = function () {
+    axios.delete(`http://localhost:5050/blog_event/${id}`).then((res) => {
+      console.log(res);
+    }).catch((err) => {
+      console.log(err);
+    });
+  };
+
 
 
   const navigate = useNavigate(); function handleClick() { navigate(`/blog/${id}`); }
@@ -77,6 +87,8 @@ export default function ImgMediaCard({
                 {/*sisi*/}
               </Typography>
             </CardContent>
+
+
             <CardActions>
               {like}
               <Checkbox
@@ -113,6 +125,12 @@ export default function ImgMediaCard({
                 {description}
                 {/*sisi*/}
               </Typography>
+
+            </CardContent>
+            <CardContent>
+              <Typography color="black">
+                {event}
+              </Typography>
             </CardContent>
             <CardActions>
               {like}
@@ -132,6 +150,11 @@ export default function ImgMediaCard({
                 onClick={handleClick}
 
               >Ouvrir</Button>
+              <Button onClick={
+                deleteBlog
+              }
+
+              >Supprimer</Button>
 
             </CardActions>
           </Card>

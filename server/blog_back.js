@@ -75,6 +75,7 @@ module.exports = (app, db, ws) => {
             }
         );
 
+
     });
 
 
@@ -151,7 +152,7 @@ module.exports = (app, db, ws) => {
 
 
     app.post("/blog/newblog", async (req, res) => {
-        const { title, description, photo, inputEditorState } = req.body;
+        const { title, description, photo, inputEditorState, event } = req.body;
 
 
         if (title == null || title == "") {
@@ -163,6 +164,10 @@ module.exports = (app, db, ws) => {
         if (photo == null || photo == "") {
             return res.status(400).send("Photo is required");
         }
+        if (inputEditorState == null || inputEditorState == "") {
+            return res.status(400).send("inputEditorState is required");
+        }
+
 
 
 
@@ -175,6 +180,7 @@ module.exports = (app, db, ws) => {
                 description: description,
                 photo: photo,
                 inputEditorState: inputEditorState,
+                event: event,
 
             });
             res.send("Document successfully written!");
@@ -186,6 +192,11 @@ module.exports = (app, db, ws) => {
 
     app.get("/blog_event/:id", async (req, res) => {
         const snapshot = await db.collection("blog_evenements").doc(req.params.id).get();
+        res.send(snapshot.data());
+    })
+
+    app.delete("/blog_event/:id", async (req, res) => {
+        const snapshot = await db.collection("blog_evenements").doc(req.params.id).delete();
         res.send(snapshot.data());
     })
 

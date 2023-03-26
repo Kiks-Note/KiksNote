@@ -30,7 +30,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
   const [image, setImage] = useState("");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [inputEditorState, setInputEditorState] = useState("");
-
+  const [event, setEvent] = useState("");
 
   const handleEditorChange = (e) => {
     setEditorState(e);
@@ -43,7 +43,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
   const newBlog = async (e) => {
     e.preventDefault();
 
-    if (!title || !description || !photo || !editorState || !inputEditorState) {
+    if (!title || !description || !photo || !editorState || !inputEditorState || !event) {
       console.log(title, description, photo, editorState);
       toast.error("Veuillez remplir tous les champs");
       return;
@@ -54,7 +54,8 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
       description,
       photo,
       editorState,
-      inputEditorState
+      inputEditorState,
+      event
 
 
     };
@@ -149,6 +150,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             InputProps={{ className: "input" }}
           />
 
+
           <TextField
 
             sx={{ marginBottom: 2 }}
@@ -158,6 +160,22 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             label="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            fullWidth
+            InputLabelProps={{ className: "inputLabel" }}
+            InputProps={{ className: "input" }}
+          >
+
+          </TextField >
+
+          <TextField
+
+            sx={{ marginBottom: 2 }}
+            id="outlined-search"
+            type={"text"}
+            name="Event"
+            label="Event"
+            value={event}
+            onChange={(e) => setEvent(e.target.value)}
             fullWidth
             InputLabelProps={{ className: "inputLabel" }}
             InputProps={{ className: "input" }}
@@ -196,6 +214,9 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
                 image={photo ? photo : ""}
                 alt=""
               />
+
+
+
 
 
             </>
