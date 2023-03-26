@@ -75,7 +75,6 @@ module.exports = (app, db, ws) => {
             }
         );
 
-
     });
 
 
@@ -198,6 +197,7 @@ module.exports = (app, db, ws) => {
     app.delete("/blog_event/:id", async (req, res) => {
         const snapshot = await db.collection("blog_evenements").doc(req.params.id).delete();
         res.send(snapshot.data());
+
     })
 
 };
