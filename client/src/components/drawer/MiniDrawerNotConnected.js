@@ -4,42 +4,27 @@ import { ColorModeContext } from "../../utils/Theme";
 import { useTheme } from "@mui/material/styles";
 import { createBrowserHistory } from "history";
 import { styled } from "@mui/material/styles";
-import { accountAuthService } from "../../services/accountAuth";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import Collapse from "@mui/material/Collapse";
-import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-
-import GroupsIcon from "@mui/icons-material/Groups";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import Person2Icon from "@mui/icons-material/Person2";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
-import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
-import BallotIcon from "@mui/icons-material/Ballot";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import NewspaperIcon from "@mui/icons-material/Newspaper";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import WbIridescentIcon from "@mui/icons-material/WbIridescent";
-import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
-import TimelineIcon from "@mui/icons-material/Timeline";
 import SchoolIcon from "@mui/icons-material/School";
-import BookIcon from "@mui/icons-material/Book";
-
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
 import Logo from "./../../assets/logo/logo.png";
 
 /// Drawer width where is open
@@ -93,18 +78,18 @@ const Drawer = styled(MuiDrawer, {
   }),
 }));
 
-export default function MiniDrawer({ element }) {
+export default function MiniDrawerNotConnected({ element }) {
   const history = createBrowserHistory();
   const [open, setOpen] = React.useState(false);
   const colorMode = React.useContext(ColorModeContext);
   const theme = useTheme();
   const navigate = useNavigate();
-  // List of page for the drawer
+  // List of page for the drawer NOT CONNECTED
   const [listPage, setListPage] = React.useState([
     {
       id: 1,
       name: "Blog",
-      route: "/blog",
+      route: "#",
       icon: (
         <AlternateEmailIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
@@ -112,23 +97,25 @@ export default function MiniDrawer({ element }) {
     {
       id: 2,
       name: "Projet Mis en avant",
-      route: "/projet-etudiant",
+      route: "#",
       icon: <SchoolIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {
       id: 3,
       name: "Connexion",
-      route: "/signup",
+      route: "/login",
       icon: (
-        <LibraryBooksIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+        <ConnectWithoutContactIcon
+          sx={{ color: theme.palette.custom.iconDrawer }}
+        />
       ),
     },
     {
       id: 4,
       name: "Inscription",
-      route: "/login",
+      route: "/signup",
       icon: (
-        <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+        <AccountCircleIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
     },
   ]);
@@ -161,21 +148,8 @@ export default function MiniDrawer({ element }) {
       navigate(route);
     }
   };
-  //To navigate on home
-  const handleAvatarClick = () => {
-    if (history.location.pathname !== "/") {
-      navigate("/");
-    }
-  };
-  //To logout
-  const handleLogout = () => {
-    accountAuthService.logout();
-    localStorage.removeItem("userUid");
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
   // MiniDrawer Types
-  MiniDrawer.propTypes = {
+  MiniDrawerNotConnected.propTypes = {
     element: PropTypes.any.isRequired,
   };
 
@@ -185,17 +159,14 @@ export default function MiniDrawer({ element }) {
         <DrawerHeader>
           {open ? (
             <>
-              <Avatar
+              <img
                 src={Logo}
                 alt="Code Note"
-                sx={{
-                  mr: 1,
-                  bgcolor: "transparent",
-                  width: "fit-content",
+                style={{
+                  height: "3vh",
+                  width: "80%",
                   cursor: "pointer",
                 }}
-                onClick={handleAvatarClick}
-                variant="square"
               />
               <IconButton onClick={handleDrawerClose}>
                 <ChevronLeftIcon
@@ -269,6 +240,9 @@ export default function MiniDrawer({ element }) {
                             minHeight: 48,
                             justifyContent: open ? "initial" : "center",
                             px: 2.5,
+                            "& svg": {
+                              color: theme.palette.custom.iconDrawer,
+                            },
                           }}
                         >
                           <ListItemIcon
@@ -294,8 +268,27 @@ export default function MiniDrawer({ element }) {
           ))}
         </List>
         <Divider />
+        <List>
+          {theme.mode === "dark" ? (
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
+              <Brightness7Icon />
+            </IconButton>
+          ) : (
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
+              <Brightness4Icon />
+            </IconButton>
+          )}
+        </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main">
         <>{element}</>
       </Box>
     </Box>

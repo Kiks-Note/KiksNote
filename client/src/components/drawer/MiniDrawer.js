@@ -256,17 +256,15 @@ export default function MiniDrawer({ element }) {
         <DrawerHeader>
           {open ? (
             <>
-              <Avatar
+              <img
                 src={Logo}
                 alt="Code Note"
-                sx={{
-                  mr: 1,
-                  bgcolor: "transparent",
-                  width: "fit-content",
+                onClick={handleAvatarClick}
+                style={{
+                  height: "3vh",
+                  width: "80%",
                   cursor: "pointer",
                 }}
-                onClick={handleAvatarClick}
-                variant="square"
               />
               <IconButton onClick={handleDrawerClose}>
                 <ChevronLeftIcon
@@ -340,6 +338,9 @@ export default function MiniDrawer({ element }) {
                             minHeight: 48,
                             justifyContent: open ? "initial" : "center",
                             px: 2.5,
+                            "& svg": {
+                              color: theme.palette.custom.iconDrawer,
+                            },
                           }}
                         >
                           <ListItemIcon
@@ -423,7 +424,7 @@ export default function MiniDrawer({ element }) {
           )}
         </List>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main">
         <>{element}</>
       </Box>
     </Box>
