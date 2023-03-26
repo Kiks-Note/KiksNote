@@ -1,5 +1,5 @@
 const {initializeApp} = require("firebase/app");
-const { signInWithEmailAndPassword, getAuth } = require("firebase/auth");
+const { createUserWithEmailAndPassword, signInWithEmailAndPassword, getAuth } = require("firebase/auth");
 
 initializeApp({
   apiKey: process.env.REACT_APP_APIKEY,
@@ -13,4 +13,4 @@ initializeApp({
 
 const authClient = getAuth() 
 
-module.exports = {signInWithEmailAndPassword , authClient};
+module.exports = { createUserWithEmailAndPassword, signInWithEmailAndPassword , authClient};

@@ -1,10 +1,45 @@
-module.exports = (
-  app,
-  db,
-  auth,
-  authClient,
-  signInWithEmailAndPassword
-) => {
+module.exports = (app, db, bcrypt, saltRounds, auth, authClient, createUserWithEmailAndPassword, signInWithEmailAndPassword) => {
+
+
+  app.post("/auth/signup", (req, res) => {
+
+    const { userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass } = req.body;
+
+    let salt = bcrypt.genSaltSync(saltRounds)
+
+    createUserWithEmailAndPassword(authClient, userEmail, userPassword).then((userCredential) => {
+      if (userClass === "") {
+        db.collection("users")
+          .doc(userCredential.user.uid)
+          .set({
+            firstname: userFirstName,
+            lastname: userLastName,
+            password: bcrypt.hashSync(userPassword, salt),
+            dateofbirth: new Date(userBirthDate),
+            status: userStatus,
+            email: userEmail,
+          });
+      } else {
+        db.collection("users")
+          .doc(userCredential.user.uid)
+          .set({
+            firstname: userFirstName,
+            lastname: userLastName,
+            password: bcrypt.hashSync(userPassword, salt),
+            dateofbirth: new Date(userBirthDate),
+            status: userStatus,
+            email: userEmail,
+            class: userClass,
+          });
+      }
+      return res.status(200).send(userCredential);
+    })
+      .catch((err) => {
+        console.log(err)
+        return res.status(401).send(err);
+      });
+  });
+
   app.post("/auth/login", async (req, res) => {
     const { email, password } = req.body;
     try {
