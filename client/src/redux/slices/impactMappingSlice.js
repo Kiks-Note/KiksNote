@@ -10,14 +10,23 @@ const impactMappingSlice = createSlice({
         deliverables:[]
 },
     reducers: {
-        addImpactMapping: (state, action) => {
-            state.push(action.payload);
+        addImpactMappingGoals: (state, action) => {
+            state.goal.push(action.payload.goal)
+        },
+        addImpactMappingActors: (state, action) => {
+            state.actors.push(action.payload.actors)
+        },
+        addImpactMappingImpacts: (state, action) => {
+            state.impacts.push(action.payload.impacts)
+        },
+        addImpactMappingDeliverables: (state, action) => {
+            state.deliverables.push(action.payload.deliverables)
         }
     }
 })
 
 //there you export the function to use it everywhere you want
-export const {addImpactMapping} = impactMappingSlice.actions
+export const {addImpactMappingGoals, addImpactMappingActors, addImpactMappingDeliverables, addImpactMappingImpacts} = impactMappingSlice.actions
 
 
 export default impactMappingSlice.reducer
