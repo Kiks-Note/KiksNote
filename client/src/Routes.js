@@ -17,8 +17,7 @@ function RoutesProvider() {
       <Routes>
         {/* EXAMPLES */}
 
-        {/* <Route path="/login" element={<Login />} /> */}
-        {/* <Route path="/register" element={<Register />} /> */}
+        <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
         <Route element={<PrivateRoutes />}>

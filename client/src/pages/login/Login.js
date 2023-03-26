@@ -222,7 +222,7 @@ const Login = () => {
             <p className="text-sm font-medium text-center m-3">
               Pas encore de compte? CrÃ©ez-en un{" "}
               <Link
-                href="/signup"
+                href="/register"
                 sx={{
                   color: "#7a52e1",
                   textDecoration: "none",
