@@ -19,8 +19,8 @@ module.exports = (app, db) => {
   //   res.status(200).send(users);
   // });
 
-  app.put("/profile/editUser", (req, res) => {
-    const userId = req.body.userId;
+  app.put("/profile/:userId/editUser", (req, res) => {
+    const userId = req.params;
     const userDataToUpdate = req.body.userDataToUpdate;
 
     db.collection("users")
