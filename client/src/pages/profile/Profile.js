@@ -55,7 +55,10 @@ const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/
     mode: "onTouched",
   });
 
+  const userUid = localStorage.getItem("userUid");
+
   useEffect(() => {
+
     if (isSubmitSuccessful) {
       reset({
         dateBirthday: "",
@@ -84,7 +87,7 @@ const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/
     }
   }
   useEffect(() => {
-    // getUser('3F96JHuEydboq4QGhxC2sXKS50s2');
+    // getUser(userUid);
     // getUser();
     
   }, []);
@@ -226,7 +229,7 @@ const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/
             component="form"
             noValidate
             autoComplete="off"
-            onSubmit={handleSubmit((data)=>(sendData('3F96JHuEydboq4QGhxC2sXKS50s2')))}
+            onSubmit={handleSubmit((data)=>(sendData(userUid)))}
           >
             {isSubmitSuccessful && (
               <Alert severity="success">
