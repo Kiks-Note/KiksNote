@@ -3,61 +3,6 @@ module.exports = (app, db, ws, parse) => {
     await db.collection("dashboard").doc(req.params.dashboardId).update({ favorite: req.params.favorite });
   });
 
-  ws.on("request", (request) => {
-    const connection = request.accept(null, request.origin);
-    const { pathname } = parse(request.httpRequest.url);
-    connection ? console.log("connection ok") : console.log("connection failed");
-
-    if (pathname === "/dashboard") {
-      console.log("je suis dans /dashboard");
-
-      connection.on("message", (message) => {
-        console.log("message => ", message);
-        console.log("message.utf8Data => ", message.utf8Data);
-        const studentId = JSON.parse(message.utf8Data);
-        db.collection("dashboard").onSnapshot(
-          (snapshot) => {
-            const data = [];
-            snapshot.forEach((doc) => {
-              doc.data().students.forEach((student) => {
-                if (student == studentId) {
-                  data.push({ ...doc.data(), id: doc.id });
-                }
-              });
-            });
-            connection.sendUTF(JSON.stringify(data));
-          },
-          (err) => {
-            console.log(`Encountered error: ${err}`);
-          }
-        );
-      });
-    }
-    if (pathname === "/board") {
-      console.log("je suis dans /board");
-      connection.on("message", (message) => {
-        var json = JSON.parse(message.utf8Data);
-        var dashboardId = json.dashboardId;
-        var boardId = json.boardId;
-        db.collection("dashboard")
-          .doc(dashboardId)
-          .collection("board")
-          .doc(boardId)
-          .onSnapshot(
-            (snapshot) => {
-              const data = snapshot.data();
-              connection.sendUTF(
-                JSON.stringify([data.requested, data.acceptance, data.toDo, data.inProgress, data.done])
-              );
-            },
-            (err) => {
-              console.log(`Encountered error: ${err}`);
-            }
-          );
-      });
-    }
-  });
-
   app.put("/dashboard/:dashboardId/board/:boardId/setCards", async (req, res) => {
     var data = req.body;
     await db.collection("dashboard").doc(req.params.dashboardId).collection("board").doc(req.params.boardId).update({
@@ -69,7 +14,7 @@ module.exports = (app, db, ws, parse) => {
     });
   });
 
-  app.post("/board/:dashboardId", async (req, res) => {
+  app.post("/boarde/:dashboardId", async (req, res) => {
     await db
       .collection("dashboard")
       .doc(req.params.dashboardId)
@@ -368,7 +313,6 @@ module.exports = (app, db, ws, parse) => {
           return card.id;
         }
       });
-      console.log(cardIndex);
       if (cardIndex == -1) {
         // Card not found
         res.status(404).send({ message: "Card not found" });
@@ -390,7 +334,6 @@ module.exports = (app, db, ws, parse) => {
 
   // Getter to Column Field
   function getColumnField(columnId) {
-    console.log(columnId);
     switch (columnId.toString()) {
       case "0":
         return "requested";

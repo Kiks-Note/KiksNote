@@ -1,17 +1,17 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require('body-parser');
-const dotenv = require('dotenv').config();
+const bodyParser = require("body-parser");
+const dotenv = require("dotenv").config();
 const app = express();
-const { db, auth } = require("./firebase")
+const { db, auth } = require("./firebase");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const webSocketServer = require("websocket").server;
 const http = require("http");
 const { parse } = require("url");
 const saltRounds = 12;
-
 const { signInWithEmailAndPassword, authClient } = require("./firebase_auth");
+const path = require("path");
 
 app.use(express.json());
 app.use(cors());
@@ -33,19 +33,17 @@ const ws = new webSocketServer({
 ws.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
-  console.log("request.httpServer => ", request);
-  console.log("request.url => ", request.pathname);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
 
   require("./blog_back.js")(app, pathname, db, connection);
   require("./routes/call")(app, db, connection, pathname);
-  require("./dashboard")(app, db, ws, parse);
+  require("./dashboardWebSocket")(app, db, connection, pathname);
   require("./routes/groupscreation")(app, db);
 });
 
 require("./routes/auth")(app, db, auth, authClient, signInWithEmailAndPassword);
-
+require("./dashboard")(app, db, ws, parse);
 
 app.post("/register", (req, res) => {
   const { userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass } = req.body;
@@ -85,4 +83,3 @@ app.post("/register", (req, res) => {
       console.log(err);
     });
 });
-

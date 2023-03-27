@@ -3,17 +3,7 @@ import { useForm } from "react-hook-form";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import {
-  InputLabel,
-  Input,
-  Button,
-  IconButton,
-  Alert,
-  Box,
-  Grid,
-  Typography,
-  Stack,
-} from "@mui/material";
+import { InputLabel, Input, Button, IconButton, Alert, Box, Grid, Typography, Stack } from "@mui/material";
 import { TextField } from "@material-ui/core";
 import PDF from "../overview/020_android_backlog_projet-flashcard.pdf";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
@@ -49,11 +39,9 @@ function PdfView() {
   const zoomOut = () => {
     setScale((prevScale) => prevScale - 0.1);
   };
-  const goToPrevPage = () =>
-    setPageNumber(pageNumber - 1 <= 1 ? 1 : pageNumber - 1);
+  const goToPrevPage = () => setPageNumber(pageNumber - 1 <= 1 ? 1 : pageNumber - 1);
 
-  const goToNextPage = () =>
-    setPageNumber(pageNumber + 1 >= numPages ? numPages : pageNumber + 1);
+  const goToNextPage = () => setPageNumber(pageNumber + 1 >= numPages ? numPages : pageNumber + 1);
 
   const {
     register,
@@ -99,11 +87,7 @@ function PdfView() {
 
   return (
     <>
-      {isSubmitSuccessful && (
-        <Alert severity="success">
-          Vos taches ont été enregrister avec succés
-        </Alert>
-      )}
+      {isSubmitSuccessful && <Alert severity="success">Vos taches ont été enregrister avec succés</Alert>}
       <div>
         <Grid container spacing={2} sx={{ m: 2 }}>
           <Grid item xs={12} md={7} sx={{ ml: 2 }}>
@@ -131,26 +115,12 @@ function PdfView() {
                   >
                     -
                   </Button>
-                  <p className="zoomIndicator">
-                    {" "}
-                    Zoom: {(scale * 100).toFixed(0)}%
-                  </p>
+                  <p className="zoomIndicator"> Zoom: {(scale * 100).toFixed(0)}%</p>
 
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={zoomIn}
-                    disabled={scale >= 2}
-                    className="button"
-                  >
+                  <Button variant="contained" color="primary" onClick={zoomIn} disabled={scale >= 2} className="button">
                     +
                   </Button>
-                  <IconButton
-                    aria-label="download"
-                    variant="contained"
-                    color="primary"
-                    onClick={handleDownload}
-                  >
+                  <IconButton aria-label="download" variant="contained" color="primary" onClick={handleDownload}>
                     <FileDownloadIcon />
                   </IconButton>
 
@@ -166,11 +136,7 @@ function PdfView() {
                 </div>
 
                 <div className="container_pdf">
-                  <Document
-                    file={PDF}
-                    options={{ workerSrc: "/pdf.worker.js" }}
-                    onLoadSuccess={onDocumentLoadSuccess}
-                  >
+                  <Document file={PDF} options={{ workerSrc: "/pdf.worker.js" }} onLoadSuccess={onDocumentLoadSuccess}>
                     <Page
                       className="page"
                       pageNumber={pageNumber}
@@ -244,12 +210,7 @@ function PdfView() {
                         flexDirection: "column",
                       }}
                     >
-                      <Button
-                        variant="contained"
-                        type="submit"
-                        disabled={isSubmitting}
-                        sx={{ mt: 3, mb: 2 }}
-                      >
+                      <Button variant="contained" type="submit" disabled={isSubmitting} sx={{ mt: 3, mb: 2 }}>
                         Enregistrer
                       </Button>
                     </Box>

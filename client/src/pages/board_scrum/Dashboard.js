@@ -50,7 +50,7 @@ function Dashboard() {
   }
 
   async function board() {
-    await axios.post(`http://localhost:5050/board/JUnEQaGjoiSvGZvGfElf`);
+    await axios.post(`http://localhost:5050/boarde/LSNoY69ELr9N6nBBHqHt`);
   }
 
   // * DEFINE BOARDS WHO IS ACTIF
@@ -150,7 +150,6 @@ function Dashboard() {
         <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
           Mon espace de travail
         </Typography>
-        {/* <Button onClick={board}> board </Button> */}
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <ToggleButtonGroup value={view} exclusive onChange={viewChange} sx={{ margin: 1 }}>
             <ToggleButton value="module" aria-label="module">
@@ -160,7 +159,6 @@ function Dashboard() {
               <ViewListIcon />
             </ToggleButton>
           </ToggleButtonGroup>
-
           <ModalCreateSprint />
         </div>
       </Box>
