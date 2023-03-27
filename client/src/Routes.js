@@ -10,6 +10,7 @@ import Navbar from "./components/navbar/Navbar";
 import Register from "./pages/register/Register";
 import Tuto from "./pages/blog/Tuto";
 import Login from "./pages/login/Login";
+import Profile from "./pages/profile/Profile";
 
 function RoutesProvider() {
   return (
@@ -30,6 +31,7 @@ function RoutesProvider() {
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
       </Routes>
     </BrowserRouter>
