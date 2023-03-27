@@ -25,14 +25,14 @@ export default function Profile() {
   const [user, setUser] = useState();
   const [isLoading, setLoading] = useState(false);
   const [dateBirthday, setDateBirthday] = useState(today);
-  const [job, setJob] = useState(null);
-  const [linkedin, setLinkedin] = useState(null);
-  const [gitLink, setGitLink] = useState(null);
-  const [compagny, setCompany] = useState(null);
-  const [classe, setClasse] = useState(null);
-  const [programmationLanguage, setProgrammationLanguage] = useState(null);
-  const [discordName, setDiscordName] = useState(null);
-  const [phoneNumber, setPhoneNumber] = useState(null);
+  const [job, setJob] = useState('');
+  const [linkedin, setLinkedin] = useState('');
+  const [gitLink, setGitLink] = useState('');
+  const [compagny, setCompany] = useState('');
+  const [classe, setClasse] = useState('');
+  const [programmationLanguage, setProgrammationLanguage] = useState('');
+  const [discordName, setDiscordName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const mustClass = ["L1 TP", "L1 ALT", "L2", "L3"];
   const mustLanguage = ["PHP", "Java", "Ruby", "Javascript", "Python"];
   const mustJob = ["Intégrateur", "Back-End", "Front-end", "FullStack"];
@@ -70,22 +70,26 @@ const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/
       });
     }
   }, [formState, isSubmitSuccessful, reset]);
-  // useEffect(() => {
-  //   (async () => {
-  //     await axios
-  //       .get(`http://localhost:5050/profile/getUser/ZtBPmoN6SHibtw9s5qmB`)
-  //       .then((res) => {
-  //         setUser(res.data);
-  //         console.log(res.data);
-  //         setLoading(false);
-  //       })
-  //       .catch((err) => {
-  //         console.log(err);
-  //       });
-  //   })();
-  // }, []);
 
-  const sendData = async (data) => {
+  const getUser = async (userId) =>{
+    try {
+      const res = await axios.get(`http://localhost:5050/profile/getUser/${userId}`);
+      setUser(res.data);
+      console.log(res.data);
+      setLoading(false);
+      // const res = await axios.get(`http://localhost:5050/profile/users`);
+      // console.log(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  useEffect(() => {
+    // getUser('3F96JHuEydboq4QGhxC2sXKS50s2');
+    // getUser();
+    
+  }, []);
+
+  const sendData = async (data, userId) => {
     console.log(data);
     const formData = {
       dateBirthday: data.dateBirthday,
@@ -99,7 +103,15 @@ const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/
       phoneNumber: data.phoneNumber,
     };
     console.log(formData);
-    // axios.put("http://localhost:5050/profile/user", {
+    axios.put(`http://localhost:5050/profile/${userId}/editUser/` ,
+    formData,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+    }
+    // {
     //   dateBirthday: dateBirthday,
     //   job: job,
     //   linkedin: linkedin,
@@ -109,7 +121,8 @@ const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/
     //   programmationLanguage: programmationLanguage,
     //   discordName: discordName,
     //   phoneNumber: phoneNumber,
-    // });
+    // }
+    );
   };
   const convertToBase64 = (file) => {
     return new Promise((resolve, reject) => {
@@ -213,7 +226,7 @@ const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/
             component="form"
             noValidate
             autoComplete="off"
-            onSubmit={handleSubmit(sendData)}
+            onSubmit={handleSubmit((data)=>(sendData('3F96JHuEydboq4QGhxC2sXKS50s2')))}
           >
             {isSubmitSuccessful && (
               <Alert severity="success">
@@ -432,9 +445,6 @@ const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/
                       message: "Le format du lien GitHub est incorrect",
                     },
                   })}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
                 />
                 {errors.gitLink && (
                   <Typography variant="subtitle1" color="error">
