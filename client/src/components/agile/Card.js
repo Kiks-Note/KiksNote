@@ -9,15 +9,14 @@ import InputLabel from "@mui/material/InputLabel";
 import TextField from "@mui/material/TextField";
 import { useSelector, useDispatch } from "react-redux";
 
-import { addImpactMappingActors, addImpactMappingDeliverables, addImpactMappingImpacts, addImpactMappingGoals } from "../../redux/slices/impactMappingSlice";
+import { addImpactMappingActors, addImpactMappingDeliverables, addImpactMappingImpacts, addImpactMappingGoals, deleteImpactMappingActors, deleteImpactMappingDeliverables, deleteImpactMappingGoals, deleteImpactMappingImpacts } from "../../redux/slices/impactMappingSlice";
 
-const BasicCard = ({type , column, texte, onConfirmForm}) => {
+const BasicCard = ({title, type , column, texte, onCloseForm, index}) => {
   const [text, setText] = useState('');
-  const [title, setTitle] = useState('');
   const dispatch = useDispatch();
 
   useEffect(() => {
-    console.log("type", type);
+    console.log("type", index);
   }, []);
 
   const onHandleClick = () =>{
@@ -25,27 +24,43 @@ const BasicCard = ({type , column, texte, onConfirmForm}) => {
     //switch 
     switch (column) {
       case 0:
-        dispatch(addImpactMappingGoals({goal:text}));
-        setTitle('Objectif')
+        dispatch(addImpactMappingGoals({goals:text}));
         break;
         
       case 1:
         dispatch(addImpactMappingActors({actors:text}));
-        setTitle('Acteurs')
         break;
       case 2:
         dispatch(addImpactMappingImpacts({impacts:text}));
-        setTitle('Impacts')
         break;
       case 3:
         dispatch(addImpactMappingDeliverables({deliverables:text}));
-        setTitle('Deliverables')
         break;
       default:
         break;
     }
     console.log(text);
-    onConfirmForm();
+    onCloseForm();
+  };
+
+  const deleteButton = () =>{
+    switch (column) {
+      case 0:
+        dispatch(deleteImpactMappingGoals({index:index}));
+        break;
+      case 1:
+        dispatch(deleteImpactMappingActors({index:index}));
+        break;
+      case 2:
+        dispatch(deleteImpactMappingImpacts({index:index}));
+        break;
+      case 3:
+        dispatch(deleteImpactMappingDeliverables({index:index}));
+        break;
+      default:
+        break;
+    }
+    console.log("delete", index)
   }
 
   return (
@@ -60,9 +75,6 @@ const BasicCard = ({type , column, texte, onConfirmForm}) => {
         <CardContent
           sx={{     padding:'1'     }}
         >
-          <Typography variant="h6" component="div">
-            {title}
-          </Typography>
           <FormControl
             sx={{
               width: "100%",
@@ -83,22 +95,21 @@ const BasicCard = ({type , column, texte, onConfirmForm}) => {
           </FormControl>
           <CardActions sx={{justifyContent:'flex-end'}}>
             <Button size="small" onClick={()=>onHandleClick()}>Confirmer</Button>
+            <Button size="small" color="error" onClick={()=>onCloseForm()}>Annuler</Button>
           </CardActions>
         </CardContent>
       )}
       {type == "card" && (
         <CardContent>
-          <Typography variant="h5" component="div">
-            {title}
-          </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {texte}
+            {title} #{index+1}
           </Typography>
           <Typography variant="body2">
-            well meaning and kindly.
-            <br />
-            {'"a benevolent smile"'}
+            {texte}
           </Typography>
+          <CardActions sx={{justifyContent:'flex-end'}}>
+            <Button size="small" color="error" onClick={()=>deleteButton()}>Supprimer</Button>
+          </CardActions>
         </CardContent>
       )}
     </Card>
