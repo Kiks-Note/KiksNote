@@ -11,6 +11,8 @@ import { w3cwebsocket } from "websocket";
 
 function OverView(props) {
   var [releases, setRelease] = useState({});
+  var [boards, setBoards] = useState({});
+  const [display, setDisplay] = useState(false);
 
   const stories = [
     {
@@ -57,8 +59,10 @@ function OverView(props) {
 
       wsComments.onmessage = (message) => {
         var data = JSON.parse(message.data);
-        console.log(data.release);
         setRelease((releases = data.release));
+        console.log(data.boards);
+        setBoards((boards = data.boards));
+        setDisplay(true);
       };
     })();
   }, []);
@@ -71,7 +75,7 @@ function OverView(props) {
           <TextList stories={stories} sprints={releases} />
         </Grid>
         <Grid item xs={12} md={4}>
-          <StatTab />
+          {display ? <StatTab dashboardId={props.id} boards={boards} /> : <></>}
         </Grid>
         <Grid item xs={12} md={3}>
           <Box>

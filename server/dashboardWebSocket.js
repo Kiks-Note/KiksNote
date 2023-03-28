@@ -59,14 +59,48 @@ module.exports = (app, db, connection, pathname) => {
   }
   if (pathname === "/overview") {
     console.log("je suis dans /overview");
-    connection.on("message", (message) => {
+    connection.on("message", async (message) => {
       var dashboardId = JSON.parse(message.utf8Data);
-      db.collection("dashboard")
+      var dataReturn = [];
+      var res = await db
+        .collection("dashboard")
         .doc(dashboardId)
         .onSnapshot(
           (snapshot) => {
             const data = snapshot.data();
-            connection.sendUTF(JSON.stringify({ release: data.release }));
+            dataReturn.push(data.release);
+          },
+          (err) => {
+            console.log(`Encountered error: ${err}`);
+          }
+        );
+      var wait = await db
+        .collection("dashboard")
+        .doc(dashboardId)
+        .collection("board")
+        .onSnapshot(
+          (snapshot) => {
+            var boards = [];
+            snapshot.forEach((doc) => {
+              dataReturn.map((release) => {
+                for (var r in release) {
+                  release[r].map((x) => {
+                    if (doc.id == x.boardId) {
+                      boards.push({
+                        id: doc.id,
+                        name: r + " / " + x.name,
+                        data: {
+                          toDo: doc.data().toDo.items.length,
+                          inProgress: doc.data().inProgress.items.length,
+                          done: doc.data().done.items.length,
+                        },
+                      });
+                    }
+                  });
+                }
+              });
+            });
+            connection.sendUTF(JSON.stringify({ release: dataReturn[0], boards: boards }));
           },
           (err) => {
             console.log(`Encountered error: ${err}`);
