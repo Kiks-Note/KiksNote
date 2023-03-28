@@ -70,49 +70,40 @@ function TextList({ stories, sprints }) {
           }}
         >
           <div style={{ width: "80%" }}>
-            {story
-              .slice(page * storyPerPage, page * storyPerPage + storyPerPage)
-              .map((items, index) => (
-                <div key={index} style={{ marginBottom: "2vh" }}>
-                  <Accordion
-                    expanded={expanded === index}
-                    onChange={handleChange(index)}
+            {story.slice(page * storyPerPage, page * storyPerPage + storyPerPage).map((items, index) => (
+              <div key={index} style={{ marginBottom: "2vh" }}>
+                <Accordion expanded={expanded === index} onChange={handleChange(index)}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="panel1bh-content"
+                    id="panel1bh-header"
                   >
-                    <AccordionSummary
-                      expandIcon={<ExpandMoreIcon />}
-                      aria-controls="panel1bh-content"
-                      id="panel1bh-header"
-                    >
-                      <Typography sx={{ width: "90%", flexShrink: 0 }}>
-                        {items.name}{" "}
-                        <IconButton
-                          aria-controls="simple-menu"
-                          aria-haspopup="true"
-                          onClick={handleMenuOpen}
-                        >
-                          <MoreVertIcon />
-                        </IconButton>{" "}
-                      </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                      <Typography>{items.desc}</Typography>
-                    </AccordionDetails>
-                  </Accordion>
-                  <Menu
-                    id="simple-menu"
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleMenuClose}
-                  >
-                    <Typography variant="subtitle1" color="textSecondary">
-                      Ajouter à un sprint
+                    <Typography sx={{ width: "90%", flexShrink: 0 }}>
+                      {items.name}{" "}
+                      <IconButton aria-controls="simple-menu" aria-haspopup="true" onClick={handleMenuOpen}>
+                        <MoreVertIcon />
+                      </IconButton>{" "}
                     </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Typography>{items.desc}</Typography>
+                  </AccordionDetails>
+                </Accordion>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  keepMounted
+                  open={Boolean(anchorEl)}
+                  onClose={handleMenuClose}
+                >
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Ajouter à un sprint
+                  </Typography>
 
-                    <Typography variant="subtitle1" color="textSecondary">
-                      Nom de la release 1
-                    </Typography>
-                    {sprint.map((item, index) => (
+                  <Typography variant="subtitle1" color="textSecondary">
+                    Nom de la release 1
+                  </Typography>
+                  {/* {sprint.map((item, index) => (
                       <MenuItem key={index} onClick={handleMenuClose}>
                         {item.sprint_name}
                       </MenuItem>
@@ -124,10 +115,10 @@ function TextList({ stories, sprints }) {
                       <MenuItem key={index} onClick={handleMenuClose}>
                         {item.sprint_name}
                       </MenuItem>
-                    ))}
-                  </Menu>
-                </div>
-              ))}
+                    ))} */}
+                </Menu>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -141,9 +132,7 @@ function TextList({ stories, sprints }) {
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeStoryPerPage}
           labelRowsPerPage="Par page"
-          labelDisplayedRows={({ from, to, count }) =>
-            `${from} - ${to} sur ${count}`
-          }
+          labelDisplayedRows={({ from, to, count }) => `${from} - ${to} sur ${count}`}
         />
       </Box>
     </div>

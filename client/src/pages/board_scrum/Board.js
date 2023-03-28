@@ -47,7 +47,7 @@ const taskStatus = {
   },
 };
 
-function Board() {
+function Board(props) {
   const labelChange = () => setLabel(!label);
   const [columns, setColumns] = useState(taskStatus);
   const [label, setLabel] = useState(false);
@@ -61,7 +61,7 @@ function Board() {
       wsComments.onopen = function (e) {
         console.log("[open] Connection established");
         console.log("Sending to server");
-        wsComments.send(JSON.stringify({ dashboardId: "LSNoY69ELr9N6nBBHqHt", boardId: "23fR5KKU9nqfPa3Qt5ij" }));
+        wsComments.send(JSON.stringify({ dashboardId: props.dashboardId, boardId: props.boardId }));
       };
       wsComments.onmessage = (message) => {
         const data = JSON.parse(message.data);
@@ -74,7 +74,7 @@ function Board() {
 
   async function changeCardIndex(newColumns) {
     await axios.put(
-      "http://localhost:5050/dashboard/LSNoY69ELr9N6nBBHqHt/board/23fR5KKU9nqfPa3Qt5ij/setCards",
+      "http://localhost:5050/dashboard/" + props.dashboardId + "/board/" + props.boardId + "/setCards",
       newColumns
     );
   }
@@ -259,6 +259,8 @@ function Board() {
                                           label={label}
                                           list_name={column.name}
                                           columnId={columnId}
+                                          dashboardId={props.dashboardId}
+                                          boardId={props.boardId}
                                         ></CardBoard>
                                       </div>
                                     );
@@ -271,7 +273,7 @@ function Board() {
                         );
                       }}
                     </Droppable>
-                    <ButtonAddCard columnId={columnId} />
+                    <ButtonAddCard columnId={columnId} dashboardId={props.dashboardId} boardId={props.boardId} />
                   </div>
                 </div>
               );

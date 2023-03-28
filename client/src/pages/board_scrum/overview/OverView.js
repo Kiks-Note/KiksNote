@@ -7,8 +7,11 @@ import CardSprint from "../../../components/board_scrum/overview/CardSprint";
 import StatTab from "../../../components/board_scrum/overview/StatTab";
 import TextList from "./StoryList";
 import Grid from "@mui/material/Grid";
+import { w3cwebsocket } from "websocket";
 
-function OverView() {
+function OverView(props) {
+  var [releases, setRelease] = useState({});
+
   const stories = [
     {
       id: "1",
@@ -18,150 +21,8 @@ function OverView() {
       labels: [],
       color: "",
     },
-    {
-      id: "2",
-      name: "Storie 2",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "3",
-      name: "Storie 3",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "4",
-      name: "Storie 4",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "5",
-      name: "Storie 5",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "6",
-      name: "Storie 6",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "7",
-      name: "Storie 7",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "8",
-      name: "Storie 8",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "9",
-      name: "Storie 9",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "10",
-      name: "Storie 10",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "11",
-      name: "Storie 11",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "12",
-      name: "Storie 12",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-    {
-      id: "13",
-      name: "Storie 13",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
   ];
-  const sprint = [
-    {
-      id: 100,
-      sprint_name: "Java",
-      sprint_group: "Kiks",
-      start: "01/03/2023",
-      end: "15/03/2023",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Chris",
-      },
-      picture: "https://picsum.photos/500/300?random=" + 2,
-    },
-    {
-      id: 200,
-      sprint_name: "Php",
-      sprint_group: "Kiks2",
-      start: "22/12/2022",
-      end: "29/12/2022",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Elim",
-      },
-      picture: "https://picsum.photos/500/300?random=" + 2,
-    },
-    {
-      id: 300,
-      sprint_name: "JavaScript",
-      sprint_group: "TheVie",
-      start: "22/12/2022",
-      end: "29/12/2022",
-      backlog: "lien",
-      favorite: false,
-      favoriteDate: "",
-      students: {
-        student_id: "uid(student)",
-        firstname: "Elim",
-      },
-      picture: "https://picsum.photos/500/300?random=" + 2,
-    },
-  ];
+
   const moveToOverView = () => {
     var x = JSON.parse(localStorage.getItem("tabs")) || [];
     var push = true;
@@ -183,12 +44,31 @@ function OverView() {
     localStorage.setItem("activeTab", JSON.stringify(newIndex));
   };
 
+  useEffect(() => {
+    (async () => {
+      const wsComments = new w3cwebsocket(`ws://localhost:5050/overview`);
+
+      wsComments.onopen = function (e) {
+        console.log("[open] Connection established");
+        console.log("Sending to server");
+        console.log("dashboard", props.id);
+        wsComments.send(JSON.stringify(props.id));
+      };
+
+      wsComments.onmessage = (message) => {
+        var data = JSON.parse(message.data);
+        console.log(data.release);
+        setRelease((releases = data.release));
+      };
+    })();
+  }, []);
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <Grid container spacing={2} sx={{ m: 2 }}>
         <Grid item xs={12} md={4}>
           <Typography variant="h4">Stories</Typography>
-          <TextList stories={stories} sprints={sprint} />
+          <TextList stories={stories} sprints={releases} />
         </Grid>
         <Grid item xs={12} md={4}>
           <StatTab />
@@ -217,8 +97,8 @@ function OverView() {
                 marginTop: "8%",
               }}
             >
-              {sprint.map((person) => (
-                <ListItem key={person.id}>
+              {Object.keys(releases).map((item, i) => (
+                <ListItem key={i}>
                   <Box sx={{ width: "100%" }}>
                     <Accordion>
                       <AccordionSummary
@@ -226,16 +106,11 @@ function OverView() {
                         aria-controls="panel1a-content"
                         id="panel1a-header"
                       >
-                        <Typography>{person.sprint_group}</Typography>
+                        <Typography>{item}</Typography>
                       </AccordionSummary>
                       <AccordionDetails sx={{ width: "100%" }}>
                         <Box sx={{ width: "100%" }}>
-                          <CardSprint
-                            picture={person.picture}
-                            sprint_group={person.sprint_group}
-                            fav={person.favorite}
-                            id={person.id}
-                          />
+                          <CardSprint release={releases[item]} dashboardId={props.id} />
                         </Box>
                       </AccordionDetails>
                     </Accordion>

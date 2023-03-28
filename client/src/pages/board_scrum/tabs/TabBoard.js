@@ -56,10 +56,10 @@ export default function TabBoard() {
         var component;
         switch (storageTab[i].type) {
           case "board":
-            component = <Board />;
+            component = <Board boardId={storageTab[i].idDb} dashboardId={storageTab[i].dashboardId} />;
             break;
           case "overView":
-            component = <OverView />;
+            component = <OverView id={storageTab[i].idDb} />;
             break;
           case "pdf":
             component = <PdfView />;

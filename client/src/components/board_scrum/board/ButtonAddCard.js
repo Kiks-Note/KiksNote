@@ -27,7 +27,11 @@ export default function ButtonAddCart(props) {
     if (cardTitle != "") {
       axios
         .put(
-          "http://localhost:5050/dashboard/JUnEQaGjoiSvGZvGfElf/board/HCmKbXNmFtGYn3m6UbFt/column/" +
+          "http://localhost:5050/dashboard/" +
+            props.dashboardId +
+            "/board/" +
+            props.boardId +
+            "/column/" +
             props.columnId +
             "/addCard",
           {

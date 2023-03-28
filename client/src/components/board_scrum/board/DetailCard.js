@@ -69,7 +69,11 @@ export default function DetailCard(props) {
 
   const saveName = (title) => {
     axios.put(
-      "http://localhost:5050/dashboard/JUnEQaGjoiSvGZvGfElf/board/HCmKbXNmFtGYn3m6UbFt/column/" +
+      "http://localhost:5050/dashboard/" +
+        props.dashboardId +
+        "/board/" +
+        props.boardId +
+        "/column/" +
         props.columnId +
         "/editCard",
       {
@@ -82,7 +86,11 @@ export default function DetailCard(props) {
 
   const saveDesc = () => {
     axios.put(
-      "http://localhost:5050/dashboard/JUnEQaGjoiSvGZvGfElf/board/HCmKbXNmFtGYn3m6UbFt/column/" +
+      "http://localhost:5050/dashboard/" +
+        props.dashboardId +
+        "/board/" +
+        props.boardId +
+        "/column/" +
         props.columnId +
         "/editCard",
       {
@@ -186,7 +194,11 @@ export default function DetailCard(props) {
     console.log(info.id);
     console.log(props.columnId);
     axios.delete(
-      "http://localhost:5050/dashboard/JUnEQaGjoiSvGZvGfElf/board/HCmKbXNmFtGYn3m6UbFt/column/" +
+      "http://localhost:5050/dashboard/" +
+        props.dashboardId +
+        "/board/" +
+        props.boardId +
+        "/column/" +
         props.columnId +
         "/card/" +
         info.id

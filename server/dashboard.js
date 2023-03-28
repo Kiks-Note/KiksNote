@@ -199,7 +199,7 @@ module.exports = (app, db, ws, parse) => {
       const cards = column.items || [];
       const highestId = Math.max(...cards.map((card) => card.id), 0);
       const newCard = {
-        id: highestId + 1,
+        id: (highestId + 1).toString(),
         name: data.title,
         desc: "",
         assignedTo: [],

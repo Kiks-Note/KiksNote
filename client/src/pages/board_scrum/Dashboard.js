@@ -64,7 +64,7 @@ function Dashboard() {
   // * DEFINE BOARDS WHO IS IN  FAVORIS
   let favoris = rows.filter((person) => person.favorite === true).sort((a, b) => a - b);
 
-  const connectedStudent = "nFVLL3s1TYtZsjFZPnmw";
+  var connectedStudent = localStorage.getItem("userUid");
 
   useEffect(() => {
     (async () => {
