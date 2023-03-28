@@ -29,7 +29,7 @@ const ImpactMapping = () => {
 
     useEffect(() => {
         console.log('impact', impactMapping);
-        setCardObjectif(impactMapping.goal);
+        setCardObjectif(impactMapping.goals);
         setCardActors(impactMapping.actors);
         setCardImpacts(impactMapping.impacts);
         setCardDeliverables(impactMapping.deliverables);
@@ -41,7 +41,7 @@ const ImpactMapping = () => {
     setColumnIndex(index.toString());
   };
 
-  const handleConfirmForm = () => {
+  const handleButtonForm = () => {
     setShowCard(false);
     setColumnIndex('');
   };
@@ -60,11 +60,11 @@ const ImpactMapping = () => {
           <TableBody>
             <TableRow>
               <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-                {cardObjectif.map((texte)=>{
-                    return <Card type="card" texte={texte} key={texte}/>
+                {cardObjectif.map((texte, index)=>{
+                    return <Card title='Objectif' type="card" column={0} texte={texte} key={index} index={index}/>
                 })}
                 {showCard && columnIndex === '0' && (
-                    <Card type="form" column={0} onConfirmForm={handleConfirmForm}/>
+                    <Card type="form" column={0} onCloseForm={handleButtonForm}/>
                 )}
                 <IconButton
                     aria-label="add"
@@ -75,11 +75,11 @@ const ImpactMapping = () => {
               </TableCell>
 
               <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-              {cardActors.map((texte)=>{
-                    return <Card type="card" texte={texte} key={texte}/>
+              {cardActors.map((texte, index)=>{
+                    return <Card title='Acteur' type="card" column={1} texte={texte} key={index} index={index}/>
                 })}
               {showCard && columnIndex === '1' && (
-                    <Card type="form" column={1} onConfirmForm={handleConfirmForm}/>
+                    <Card type="form" column={1} onCloseForm={handleButtonForm}/>
                 )}
                 <IconButton aria-label="add"  onClick={() => addCard(1)}>
                   <AddIcon />
@@ -87,11 +87,11 @@ const ImpactMapping = () => {
               </TableCell>
 
               <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-              {cardImpacts.map((texte)=>{
-                    return <Card type="card" texte={texte} key={texte}/>
+              {cardImpacts.map((texte, index)=>{
+                    return <Card title='Impact' type="card" column={2} texte={texte} key={index} index={index}/>
                 })}
                 {showCard && columnIndex === '2' && (
-                    <Card type="form" column={2} onConfirmForm={handleConfirmForm}/>
+                    <Card type="form" column={2} onCloseForm={handleButtonForm}/>
                 )}
                 <IconButton aria-label="add"  onClick={() => addCard(2)}>
                   <AddIcon />
@@ -99,12 +99,12 @@ const ImpactMapping = () => {
               </TableCell>
 
               <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-              {cardDeliverables.map((texte)=>{
-                    return <Card type="card" texte={texte} key={texte}/>
+              {cardDeliverables.map((index, texte)=>{
+                    return <Card title="Deliverables" column={3} type="card" texte={texte} key={index} index={index}/>
                 })}
                 
               {showCard && columnIndex === '3' && (
-                    <Card type="form" column={3} onConfirmForm={handleConfirmForm}/>
+                    <Card type="form" column={3} onCloseForm={handleButtonForm}/>
                 )}
                 <IconButton aria-label="add"  onClick={() => addCard(3)}>
                   <AddIcon />
