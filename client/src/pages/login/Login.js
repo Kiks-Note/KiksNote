@@ -242,8 +242,8 @@ const Login = () => {
                   type="submit"
                   className="login-button"
                   sx={{
-                    backgroundColor: "#7a52e1"
-                    color: "white",
+                    backgroundColor: "#7a52e1",
+                    color: "white"
                   }}
                   variant="contained"
                 >
