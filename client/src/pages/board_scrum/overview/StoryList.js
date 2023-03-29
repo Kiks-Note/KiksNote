@@ -185,7 +185,9 @@ function EnhancedTableToolbar(props) {
           {numSelected} selected
         </Typography>
       ) : (
-        <></>
+        <Typography sx={{ flex: "1 1 100%" }} color="inherit" variant="subtitle1" component="div">
+          Select one or more stories
+        </Typography>
       )}
 
       {numSelected > 0 ? (
@@ -218,11 +220,7 @@ function EnhancedTableToolbar(props) {
           </Dialog>
         </div>
       ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
+        <></>
       )}
     </Toolbar>
   );
@@ -341,11 +339,7 @@ export default function StoryList(props) {
           dashboardId={props.dashboardId}
         />
         <TableContainer>
-          <Table
-            sx={{ minHeight: "60vh", overflow: "scroll" }}
-            aria-labelledby="tableTitle"
-            size={dense ? "small" : "medium"}
-          >
+          <Table sx={{ minHeight: "75vh", overflow: "scroll", marginTop: "-10vh" }}>
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
@@ -409,7 +403,6 @@ export default function StoryList(props) {
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel control={<Switch checked={dense} onChange={handleChangeDense} />} label="Dense padding" />
     </Box>
   );
 }
