@@ -94,6 +94,9 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function MiniDrawer({ element }) {
+  const loggedUser = localStorage.getItem("user");
+  const loggedUserParsed = JSON.parse(loggedUser);
+  var userStatus = loggedUserParsed.status;
   const history = createBrowserHistory();
   const [open, setOpen] = React.useState(false);
   const colorMode = React.useContext(ColorModeContext);
@@ -152,38 +155,50 @@ export default function MiniDrawer({ element }) {
         <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
     },
-    {
-      id: 5,
-      name: "Agile",
-      route: "#",
-      icon: <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
-      children: [
-        {
-          id: 12,
-          name: "Coding Board",
-          route: "/tabList",
-          icon: (
-            <DashboardIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-          ),
-        },
-        {
-          id: 13,
-          name: "Coding Retro",
-          route: "#",
-          icon: (
-            <WbIridescentIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-          ),
-        },
-        {
-          id: 14,
-          name: "Coding Agile",
-          route: "#",
-          icon: (
-            <TimelineIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-          ),
-        },
-      ],
-    },
+    ...(userStatus !== "Pédago"
+      ? [
+          {
+            id: 5,
+            name: "Agile",
+            route: "#",
+            icon: (
+              <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+            ),
+            children: [
+              {
+                id: 12,
+                name: "Coding Board",
+                route: "/tabList",
+                icon: (
+                  <DashboardIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
+              },
+              {
+                id: 13,
+                name: "Coding Retro",
+                route: "#",
+                icon: (
+                  <WbIridescentIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
+              },
+              {
+                id: 14,
+                name: "Coding Agile",
+                route: "#",
+                icon: (
+                  <TimelineIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
     {
       id: 6,
       name: "Inventaire",

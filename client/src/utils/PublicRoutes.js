@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import MiniDrawer from "../components/drawer/MiniDrawer";
+import MiniDrawerNotConnected from "../components/drawer/MiniDrawerNotConnected";
 import { accountAuthService } from "../services/accountAuth";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 
-function PrivateRoutes() {
+function PublicRoutes() {
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -33,12 +33,12 @@ function PrivateRoutes() {
       </Box>
     );
   }
-  // Redirect user to login page if user not authenticated
+  // Redirect user to home page if already authenticated, else show
   return authenticated ? (
-    <MiniDrawer element={<Outlet />} />
+    <Navigate to="/" />
   ) : (
-    <Navigate to="/login" />
+    <MiniDrawerNotConnected element={<Outlet />} />
   );
 }
 
-export default PrivateRoutes;
+export default PublicRoutes;

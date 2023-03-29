@@ -6,9 +6,9 @@ import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
-import MiniDrawerNotConnected from "./components/drawer/MiniDrawerNotConnected";
-import Register from "./pages/register/Register";
 import Tuto from "./pages/blog/Tuto";
+import PublicRoutes from "./utils/PublicRoutes";
+import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
 
 function RoutesProvider() {
@@ -17,14 +17,10 @@ function RoutesProvider() {
       <Routes>
         {/* EXAMPLES */}
 
-        <Route
-          path="/login"
-          element={<MiniDrawerNotConnected element={<Login />} />}
-        />
-        <Route
-          path="/signup"
-          element={<MiniDrawerNotConnected element={<Register />} />}
-        />
+        <Route element={<PublicRoutes />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Register />} />
+        </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
           <Route path="/" element={<Home />} />
