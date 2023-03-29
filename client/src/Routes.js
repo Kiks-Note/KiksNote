@@ -10,6 +10,7 @@ import Tuto from "./pages/blog/Tuto";
 import PublicRoutes from "./utils/PublicRoutes";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
+import NotFound from "./pages/not_found/NotFound";
 
 function RoutesProvider() {
   return (
@@ -30,6 +31,8 @@ function RoutesProvider() {
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
+          {/* 404 Page */}
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
