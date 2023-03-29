@@ -75,16 +75,10 @@ const Register = () => {
 
   const regex = /@edu\.esiee-it\.fr/;
 
-  const register = async (email, password, firstname, lastname, birthdate, status, userClass) => {
+  const register = async () => {
     await axios
       .post("http://localhost:5050/auth/signup", {
-        email,
-        password,
-        firstname,
-        lastname,
-        birthdate,
-        status,
-        userClass,
+        userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass
       })
       .then((res) => {
         console.log(res.status)
@@ -185,7 +179,7 @@ const Register = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    register(userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass);
+    await register();
     verifInputErrors(userLastName, userFirstName, userEmail, userPassword, userConfirmPassword, userStatus, userClass, userBirthDate);
   };
 
@@ -203,9 +197,7 @@ const Register = () => {
       setMessageBirthDate('Invalid date');
     }
   };
-
-  console.log(userStatus)
-  console.log(userClass)
+  
   return (
     <div className="register">
       <div className="register-header">
