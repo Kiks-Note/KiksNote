@@ -20,7 +20,7 @@ import axios from "axios";
 import { accountAuthService } from "../../services/accountAuth";
 
 import "./Login.scss";
-import imgLogin from "./../../assets/img/login_img.svg";
+import imgLogin from "./../../assets/img/login-welcome.svg";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -77,7 +77,7 @@ const Login = () => {
   const verifInputErrors = (email, password) => {
     if (email === "") {
       setErrorEmail(true);
-      setMessageEmail("Email requis");
+      setMessageEmail("L'adresse email est requis");
     }
     else if (regex.test(email)) {
       setErrorEmail(false);
@@ -89,7 +89,7 @@ const Login = () => {
     }
     if (password === "") {
       setErrorPassword(true);
-      setMessagePassword("Password requis");
+      setMessagePassword("Le mot de passe est requis");
     }
     else if (password.length >= 6) {
       setErrorPassword(false);
@@ -243,7 +243,7 @@ const Login = () => {
                   className="login-button"
                   sx={{
                     backgroundColor: "#7a52e1",
-                    color: "white",
+                    color: "white"
                   }}
                   variant="contained"
                 >

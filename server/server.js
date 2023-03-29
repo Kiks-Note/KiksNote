@@ -9,9 +9,9 @@ const bcrypt = require("bcrypt");
 const webSocketServer = require("websocket").server;
 const http = require("http");
 const { parse } = require("url");
-const saltRounds = 12;
+const saltRounds = parseInt(process.env.SALTY_ROUNDS);
 
-const { signInWithEmailAndPassword, authClient } = require("./firebase_auth");
+const { createUserWithEmailAndPassword , signInWithEmailAndPassword, authClient } = require("./firebase_auth");
 
 app.use(express.json());
 app.use(cors());
@@ -45,51 +45,4 @@ ws.on("request", (request) => {
   require("./userInfo")(app, db, ws, parse);
 });
 
-require("./routes/auth")(app, db, auth, authClient, signInWithEmailAndPassword);
-
-app.post("/register", (req, res) => {
-  const {
-    userEmail,
-    userPassword,
-    userFirstName,
-    userLastName,
-    userBirthDate,
-    userStatus,
-    userClass,
-  } = req.body;
-  auth
-    .createUser({
-      email: userEmail,
-      password: userPassword,
-    })
-    .then((user) => {
-      if (userClass === "") {
-        db.collection("users")
-          .doc(user.uid)
-          .set({
-            firstname: userFirstName,
-            lastname: userLastName,
-            password: bcrypt.hashSync(userPassword, saltRounds),
-            dateofbirth: new Date(userBirthDate),
-            status: userStatus,
-            email: userEmail,
-          });
-      } else {
-        db.collection("users")
-          .doc(user.uid)
-          .set({
-            firstname: userFirstName,
-            lastname: userLastName,
-            password: bcrypt.hashSync(userPassword, saltRounds),
-            dateofbirth: new Date(userBirthDate),
-            status: userStatus,
-            email: userEmail,
-            class: userClass,
-          });
-      }
-      res.send({ message: "User created successfully" });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-});
+require("./routes/auth")(app, db, bcrypt, saltRounds, auth, authClient, createUserWithEmailAndPassword , signInWithEmailAndPassword);
