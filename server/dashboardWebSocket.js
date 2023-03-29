@@ -62,50 +62,38 @@ module.exports = (app, db, connection, pathname) => {
     connection.on("message", async (message) => {
       var dashboardId = JSON.parse(message.utf8Data);
       var dataReturn = [];
-      var res = await db
-        .collection("dashboard")
-        .doc(dashboardId)
-        .onSnapshot(
-          (snapshot) => {
-            const data = snapshot.data();
-            dataReturn.push(data.release);
-          },
-          (err) => {
-            console.log(`Encountered error: ${err}`);
-          }
-        );
-      var wait = await db
-        .collection("dashboard")
-        .doc(dashboardId)
-        .collection("board")
-        .onSnapshot(
-          (snapshot) => {
-            var boards = [];
-            snapshot.forEach((doc) => {
-              dataReturn.map((release) => {
-                for (var r in release) {
-                  release[r].map((x) => {
-                    if (doc.id == x.boardId) {
-                      boards.push({
-                        id: doc.id,
-                        name: r + " / " + x.name,
-                        data: {
-                          toDo: doc.data().toDo.items.length,
-                          inProgress: doc.data().inProgress.items.length,
-                          done: doc.data().done.items.length,
-                        },
-                      });
-                    }
-                  });
-                }
-              });
+
+      const dashboardRef = db.collection("dashboard").doc(dashboardId);
+      const boardRef = dashboardRef.collection("board");
+      const snapshotDashboard = await dashboardRef.get();
+      const snapshotBoard = await boardRef.get();
+
+      const data = snapshotDashboard.data();
+      dataReturn.push(data.release);
+
+      var stories = [];
+      var boards = [];
+      snapshotBoard.forEach((doc) => {
+        dataReturn.map((release) => {
+          for (var r in release) {
+            release[r].map((x) => {
+              if (doc.id == x.boardId) {
+                boards.push({
+                  id: doc.id,
+                  name: r + " / " + x.name,
+                  data: {
+                    toDo: doc.data().toDo.items.length,
+                    inProgress: doc.data().inProgress.items.length,
+                    done: doc.data().done.items.length,
+                  },
+                });
+                stories = stories.concat(doc.data().requested.items);
+              }
             });
-            connection.sendUTF(JSON.stringify({ release: dataReturn[0], boards: boards }));
-          },
-          (err) => {
-            console.log(`Encountered error: ${err}`);
           }
-        );
+        });
+      });
+      connection.sendUTF(JSON.stringify({ stories: stories, release: dataReturn[0], boards: boards }));
     });
   }
 };
@@ -144,12 +132,10 @@ async function addDashboard(groups, studentId, db) {
                 name: "Critère d'acceptation",
                 items: [],
               },
-
               toDo: {
                 name: "To Do",
                 items: [],
               },
-
               inProgress: {
                 name: "In progress",
                 items: [],

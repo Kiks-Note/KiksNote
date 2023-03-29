@@ -5,25 +5,15 @@ import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import CardSprint from "../../../components/board_scrum/overview/CardSprint";
 import StatTab from "../../../components/board_scrum/overview/StatTab";
-import TextList from "./StoryList";
+import StoryList from "./StoryList";
 import Grid from "@mui/material/Grid";
 import { w3cwebsocket } from "websocket";
 
 function OverView(props) {
   var [releases, setRelease] = useState({});
+  const [stories, setStories] = useState({});
   var [boards, setBoards] = useState({});
   const [display, setDisplay] = useState(false);
-
-  const stories = [
-    {
-      id: "1",
-      name: "Storie 1",
-      desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-      assignedTo: [],
-      labels: [],
-      color: "",
-    },
-  ];
 
   const moveToOverView = () => {
     var x = JSON.parse(localStorage.getItem("tabs")) || [];
@@ -58,10 +48,12 @@ function OverView(props) {
       };
 
       wsComments.onmessage = (message) => {
+        console.log(JSON.parse(message.data));
         var data = JSON.parse(message.data);
         setRelease((releases = data.release));
-        console.log(data.boards);
         setBoards((boards = data.boards));
+        setStories(data.stories);
+        console.log(stories);
         setDisplay(true);
       };
     })();
@@ -72,7 +64,7 @@ function OverView(props) {
       <Grid container spacing={2} sx={{ m: 2 }}>
         <Grid item xs={12} md={4}>
           <Typography variant="h4">Stories</Typography>
-          <TextList stories={stories} sprints={releases} />
+          {display ? <StoryList stories={stories} sprints={releases} dashboardId={props.id} /> : <></>}
         </Grid>
         <Grid item xs={12} md={4}>
           {display ? <StatTab dashboardId={props.id} boards={boards} /> : <></>}

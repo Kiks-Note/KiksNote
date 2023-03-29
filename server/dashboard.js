@@ -167,6 +167,18 @@ module.exports = (app, db, ws, parse) => {
       const boardRef = dashboardRef.collection("board").doc(req.params.boardId);
       const snapshot = await boardRef.get();
       const columns = snapshot.data();
+      const allBoardRef = dashboardRef.collection("board");
+      const snapshotAllBoardRef = await allBoardRef.get();
+      var highestId = 0;
+      snapshotAllBoardRef.forEach((doc) => {
+        for (var column in doc.data()) {
+          doc.data()[column].items.forEach((card) => {
+            if (highestId < card.id) {
+              highestId = card.id;
+            }
+          });
+        }
+      });
 
       let column;
       let columnName;
@@ -197,9 +209,8 @@ module.exports = (app, db, ws, parse) => {
       }
 
       const cards = column.items || [];
-      const highestId = Math.max(...cards.map((card) => card.id), 0);
       const newCard = {
-        id: (highestId + 1).toString(),
+        id: (parseInt(highestId) + 1).toString(),
         name: data.title,
         desc: "",
         assignedTo: [],
@@ -365,4 +376,34 @@ module.exports = (app, db, ws, parse) => {
       }
     });
   }
+
+  app.post("/dashboard/:dashboardId/moveStories", async (req, res) => {
+    console.log("Stories moving");
+    try {
+      const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
+      var storiesToMove = { name: "Stories", items: [] };
+      const boards = dashboardRef.collection("board");
+      const snapshotSource = await boards.get();
+      await snapshotSource.forEach(async (board) => {
+        var storiesToKeep = { name: "Stories", items: [] };
+        board.data().requested.items.forEach((story) => {
+          if (req.body.storiesId.includes(story.id)) {
+            storiesToMove.items.push(story);
+          } else {
+            storiesToKeep.push(story);
+          }
+        });
+        await boards.doc(board.id).update({ ["requested"]: storiesToKeep });
+        console.log(storiesToKeep);
+      });
+      await boards.doc(req.body.boardId).update({ ["requested"]: storiesToMove });
+      console.log(storiesToMove);
+
+      console.log("Stories moved");
+    } catch (error) {
+      console.error("Fuck" + error);
+      // Server error
+      res.status(500).send({ message: "An error occurred while moving the stories" });
+    }
+  });
 };

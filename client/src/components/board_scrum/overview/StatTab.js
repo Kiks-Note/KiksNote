@@ -169,7 +169,6 @@ export default function StatTab(props) {
       }}
     >
       {boards.map((board) => {
-        console.log(board["data"]);
         index += 1;
         return (
           <TabPanel
