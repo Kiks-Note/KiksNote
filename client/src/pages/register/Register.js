@@ -105,9 +105,17 @@ const Register = () => {
       setErrorLastName(true)
       setMessageLastName("Le nom est requis")
     }
+    else{
+      setErrorLastName(false)
+      setMessageLastName("")
+    }
     if (firstname === "") {
       setErrorFirstName(true)
       setMessageFirstName("Le prénom est requis")
+    }
+    else{
+      setErrorFirstName(false)
+      setMessageFirstName("")
     }
     if (email === "") {
       setErrorEmail(true);
@@ -131,12 +139,20 @@ const Register = () => {
       setErrorPassword(true);
       setMessagePassword("Le mot de passe ne peut pas dépasser plus de 24 caractères");
     }
+    else {
+      setErrorPassword(false);
+      setMessagePassword("");
+    }
     if (confirmpassword === "") {
       setErrorConfirmPassword(true)
       setMessageConfirmPassword("Confirmez le mot de passe");
     } else if (password !== confirmpassword) {
       setErrorConfirmPassword(true)
       setMessageConfirmPassword("Le mot de passe ne correspond pas");
+    }
+    else{
+      setErrorConfirmPassword(false)
+      setMessageConfirmPassword("");
     }
     if (status === "") {
       setErrorStatus(true)
@@ -145,13 +161,25 @@ const Register = () => {
       setErrorStatus(true)
       setMessageEmail("Courriel edu introuvable");
     }
+    else{
+      setErrorStatus(false)
+      setMessageStatus("");
+    }
     if (status === "etudiant" && student_class === "") {
-      setErrorStatus(true);
+      setErrorClass(true)
       setMessageClass("Indiquez votre classe")
+    }
+    else{
+      setErrorClass(false);
+      setMessageClass("")
     }
     if (birthdate === "") {
       setErrorBirthDate(true)
       setMessageBirthDate("La date de naissance est requis");
+    }
+    else{
+      setErrorBirthDate(false)
+      setMessageBirthDate("");
     }
   };
 
@@ -302,6 +330,7 @@ const Register = () => {
                 }}
               />
               <TextField
+                label="Date de naissance"
                 type="date"
                 fullWidth
                 sx={{
