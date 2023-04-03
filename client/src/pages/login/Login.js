@@ -262,7 +262,7 @@ const Login = () => {
                   fontWeight: "bold",
                 }}
               >
-                ici
+             Inscription
               </Link>
             </p>
           </Container>
