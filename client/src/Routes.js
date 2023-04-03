@@ -32,8 +32,8 @@ function RoutesProvider() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           {/* 404 Page */}
-          <Route path="*" element={<NotFound />} />
         </Route>
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
