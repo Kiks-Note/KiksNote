@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from "react";
+import Board from "../../../pages/board_scrum/Board";
 import "./CardBoard.css";
 
-const CardBoard = ({ title, startingDate, endingDate, id, dashboardId }) => {
+const CardBoard = ({ title, startingDate, endingDate, id, dashboardId, addTab }) => {
   const moveToOverView = () => {
-    console.log(id);
-
     var x = JSON.parse(localStorage.getItem("tabs")) || [];
-
-    var tabsIndex = localStorage.getItem("tabsIndex");
-
-    if (tabsIndex === null) {
-      tabsIndex = 0;
-    }
-
-    var newIndex = parseInt(tabsIndex) + 1;
-
-    var tabsIndex = localStorage.setItem("tabsIndex", newIndex);
-
-    x.push({ id: newIndex, idDb: id, type: "board", label: title, dashboardId: dashboardId });
+    x.push({ id: id, type: "board", label: title, dashboardId: dashboardId });
     localStorage.setItem("tabs", JSON.stringify(x));
 
-    localStorage.setItem("activeTab", JSON.stringify(newIndex));
+    addTab({
+      id: id,
+      tab: "Board" + title,
+      component: <Board boardId={id} dashboardId={dashboardId} />,
+      closeable: true,
+    });
   };
 
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());

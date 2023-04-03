@@ -8,6 +8,7 @@ import StatTab from "../../../components/board_scrum/overview/StatTab";
 import StoryList from "./StoryList";
 import Grid from "@mui/material/Grid";
 import { w3cwebsocket } from "websocket";
+import PdfView from "./PdfView";
 
 function OverView(props) {
   var [releases, setRelease] = useState({});
@@ -17,23 +18,15 @@ function OverView(props) {
 
   const moveToOverView = () => {
     var x = JSON.parse(localStorage.getItem("tabs")) || [];
-    var push = true;
-    for (var tab of x) {
-      if (tab.id === -1) {
-        push = false;
-      }
-    }
-    if (push) {
-      var tabsIndex = localStorage.getItem("tabsIndex");
+    x.push({ id: props.id + "pdf", idDb: -1, type: "pdf", label: "pdf" });
+    localStorage.setItem("tabs", JSON.stringify(x));
 
-      var newIndex = parseInt(tabsIndex) + 1;
-
-      var tabsIndex = localStorage.setItem("tabsIndex", newIndex);
-
-      x.push({ id: newIndex, idDb: -1, type: "pdf", label: "pdf" });
-      localStorage.setItem("tabs", JSON.stringify(x));
-    }
-    localStorage.setItem("activeTab", JSON.stringify(newIndex));
+    props.addTab({
+      id: props.id + "pdf",
+      tab: "pdf",
+      component: <PdfView />,
+      closeable: true,
+    });
   };
 
   useEffect(() => {
@@ -48,12 +41,10 @@ function OverView(props) {
       };
 
       wsComments.onmessage = (message) => {
-        console.log(JSON.parse(message.data));
         var data = JSON.parse(message.data);
         setRelease((releases = data.release));
         setBoards((boards = data.boards));
         setStories(data.stories);
-        console.log(stories);
         setDisplay(true);
       };
     })();
@@ -106,7 +97,7 @@ function OverView(props) {
                       </AccordionSummary>
                       <AccordionDetails sx={{ width: "100%" }}>
                         <Box sx={{ width: "100%" }}>
-                          <CardSprint release={releases[item]} dashboardId={props.id} />
+                          <CardSprint addTab={props.addTab} release={releases[item]} dashboardId={props.id} />
                         </Box>
                       </AccordionDetails>
                     </Accordion>

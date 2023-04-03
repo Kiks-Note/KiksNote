@@ -259,6 +259,7 @@ function Board(props) {
                                           label={label}
                                           list_name={column.name}
                                           columnId={columnId}
+                                          stories={columns[0].items}
                                           dashboardId={props.dashboardId}
                                           boardId={props.boardId}
                                         ></CardBoard>

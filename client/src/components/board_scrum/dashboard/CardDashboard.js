@@ -5,27 +5,20 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import { Box, Button, CardActionArea, Typography } from "@mui/material";
 import { PropTypes } from "prop-types";
+import OverView from "../../../pages/board_scrum/overview/OverView";
 
-export default function CardDashboard({ picture, sprint_group, fav, isFavoris, id }) {
+export default function CardDashboard({ addTab, picture, sprint_group, fav, isFavoris, id }) {
   const moveToOverView = () => {
     var x = JSON.parse(localStorage.getItem("tabs")) || [];
-    var push = true;
-    for (var tab of x) {
-      if (tab.id === id) {
-        push = false;
-      }
-    }
-    if (push) {
-      var tabsIndex = localStorage.getItem("tabsIndex");
+    x.push({ id: id, idDb: id, type: "overView", label: `OverView ${sprint_group}` });
+    localStorage.setItem("tabs", JSON.stringify(x));
 
-      var newIndex = parseInt(tabsIndex) + 1;
-
-      var tabsIndex = localStorage.setItem("tabsIndex", newIndex);
-
-      x.push({ id: newIndex, idDb: id, type: "overView", label: `OverView ${sprint_group}` });
-      localStorage.setItem("tabs", JSON.stringify(x));
-    }
-    localStorage.setItem("activeTab", JSON.stringify(newIndex));
+    addTab({
+      id: id,
+      tab: "OverView " + sprint_group,
+      component: <OverView id={id} addTab={addTab} />,
+      closeable: true,
+    });
   };
   return (
     <CardActionArea onClick={moveToOverView} sx={{ height: 150, maxWidth: 345 }}>

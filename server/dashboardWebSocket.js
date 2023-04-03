@@ -20,7 +20,7 @@ module.exports = (app, db, connection, pathname) => {
           var add = true;
           addDashboard(groups, studentId, db);
           snapshot.forEach((doc) => {
-            doc.data().students.forEach((student) => {
+            doc.data().students?.forEach((student) => {
               if (student == studentId) {
                 data.push({ ...doc.data(), id: doc.id });
               }

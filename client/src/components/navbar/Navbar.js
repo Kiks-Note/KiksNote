@@ -108,17 +108,11 @@ export default function MiniDrawer({ element }) {
         <DrawerHeader>
           {open ? (
             <IconButton onClick={handleDrawerClose}>
-              <ChevronLeftIcon
-                style={{ color: theme.palette.custom.iconDrawer }}
-                fontSize="large"
-              />
+              <ChevronLeftIcon style={{ color: theme.palette.custom.iconDrawer }} fontSize="large" />
             </IconButton>
           ) : (
             <IconButton onClick={handleDrawerOpen}>
-              <ChevronRightIcon
-                style={{ color: theme.palette.custom.iconDrawer }}
-                fontSize="large"
-              />
+              <ChevronRightIcon style={{ color: theme.palette.custom.iconDrawer }} fontSize="large" />
             </IconButton>
           )}
         </DrawerHeader>
@@ -129,49 +123,31 @@ export default function MiniDrawer({ element }) {
               id: 1,
               name: "Accueil",
               route: "/",
-              icon: (
-                <HomeIcon style={{ color: theme.palette.custom.iconDrawer }} />
-              ),
+              icon: <HomeIcon style={{ color: theme.palette.custom.iconDrawer }} />,
             },
             {
               id: 2,
               name: "Agile",
               route: "#",
-              icon: (
-                <BallotIcon
-                  style={{ color: theme.palette.custom.iconDrawer }}
-                />
-              ),
+              icon: <BallotIcon style={{ color: theme.palette.custom.iconDrawer }} />,
             },
             {
               id: 3,
               name: "Profil",
               route: "#",
-              icon: (
-                <Person2Icon
-                  style={{ color: theme.palette.custom.iconDrawer }}
-                />
-              ),
+              icon: <Person2Icon style={{ color: theme.palette.custom.iconDrawer }} />,
             },
             {
               id: 4,
               name: "Espace de travail",
-              route: "/tabList",
-              icon: (
-                <DashboardIcon
-                  style={{ color: theme.palette.custom.iconDrawer }}
-                />
-              ),
+              route: "/dashboard",
+              icon: <DashboardIcon style={{ color: theme.palette.custom.iconDrawer }} />,
             },
             {
               id: 5,
               name: "Blog",
               route: "/blog",
-              icon: (
-                <AlternateEmailIcon
-                  style={{ color: theme.palette.custom.iconDrawer }}
-                />
-              ),
+              icon: <AlternateEmailIcon style={{ color: theme.palette.custom.iconDrawer }} />,
             },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
@@ -193,10 +169,7 @@ export default function MiniDrawer({ element }) {
                   {page.icon}
                 </ListItemIcon>
 
-                <ListItemText
-                  primary={page.name}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
+                <ListItemText primary={page.name} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}
@@ -209,11 +182,7 @@ export default function MiniDrawer({ element }) {
               id: 1,
               name: "Déconnexion",
               route: "#",
-              icon: (
-                <LogoutOutlinedIcon
-                  style={{ color: theme.palette.custom.iconDrawer }}
-                />
-              ),
+              icon: <LogoutOutlinedIcon style={{ color: theme.palette.custom.iconDrawer }} />,
             },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
@@ -234,27 +203,16 @@ export default function MiniDrawer({ element }) {
                 >
                   {page.icon}
                 </ListItemIcon>
-                <ListItemText
-                  primary={page.name}
-                  sx={{ opacity: open ? 1 : 0 }}
-                />
+                <ListItemText primary={page.name} sx={{ opacity: open ? 1 : 0 }} />
               </ListItemButton>
             </ListItem>
           ))}
           {theme.mode === "dark" ? (
-            <IconButton
-              sx={{ ml: 1 }}
-              onClick={colorMode.toggleColorMode}
-              color="inherit"
-            >
+            <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
               <Brightness7Icon />
             </IconButton>
           ) : (
-            <IconButton
-              sx={{ ml: 1 }}
-              onClick={colorMode.toggleColorMode}
-              color="inherit"
-            >
+            <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
               <Brightness4Icon />
             </IconButton>
           )}

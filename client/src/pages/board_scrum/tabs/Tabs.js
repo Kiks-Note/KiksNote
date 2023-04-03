@@ -15,7 +15,15 @@ const styles = (theme) => ({
   },
 });
 
-export const TabsDemo = ({ tabs, selectedTab, onClose, tabsProps = { indicatorColor: "black" }, ...rest }) => {
+export const TabsDemo = ({
+  tabs,
+  selectedTab,
+  onClose,
+  handleChange,
+  handleClose,
+  tabsProps = { indicatorColor: "black" },
+  ...rest
+}) => {
   const [activeTab, setActiveTab] = useState(0);
   const [activetabs, setActiveTabs] = useState([]);
 
@@ -23,28 +31,6 @@ export const TabsDemo = ({ tabs, selectedTab, onClose, tabsProps = { indicatorCo
     setActiveTabs(tabs);
     setActiveTab(selectedTab);
   }, [tabs][selectedTab]);
-
-  const handleChange = useCallback((event, activeTab) => {
-    localStorage.setItem("activeTab", JSON.stringify(activeTab));
-    setActiveTab(activeTab);
-  });
-
-  const handleClose = useCallback(
-    (tabToDelete) => {
-      localStorage.setItem("activeTab", JSON.stringify(0));
-
-      const tabToDeleteIndex = activetabs.findIndex((tab) => tab.id === tabToDelete.id);
-      const updatedTabs = activetabs.filter((tab) => tab.id !== tabToDelete.id);
-      const newStorageTabs = JSON.parse(localStorage.getItem("tabs"))?.filter((tab) => tab.id !== tabToDelete.id) || [];
-      // const previousTab = activetabs[tabToDeleteIndex - 1] || activetabs[tabToDeleteIndex + 1] || {};
-
-      setActiveTabs(updatedTabs);
-      setActiveTab(0); // Pass the id of the first element of updatedTabs
-
-      localStorage.setItem("tabs", JSON.stringify(newStorageTabs));
-    },
-    [activetabs]
-  );
 
   return (
     <>
@@ -55,9 +41,9 @@ export const TabsDemo = ({ tabs, selectedTab, onClose, tabsProps = { indicatorCo
               key={tab.id}
               value={tab.id}
               label={
-                typeof tab.label === "string" ? (
+                typeof tab.tab === "string" ? (
                   <span>
-                    {tab.label}
+                    {tab.tab}
                     {tab.closeable && (
                       // <IconButton onClick={() => handleClose(tab.id)}>
                       //   <CloseIcon />
@@ -68,7 +54,7 @@ export const TabsDemo = ({ tabs, selectedTab, onClose, tabsProps = { indicatorCo
                     )}
                   </span>
                 ) : (
-                  tab.label
+                  tab.tab
                 )
               }
             />

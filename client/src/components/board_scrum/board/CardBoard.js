@@ -23,6 +23,8 @@ export default function CardBoard(props) {
 
   const info = props.card_info;
 
+  var color = info.color;
+
   const assignedTo = props.card_info.assignedTo;
   const assignedToAvatars = assignedTo.slice(0, 2).map((person) => {
     return <Avatar key={person.id} alt={person.name} src={person.photo} sx={{ width: 24, height: 24 }} />;
@@ -84,6 +86,9 @@ export default function CardBoard(props) {
         marginBottom: "0.5rem",
         padding: "0.5rem",
         position: "relative",
+        borderStyle: "solid",
+        borderColor: color,
+        borderWidth: "3px",
       }}
     >
       <div
@@ -149,6 +154,7 @@ export default function CardBoard(props) {
           columnId={props.columnId}
           dashboardId={props.dashboardId}
           boardId={props.boardId}
+          stories={props.stories}
         ></DetailCard>
       </Modal>
     </div>

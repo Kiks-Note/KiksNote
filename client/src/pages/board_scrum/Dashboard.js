@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import TableBoard from "../../components/board_scrum/dashboard/TableDashboard";
-import CardBoard from "../../components/board_scrum/dashboard/CardDashboard";
+import CardDashBoard from "../../components/board_scrum/dashboard/CardDashboard";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { Divider, List, ListItem, Typography, Button } from "@mui/material";
@@ -15,7 +15,7 @@ import { w3cwebsocket } from "websocket";
 
 let maDate = new Date();
 
-function Dashboard() {
+function Dashboard(props) {
   const [rows, setRows] = useState([]);
   const [view, setView] = useState("module");
   const [page, setPage] = React.useState(0);
@@ -49,10 +49,6 @@ function Dashboard() {
     await axios.put(`http://localhost:5050/dashboard/` + id + "/" + favorite);
   }
 
-  async function board() {
-    await axios.post(`http://localhost:5050/boarde/LSNoY69ELr9N6nBBHqHt`);
-  }
-
   // * DEFINE BOARDS WHO IS ACTIF
   let actif = rows.filter((board) => {
     const startDate = new Date(board.start);
@@ -64,7 +60,8 @@ function Dashboard() {
   // * DEFINE BOARDS WHO IS IN  FAVORIS
   let favoris = rows.filter((person) => person.favorite === true).sort((a, b) => a - b);
 
-  var connectedStudent = localStorage.getItem("userUid");
+  //var connectedStudent = localStorage.getItem("userUid");
+  var connectedStudent = "nFVLL3s1TYtZsjFZPnmw";
 
   useEffect(() => {
     (async () => {
@@ -126,7 +123,8 @@ function Dashboard() {
         >
           {list.map((person) => (
             <ListItem key={person.id} style={{ maxWidth: "345px" }}>
-              <CardBoard
+              <CardDashBoard
+                addTab={props.addTab}
                 key={person.id}
                 picture={person.picture}
                 sprint_group={person.sprint_group}
@@ -167,7 +165,8 @@ function Dashboard() {
         <Grid container spacing={2}>
           {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((dashboard) => (
             <Grid item xs={3} key={dashboard.id}>
-              <CardBoard
+              <CardDashBoard
+                addTab={props.addTab}
                 picture={dashboard.picture}
                 sprint_group={dashboard.sprint_group}
                 fav={dashboard.favorite}
@@ -178,7 +177,15 @@ function Dashboard() {
           ))}
         </Grid>
       ) : (
-        rows.length > 0 && <TableBoard rows={rows} addFavorite={favorisTell} deleteBoards={deleteBoards} />
+        rows.length > 0 && (
+          <TableBoard
+            id={props.id}
+            addTab={props.addTab}
+            rows={rows}
+            addFavorite={favorisTell}
+            deleteBoards={deleteBoards}
+          />
+        )
       )}
 
       {view === "module" ? (

@@ -14,151 +14,18 @@ module.exports = (app, db, ws, parse) => {
     });
   });
 
-  app.post("/boarde/:dashboardId", async (req, res) => {
-    await db
-      .collection("dashboard")
-      .doc(req.params.dashboardId)
-      .collection("board")
-      .add({
-        requested: {
-          name: "Stories",
-          items: [
-            {
-              id: "14",
-              index: 0,
-              name: "Tset",
-              desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-              assignedTo: [],
-              labels: [],
-            },
-            {
-              id: "15",
-              index: 1,
-              name: "Do all",
-              desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-              assignedTo: [],
-              labels: [],
-            },
-          ],
-        },
-        acceptance: {
-          name: "Critère d'acceptation",
-          items: [
-            {
-              id: "7",
-              index: 0,
-              name: "Sprint retro",
-              desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-              assignedTo: [],
-              labels: [],
-            },
-            {
-              id: "8",
-              index: 1,
-              name: "Sprint retro",
-              desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-              assignedTo: [],
-              labels: [],
-            },
-            {
-              id: "9",
-              index: 2,
-              name: "Sprint retro",
-              desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-              assignedTo: [],
-              labels: [],
-            },
-            {
-              id: "10",
-              index: 3,
-              name: "Sprint retro",
-              desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.",
-              assignedTo: [],
-              labels: [],
-            },
-          ],
-        },
-
-        toDo: {
-          name: "To Do",
-          items: [
-            {
-              id: "1",
-              index: 0,
-              name: "Board EduScrum",
-              desc: "",
-              assignedTo: [
-                {
-                  id: "1",
-                  name: "John Doe",
-                  photo: "https://picsum.photos/500/300?random=45",
-                },
-                {
-                  id: "2",
-                  name: "Jane Smith",
-                  photo: "https://picsum.photos/500/300?random=67",
-                },
-                {
-                  id: "3",
-                  name: "Bob Johnson",
-                  photo: "https://picsum.photos/500/300?random=89",
-                },
-              ],
-              labels: ["Urgent", "Fix", "Feature"],
-            },
-            {
-              id: "2",
-              index: 1,
-              name: "Création de sprint agile très très long",
-              desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-              assignedTo: [
-                {
-                  id: "3",
-                  name: "Bob Johnson",
-                  photo: "https://picsum.photos/500/300?random=3",
-                },
-              ],
-              labels: ["Urgent"],
-            },
-            {
-              id: "3",
-              index: 2,
-              name: "BurnDown chart",
-              desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-              assignedTo: [],
-              labels: ["Documentation", "Fix"],
-            },
-            {
-              id: "4",
-              index: 3,
-              name: "Ajout du backlog",
-              desc: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
-              assignedTo: [
-                {
-                  id: "2",
-                  name: "Jane Smith",
-                  photo: "https://picsum.photos/500/300?random=1",
-                },
-                {
-                  id: "3",
-                  name: "Bob Johnson",
-                  photo: "https://picsum.photos/500/300?random=2",
-                },
-              ],
-              labels: ["Feature", "Urgent"],
-            },
-          ],
-        },
-        inProgress: {
-          name: "In progress",
-          items: [],
-        },
-        done: {
-          name: "Done",
-          items: [],
-        },
-      });
+  app.put("/dashboard/:dashboardId/board/:boardId/linkStory", async (req, res) => {
+    var data = req.body;
+    console.log(data);
+    // await db.collection("dashboard").doc(req.params.dashboardId).collection("board").doc(req.params.boardId).update({
+    //   requested: data[0],
+    //   acceptance: data[1],
+    //   toDo: data[2],
+    //   inProgress: data[3],
+    //   done: data[4],
+    // });
   });
+
   /// PATH to add a info card
   app.put("/dashboard/:dashboardId/board/:boardId/column/:columnId/addCard", async (req, res) => {
     try {
@@ -170,10 +37,16 @@ module.exports = (app, db, ws, parse) => {
       const allBoardRef = dashboardRef.collection("board");
       const snapshotAllBoardRef = await allBoardRef.get();
       var highestId = 0;
+      var color = getRandomColor();
       snapshotAllBoardRef.forEach((doc) => {
         for (var column in doc.data()) {
           doc.data()[column].items.forEach((card) => {
-            if (highestId < card.id) {
+            if (column == "requested") {
+              while (card.color == color) {
+                color = getRandomColor();
+              }
+            }
+            if (parseInt(highestId) < parseInt(card.id)) {
               highestId = card.id;
             }
           });
@@ -208,14 +81,31 @@ module.exports = (app, db, ws, parse) => {
           return;
       }
 
+      console.log(highestId);
+      const id = (parseInt(highestId) + 2).toString();
       const cards = column.items || [];
-      const newCard = {
-        id: (parseInt(highestId) + 1).toString(),
-        name: data.title,
-        desc: "",
-        assignedTo: [],
-        labels: [],
-      };
+      var newCard = {};
+      if (columnName == "requested") {
+        newCard = {
+          id: id,
+          name: data.title,
+          desc: "",
+          assignedTo: [],
+          labels: [],
+          color: color,
+          storyId: id,
+        };
+      } else {
+        newCard = {
+          id: id,
+          name: data.title,
+          desc: "",
+          assignedTo: [],
+          labels: [],
+          color: "#fff",
+          storyId: -1,
+        };
+      }
       column.items = [...cards, newCard];
 
       await boardRef.update({ [columnName]: column });
@@ -368,8 +258,10 @@ module.exports = (app, db, ws, parse) => {
           id: updatedItem.id,
           name: updatedItem.title,
           desc: updatedItem.desc,
-          assignedTo: item.assignedTo,
-          labels: item.labels,
+          assignedTo: updatedItem.assignedTo,
+          labels: updatedItem.labels,
+          color: updatedItem.color,
+          storyId: updatedItem.storyId,
         };
       } else {
         return item;
@@ -390,14 +282,27 @@ module.exports = (app, db, ws, parse) => {
           if (req.body.storiesId.includes(story.id)) {
             storiesToMove.items.push(story);
           } else {
-            storiesToKeep.push(story);
+            storiesToKeep.items.push(story);
           }
         });
+        for (var column in board.data()) {
+          if (column != "requested") {
+            cardToMove = { name: column, items: [] };
+            cardToKeep = { name: column, items: [] };
+            await board.data()[column].items.forEach((card) => {
+              if (req.body.storiesId.includes(card.storyId)) {
+                cardToMove.items.push(card);
+              } else {
+                cardToKeep.items.push(card);
+              }
+            });
+            await boards.doc(board.id).update({ [column]: cardToKeep });
+            await boards.doc(req.body.boardId).update({ [column]: cardToMove });
+          }
+        }
         await boards.doc(board.id).update({ ["requested"]: storiesToKeep });
-        console.log(storiesToKeep);
       });
       await boards.doc(req.body.boardId).update({ ["requested"]: storiesToMove });
-      console.log(storiesToMove);
 
       console.log("Stories moved");
     } catch (error) {
@@ -406,4 +311,13 @@ module.exports = (app, db, ws, parse) => {
       res.status(500).send({ message: "An error occurred while moving the stories" });
     }
   });
+};
+
+const getRandomColor = () => {
+  const hexLetters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += hexLetters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 };

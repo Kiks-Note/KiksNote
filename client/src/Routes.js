@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
 import Blog from "./pages/blog/Blog";
-import TabList from "./pages/board_scrum/tabs/TabBoard";
+import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
@@ -24,7 +24,7 @@ function RoutesProvider() {
           <Route path="/presence/:id" element={<Navbar element={<Presence />} />} />
           <Route path="/groups" element={<Navbar element={<Groups />} />} />
           <Route path="/" element={<Home />} />
-          <Route path="/tabList" element={<TabList />} />
+          <Route path="/dashboard" element={<TabBoard />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
         </Route>
