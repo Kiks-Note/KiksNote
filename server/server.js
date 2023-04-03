@@ -10,6 +10,8 @@ const webSocketServer = require("websocket").server;
 const http = require("http");
 const { parse } = require("url");
 const saltRounds = parseInt(process.env.SALTY_ROUNDS);
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 const { createUserWithEmailAndPassword , signInWithEmailAndPassword, authClient } = require("./firebase_auth");
 
@@ -42,7 +44,7 @@ ws.on("request", (request) => {
   require("./routes/call")(app, db, connection, pathname);
   require("./dashboard")(app, db, ws, parse);
   require("./routes/groupscreation")(app, db);
-  require("./userInfo")(app, db, ws, parse);
+  require("./userInfo")(app, pathname, db, connection, upload);
 });
 
 require("./routes/auth")(app, db, bcrypt, saltRounds, auth, authClient, createUserWithEmailAndPassword , signInWithEmailAndPassword);

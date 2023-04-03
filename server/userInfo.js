@@ -1,27 +1,37 @@
-module.exports = (app, db) => {
+module.exports = (app, pathname, db, connection,upload) => {
   //API for getting users' info from db
-  app.get(`/profile/getUser/:userId`, async (req, res) => {
-    const { userId } = req.params;
 
-    const docRef = db.collection("users").doc(userId);
-    const doc = await docRef.get();
-    console.log(doc.data());
-    res.status(200).send(doc.data());
-  });
+  if (pathname === "/profil") {
+    console.log("je suis dans /profile");
 
-  // app.get('/profile/users', async (req, res) => {
-  //   const docRef = db.collection("users");
-  //   const snapshot = await docRef.get();
-  //   const users = [];
-  //   snapshot.forEach(doc => {
-  //     users.push(doc.data());
-  //   });
-  //   res.status(200).send(users);
-  // });
+    connection.on("message", (message) => {
+      console.log("message => ", message);
+      console.log("message.utf8Data => ", message.utf8Data);
+      const studentId = JSON.parse(message.utf8Data);
+      console.log(studentId);
+      db.collection("users")
+        .doc(studentId)
+        .get()
+        .then((doc) => {
+          if (doc.exists) {
+            connection.sendUTF(JSON.stringify(doc.data()));
+          } else {
+            connection.sendUTF(JSON.stringify({ error: "User not found" }));
+          }
+        })
+        .catch((err) => {
+          console.log(`Encountered error: ${err}`);
+          connection.sendUTF(
+            JSON.stringify({ error: "Error getting user data" })
+          );
+        });
+    });
+  }
 
-  app.put("/profile/:userId/editUser", (req, res) => {
+  app.put("/profil/:userId/editUser", upload.single("image"), (req, res) => {
     const userId = req.params;
     const userDataToUpdate = req.body.userDataToUpdate;
+    const imageUrl = req.file ? req.file.path : "";
 
     db.collection("users")
       .doc(userId)
