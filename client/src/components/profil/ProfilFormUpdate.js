@@ -1,6 +1,7 @@
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import { format } from "date-fns";
 import {
   InputLabel,
   Input,
@@ -9,26 +10,42 @@ import {
   Avatar,
   Box,
   Grid,
+  Chip,
+  TextareaAutosize,
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-export default function ProfilFormStudent({ onClose, user }) {
-  const [image, setImage] = useState(user.imageprofil);
+function ProfilFormUpdate({ onClose, user }) {
+  const [image, setImage] = useState(user.image);
   const [pictureToUpload, setPictureToUpload] = useState(null);
-  const [dateBirthday, setDateBirthday] = useState(user.dateBirthday);
+  const [dateBirthday, setDateBirthday] = useState(new Date(user.dateBirthday));
   const [job, setJob] = useState(user.job);
   const [linkedin, setLinkedin] = useState(user.linkedin);
   const [gitLink, setGitLink] = useState(user.git);
   const [company, setCompany] = useState(user.company);
+  const [description, setDescription] = useState(user.description);
   const [classe, setClasse] = useState(user.class);
-  const [programmationLanguage, setProgrammationLanguage] = useState(
+  const [programmationLanguage, setProgrammationLanguage] = useState();
+  const [programmationLanguages, setProgrammationLanguages] = useState(
     user.programmationLanguage
   );
+
   const [discordName, setDiscordName] = useState(user.discord);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
-  const mustClass = ["L1-Alt-cergy", "L1-Alt-paris", "L2", "L3"];
+  const mustClass = [
+    { value: "L1-paris", label: "L1-Paris" },
+    { value: "L1-cergy", label: "L1-Cergy" },
+    { value: "L2-paris", label: "L2-Paris" },
+    { value: "L2-cergy", label: "L2-Cergy" },
+    { value: "L3-paris", label: "L3-Paris" },
+    { value: "L3-cergy", label: "L3-Cergy" },
+    { value: "M1-lead", label: "M1-LeadDev" },
+    { value: "M1-gaming", label: "M1-Gaming" },
+    { value: "M2-lead", label: "M2-LeadDev" },
+    { value: "M2-gaming", label: "M2-Gaming" },
+  ];
 
   /// VALIDATION && REGEX FORM
   const PHONE_NUMBER_REGEX = /^\d{10}$/;
@@ -45,25 +62,27 @@ export default function ProfilFormStudent({ onClose, user }) {
     mode: "onTouched",
   });
 
-  const userUid = localStorage.getItem("userUid");
+  const handleDateChange = (event) => {
+    console.log(event.target.value);
+    setDateBirthday(event.target.value);
+  };
 
   const sendData = async (data) => {
-    console.log(phoneNumber);
     const formData = new FormData();
-    // formData.append("dateBirthday", data.dateBirthday);
-    // formData.append("job", data.job);
-    // formData.append("linkedin", data.linkedin);
-    // formData.append("gitLink", data.gitLink);
-    // formData.append("compagny", data.compagny);
-    // formData.append("classe", data.classe);
-    // formData.append("programmationLanguage", data.programmationLanguage);
-    // formData.append("discordName", data.discordName);
-    // formData.append("phoneNumber", data.phoneNumber);
-    // formData.append("image", pictureToUpload);
+    formData.append("dateofbirth", dateBirthday);
+    formData.append("job", data.job);
+    formData.append("linkedin", data.linkedin);
+    formData.append("git", data.gitLink);
+    formData.append("company", data.company);
+    formData.append("class", data.class);
+    formData.append("programmationLanguage", programmationLanguages);
+    formData.append("discord", data.discordName);
+    formData.append("phone", data.phoneNumber);
+    formData.append("image", pictureToUpload);
 
     try {
       const response = await axios.put(
-        `http://localhost:5050/profile/${userUid}/editUser/`,
+        `http://localhost:5050/profil/${user.id}`,
         formData,
         {
           headers: {
@@ -75,30 +94,46 @@ export default function ProfilFormStudent({ onClose, user }) {
     } catch (error) {
       console.error(error);
     }
+    onClose();
   };
-  const convertToBase64 = (file) => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(file);
-      fileReader.onload = () => {
-        resolve(fileReader.result);
-      };
-      fileReader.onerror = (error) => {
-        reject(error);
-      };
-    });
+
+  const handleButtonClick = () => {
+    if (
+      typeof programmationLanguage === "string" &&
+      programmationLanguage.trim() !== ""
+    ) {
+      if (
+        !programmationLanguages.some(
+          (language) =>
+            typeof language === "string" &&
+            language.toLowerCase() === programmationLanguage.toLowerCase()
+        ) &&
+        programmationLanguages.length < 5
+      ) {
+        setProgrammationLanguages([
+          ...programmationLanguages,
+          programmationLanguage,
+        ]);
+        setProgrammationLanguage("");
+      }
+    }
+  };
+
+  const handleDelete = (languageToDelete) => {
+    setProgrammationLanguages(
+      programmationLanguages.filter((language) => language !== languageToDelete)
+    );
   };
 
   const handleOnChange = async (event) => {
     const newImage = event.target?.files?.[0];
+    console.log("newImage" + newImage);
 
     if (newImage) {
       setImage(URL.createObjectURL(newImage));
-      const base64 = await convertToBase64(newImage);
-      setPictureToUpload(base64);
+      setPictureToUpload(newImage);
     }
   };
-
   return (
     <>
       <Box
@@ -108,9 +143,10 @@ export default function ProfilFormStudent({ onClose, user }) {
           flexDirection: "column",
         }}
         component="form"
+        encType="multipart/form-data"
         noValidate
         autoComplete="off"
-        onSubmit={handleSubmit(() => sendData())}
+        onSubmit={handleSubmit((data) => sendData(data))}
       >
         <Grid container spacing={2}>
           <Grid
@@ -194,6 +230,26 @@ export default function ProfilFormStudent({ onClose, user }) {
               )}
             </Box>
           </Grid>
+          <Grid item xs={12}>
+            <InputLabel id="description">Description *</InputLabel>
+            <TextareaAutosize
+              id="description"
+              aria-describedby="description"
+              name="description"
+              minRows={2}
+              maxRows={4}
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: "1px solid",
+                borderRadius: "10px",
+              }}
+              {...register("description", {
+                value: description,
+                required: true,
+              })}
+            />
+          </Grid>
           <Grid item xs={12} sm={6}>
             <InputLabel id="label_date_birthday">
               Date de naissance *
@@ -202,14 +258,14 @@ export default function ProfilFormStudent({ onClose, user }) {
               id="date"
               type="date"
               name="dateBirthday"
-              value={dateBirthday}
-              onChange={(e) => setDateBirthday(e.target.value)}
+              onChange={handleDateChange}
               sx={{ width: 220 }}
               InputLabelProps={{
                 shrink: true,
               }}
               {...register("dateBirthday", {
-                required: true, // Change required to true
+                value: dateBirthday ? format(dateBirthday, "yyyy-MM-dd") : "",
+                required: true,
               })}
             />
 
@@ -220,17 +276,17 @@ export default function ProfilFormStudent({ onClose, user }) {
             )}
           </Grid>
           <Grid item xs={12} sm={6}>
-            <InputLabel id="phonenumber"> Numéro de téléphone </InputLabel>
+            <InputLabel id="phonenumber"> Numéro de téléphone * </InputLabel>
             <Input
-              id="phone-number"
+              id="phonenumber"
               aria-describedby="phoneNumber"
               name="phoneNumber"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
               {...register("phoneNumber", {
+                required: true,
+                value: phoneNumber,
                 pattern: {
                   value: PHONE_NUMBER_REGEX,
-                  message: "Le format du numéro  est incorrecte",
+                  message: "Le format du numéro est incorrect",
                 },
               })}
             />
@@ -241,34 +297,63 @@ export default function ProfilFormStudent({ onClose, user }) {
               </Typography>
             )}
           </Grid>
-          {/* <Grid item xs={12} sm={6}>
-            <InputLabel id="select-class">Classe</InputLabel>
-            <Select
-              name="classe"
-              id="class"
-              value={classe}
-              onChange={(e) => setClasse(e.target.value)}
-              sx={{ width: 320 }}
-            >
-              {mustClass.map((index) => (
-                <MenuItem key={index} value={index}>
-                  {index}
-                </MenuItem>
-              ))}
-            </Select>
-          </Grid> */}
+          {user && user.status === "etudiant" && (
+            <Grid item xs={12} sm={6}>
+              <InputLabel id="select-class">Classe *</InputLabel>
+              <Select
+                name="classe"
+                id="class"
+                onChange={(e) => setClasse(e.target.value)}
+                defaultValue={classe}
+                sx={{ width: 320 }}
+                {...register("class", { value: classe, required: true })}
+              >
+                {mustClass.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Grid>
+          )}
+
           <Grid item xs={12} sm={6}>
-            <InputLabel id="select-language">
-              Langage de Programmation Favori{" "}
+            <InputLabel id="ProgrammationLanguage-name">
+              Langage de Programmation Favori
             </InputLabel>
-            <Input
+            <TextField
               id="ProgrammationLanguage-name"
               aria-describedby="ProgrammationLanguage"
               name="ProgrammationLanguage"
-              onChange={(e) => setProgrammationLanguage(e.target.value)}
               value={programmationLanguage}
+              onChange={(e) => setProgrammationLanguage(e.target.value)}
             />
+            <Button
+              variant="contained"
+              color="primary"
+              disabled={!programmationLanguage}
+              onClick={handleButtonClick}
+            >
+              Ajouter
+            </Button>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                flexWrap: "wrap",
+              }}
+            >
+              {programmationLanguages.map((language) => (
+                <Chip
+                  key={language}
+                  label={language}
+                  onDelete={() => handleDelete(language)}
+                  style={{ margin: "2px" }}
+                />
+              ))}
+            </div>
           </Grid>
+
           <Grid item xs={12} sm={6}>
             <InputLabel id="github-link"> Lien GitHub </InputLabel>
             <Input
@@ -276,8 +361,8 @@ export default function ProfilFormStudent({ onClose, user }) {
               type="text"
               name="gitLink"
               onChange={(e) => setGitLink(e.target.value)}
-              value={gitLink}
               {...register("gitLink", {
+                value: gitLink,
                 pattern: {
                   value: GITHUB_LINK_REGEX,
                   message: "Le format du lien GitHub est incorrect",
@@ -294,12 +379,13 @@ export default function ProfilFormStudent({ onClose, user }) {
             <InputLabel id="discord-name"> Discord </InputLabel>
             <Input
               id="discord-name"
-              aria-describedby="discordName"
-              onChange={(e) => setDiscordName(e.target.value)}
-              value={discordName}
-              {...register("discordName")}
               type="text"
               name="discordName"
+              aria-describedby="discordName"
+              onChange={(e) => setDiscordName(e.target.value)}
+              {...register("discordName", {
+                value: discordName,
+              })}
             />
             {errors.discordName && (
               <Typography variant="subtitle1" color="error">
@@ -313,9 +399,15 @@ export default function ProfilFormStudent({ onClose, user }) {
               id="linkedin-name"
               aria-describedby="linkedin"
               onChange={(e) => setLinkedin(e.target.value)}
-              value={linkedin}
               type="text"
               name="linkedin"
+              {...register("linkedin", {
+                value: linkedin,
+                pattern: {
+                  value: LINKEDIN_REGEX,
+                  message: "Le format du lien linkedin est incorrect",
+                },
+              })}
             />
             {errors.linkedin && (
               <Typography variant="subtitle1" color="error">
@@ -330,17 +422,21 @@ export default function ProfilFormStudent({ onClose, user }) {
               aria-describedby="CompagnyName"
               name="company"
               onChange={(e) => setCompany(e.target.value)}
-              value={company}
+              {...register("company", {
+                value: company,
+              })}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <InputLabel id="select-language">Poste Pourvu </InputLabel>
+            <InputLabel id="job">Poste Pourvu </InputLabel>
             <Input
               id="job"
               aria-describedby="job"
               name="job"
               onChange={(e) => setJob(e.target.value)}
-              value={job}
+              {...register("job", {
+                value: job,
+              })}
             />
           </Grid>
 
@@ -378,3 +474,4 @@ export default function ProfilFormStudent({ onClose, user }) {
     </>
   );
 }
+export default ProfilFormUpdate;
