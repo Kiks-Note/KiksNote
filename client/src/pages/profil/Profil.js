@@ -1,3 +1,6 @@
+import React, { useEffect, useState, useRef } from "react";
+import { w3cwebsocket } from "websocket";
+import axios from "axios";
 import "./Profil.scss";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import GitHubIcon from "@mui/icons-material/GitHub";
@@ -14,17 +17,17 @@ import {
   Dialog,
   DialogContent,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { w3cwebsocket } from "websocket";
+
 import ProfilFormUpdate from "../../components/profil/ProfilFormUpdate.js";
 import ProfilSkeleton from "../../components/profil/ProfilSkeleton";
-export default function Profil() {
+function Profil() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const radioGroupRef = React.useRef(null);
   const userUid = localStorage.getItem("userUid");
   const [user, setUser] = useState({});
+  const fileInputRef = useRef(null);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -42,6 +45,41 @@ export default function Profil() {
   const handleEntering = () => {
     if (radioGroupRef.current != null) {
       radioGroupRef.current.focus();
+    }
+  };
+  const handleEditBanner = () => {
+    fileInputRef.current.click();
+  };
+
+  const sendData = async (pictureToUpload) => {
+    const formData = new FormData();
+    formData.append("image", pictureToUpload);
+
+    try {
+      const response = await axios.put(
+        `http://localhost:5050/profil/background/${user.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleOnChange = async (event) => {
+    const newImage = event.target?.files?.[0];
+    console.log("newImage" + newImage);
+
+    if (newImage) {
+      sendData(newImage);
+      setUser((prevState) => ({
+        ...prevState,
+        imagebackground: URL.createObjectURL(newImage),
+      }));
     }
   };
 
@@ -71,7 +109,9 @@ export default function Profil() {
           description: data.description,
           email: data.email,
           image: data.image,
-          imagebackground: "https://picsum.photos/600",
+          imagebackground: !data.imagebackground
+            ? "https://picsum.photos/600"
+            : data.imagebackground,
           dateBirthday: formattedDate,
           job: data.job,
           linkedin: data.linkedin,
@@ -94,7 +134,13 @@ export default function Profil() {
         <div style={{ margin: "2%" }}>
           <Box
             className="profilBox"
-            style={{ backgroundImage: `url(${user.imagebackground})` }}
+            style={{
+              backgroundImage: `linear-gradient(
+        rgba(0, 0, 0, 0.5),
+        rgba(0, 0, 0, 0.5)
+      ),
+      url(${user.imagebackground})`,
+            }}
           >
             <IconButton
               aria-label="settings"
@@ -113,6 +159,16 @@ export default function Profil() {
                 <EditIcon style={{ color: "orange" }} />
                 Modifier mon profil
               </MenuItem>
+              <MenuItem className="menuItem" onClick={handleEditBanner}>
+                <EditIcon style={{ color: "orange" }} />
+                Modifier ma bannière
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                  onChange={handleOnChange}
+                />
+              </MenuItem>
             </Menu>
             <Dialog
               fullWidth
@@ -128,14 +184,18 @@ export default function Profil() {
               </DialogContent>
             </Dialog>
 
-            <Avatar src={user.image} sx={{ width: "20vh", height: "20vh" }} />
-            <Typography variant="h5">
+            <Avatar
+              src={user.image}
+              sx={{ width: "150px", height: "150px", border: "3px solid #fff" }}
+            />
+            <Typography variant="h4">
               {user.firstname} {user.lastname}
             </Typography>
-            <Typography variant="h5">
+            <Typography variant="h6">
               {user.job} chez {user.company}
             </Typography>
           </Box>
+
           <Box
             sx={{
               display: "flex",
@@ -217,3 +277,4 @@ export default function Profil() {
     </>
   );
 }
+export default Profil;
