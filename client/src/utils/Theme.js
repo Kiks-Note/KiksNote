@@ -53,6 +53,7 @@ export default function ToggleColorMode() {
           },
           custom: {
             iconDrawer: mode === "light" ? "#000" : "#fff",
+            iconPdf: mode === "light" ? "#fff" : "#000",
           },
         },
         frFR,

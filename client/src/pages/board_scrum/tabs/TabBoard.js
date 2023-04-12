@@ -5,6 +5,9 @@ import Dashboard from "../Dashboard";
 const TabBoard = () => {
   const [data, setData] = useState([
     {
+      id: 0,
+      label: "",
+      closeable: false,
       tab: "Dashboard",
       component: (
         <Dashboard
@@ -28,7 +31,6 @@ const TabBoard = () => {
           }}
         ></Dashboard>
       ),
-      id: 0,
     },
   ]);
 
@@ -43,11 +45,16 @@ const TabBoard = () => {
     (tabToDelete) => {
       localStorage.setItem("activeTab", JSON.stringify(0));
 
-      const tabToDeleteIndex = data.findIndex((tab) => tab.id === tabToDelete.id);
+      const tabToDeleteIndex = data.findIndex(
+        (tab) => tab.id === tabToDelete.id
+      );
       const updatedTabs = data.filter((tab) => tab.id !== tabToDelete.id);
       setActiveIndex(updatedTabs[0].id); // Doesn't work...
 
-      const newStorageTabs = JSON.parse(localStorage.getItem("tabs"))?.filter((tab) => tab.id !== tabToDelete.id) || [];
+      const newStorageTabs =
+        JSON.parse(localStorage.getItem("tabs"))?.filter(
+          (tab) => tab.id !== tabToDelete.id
+        ) || [];
 
       setData(updatedTabs);
 
@@ -59,7 +66,14 @@ const TabBoard = () => {
     [data]
   );
 
-  return <TabsDemo handleClose={handleClose} handleChange={handleChange} tabs={data} selectedTab={activeIndex} />;
+  return (
+    <TabsDemo
+      handleClose={handleClose}
+      handleChange={handleChange}
+      tabs={data}
+      selectedTab={activeIndex}
+    />
+  );
 };
 
 export default TabBoard;

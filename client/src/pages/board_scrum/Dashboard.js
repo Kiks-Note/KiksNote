@@ -45,9 +45,19 @@ function Dashboard(props) {
     });
   };
   // * TO MAKE A BOARD IN FAVORI
-  async function favorisTell(id, favorite) {
-    await axios.put(`http://localhost:5050/dashboard/` + id + "/" + favorite);
+async function favorisTell(dashboardId, favorite) {
+  try {
+    await axios.put(
+      `http://localhost:5050/dashboard-favorite/${dashboardId}`
+    );
+  } catch (error) {
+    console.error(error);
+    // Gérer l'erreur de manière appropriée, par exemple :
+    // throw new Error('Erreur lors de la mise à jour du document');
   }
+}
+
+
 
   // * DEFINE BOARDS WHO IS ACTIF
   let actif = rows.filter((board) => {

@@ -97,7 +97,7 @@ function OverView(props) {
                       </AccordionSummary>
                       <AccordionDetails sx={{ width: "100%" }}>
                         <Box sx={{ width: "100%" }}>
-                          <CardSprint addTab={props.addTab} release={releases[item]} dashboardId={props.id} />
+                          <CardSprint key={i} addTab={props.addTab} release={releases[item]} dashboardId={props.id} />
                         </Box>
                       </AccordionDetails>
                     </Accordion>

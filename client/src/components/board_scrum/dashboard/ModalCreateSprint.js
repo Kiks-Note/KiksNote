@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef} from "react";
 //import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 import PropTypes from "prop-types";
@@ -41,7 +41,7 @@ function DialogDashbord(props) {
   } = useForm({
     mode: "onTouched",
   });
-  React.useEffect(() => {
+  useEffect(() => {
     if (isSubmitSuccessful) {
       reset({
         end: "",
@@ -54,7 +54,7 @@ function DialogDashbord(props) {
     }
   }, [formState, isSubmitSuccessful, reset]);
   // create a preview as a side effect, whenever selected file is changed
-  React.useEffect(() => {
+  useEffect(() => {
     if (!selectedFile) {
       setPreview();
       return;
@@ -65,13 +65,13 @@ function DialogDashbord(props) {
     // free memory when ever this component is unmounted
     return () => URL.revokeObjectURL(objectUrl);
   }, [selectedFile]);
-  React.useEffect(() => {
+  useEffect(() => {
     if (!open) {
       setValue(valueProp);
     }
   }, [valueProp, open]);
 
-  const radioGroupRef = React.useRef(null);
+  const radioGroupRef = useRef(null);
   const handleEntering = () => {
     if (radioGroupRef.current != null) {
       radioGroupRef.current.focus();
@@ -141,15 +141,6 @@ function DialogDashbord(props) {
     setUploadedPhotos([...uploadedPhotos, files]);
     // I've kept this example simple by using the first image instead of multiple
     setSelectedFile(e.target.files[0]);
-  };
-
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: 48 * 4.5 + 8,
-        width: 250,
-      },
-    },
   };
 
   const membres = [

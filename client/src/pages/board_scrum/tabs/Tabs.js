@@ -34,7 +34,6 @@ export const TabsDemo = ({
 
   return (
     <>
-      <div>
         <Tabs value={activeTab} onChange={handleChange}>
           {activetabs.map((tab) => (
             <Tab
@@ -63,7 +62,6 @@ export const TabsDemo = ({
         {activetabs.map((tab) =>
           activeTab === tab.id ? <TabContainer key={tab.id}>{tab.component}</TabContainer> : null
         )}
-      </div>
     </>
   );
 };
