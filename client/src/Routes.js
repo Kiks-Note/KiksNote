@@ -10,6 +10,7 @@ import Tuto from "./pages/blog/Tuto";
 import PublicRoutes from "./utils/PublicRoutes";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
+import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
 
 function RoutesProvider() {
@@ -24,6 +25,9 @@ function RoutesProvider() {
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
+          <Route path="/appel" element={<Appel />} />
+          <Route path="/presence/:id" element={<Presence />} />
+          <Route path="/groups" element={<Groups />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
@@ -31,6 +35,7 @@ function RoutesProvider() {
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
+          <Route path="/profil" element={<Profil />} />
           {/* 404 Page */}
         </Route>
         <Route path="*" element={<NotFound />} />
