@@ -11,7 +11,6 @@ import MuiDrawer from "@mui/material/Drawer";
 import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import Collapse from "@mui/material/Collapse";
-import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -136,7 +135,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 2,
       name: "Profil",
-      route: "#",
+      route: "/profil",
       icon: <Person2Icon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {
@@ -160,7 +159,6 @@ export default function MiniDrawer({ element }) {
           {
             id: 5,
             name: "Agile",
-            route: "#",
             icon: (
               <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />
             ),
@@ -227,26 +225,22 @@ export default function MiniDrawer({ element }) {
   };
   /// Add an indicator if the page is active
   const isPageActive = (page) => {
-    return (
-      history.location.pathname === page.route ||
-      (page.children &&
-        page.children.some(
-          (child) => child.route === history.location.pathname
-        ))
-    );
+    return history.location.pathname === page.route;
   };
+
   //To navigate on drawer
   const handleToggle = (id, route) => {
     const newPages = [...listPage];
     const index = newPages.findIndex((page) => page.id === id);
 
-    if (newPages[index].children) {
+    if (newPages[index]?.children) {
       newPages[index].open = !newPages[index].open;
       setListPage(newPages);
     } else if (history.location.pathname !== route) {
       navigate(route);
     }
   };
+
   //To navigate on home
   const handleAvatarClick = () => {
     if (history.location.pathname !== "/") {
@@ -301,11 +295,7 @@ export default function MiniDrawer({ element }) {
         <List>
           {listPage.map((page) => (
             <div key={page.id}>
-              <ListItem
-                disablePadding
-                sx={{ display: "block" }}
-                selected={isPageActive(page)}
-              >
+              <ListItem disablePadding selected={isPageActive(page)}>
                 <ListItemButton
                   sx={{
                     minHeight: 48,
@@ -331,7 +321,7 @@ export default function MiniDrawer({ element }) {
                     {page.icon}
                   </ListItemIcon>
                   <ListItemText
-                    sx={{ opacity: open ? 1 : 0 }}
+                    sx={{ display: open ? "block" : "none" }}
                     primary={page.name}
                   />
                   {page.children &&
@@ -340,40 +330,48 @@ export default function MiniDrawer({ element }) {
               </ListItem>
               {page.children && (
                 <Collapse in={page.open} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding sx={{ marginLeft: 2 }}>
-                    {page.children.map((child) => (
-                      <ListItem
-                        key={child.id}
-                        disablePadding
-                        sx={{ display: "block" }}
-                      >
-                        <ListItemButton
-                          href={child.route}
-                          sx={{
-                            minHeight: 48,
-                            justifyContent: open ? "initial" : "center",
-                            px: 2.5,
-                            "& svg": {
-                              color: theme.palette.custom.iconDrawer,
-                            },
-                          }}
+                  <List
+                    component="div"
+                    disablePadding
+                    sx={{ marginLeft: open ? 5 : 3 }}
+                  >
+                    {page.children &&
+                      page.children.map((child) => (
+                        <ListItem
+                          key={child.id}
+                          disablePadding
+                          selected={isPageActive(child)}
                         >
-                          <ListItemIcon
+                          <ListItemButton
                             sx={{
-                              minWidth: 0,
-                              mr: open ? 3 : "auto",
-                              justifyContent: "center",
+                              minHeight: 48,
+                              justifyContent: "space-between",
+                              "& svg": {
+                                color: theme.palette.custom.iconDrawer,
+                              },
+                              ...(isPageActive(child) && {
+                                backgroundColor: "rgba(0, 0, 0, 0.08)",
+                                borderRight: `4px solid ${theme.palette.secondary.main}`,
+                              }),
                             }}
+                            onClick={() => handleToggle(child.id, child.route)}
                           >
-                            {child.icon}
-                          </ListItemIcon>
-                          <ListItemText
-                            primary={child.name}
-                            sx={{ opacity: open ? 1 : 0 }}
-                          />
-                        </ListItemButton>
-                      </ListItem>
-                    ))}
+                            <ListItemIcon
+                              sx={{
+                                minWidth: 0,
+                                mr: open ? 3 : "auto",
+                                justifyContent: "center",
+                              }}
+                            >
+                              {child.icon}
+                            </ListItemIcon>
+                            <ListItemText
+                              primary={child.name}
+                              sx={{ opacity: open ? 1 : 0 }}
+                            />
+                          </ListItemButton>
+                        </ListItem>
+                      ))}
                   </List>
                 </Collapse>
               )}
