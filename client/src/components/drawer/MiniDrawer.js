@@ -149,53 +149,53 @@ export default function MiniDrawer({ element }) {
     {
       id: 4,
       name: "Calendrier",
-      route: "#",
+      route: "calendrier",
       icon: (
         <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
     },
     ...(userStatus !== "Pédago"
       ? [
-          {
-            id: 5,
-            name: "Agile",
-            icon: (
-              <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-            ),
-            children: [
-              {
-                id: 12,
-                name: "Coding Board",
-                route: "/tabList",
-                icon: (
-                  <DashboardIcon
-                    sx={{ color: theme.palette.custom.iconDrawer }}
-                  />
-                ),
-              },
-              {
-                id: 13,
-                name: "Coding Retro",
-                route: "#",
-                icon: (
-                  <WbIridescentIcon
-                    sx={{ color: theme.palette.custom.iconDrawer }}
-                  />
-                ),
-              },
-              {
-                id: 14,
-                name: "Coding Agile",
-                route: "#",
-                icon: (
-                  <TimelineIcon
-                    sx={{ color: theme.palette.custom.iconDrawer }}
-                  />
-                ),
-              },
-            ],
-          },
-        ]
+        {
+          id: 5,
+          name: "Agile",
+          icon: (
+            <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+          ),
+          children: [
+            {
+              id: 12,
+              name: "Coding Board",
+              route: "/tabList",
+              icon: (
+                <DashboardIcon
+                  sx={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
+            },
+            {
+              id: 13,
+              name: "Coding Retro",
+              route: "#",
+              icon: (
+                <WbIridescentIcon
+                  sx={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
+            },
+            {
+              id: 14,
+              name: "Coding Agile",
+              route: "#",
+              icon: (
+                <TimelineIcon
+                  sx={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
+            },
+          ],
+        },
+      ]
       : []),
     {
       id: 6,
