@@ -12,7 +12,7 @@ import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
-import Calendar from "./components/calendar/Calendar";
+import Calendar from "./pages/calendar/Calendar";
 
 function RoutesProvider() {
   return (

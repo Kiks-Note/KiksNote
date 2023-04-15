@@ -75,7 +75,8 @@ ws.on("request", (request) => {
   require("./routes/call")(app, db, connection, pathname);
   require("./dashboardWebSocket")(app, db, connection, pathname);
   require("./routes/groupscreation")(app, db);
-  require("./userInfo")(app, pathname, db, connection, upload,path,fs);
+  require("./calendar")(app, db);
+  require("./userInfo")(app, pathname, db, connection, upload, path, fs);
 });
 
 require("./routes/auth")(

@@ -7,6 +7,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fullcalendar/daygrid": "^6.1.5",
+    "@fullcalendar/interaction": "^6.1.5",
     "@fullcalendar/moment": "^6.1.5",
     "@fullcalendar/react": "^6.1.5",
     "@fullcalendar/timegrid": "^6.1.5",
