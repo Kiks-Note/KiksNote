@@ -186,7 +186,7 @@ function EnhancedTableToolbar(props) {
         </Typography>
       ) : (
         <Typography sx={{ flex: "1 1 100%" }} color="inherit" variant="subtitle1" component="div">
-          Select one or more stories
+          Selectionnez une or plusieurs stories
         </Typography>
       )}
 

@@ -73,6 +73,7 @@ ws.on("request", (request) => {
 
   require("./blog_back.js")(app, pathname, db, connection);
   require("./routes/call")(app, db, connection, pathname);
+  require("./dashboard")(app, db);
   require("./dashboardWebSocket")(app, db, connection, pathname);
   require("./routes/groupscreation")(app, db);
   require("./userInfo")(app, pathname, db, connection, upload,path,fs);
