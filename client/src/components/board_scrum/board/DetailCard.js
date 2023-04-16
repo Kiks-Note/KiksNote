@@ -158,17 +158,6 @@ export default function DetailCard(props) {
     boxShadow: 24,
     margin: 0,
   };
-  const style_child_modal = {
-    position: "absolute",
-    top: "30%",
-    left: "71%",
-    transform: "translate(-50%, -50%)",
-    height: "28vh",
-    bgcolor: "#FFFFFF",
-    boxShadow: 24,
-    margin: 0,
-  };
-
   const style_card = {
     display: "flex",
     justifyContent: "space-between",
@@ -320,7 +309,7 @@ export default function DetailCard(props) {
                   <NotesIcon style={{ color: "gray", marginRight: "5px" }} />
                   Description
                 </Typography>
-                {isEditingDescription || descriptionValue === "" ? (
+                {isEditingDescription ? (
                   <Box
                     sx={{
                       display: "flex",
@@ -330,7 +319,6 @@ export default function DetailCard(props) {
                     }}
                   >
                     <TextField
-                      inputProps={{ style: { color: "black" } }}
                       sx={{ width: "100%" }}
                       value={descriptionValue}
                       onChange={handleDescriptionChange}

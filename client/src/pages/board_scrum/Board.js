@@ -61,7 +61,12 @@ function Board(props) {
       wsComments.onopen = function (e) {
         console.log("[open] Connection established");
         console.log("Sending to server");
-        wsComments.send(JSON.stringify({ dashboardId: props.dashboardId, boardId: props.boardId }));
+        wsComments.send(
+          JSON.stringify({
+            dashboardId: props.dashboardId,
+            boardId: props.boardId,
+          })
+        );
       };
       wsComments.onmessage = (message) => {
         const data = JSON.parse(message.data);
@@ -74,7 +79,11 @@ function Board(props) {
 
   async function changeCardIndex(newColumns) {
     await axios.put(
-      "http://localhost:5050/dashboard/" + props.dashboardId + "/board/" + props.boardId + "/setCards",
+      "http://localhost:5050/dashboard/" +
+        props.dashboardId +
+        "/board/" +
+        props.boardId +
+        "/setCards",
       newColumns
     );
   }
@@ -86,28 +95,44 @@ function Board(props) {
   };
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
-    if (result.destination.droppableId === "0" && result.source.droppableId !== "0") {
+    if (
+      result.destination.droppableId === "0" &&
+      result.source.droppableId !== "0"
+    ) {
       setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
       setTimeout(() => {
         setErrorMessage("");
       }, 3000); // DELETE AFTER 3 SEC
       return;
-    } else if (result.destination.droppableId !== "0" && result.source.droppableId === "0") {
-      setErrorMessage("Impossible de déplacer une storie dans une autre colonne");
+    } else if (
+      result.destination.droppableId !== "0" &&
+      result.source.droppableId === "0"
+    ) {
+      setErrorMessage(
+        "Impossible de déplacer une storie dans une autre colonne"
+      );
       setTimeout(() => {
         setErrorMessage("");
       }, 5000); // DELETE AFTER 5 SEC
       return;
     }
     console.log(result.destination.droppableId);
-    if (result.destination.droppableId === "1" && result.source.droppableId !== "1") {
+    if (
+      result.destination.droppableId === "1" &&
+      result.source.droppableId !== "1"
+    ) {
       setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
       setTimeout(() => {
         setErrorMessage("");
       }, 3000); // DELETE AFTER 3 SEC
       return;
-    } else if (result.destination.droppableId !== "1" && result.source.droppableId === "1") {
-      setErrorMessage("Impossible de déplacer un critère d'acceptation dans une autre colonne");
+    } else if (
+      result.destination.droppableId !== "1" &&
+      result.source.droppableId === "1"
+    ) {
+      setErrorMessage(
+        "Impossible de déplacer un critère d'acceptation dans une autre colonne"
+      );
       setTimeout(() => {
         setErrorMessage("");
       }, 5000); // DELETE AFTER 5 SEC
@@ -169,7 +194,11 @@ function Board(props) {
     <>
       <div>
         {errorMessage && (
-          <Alert severity="warning" variant="filled" TransitionComponent={TransitionComponent}>
+          <Alert
+            severity="warning"
+            variant="filled"
+            TransitionComponent={TransitionComponent}
+          >
             <AlertTitle>Attention</AlertTitle>
             {errorMessage}
           </Alert>
@@ -177,10 +206,16 @@ function Board(props) {
         <Typography style={{ textAlign: "center" }} variant="h5">
           Scrum Board
         </Typography>
-        <Switch checked={label} onChange={labelChange} inputProps={{ "aria-label": "controlled" }} />
+        <Switch
+          checked={label}
+          onChange={labelChange}
+          inputProps={{ "aria-label": "controlled" }}
+        />
         <p>Label name</p>
         <div className="board_container_all">
-          <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
+          <DragDropContext
+            onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+          >
             {Object.entries(columns).map(([columnId, column], index) => {
               return (
                 <div className="board_container_table" key={columnId}>
@@ -196,20 +231,8 @@ function Board(props) {
                       >
                         {column.name}
                       </Typography>
-                      <IconButton aria-label="menu" onClick={(event) => handleMenuOpen(event, columnId)}>
-                        <MoreHorizIcon />
-                      </IconButton>
                     </div>
-                    <Menu anchorEl={menuAnchorEl} open={Boolean(menuAnchorEl)} onClose={handleMenuClose}>
-                      <MenuItem
-                        onClick={() => {
-                          handleMenuClose();
-                        }}
-                      >
-                        <AddIcon />
-                        Ajouter une carte
-                      </MenuItem>
-                    </Menu>
+
                     <Droppable droppableId={columnId} key={columnId}>
                       {(provided, snapshot) => {
                         return (
@@ -217,7 +240,9 @@ function Board(props) {
                             {...provided.droppableProps}
                             ref={provided.innerRef}
                             style={{
-                              background: snapshot.isDraggingOver ? "#ed6c0247" : "#ebecf0",
+                              background: snapshot.isDraggingOver
+                                ? "#ed6c0247"
+                                : "#ebecf0",
                               padding: 4,
                               width: 260,
                               minHeight: 30,
@@ -232,7 +257,10 @@ function Board(props) {
                                   key={item.id}
                                   draggableId={item.id}
                                   index={index}
-                                  isDragDisabled={column.isDragDisabled && column.name === "Stories"} //  disable the drag on the "Stories" column
+                                  isDragDisabled={
+                                    column.isDragDisabled &&
+                                    column.name === "Stories"
+                                  } //  disable the drag on the "Stories" column
                                 >
                                   {(provided, snapshot) => {
                                     return (
@@ -245,7 +273,9 @@ function Board(props) {
                                           marginBottom: 8,
                                           minHeight: "60px",
                                           borderRadius: 3,
-                                          backgroundColor: snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
+                                          backgroundColor: snapshot.isDragging
+                                            ? "#FFFFFF"
+                                            : "#FFFFFF",
                                           boxShadow:
                                             "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
                                           color: "white",
@@ -274,7 +304,11 @@ function Board(props) {
                         );
                       }}
                     </Droppable>
-                    <ButtonAddCard columnId={columnId} dashboardId={props.dashboardId} boardId={props.boardId} />
+                    <ButtonAddCard
+                      columnId={columnId}
+                      dashboardId={props.dashboardId}
+                      boardId={props.boardId}
+                    />
                   </div>
                 </div>
               );
