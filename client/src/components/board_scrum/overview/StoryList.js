@@ -29,18 +29,6 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useTheme } from "@mui/material/styles";
-import ListSubheader from "@mui/material/ListSubheader";
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
-import Collapse from "@mui/material/Collapse";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import DraftsIcon from "@mui/icons-material/Drafts";
-import SendIcon from "@mui/icons-material/Send";
-import ExpandLess from "@mui/icons-material/ExpandLess";
-import ExpandMore from "@mui/icons-material/ExpandMore";
-import StarBorder from "@mui/icons-material/StarBorder";
 import NestedListRelease from "./NestedListRelease";
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -90,7 +78,14 @@ const DEFAULT_ORDER_BY = "name";
 const DEFAULT_ROWS_PER_PAGE = 5;
 
 function EnhancedTableHead(props) {
-  const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+  const {
+    onSelectAllClick,
+    order,
+    orderBy,
+    numSelected,
+    rowCount,
+    onRequestSort,
+  } = props;
   const createSortHandler = (newOrderBy) => (event) => {
     onRequestSort(event, newOrderBy);
   };
@@ -176,16 +171,30 @@ function EnhancedTableToolbar(props) {
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
         ...(numSelected > 0 && {
-          bgcolor: (theme) => alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
+          bgcolor: (theme) =>
+            alpha(
+              theme.palette.primary.main,
+              theme.palette.action.activatedOpacity
+            ),
         }),
       }}
     >
       {numSelected > 0 ? (
-        <Typography sx={{ flex: "1 1 100%" }} color="inherit" variant="subtitle1" component="div">
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          color="inherit"
+          variant="subtitle1"
+          component="div"
+        >
           {numSelected} selected
         </Typography>
       ) : (
-        <Typography sx={{ flex: "1 1 100%" }} color="inherit" variant="subtitle1" component="div">
+        <Typography
+          sx={{ flex: "1 1 100%" }}
+          color="inherit"
+          variant="subtitle1"
+          component="div"
+        >
           Selectionnez une or plusieurs stories
         </Typography>
       )}
@@ -239,9 +248,15 @@ export default function StoryList(props) {
   const [paddingHeight, setPaddingHeight] = React.useState(0);
 
   React.useEffect(() => {
-    let rowsOnMount = stableSort(rows, getComparator(DEFAULT_ORDER, DEFAULT_ORDER_BY));
+    let rowsOnMount = stableSort(
+      rows,
+      getComparator(DEFAULT_ORDER, DEFAULT_ORDER_BY)
+    );
 
-    rowsOnMount = rowsOnMount.slice(0 * DEFAULT_ROWS_PER_PAGE, 0 * DEFAULT_ROWS_PER_PAGE + DEFAULT_ROWS_PER_PAGE);
+    rowsOnMount = rowsOnMount.slice(
+      0 * DEFAULT_ROWS_PER_PAGE,
+      0 * DEFAULT_ROWS_PER_PAGE + DEFAULT_ROWS_PER_PAGE
+    );
 
     setVisibleRows(rowsOnMount);
   }, []);
@@ -253,8 +268,14 @@ export default function StoryList(props) {
       setOrder(toggledOrder);
       setOrderBy(newOrderBy);
 
-      const sortedRows = stableSort(rows, getComparator(toggledOrder, newOrderBy));
-      const updatedRows = sortedRows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+      const sortedRows = stableSort(
+        rows,
+        getComparator(toggledOrder, newOrderBy)
+      );
+      const updatedRows = sortedRows.slice(
+        page * rowsPerPage,
+        page * rowsPerPage + rowsPerPage
+      );
 
       setVisibleRows(updatedRows);
     },
@@ -281,7 +302,10 @@ export default function StoryList(props) {
     } else if (selectedIndex === selected.length - 1) {
       newSelected = newSelected.concat(selected.slice(0, -1));
     } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(selected.slice(0, selectedIndex), selected.slice(selectedIndex + 1));
+      newSelected = newSelected.concat(
+        selected.slice(0, selectedIndex),
+        selected.slice(selectedIndex + 1)
+      );
     }
 
     setSelected(newSelected);
@@ -292,12 +316,18 @@ export default function StoryList(props) {
       setPage(newPage);
 
       const sortedRows = stableSort(rows, getComparator(order, orderBy));
-      const updatedRows = sortedRows.slice(newPage * rowsPerPage, newPage * rowsPerPage + rowsPerPage);
+      const updatedRows = sortedRows.slice(
+        newPage * rowsPerPage,
+        newPage * rowsPerPage + rowsPerPage
+      );
 
       setVisibleRows(updatedRows);
 
       // Avoid a layout jump when reaching the last page with empty rows.
-      const numEmptyRows = newPage > 0 ? Math.max(0, (1 + newPage) * rowsPerPage - rows.length) : 0;
+      const numEmptyRows =
+        newPage > 0
+          ? Math.max(0, (1 + newPage) * rowsPerPage - rows.length)
+          : 0;
 
       const newPaddingHeight = (dense ? 33 : 53) * numEmptyRows;
       setPaddingHeight(newPaddingHeight);
@@ -313,7 +343,10 @@ export default function StoryList(props) {
       setPage(0);
 
       const sortedRows = stableSort(rows, getComparator(order, orderBy));
-      const updatedRows = sortedRows.slice(0 * updatedRowsPerPage, 0 * updatedRowsPerPage + updatedRowsPerPage);
+      const updatedRows = sortedRows.slice(
+        0 * updatedRowsPerPage,
+        0 * updatedRowsPerPage + updatedRowsPerPage
+      );
 
       setVisibleRows(updatedRows);
 
@@ -339,7 +372,9 @@ export default function StoryList(props) {
           dashboardId={props.dashboardId}
         />
         <TableContainer>
-          <Table sx={{ minHeight: "75vh", overflow: "scroll", marginTop: "-10vh" }}>
+          <Table
+            sx={{ minHeight: "75vh", overflow: "scroll", marginTop: "-10vh" }}
+          >
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
@@ -373,10 +408,19 @@ export default function StoryList(props) {
                             }}
                           />
                         </TableCell>
-                        <TableCell component="th" id={labelId} scope="row" padding="none">
+                        <TableCell
+                          component="th"
+                          id={labelId}
+                          scope="row"
+                          padding="none"
+                        >
                           {row.name}
                         </TableCell>
-                        <TableCell>{row.desc.length > 40 ? `${row.desc.substring(0, 40)}...` : row.desc}</TableCell>
+                        <TableCell>
+                          {row.desc.length > 40
+                            ? `${row.desc.substring(0, 40)}...`
+                            : row.desc}
+                        </TableCell>
                       </TableRow>
                     );
                   })

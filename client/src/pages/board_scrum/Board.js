@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
 import "./Board.scss";
 import axios from "axios";
-import AddIcon from "@mui/icons-material/Add";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CardBoard from "../../components/board_scrum/board/CardBoard";
-import { Typography, IconButton, Menu, MenuItem } from "@mui/material";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { Typography } from "@mui/material";
 import ButtonAddCard from "../../components/board_scrum/board/ButtonAddCard";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";

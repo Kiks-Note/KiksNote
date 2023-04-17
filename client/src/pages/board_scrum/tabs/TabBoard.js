@@ -29,7 +29,7 @@ const TabBoard = () => {
               return newData;
             });
           }}
-        ></Dashboard>
+        />
       ),
     },
   ]);

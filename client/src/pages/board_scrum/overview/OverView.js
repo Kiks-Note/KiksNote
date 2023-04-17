@@ -1,11 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  List,
+  ListItem,
+  Typography,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import CardSprint from "../../../components/board_scrum/overview/CardSprint";
 import StatTab from "../../../components/board_scrum/overview/StatTab";
-import StoryList from "./StoryList";
+import StoryList from "../../../components/board_scrum/overview/StoryList";
 import Grid from "@mui/material/Grid";
 import { w3cwebsocket } from "websocket";
 import PdfView from "./PdfView";
@@ -55,7 +62,15 @@ function OverView(props) {
       <Grid container spacing={2} sx={{ m: 2 }}>
         <Grid item xs={12} md={4}>
           <Typography variant="h4">Stories</Typography>
-          {display ? <StoryList stories={stories} sprints={releases} dashboardId={props.id} /> : <></>}
+          {display ? (
+            <StoryList
+              stories={stories}
+              sprints={releases}
+              dashboardId={props.id}
+            />
+          ) : (
+            <></>
+          )}
         </Grid>
         <Grid item xs={12} md={4}>
           {display ? <StatTab dashboardId={props.id} boards={boards} /> : <></>}
@@ -97,7 +112,12 @@ function OverView(props) {
                       </AccordionSummary>
                       <AccordionDetails sx={{ width: "100%" }}>
                         <Box sx={{ width: "100%" }}>
-                          <CardSprint key={i} addTab={props.addTab} release={releases[item]} dashboardId={props.id} />
+                          <CardSprint
+                            key={i}
+                            addTab={props.addTab}
+                            release={releases[item]}
+                            dashboardId={props.id}
+                          />
                         </Box>
                       </AccordionDetails>
                     </Accordion>

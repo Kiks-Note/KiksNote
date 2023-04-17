@@ -103,14 +103,22 @@ export default function CardBoard(props) {
             expanded={states.expanded}
             onClick={handleAccordion}
             style={{
-              backgroundColor: props.snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
+              backgroundColor: props.snapshot.isDragging
+                ? "#FFFFFF"
+                : "#FFFFFF",
               boxShadow: "none",
               marginTop: "5%",
             }}
           >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
               <div>
-                <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  {Labels}
+                </div>
                 <Typography variant="body1" color="black">
                   {info.name}
                 </Typography>
@@ -128,7 +136,9 @@ export default function CardBoard(props) {
           </Accordion>
         ) : (
           <div>
-            <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {Labels}
+            </div>
             <Typography variant="body1" color="black">
               {info.name}
             </Typography>
@@ -137,11 +147,27 @@ export default function CardBoard(props) {
         <InfoIcon
           onClick={handleOpen}
           color="primary"
-          style={{ marginLeft: "0.5rem", position: "absolute", right: "6%", top: "5%" }}
+          style={{
+            marginLeft: "0.5rem",
+            position: "absolute",
+            right: "6%",
+            top: "5%",
+          }}
         />
       </div>
-      <Box style={{ display: "flex", alignItems: "center", justifyContent: " space-between" }}>
-        <Stack direction="row" spacing={1} width={"100%"} justifyContent={"flex-end"}>
+      <Box
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: " space-between",
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={1}
+          width={"100%"}
+          justifyContent={"flex-end"}
+        >
           {assignedToAvatars}
           {moreAvatar}
         </Stack>
@@ -155,7 +181,8 @@ export default function CardBoard(props) {
           dashboardId={props.dashboardId}
           boardId={props.boardId}
           stories={props.stories}
-        ></DetailCard>
+          handleClose={handleClose}
+        />
       </Modal>
     </div>
   );
