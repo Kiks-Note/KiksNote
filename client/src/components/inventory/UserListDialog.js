@@ -1,4 +1,3 @@
-import * as React from "react";
 import PropTypes from "prop-types";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
@@ -12,21 +11,21 @@ import PersonIcon from "@mui/icons-material/Person";
 import AddIcon from "@mui/icons-material/Add";
 import Typography from "@mui/material/Typography";
 import {blue} from "@mui/material/colors";
+import {useEffect, useState} from "react";
 
 export function UserListDialog({open, toogleDialog, emails}) {
-  const [_emails, setEmails] = React.useState([]);
+  const [_emails, setEmails] = useState([]);
 
-  React.useEffect(() => {
-    open === true && setEmails(emails.flat());
-    console.log(emails);
-  }, [emails, open === true]);
+  useEffect(() => {
+    open === true && setEmails(emails) && console.log(emails);
+  }, [open === true]);
 
   return (
     <Dialog open={open} onClose={() => toogleDialog(false)}>
       <DialogTitle>Liste du groupe</DialogTitle>
       <List sx={{pt: 0}}>
-        {_emails.map((email) => (
-          <ListItem key={email}>
+        {_emails.map((email, i) => (
+          <ListItem key={i}>
             <ListItemAvatar>
               <Avatar sx={{bgcolor: blue[100], color: blue[600]}}>
                 <PersonIcon />

@@ -229,7 +229,6 @@ const InventoryAdminDashboard = () => {
   useEffect(() => {
     (async () => {
       const ws = new w3cwebsocket("ws://localhost:5050/todayRequests");
-
       console.log(user);
 
       ws.onmessage = (e) => {
