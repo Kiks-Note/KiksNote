@@ -73,11 +73,12 @@ ws.on("request", (request) => {
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
 
-  require("./blog_back.js")(app, pathname, db, connection);
+  require("./blog_back.js")(app, db);
+  require("./blog_backWebSocket.js")(app, pathname, db, connection);
   require("./routes/call")(app, db, connection, pathname);
   require("./dashboard")(app, db, ws, parse);
   require("./routes/groupscreation")(app, db);
-  require("./userInfo")(app, pathname, db, connection, upload,path,fs);
+  require("./userInfo")(app, pathname, db, connection, upload, path, fs);
 });
 
 require("./routes/auth")(
