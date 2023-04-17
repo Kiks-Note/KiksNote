@@ -97,7 +97,7 @@ const CreateEventForm = () => {
     formData.append("instructors", JSON.stringify(data.instructors));
 
     // axios
-    //   .post("http://example.com/api/endpoint", formData)
+    //   .post("http://localhost:5050/api/endpoint", formData)
     //   .then((response) => {
     //     console.log(response);
     //   })
@@ -124,19 +124,19 @@ const CreateEventForm = () => {
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
+            <InputLabel>Titre *</InputLabel>
             <Grid item xs={12}>
               <TextField
                 fullWidth
-                label="Titre"
                 {...register("title")}
                 error={!!errors.title}
                 helperText={errors.title?.message}
               />
             </Grid>
             <Grid item xs={6}>
+              <InputLabel>Date de début *</InputLabel>
               <TextField
                 fullWidth
-                label="Date de début"
                 type="datetime-local"
                 {...register("start")}
                 error={!!errors.start}
@@ -144,9 +144,9 @@ const CreateEventForm = () => {
               />
             </Grid>
             <Grid item xs={6}>
+              <InputLabel>Date de fin *</InputLabel>
               <TextField
                 fullWidth
-                label="Date de fin"
                 type="datetime-local"
                 {...register("end")}
                 error={!!errors.end}
@@ -155,7 +155,7 @@ const CreateEventForm = () => {
             </Grid>
             <Grid item xs={12}>
               <FormControl fullWidth sx={{ minWidth: 120 }}>
-                <InputLabel>Formateur(s)</InputLabel>
+                <InputLabel>Formateur(s) *</InputLabel>
                 <Select
                   {...register("instructors")}
                   multiple
@@ -206,6 +206,7 @@ const CreateEventForm = () => {
               </FormGroup>
             </Grid>
             <Grid item xs={12}>
+              <InputLabel>Commentaires</InputLabel>
               <TextField
                 fullWidth
                 label="Commentaires"
@@ -215,6 +216,7 @@ const CreateEventForm = () => {
               />
             </Grid>
             <Grid item xs={12}>
+              <InputLabel>Matériel</InputLabel>
               <TextField fullWidth label="Matériel" {...register("material")} />
             </Grid>
             <Grid item xs={12}>
