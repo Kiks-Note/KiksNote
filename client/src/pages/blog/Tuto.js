@@ -19,8 +19,9 @@ function Tuto() {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050");
-      ws.onmessage = (message) => {
+      const wsTutos = new w3cwebsocket("ws://localhost:5050/tuto");
+
+      wsTutos.onmessage = (message) => {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
         setTutos(dataFromServer);
@@ -28,12 +29,6 @@ function Tuto() {
       };
     })();
   }, []);
-
-  // const getTutos = async () => {
-  //   const response = await axios.get("http://localhost:5050/tutos");
-  //   setTutos(response.data);
-  //   // console.log(response.data);
-  // };
 
   const toggleDrawerModify = (event, open) => {
     if (
@@ -46,36 +41,10 @@ function Tuto() {
     setOpenModify(open);
   };
 
-  // const getTutosId = async () => {
-  //   const response = await axios.get("http://localhost:5050/tutos/id");
-  //   setTutosId(response.data);
-  //   // console.log(response.data);
-  // };
-
-  // useEffect(() => {
-  //   getTutos();
-  //   getTutosId();
-  // }, []);
-  // <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-  //     <Grid item xs={4}>
-  //         <Item>1</Item>
-  //     </Grid>
-  //     <Grid item xs={8}>
-  //         <Item>2</Item>
-  //     </Grid>
-  //
-  // </Grid>
-
   return (
     <>
       <Toaster />
-      <Box
-        sx={
-          {
-            // display: 'flex', flexWrap: 'wrap', justifyContent: 'center'
-          }
-        }
-      >
+      <Box>
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid item xs={2}>
             <TagFilter />
@@ -83,8 +52,6 @@ function Tuto() {
           <Grid
             item
             xs={10}
-            // justifyContent="center" alignItems="flex-start"
-            // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
           >
             <Grid
               container
@@ -117,11 +84,7 @@ function Tuto() {
                 xs={10}
                 justifyContent="center"
                 alignItems="flex-start"
-                // spacing={2} columns={{xs: 4, sm: 8, md: 12}}
               >
-                {/*{tutosId.length > 0*/}
-                {/*  ? tutosId.map((blogId) => <ImgMediaCard id={blogId} />)*/}
-                {/*  : Array.from(new Array(9)).map(() => <TutoSkeleton />)}*/}
 
                 {!loading
                   ? tutos.map((blog) => (
@@ -137,19 +100,6 @@ function Tuto() {
                       />
                     ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}
-
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<ImgMediaCard/>*/}
-                {/*<TutoSkeleton/>*/}
               </Grid>
             </Grid>
           </Grid>
