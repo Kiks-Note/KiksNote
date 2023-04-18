@@ -1310,7 +1310,7 @@
     "@emotion/weak-memoize" "^0.2.5"
     hoist-non-react-statics "^3.3.1"
 
-"@emotion/react@^11.10.5":
+"@emotion/react@^11.10.6":
   version "11.10.6"
   resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.10.6.tgz#dbe5e650ab0f3b1d2e592e6ab1e006e75fd9ac11"
   integrity sha512-6HT8jBmcSkfzO7mc+N1L9uwvOnlcGoix8Zn7srt+9ga0MjREo6lRpuVX0kzo6Jp6oTqDhREOFsygN6Ew4fEQbw==
@@ -1351,7 +1351,7 @@
     "@emotion/serialize" "^1.0.2"
     "@emotion/utils" "^1.1.0"
 
-"@emotion/styled@^11.10.5":
+"@emotion/styled@^11.10.6":
   version "11.10.6"
   resolved "https://registry.yarnpkg.com/@emotion/styled/-/styled-11.10.6.tgz#d886afdc51ef4d66c787ebde848f3cc8b117ebba"
   integrity sha512-OXtBzOmDSJo5Q0AFemHCfl+bUueT8BIcPSxu0EGTpGk6DmI5dnhSzQANm1e1ze0YZL7TDyAyy6s/b/zmGOS3Og==

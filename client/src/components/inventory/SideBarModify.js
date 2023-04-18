@@ -58,7 +58,7 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
     open === true &&
       (async () => {
         await axios
-          .get(`http://localhost:5050/inventory/${deviceId}`)
+          .get(`http://localhost:5050/inventory/device/${deviceId}`)
           .then((res) => {
             setLabel(res.data.label);
             setReference(res.data.reference);

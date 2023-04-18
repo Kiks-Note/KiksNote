@@ -51,7 +51,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
     } else {
       try {
         await toast.promise(
-          axios.post("http://localhost:5050/addDevice", {
+          axios.post("http://localhost:5050/inventory", {
             label: label,
             price: price,
             acquisitiondate: acquisitiondate,
@@ -96,13 +96,14 @@ export default function ModalForm({open, toggleDrawerAdd}) {
     open === true &&
       (async () => {
         await axios
-          .get("http://localhost:5050/categoriesInventory")
+          .get("http://localhost:5050/inventory/categories")
           .then((res) => {
             setCategories(res.data);
+            console.log(res.data);
             setLoading(false);
           });
       })();
-  }, [open === true]);
+  }, [open]);
 
   const list = () => (
     <Box
@@ -209,9 +210,10 @@ export default function ModalForm({open, toggleDrawerAdd}) {
           label="Catégorie"
           onChange={(e) => setCategory(e.target.value)}
         >
-          {categories.map((category) => (
-            <MenuItem value={category.label}>{category.label}</MenuItem>
-          ))}
+          {!loading &&
+            categories.map((category) => (
+              <MenuItem value={category}>{category}</MenuItem>
+            ))}
         </Select>
       </FormControl>
 

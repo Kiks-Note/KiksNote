@@ -21,7 +21,7 @@
   color: #ffffff !important;
   font-family: "poppins-regular" !important;
 }
-
+/* 
 #demo-simple-select {
   border-color: #ffffff !important;
   color: #ffffff !important;
@@ -51,16 +51,16 @@
   color: #11151a !important;
   margin: 10px !important;
   border-radius: 10px !important;
-}
+} */
 
-.Mui-selected {
+/* .Mui-selected {
   background-color: #1a2027 !important;
-  color: #ffffff !important;
+  color: #ffffff !important; */
   /* margin: 10px !important; */
   /* border-radius: 10px !important; */
-}
+/* } */
 
-.MuiDrawer-paper {
+/* .MuiDrawer-paper {
   background-color: #1a2027 !important;
   font-family: "poppins-regular" !important;
 }
@@ -76,7 +76,7 @@
 .MuiDataGrid-columnHeaderTitle {
   color: #1a2027 !important;
   font-family: "poppins-semibold" !important;
-}
+} */
 
 /* 
 
@@ -145,7 +145,7 @@
   font-family: "poppins-regular" !important;
 }*/
 
-.demo-simple-select-label {
+/* .demo-simple-select-label {
   background-color: black !important;
   font-family: "poppins-regular" !important;
-}
+} */

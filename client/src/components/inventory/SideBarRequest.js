@@ -1,5 +1,10 @@
 import CloseIcon from "@mui/icons-material/Close";
-import {IconButton, TextField, Typography} from "@mui/material";
+import {
+  IconButton,
+  TextField,
+  TextareaAutosize,
+  Typography,
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
@@ -12,6 +17,8 @@ import "react-date-range/dist/theme/default.css"; // theme css file
 import toast from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
 import * as locales from "react-date-range/dist/locale";
+import StyledTextField from "./StyledTextField";
+import useAuth from "../../hooks/useAuth";
 
 export default function SideBarRequest({
   open,
@@ -21,8 +28,8 @@ export default function SideBarRequest({
 }) {
   const [device, setDevice] = useState({});
   const [loading, setLoading] = useState(true);
-  const [requestReason, setRequestReason] = useState(true);
-  const [persons, setPersons] = useState(true);
+  const [requestReason, setRequestReason] = useState("");
+  const [persons, setPersons] = useState([]);
   const [selectDates, setSelectedDates] = useState([
     {
       startDate: new Date(),
@@ -30,12 +37,13 @@ export default function SideBarRequest({
       key: "selection",
     },
   ]);
+  const {user} = useAuth();
 
   useEffect(() => {
     open === true &&
       (async () => {
         await axios
-          .get(`http://localhost:5050/inventory/${deviceId}`)
+          .get(`http://localhost:5050/inventory/device/${deviceId}`)
           .then((res) => {
             setDevice(res.data);
             setLoading(false);
@@ -53,12 +61,16 @@ export default function SideBarRequest({
       toast.error("Veuillez choisir une date de début et de fin");
       return;
     } else {
+      console.log(user);
       toast.promise(
-        axios.put(
-          `http://localhost:5050/inventory/makerequest/${category}/${deviceId}`,
+        axios.post(
+          `http://localhost:5050/inventory/request/${category}/${deviceId}`,
           {
             startDate: new Date(selectDates[0].startDate),
             endDate: new Date(selectDates[0].endDate),
+            requestReason: requestReason,
+            persons: persons.split(",").map((person) => person.trim()),
+            requesterId: user.id,
           }
         ),
         {
@@ -106,25 +118,37 @@ export default function SideBarRequest({
       </IconButton>
       {!loading ? (
         <>
-          <TextField
-            sx={{marginBottom: 2}}
-            id="outlined-search"
+          {/* <StyledTextField
             type={"text"}
-            name="raison"
+            placeholder="Raison"
             defaultValue={device.requestReason}
-            disabled
-            fullWidth
+            onChange={(e) => {
+              setRequestReason(e.target.value);
+            }}
+            value={requestReason}
+          /> */}
+          <StyledTextField
+            sx={{marginBottom: 2, width: "100%"}}
+            placeholder="Raison"
+            onChange={(e) => {
+              setRequestReason(e.target.value);
+            }}
+            value={requestReason}
+            multiline={true}
+            rows={4}
           />
-          <TextField
+          <StyledTextField
             sx={{marginBottom: 2}}
             id="outlined-search"
             type={"text"}
-            name="Personnes concernées"
-            defaultValue={device.setPersons}
-            disabled
+            placeholder="Personnes concernées"
             fullWidth
+            onChange={(e) => {
+              setPersons(e.target.value);
+            }}
+            value={persons}
           />
-          <TextField
+          <StyledTextField
             sx={{marginBottom: 2}}
             id="outlined-search"
             type={"text"}
@@ -133,31 +157,31 @@ export default function SideBarRequest({
             defaultValue={device.label}
             fullWidth
           />
-          <TextField
+          <StyledTextField
             sx={{marginBottom: 2}}
             id="outlined-search"
             type={"text"}
-            name="reference"
-            defaultValue={device.ref}
+            placeholder="Référence"
+            defaultValue={device.reference}
             disabled
             fullWidth
           />
 
-          <TextField
+          <StyledTextField
             sx={{marginBottom: 2}}
             id="outlined-search"
             type={"text"}
-            name="category"
+            placeholder="category"
             defaultValue={device.category}
             disabled
             fullWidth
           />
 
-          <TextField
+          <StyledTextField
             sx={{marginBottom: 2}}
             id="outlined-search"
             type={"text"}
-            name="campus"
+            placeholder="campus"
             defaultValue={device.campus}
             disabled
             fullWidth
@@ -165,7 +189,7 @@ export default function SideBarRequest({
           <Typography variant="h6" sx={{marginBottom: 2}}>
             Choisissez les dates
           </Typography>
-           <DateRange
+          <DateRange
             editableDateInputs={true}
             onChange={(item) => {
               setSelectedDates([item.selection]);
@@ -181,7 +205,7 @@ export default function SideBarRequest({
             fullWidth
             onClick={(e) => {
               handleRequest();
-              toggleDrawerRequest(e, false);
+              // toggleDrawerRequest(e, false);
             }}
           >
             Confirmer

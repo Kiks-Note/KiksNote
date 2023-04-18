@@ -33,7 +33,10 @@ module.exports = (app, db, auth, authClient, signInWithEmailAndPassword) => {
             const decodedToken = await auth.verifyIdToken(idToken);
             const docRef = await db.collection("users");
             const snapshot = await docRef.doc(decodedToken.uid).get();
-            return res.status(200).send(snapshot.data());
+            return res.status(200).send({
+              id: snapshot.id,
+              ...snapshot.data(),
+            });
           });
         } else {
           return res.send("No user logged in");

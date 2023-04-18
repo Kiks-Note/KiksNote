@@ -201,6 +201,7 @@ const InventoryAdminDashboard = () => {
   const [categoriesListOpen, setCategoriesListOpen] = useState(false);
   const [todayRequests, setTodayRequests] = useState([]);
   const [emailsDialogOpen, setEmailsDialogOpen] = useState(false);
+  const [emails, setEmails] = useState([]);
   const navigate = useNavigate();
   const {user} = useAuth();
 
@@ -228,9 +229,7 @@ const InventoryAdminDashboard = () => {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/todayRequests");
-
-      console.log(user);
+      const ws = new w3cwebsocket("ws://localhost:5050/inventory");
 
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
@@ -286,11 +285,7 @@ const InventoryAdminDashboard = () => {
       <UserListDialog
         open={emailsDialogOpen}
         toogleDialog={setEmailsDialogOpen}
-        emails={
-          todayRequests.map((request) => {
-            return request.request.groupe;
-          }) || []
-        }
+        emails={emails}
       />
       <Container style={{padding: 0, margin: 0, minWidth: "100%"}}>
         <Typography
@@ -467,7 +462,7 @@ const InventoryAdminDashboard = () => {
                       <TableCell
                         sx={{color: "white", fontFamily: "poppins-regular"}}
                       >
-                        {r.request.requester}
+                        {r.request.requesterId}
                       </TableCell>
                       <TableCell
                         sx={{color: "white", fontFamily: "poppins-regular"}}
@@ -492,11 +487,12 @@ const InventoryAdminDashboard = () => {
                         onClick={() =>
                           r.request.group &&
                           r.request?.group.length > 0 &&
-                          setEmailsDialogOpen(true)
+                          (setEmailsDialogOpen(true),
+                          setEmails(r.request.group))
                         }
                       >
                         {r.request.group && r.request?.group.length > 0
-                          ? r.request.group
+                          ? r.request.group.length
                           : "Seul"}
                       </TableCell>
                     </TableRow>
