@@ -9,6 +9,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemAvatar from "@mui/material/ListItemAvatar";
 import ListItemText from "@mui/material/ListItemText";
 import {blue} from "@mui/material/colors";
+import PersonIcon from "@mui/icons-material/Person";
 
 export function UserListDialog({open, toogleDialog, emails}) {
   const [_emails, setEmails] = React.useState([]);
