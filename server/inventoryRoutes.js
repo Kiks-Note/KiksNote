@@ -21,6 +21,7 @@ const {
   updateCategory,
   todayRequests,
   liveCategories,
+  liveInventory,
 } = require("./controllers/inventory");
 
 module.exports = function (wsI) {
@@ -30,7 +31,7 @@ module.exports = function (wsI) {
   router.post("/", addDevice);
   router.put("/device/:deviceId", updateDevice);
   router.delete("/device/:deviceId", deleteDevice);
-  router.post("/request/:category/:deviceId", makeRequest);
+  router.post("/request/:deviceId", makeRequest);
   router.get("/requests/:deviceId", deviceRequests);
   router.put("/accept/:deviceId/:requestId", acceptRequest);
   router.put("/reject/:deviceId/:requestId", rejectRequest);
@@ -55,6 +56,10 @@ module.exports = function (wsI) {
       case "/liveCategories":
         liveCategories(request, connection);
         console.log("liveCategories");
+        break;
+      case "/liveInventory":
+        liveInventory(request, connection);
+        console.log("liveInventory");
         break;
       default:
         break;

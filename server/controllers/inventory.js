@@ -35,6 +35,7 @@ const addDevice = async (req, res) => {
     description,
     reference,
     category,
+    createdBy,
   } = req.body;
 
   try {
@@ -53,7 +54,7 @@ const addDevice = async (req, res) => {
         createdAt: new Date(),
         category: category,
         reference: reference,
-        createdBy: "user.ref",
+        createdBy: createdBy,
         status: "available",
       });
 
@@ -119,6 +120,11 @@ const deleteDevice = async (req, res) => {
 const makeRequest = async (req, res) => {
   const {deviceId} = req.params;
   const {startDate, endDate, requestReason, persons, requesterId} = req.body;
+  console.log(requesterId);
+
+  if (requesterId === undefined) {
+    return res.status(500).send("You must be logged in to make a request");
+  }
 
   try {
     const deviceRef = db.collection("inventory").doc(deviceId);
@@ -142,9 +148,9 @@ const makeRequest = async (req, res) => {
 
     await Promise.all([d, r]);
 
-    res.send("Request successfully made!");
+    res.status(200).send("Request successfully made!");
   } catch (err) {
-    res.send(err);
+    res.status(500).send(err);
   }
 };
 
@@ -359,11 +365,17 @@ const todayRequests = async (request, connection) => {
         console.log(`Encountered error: ${err}`);
       }
     );
+};
 
-  // request.on("close", () => {
-  //   console.log("Connection closed");
-  //   requestsListener();
-  // });
+const liveInventory = async (request, connection) => {
+  db.collection("inventory").onSnapshot((snapshot) => {
+    const inventory = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    connection.sendUTF(JSON.stringify(inventory));
+  });
 };
 
 module.exports = {
@@ -384,4 +396,5 @@ module.exports = {
   updateCategory,
   todayRequests,
   liveCategories,
+  liveInventory,
 };

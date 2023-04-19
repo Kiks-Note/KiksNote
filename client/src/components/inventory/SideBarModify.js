@@ -44,15 +44,15 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
   useEffect(() => {
     open === true &&
       (async () => {
-        const ws = new w3cwebsocket("ws://localhost:5050/categoriesInventory");
-
-        ws.onmessage = (e) => {
-          const data = JSON.parse(e.data);
-          setCategories(data);
-          setLoading(false);
-        };
+        await axios
+          .get("http://localhost:5050/inventory/categories")
+          .then((res) => {
+            setCategories(res.data);
+            console.log(res.data);
+            setLoading(false);
+          });
       })();
-  }, [open === true]);
+  }, [open]);
 
   useEffect(() => {
     open === true &&
@@ -100,8 +100,8 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
       return toast.error("Aucune modification n'a été effectuée");
     }
 
-    toast.promise(
-      axios.put(`http://localhost:5050/inventory/modify/${deviceId}`, {
+    await axios
+      .put(`http://localhost:5050/inventory/device/${deviceId}`, {
         label,
         reference,
         category,
@@ -114,22 +114,15 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
         condition,
         description,
         lastModifiedBy: "admin",
-      }),
-      {
-        success: () => {
-          toggleDrawerModify(null, false);
-          return "Le périphérique a bien été modifié";
-        },
-        loading: () => {
-          toggleDrawerModify(null, false);
-          return "Modification en cours...";
-        },
-        error: () => {
-          toggleDrawerModify(null, false);
-          return "Une erreur est survenue";
-        },
-      }
-    );
+      })
+      .then((res) => {
+        toggleDrawerModify(null, false);
+        toast.success("Le périphérique a bien été modifié");
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Une erreur est survenue");
+      });
   };
 
   const list = () => (
@@ -271,7 +264,7 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
               onChange={(e) => setCategory(e.target.value)}
             >
               {categories.map((category) => (
-                <MenuItem value={category.label}>{category.label}</MenuItem>
+                <MenuItem value={category}>{category}</MenuItem>
               ))}
             </Select>
           </FormControl>

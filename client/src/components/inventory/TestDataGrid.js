@@ -11,19 +11,20 @@ import CustomSnackbar from "./CustomSnackBar";
 import axios from "axios";
 import {toast, Toaster} from "react-hot-toast";
 import {Avatar, Typography} from "@mui/material";
+import theme from "../../theme";
 
 export default function TestDataGrid() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pageSize, setPageSize] = useState(15);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [clickedDeviceId, setClickedDeviceId] = useState(null);
+  const [deviceId, setDeviceId] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [openModify, setOpenModify] = useState(false);
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/adminInventory");
+      const ws = new w3cwebsocket("ws://localhost:5050/liveInventory");
       ws.onmessage = (message) => {
         const data = JSON.parse(message.data);
         console.log(data);
@@ -48,20 +49,15 @@ export default function TestDataGrid() {
     setIsMenuOpen(false);
     setSnackBarOpen(false);
 
-    toast.promise(
-      await axios.delete(
-        `http://localhost:5050/inventory/delete/${clickedDeviceId}`
-      ),
-      {
-        success: (res) => {
-          return "Matériel supprimé avec succès";
-        },
-        error: (err) => {
-          console.log(err);
-          return "Une erreur est survenue";
-        },
-      }
-    );
+    await axios
+      .delete(`http://localhost:5050/inventory/device/${deviceId}`)
+      .then((res) => {
+        toast.success("Matériel supprimé avec succès");
+      })
+      .catch((err) => {
+        toast.error("Une erreur est survenue");
+        console.log(err);
+      });
   };
 
   const columns = [
@@ -208,10 +204,10 @@ export default function TestDataGrid() {
             }}
           >
             <EditRoundedIcon
-              style={{color: "black", cursor: "pointer"}}
+              style={{color: "white", cursor: "pointer"}}
               sx={{mr: 2}}
               onClick={(e) => {
-                setClickedDeviceId(params.row.deviceId);
+                setDeviceId(params.row.deviceId);
                 toggleDrawerModify(e, true);
               }}
             />
@@ -220,7 +216,7 @@ export default function TestDataGrid() {
               onClick={() => {
                 setSnackBarOpen(true);
                 setIsMenuOpen(false);
-                setClickedDeviceId(params.row.deviceId);
+                setDeviceId(params.row.deviceId);
               }}
             />
           </div>
@@ -281,7 +277,7 @@ export default function TestDataGrid() {
           <SideBarModify
             open={openModify}
             toggleDrawerModify={toggleDrawerModify}
-            deviceId={clickedDeviceId}
+            deviceId={deviceId}
           />
           <CustomSnackbar
             open={snackBarOpen}
@@ -297,6 +293,7 @@ export default function TestDataGrid() {
           <Toaster position="bottom-left" />
           <Box sx={{height: 800}}>
             <DataGrid
+              isRowSelectable={false}
               columns={columns}
               rows={rows}
               pageSize={pageSize}
@@ -305,7 +302,13 @@ export default function TestDataGrid() {
               rowsPerPageOptions={[15, 30, 50]}
               // sx={{background: "white"}}
               disableSelectionOnClick
-              sx={{background: "white"}}
+              sx={{
+                background: theme.colors.background.dark,
+                color: "white",
+                "& .MuiIconButton-root": {
+                  color: "white",
+                },
+              }}
               localeText={{
                 noRowsLabel: "Pas de résultats",
                 noResultsOverlayLabel: "Aucun résultat.",

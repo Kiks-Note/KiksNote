@@ -60,36 +60,27 @@ export default function SideBarRequest({
     if (!selectDates[0].startDate || !selectDates[0].endDate) {
       toast.error("Veuillez choisir une date de début et de fin");
       return;
-    } else {
-      console.log(user);
-      toast.promise(
-        axios.post(
-          `http://localhost:5050/inventory/request/${category}/${deviceId}`,
-          {
+    } else if(user.id === undefined) {
+      toast.error("Veuillez vous connecter pour faire une demande");
+      return;
+    }else {
+        await axios
+          .post(`http://localhost:5050/inventory/request/${deviceId}`, {
             startDate: new Date(selectDates[0].startDate),
             endDate: new Date(selectDates[0].endDate),
             requestReason: requestReason,
-            persons: persons.split(",").map((person) => person.trim()),
+            persons: persons.split(",").map((person) => person.trim()) || [],
             requesterId: user.id,
-          }
-        ),
-        {
-          loading: () => {
-            toggleDrawerRequest(false);
-            return "Demande en cours d'envoi";
-          },
-          success: (res) => {
-            reloadData();
-            toggleDrawerRequest(false);
+          })
+          .then((res) => {
             console.log(res);
-            return "Demande envoyée";
-          },
-          error: (err) => {
-            toggleDrawerRequest(false);
-            return "Erreur lors de l'envoi de la demande";
-          },
-        }
-      );
+            toast.success("Demande envoyée");
+            reloadData();
+          })
+          .catch((err) => {
+            console.log(err);
+            toast.error("Erreur lors de l'envoi de la demande");
+          });
     }
   };
 

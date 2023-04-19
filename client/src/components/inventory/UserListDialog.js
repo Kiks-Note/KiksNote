@@ -16,8 +16,7 @@ export function UserListDialog({open, toogleDialog, emails}) {
 
   React.useEffect(() => {
     open === true && setEmails(emails.flat());
-    console.log(emails);
-  }, [emails, open === true]);
+  }, [open === true]);
 
   return (
     <Dialog open={open} onClose={() => toogleDialog(false)}>

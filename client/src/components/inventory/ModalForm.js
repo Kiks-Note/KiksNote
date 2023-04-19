@@ -19,6 +19,7 @@ import {useEffect, useState} from "react";
 import "react-datetime/css/react-datetime.css";
 import {toast} from "react-hot-toast";
 import {w3cwebsocket} from "websocket";
+import useAuth from "../../hooks/useAuth";
 
 export default function ModalForm({open, toggleDrawerAdd}) {
   const [categories, setCategories] = useState([]);
@@ -33,6 +34,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
   const [category, setCategory] = useState(null);
   const [reference, setReference] = useState("");
   const [loading, setLoading] = useState(true);
+  const {user} = useAuth();
 
   const addDevice = async () => {
     if (
@@ -62,6 +64,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
             description: description,
             category: category,
             reference: reference,
+            createdBy: user.id,
           }),
           {
             success: () => {
