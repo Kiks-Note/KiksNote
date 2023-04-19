@@ -142,6 +142,12 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
       });
   };
 
+  const handleCancel = (e) => {
+    setEditableIndex(-1);
+    document.getElementById(`category-${e}`).textContent = oldCategory;
+    toast.error("Modification annulée");
+  };
+
   return (
     <Dialog open={open} onClose={() => setCategoriesListOpen(false)}>
       <div style={{maxWidth: 500, maxHeight: 750, overflow: "auto"}}>
@@ -198,10 +204,6 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
                   .sort((a, b) => a.localeCompare(b))
                   .map((category, index) => (
                     <Item
-                      onDoubleClick={() => {
-                        setEditableIndex(index);
-                        setOldCategory(category);
-                      }}
                       key={index}
                       sx={{
                         mb: 1,
@@ -233,6 +235,10 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
                             color: theme.colors.components.light,
                             marginLeft: 5,
                           }}
+                          onDoubleClick={() => {
+                            setEditableIndex(index);
+                            setOldCategory(category);
+                          }}
                           contentEditable={editableIndex === index}
                           id={`category-${category}`}
                           suppressContentEditableWarning={true}
@@ -241,14 +247,31 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
                         </p>
                       </div>
                       <div>
-                        <Tooltip title="Modifier">
-                          <IconButton
-                            onClick={() => handleEdit(category)}
-                            sx={{color: theme.colors.components.dark}}
-                          >
-                            <EditRoundedIcon />
-                          </IconButton>
-                        </Tooltip>
+                        {editableIndex === index && (
+                          <>
+                            <Tooltip title="Annuler">
+                              <IconButton
+                                onClick={() => handleCancel(category)}
+                                sx={{color: "#FF0000"}}
+                              >
+                                <CloseIcon />
+                              </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="Modifier">
+                              <IconButton
+                                onClick={() => handleEdit(category)}
+                                sx={{color: theme.colors.components.dark}}
+                                disabled={
+                                  editableIndex !== -1 &&
+                                  editableIndex !== index
+                                }
+                              >
+                                <EditRoundedIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </>
+                        )}
                         <Tooltip title="Supprimer">
                           <IconButton
                             onClick={() => deleteCategory(category)}

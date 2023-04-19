@@ -297,6 +297,9 @@ const updateCategory = async (req, res) => {
   if (!oldCategory || !newCategory)
     return res.status(400).send("Veuillez entrer une catégorie");
 
+  if (oldCategory === newCategory)
+    return res.status(400).send("Veuillez entrer une catégorie différente");
+
   try {
     const docRef = db
       .collection("inventoryCategories")
