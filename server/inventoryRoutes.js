@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const {db} = require("./firebase");
+const {parse} = require("url");
 
 const {
   inventory,
@@ -15,7 +16,11 @@ const {
   getRequests,
   updateRequest,
   getCategories,
+  addCategory,
+  deleteCategory,
+  updateCategory,
   todayRequests,
+  liveCategories,
 } = require("./controllers/inventory");
 
 module.exports = function (wsI) {
@@ -32,12 +37,28 @@ module.exports = function (wsI) {
   router.get("/request/:requestId", getRequests);
   router.put("/request/:requestId", updateRequest);
   router.get("/categories", getCategories);
+  router.put("/category", addCategory);
+  router.delete("/category/:category", deleteCategory);
+  router.put("/category/:oldCategory", updateCategory);
 
   wsI.on("request", async function (request) {
     const connection = request.accept(null, request.origin);
+    const {pathname} = parse(request.httpRequest.url);
     connection ? console.log("connected") : console.log("not connected");
+    console.log(pathname);
 
-    todayRequests(request, connection);
+    switch (pathname) {
+      case "/todayRequests":
+        todayRequests(request, connection);
+        console.log("todayRequests");
+        break;
+      case "/liveCategories":
+        liveCategories(request, connection);
+        console.log("liveCategories");
+        break;
+      default:
+        break;
+    }
   });
 
   return router;

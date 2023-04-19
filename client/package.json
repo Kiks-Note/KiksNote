@@ -49,6 +49,7 @@
     "react-giphy-searchbox": "^1.5.4",
     "react-hook-form": "^7.41.1",
     "react-hot-toast": "^2.4.0",
+    "react-icons": "^4.8.0",
     "react-loader-spinner": "^5.3.4",
     "react-native-sha512": "^1.0.2",
     "react-pdf": "^6.2.2",

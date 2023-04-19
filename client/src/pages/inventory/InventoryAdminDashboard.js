@@ -7,6 +7,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   Grid,
   IconButton,
   Input,
@@ -38,6 +39,8 @@ import timeConverter from "../../functions/TimeConverter";
 import moment from "moment";
 import {UserListDialog} from "../../components/inventory/UserListDialog";
 import useAuth from "../../hooks/useAuth";
+import CloseIcon from "@mui/icons-material/Close";
+import FaInfoCircle from "@mui/icons-material/Info";
 
 const Item = styled(Paper)(({theme}) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -49,22 +52,21 @@ const Item = styled(Paper)(({theme}) => ({
 
 const CategoryDialog = ({open, setDialogOpen}) => {
   const [category, setCategory] = useState("");
-  const [categoryValue, setCategoryValue] = useState("");
 
-  const writeJson = () => {
-    axios
-      .post("http://localhost:5050/write-to-file", {
-        label: category,
-        value: categoryValue,
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await axios
+      .put("http://localhost:5050/inventory/category", {
+        category,
       })
       .then((res) => {
-        console.log(res);
         setDialogOpen(false);
         setCategory("");
-        setCategoryValue("");
+        toast.success("Catégorie ajoutée avec succès");
       })
       .catch((err) => {
         console.log(err);
+        toast.error(err.response.data);
       });
   };
 
@@ -82,20 +84,10 @@ const CategoryDialog = ({open, setDialogOpen}) => {
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         />
-        <TextField
-          autoFocus
-          margin="dense"
-          id="name"
-          label="Categorie Value"
-          fullWidth
-          variant="outlined"
-          value={categoryValue}
-          onChange={(e) => setCategoryValue(e.target.value)}
-        />
       </DialogContent>
       <DialogActions>
         <Button onClick={() => setDialogOpen(false)}>Annuler</Button>
-        <Button onClick={() => writeJson()}>Ajouter</Button>
+        <Button onClick={(e) => handleSubmit(e)}>Ajouter</Button>
       </DialogActions>
     </Dialog>
   );
@@ -104,94 +96,179 @@ const CategoryDialog = ({open, setDialogOpen}) => {
 const CategoriesList = ({open, setCategoriesListOpen}) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [editableIndex, setEditableIndex] = useState(-1);
+  const [oldCategory, setOldCategory] = useState("");
 
   useEffect(() => {
-    open &&
-      (async () => {
-        const ws = new w3cwebsocket("ws://localhost:5050/categoriesInventory");
+    (async () => {
+      const ws = new w3cwebsocket("ws://localhost:5050/liveCategories");
 
-        ws.onopen = () => {
-          ws.onmessage = (e) => {
-            const data = JSON.parse(e.data);
-            setCategories(data);
-            setLoading(false);
-          };
-        };
-      })();
-  }, [open]);
+      ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        setCategories(data.labels);
+        setLoading(false);
+      };
+    })();
+  }, []);
 
-  const deleteCategory = async (id) => {
+  const deleteCategory = async (category) => {
+    console.log(category);
     await axios
-      .delete(`http://localhost:5050/delete-from-file/${id}`)
+      .delete(`http://localhost:5050/inventory/category/${category}`)
       .then((res) => {
+        toast.success("Catégorie supprimée avec succès");
+      })
+      .catch((err) => {
+        toast.error(err.response.data);
+        console.log(err);
+      });
+  };
+
+  const handleEdit = async (e) => {
+    const newCategory = document.getElementById(`category-${e}`).textContent;
+
+    await axios
+      .put(`http://localhost:5050/inventory/category/${oldCategory}`, {
+        newCategory,
+      })
+      .then((res) => {
+        toast.success("Catégorie modifiée avec succès");
+        setEditableIndex(-1);
         console.log(res);
       })
       .catch((err) => {
+        toast.error(err.response.data);
         console.log(err);
       });
   };
 
   return (
     <Dialog open={open} onClose={() => setCategoriesListOpen(false)}>
-      <DialogTitle>Liste des catégories</DialogTitle>
-      <DialogContent>
-        {loading ? (
-          <Typography variant="h6">Chargement...</Typography>
-        ) : (
-          <List>
-            {categories.map((category) => (
-              <Item
-                key={category.i}
-                sx={{
-                  mb: 1,
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: 400,
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <span style={{fontFamily: "poppins-semibold", fontSize: 16}}>
-                    Label:{" "}
-                  </span>
-                  <span style={{fontFamily: "poppins-regular", fontSize: 16}}>
-                    {category.label}
-                  </span>
-                </div>
-                <div>
-                  <Tooltip title="Modifier">
-                    <IconButton
-                      onClick={() => {}}
-                      sx={{color: theme.colors.components.dark}}
+      <div style={{maxWidth: 500, maxHeight: 750, overflow: "auto"}}>
+        <DialogTitle
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <Typography variant="h6">Liste des catégories</Typography>
+          <IconButton
+            onClick={() => setCategoriesListOpen(false)}
+            sx={{color: theme.colors.components.light}}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <Divider
+          sx={{
+            backgroundColor: "transparent",
+            flexShrink: 0,
+            borderTop: "0px solid rgba(255, 255, 255, 0.12)",
+            borderRight: "0px solid rgba(255, 255, 255, 0.12)",
+            borderLeft: "0px solid rgba(255, 255, 255, 0.12)",
+            borderBottom: "none",
+            height: "0.0625rem",
+            margin: ".1rem 0",
+            opacity: 0.25,
+            backgroundImage:
+              "linear-gradient(to right, rgba(52, 71, 103, 0), rgb(255, 255, 255), rgba(52, 71, 103, 0)) !important",
+          }}
+        />
+        <DialogTitle
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            gap: 1,
+          }}
+        >
+          <FaInfoCircle />
+          <Typography variant="body2">
+            Double-cliquez sur une catégorie pour la modifier et ensuite appuyez
+            sur le bouton pour confirmer
+          </Typography>
+        </DialogTitle>
+        <DialogContent>
+          {loading ? (
+            <Typography variant="h6">Chargement...</Typography>
+          ) : (
+            <List>
+              {!loading &&
+                categories
+                  .sort((a, b) => a.localeCompare(b))
+                  .map((category, index) => (
+                    <Item
+                      onDoubleClick={() => {
+                        setEditableIndex(index);
+                        setOldCategory(category);
+                      }}
+                      key={index}
+                      sx={{
+                        mb: 1,
+                        display: "flex",
+                        justifyContent: "space-between",
+                        width: 400,
+                      }}
                     >
-                      <EditRoundedIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Supprimer">
-                    <IconButton
-                      onClick={() => deleteCategory(category.id)}
-                      sx={{color: "#FF0000"}}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </div>
-              </Item>
-            ))}
-          </List>
-        )}
-      </DialogContent>
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <p
+                          style={{
+                            fontFamily: "poppins-semibold",
+                            fontSize: 16,
+                            color: theme.colors.components.light,
+                          }}
+                        >
+                          Label:{" "}
+                        </p>
+                        <p
+                          style={{
+                            fontFamily: "poppins-regular",
+                            fontSize: 16,
+                            color: theme.colors.components.light,
+                            marginLeft: 5,
+                          }}
+                          contentEditable={editableIndex === index}
+                          id={`category-${category}`}
+                          suppressContentEditableWarning={true}
+                        >
+                          {category}
+                        </p>
+                      </div>
+                      <div>
+                        <Tooltip title="Modifier">
+                          <IconButton
+                            onClick={() => handleEdit(category)}
+                            sx={{color: theme.colors.components.dark}}
+                          >
+                            <EditRoundedIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Supprimer">
+                          <IconButton
+                            onClick={() => deleteCategory(category)}
+                            sx={{color: "#FF0000"}}
+                          >
+                            <DeleteIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </div>
+                    </Item>
+                  ))}
+            </List>
+          )}
+        </DialogContent>
+      </div>
     </Dialog>
   );
 };
 
 const InventoryAdminDashboard = () => {
-  const [devices, setDevices] = useState([]);
   const [openModify, setOpenModify] = useState(false);
   const [clickedDeviceId, setClickedDeviceId] = useState();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -229,7 +306,7 @@ const InventoryAdminDashboard = () => {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/inventory");
+      const ws = new w3cwebsocket("ws://localhost:5050/todayRequests");
 
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);

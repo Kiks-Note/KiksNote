@@ -1,4 +1,4 @@
-const {db} = require("../firebase");
+const {db, FieldValue} = require("../firebase");
 const {parse} = require("url");
 const moment = require("moment");
 
@@ -236,9 +236,93 @@ const getCategories = async (req, res) => {
     .doc("7UKjabIg2uFyz1504U2K")
     .get();
 
-  console.log(doc.data());
-
   res.status(200).send(doc.data().labels);
+};
+
+const addCategory = async (req, res) => {
+  const {category} = req.body;
+
+  const doc = await db
+    .collection("inventoryCategories")
+    .doc("7UKjabIg2uFyz1504U2K")
+    .get();
+
+  if (!category) return res.status(400).send("Veuillez entrer une catégorie");
+  if (doc.data().labels.includes(category))
+    return res.status(400).send("Cette catégorie existe déjà");
+
+  try {
+    const docRef = db
+      .collection("inventoryCategories")
+      .doc("7UKjabIg2uFyz1504U2K");
+
+    await docRef.update({
+      labels: FieldValue.arrayUnion(category),
+    });
+
+    res.status(200).send("Categorie ajoutée avec succès");
+  } catch (err) {
+    res.status(500).send("Une erreur est survenue");
+    console.log(err);
+  }
+};
+
+const deleteCategory = async (req, res) => {
+  const {category} = req.params;
+
+  if (!category) return res.status(400).send("Veuillez entrer une catégorie");
+
+  try {
+    const docRef = db
+      .collection("inventoryCategories")
+      .doc("7UKjabIg2uFyz1504U2K");
+
+    await docRef.update({
+      labels: FieldValue.arrayRemove(category),
+    });
+
+    res.status(200).send("Categorie supprimée avec succès");
+  } catch (err) {
+    res.status(500).send("Une erreur est survenue");
+    console.log(err);
+  }
+};
+
+const updateCategory = async (req, res) => {
+  const {oldCategory} = req.params;
+  const {newCategory} = req.body;
+
+  console.log(oldCategory, newCategory);
+
+  if (!oldCategory || !newCategory)
+    return res.status(400).send("Veuillez entrer une catégorie");
+
+  try {
+    const docRef = db
+      .collection("inventoryCategories")
+      .doc("7UKjabIg2uFyz1504U2K");
+
+    await docRef.update({
+      labels: FieldValue.arrayRemove(oldCategory),
+    });
+
+    await docRef.update({
+      labels: FieldValue.arrayUnion(newCategory),
+    });
+
+    res.status(200).send("Categorie modifiée avec succès");
+  } catch (err) {
+    res.status(500).send("Une erreur est survenue");
+    console.log(err);
+  }
+};
+
+const liveCategories = async (request, connection) => {
+  db.collection("inventoryCategories")
+    .doc("7UKjabIg2uFyz1504U2K")
+    .onSnapshot((snapshot) => {
+      connection.sendUTF(JSON.stringify(snapshot.data()));
+    });
 };
 
 const todayRequests = async (request, connection) => {
@@ -292,5 +376,9 @@ module.exports = {
   getRequests,
   updateRequest,
   getCategories,
+  addCategory,
+  deleteCategory,
+  updateCategory,
   todayRequests,
+  liveCategories,
 };
