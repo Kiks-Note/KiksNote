@@ -134,6 +134,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
       .then((res) => {
         toast.success("Catégorie modifiée avec succès");
         setEditableIndex(-1);
+        setOldCategory("");
         console.log(res);
       })
       .catch((err) => {
@@ -142,10 +143,13 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
       });
   };
 
-  const handleCancel = (e) => {
+  const handleCancel = (category) => {
     setEditableIndex(-1);
-    document.getElementById(`category-${e}`).textContent = oldCategory;
-    toast.error("Modification annulée");
+    setOldCategory("");
+    document.getElementById(`category-${category}`).textContent = oldCategory;
+    toast("Modification annulée", {
+      icon: "✏️",
+    });
   };
 
   return (
