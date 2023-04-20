@@ -1,8 +1,9 @@
 import {useEffect} from "react";
-import useAuth from "../../hooks/useAuth";
+// import useAuth from "../../hooks/useAuth";
+import useFirebase from "../../hooks/useFirebase";
 
 function Home() {
-  const {user} = useAuth();
+  const {user} = useFirebase();
 
   return (
     <div className="home">

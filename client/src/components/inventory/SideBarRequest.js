@@ -18,7 +18,8 @@ import toast from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
 import * as locales from "react-date-range/dist/locale";
 import StyledTextField from "./StyledTextField";
-import useAuth from "../../hooks/useAuth";
+// import useAuth from "../../hooks/useAuth";
+import useFirebase from "../../hooks/useFirebase";
 
 export default function SideBarRequest({
   open,
@@ -37,7 +38,7 @@ export default function SideBarRequest({
       key: "selection",
     },
   ]);
-  const {user} = useAuth();
+  const {user} = useFirebase();
 
   useEffect(() => {
     open === true &&
@@ -60,27 +61,28 @@ export default function SideBarRequest({
     if (!selectDates[0].startDate || !selectDates[0].endDate) {
       toast.error("Veuillez choisir une date de début et de fin");
       return;
-    } else if(user.id === undefined) {
+    } else if (user.id === undefined) {
       toast.error("Veuillez vous connecter pour faire une demande");
       return;
-    }else {
-        await axios
-          .post(`http://localhost:5050/inventory/request/${deviceId}`, {
-            startDate: new Date(selectDates[0].startDate),
-            endDate: new Date(selectDates[0].endDate),
-            requestReason: requestReason,
-            persons: persons.split(",").map((person) => person.trim()) || [],
-            requesterId: user.id,
-          })
-          .then((res) => {
-            console.log(res);
-            toast.success("Demande envoyée");
-            reloadData();
-          })
-          .catch((err) => {
-            console.log(err);
-            toast.error("Erreur lors de l'envoi de la demande");
-          });
+    } else {
+      await axios
+        .post(`http://localhost:5050/inventory/request/${deviceId}`, {
+          startDate: new Date(selectDates[0].startDate),
+          endDate: new Date(selectDates[0].endDate),
+          requestReason: requestReason,
+          persons: persons.split(",").map((person) => person.trim()) || [],
+          requesterId: user.id,
+        })
+        .then((res) => {
+          console.log(res);
+          toast.success("Demande envoyée");
+          reloadData();
+          toggleDrawerRequest(false);
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Erreur lors de l'envoi de la demande");
+        });
     }
   };
 

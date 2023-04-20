@@ -38,9 +38,10 @@ import theme from "../../theme";
 import timeConverter from "../../functions/TimeConverter";
 import moment from "moment";
 import {UserListDialog} from "../../components/inventory/UserListDialog";
-import useAuth from "../../hooks/useAuth";
+// import useAuth from "../../hooks/useAuth";
 import CloseIcon from "@mui/icons-material/Close";
 import FaInfoCircle from "@mui/icons-material/Info";
+import useFirebase from "../../hooks/useFirebase";
 
 const Item = styled(Paper)(({theme}) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -307,7 +308,7 @@ const InventoryAdminDashboard = () => {
   const [emailsDialogOpen, setEmailsDialogOpen] = useState(false);
   const [emails, setEmails] = useState([]);
   const navigate = useNavigate();
-  const {user} = useAuth();
+  const {user} = useFirebase();
 
   const toggleDrawerAdd = (event, open) => {
     if (

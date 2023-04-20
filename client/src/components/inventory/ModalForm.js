@@ -19,7 +19,8 @@ import {useEffect, useState} from "react";
 import "react-datetime/css/react-datetime.css";
 import {toast} from "react-hot-toast";
 import {w3cwebsocket} from "websocket";
-import useAuth from "../../hooks/useAuth";
+// import useAuth from "../../hooks/useAuth";
+import useFirebase from "../../hooks/useFirebase";
 
 export default function ModalForm({open, toggleDrawerAdd}) {
   const [categories, setCategories] = useState([]);
@@ -34,7 +35,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
   const [category, setCategory] = useState(null);
   const [reference, setReference] = useState("");
   const [loading, setLoading] = useState(true);
-  const {user} = useAuth();
+  const {user} = useFirebase();
 
   const addDevice = async () => {
     if (

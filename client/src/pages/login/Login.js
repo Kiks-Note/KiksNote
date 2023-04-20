@@ -1,26 +1,25 @@
-import React, {useState, useEffect} from "react";
+import React, {useState} from "react";
 import {useNavigate} from "react-router-dom";
-
-import {
-  TextField,
-  Typography,
-  Container,
-  Box,
-  Button,
-  Link,
-  IconButton,
-  InputAdornment,
-} from "@mui/material";
-import MailIcon from "@mui/icons-material/Mail";
 import {Visibility, VisibilityOff} from "@mui/icons-material";
 import LockIcon from "@mui/icons-material/Lock";
+import MailIcon from "@mui/icons-material/Mail";
+import {
+  Box,
+  Button,
+  Container,
+  IconButton,
+  InputAdornment,
+  Link,
+  TextField,
+  Typography,
+} from "@mui/material";
+import Cookies from "universal-cookie";
+import {signInWithEmailAndPassword} from "firebase/auth";
 
-import axios from "axios";
-
-import {accountAuthService} from "../../services/accountAuth";
-
-import "./Login.scss";
 import imgLogin from "./../../assets/img/login_img.svg";
+import "./Login.scss";
+import useFirebase from "../../hooks/useFirebase";
+import {Toaster, toast} from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -32,6 +31,8 @@ const Login = () => {
   const [messageEmail, setMessageEmail] = useState("");
   const [messagePassword, setMessagePassword] = useState("");
   const regex = /@edu\.esiee-it\.fr/;
+  const cookies = new Cookies();
+  const {auth} = useFirebase();
 
   const navigate = useNavigate();
 
@@ -53,23 +54,53 @@ const Login = () => {
     event.preventDefault();
   };
 
-  const login = async (email, password) => {
-    await axios
-      .post("http://localhost:5050/auth/login", {
+  // const login = async (email, password) => {
+  //   await axios
+  //     .post("http://localhost:5050/auth/login", {
+  //       email,
+  //       password,
+  //     })
+  //     .then((res) => {
+  //       console.log(res.data.userUid);
+  //       localStorage.setItem("userUid", res.data.userUid);
+  //       localStorage.setItem("user", JSON.stringify(res.data.user));
+  //       accountAuthService.saveTokens(res.data.token, res.data.refreshToken);
+  //       navigate("/");
+  //     })
+  //     .catch(
+  //       (err) => setMessageError(err.response.data),
+  //       console.log(errorMessage)
+  //     );
+  // };
+
+  const login = async () => {
+    if (!email || !password) {
+      toast.error("Veuillez remplir tous les champs !");
+      return;
+    }
+    try {
+      const loggedInUser = await signInWithEmailAndPassword(
+        auth,
         email,
-        password,
-      })
-      .then((res) => {
-        console.log(res.data.userUid);
-        localStorage.setItem("userUid", res.data.userUid);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        accountAuthService.saveTokens(res.data.token, res.data.refreshToken);
-        navigate("/");
-      })
-      .catch(
-        (err) => setMessageError(err.response.data),
-        console.log(errorMessage)
+        password
       );
+
+      const token = await loggedInUser.user.getIdToken();
+      cookies.set("token", token, {path: "/"});
+
+      navigate("/dashboard");
+    } catch (e) {
+      if (e.message.includes("auth/invalid-email")) {
+        toast.error("Cet email n'est associé à aucun compte !");
+        return;
+      }
+      if (e.message.includes("auth/wrong-password")) {
+        toast.error("Mot de passe incorrect !");
+        return;
+      }
+      toast.error("Une erreur est survenue");
+      console.log(e);
+    }
   };
 
   const verifInputErrors = (email, password) => {
@@ -103,6 +134,7 @@ const Login = () => {
 
   return (
     <div className="login-page-container">
+      <Toaster />
       <div className="login">
         <Container
           className="login-image-box"
