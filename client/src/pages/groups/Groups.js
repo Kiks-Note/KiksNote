@@ -84,6 +84,7 @@ function App() {
         },
     };
 
+    const [lock, setLock] = useState(false);
     const [columns, setColumns] = useState(colContent);
 
     function moveOnClick(columnId, student, columns) {
@@ -170,6 +171,7 @@ function App() {
             setColumns(colContent);
         }
     }
+
     function shuffle(array) {
         let currentIndex = array.length,
             randomIndex;
@@ -199,6 +201,7 @@ function App() {
         } else {
             var studentsArrayRandom = shuffle(columns.students.items);
             var groups = Object.keys(columns).filter((key) => key.startsWith("g"));
+            var students = Object.keys(columns).filter((key) => key.startsWith("s"));
             var groupIndex = 0;
 
             var numberGroup = groups.length;
@@ -223,8 +226,18 @@ function App() {
 
                 groupIndex++;
             }
+            columns[students[0]].items = [];
             setColumns({ ...columns });
             document.querySelector('input[type="text"]').value = '';
+        }
+    }
+
+    function lockGroups() {
+        if (lock) {
+            setLock(false);
+        }
+        else {
+            setLock(true);
         }
     }
 
@@ -250,7 +263,7 @@ function App() {
                     <CasinoIcon className="icon-svg" />
                 </button>
                 <button className="input-button">
-                    <LockOpenIcon className="icon-svg" />
+                    {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
                 </button>
             </div>
             <div
@@ -263,7 +276,7 @@ function App() {
             >
                 <DragDropContext onDragEnd={onDragEnd}>
                     {Object.entries(columns).map(([columnId, column], index) => {
-                        if (index === 0) {
+                        if (index === 0 && columns.students.items.length > 0) {
                             return (
                                 <div
                                     style={{
@@ -291,6 +304,7 @@ function App() {
                                                             maxHeight: 500,
                                                             overflow: "auto",
                                                             height: "auto",
+                                                            ...(!lock && { backgroundColor: "#999999", opacity: 0.5, pointerEvents: "none" })
                                                         }}
                                                         className="group"
                                                     >
@@ -336,7 +350,7 @@ function App() {
                                     </div>
                                 </div>
                             );
-                        } else {
+                        } else if (index !== 0) {
                             return (
                                 <div
                                     style={{
@@ -418,6 +432,9 @@ function App() {
                                     </div>
                                 </div>
                             );
+                        }
+                        else {
+                            return <span></span>;
                         }
                     })}
                 </DragDropContext>
