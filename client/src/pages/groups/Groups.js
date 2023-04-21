@@ -5,6 +5,8 @@ import CachedIcon from "@mui/icons-material/Cached";
 import LockIcon from "@mui/icons-material/Lock";
 import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
+import SettingsIcon from '@mui/icons-material/Settings';
+import { PopUp } from "../../components/groups/Popup";
 import "./Groups.scss";
 
 function App() {
@@ -84,7 +86,7 @@ function App() {
         },
     };
 
-    const [lock, setLock] = useState(false);
+    const [lock, setLock] = useState(true);
     const [columns, setColumns] = useState(colContent);
 
     function moveOnClick(columnId, student, columns) {
@@ -160,7 +162,7 @@ function App() {
 
             for (let index = 1; index < numberOfCase + 1; index++) {
                 copiedColContent[`g${index}`] = {
-                    name: `Group ${index}`,
+                    name: `Groupe ${index}`,
                     items: [],
                 };
             }
@@ -196,9 +198,29 @@ function App() {
         let nsgp = parseInt(document.querySelector('input[type="text"]').value); // Number of students per groups
         if (!nsgp) {
             alert(
-                "Merci de renseigner d'abords le nombre de groupe d'élèves par groupe souhaité"
-            );
+                "Merci de renseigner d'abord le nombre de groupe d'élèves par groupe souhaité"
+                );
         } else {
+
+            const numberOfStudents = columns.students.items.length; //TODO update in function of BDD link
+
+            let copiedColContent = { ...colContent };
+
+            let numberOfCase = Math.floor(numberOfStudents / nsgp);
+
+            if (numberOfStudents % nsgp !== 0) {
+                numberOfCase++;
+            }
+
+            for (let index = 1; index < numberOfCase + 1; index++) {
+                copiedColContent[`g${index}`] = {
+                    name: `Groupe ${index}`,
+                    items: [],
+                };
+            }
+
+            setColumns(copiedColContent);
+
             var studentsArrayRandom = shuffle(columns.students.items);
             var groups = Object.keys(columns).filter((key) => key.startsWith("g"));
             var students = Object.keys(columns).filter((key) => key.startsWith("s"));
@@ -228,7 +250,6 @@ function App() {
             }
             columns[students[0]].items = [];
             setColumns({ ...columns });
-            document.querySelector('input[type="text"]').value = '';
         }
     }
 
@@ -241,16 +262,20 @@ function App() {
         }
     }
 
+
+    function settings() {
+        
+    }
     return (
-        <div>
+        <><PopUp />
+            <div>
             <h1 style={{ textAlign: "center" }}>Création de Groupes</h1>
             <div className="groups-inputs">
                 <input
                     type="text"
                     list="students-list"
                     placeholder="Eleves/groupes"
-                    onChange={generateGroupCase}
-                />
+                    onChange={generateGroupCase} />
                 <datalist id="students-list">
                     <option value={3}></option>
                     <option value={4}></option>
@@ -264,6 +289,9 @@ function App() {
                 </button>
                 <button className="input-button">
                     {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
+                </button>
+                <button className="input-button" onClick={settings}>
+                  <SettingsIcon className="input-svg" />
                 </button>
             </div>
             <div
@@ -295,9 +323,7 @@ function App() {
                                                         {...provided.droppableProps}
                                                         ref={provided.innerRef}
                                                         style={{
-                                                            background: snapshot.isDraggingOver
-                                                                ? "#e697b3"
-                                                                : "#252525",
+                                                            backgroundColor: snapshot.isDraggingOver ? "#e697b3" : "#252525",
                                                             padding: 4,
                                                             width: "100%",
                                                             minHeight: 140,
@@ -338,14 +364,14 @@ function App() {
                                                                                 <p>{item.name}</p>
                                                                             </div>
                                                                         );
-                                                                    }}
+                                                                    } }
                                                                 </Draggable>
                                                             );
                                                         })}
                                                         {provided.placeholder}
                                                     </div>
                                                 );
-                                            }}
+                                            } }
                                         </Droppable>
                                     </div>
                                 </div>
@@ -371,15 +397,14 @@ function App() {
                                                         {...provided.droppableProps}
                                                         ref={provided.innerRef}
                                                         style={{
-                                                            background: snapshot.isDraggingOver
-                                                                ? "#e697b3"
-                                                                : "#252525",
+                                                            backgroundColor: snapshot.isDraggingOver ? "#e697b3" : "#252525",
                                                             padding: 4,
                                                             width: 250,
                                                             minHeight: 140,
                                                             maxHeight: 500,
                                                             overflow: "auto",
                                                             height: "auto",
+                                                            ...(!lock && { backgroundColor: "#999999", opacity: 0.5, pointerEvents: "none" })
                                                         }}
                                                         className="group"
                                                         onClick={() => {
@@ -388,7 +413,7 @@ function App() {
                                                                 moveOnClick(columnId, student, columns);
                                                                 setColumns({ ...columns });
                                                             }
-                                                        }}
+                                                        } }
                                                     >
                                                         {column.items.map((item, index) => {
                                                             return (
@@ -420,14 +445,14 @@ function App() {
                                                                                 <p>{item.name}</p>
                                                                             </div>
                                                                         );
-                                                                    }}
+                                                                    } }
                                                                 </Draggable>
                                                             );
                                                         })}
                                                         {provided.placeholder}
                                                     </div>
                                                 );
-                                            }}
+                                            } }
                                         </Droppable>
                                     </div>
                                 </div>
@@ -439,7 +464,7 @@ function App() {
                     })}
                 </DragDropContext>
             </div>
-        </div>
+        </div></>
     );
 }
 export default App;

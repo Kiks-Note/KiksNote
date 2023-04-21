@@ -26,7 +26,7 @@ function RoutesProvider() {
             path="/presence/:id"
             element={<Navbar element={<Presence />} />}
           />
-          <Route path="/groups" element={<Navbar element={<Groups />} />} />
+          <Route path="/groupes" element={<Navbar element={<Groups />} />} />
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
