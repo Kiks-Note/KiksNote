@@ -95,6 +95,7 @@ function Profil() {
       };
 
       wsComments.onmessage = (message) => {
+        console.log(message.data);
         const data = JSON.parse(message.data);
         var userInfo = data;
         const date = new Date(
@@ -127,7 +128,7 @@ function Profil() {
         setIsLoading(true);
       };
     })();
-  }, []);
+  }, [userUid]);
   return (
     <>
       {isLoading ? (
