@@ -9,7 +9,7 @@ import vueimg from '../../pages/ressources/vue.png';
 import { useNavigate } from 'react-router-dom';
 import CreateCard from '../../pages/ressources/CreateCard';
 
-export default function Dard() {
+export default function Dard({ formData }) {
 
   let navigate = useNavigate();
   const PDFBacklog = () => {
@@ -34,7 +34,7 @@ export default function Dard() {
       <CardContent>
       {/* Card Title */}
         <Typography gutterBottom variant="h5" component="div">
-          {CreateCard.title}
+         
         </Typography>
       {/* Card Description */}
         <Typography variant="body2" color="text.secondary">

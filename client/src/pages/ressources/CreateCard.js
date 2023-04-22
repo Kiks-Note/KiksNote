@@ -1,44 +1,73 @@
 import React, { useState } from 'react';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import NativeSelect from '@mui/material/NativeSelect';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 export default function CreateCard() {
 
+  const current = new Date();
+  const dateTime = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
+
+  const [title, setTitle] = useState("React");
+  const [desc, setDesc] = useState("");
+  const [po, setPo] = useState("");
+  const [date, setDate] = useState(dateTime);
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    const newCard = {
+      title: title,
+      desc: desc,
+      po: po,
+      date: date,
+    }
+    console.log(newCard);
+
+    try{
+      axios.post("http://localhost:5050/api/ressources", newCard)
+        .then(res => console.log(res.data));
+    }catch(err){
+      console.log(err);
+    }
+
+    setTitle("React");
+    setDesc("");
+    setPo("");
+    setDate(dateTime);
+
+    
+  };
+
   let navigate = useNavigate();
-  const Ressources = () => {
-    let path = "/ressources";
-    navigate(path);
+  const Ressources = () =>{
+      let path = "/ressources";
+      navigate(path);
   }
-  
-  const { register, handleSubmit } = useForm();
-  const [data, setData] = useState("");
-  const onSubmit = data => console.log(data);
+
+
 
   return (
-    <Box
-      component="form"
-      sx={{ '& > :not(style)': { m: 1, width: '25ch' }, }}
-      noValidate
-      autoComplete="off"
-    >
-      <form onSubmit={handleSubmit((data) => setData(JSON.stringify(data)))}>
+   
+    <div>
+      <form onSubmit={handleSubmit}>
         <FormControl fullWidth>
           <InputLabel variant="standard" htmlFor="uncontrolled-native">
-            Age
+            Titre/Languages du cours
           </InputLabel>
           <NativeSelect
-            {...register("title", { required: true })}
-            defaultValue="React"
             inputProps={{
-              name: 'Titre/Language du cours',
+              name: 'title',
               id: 'uncontrolled-native',
             }}
+            type='text'
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
           >
             <option value="Vue">VueJS</option>
             <option value="React">React</option>
@@ -99,18 +128,25 @@ export default function CreateCard() {
             <option value="REST">REST</option>
             <option value="SOAP">SOAP</option>
             <option value="JSON">JSON</option>
+            <option value="XML">XML</option>
+            <option value="YAML">YAML</option>
+            <option value="CSV">CSV</option>
+            <option value="Markdown">Markdown</option>
+            <option value="LaTeX">LaTeX</option>
+            <option value="Bash">Bash</option>
           </NativeSelect>
         </FormControl>
          
-        <TextField id="standard-basic" label="Date de création" variant="standard" {...register("date", {required: true})} />
-        <TextField id="standard-basic" label="Image du cours" variant="standard" {...register("image", {required: true})} />
-        <TextField id="standard-basic" label="Description du cours" variant="standard" {...register("desc", {required: true})} />
-        <TextField id="standard-basic" label="PO" variant="standard" {...register("po", {required: true})} />
+        <TextField id="standard-basic" name='date' label="Date de création" variant="standard" type='date' value={date} onChange={(e) => setDate(e.target.value)} />
+        <TextField id="standard-basic" name='image' label="Image du cours" variant="standard" />
+        <TextField id="standard-basic" name='desc' label="Description du cours" variant="standard" type='text' value={desc} onChange={(e) => setDesc(e.target.value)} />
+        <TextField id="standard-basic" name='po' label="PO" variant="standard" type='text' value={po} onChange={(e) => setPo(e.target.value)} />
 
-        <Button type='submit' variant="contained" onClick={Ressources}>
+        <Button type='submit' color='primary'  >
           Submit
         </Button>
       </form>
-    </Box>
+    </div>
+    
   );
 }
