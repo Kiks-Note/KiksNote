@@ -29,6 +29,13 @@ module.exports = (app, db) => {
     res.send(snapshot.docs.map((doc) => doc.data()));
   });
 
+  app.get("/blog", async (req, res) => {
+    const snapshot = await db.collection("blog_evenements").get();
+    res.send(snapshot.docs.map((doc) => doc.data()));
+  });
+
+
+
   //post a new comment on a tutorial
   app.post("/blog/:id/comments", async (req) => {
     await db

@@ -86,16 +86,16 @@ function Blog() {
               >
                 {!loading
                   ? blog.map((blog) => (
-                      <ImgMediaCard
-                        image={blog.photo}
-                        title={blog.title}
-                        description={blog.description}
-                        key={blog.id}
-                        id={blog.id}
-                        like={blog.like}
-                        dislike={blog.dislike}
-                      />
-                    ))
+                    <ImgMediaCard
+                      image={blog.photo}
+                      title={blog.title}
+                      description={blog.description}
+                      key={blog.id}
+                      id={blog.id}
+                      like={blog.like}
+                      dislike={blog.dislike}
+                    />
+                  ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}
               </Grid>
             </Grid>
