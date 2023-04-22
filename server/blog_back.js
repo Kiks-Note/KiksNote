@@ -1,4 +1,8 @@
 module.exports = (app, db) => {
+
+
+
+
   // get all tutos
   app.get("/tutos", async (req, res) => {
     const snapshot = await db.collection("blog_tutos").get();

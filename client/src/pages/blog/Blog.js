@@ -20,6 +20,7 @@ function Blog() {
   useEffect(() => {
     (async () => {
       const ws = new w3cwebsocket("ws://localhost:5050/blog");
+
       ws.onmessage = (message) => {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
@@ -48,10 +49,7 @@ function Blog() {
           <Grid item xs={2}>
             <TagFilter />
           </Grid>
-          <Grid
-            item
-            xs={10}
-          >
+          <Grid item xs={10}>
             <Grid
               container
               direction={"column"}
