@@ -2,16 +2,13 @@ module.exports = (app, db, upload, path, fs) => {
   // Route to create a new resource
   app.post("/ressources", upload.single("image"), async (req, res) => {
     try {
-      const url = req.protocol + "://" + req.get("host") + "/";
-      const image = req.file.path;
-      const { title, description } = req.body;
-      const resourcesRef = db.collection("resources");
+      const { title, description,date } = req.body;
+      console.log(req.body);
+      const resourcesRef = db.collection("ressources");
       const newResource = await resourcesRef.add({
         title,
         description,
         date,
-        insctructor,
-        image: req.file ? url + image : "",
       });
       res.status(201).json({ id: newResource.id });
     } catch (err) {

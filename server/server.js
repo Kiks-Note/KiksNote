@@ -77,8 +77,8 @@ ws.on("request", (request) => {
   require("./routes/call")(app, db, connection, pathname);
   require("./dashboard")(app, db, ws, parse);
   require("./routes/groupscreation")(app, db);
-  require("./userInfo")(app, pathname, db, connection, upload,path,fs);
-  require("./ressources")(app, db);
+  require("./userInfo")(app, pathname, db, connection, upload, path, fs);
+  require("./ressources")(app, db, upload, path, fs);
 });
 
 require("./routes/auth")(

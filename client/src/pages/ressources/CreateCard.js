@@ -23,15 +23,16 @@ export default function CreateCard() {
     
     const newCard = {
       title: title,
-      desc: desc,
-      po: po,
+      description: desc,
+      insctrutor: po,
       date: date,
     }
     console.log(newCard);
 
     try{
-      axios.post("http://localhost:5050/api/ressources", newCard)
-        .then(res => console.log(res.data));
+      axios
+        .post("http://localhost:5050/ressources", newCard)
+        .then((res) => console.log(res.data));
     }catch(err){
       console.log(err);
     }
