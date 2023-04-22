@@ -2,7 +2,7 @@ module.exports = (app, db) => {
   // Route to create a new resource
   app.post("/ressources", async (req, res) => {
     try {
-      const { title, description,date } = req.body;
+      const { title, description, date } = req.body;
       console.log(req.body);
       const resourcesRef = db.collection("ressources");
       const newResource = await resourcesRef.add({
@@ -20,12 +20,11 @@ module.exports = (app, db) => {
   // Route to get all resources
   app.get("/ressources", async (req, res) => {
     try {
-      const resourcesRef = db.collection("resources");
+      const resourcesRef = db.collection("ressources");
       const snapshot = await resourcesRef.get();
       const resources = snapshot.docs.map((doc) => ({
         id: doc.id,
-        title: doc.data().title,
-        description: doc.data().description,
+        ...doc.data(),
       }));
       res.status(200).json(resources);
     } catch (err) {
