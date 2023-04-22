@@ -20,15 +20,18 @@ import axios from "axios";
 import { accountAuthService } from "../../services/accountAuth";
 
 import "./Login.scss";
-import imgLogin from "./../../assets/img/login_img.svg";
+import imgLogin from "./../../assets/img/login-welcome.svg";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setMessageError] = useState("");
-  const ip = process.env.REACT_APP_IP;
-
-  const auth = getAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [errorPassword, setErrorPassword] = useState(false);
+  const [messageEmail, setMessageEmail] = useState("");
+  const [messagePassword, setMessagePassword] = useState("");
+  const regex = /@edu\.esiee-it\.fr/;
 
   const navigate = useNavigate();
 
@@ -59,7 +62,9 @@ const Login = () => {
         password,
       })
       .then((res) => {
-        console.log(res.data.user)
+        console.log(res.data.userUid)
+        localStorage.setItem("userUid", res.data.userUid)
+        localStorage.setItem("user", JSON.stringify(res.data.user))
         accountAuthService.saveTokens(res.data.token, res.data.refreshToken);
         navigate("/");
       })
@@ -72,7 +77,7 @@ const Login = () => {
   const verifInputErrors = (email, password) => {
     if (email === "") {
       setErrorEmail(true);
-      setMessageEmail("Email requis");
+      setMessageEmail("L'adresse email est requis");
     }
     else if (regex.test(email)) {
       setErrorEmail(false);
@@ -84,7 +89,7 @@ const Login = () => {
     }
     if (password === "") {
       setErrorPassword(true);
-      setMessagePassword("Password requis");
+      setMessagePassword("Le mot de passe est requis");
     }
     else if (password.length >= 6) {
       setErrorPassword(false);
@@ -98,34 +103,8 @@ const Login = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        userCredential.user.getIdToken().then(async (idToken) => {
-          console.log(userCredential.user);
-          await axios
-            .post(`http://${ip}:5050/auth/login`, {
-              idToken,
-            })
-            .then((res) => {
-              accountAuthService.saveTokens(
-                res.data.token,
-                userCredential.user.stsTokenManager.refreshToken
-              );
-              localStorage.setItem("user_uid", userCredential.user.uid);
-              navigate("/");
-            })
-            .catch(
-              (err) => setMessageError(err.response.data),
-              console.log(errorMessage)
-            );
-        });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-      });
+    login(email, password);
+    verifInputErrors(email, password);
   };
 
   return (
@@ -186,6 +165,9 @@ const Login = () => {
                   id="input-email"
                   defaultValue={email}
                   onChange={onChangeEmail}
+                  sx={{
+                    input: { color: 'black' }
+                  }}
                   error={errorEmail}
                   helperText={messageEmail}
                 />
@@ -215,6 +197,9 @@ const Login = () => {
                   id="input-password"
                   defaultValue={password}
                   onChange={onChangePassword}
+                  sx={{
+                    input: { color: 'black' }
+                  }}
                   error={errorPassword}
                   helperText={messagePassword}
                   InputProps={{
@@ -258,6 +243,7 @@ const Login = () => {
                   className="login-button"
                   sx={{
                     backgroundColor: "#7a52e1",
+                    color: "white"
                   }}
                   variant="contained"
                 >
@@ -276,7 +262,7 @@ const Login = () => {
                   fontWeight: "bold",
                 }}
               >
-                ici
+             Inscription
               </Link>
             </p>
           </Container>
