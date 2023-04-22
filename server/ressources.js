@@ -1,6 +1,6 @@
-module.exports = (app, db, upload, path, fs) => {
+module.exports = (app, db) => {
   // Route to create a new resource
-  app.post("/ressources", upload.single("image"), async (req, res) => {
+  app.post("/ressources", async (req, res) => {
     try {
       const { title, description,date } = req.body;
       console.log(req.body);
