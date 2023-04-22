@@ -6,10 +6,25 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { useLocation } from 'react-router-dom';
+import axios from 'axios';
 
-export default function Ressources(props) {
+export default function Ressources() {
 
-    const { data } = props;
+    const [ressources, setRessources] = useState([]);
+
+    useEffect(() => {
+        (async () => {
+    
+            try{
+                axios.get("http://localhost:5050/ressources")
+                .then((res) => setRessources(res.data));
+            }catch(error){
+                console.log(error);
+            }
+          
+        })();
+      }, []);
+
 
     let navigate = useNavigate();
     const createCardRoute = () =>{ 
@@ -17,7 +32,7 @@ export default function Ressources(props) {
         navigate(path);
     }
 
-    if(!data) {
+    if(!ressources) {
         return <div>Aucune carte à afficher</div>;
     }
 
@@ -32,10 +47,12 @@ export default function Ressources(props) {
             </IconButton>
 
             <div>
-                <h2>{data.title}</h2>
-                <p>{data.desc}</p>
-                <p>{data.po}</p>
-                <p>{data.date}</p>
+                {ressources.map((resource) => (
+                    <div key={resource.id}>
+                    <h2>{resource.title}</h2>
+                    <p>{resource.description}</p>
+                    </div>
+                ))}
             </div>
         </div>
     );

@@ -17,8 +17,7 @@ export default function CreateCard() {
   const [po, setPo] = useState("");
   const [date, setDate] = useState(dateTime);
 
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     const newCard = {
@@ -30,7 +29,7 @@ export default function CreateCard() {
     console.log(newCard);
 
     try{
-      axios
+      await axios
         .post("http://localhost:5050/ressources", newCard)
         .then((res) => console.log(res.data));
     }catch(err){
@@ -143,7 +142,7 @@ export default function CreateCard() {
         <TextField id="standard-basic" name='desc' label="Description du cours" variant="standard" type='text' value={desc} onChange={(e) => setDesc(e.target.value)} />
         <TextField id="standard-basic" name='po' label="PO" variant="standard" type='text' value={po} onChange={(e) => setPo(e.target.value)} />
 
-        <Button type='submit' color='primary'  >
+        <Button type='submit' color='primary' onClick={Ressources} >
           Submit
         </Button>
       </form>
