@@ -39,7 +39,7 @@ function RoutesProvider() {
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
-          <Route path="/ressources" element={<Ressources />} />
+          <Route path="/cours" element={<Ressources />} />
           <Route path="/createCard" element={<CreateCard />} />
           <Route path="/pdfbacklog" element={<PDFBacklogCartView />} />
           <Route path="/pdfsupport" element={<PDFSupport />} />

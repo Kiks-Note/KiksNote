@@ -141,7 +141,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 3,
       name: "Cours",
-      route: "#",
+      route: "/cours",
       icon: (
         <LibraryBooksIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
