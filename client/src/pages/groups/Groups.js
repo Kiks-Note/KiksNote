@@ -11,15 +11,18 @@ import "./Groups.scss";
 
 function App() {
     // For PO view
-    /*    const getStudents = (classStudents) => {
-          axios.get("http://localhost:5050/users").then((res) => {
-               const students = [];
-              res.data.user.forEach(element => {
-                  if (element.class === classStudents) students.push(element);
-              });
-              return students 
-          });
-      }  */
+    const getStudents = async (classStudents) => {
+        try {
+            const res = await axios.get("http://localhost:5050/users");
+            const students = res.data.user.filter(element => element.class === classStudents);
+            return students;
+        } catch (error) {
+            // Handle errors here
+            console.error(error);
+            throw error;
+        }
+    };
+
     const tasks = [
         {
             id: "1",
@@ -93,6 +96,12 @@ function App() {
         columns[columnId].items.push(student);
         setColumns({ ...columns });
     }
+
+    async function test() {
+        const users = await getStudents("L2-cergy");
+        console.log(users);
+    }
+    test();
 
     const onDragEnd = (result) => {
         if (!result.destination) return;
