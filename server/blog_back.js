@@ -1,8 +1,6 @@
+const { app } = require("firebase-admin");
+
 module.exports = (app, db) => {
-
-
-
-
   // get all tutos
   app.get("/tutos", async (req, res) => {
     const snapshot = await db.collection("blog_tutos").get();
@@ -37,8 +35,6 @@ module.exports = (app, db) => {
     const snapshot = await db.collection("blog_evenements").get();
     res.send(snapshot.docs.map((doc) => doc.data()));
   });
-
-
 
   //post a new comment on a tutorial
   app.post("/blog/:id/comments", async (req) => {
@@ -117,5 +113,10 @@ module.exports = (app, db) => {
     } catch (err) {
       res.status(500).send(err);
     }
+  });
+
+  app.delete("/blog_event/:id", async (req, res) => {
+    await db.collection("blog_evenements").doc(req.params.id).delete();
+    res.send("Document successfully deleted!");
   });
 };
