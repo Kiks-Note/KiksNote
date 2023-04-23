@@ -2,15 +2,15 @@ import * as React from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import App from "../App";
 import { frFR } from "@mui/material/locale";
-import useMediaQuery from "@mui/material/useMediaQuery";
-
+import CssBaseline from "@mui/material/CssBaseline";
 export const ColorModeContext = React.createContext();
 
 export default function ToggleColorMode() {
-  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  let themeMode = "";
-  prefersDarkMode === true ? (themeMode = "dark") : (themeMode = "light");
-  const [mode, setMode] = React.useState(themeMode);
+  const [mode, setMode] = React.useState(() => {
+    const savedMode = localStorage.getItem("color-mode");
+    return savedMode !== null ? savedMode : "dark";
+  });
+
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
@@ -19,69 +19,41 @@ export default function ToggleColorMode() {
     }),
     []
   );
-  // ? TO ADD COLOR AND USE 
-  // THIS THE PALETTE OF THE APP IF YOU CHANGE WANT TO ADD COLOR SPECIFIC ADD A ITEM IN CUSTOM
-  // EXEMPLE WITH iconDrawer TO USE ON THE CODE  -->    style={{ color: theme.palette.custom.iconDrawer }}
+
+  React.useEffect(() => {
+    localStorage.setItem("color-mode", mode);
+  }, [mode]);
 
   const theme = React.useMemo(
     () =>
       createTheme({
         palette: {
-          ...(mode === "dark"
-            ? {
-                text: {
-                  primary: "#fff",
-                  secondary: "#9e9e9e",
-                  default:"#000",
-                },
-                background: {
-                  default: "#212121",
-                  paper: "#424242",
-                },
-                primary: {
-                  main: "#90caf9",
-                  dark: "#2196f3",
-                  light: "#64b5f6",
-                },
-                secondary: {
-                  main: "#f48fb1",
-                  dark: "#f06292",
-                  light: "#ff8a80",
-                },
-                error: {
-                  main: "#ff5252",
-                },
-                custom: {
-                  iconDrawer: "#fff",
-                },
-              }
-            : {
-                text: {
-                  primary: "#000",
-                  secondary: "#424242",
-                  default:"#000",
-                },
-                background: {
-                  default: "#fafafa",
-                  paper: "#fff",
-                },
-                primary: {
-                  main: "#2196f3",
-                  dark: "#1976d2",
-                  light: "#64b5f6",
-                },
-                secondary: {
-                  main: "#f50057",
-                  dark: "#c51162",
-                  light: "#ff4081",
-                },
-                error: {
-                  main: "#f44336",
-                },
-                custom: {
-                  iconDrawer: "#000",
-                },
-              }),
+          mode: mode,
+          text: {
+            primary: mode === "light" ? "#000" : "#fff",
+            secondary: mode === "light" ? "#424242" : "#9e9e9e",
+            default: mode === "light" ? "#000" : "#fff",
+          },
+          background: {
+            default: mode === "light" ? "#f5f5f5" : "#212121",
+            paper: mode === "light" ? "#eaeaea" : "#424242",
+          },
+          primary: {
+            main: mode === "light" ? "#2196f3" : "#90caf9",
+            dark: mode === "light" ? "#1976d2" : "#2196f3",
+            light: mode === "light" ? "#64b5f6" : "#64b5f6",
+          },
+          secondary: {
+            main: mode === "light" ? "#f50057" : "#f48fb1",
+            dark: mode === "light" ? "#c51162" : "#f06292",
+            light: mode === "light" ? "#ff4081" : "#ff8a80",
+          },
+          error: {
+            main: mode === "light" ? "#f44336" : "#ff5252",
+          },
+          custom: {
+            iconDrawer: mode === "light" ? "#000" : "#fff",
+          },
         },
         frFR,
       }),
@@ -91,6 +63,7 @@ export default function ToggleColorMode() {
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
+        <CssBaseline />
         <App />
       </ThemeProvider>
     </ColorModeContext.Provider>

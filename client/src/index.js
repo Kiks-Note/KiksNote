@@ -6,6 +6,6 @@ import Theme from "./utils/Theme";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <>
-    <Theme/>
+    <Theme />
   </>
 );
