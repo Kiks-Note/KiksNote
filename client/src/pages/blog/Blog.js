@@ -12,6 +12,9 @@ import SideBarModify from "../../components/blog/NewBlog.js";
 import { Toaster } from "react-hot-toast";
 
 function Blog() {
+  const loggedUser = localStorage.getItem("user");
+  const loggedUserParsed = JSON.parse(loggedUser);
+  var userStatus = loggedUserParsed.status;
   const [blog, setBlog] = useState([]);
   const [blogId, setBlogId] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,7 +64,11 @@ function Blog() {
                   <SearchBar title={blog} />
                 </Grid>
                 <Grid item xs={2}>
+
+
                   <Button
+
+
                     variant="contained"
                     color="primary"
                     onClick={(e) => toggleDrawerModify(e, true)}

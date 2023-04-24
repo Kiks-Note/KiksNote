@@ -9,9 +9,9 @@ module.exports = (app, pathname, db, connection) => {
         }));
         connection.sendUTF(JSON.stringify(documents));
       },
-      // (err) => {
-      //   console.log(err);
-      // }
+      (err) => {
+        console.log(err);
+      }
     );
   }
   if (pathname === "/tuto") {

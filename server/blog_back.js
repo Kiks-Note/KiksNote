@@ -91,7 +91,7 @@ module.exports = (app, db) => {
   });
 
   app.post("/blog/newblog", async (req, res) => {
-    const { title, description, photo } = req.body;
+    const { title, description, photo, inputEditorState } = req.body;
 
     if (title == null || title == "") {
       return res.status(400).send("Title is required");
@@ -102,12 +102,17 @@ module.exports = (app, db) => {
     if (photo == null || photo == "") {
       return res.status(400).send("Photo is required");
     }
+    if (inputEditorState == null || inputEditorState == "") {
+      return res.status(400).send("Editor is required");
+    }
+
 
     try {
       await db.collection("blog_evenements").doc().set({
         title: title,
         description: description,
         photo: photo,
+        inputEditorState: inputEditorState,
       });
       res.send("Document successfully written!");
     } catch (err) {
@@ -119,4 +124,11 @@ module.exports = (app, db) => {
     await db.collection("blog_evenements").doc(req.params.id).delete();
     res.send("Document successfully deleted!");
   });
+
+
+  app.get("/blog_event/:id", async (req, res) => {
+    const snapshot = await db.collection("blog_evenements").doc(req.params.id).get();
+    res.send(snapshot.data());
+  })
 };
+

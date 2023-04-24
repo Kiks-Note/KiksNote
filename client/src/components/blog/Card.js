@@ -144,7 +144,6 @@ export default function ImgMediaCard({
                 checkedIcon={<ThumbDownAltIcon color={"error"} />}
               />
 
-              <Button size="small">Commencer</Button>
               <Button size="small"
 
                 onClick={handleClick}
