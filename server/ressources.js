@@ -72,4 +72,22 @@ module.exports = (app, db) => {
       res.status(500).send("Erreur lors de la récupération des utilisateurs.");
     }
   });
+
+  app.get("/course", async (req, res) => {
+    try{
+      const coursesRef = db.collection("course");
+      const snapshot = await coursesRef.get();
+      console.log(snapshot.docs);
+      const courses = snapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          name: doc.data().name,
+        };
+      });
+      res.status(200).json(courses);
+    }catch(err){
+      console.error(err);
+      res.status(500).send("Erreur lors de la récupération des cours.");
+    }
+  })
 };
