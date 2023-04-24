@@ -79,6 +79,7 @@ ws.on("request", (request) => {
   require("./routes/groupscreation")(app, db);
   require("./userInfo")(app, pathname, db, connection, upload,path,fs);
 });
+require("./routes/user")(app, db);
 
 require("./routes/auth")(
   app,
