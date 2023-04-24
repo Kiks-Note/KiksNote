@@ -4,3 +4,4 @@ credentials.json
 .env.login
 /uploads
 yarn.lock
+.env.resetpass
