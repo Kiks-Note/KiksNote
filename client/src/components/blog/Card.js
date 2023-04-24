@@ -4,7 +4,7 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
+import { Grid, IconButton } from "@mui/material";
 import Checkbox from "@mui/material/Checkbox";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
@@ -14,7 +14,9 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Comment from "./Comment";
 import { useNavigate } from "react-router-dom";
+import PreviewIcon from "@mui/icons-material/Preview";
 
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 export default function ImgMediaCard({
   image,
@@ -25,21 +27,22 @@ export default function ImgMediaCard({
   id,
   type,
   event,
-
-
 }) {
-
   const deleteBlog = function () {
-    axios.delete(`http://localhost:5050/blog_event/${id}`).then((res) => {
-      console.log(res);
-    }).catch((err) => {
-      console.log(err);
-    });
+    axios
+      .delete(`http://localhost:5050/blog_event/${id}`)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
-
-
-  const navigate = useNavigate(); function handleClick() { navigate(`/blog/${id}`); }
+  const navigate = useNavigate();
+  function handleClick() {
+    navigate(`/blog/${id}`);
+  }
 
   // console.log(id);
 
@@ -69,7 +72,6 @@ export default function ImgMediaCard({
         <Grid item xs={2} sm={4} md={5}>
           <Card sx={{ maxWidth: 380, m: 2 }}>
             <CardMedia
-
               component="img"
               // alt="green iguana"
               height="10"
@@ -87,7 +89,6 @@ export default function ImgMediaCard({
                 {/*sisi*/}
               </Typography>
             </CardContent>
-
 
             <CardActions>
               {like}
@@ -125,12 +126,9 @@ export default function ImgMediaCard({
                 {description}
                 {/*sisi*/}
               </Typography>
-
             </CardContent>
             <CardContent>
-              <Typography color="black">
-                {event}
-              </Typography>
+              <Typography color="black">{event}</Typography>
             </CardContent>
             <CardActions>
               {like}
@@ -144,16 +142,23 @@ export default function ImgMediaCard({
                 checkedIcon={<ThumbDownAltIcon color={"error"} />}
               />
 
-              <Button size="small"
+              <Button size="small" onClick={handleClick}>
+                Ouvrir
+              </Button>
+              <Button onClick={deleteBlog}>Supprimer</Button>
+            </CardActions>
 
-                onClick={handleClick}
 
-              >Ouvrir</Button>
-              <Button onClick={
-                deleteBlog
-              }
 
-              >Supprimer</Button>
+
+            <CardActions>
+              <FormControlLabel
+                control={<Checkbox />}
+                label="Participation"
+              />
+              <IconButton >
+                <PreviewIcon />
+              </IconButton>
 
             </CardActions>
           </Card>
@@ -162,12 +167,6 @@ export default function ImgMediaCard({
     </>
   );
 }
-
-
-
-
-
-
 
 // import Card from "@mui/material/Card";
 // import CardActions from "@mui/material/CardActions";
@@ -322,10 +321,8 @@ export default function ImgMediaCard({
 //               </Typography>
 //             </CardContent>
 
-
 //           </Card>
 //         </Grid>
-
 
 //       )
 //       }
