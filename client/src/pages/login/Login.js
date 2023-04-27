@@ -88,7 +88,7 @@ const Login = () => {
       const token = await loggedInUser.user.getIdToken();
       cookies.set("token", token, {path: "/"});
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (e) {
       if (e.message.includes("auth/invalid-email")) {
         toast.error("Cet email n'est associé à aucun compte !");

@@ -378,6 +378,45 @@ const liveInventory = async (request, connection) => {
   });
 };
 
+const borrowedList = async (request, connection) => {
+  db.collection("inventory")
+    .where("status", "==", "borrowed")
+    .onSnapshot(
+      (snapshot) => {
+        const documents = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        db.collection("inventory_requests")
+          .where("status", "==", "accepted")
+          .onSnapshot(
+            (snapshot) => {
+              const requests = snapshot.docs.map((doc) => ({
+                id: doc.id,
+                ...doc.data(),
+              }));
+
+              const borrowedWithRequests = documents.map((doc) => {
+                const request = requests.find(
+                  (request) => request.deviceId === doc.id
+                );
+                return {device: doc, request: request};
+              });
+
+              connection.sendUTF(JSON.stringify(borrowedWithRequests));
+            },
+            (err) => {
+              console.log(`Encountered error: ${err}`);
+            }
+          );
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
+};
+
 module.exports = {
   inventory,
   inventoryDeviceId,
@@ -397,4 +436,5 @@ module.exports = {
   todayRequests,
   liveCategories,
   liveInventory,
+  borrowedList,
 };
