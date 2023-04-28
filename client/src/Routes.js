@@ -16,6 +16,7 @@ import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
+import Jpo from "./pages/ressources/jpo/jpo";
 
 function RoutesProvider() {
   return (
@@ -44,6 +45,7 @@ function RoutesProvider() {
           <Route path="/pdfbacklog" element={<PDFBacklogCartView />} />
           <Route path="/pdfsupport" element={<PDFSupport />} />
           <Route path="/profil" element={<Profil />} />
+          <Route path="/jpo" element={<Jpo />} />
           {/* 404 Page */}
         </Route>
         <Route path="*" element={<NotFound />} />

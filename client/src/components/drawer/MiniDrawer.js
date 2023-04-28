@@ -38,6 +38,7 @@ import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import SchoolIcon from "@mui/icons-material/School";
 import BookIcon from "@mui/icons-material/Book";
+import EventIcon from "@mui/icons-material/Event";
 
 import Logo from "./../../assets/logo/logo.png";
 
@@ -127,7 +128,7 @@ export default function MiniDrawer({ element }) {
         {
           id: 11,
           name: "Projet Étudiant",
-          route: "/projet-etudiant",
+          route: "/jpo",
           icon: <SchoolIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
         },
       ],

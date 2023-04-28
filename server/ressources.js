@@ -90,4 +90,24 @@ module.exports = (app, db) => {
       res.status(500).send("Erreur lors de la récupération des cours.");
     }
   })
+
+  app.get("/jpo", async (req, res) => {
+    try{
+      const jpoRef = db.collection("blog_evenements");
+      const snapshot = await jpoRef.get();
+      console.log(snapshot.docs);
+      const jpo = snapshot.docs.map((doc) => {
+        return {
+          id: doc.id,
+          title: doc.data().title,
+          description: doc.data().description,
+          date: doc.data().creation_date,
+        };
+      });
+      res.status(200).json(jpo);
+    }catch(err){
+      console.error(err);
+      res.status(500).send("Erreur lors de la récupération des évenements.");
+    }
+  })
 };

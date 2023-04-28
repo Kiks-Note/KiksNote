@@ -1,4 +1,6 @@
 import AddIcon from "@mui/icons-material/Add";
+import BackpackIcon from '@mui/icons-material/Backpack';
+import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { CardMedia, Tooltip } from "@mui/material";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -10,8 +12,6 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import BackpackIcon from '@mui/icons-material/Backpack';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import imageUrl from "../ressources/vue.png";
 
 export default function Ressources() {
