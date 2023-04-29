@@ -76,7 +76,18 @@ ws.on("request", (request) => {
   require("./dashboardWebSocket")(app, db, connection, pathname);
   require("./routes/groupscreation")(app, db);
   require("./calendar")(app, db);
+    require("./calendarWebSocket")(app, db, connection, pathname);
   require("./userInfo")(app, pathname, db, connection, upload, path, fs);
+
+  connection.on("error", (error) => {
+    console.log(`WebSocket Error: ${error}`);
+  });
+
+  connection.on("close", (reasonCode, description) => {
+    console.log(
+      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
+    );
+  });
 });
 
 require("./routes/auth")(

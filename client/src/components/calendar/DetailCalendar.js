@@ -67,16 +67,25 @@ export default function DetailCalendar(props) {
                       <Person />
                     </ListItemIcon>
                     <ListItemText
-                      primary={`Formateur(s) ${event.instructor.name}`}
+                      primary={`Formateur(s):`}
+                      secondary={
+                        <React.Fragment>
+                          {event.instructor.map((inst) => (
+                            <ListItemText
+                              key={inst.uid}
+                              primary={`${inst.lastname} ${inst.firstname}`}
+                              component="li"
+                            />
+                          ))}
+                        </React.Fragment>
+                      }
                     />
                   </ListItem>
                   <ListItem disablePadding>
                     <ListItemIcon>
                       <Room />
                     </ListItemIcon>
-                    <ListItemText
-                      primary={`Salle(s) ${event.location.room}, ${event.location.city}`}
-                    />
+                    <ListItemText primary={`Salle(s): ${event.location}`} />
                   </ListItem>
                   {event.commentaire && (
                     <ListItem disablePadding>
