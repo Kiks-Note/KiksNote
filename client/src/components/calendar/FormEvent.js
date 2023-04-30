@@ -42,17 +42,16 @@ export default function FormCourse(props) {
       const startTime = moment(data.start).format("HH:mm");
       const endTime = moment(data.end).format("HH:mm");
 
-      const eventStart = moment
-        .utc(startDate.format("YYYY-MM-DD") + "T" + startTime)
-        .toISOString();
-      const eventEnd = moment
-        .utc(endDate.format("YYYY-MM-DD") + "T" + endTime)
-        .toISOString();
+      const eventStart = moment(
+        startDate.format("YYYY-MM-DD") + "T" + startTime
+      );
+
+      const eventEnd = moment(endDate.format("YYYY-MM-DD") + "T" + endTime);
 
       const event = {
         title: data.title,
-        start: eventStart,
-        end: eventEnd,
+        start: eventStart._i,
+        end: eventEnd._i,
         backgroundColor: "orange",
         borderColor: "orange",
         location: data.localisation,

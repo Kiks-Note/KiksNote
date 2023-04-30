@@ -89,19 +89,20 @@ export default function CalendarPedago() {
         const endDate = moment(end);
 
         while (startDate <= endDate) {
-          const startTime = moment(selectInfo.startStr).format("HH:mm");
-          const endTime = moment(end).format("HH:mm");
+          const startTime = "09:00";
+          const endTime = "17:00";
 
-          const eventStart = moment
-            .utc(startDate.format("YYYY-MM-DD") + "T" + startTime)
-            .toISOString();
-          const eventEnd = moment
-            .utc(endDate.format("YYYY-MM-DD") + "T" + endTime)
-            .toISOString();
+          const eventStart = moment(
+            startDate.format("YYYY-MM-DD") + "T" + startTime
+          );
+
+          const eventEnd = moment(
+            startDate.format("YYYY-MM-DD") + "T" + endTime
+          );
 
           const event = {
             title: "Entreprise",
-            start: eventStart,
+            start: eventStart._i,
             end: eventEnd,
             backgroundColor: "red",
             borderColor: "red",
@@ -118,7 +119,7 @@ export default function CalendarPedago() {
 
           startDate.add(1, "day");
         }
-
+        console.log(events);
         try {
           axios
             .post("http://localhost:5050/calendar", events)
