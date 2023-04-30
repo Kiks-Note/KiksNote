@@ -1,5 +1,5 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button } from '@mui/material';
+import { Avatar, Box, Button, IconButton, Typography } from '@mui/material';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import NativeSelect from '@mui/material/NativeSelect';
@@ -19,13 +19,16 @@ export default function CreateCard() {
   const [desc, setDesc] = useState("");
   const [po, setPo] = useState("");
   const [date, setDate] = useState(dateTime);
-  const [instructors, setInstructors] = useState([]);
+  const [image, setImage] = useState("");
+  // const [instructors, setInstructors] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [pictureToUpload, setPictureToUpload] = useState(null);
 
   const schema = yup.object().shape({
     title: yup.string().required(),
     description: yup.string().required(),
     po: yup.string().required(),
+    image: yup.string().required(),
     date: yup.date().required()
   });
 
@@ -65,17 +68,22 @@ export default function CreateCard() {
   const onSubmit = async (e) => {
     // e.preventDefault();
     console.log(e);
-    const newCard = {
-      title: e.title,
-      description: e.description,
-      insctrutor: e.po,
-      date: e.date,
-    }
-    console.log(newCard);
-
+    const formData = new FormData();
+    formData.append("title", e.title);
+    formData.append("description", e.description);
+    formData.append("instructor", e.insctrutor);
+    formData.append("date", e.date);
+    formData.append("image", pictureToUpload);
+    
+    console.log(pictureToUpload);
     try{
       await axios
-        .post("http://localhost:5050/ressources", newCard)
+        .post("http://localhost:5050/ressources", 
+        formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
         .then((res) => console.log(res.data));
         Ressources();
     }catch(err){
@@ -85,8 +93,19 @@ export default function CreateCard() {
     setTitle("React");
     setDesc("");
     setPo("");
+    setImage("");
     setDate(dateTime);
 
+  };
+
+  const handleOnChange = async (event) => {
+    const newImage = event.target?.files?.[0];
+    console.log("newImage" + newImage);
+
+    if (newImage) {
+      setImage(URL.createObjectURL(newImage));
+      setPictureToUpload(newImage);
+    }
   };
 
 
@@ -120,12 +139,77 @@ export default function CreateCard() {
           type='date' 
           {...register("date")} 
         />
-        <TextField 
-          id="standard-basic" 
-          name='image' 
-          label="Image du cours" 
-          variant="standard" 
-        />
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: " center",
+              }}
+            >
+              {image && (
+                <IconButton
+                  color="indefined"
+                  aria-label="upload picture"
+                  component="label"
+                >
+                  <input
+                    hidden
+                    type="file"
+                    onChange={handleOnChange}
+                    name="image"
+                    accept="image/png,image/jpeg"
+                  />
+                  <Avatar
+                    src={image}
+                    style={{
+                      width: "160px",
+                      height: "160px",
+                    }}
+                  />
+                </IconButton>
+              )}
+              {!image && (
+                <IconButton
+                  color="indefined"
+                  aria-label="upload picture"
+                  component="label"
+                >
+                  <input
+                    hidden
+                    {...register("image", {
+                      validate: {
+                        lessThan10MB: (file) =>
+                          file[0]?.size < 10000000 || "Max 10MB",
+                      },
+                    })}
+                    type="file"
+                    onChange={handleOnChange}
+                    name="image"
+                    accept="image/png,image/jpeg"
+                  />
+                  <Avatar
+                    src={image}
+                    style={{
+                      width: "160px",
+                      height: "160px",
+                    }}
+                  />
+                </IconButton>
+              )}
+            </Box>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                flexDirection: "column",
+              }}
+            >
+              {errors.image && (
+                <Typography variant="subtitle1" color="error" align="center">
+                  {"Choisissez une photo"}
+                </Typography>
+              )}
+            </Box>
         <TextField 
           id="standard-basic" 
           name='desc' 

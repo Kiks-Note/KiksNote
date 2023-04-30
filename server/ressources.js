@@ -1,14 +1,17 @@
-module.exports = (app, db) => {
+module.exports = (app, db, upload, path, fs) => {
   // Route to create a new resource
-  app.post("/ressources", async (req, res) => {
+  app.post("/ressources", upload.single("image"), async (req, res) => {
     try {
       const { title, description, date } = req.body;
+      const url = req.protocol + "://" + req.get("host") + "/";
+      let image = req.file ? req.file.path : "";
       console.log(req.body);
       const resourcesRef = db.collection("ressources");
       const newResource = await resourcesRef.add({
         title,
         description,
         date,
+        image: url + image,
       });
       res.status(201).json({ id: newResource.id });
     } catch (err) {
@@ -44,7 +47,7 @@ module.exports = (app, db) => {
           id: doc.id,
           title: doc.data().title,
           description: doc.data().description,
-          imageUrl: doc.data().imageUrl,
+          image: doc.data().image
         };
         res.status(200).json(resource);
       }

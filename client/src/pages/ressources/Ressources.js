@@ -65,9 +65,9 @@ export default function Ressources() {
           >
             <CardMedia
               style={{resizeMode: "contain"}}
-              src={imageUrl} // À Modifier pour afficher l'image Choisie par l'utilisateur
+              src={ressource.image} // À Modifier pour afficher l'image Choisie par l'utilisateur
               height="140"
-              title="Contemplative Reptile"
+              title={ressource.title}
               component="img"
             />
             <CardContent
