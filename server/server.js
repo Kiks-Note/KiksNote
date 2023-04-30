@@ -6,7 +6,7 @@ const path = require("path");
 const fs = require("fs");
 const dotenv = require("dotenv").config();
 const app = express();
-const { db, auth } = require("./firebase");
+const { db, auth, storageFirebase } = require("./firebase");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const webSocketServer = require("websocket").server;
@@ -14,6 +14,8 @@ const http = require("http");
 const { parse } = require("url");
 const saltRounds = parseInt(process.env.SALTY_ROUNDS);
 const multer = require("multer");
+const mime = require("mime-types");
+
 const DIR = "uploads/";
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -40,6 +42,8 @@ var upload = multer({
     }
   },
 });
+
+const bucket = storageFirebase.bucket();
 
 const {
   createUserWithEmailAndPassword,
@@ -91,4 +95,4 @@ require("./routes/auth")(
   signInWithEmailAndPassword
 );
 
-require("./ressources")(app, db);
+require("./ressources")(app, db, bucket, mime);

@@ -1,93 +1,130 @@
-module.exports = (app, db) => {
-  // Route to create a new courses
+module.exports = (app, db, bucket, mime) => {
+  // Route pour créer un nouveau cours
   app.post("/ressources/cours", async (req, res) => {
     try {
-      const { title, description, date } = req.body;
-      console.log(req.body);
-      const resourcesRef = db.collection("ressources");
+      const {
+        title,
+        description,
+        date,
+        campus_numerique,
+        courseClass,
+        owner,
+        private,
+        imageBase64,
+      } = req.body;
+
+      if (
+        !title ||
+        !description ||
+        !date ||
+        !courseClass ||
+        !owner ||
+        !imageBase64
+      ) {
+        return res
+          .status(400)
+          .send("Veuillez remplir tous les champs obligatoires.");
+      }
+
+      const mimeType = "image/png";
+      const fileExtension = mime.extension(mimeType);
+      const fileName = `${title}.${fileExtension}`;
+
+      // upload l'image sur Firebase Storage
+      const buffer = Buffer.from(
+        imageBase64.replace(/^data:image\/\w+;base64,/, ""),
+        "base64"
+      );
+      const file = bucket.file(`cours/${fileName}`);
+      await file.save(buffer, {
+        metadata: {
+          contentType: mimeType || "image/jpeg",
+          cacheControl: "public, max-age=31536000",
+        },
+      });
+
+      const url = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+
+      const resourcesRef = db.collection("cours");
       const newResource = await resourcesRef.add({
         title,
         description,
         date,
+        campus_numerique,
+        courseClass,
+        owner,
+        private,
+        imageCourse: url,
       });
-      res.status(201).json({ id: newResource.id });
+
+      const newResourceData = await db
+        .collection("cours")
+        .doc(newResource.id)
+        .get();
+
+      res.status(200).json({
+        cours_id: newResource.id,
+        cours_created_datas: newResourceData._fieldsProto,
+      });
     } catch (err) {
       console.error(err);
-      res.status(500).send("Erreur lors de la création de la ressource.");
+      res.status(500).send("Erreur lors de la création du cours.");
     }
   });
 
-  // Route to get all resources
-  app.get("/ressources", async (req, res) => {
+  // Route pour récupérer tous les cours
+  app.get("/ressources/cours", async (req, res) => {
     try {
-      const resourcesRef = db.collection("ressources");
+      const resourcesRef = db.collection("cours");
       const snapshot = await resourcesRef.get();
-      const resources = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      res.status(200).json(resources);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Erreur lors de la récupération des ressources.");
-    }
-  });
-  app.get("/ressources/:id", async (req, res) => {
-    try {
-      const resourceRef = db.collection("resources").doc(req.params.id);
-      const doc = await resourceRef.get();
-
-      if (!doc.exists) {
-        res.status(404).send("Ressource introuvable.");
-      } else {
-        const resource = {
+      const resources = [];
+      snapshot.forEach((doc) => {
+        resources.push({
           id: doc.id,
-          title: doc.data().title,
-          description: doc.data().description,
-          imageUrl: doc.data().imageUrl,
-        };
-        res.status(200).json(resource);
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Erreur lors de la récupération de la ressource.");
-    }
-  });
-
-  app.get("/ressources/instructor", async (req, res) => {
-    try {
-      const usersRef = db.collection("users");
-      const snapshot = await usersRef.where("status", "==", "po").get();
-      const poUsers = snapshot.docs.map((doc) => {
-        return {
-          uid: doc.id,
-          firstname: doc.data().firstname,
-          lastname: doc.data().lastname,
-          image: doc.data().image,
-        };
+          data: doc.data(),
+        });
       });
-      res.status(200).json(poUsers);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Erreur lors de la récupération des utilisateurs.");
-    }
-  });
-
-  app.get("/course", async (req, res) => {
-    try {
-      const coursesRef = db.collection("course");
-      const snapshot = await coursesRef.get();
-      console.log(snapshot.docs);
-      const courses = snapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          name: doc.data().name,
-        };
+      res.status(200).json({
+        cours: resources,
       });
-      res.status(200).json(courses);
     } catch (err) {
       console.error(err);
       res.status(500).send("Erreur lors de la récupération des cours.");
+    }
+  });
+
+  // Route pour récupérer un cours par son id
+  app.get("/ressources/cours/:id", async (req, res) => {
+    try {
+      const resourceRef = await db.collection("cours").doc(req.params.id).get();
+      if (!resourceRef.exists) {
+        res.status(404).send("Cours non trouvé");
+      } else {
+        res.status(200).json({
+          id: resourceRef.id,
+          data: resourceRef.data(),
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Erreur lors de la récupération du cours.");
+    }
+  });
+
+  // Route pour récuperer dans la collection users, tous les users qui ont le status de po
+  app.get("/ressources/allpo", async (req, res) => {
+    try {
+      const snapshot = await db
+        .collection("users")
+        .where("status", "==", "po")
+        .get();
+      const users = snapshot.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+      });
+      res.status(200).json(users);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Erreur lors de la récupération des utilisateurs.");
     }
   });
 
