@@ -36,15 +36,20 @@ module.exports = (app, db, bucket, mime) => {
         "base64"
       );
       const file = bucket.file(`cours/${fileName}`);
-      await file.save(buffer, {
+
+      const options = {
         metadata: {
           contentType: mimeType || "image/jpeg",
           cacheControl: "public, max-age=31536000",
         },
-        predefinedAcl: "publicRead",
-      });
+      };
 
-      const url = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+      await file.save(buffer, options);
+
+      const [url] = await file.getSignedUrl({
+        action: "read",
+        expires: "03-17-2025",
+      });
 
       const resourcesRef = db.collection("cours");
       const newResource = await resourcesRef.add({
