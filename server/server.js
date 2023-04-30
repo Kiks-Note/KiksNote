@@ -95,4 +95,4 @@ require("./routes/auth")(
   signInWithEmailAndPassword
 );
 
-require("./ressources")(app, db, bucket, mime);
+require("./routes/ressources")(app, db, bucket, mime);

@@ -41,6 +41,7 @@ module.exports = (app, db, bucket, mime) => {
           contentType: mimeType || "image/jpeg",
           cacheControl: "public, max-age=31536000",
         },
+        predefinedAcl: "publicRead",
       });
 
       const url = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
@@ -54,7 +55,7 @@ module.exports = (app, db, bucket, mime) => {
         courseClass,
         owner,
         private,
-        imageCourse: url,
+        imageCourseUrl: url,
       });
 
       const newResourceData = await db
