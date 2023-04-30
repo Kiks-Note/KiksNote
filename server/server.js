@@ -31,12 +31,13 @@ var upload = multer({
     if (
       file.mimetype == "image/png" ||
       file.mimetype == "image/jpg" ||
-      file.mimetype == "image/jpeg"
+      file.mimetype == "image/jpeg" ||
+      file.mimetype == "application/pdf"
     ) {
       cb(null, true);
     } else {
       cb(null, false);
-      return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
+      return cb(new Error("Only .png, .jpg, .jpeg and .pdf format allowed!"));
     }
   },
 });
@@ -76,7 +77,7 @@ ws.on("request", (request) => {
   require("./dashboardWebSocket")(app, db, connection, pathname);
   require("./routes/groupscreation")(app, db);
   require("./calendar")(app, db);
-    require("./calendarWebSocket")(app, db, connection, pathname);
+  require("./calendarWebSocket")(app, db, connection, pathname);
   require("./userInfo")(app, pathname, db, connection, upload, path, fs);
 
   connection.on("error", (error) => {

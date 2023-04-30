@@ -48,6 +48,21 @@ module.exports = (app, db, connection, pathname) => {
         });
     });
   }
+  if (pathname === "/calendar/pedago") {
+    console.log("je suis dans /calendar/pedago");
+    db.collection("class")
+      .get()
+      .then((querySnapshot) => {
+        const data = [];
+        querySnapshot.forEach((doc) => {
+          data.push({ id: doc.id, ...doc.data() });
+        });
+        connection.sendUTF(JSON.stringify(data));
+      })
+      .catch((error) => {
+        console.log(`Encountered error: ${error}`);
+      });
+  }
 };
 
 async function addDashboard(groups, studentId, db) {

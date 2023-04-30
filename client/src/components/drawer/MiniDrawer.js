@@ -154,7 +154,7 @@ export default function MiniDrawer({ element }) {
         <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
     },
-    ...(userStatus !== "Pédago"
+    ...(userStatus !== "pedago"
       ? [
           {
             id: 5,

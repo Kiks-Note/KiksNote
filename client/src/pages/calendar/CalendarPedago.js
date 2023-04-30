@@ -11,13 +11,17 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import moment from "moment";
-import { Grid, Typography } from "@material-ui/core";
+import { Grid, Typography, Box, Button } from "@material-ui/core";
 import frLocale from "@fullcalendar/core/locales/fr";
 import DetailCalendar from "../../components/calendar/DetailCalendar";
 import FormCourse from "../../components/calendar/FormCourse";
 import FormEvent from "../../components/calendar/FormEvent";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import { w3cwebsocket } from "websocket";
+import { useParams } from "react-router-dom";
 export default function CalendarPedago() {
+  const { id } = useParams();
   const [value, setValue] = useState("Cours");
   const [statesDetail, setStatesDetail] = useState({
     open: false,
@@ -29,104 +33,7 @@ export default function CalendarPedago() {
   const [instructors, setInstructors] = useState([]);
   const [course, setCourse] = useState([]);
   const [holidays, setHolidays] = useState([]);
-  const [events, setEvents] = useState([
-    {
-      id: "1",
-      title: "Cours de php",
-      start: "2023-04-10T09:00:00",
-      end: "2023-04-10T17:00:00",
-      backgroundColor: "green",
-      borderColor: "green",
-      location: {
-        city: "Paris",
-        room: "Salle 1",
-      },
-      instructor: {
-        uid: "12345",
-        name: "John Terry",
-      },
-    },
-    {
-      id: "2",
-      title: "Cours de php",
-      start: "2023-04-11T09:00:00",
-      end: "2023-04-11T17:00:00",
-      backgroundColor: "green",
-      borderColor: "green",
-      location: {
-        city: "Paris",
-        room: "Salle 1",
-      },
-      instructor: {
-        uid: "12345",
-        name: "John Terry",
-      },
-    },
-    {
-      id: "3",
-      title: "Cours de php",
-      start: "2023-04-12T09:00:00",
-      end: "2023-04-12T17:00:00",
-      backgroundColor: "green",
-      borderColor: "green",
-      location: {
-        city: "Paris",
-        room: "Salle 1",
-      },
-      instructor: {
-        uid: "12345",
-        name: "John Terry",
-      },
-    },
-    {
-      id: "4",
-      title: "Cours de php",
-      start: "2023-04-13T09:00:00",
-      end: "2023-04-13T17:00:00",
-      backgroundColor: "green",
-      borderColor: "green",
-      location: {
-        city: "Paris",
-        room: "Salle 1",
-      },
-      instructor: {
-        uid: "12345",
-        name: "John Terry",
-      },
-    },
-    {
-      id: "5",
-      title: "Cours de php",
-      start: "2023-04-14T09:00:00",
-      end: "2023-04-14T17:00:00",
-      backgroundColor: "green",
-      borderColor: "green",
-      location: {
-        city: "Paris",
-        room: "Salle 1",
-      },
-      instructor: {
-        uid: "12345",
-        name: "John Terry",
-      },
-    },
-    {
-      id: "6",
-      title: "Event 2",
-      start: "2023-04-17T14:00:00",
-      end: "2023-04-17T16:00:00",
-      backgroundColor: "green",
-      borderColor: "green",
-      location: {
-        city: "Paris",
-        room: "Salle 1",
-      },
-      instructor: {
-        uid: "12345",
-        name: "John Terry",
-      },
-    },
-  ]);
+  const [events, setEvents] = useState([]);
 
   const handleCloseDetail = () =>
     setStatesDetail({ open: false, expanded: false });
@@ -172,6 +79,7 @@ export default function CalendarPedago() {
           instructors: instructors,
           courses: course,
           holidays: holidays,
+          class: id,
         });
         setModalCourse(true);
         break;
@@ -186,11 +94,9 @@ export default function CalendarPedago() {
 
           const eventStart = moment
             .utc(startDate.format("YYYY-MM-DD") + "T" + startTime)
-            .utcOffset(startDate.utcOffset())
             .toISOString();
           const eventEnd = moment
             .utc(endDate.format("YYYY-MM-DD") + "T" + endTime)
-            .utcOffset(endDate.utcOffset())
             .toISOString();
 
           const event = {
@@ -201,7 +107,8 @@ export default function CalendarPedago() {
             borderColor: "red",
             location: "",
             instructor: [],
-            class: "",
+            class: id,
+            display: "background",
             color: "#ff9f89",
             allDay: true,
             constraint: "holiday",
@@ -229,6 +136,7 @@ export default function CalendarPedago() {
         setInitData({
           start: selectInfo.startStr,
           end: end,
+          class: id,
         });
         setModalEvent(true);
         break;
@@ -257,25 +165,57 @@ export default function CalendarPedago() {
       const response = await axios.get(
         `https://calendrier.api.gouv.fr/jours-feries/metropole/${year}.json`
       );
-      const holiday = Object.keys(response.data);
-      setHolidays(holiday);
+      const holidays = response.data;
+      const events = Object.keys(holidays).map((date) => ({
+        title: holidays[date],
+        start: `${date}T00:00:00`,
+        end: `${date}T23:59:59`,
+        display: "background",
+        color: "#ff9f89",
+        allDay: true,
+        constraint: "holiday",
+      }));
+      setEvents(events);
     };
+    const fetchSocket = async () => {
+      const wsComments = new w3cwebsocket(
+        `ws://localhost:5050/calendar/student`
+      );
+
+      wsComments.onopen = function (e) {
+        wsComments.send(JSON.stringify(id));
+      };
+
+      wsComments.onmessage = (message) => {
+        const data = JSON.parse(message.data);
+        setEvents((prevEvents) => [...prevEvents, ...data]);
+      };
+    };
+    fetchSocket();
     fetchHolidays();
     fetchInstructors();
     fetchCourses();
   }, []);
   return (
     <>
-      <Grid container spacing={2} alignItems="center" justifyContent="center">
-        <Grid
-          item
-          xs={12}
-          direction="row"
-          alignItems="center"
-          justifyContent="center"
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography variant="h3" align="center">
+          Gestion du calendrier de formation
+        </Typography>
+        <Button
+          component={Link}
+          to={"/calendrier"}
+          size="small"
+          variant="contained"
         >
+          Retour
+        </Button>
+      </Box>
+
+      <Grid container spacing={2} style={{ padding: "20px" }}>
+        <Grid item xs={12} md={4}>
           <FormControl component="fieldset">
-            <FormLabel component="legend">Type d'événement</FormLabel>
+            <FormLabel component="legend">Type de votre événement</FormLabel>
             <RadioGroup
               aria-label="event-type"
               name="event-type"
@@ -300,9 +240,16 @@ export default function CalendarPedago() {
               />
             </RadioGroup>
           </FormControl>
+          <Typography variant="body1">
+            Bienvenue dans la partie gestion du calendrier de formation. Trois
+            choix s'offrent à vous. Pour entrer un événement, il suffit de
+            choisir le type de votre événement, puis de sélectionner un ou
+            plusieurs jours directement sur le calendrier. Selon le type choisi,
+            un formulaire peut s'ouvrir pour compléter votre événement.
+          </Typography>
         </Grid>
 
-        <Grid item xs={10} alignItems="center" justifyContent="center">
+        <Grid item xs={12} md={8}>
           <FullCalendar
             plugins={[
               dayGridPlugin,
@@ -315,14 +262,14 @@ export default function CalendarPedago() {
               center: "title",
               right: "timeGridWeek,dayGridMonth",
             }}
-            slotDuration="00:30:00"
-            slotMinTime="09:00:00"
-            slotMaxTime="20:00:00"
             initialView="dayGridMonth"
             editable={false}
+            businessHours={true}
+            weekNumbers={true}
             selectable={true}
             selectMirror={true}
             dayMaxEvents={true}
+            nowIndicator={true}
             locale={frLocale}
             events={events}
             select={handleAddEvent}

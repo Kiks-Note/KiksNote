@@ -4,6 +4,7 @@ import { Grid, Typography } from "@material-ui/core";
 import axios from "axios";
 import CalendarStudent from "../../components/calendar/CalendarStudent";
 import CalendarPo from "../../components/calendar/CalendarPo";
+import CalendarViewPedago from "../../components/calendar/CalendarViewPedago";
 
 export default function Calendar() {
   const loggedUser = localStorage.getItem("user");
@@ -19,13 +20,7 @@ export default function Calendar() {
       <Grid item xs={10}>
         {userStatus === "po" && <CalendarPo />}
         {userStatus === "etudiant" && <CalendarStudent />}
-        {userStatus === "pedago" && (
-          <>
-            <Typography variant="body1">
-              Vous êtes un membres de l'administration.
-            </Typography>
-          </>
-        )}
+        {userStatus === "pedago" && <CalendarViewPedago />}
       </Grid>
     </Grid>
   );

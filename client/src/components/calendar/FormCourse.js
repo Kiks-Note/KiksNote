@@ -11,6 +11,7 @@ import {
   FormGroup,
   InputLabel,
   MenuItem,
+  MenuList,
   Select,
   Typography,
   TextField,
@@ -28,31 +29,20 @@ import { FocusTrap } from "react-focus-trap";
 const schema = yup.object().shape({
   title: yup.string().required("Le titre est requis"),
   instructors: yup.array().min(1, "Au moins un formateur est requis"),
-  course: yup.array().min(1, " Le cours est requis"),
+  course: yup.string().required("Le cours est requis"),
   localisation: yup.string().required(" La localisation est requis"),
   distanciel: yup.boolean(),
   commentaire: yup.string(),
   materiel: yup.string(),
 });
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
 export default function FormCourse(props) {
   const [instructors, setInstructors] = useState(props.initData.instructors);
   const [course, setCourse] = useState(props.initData.courses);
   const [holiday, setHoliday] = useState(props.initData.holidays);
   const [isDistanciel, setIsDistanciel] = useState(false);
   const [valueInstructor, setValueInstructor] = useState([]);
-  const [valueCourse, setValueCourse] = useState([]);
-  console.log(props);
+  const [valueCourse, setValueCourse] = useState("");
   const handleChange = (event) => {
     const {
       target: { value },
@@ -66,11 +56,9 @@ export default function FormCourse(props) {
     const {
       target: { value },
     } = event;
-    setValueCourse(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+    setValueCourse(value);
   };
+
   const {
     register,
     handleSubmit,
@@ -82,35 +70,29 @@ export default function FormCourse(props) {
     const events = [];
     const startDate = moment(props.initData.start);
     const endDate = moment(props.initData.end);
-    const instructorsChoice = data.instructors;
     while (startDate <= endDate) {
       if (isWeekend(startDate._d) || isHoliday(startDate._d)) {
         // ignore weekends and holidays
       } else {
-        const startTime = moment(data.start).format("HH:mm");
-        const endTime = moment(data.end).format("HH:mm");
+        const startTime = "09:00";
+        const endTime = "17:00";
 
         const eventStart = moment
           .utc(startDate.format("YYYY-MM-DD") + "T" + startTime)
-          .utcOffset(startDate.utcOffset())
           .toISOString();
         const eventEnd = moment
           .utc(endDate.format("YYYY-MM-DD") + "T" + endTime)
-          .utcOffset(endDate.utcOffset())
           .toISOString();
 
         const event = {
           title: data.title,
           start: eventStart,
           end: eventEnd,
-          backgroundColor: "blue",
-          borderColor: "blue",
+          color: "#ADD8E6",
           location: data.localisation,
-          instructor:
-            instructorsChoice[
-              Math.floor(Math.random() * instructorsChoice.length)
-            ],
-          class: "",
+          instructor: data.instructors,
+          class: props.initData.class,
+          allDay: false,
         };
 
         events.push(event);
@@ -138,10 +120,8 @@ export default function FormCourse(props) {
   }
 
   const onSubmit = (data) => {
-    console.log(data);
     const events = generateEvents(data);
     console.log(events);
-
     try {
       axios
         .post("http://localhost:5050/calendar", events)
@@ -151,6 +131,7 @@ export default function FormCourse(props) {
         .catch((error) => {
           console.log(error);
         });
+      props.onClose();
     } catch (error) {
       console.log(error);
     }
@@ -183,8 +164,8 @@ export default function FormCourse(props) {
                 helperText={errors.title?.message}
               />
             </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth sx={{ minWidth: 120 }}>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
                 <InputLabel>Formateur(s) *</InputLabel>
                 <Select
                   {...register("instructors")}
@@ -201,10 +182,15 @@ export default function FormCourse(props) {
                       ))}
                     </Box>
                   )}
-                  MenuProps={MenuProps}
                 >
                   {instructors.map((instructor) => (
-                    <MenuItem key={instructor.uid} value={instructor}>
+                    <MenuItem
+                      key={instructor.uid}
+                      value={instructor}
+                      sx={{
+                        width: "100%",
+                      }}
+                    >
                       {instructor.image && (
                         <Avatar
                           src={instructor.image}
@@ -222,38 +208,36 @@ export default function FormCourse(props) {
                 </Typography>
               )}
             </Grid>
-            <Grid item xs={12}>
-              <FormControl fullWidth sx={{ minWidth: 120 }}>
-                <InputLabel>Cours*</InputLabel>
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="course-select-label">Cours*</InputLabel>
                 <Select
                   {...register("course")}
+                  labelId="course-select-label"
+                  id="course-select"
                   value={valueCourse}
                   onChange={handleChangeCourse}
-                  // input={
-                  //   <OutlinedInput id="select-multiple-chip" label="Chip" />
-                  // }
-                  // renderValue={(selected) => (
-                  //   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
-                  //     {selected.map((value) => (
-                  //       <Chip key={value.uid} label={value.firstname} />
-                  //     ))}
-                  //   </Box>
-                  // )}
-                  MenuProps={MenuProps}
                 >
                   {course.map((cours) => (
-                    <MenuItem key={cours.uid} value={cours}>
+                    <MenuItem
+                      key={cours.uid}
+                      value={cours.name}
+                      sx={{
+                        width: "100%",
+                      }}
+                    >
                       {cours.name}
                     </MenuItem>
                   ))}
                 </Select>
+                {errors.course && (
+                  <Typography color="error" sx={{ mt: 1 }}>
+                    {errors.course.message}
+                  </Typography>
+                )}
               </FormControl>
-              {errors.course && (
-                <Typography color="error" sx={{ mt: 1 }}>
-                  {errors.course.message}
-                </Typography>
-              )}
             </Grid>
+
             <Grid item xs={12}>
               <InputLabel>Localisation *</InputLabel>
               <TextField

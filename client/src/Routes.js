@@ -13,6 +13,8 @@ import Login from "./pages/login/Login";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
 import Calendar from "./pages/calendar/Calendar";
+import CalendarPedago from "./pages/calendar/CalendarPedago";
+
 
 function RoutesProvider() {
   return (
@@ -38,6 +40,7 @@ function RoutesProvider() {
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/calendrier" element={<Calendar />} />
+          <Route path="/calendrier/:id" element={<CalendarPedago />} />
 
           {/* 404 Page */}
         </Route>

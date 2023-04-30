@@ -44,7 +44,6 @@ export default function DetailCalendar(props) {
           <CardHeader
             title={
               <Typography color="text.default" variant="h6">
-                {" "}
                 {event.title}
               </Typography>
             }

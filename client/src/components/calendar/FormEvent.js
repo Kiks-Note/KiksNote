@@ -44,11 +44,9 @@ export default function FormCourse(props) {
 
       const eventStart = moment
         .utc(startDate.format("YYYY-MM-DD") + "T" + startTime)
-        .utcOffset(startDate.utcOffset())
         .toISOString();
       const eventEnd = moment
         .utc(endDate.format("YYYY-MM-DD") + "T" + endTime)
-        .utcOffset(endDate.utcOffset())
         .toISOString();
 
       const event = {
@@ -59,7 +57,8 @@ export default function FormCourse(props) {
         borderColor: "orange",
         location: data.localisation,
         instructor: [],
-        class: "",
+        class: props.init.class,
+        color: "#CCCCFF",
       };
 
       events.push(event);
@@ -71,10 +70,7 @@ export default function FormCourse(props) {
   }
 
   const onSubmit = (data) => {
-    console.log(data);
     const events = generateEvents(data);
-    console.log(events);
-
     try {
       axios
         .post("http://localhost:5050/calendar", events)
@@ -84,6 +80,7 @@ export default function FormCourse(props) {
         .catch((error) => {
           console.log(error);
         });
+      props.onClose();
     } catch (error) {
       console.log(error);
     }
