@@ -33,12 +33,20 @@ function PrivateRoutes() {
       </Box>
     );
   }
-  // Redirect user to login page if user not authenticated
-  return authenticated ? (
-    <MiniDrawer element={<Outlet />} />
-  ) : (
-    <Navigate to="/login" />
-  );
+
+  // If user is authenticated, allow access to all pages
+  if (authenticated) {
+    return <MiniDrawer element={<Outlet />} />;
+  }
+
+  // If user is not authenticated, redirect to login page only if user is not already on the login page
+  const currentLocation = window.location.pathname;
+  if (currentLocation == "/") {
+    return <Navigate to="/login" />;
+  }
+
+  // If user is not authenticated and already on login page, allow access to login page
+  return <Outlet />;
 }
 
 export default PrivateRoutes;

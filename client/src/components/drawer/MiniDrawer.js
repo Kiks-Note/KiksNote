@@ -128,7 +128,7 @@ export default function MiniDrawer({ element }) {
         {
           id: 11,
           name: "Projet Étudiant",
-          route: "/jpo",
+          route: "/studentprojects",
           icon: <SchoolIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
         },
       ],

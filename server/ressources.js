@@ -1,6 +1,6 @@
 module.exports = (app, db) => {
-  // Route to create a new resource
-  app.post("/ressources", async (req, res) => {
+  // Route to create a new courses
+  app.post("/ressources/cours", async (req, res) => {
     try {
       const { title, description, date } = req.body;
       console.log(req.body);
@@ -74,7 +74,7 @@ module.exports = (app, db) => {
   });
 
   app.get("/course", async (req, res) => {
-    try{
+    try {
       const coursesRef = db.collection("course");
       const snapshot = await coursesRef.get();
       console.log(snapshot.docs);
@@ -85,14 +85,14 @@ module.exports = (app, db) => {
         };
       });
       res.status(200).json(courses);
-    }catch(err){
+    } catch (err) {
       console.error(err);
       res.status(500).send("Erreur lors de la récupération des cours.");
     }
-  })
+  });
 
   app.get("/jpo", async (req, res) => {
-    try{
+    try {
       const jpoRef = db.collection("blog_evenements");
       const snapshot = await jpoRef.get();
       console.log(snapshot.docs);
@@ -105,9 +105,9 @@ module.exports = (app, db) => {
         };
       });
       res.status(200).json(jpo);
-    }catch(err){
+    } catch (err) {
       console.error(err);
       res.status(500).send("Erreur lors de la récupération des évenements.");
     }
-  })
+  });
 };

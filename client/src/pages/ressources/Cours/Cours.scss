@@ -1,0 +1,33 @@
+.cours-container {
+    width: 1650px;
+    height: 100%;
+}
+
+.header-cours {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.search-bar-container {
+    display: flex;
+    width: 80%;
+}
+
+.btn-add-cours {
+    display: flex;
+    width: 30%;
+    justify-content: center;
+}
+
+.create-card-form {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.textfield {
+    width: 40%;
+}
+

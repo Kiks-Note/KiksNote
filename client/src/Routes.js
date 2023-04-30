@@ -7,8 +7,8 @@ import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Tuto from "./pages/blog/Tuto";
-import Ressources from "./pages/ressources/Ressources";
-import CreateCard from "./pages/ressources/CreateCard";
+import Cours from "./pages/ressources/Cours/Cours";
+import CreateCard from "./pages/ressources/Cours/CreateCard";
 import PDFBacklogCartView from "./pages/ressources/PDFBacklogCardView";
 import PDFSupport from "./pages/ressources/PDFSupportCardView";
 import PublicRoutes from "./utils/PublicRoutes";
@@ -16,7 +16,8 @@ import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
-import Jpo from "./pages/ressources/jpo/jpo";
+import Jpo from "./pages/ressources/JPO/jpo";
+import StudentsProjects from "./pages/students_project/StudentsProjects";
 
 function RoutesProvider() {
   return (
@@ -40,12 +41,13 @@ function RoutesProvider() {
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
-          <Route path="/cours" element={<Ressources />} />
+          <Route path="/cours" element={<Cours />} />
           <Route path="/createCard" element={<CreateCard />} />
           <Route path="/pdfbacklog" element={<PDFBacklogCartView />} />
           <Route path="/pdfsupport" element={<PDFSupport />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/jpo" element={<Jpo />} />
+          <Route path="/studentprojects" element={<StudentsProjects />} />
           {/* 404 Page */}
         </Route>
         <Route path="*" element={<NotFound />} />

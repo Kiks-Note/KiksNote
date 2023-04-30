@@ -1,19 +1,28 @@
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Button } from '@mui/material';
-import FormControl from '@mui/material/FormControl';
-import InputLabel from '@mui/material/InputLabel';
-import NativeSelect from '@mui/material/NativeSelect';
-import TextField from '@mui/material/TextField';
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { Button } from "@mui/material";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import NativeSelect from "@mui/material/NativeSelect";
+import TextField from "@mui/material/TextField";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 
-export default function CreateCard() {
+import "./Cours.scss";
 
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// toastSuccess("Utilisateur enregistré");
+// toastFail("Utilisateur non enregistré");
+
+export default function CreateCard() {
   const current = new Date();
-  const dateTime = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
+  const dateTime = `${current.getDate()}/${
+    current.getMonth() + 1
+  }/${current.getFullYear()}`;
 
   const [title, setTitle] = useState("React");
   const [desc, setDesc] = useState("");
@@ -26,13 +35,13 @@ export default function CreateCard() {
     title: yup.string().required(),
     description: yup.string().required(),
     po: yup.string().required(),
-    date: yup.date().required()
+    date: yup.date().required(),
   });
 
   const {
     register,
     handleSubmit,
-    formState: {errors},
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -51,7 +60,8 @@ export default function CreateCard() {
   // Get all courses
   useEffect(() => {
     const fetchCourses = async () => {
-      const response = await axios.get("http://localhost:5050/course")
+      const response = await axios
+        .get("http://localhost:5050/course")
         .then((response) => {
           setCourses(response.data);
         });
@@ -70,15 +80,15 @@ export default function CreateCard() {
       description: e.description,
       insctrutor: e.po,
       date: e.date,
-    }
+    };
     console.log(newCard);
 
-    try{
+    try {
       await axios
         .post("http://localhost:5050/ressources", newCard)
         .then((res) => console.log(res.data));
-        Ressources();
-    }catch(err){
+      Ressources();
+    } catch (err) {
       console.log(err);
     }
 
@@ -86,64 +96,61 @@ export default function CreateCard() {
     setDesc("");
     setPo("");
     setDate(dateTime);
-
   };
 
-
   return (
-   
     <div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FormControl fullWidth>
-          <InputLabel variant="standard" htmlFor="uncontrolled-native">
-            Titre/Languages du cours
-          </InputLabel>
-          <NativeSelect
-            inputProps={{
-              name: 'title',
-              id: 'uncontrolled-native',
-            }}
-            {...register("title")}
-            type='text'
-          >
-           {courses.map((course) => (
-              <option key={course.id} value={course.name}>{course.name}</option>
-           ))}
-          </NativeSelect>
-        </FormControl>
-         
-        <TextField 
-          id="standard-basic" 
-          name='date' 
-          label="Date de création" 
-          variant="standard" 
-          type='date' 
-          {...register("date")} 
+      <form onSubmit={handleSubmit(onSubmit)} className="create-card-form">
+        <TextField
+          className="textfield"
+          id="title"
+          name="title"
+          label="Titre/Langages du cours"
+          variant="standard"
         />
-        <TextField 
-          id="standard-basic" 
-          name='image' 
-          label="Image du cours" 
-          variant="standard" 
+        <TextField
+          className="textfield"
+          id="date"
+          name="date"
+          variant="standard"
+          type="date"
+          {...register("date")}
         />
-        <TextField 
-          id="standard-basic" 
-          name='desc' 
-          label="Description du cours" 
-          variant="standard" 
-          type='text' 
-          {...register("description")} 
+        <TextField
+          className="textfield"
+          id="image"
+          name="image"
+          label="Image du cours"
+          variant="standard"
         />
-        <TextField 
-          id="standard-basic" 
-          name='po' 
-          label="PO" 
-          variant="standard" 
-          type='text' 
-          {...register("po")} 
+        <TextField
+          className="textfield"
+          id="desc"
+          name="desc"
+          label="Description du cours"
+          variant="standard"
+          type="text"
+          {...register("description")}
+        />
+        <TextField
+          className="textfield"
+          id="po"
+          name="po"
+          label="PO"
+          variant="standard"
+          type="text"
+          {...register("po")}
         />
 
-        <Button type='submit' color='primary' >
+        <Button
+          type="submit"
+          color="primary"
+          sx={{
+            marginLeft: "30%",
+            marginRight: "30%",
+            marginTop: "10px",
+          }}
+        >
           Submit
         </Button>
         {/* PO */}
@@ -160,6 +167,5 @@ export default function CreateCard() {
         ))} */}
       </form>
     </div>
-    
   );
 }

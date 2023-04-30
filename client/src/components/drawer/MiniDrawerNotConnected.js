@@ -89,7 +89,7 @@ export default function MiniDrawerNotConnected({ element }) {
     {
       id: 1,
       name: "Blog",
-      route: "#",
+      route: "/blog",
       icon: (
         <AlternateEmailIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
@@ -97,7 +97,7 @@ export default function MiniDrawerNotConnected({ element }) {
     {
       id: 2,
       name: "Projet Mis en avant",
-      route: "#",
+      route: "/studentprojects",
       icon: <SchoolIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {
