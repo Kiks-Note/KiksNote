@@ -39,6 +39,20 @@ export default function ImgMediaCard({
       });
   };
 
+  const participation = function () {
+    axios
+      .post(`http://localhost:5050/blog_event/${id}/participation`)
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+
+
+
   const navigate = useNavigate();
   function handleClick() {
     navigate(`/blog/${id}`);
@@ -153,7 +167,9 @@ export default function ImgMediaCard({
 
             <CardActions>
               <FormControlLabel
-                control={<Checkbox />}
+                control={<Checkbox
+
+                />}
                 label="Participation"
               />
               <IconButton >
