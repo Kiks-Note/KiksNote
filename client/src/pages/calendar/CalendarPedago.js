@@ -20,6 +20,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { w3cwebsocket } from "websocket";
 import { useParams } from "react-router-dom";
+import EntrepriseDaysList from "../../components/calendar/EntrpriseDayList";
 export default function CalendarPedago() {
   const { id } = useParams();
   const [value, setValue] = useState("Cours");
@@ -34,6 +35,7 @@ export default function CalendarPedago() {
   const [course, setCourse] = useState([]);
   const [holidays, setHolidays] = useState([]);
   const [events, setEvents] = useState([]);
+  const [entrepriseDay, setEntrepriseDay] = useState([]);
 
   const handleCloseDetail = () =>
     setStatesDetail({ open: false, expanded: false });
@@ -103,7 +105,7 @@ export default function CalendarPedago() {
           const event = {
             title: "Entreprise",
             start: eventStart._i,
-            end: eventEnd,
+            end: eventEnd._i,
             backgroundColor: "red",
             borderColor: "red",
             location: "",
@@ -112,7 +114,7 @@ export default function CalendarPedago() {
             display: "background",
             color: "#ff9f89",
             allDay: true,
-            constraint: "holiday",
+            constraint: "entreprise",
           };
 
           events.push(event);
@@ -150,6 +152,7 @@ export default function CalendarPedago() {
   const handleChange = (event) => {
     setValue(event.target.value);
   };
+  const wsComments = new w3cwebsocket(`ws://localhost:5050/calendar/student`);
   useEffect(() => {
     const fetchCourses = async () => {
       const response = await axios.get("http://localhost:5050/calendar/course");
@@ -179,10 +182,6 @@ export default function CalendarPedago() {
       setEvents(events);
     };
     const fetchSocket = async () => {
-      const wsComments = new w3cwebsocket(
-        `ws://localhost:5050/calendar/student`
-      );
-
       wsComments.onopen = function (e) {
         wsComments.send(JSON.stringify(id));
       };
@@ -190,6 +189,8 @@ export default function CalendarPedago() {
       wsComments.onmessage = (message) => {
         const data = JSON.parse(message.data);
         setEvents((prevEvents) => [...prevEvents, ...data]);
+        const entrepriseEvents = data.filter((event) => event.id);
+        setEntrepriseDay(entrepriseEvents);
       };
     };
     fetchSocket();
@@ -214,7 +215,7 @@ export default function CalendarPedago() {
       </Box>
 
       <Grid container spacing={2} style={{ padding: "20px" }}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={5}>
           <FormControl component="fieldset">
             <FormLabel component="legend">Type de votre événement</FormLabel>
             <RadioGroup
@@ -248,9 +249,10 @@ export default function CalendarPedago() {
             plusieurs jours directement sur le calendrier. Selon le type choisi,
             un formulaire peut s'ouvrir pour compléter votre événement.
           </Typography>
+          <EntrepriseDaysList entrepriseDaysList={entrepriseDay} />
         </Grid>
 
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={7}>
           <FullCalendar
             plugins={[
               dayGridPlugin,

@@ -50,4 +50,23 @@ module.exports = (app, db) => {
       res.status(500).send("Erreur lors de l'ajout des événements à Firestore");
     }
   });
+  app.delete("/calendar/:eventId", async (req, res) => {
+    const eventId = req.params.eventId;
+
+    try {
+      const docRef = await db.collection("calendar").doc(eventId).get();
+      if (!docRef.exists) {
+        res.status(404).send(`L'événement avec l'ID ${eventId} n'existe pas.`);
+        return;
+      }
+      await db.collection("calendar").doc(eventId).delete();
+      res.status(200).send(`L'événement avec l'ID ${eventId} a été supprimé.`);
+    } catch (error) {
+      console.error(error);
+      res
+        .status(500)
+        .send("Erreur lors de la suppression de l'événement de Firestore");
+    }
+  });
+
 };
