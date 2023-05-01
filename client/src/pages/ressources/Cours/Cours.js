@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { all } from "axios";
 
 import {
   Container,
@@ -21,6 +21,8 @@ import {
   TextField,
   InputAdornment,
   Modal,
+  MenuItem,
+  Select,
 } from "@mui/material";
 
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -40,14 +42,38 @@ export default function Ressources() {
   const loggedUser = localStorage.getItem("user");
   const loggedUserParsed = JSON.parse(loggedUser);
   var userStatus = loggedUserParsed.status;
+  var studentClass = loggedUserParsed.class;
 
   const [rows, setRows] = useState([]);
   const [view, setView] = useState("module");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const [courseTitle, setCourseTitle] = useState("");
+  const [courseDescription, setCourseDescription] = useState("");
+  const [courseDate, setCourseDate] = useState("");
+  const [courseCampusNumerique, setCourseCampusNumerique] = useState(false);
+  const [courseClass, setCourseClass] = useState("");
+  const [courseOwner, setCourseOwner] = useState("");
+  const [coursePrivate, setCoursePrivate] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    control,
+    formState,
+    formState: { errors, isSubmitting, isSubmitSuccessful },
+  } = useForm({
+    mode: "onTouched",
+  });
+
   const [open, setOpen] = useState(false);
+
+  const [allpo, setAllPo] = useState([]);
 
   const filteredCourses = courses.filter(
     (course) =>
@@ -89,8 +115,47 @@ export default function Ressources() {
     }
   };
 
+  const getAllPo = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/allpo")
+        .then((res) => {
+          setAllPo(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const createNewCours = async () => {
+    try {
+      await axios
+        .post("http://localhost:5050/ressources/cours", {
+          courseTitle,
+          courseDescription,
+          courseDate,
+          courseCampusNumerique,
+          courseClass,
+          courseOwner,
+          coursePrivate,
+        })
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     getAllCours();
+    getAllPo();
   }, []);
 
   const createCourse = () => {
@@ -100,11 +165,11 @@ export default function Ressources() {
   const pdfBacklogRoute = () => navigate("/pdfBacklog");
   const pdfSupportRoute = () => navigate("/pdfSupport");
 
-  const onSubmit = async (e) => {};
-
-  const handleSubmit = () => {
-    console.log("Submited");
+  const onSubmit = async (e) => {
+    console.log("submited & create cours !!");
   };
+
+  console.log(allpo);
 
   return (
     <div className="cours-container">
@@ -178,7 +243,7 @@ export default function Ressources() {
         </div>
 
         <Modal open={open} onClose={handleClose}>
-          <form onSubmit={handleSubmit(onSubmit)} className="create-card-form">
+          <form className="create-card-form">
             <IconButton
               sx={{
                 marginLeft: "80%",
@@ -223,42 +288,37 @@ export default function Ressources() {
               type="text"
               // {...register("po")}
             />
-            {/* <Controller
+            <Controller
               name="po"
-              {...register("membres", {
-                required: true,
-                validate: {
-                  valid: (event, item) => {
-                    if (event.length < 2 || event.length > 4) {
-                      return false;
-                    }
-                  },
-                },
-              })}
-              // control={control}
+              control={control}
+              rules={{ required: true }}
               render={({ field: { onChange, value } }) => (
                 <Autocomplete
-                  multiple
-                  id="tags-outlined"
-                  onChange={(event, item) => {
-                    onChange(item);
-                  }}
-                  value={value}
-                  // options={membres}
+                  id="po-select"
+                  options={allpo}
                   getOptionLabel={(option) =>
-                    `${option.firstname + option.lastname}`
+                    `${option.lastname ? option.lastname.toUpperCase() : ""} ${
+                      option.firstname
+                    }`
                   }
-                  filterSelectedOptions
+                  value={allpo.find((po) => po.id === value) || ""}
+                  onChange={(event, newValue) => {
+                    onChange(newValue ? newValue.id : "");
+                  }}
                   renderInput={(params) => (
                     <TextField
                       {...params}
-                      label="Membres*"
-                      placeholder="Choissisez vos partenanires"
+                      label="Select a PO"
+                      variant="outlined"
+                      inputProps={{
+                        ...params.inputProps,
+                        name: "po",
+                      }}
                     />
                   )}
                 />
               )}
-            /> */}
+            />
             <TextField
               className="textfield"
               id="desc"
@@ -275,13 +335,13 @@ export default function Ressources() {
             />
 
             <Button
-              type="submit"
               color="primary"
               sx={{
                 marginLeft: "30%",
                 marginRight: "30%",
                 marginTop: "10px",
               }}
+              onClick={onSubmit}
             >
               Submit
             </Button>
@@ -364,7 +424,15 @@ export default function Ressources() {
           </Grid>
         </Container>
       ) : (
-        <div className="list-view-container">
+        <Container
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            width: "100%",
+            margin: 0,
+            paddingTop: "20px",
+          }}
+        >
           {filteredCourses.map((course) => (
             <Card className="list-card">
               <div className="list-card-content">
@@ -418,7 +486,7 @@ export default function Ressources() {
               </div>
             </Card>
           ))}
-        </div>
+        </Container>
       )}
     </div>
   );

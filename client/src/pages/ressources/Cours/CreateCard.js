@@ -99,73 +99,71 @@ export default function CreateCard() {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit(onSubmit)} className="create-card-form">
-        <TextField
-          className="textfield"
-          id="title"
-          name="title"
-          label="Titre/Langages du cours"
-          variant="standard"
-        />
-        <TextField
-          className="textfield"
-          id="date"
-          name="date"
-          variant="standard"
-          type="date"
-          {...register("date")}
-        />
-        <TextField
-          className="textfield"
-          id="image"
-          name="image"
-          label="Image du cours"
-          variant="standard"
-        />
-        <TextField
-          className="textfield"
-          id="desc"
-          name="desc"
-          label="Description du cours"
-          variant="standard"
-          type="text"
-          {...register("description")}
-        />
-        <TextField
-          className="textfield"
-          id="po"
-          name="po"
-          label="PO"
-          variant="standard"
-          type="text"
-          {...register("po")}
-        />
+    <form onSubmit={handleSubmit(onSubmit)} className="create-card-form">
+      <TextField
+        className="textfield"
+        id="title"
+        name="title"
+        label="Titre/Langages du cours"
+        variant="standard"
+      />
+      <TextField
+        className="textfield"
+        id="date"
+        name="date"
+        variant="standard"
+        type="date"
+        {...register("date")}
+      />
+      <TextField
+        className="textfield"
+        id="image"
+        name="image"
+        label="Image du cours"
+        variant="standard"
+      />
+      <TextField
+        className="textfield"
+        id="desc"
+        name="desc"
+        label="Description du cours"
+        variant="standard"
+        type="text"
+        {...register("description")}
+      />
+      <TextField
+        className="textfield"
+        id="po"
+        name="po"
+        label="PO"
+        variant="standard"
+        type="text"
+        {...register("po")}
+      />
 
-        <Button
-          type="submit"
-          color="primary"
-          sx={{
-            marginLeft: "30%",
-            marginRight: "30%",
-            marginTop: "10px",
-          }}
-        >
-          Submit
-        </Button>
-        {/* PO */}
-        {/* {instructors.map((instructor) => (
-          <MenuItem key={instructor.id} value={instructor}>
-            {instructor.image && (
-              <Avatar
-                src={instructor.image}
-                alt={`${instructor.firstname} ${instructor.lastname}`}
-              />
-            )}
-            {instructor.firstname} {instructor.lastname}
-          </MenuItem>
-        ))} */}
-      </form>
-    </div>
+      <Button
+        type="submit"
+        color="primary"
+        sx={{
+          marginLeft: "30%",
+          marginRight: "30%",
+          marginTop: "10px",
+        }}
+      >
+        Submit
+      </Button>
+      {/* PO */}
+      {/* {instructors.map((instructor) => (
+        <MenuItem key={instructor.id} value={instructor}>
+          {instructor.image && (
+            <Avatar
+              src={instructor.image}
+              alt={`${instructor.firstname} ${instructor.lastname}`}
+            />
+          )}
+          {instructor.firstname} {instructor.lastname}
+        </MenuItem>
+      ))} */}
+    </form>
   );
 }
