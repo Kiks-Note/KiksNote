@@ -4,7 +4,7 @@ import TableBoard from "../../components/board_scrum/dashboard/TableDashboard";
 import CardDashBoard from "../../components/board_scrum/dashboard/CardDashboard";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import { Divider, List, ListItem, Typography, Button } from "@mui/material";
+import { Divider, List, ListItem, Typography } from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -20,6 +20,7 @@ function Dashboard(props) {
   const [view, setView] = useState("module");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [members, setMembers] = useState([]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -45,35 +46,42 @@ function Dashboard(props) {
     });
   };
   // * TO MAKE A BOARD IN FAVORI
-async function favorisTell(dashboardId, favorite) {
-  try {
-    await axios.put(
-      `http://localhost:5050/dashboard-favorite/${dashboardId}`
-    );
-  } catch (error) {
-    console.error(error);
-    // Gérer l'erreur de manière appropriée, par exemple :
-    // throw new Error('Erreur lors de la mise à jour du document');
+  async function favorisTell(dashboardId, favorite) {
+    try {
+      await axios.put(
+        `http://localhost:5050/dashboard-favorite/${dashboardId}`
+      );
+    } catch (error) {
+      console.error(error);
+      // Gérer l'erreur de manière appropriée, par exemple :
+      // throw new Error('Erreur lors de la mise à jour du document');
+    }
   }
-}
-
-
 
   // * DEFINE BOARDS WHO IS ACTIF
   let actif = rows.filter((board) => {
     const startDate = new Date(board.start);
     const endDate = new Date(board.end);
     const maDateValue = maDate.valueOf();
-    return startDate.valueOf() <= maDateValue && maDateValue <= endDate.valueOf();
+    return (
+      startDate.valueOf() <= maDateValue && maDateValue <= endDate.valueOf()
+    );
   });
 
   // * DEFINE BOARDS WHO IS IN  FAVORIS
-  let favoris = rows.filter((person) => person.favorite === true).sort((a, b) => a - b);
+  let favoris = rows
+    .filter((person) => person.favorite === true)
+    .sort((a, b) => a - b);
 
   //var connectedStudent = localStorage.getItem("userUid");
   var connectedStudent = "nFVLL3s1TYtZsjFZPnmw";
 
   useEffect(() => {
+    const fetchMembers = async () => {
+      const response = await axios.get("http://localhost:5050/members");
+      setMembers(response.data);
+    };
+    fetchMembers();
     (async () => {
       const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
 
@@ -90,11 +98,13 @@ async function favorisTell(dashboardId, favorite) {
         var listDashboards = [];
         dashboards.forEach((dashboard) => {
           const startDate = new Date(
-            dashboard.starting_date._seconds * 1000 + dashboard.starting_date._nanoseconds / 100000
+            dashboard.starting_date._seconds * 1000 +
+              dashboard.starting_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
 
           const endDate = new Date(
-            dashboard.ending_date._seconds * 1000 + dashboard.ending_date._nanoseconds / 100000
+            dashboard.ending_date._seconds * 1000 +
+              dashboard.ending_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
 
           let favorite = dashboard.favorite === "true";
@@ -159,7 +169,12 @@ async function favorisTell(dashboardId, favorite) {
           Mon espace de travail
         </Typography>
         <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <ToggleButtonGroup value={view} exclusive onChange={viewChange} sx={{ margin: 1 }}>
+          <ToggleButtonGroup
+            value={view}
+            exclusive
+            onChange={viewChange}
+            sx={{ margin: 1 }}
+          >
             <ToggleButton value="module" aria-label="module">
               <ViewModuleIcon />
             </ToggleButton>
@@ -167,24 +182,26 @@ async function favorisTell(dashboardId, favorite) {
               <ViewListIcon />
             </ToggleButton>
           </ToggleButtonGroup>
-          <ModalCreateSprint />
+          <ModalCreateSprint members={members} />
         </div>
       </Box>
 
       {view === "module" ? (
         <Grid container spacing={2}>
-          {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((dashboard) => (
-            <Grid item xs={3} key={dashboard.id}>
-              <CardDashBoard
-                addTab={props.addTab}
-                picture={dashboard.picture}
-                sprint_group={dashboard.sprint_group}
-                fav={dashboard.favorite}
-                isFavoris={favorisTell}
-                id={dashboard.id}
-              />
-            </Grid>
-          ))}
+          {rows
+            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            .map((dashboard) => (
+              <Grid item xs={3} key={dashboard.id}>
+                <CardDashBoard
+                  addTab={props.addTab}
+                  picture={dashboard.picture}
+                  sprint_group={dashboard.sprint_group}
+                  fav={dashboard.favorite}
+                  isFavoris={favorisTell}
+                  id={dashboard.id}
+                />
+              </Grid>
+            ))}
         </Grid>
       ) : (
         rows.length > 0 && (
@@ -200,7 +217,14 @@ async function favorisTell(dashboardId, favorite) {
 
       {view === "module" ? (
         rows.length > 0 && (
-          <Box sx={{ flexGrow: 1, marginTop: 3, display: "flex", justifyContent: "center" }}>
+          <Box
+            sx={{
+              flexGrow: 1,
+              marginTop: 3,
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
             <TablePagination
               component="div"
               rowsPerPageOptions={[5, 10, 25, { label: "Tout", value: -1 }]}
@@ -210,7 +234,9 @@ async function favorisTell(dashboardId, favorite) {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
               labelRowsPerPage="Par page"
-              labelDisplayedRows={({ from, to, count }) => `${from} - ${to} sur ${count}`}
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from} - ${to} sur ${count}`
+              }
             />
           </Box>
         )

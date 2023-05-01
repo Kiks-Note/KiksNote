@@ -1,9 +1,23 @@
-import React, { useEffect, useState, useRef} from "react";
-//import axios from "axios";
-import { useForm, Controller } from "react-hook-form";
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import { format } from "date-fns";
+import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import PropTypes from "prop-types";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
+import {
+  Button,
+  Grid,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Typography,
+  TextField,
+  Avatar,
+  OutlinedInput,
+  Box,
+  Chip,
+} from "@mui/material";
 import List from "@mui/material/List";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -11,61 +25,56 @@ import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
-import TextField from "@mui/material/TextField";
-import Stack from "@mui/material/Stack";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import InputLabel from "@mui/material/InputLabel";
-import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import CloseIcon from "@mui/icons-material/Close";
-import ClearIcon from "@mui/icons-material/Clear";
-import Autocomplete from "@mui/material/Autocomplete";
-import { Alert, Typography } from "@mui/material";
-import Grid from "@mui/material/Grid";
+
+const schema = yup.object().shape({
+  sprint_name: yup.string().required("Donnez un nom à votre sprint."),
+  sprint_group: yup.string().required("Donnez un nom à votre groupe."),
+  ending_date: yup
+    .date()
+    .min(new Date(), "La date de fin doit être postérieure à aujourd'hui")
+    .when(
+      "starting_date",
+      (startingDate, schema) =>
+        startingDate &&
+        schema.min(
+          startingDate,
+          "La date de fin doit être postérieure à la date de début"
+        )
+    ),
+  starting_date: yup.date(),
+  students: yup.array().min(1, "Ajoutez au moins un membre."),
+});
 
 function DialogDashbord(props) {
   const { onClose, value: valueProp, open, ...other } = props;
   const [value, setValue] = React.useState(valueProp);
-  const [personName, setPersonName] = React.useState([]);
-  const [selectedFile, setSelectedFile] = React.useState();
-  const [uploadedPhotos, setUploadedPhotos] = React.useState([]);
-  const [preview, setPreview] = React.useState();
-
+  const [members, setMembers] = useState(props.members);
+  const [valueMembers, setValueMembers] = useState([]);
   const {
     register,
     handleSubmit,
+    formState: { errors },
     reset,
-    control,
-    formState,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
   } = useForm({
-    mode: "onTouched",
+    resolver: yupResolver(schema),
   });
-  useEffect(() => {
-    if (isSubmitSuccessful) {
-      reset({
-        end: "",
-        start: "",
-        sprint_name: "",
-        sprint_group: "",
-        image: "",
-      });
-      setPersonName([]);
-    }
-  }, [formState, isSubmitSuccessful, reset]);
-  // create a preview as a side effect, whenever selected file is changed
-  useEffect(() => {
-    if (!selectedFile) {
-      setPreview();
-      return;
-    }
 
-    const objectUrl = URL.createObjectURL(selectedFile);
-    setPreview(objectUrl);
-    // free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [selectedFile]);
+  const today = new Date();
+  const defaultStartDate = format(today, "yyyy-MM-dd");
+  //Function for the select to change member
+  const handleChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    setValueMembers(
+      // On autofill we get a stringified value.
+      typeof value === "string" ? value.split(",") : value
+    );
+  };
+
   useEffect(() => {
+    setMembers(props.members);
     if (!open) {
       setValue(valueProp);
     }
@@ -77,84 +86,36 @@ function DialogDashbord(props) {
       radioGroupRef.current.focus();
     }
   };
-  const handleCancel = () => {
-    reset({
-      end: "",
-      start: "",
-      sprint_name: "",
-      sprint_group: "",
-      membres: "",
-      image: "",
-    });
-    onClose();
-  };
-  const handleOk = () => {
-    setSelectedFile();
-    onClose(value);
-  };
-  const handleChange = (event) => {
-    const {
-      target: { value },
-    } = event;
 
-    setPersonName(typeof value === "string" ? value.split(",") : value);
-  };
-  const wait = function (duration = 1000) {
-    return new Promise((resolve) => {
-      window.setTimeout(resolve, duration);
-    });
-  };
-  const handleDelete = (chipToDelete) => () => {
-    setPersonName((chips) => chips.filter((chip) => chip.key !== chipToDelete.key));
+  //Function to close the dialog
+  const handleClose = () => {
+    reset();
+    setValueMembers();
+    onClose();
   };
   //SUBMIT FONCTION
   const onSubmit = async (data) => {
-    console.log(data.membres);
-    const formData = {
-      sprint_name: data.sprint_name,
-      sprint_group: data.sprint_group,
-      start: data.start,
-      end: data.end,
-      favorite: false,
-      favoriteDate: "",
-      students: data.membres,
+    const dataForm = {
+      students: data.students,
+      starting_date: data.starting_date,
+      ending_date: data.ending_date,
+      favorite: "false",
+      group_name: data.group_name,
+      sprint_name: data.group_name,
+      image: "",
+      pdf_link: "",
+      release: {},
     };
-    // try {
-    //   axios.post(`http://localhost:5050/board`, { formData }).then((res) => {
-    //     console.log(res);
-    //     console.log(res.data);
-    //   });
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
-    await wait(2000);
-    handleOk();
+    try {
+      axios
+        .post(`http://localhost:5050/dashboard-creation`, { dataForm })
+        .then((res) => {
+          handleClose();
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
-
-  const removeSelectedImage = () => {
-    setSelectedFile();
-  };
-
-  const onSelectFile = (e) => {
-    const files = e.target.files[0];
-    setUploadedPhotos([...uploadedPhotos, files]);
-    // I've kept this example simple by using the first image instead of multiple
-    setSelectedFile(e.target.files[0]);
-  };
-
-  const membres = [
-    { student_id: 1, firstname: "Oliver ", lastname: "Hansen" },
-    { student_id: 2, firstname: "Henry", lastname: "Van" },
-    { student_id: 3, firstname: "April ", lastname: "Tucker" },
-    { student_id: 4, firstname: "Ralph", lastname: "Hubbard" },
-    { student_id: 5, firstname: "Omar", lastname: "Alexander" },
-    { student_id: 6, firstname: "Carlos ", lastname: "Abbott" },
-    { student_id: 7, firstname: "Miriam ", lastname: "Wagner" },
-    { student_id: 8, firstname: "Bradley", lastname: "Wilkerson" },
-    { student_id: 9, firstname: "Virginia ", lastname: "Andrews" },
-    { student_id: 10, firstname: "Kelly", lastname: "Snyder" },
-  ];
 
   return (
     <Dialog
@@ -181,121 +142,61 @@ function DialogDashbord(props) {
       {...other}
     >
       <DialogActions>
-        <IconButton onClick={handleCancel}>
+        <IconButton onClick={handleClose}>
           <CloseIcon />
         </IconButton>
       </DialogActions>
-      <DialogTitle>Création d'un sprint</DialogTitle>
+      <DialogTitle>Création d'un dashbaord</DialogTitle>
       <DialogContent dividers>
-        <Box component="form" noValidate sx={{ mt: 3 }} autoComplete="off" onSubmit={handleSubmit(onSubmit)}>
-          {isSubmitSuccessful && <Alert severity="success">Votre sprint a été enregrister avec succés</Alert>}
-
+        <Box
+          component="form"
+          noValidate
+          sx={{ mt: 3 }}
+          autoComplete="off"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <Grid container spacing={2}>
-            <Grid
-              item
-              xs={12}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "column",
-              }}
-            >
-              {selectedFile && (
-                <Box
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: " center",
-                  }}
-                >
-                  <IconButton
-                    onClick={removeSelectedImage}
-                    aria-label="nettoyer"
-                    sx={{
-                      cursor: "pointer",
-                      color: "white",
-                      backgroundColor: "black",
-                      position: "absolute",
-                    }}
-                  >
-                    <ClearIcon />
-                  </IconButton>
-                  <img src={preview} alt="" style={{ height: "150px", width: "345px" }} />
-                </Box>
-              )}
-              {!selectedFile && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    flexDirection: "column",
-                  }}
-                >
-                  <IconButton color="primary" aria-label="upload picture" component="label">
-                    <input
-                      hidden
-                      {...register("image", {
-                        validate: {
-                          lessThan10MB: (files) => files[0]?.size < 30000 || "Max 30kb",
-                        },
-                      })}
-                      type="file"
-                      onChange={onSelectFile}
-                      name="image"
-                      accept="image/png,image/jpeg"
-                    />
-                    <PhotoCamera />
-                  </IconButton>
-                </Box>
-              )}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                }}
-              >
-                {errors.image && (
-                  <Typography variant="subtitle1" color="error" align="center">
-                    {"Choisissez une photo"}
-                  </Typography>
-                )}
-              </Box>
-            </Grid>
             <Grid item xs={12}>
-              <Controller
-                name="membres"
-                {...register("membres", {
-                  required: true,
-                  validate: {
-                    valid: (event, item) => {
-                      if (event.length < 2 || event.length > 4) {
-                        return false;
-                      }
-                    },
-                  },
-                })}
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <Autocomplete
-                    multiple
-                    id="tags-outlined"
-                    onChange={(event, item) => {
-                      onChange(item);
-                    }}
-                    value={value}
-                    options={membres}
-                    getOptionLabel={(option) => `${option.firstname + option.lastname}`}
-                    filterSelectedOptions
-                    renderInput={(params) => (
-                      <TextField {...params} label="Membres*" placeholder="Choissisez vos partenanires" />
-                    )}
-                  />
-                )}
-              />
-              {errors.membres && (
-                <Typography variant="subtitle1" color="error">
-                  {"Choisissez entre 2 et 4 membres"}
+              <FormControl fullWidth>
+                <InputLabel>Membres *</InputLabel>
+                <Select
+                  {...register("students")}
+                  multiple
+                  value={valueMembers}
+                  onChange={handleChange}
+                  input={
+                    <OutlinedInput id="select-multiple-chip" label="Chip" />
+                  }
+                  renderValue={(selected) => (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                      {selected.map((value) => (
+                        <Chip key={value.uid} label={value.firstname} />
+                      ))}
+                    </Box>
+                  )}
+                >
+                  {members.map((member) => (
+                    <MenuItem
+                      key={member.uid}
+                      value={member}
+                      sx={{
+                        width: "100%",
+                      }}
+                    >
+                      {member.image && (
+                        <Avatar
+                          src={member.image}
+                          alt={`${member.firstname} ${member.lastname}`}
+                        />
+                      )}
+                      {member.firstname} {member.lastname}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {errors.students && (
+                <Typography color="error" sx={{ mt: 1 }}>
+                  {errors.students.message}
                 </Typography>
               )}
             </Grid>
@@ -303,89 +204,60 @@ function DialogDashbord(props) {
               <InputLabel id="label_name_sprint">Nom du sprint*</InputLabel>
               <TextField
                 fullWidth
-                id="filled-required"
-                name="sprint_name"
-                {...register("sprint_name", {
-                  required: "Choisissez un nom du sprint",
-                  minLength: {
-                    value: 3,
-                    message: "Entrez au moins 3 caractères",
-                  },
-                })}
+                {...register("sprint_name")}
+                error={!!errors.sprint_name}
+                helperText={errors.sprint_name?.message}
               />
-              {errors.sprint_name && (
-                <Typography variant="subtitle1" color="error">
-                  {errors.sprint_name.message}
-                </Typography>
-              )}
             </Grid>
             <Grid item xs={12} sm={6}>
               <InputLabel id="label_name_sprint">Nom du group*</InputLabel>
               <TextField
                 fullWidth
-                id="filled-required"
-                {...register("sprint_group", {
-                  required: "Choisissez un nom de groupe",
-                  minLength: {
-                    value: 3,
-                    message: "Entrez au moins 3 caractères",
-                  },
-                })}
+                {...register("sprint_group")}
+                error={!!errors.sprint_group}
+                helperText={errors.sprint_group?.message}
               />
-              {errors.sprint_group && (
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <InputLabel id="label_date_start">Date de début *</InputLabel>
+              <TextField
+                id="date-start"
+                type="date"
+                sx={{ width: 250 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                defaultValue={defaultStartDate}
+                {...register("starting_date")}
+              />
+
+              {errors.starting_date && (
                 <Typography variant="subtitle1" color="error">
-                  {errors.sprint_group.message}
+                  {errors.starting_date.message}
                 </Typography>
               )}
             </Grid>
             <Grid item xs={12} sm={6}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Stack spacing={1}>
-                  <InputLabel id="label_date_start">Date de début *</InputLabel>
-                  <TextField
-                    id="date-start"
-                    type="date"
-                    sx={{ width: 250 }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    {...register("start", {
-                      required: "Choisissez une date de début ",
-                    })}
-                  />
-                </Stack>
-                {errors.start && (
-                  <Typography variant="subtitle1" color="error">
-                    {errors.start.message}
-                  </Typography>
-                )}
-              </LocalizationProvider>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <Stack spacing={1}>
-                  <InputLabel id="label_date_end">Date de fin *</InputLabel>
-                  <TextField
-                    id="date-end"
-                    type="date"
-                    sx={{ width: 250 }}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    {...register("end", {
-                      required: "Choisissez une date de fin ",
-                    })}
-                  />
-                </Stack>
-                {errors.end && (
-                  <Typography variant="subtitle1" color="error">
-                    {errors.end.message}
-                  </Typography>
-                )}
-              </LocalizationProvider>
+              <InputLabel id="label_date_end">Date de fin *</InputLabel>
+              <TextField
+                id="date-end"
+                type="date"
+                sx={{ width: 250 }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                defaultValue={defaultStartDate}
+                {...register("ending_date")}
+              />
+
+              {errors.ending_date && (
+                <Typography variant="subtitle1" color="error">
+                  {errors.ending_date.message}
+                </Typography>
+              )}
             </Grid>
           </Grid>
-          <Button variant="contained" type="submit" disabled={isSubmitting} sx={{ mt: 3, mb: 2 }}>
+          <Button variant="contained" type="submit" sx={{ mt: 3, mb: 2 }}>
             Sauvegarder
           </Button>
         </Box>
@@ -398,9 +270,10 @@ DialogDashbord.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   value: PropTypes.string.isRequired,
+  members: PropTypes.array.isRequired,
 };
 
-export default function ModalCreateSprint() {
+export default function ModalCreateSprint(props) {
   const [open, setOpen] = React.useState(false);
   const [value, setValue] = React.useState("Dione");
 
@@ -415,14 +288,25 @@ export default function ModalCreateSprint() {
       setValue(newValue);
     }
   };
-
   return (
     <Box>
       <List component="div" role="group">
-        <IconButton aria-label="delete" onClick={handleClickListItem} size="large" color="primary">
+        <IconButton
+          aria-label="delete"
+          onClick={handleClickListItem}
+          size="large"
+          color="primary"
+        >
           <AddIcon />
         </IconButton>
-        <DialogDashbord id="ringtone-menu" keepMounted open={open} onClose={handleClose} value={value} />
+        <DialogDashbord
+          id="ringtone-menu"
+          keepMounted
+          open={open}
+          onClose={handleClose}
+          value={value}
+          members={props.members}
+        />
       </List>
     </Box>
   );

@@ -76,58 +76,86 @@ module.exports = (app, pathname, db, connection, upload, path, fs) => {
         res.send("Error updating user data.");
       });
   });
-   app.put("/profil/background/:userId", upload.single("image"), async (req, res) => {
-     const userId = req.params.userId;
-     const url = req.protocol + "://" + req.get("host") + "/";
-     let imageUrlToDelete = "";
-     let imagebackground = req.file ? req.file.path : "";
-     let imagebackgroundTmp = req.file ? url + req.file.path : "";
-     // Check if the user already has an image
-     const userDoc = await db.collection("users").doc(userId).get();
-     const userData = userDoc.data();
-     if (
-       userData.imagebackground &&
-       imagebackgroundTmp !== userData.imagebackground
-     ) {
-       imageUrlToDelete = userData.imagebackground.replace(
-         req.protocol + "://" + req.get("host") + "/uploads",
-         ""
-       );
-     }
+  app.put(
+    "/profil/background/:userId",
+    upload.single("image"),
+    async (req, res) => {
+      const userId = req.params.userId;
+      const url = req.protocol + "://" + req.get("host") + "/";
+      let imageUrlToDelete = "";
+      let imagebackground = req.file ? req.file.path : "";
+      let imagebackgroundTmp = req.file ? url + req.file.path : "";
+      // Check if the user already has an image
+      const userDoc = await db.collection("users").doc(userId).get();
+      const userData = userDoc.data();
+      if (
+        userData.imagebackground &&
+        imagebackgroundTmp !== userData.imagebackground
+      ) {
+        imageUrlToDelete = userData.imagebackground.replace(
+          req.protocol + "://" + req.get("host") + "/uploads",
+          ""
+        );
+      }
 
-     // Add the new image URL to userDataToUpdate
-     const userDataToUpdate = {
-       imagebackground: imagebackground
-         ? url + imagebackground
-         : userData.imagebackground,
-     };
+      // Add the new image URL to userDataToUpdate
+      const userDataToUpdate = {
+        imagebackground: imagebackground
+          ? url + imagebackground
+          : userData.imagebackground,
+      };
 
-     // Update user data in Firestore
-     db.collection("users")
-       .doc(userId)
-       .update(userDataToUpdate)
-       .then(() => {
-         // If the user had an image and the image was changed, delete the old image from the "uploads" folder
-         if (
-           imageUrlToDelete &&
-           imagebackgroundTmp &&
-           imagebackgroundTmp !== userData.imagebackground
-         ) {
-           const imagePath = path.join(__dirname, "uploads", imageUrlToDelete);
-           fs.unlink(imagePath, (err) => {
-             if (err) {
-               console.log(err);
-             }
-           });
-         }
+      // Update user data in Firestore
+      db.collection("users")
+        .doc(userId)
+        .update(userDataToUpdate)
+        .then(() => {
+          // If the user had an image and the image was changed, delete the old image from the "uploads" folder
+          if (
+            imageUrlToDelete &&
+            imagebackgroundTmp &&
+            imagebackgroundTmp !== userData.imagebackground
+          ) {
+            const imagePath = path.join(__dirname, "uploads", imageUrlToDelete);
+            fs.unlink(imagePath, (err) => {
+              if (err) {
+                console.log(err);
+              }
+            });
+          }
 
-         res.send("User data updated successfully.");
-       })
-       .catch((err) => {
-         console.log(err);
-         res.send("Error updating user data.");
-       });
-   });
+          res.send("User data updated successfully.");
+        })
+        .catch((err) => {
+          console.log(err);
+          res.send("Error updating user data.");
+        });
+    }
+  );
+  app.get("/members", (req, res) => {
+    db.collection("users")
+      .where("status", "==", "étudiant")
+      .get()
+      .then((snapshot) => {
+        const users = [];
+        snapshot.forEach((doc) => {
+          console.log(doc);
+          const data = doc.data();
+          const user = {
+            uid: doc.id,
+            firstname: data.firstname,
+            lastname: data.lastname,
+            image: data.image,
+          };
+          users.push(user);
+        });
+        res.send(users);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.send("Error fetching users.");
+      });
+  });
 
   function createProgrammingLanguageArray(programmingLanguageString) {
     return programmingLanguageString.split(",");
