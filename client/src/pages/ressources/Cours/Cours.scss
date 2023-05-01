@@ -25,9 +25,15 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-evenly;
+    position: absolute;
+    height: 50vh;
+    margin-top: 20vh;
+    padding: 5vh 5vw;
+    width: 70vw;
+    margin-left: 15vw;
+    background-color: #555555,
 }
 
 .textfield {
     width: 40%;
 }
-

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -10,9 +11,7 @@ import {
   IconButton,
   CardContent,
   Card,
-  Divider,
-  List,
-  ListItem,
+  Autocomplete,
   Typography,
   Button,
   CardMedia,
@@ -21,6 +20,7 @@ import {
   Grid,
   TextField,
   InputAdornment,
+  Modal,
 } from "@mui/material";
 
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -28,13 +28,15 @@ import ViewModule from "@mui/icons-material/ViewModule";
 import AddIcon from "@mui/icons-material/Add";
 import BackpackIcon from "@mui/icons-material/Backpack";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
-import FavoriteRounded from "@mui/icons-material/FavoriteRounded";
 import SearchIcon from "@mui/icons-material/SearchRounded";
+import CloseRounded from "@mui/icons-material/CloseRounded";
 
 import "./Cours.scss";
 import imageUrl from "./vue.png";
 
 export default function Ressources() {
+  let navigate = useNavigate();
+
   const loggedUser = localStorage.getItem("user");
   const loggedUserParsed = JSON.parse(loggedUser);
   var userStatus = loggedUserParsed.status;
@@ -43,13 +45,14 @@ export default function Ressources() {
   const [view, setView] = useState("module");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [ressources, setRessources] = useState([]);
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [open, setOpen] = useState(false);
+
   const filteredCourses = courses.filter(
     (course) =>
-      course.title &&
-      course.title.toLowerCase().includes(searchTerm.toLowerCase())
+      course.data.title &&
+      course.data.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleChangePage = (event, newPage) => {
@@ -61,40 +64,47 @@ export default function Ressources() {
     setPage(0);
   };
 
-  // * FUNCTION
+  const handleClose = () => {
+    setOpen(false);
+  };
 
-  //* CHANGE THE VIEW OF THE CARD BOARD
   const viewChange = (event, nextView) => {
     if (nextView !== null) {
       setView(nextView);
     }
   };
 
+  const getAllCours = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/cours")
+        .then((res) => {
+          setCourses(res.data.cours);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    const fetchRessources = async () => {
-      try {
-        const response = await axios.get("http://localhost:5050/ressources");
-        setRessources(response.data);
-        setCourses(response.data);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchRessources();
+    getAllCours();
   }, []);
 
-  const navigate = useNavigate();
-  const createCardRoute = () => navigate("/createCard");
+  const createCourse = () => {
+    setOpen(true);
+  };
+
   const pdfBacklogRoute = () => navigate("/pdfBacklog");
   const pdfSupportRoute = () => navigate("/pdfSupport");
 
-  if (ressources.length === 0) {
-    return <div>Aucune carte à afficher</div>;
-  }
+  const onSubmit = async (e) => {};
 
-  console.log(filteredCourses);
-  console.log(userStatus);
+  const handleSubmit = () => {
+    console.log("Submited");
+  };
 
   return (
     <div className="cours-container">
@@ -150,20 +160,133 @@ export default function Ressources() {
             </form>
           </div>
           {userStatus === "po" ? (
-            <div className="btn-add-cours">
-              <Button
-                variant="contained"
-                color="primary"
-                aria-label="add"
-                onClick={createCardRoute}
-              >
-                Ajouter un cours <AddIcon />
-              </Button>
-            </div>
+            <>
+              <div className="btn-add-cours">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  aria-label="add"
+                  onClick={createCourse}
+                >
+                  Ajouter un cours <AddIcon />
+                </Button>
+              </div>
+            </>
           ) : (
             <div></div>
           )}
         </div>
+
+        <Modal open={open} onClose={handleClose}>
+          <form onSubmit={handleSubmit(onSubmit)} className="create-card-form">
+            <IconButton
+              sx={{
+                marginLeft: "80%",
+                width: "50px",
+                height: "50px",
+              }}
+              onClick={handleClose}
+            >
+              <CloseRounded />
+            </IconButton>
+            <TextField
+              className="textfield"
+              id="title"
+              name="title"
+              label="Nom du cours"
+              variant="standard"
+              type="text"
+              // {...register("title")}
+            />
+            <TextField
+              className="textfield"
+              id="date"
+              name="date"
+              label=" "
+              variant="standard"
+              type="date"
+              // {...register("date")}
+            />
+            <TextField
+              className="textfield"
+              id="image"
+              name="image"
+              label="Image du cours"
+              variant="standard"
+            />
+            <TextField
+              className="textfield"
+              id="po"
+              name="po"
+              label="PO"
+              variant="standard"
+              type="text"
+              // {...register("po")}
+            />
+            {/* <Controller
+              name="po"
+              {...register("membres", {
+                required: true,
+                validate: {
+                  valid: (event, item) => {
+                    if (event.length < 2 || event.length > 4) {
+                      return false;
+                    }
+                  },
+                },
+              })}
+              // control={control}
+              render={({ field: { onChange, value } }) => (
+                <Autocomplete
+                  multiple
+                  id="tags-outlined"
+                  onChange={(event, item) => {
+                    onChange(item);
+                  }}
+                  value={value}
+                  // options={membres}
+                  getOptionLabel={(option) =>
+                    `${option.firstname + option.lastname}`
+                  }
+                  filterSelectedOptions
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Membres*"
+                      placeholder="Choissisez vos partenanires"
+                    />
+                  )}
+                />
+              )}
+            /> */}
+            <TextField
+              className="textfield"
+              id="desc"
+              name="desc"
+              label="Description du cours"
+              variant="standard"
+              type="text"
+              multiline
+              maxRows={7}
+              sx={{
+                width: "70%",
+              }}
+              // {...register("description")}
+            />
+
+            <Button
+              type="submit"
+              color="primary"
+              sx={{
+                marginLeft: "30%",
+                marginRight: "30%",
+                marginTop: "10px",
+              }}
+            >
+              Submit
+            </Button>
+          </form>
+        </Modal>
 
         {view === "module" ? (
           rows.length > 0 && (
@@ -196,107 +319,107 @@ export default function Ressources() {
       </Container>
 
       {view === "module" ? (
-        <Grid container spacing={2}>
-          {rows
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((dashboard) => (
-              <Grid item xs={3} key={dashboard.id}>
-                {/* <CardBoard
-                  picture={dashboard.picture}
-                  sprint_group={dashboard.sprint_group}
-                  fav={dashboard.favorite}
-                  isFavoris={favorisTell}
-                  id={dashboard.id}
-                /> */}
+        <Container
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            width: "100%",
+            margin: 0,
+            paddingTop: "20px",
+          }}
+        >
+          <Grid container spacing={2}>
+            {filteredCourses.map((course) => (
+              <Grid item xs={12} sm={6} md={4}>
+                <Card>
+                  <CardMedia
+                    style={{ resizeMode: "contain" }}
+                    src={course.data.imageCourseUrl}
+                    width="100%"
+                    title="Contemplative Reptile"
+                    component="img"
+                  />
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div">
+                      {course.data.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {course.data.description}
+                    </Typography>
+                    <Tooltip title="BackLog">
+                      <IconButton onClick={pdfBacklogRoute}>
+                        <BackpackIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Support">
+                      <IconButton onClick={pdfSupportRoute}>
+                        <PictureAsPdfIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </CardContent>
+                </Card>
               </Grid>
             ))}
-        </Grid>
+          </Grid>
+        </Container>
       ) : (
-        rows.length > 0 &&
-        // <TableBoard
-        //   rows={rows}
-        //   addFavorite={favorisTell}
-        //   deleteBoards={deleteBoards}
-        // />
-        console.log("")
-      )}
-
-      <Container
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          width: "100%",
-          margin: 0,
-          paddingTop: "20px",
-        }}
-      >
-        {filteredCourses.map((ressource) => (
-          <Card
-            key={ressource.id}
-            style={{
-              width: "24%",
-              margin: "auto",
-              marginBottom: "20px",
-              transition: "0.3s",
-              boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
-              "&:hover": {
-                boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)",
-              },
-            }}
-          >
-            <CardMedia
-              style={{ resizeMode: "contain" }}
-              src={imageUrl} // À Modifier pour afficher l'image Choisie par l'utilisateur
-              height="140"
-              title="Contemplative Reptile"
-              component="img"
-            />
-            <CardContent
-              style={{
-                textAlign: "left",
-                flexDirection: "column",
-              }}
-            >
-              <Typography
-                variant={"h6"}
-                gutterBottom
-                paragraph
-                sx={{ fontSize: 25 }}
-              >
-                {ressource.title}
-              </Typography>
-              <Typography variant={"caption"} paragraph sx={{ fontSize: 18 }}>
-                Description : {ressource.description}
-              </Typography>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  alignItems: "center",
-                  marginTop: 10,
-                }}
-              >
-                <Tooltip title="BackLog">
-                  <IconButton onClick={pdfBacklogRoute}>
-                    <BackpackIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Support">
-                  <IconButton onClick={pdfSupportRoute}>
-                    <PictureAsPdfIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Favori">
-                  <IconButton onClick={""}>
-                    <FavoriteRounded />
-                  </IconButton>
-                </Tooltip>
+        <div className="list-view-container">
+          {filteredCourses.map((course) => (
+            <Card className="list-card">
+              <div className="list-card-content">
+                <CardMedia
+                  className="list-card-image"
+                  src={course.data.imageCourseUrl}
+                  title={course.data.title}
+                />
+                <div className="list-card-details">
+                  <CardContent>
+                    <Typography variant="h5" component="h2">
+                      {course.data.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {course.data.description}
+                    </Typography>
+                  </CardContent>
+                  <div className="list-card-actions">
+                    <Tooltip title="Ouvrir le cours">
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        onClick={() => navigate(`/cours/${course._id}`)}
+                      >
+                        Ouvrir
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="Télécharger en PDF">
+                      <Button
+                        variant="contained"
+                        color="secondary"
+                        size="small"
+                        startIcon={<PictureAsPdfIcon />}
+                      >
+                        PDF
+                      </Button>
+                    </Tooltip>
+                    <Tooltip title="BackLog">
+                      <IconButton onClick={pdfBacklogRoute}>
+                        <BackpackIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Support">
+                      <IconButton onClick={pdfSupportRoute}>
+                        <PictureAsPdfIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </Container>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
