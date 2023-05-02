@@ -20,20 +20,50 @@
     justify-content: center;
 }
 
+.modal-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
 .create-card-form {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: wrap;
     justify-content: space-evenly;
     position: absolute;
-    height: 50vh;
-    margin-top: 20vh;
-    padding: 5vh 5vw;
+    padding: 5vh;
     width: 70vw;
-    margin-left: 15vw;
+    height: 70vw;
     background-color: #555555,
 }
 
-.textfield {
-    width: 40%;
+.dropzone-coursimg-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+p.info-dropdown-img {
+    font-weight: bold;
+    text-align: center;
+}
+
+.switch-btn-container {
+    display: flex;
+    align-items: center;
+}
+
+img.img-dropdown-zone {
+    width: 100%;
+    height: 100%;
+}
+
+.select-class-allpo-container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
 }

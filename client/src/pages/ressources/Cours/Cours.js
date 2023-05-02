@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import axios, { all } from "axios";
+import axios from "axios";
 
 import {
   Container,
@@ -23,6 +23,9 @@ import {
   Modal,
   MenuItem,
   Select,
+  Switch,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -33,10 +36,11 @@ import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import CloseRounded from "@mui/icons-material/CloseRounded";
 
-import "./Cours.scss";
-import imageUrl from "./vue.png";
+import Dropzone from "./Dropzone";
 
-export default function Ressources() {
+import "./Cours.scss";
+
+const Ressources = () => {
   let navigate = useNavigate();
 
   const loggedUser = localStorage.getItem("user");
@@ -56,24 +60,36 @@ export default function Ressources() {
   const [courseDescription, setCourseDescription] = useState("");
   const [courseDate, setCourseDate] = useState("");
   const [courseCampusNumerique, setCourseCampusNumerique] = useState(false);
-  const [courseClass, setCourseClass] = useState("");
   const [courseOwner, setCourseOwner] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
+  const [courseImageBase64, setCourseImageBase64] = useState("");
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    control,
-    formState,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
-  } = useForm({
+  const [files, setFiles] = useState([]);
+
+  const handleDrop = useCallback((acceptedFiles) => {
+    setFiles((files) => [...files, ...acceptedFiles]);
+  }, []);
+
+  const handleRemove = (file) => () => {
+    setFiles((files) => files.filter((f) => f !== file));
+  };
+
+  const rejectedFiles = files.filter((file) => file.errors);
+
+  const handleFileChange = (fileData) => {
+    console.log("File data:", fileData);
+    setCourseImageBase64(fileData);
+  };
+
+  const { control } = useForm({
     mode: "onTouched",
   });
 
   const [open, setOpen] = useState(false);
 
   const [allpo, setAllPo] = useState([]);
+  const [allclass, setAllclass] = useState([]);
 
   const filteredCourses = courses.filter(
     (course) =>
@@ -130,17 +146,41 @@ export default function Ressources() {
     }
   };
 
+  const getAllClass = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/classes")
+        .then((res) => {
+          setAllclass(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const createNewCours = async () => {
+    console.log(courseTitle);
+    console.log(courseDescription);
+    console.log(courseDate);
+    console.log(courseCampusNumerique);
+    console.log(selectedClass);
+    console.log(courseOwner);
+    console.log(coursePrivate);
+    console.log(courseImageBase64);
     try {
       await axios
         .post("http://localhost:5050/ressources/cours", {
-          courseTitle,
-          courseDescription,
-          courseDate,
-          courseCampusNumerique,
-          courseClass,
-          courseOwner,
-          coursePrivate,
+          title: courseTitle,
+          description: courseDescription,
+          date: courseDate,
+          campus_numerique: courseCampusNumerique,
+          courseClass: selectedClass,
+          owner: courseOwner,
+          private: coursePrivate,
+          imageBase64: courseImageBase64,
         })
         .then((res) => {
           console.log(res.data);
@@ -156,6 +196,7 @@ export default function Ressources() {
   useEffect(() => {
     getAllCours();
     getAllPo();
+    getAllClass();
   }, []);
 
   const createCourse = () => {
@@ -165,11 +206,9 @@ export default function Ressources() {
   const pdfBacklogRoute = () => navigate("/pdfBacklog");
   const pdfSupportRoute = () => navigate("/pdfSupport");
 
-  const onSubmit = async (e) => {
-    console.log("submited & create cours !!");
+  const onSubmit = async () => {
+    createNewCours();
   };
-
-  console.log(allpo);
 
   return (
     <div className="cours-container">
@@ -243,109 +282,182 @@ export default function Ressources() {
         </div>
 
         <Modal open={open} onClose={handleClose}>
-          <form className="create-card-form">
-            <IconButton
-              sx={{
-                marginLeft: "80%",
-                width: "50px",
-                height: "50px",
-              }}
-              onClick={handleClose}
-            >
-              <CloseRounded />
-            </IconButton>
-            <TextField
-              className="textfield"
-              id="title"
-              name="title"
-              label="Nom du cours"
-              variant="standard"
-              type="text"
-              // {...register("title")}
-            />
-            <TextField
-              className="textfield"
-              id="date"
-              name="date"
-              label=" "
-              variant="standard"
-              type="date"
-              // {...register("date")}
-            />
-            <TextField
-              className="textfield"
-              id="image"
-              name="image"
-              label="Image du cours"
-              variant="standard"
-            />
-            <TextField
-              className="textfield"
-              id="po"
-              name="po"
-              label="PO"
-              variant="standard"
-              type="text"
-              // {...register("po")}
-            />
-            <Controller
-              name="po"
-              control={control}
-              rules={{ required: true }}
-              render={({ field: { onChange, value } }) => (
-                <Autocomplete
-                  id="po-select"
-                  options={allpo}
-                  getOptionLabel={(option) =>
-                    `${option.lastname ? option.lastname.toUpperCase() : ""} ${
-                      option.firstname
-                    }`
-                  }
-                  value={allpo.find((po) => po.id === value) || ""}
-                  onChange={(event, newValue) => {
-                    onChange(newValue ? newValue.id : "");
-                  }}
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label="Select a PO"
-                      variant="outlined"
-                      inputProps={{
-                        ...params.inputProps,
-                        name: "po",
+          <div className="modal-container">
+            <form className="create-card-form">
+              <IconButton
+                sx={{
+                  marginLeft: "90%",
+                  width: "50px",
+                  height: "50px",
+                }}
+                onClick={handleClose}
+              >
+                <CloseRounded />
+              </IconButton>
+              <TextField
+                className="textfield"
+                id="title"
+                name="title"
+                label="Nom du cours"
+                variant="standard"
+                type="text"
+                defaultValue={courseTitle}
+                onChange={(e) => setCourseTitle(e.target.value)}
+              />
+              <TextField
+                className="textfield"
+                id="date"
+                name="date"
+                label=" "
+                variant="standard"
+                type="date"
+                defaultValue={courseDate}
+                onChange={(e) => setCourseDate(e.target.value)}
+              />
+
+              <div className="dropzone-coursimg-container">
+                <p className="info-dropdown-img">
+                  Drag and drop an image file here, or click to select an image
+                  file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
+                </p>
+                <Dropzone onDrop={handleDrop} onFileChange={handleFileChange}>
+                  {({ getRootProps, getInputProps }) => (
+                    <section>
+                      <div {...getRootProps()}>
+                        <input {...getInputProps()} />
+                        <p>
+                          Drag and drop some files here, or click to select
+                          files
+                        </p>
+                      </div>
+                    </section>
+                  )}
+                </Dropzone>
+                {rejectedFiles.length > 0 && (
+                  <div>
+                    <h4>Rejected files:</h4>
+                    <ul>
+                      {rejectedFiles.map((file) => (
+                        <li key={file.name}>
+                          {file.name} - {file.size} bytes - {file.type}
+                          <button onClick={handleRemove(file)}>Remove</button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+
+              <div className="switch-btn-container">
+                <FormControl fullWidth>
+                  <InputLabel id="campus-numerique-label">
+                    Campus Numérique
+                  </InputLabel>
+                  <Switch
+                    labelId="campus-numerique-label"
+                    checked={courseCampusNumerique}
+                    onChange={(event) =>
+                      setCourseCampusNumerique(event.target.checked)
+                    }
+                  />
+                </FormControl>
+                <FormControl fullWidth>
+                  <InputLabel id="private-label">En privée</InputLabel>
+                  <Switch
+                    labelId="campus-numerique-label"
+                    checked={coursePrivate}
+                    onChange={(event) => setCoursePrivate(event.target.checked)}
+                  />
+                </FormControl>
+              </div>
+
+              <div className="select-class-allpo-container">
+                <Select
+                  value={selectedClass}
+                  onChange={(event) => setSelectedClass(event.target.value)}
+                  displayEmpty
+                  renderValue={(value) => value || "Choisir la classe"}
+                >
+                  <MenuItem value="">Choisir une option</MenuItem>
+                  {allclass.map((cours) => (
+                    <MenuItem key={cours.id} value={cours.name}>
+                      {cours.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+
+                <Controller
+                  name="po"
+                  control={control}
+                  rules={{ required: true }}
+                  render={({ field: { onChange, value } }) => (
+                    <Autocomplete
+                      id="po-select"
+                      sx={{
+                        width: "80%",
                       }}
+                      options={allpo}
+                      getOptionLabel={(option) =>
+                        `${
+                          option.lastname ? option.lastname.toUpperCase() : ""
+                        } ${option.firstname}`
+                      }
+                      value={allpo.find((po) => po.id === value) || ""}
+                      onChange={(event, newValue) => {
+                        onChange(newValue ? newValue.id : "");
+                        setCourseOwner(
+                          newValue
+                            ? `${newValue.lastname.toUpperCase()} ${
+                                newValue.firstname
+                              }`
+                            : null
+                        );
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Select a PO"
+                          variant="outlined"
+                          inputProps={{
+                            ...params.inputProps,
+                            name: "po",
+                          }}
+                        />
+                      )}
                     />
                   )}
                 />
-              )}
-            />
-            <TextField
-              className="textfield"
-              id="desc"
-              name="desc"
-              label="Description du cours"
-              variant="standard"
-              type="text"
-              multiline
-              maxRows={7}
-              sx={{
-                width: "70%",
-              }}
-              // {...register("description")}
-            />
+              </div>
 
-            <Button
-              color="primary"
-              sx={{
-                marginLeft: "30%",
-                marginRight: "30%",
-                marginTop: "10px",
-              }}
-              onClick={onSubmit}
-            >
-              Submit
-            </Button>
-          </form>
+              <TextField
+                className="textfield"
+                id="desc"
+                name="desc"
+                label="Description du cours"
+                variant="standard"
+                type="text"
+                multiline
+                maxRows={7}
+                sx={{
+                  width: "100%",
+                }}
+                defaultValue={courseDescription}
+                onChange={(e) => setCourseDescription(e.target.value)}
+              />
+
+              <Button
+                color="primary"
+                sx={{
+                  marginLeft: "30%",
+                  marginRight: "30%",
+                  marginTop: "10px",
+                }}
+                onClick={onSubmit}
+              >
+                Submit
+              </Button>
+            </form>
+          </div>
         </Modal>
 
         {view === "module" ? (
@@ -392,7 +504,14 @@ export default function Ressources() {
           <Grid container spacing={2}>
             {filteredCourses.map((course) => (
               <Grid item xs={12} sm={6} md={4}>
-                <Card>
+                <Card
+                  sx={{
+                    height: "45vh",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
                   <CardMedia
                     style={{ resizeMode: "contain" }}
                     src={course.data.imageCourseUrl}
@@ -490,4 +609,6 @@ export default function Ressources() {
       )}
     </div>
   );
-}
+};
+
+export default Ressources;
