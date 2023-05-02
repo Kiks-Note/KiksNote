@@ -78,6 +78,23 @@ module.exports = (app, db, bucket, mime) => {
     }
   });
 
+  app.get("/ressources/classes", async (req, res) => {
+    try {
+      const snapshot = await db.collection("class").get();
+      const classes = [];
+      snapshot.forEach((doc) => {
+        classes.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      res.status(200).send(classes);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(error);
+    }
+  });
+
   // Route pour récupérer tous les cours
   app.get("/ressources/cours", async (req, res) => {
     try {
