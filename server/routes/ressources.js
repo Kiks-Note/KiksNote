@@ -134,12 +134,37 @@ module.exports = (app, db, bucket, mime) => {
     }
   });
 
+  // Route pour supprimer un cours par son id de document et l'image du cours stocké dans Firebase Storage
+  app.delete("/ressources/cours/:id", async (req, res) => {
+    try {
+      const resourceRef = db.collection("cours").doc(req.params.id);
+      const resource = await resourceRef.get();
+
+      if (!resource.exists) {
+        return res.status(404).send("Cours non trouvé");
+      }
+
+      await resourceRef.delete();
+
+      const fileName = resource.data().title;
+      console.log(fileName);
+      const file = bucket.file(`cours/${fileName}.png`);
+
+      await file.delete();
+
+      res.status(200).send("Cours supprimé avec succès");
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Erreur lors de la suppression du cours.");
+    }
+  });
+
   // Route pour récuperer dans la collection users, tous les users qui ont le status de po
-  app.get("/ressources/allpo", async (req, res) => {
+  app.get("/ressources/instructors", async (req, res) => {
     try {
       const snapshot = await db
         .collection("users")
-        .where("status", "==", "po")
+        .where("status", "in", ["po", "pedago"])
         .get();
       const users = snapshot.docs.map((doc) => {
         return { id: doc.id, ...doc.data() };
