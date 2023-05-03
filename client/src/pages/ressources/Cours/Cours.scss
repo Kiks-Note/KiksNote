@@ -40,6 +40,12 @@
     background-color: #555555,
 }
 
+.title-cours-date-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .dropzone-coursimg-container {
     display: flex;
     flex-direction: column;

@@ -3,6 +3,7 @@ import { useDropzone } from "react-dropzone";
 import { Alert } from "@mui/material";
 
 import DropZoneImg from "../../../assets/img/dropzone-img.svg";
+import ErrorDropzone from "../../../assets/img/warning-dropzone.svg";
 
 const validTypes = [
   "image/jpeg",
@@ -56,8 +57,18 @@ const Dropzone = (props) => {
     >
       <input {...getInputProps()} />
       {isDragActive && <p>Drop the image file here ...</p>}
-      {error && <Alert severity="error">{error}</Alert>}
-      {imageData ? (
+      {error ? (
+        <>
+          <div>
+            <Alert severity="error">{error}</Alert>
+            <img
+              className="img-dropdown-zone"
+              src={ErrorDropzone}
+              alt="error-img"
+            />
+          </div>
+        </>
+      ) : imageData ? (
         <div>
           <img src={imageData} alt="preview" style={{ maxWidth: "100%" }} />
         </div>
