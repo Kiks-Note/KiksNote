@@ -8,6 +8,7 @@ import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Tuto from "./pages/blog/Tuto";
 import Cours from "./pages/ressources/Cours/Cours";
+import CoursInfo from "./pages/ressources/Cours/CoursInfo";
 import PDFBacklogCartView from "./pages/ressources/PDFBacklogCardView";
 import PDFSupport from "./pages/ressources/PDFSupportCardView";
 import PublicRoutes from "./utils/PublicRoutes";
@@ -41,6 +42,7 @@ function RoutesProvider() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/cours" element={<Cours />} />
+          <Route path="/cours/:id" element={<CoursInfo />} />
           <Route path="/pdfbacklog" element={<PDFBacklogCartView />} />
           <Route path="/pdfsupport" element={<PDFSupport />} />
           <Route path="/profil" element={<Profil />} />
