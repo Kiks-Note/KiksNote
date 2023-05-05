@@ -35,7 +35,7 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
         imageBase64.replace(/^data:image\/\w+;base64,/, ""),
         "base64"
       );
-      const file = bucket.file(`cours/${fileName}`);
+      const file = bucket.file(`${courseClass}/${title}/${fileName}`);
 
       const options = {
         metadata: {
@@ -78,8 +78,8 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
     }
   });
 
-  // Route pour télécharger un fichier PDF
-  app.post("/upload-pdf", (req, res) => {
+  // Route pour uploader un fichier pdf dans Firebase Storage
+  app.post("/ressources/cours/upload-pdf", (req, res) => {
     upload(req, res, (err) => {
       if (err instanceof multer.MulterError) {
         res.status(400).json({ error: "Error uploading file." });
@@ -90,18 +90,27 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
         const fileType = mime.lookup(filePath);
         const fileSize = req.file.size;
 
-        const pdfRef = bucket.file(`cours/${req.file.originalname}`);
-        const options = {
-          metadata: {
-            contentType: fileType || "application/pdf",
-            cacheControl: "public, max-age=31536000",
-          },
-        };
+        const folderPath = `${req.body.courseClass}/${req.body.title}`;
+        const fileName = req.file.originalname;
 
-        pdfRef
-          .save(fs.readFileSync(req.file.path), options)
-          .then(() => {
-            pdfRef
+        // Créer une référence au fichier dans Firebase Storage
+        const fileRef = bucket.file(`${folderPath}/${fileName}`);
+
+        // Uploader le fichier dans Firebase Storage
+        fileRef
+          .createWriteStream({
+            metadata: {
+              contentType: fileType || "application/pdf",
+              cacheControl: "public, max-age=31536000",
+            },
+          })
+          .on("error", (error) => {
+            console.error(error);
+            res.status(400).json({ error: error.message });
+          })
+          .on("finish", () => {
+            // Récupérer l'URL de téléchargement du fichier
+            fileRef
               .getSignedUrl({
                 action: "read",
                 expires: "03-17-2025",
@@ -110,17 +119,19 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
                 res.json({
                   success: true,
                   file: {
-                    name: req.file.originalname,
+                    name: fileName,
                     type: fileType,
                     size: fileSize,
                     url: url,
                   },
                 });
+              })
+              .catch((error) => {
+                console.error(error);
+                res.status(400).json({ error: error.message });
               });
           })
-          .catch((error) => {
-            res.status(400).json({ error: error.message });
-          });
+          .end(fs.readFileSync(filePath));
       }
     });
   });
