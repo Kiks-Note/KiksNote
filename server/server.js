@@ -17,31 +17,29 @@ const multer = require("multer");
 const mime = require("mime-types");
 
 const DIR = "uploads/";
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: function (req, file, cb) {
     cb(null, DIR);
   },
-  filename: (req, file, cb) => {
-    const fileName = file.originalname.toLowerCase().split(" ").join("-");
-    cb(null, uuidv4() + "-" + fileName);
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
   },
 });
 
-var upload = multer({
+const upload = multer({
   storage: storage,
-  fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype == "image/png" ||
-      file.mimetype == "image/jpg" ||
-      file.mimetype == "image/jpeg"
-    ) {
-      cb(null, true);
-    } else {
-      cb(null, false);
-      return cb(new Error("Only .png, .jpg and .jpeg format allowed!"));
+  limits: { fileSize: 1024 * 1024 * 5 },
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype !== "application/pdf") {
+      return cb(new Error("Le fichier doit être un PDF"));
     }
+    cb(null, true);
   },
-});
+}).single("file");
 
 const bucket = storageFirebase.bucket();
 
@@ -95,4 +93,4 @@ require("./routes/auth")(
   signInWithEmailAndPassword
 );
 
-require("./routes/ressources")(app, db, bucket, mime);
+require("./routes/ressources")(app, db, bucket, mime, upload, multer, fs);

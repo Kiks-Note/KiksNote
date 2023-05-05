@@ -1,4 +1,4 @@
-module.exports = (app, db, bucket, mime) => {
+module.exports = (app, db, bucket, mime, upload, multer, fs) => {
   // Route pour créer un nouveau cours
   app.post("/ressources/cours", async (req, res) => {
     try {
@@ -76,6 +76,53 @@ module.exports = (app, db, bucket, mime) => {
       console.error(err);
       res.status(500).send("Erreur lors de la création du cours.");
     }
+  });
+
+  // Route pour télécharger un fichier PDF
+  app.post("/upload-pdf", (req, res) => {
+    upload(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Error uploading file." });
+      } else if (err) {
+        res.status(400).json({ error: err.message });
+      } else {
+        const filePath = req.file.path;
+        const fileType = mime.lookup(filePath);
+        const fileSize = req.file.size;
+
+        const pdfRef = bucket.file(`cours/${req.file.originalname}`);
+        const options = {
+          metadata: {
+            contentType: fileType || "application/pdf",
+            cacheControl: "public, max-age=31536000",
+          },
+        };
+
+        pdfRef
+          .save(fs.readFileSync(req.file.path), options)
+          .then(() => {
+            pdfRef
+              .getSignedUrl({
+                action: "read",
+                expires: "03-17-2025",
+              })
+              .then((url) => {
+                res.json({
+                  success: true,
+                  file: {
+                    name: req.file.originalname,
+                    type: fileType,
+                    size: fileSize,
+                    url: url,
+                  },
+                });
+              });
+          })
+          .catch((error) => {
+            res.status(400).json({ error: error.message });
+          });
+      }
+    });
   });
 
   app.get("/ressources/classes", async (req, res) => {
