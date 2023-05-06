@@ -247,9 +247,9 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
     try {
       const resourceRef = await db.collection("cours").doc(req.params.id).get();
       if (!resourceRef.exists) {
-        res.status(404).send("Cours non trouvé");
+        return res.status(404).send("Cours non trouvé");
       } else {
-        res.status(200).json({
+        return res.status(200).send({
           id: resourceRef.id,
           data: resourceRef.data(),
         });
@@ -260,9 +260,15 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
     }
   });
 
-  // Route pour supprimer un cours par son id de document et l'image du cours stocké dans Firebase Storage
   app.delete("/ressources/cours/:id", async (req, res) => {
     try {
+      const {
+        courseClass,
+        title,
+        fileNameCours = null,
+        fileNameBacklog = null,
+      } = req.body;
+
       const resourceRef = db.collection("cours").doc(req.params.id);
       const resource = await resourceRef.get();
 
@@ -272,16 +278,47 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
 
       await resourceRef.delete();
 
-      const fileName = resource.data().title;
-      console.log(fileName);
-      const file = bucket.file(`cours/${fileName}.png`);
+      const folderPath = `${courseClass}/${title}`;
 
-      await file.delete();
+      const filePng = bucket.file(`${folderPath}/${title}.png`);
+      if (await filePng.exists()) {
+        await filePng.delete();
+      } else {
+        console.log(`File ${folderPath}/${title}.png does not exist`);
+      }
 
-      res.status(200).send("Cours supprimé avec succès");
+      if (fileNameCours !== null) {
+        const fileCoursePdf = bucket.file(
+          `${courseClass}/${title}/${fileNameCours}`
+        );
+        const exists = await fileCoursePdf.exists();
+        if (exists) {
+          await fileCoursePdf.delete();
+        } else {
+          console.log(
+            `File ${courseClass}/${title}/${fileNameCours} does not exist`
+          );
+        }
+      }
+
+      if (fileNameBacklog !== null) {
+        const fileBacklogPdf = bucket.file(
+          `${courseClass}/${title}/${fileNameBacklog}`
+        );
+        const exists = await fileBacklogPdf.exists();
+        if (exists) {
+          await fileBacklogPdf.delete();
+        } else {
+          console.log(
+            `File ${courseClass}/${title}/${fileNameBacklog} does not exist`
+          );
+        }
+      }
+
+      return res.status(200).send("Cours supprimé avec succès");
     } catch (err) {
       console.error(err);
-      res.status(500).send("Erreur lors de la suppression du cours.");
+      return res.status(500).send("Erreur lors de la suppression du cours.");
     }
   });
 
