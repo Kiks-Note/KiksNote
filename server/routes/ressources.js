@@ -78,7 +78,7 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
     }
   });
 
-  // Route pour uploader un fichier pdf dans Firebase Storage
+  // Route pour uploader un fichier pdf dans Firebase Storage en fonction du nom de la classe et du nom du cours
   app.post("/ressources/cours/upload-pdf", (req, res) => {
     upload(req, res, (err) => {
       if (err instanceof multer.MulterError) {
@@ -93,10 +93,8 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
         const folderPath = `${req.body.courseClass}/${req.body.title}`;
         const fileName = req.file.originalname;
 
-        // Créer une référence au fichier dans Firebase Storage
         const fileRef = bucket.file(`${folderPath}/${fileName}`);
 
-        // Uploader le fichier dans Firebase Storage
         fileRef
           .createWriteStream({
             metadata: {
@@ -109,13 +107,20 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
             res.status(400).json({ error: error.message });
           })
           .on("finish", () => {
-            // Récupérer l'URL de téléchargement du fichier
             fileRef
               .getSignedUrl({
                 action: "read",
                 expires: "03-17-2025",
               })
               .then((url) => {
+                const courseId = req.body.courseId;
+
+                const pdfLinkCours = url.toString();
+
+                db.collection("cours").doc(courseId).update({
+                  pdfLinkCours: pdfLinkCours,
+                });
+
                 res.json({
                   success: true,
                   file: {
