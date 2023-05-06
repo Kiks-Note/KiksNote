@@ -78,7 +78,7 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
     }
   });
 
-  // Route pour uploader un fichier pdf dans Firebase Storage en fonction du nom de la classe et du nom du cours
+  // Route pour uploader le fichier cours pdf dans Firebase Storage en fonction du nom de la classe et du nom du cours
   app.post("/ressources/cours/upload-pdf", (req, res) => {
     upload(req, res, (err) => {
       if (err instanceof multer.MulterError) {
@@ -134,6 +134,69 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
               .catch((error) => {
                 console.error(error);
                 res.status(400).json({ error: error.message });
+              });
+          })
+          .end(fs.readFileSync(filePath));
+      }
+    });
+  });
+
+  // Route pour uploader le fichier backlog pdf dans Firebase Storage en fonction du nom de la classe et du nom du cours
+  app.post("/ressources/cours/backlog/upload-pdf", (req, res) => {
+    upload(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Error uploading file." });
+      } else if (err) {
+        res.status(400).json({ error: err.message });
+      } else {
+        const filePath = req.file.path;
+        const fileType = mime.lookup(filePath);
+        const fileSize = req.file.size;
+
+        const folderPath = `${req.body.courseClass}/${req.body.title}`;
+        const fileName = req.file.originalname;
+
+        const fileRef = bucket.file(`${folderPath}/${fileName}`);
+
+        fileRef
+          .createWriteStream({
+            metadata: {
+              contentType: fileType || "application/pdf",
+              cacheControl: "public, max-age=31536000",
+            },
+          })
+          .on("error", (error) => {
+            console.error(error);
+            res.status(400).json({ error: error.message });
+          })
+          .on("finish", () => {
+            fileRef
+              .getSignedUrl({
+                action: "read",
+                expires: "03-17-2025",
+              })
+              .then((url) => {
+                const courseId = req.body.courseId;
+
+                const pdfLinkBackLog = url.toString();
+
+                db.collection("cours").doc(courseId).update({
+                  pdfLinkBackLog: pdfLinkBackLog,
+                });
+
+                res.status(200).send({
+                  success: true,
+                  file: {
+                    name: fileName,
+                    type: fileType,
+                    size: fileSize,
+                    url: url,
+                  },
+                });
+              })
+              .catch((error) => {
+                console.error(error);
+                res.status(400).send({ error: error.message });
               });
           })
           .end(fs.readFileSync(filePath));

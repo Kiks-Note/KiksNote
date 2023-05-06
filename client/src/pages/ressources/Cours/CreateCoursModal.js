@@ -119,10 +119,17 @@ const CreateCoursModal = (props) => {
 
           <div className="switch-btn-container">
             <FormControl fullWidth>
-              <InputLabel id="campus-numerique-label">
+              <label
+                id="campus-numerique-label"
+                style={{ position: "absolute", top: 10 }}
+              >
                 Campus Numérique
-              </InputLabel>
+              </label>
               <Switch
+                sx={{
+                  marginTop: "30px",
+                  marginBottom: "10px",
+                }}
                 labelId="campus-numerique-label"
                 checked={props.courseCampusNumerique}
                 onChange={(event) =>
@@ -131,8 +138,17 @@ const CreateCoursModal = (props) => {
               />
             </FormControl>
             <FormControl fullWidth>
-              <InputLabel id="private-label">En privée</InputLabel>
+              <label
+                id="private-label"
+                style={{ position: "absolute", top: 10 }}
+              >
+                En privée
+              </label>
               <Switch
+                sx={{
+                  marginTop: "30px",
+                  marginBottom: "10px",
+                }}
                 labelId="campus-numerique-label"
                 checked={props.coursePrivate}
                 onChange={(event) =>

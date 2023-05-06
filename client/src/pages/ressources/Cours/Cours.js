@@ -364,7 +364,7 @@ const Ressources = () => {
                         src={course.data.imageCourseUrl}
                         alt="course image"
                         style={{
-                          objectFit: "cover",
+                          objectFit: "contain",
                           objectPosition: "center",
                           width: "100%",
                           minHeight: "150px",
@@ -514,6 +514,9 @@ const Ressources = () => {
                     <Card
                       className="list-card"
                       onClick={() => navigate(`/coursinfo/${course.id}`)}
+                      sx={{
+                        marginBottom: "20px",
+                      }}
                     >
                       <div className="list-card-content">
                         <CardMedia
@@ -574,6 +577,9 @@ const Ressources = () => {
                     <Card
                       className="list-card"
                       onClick={() => navigate(`/coursinfo/${course.id}`)}
+                      sx={{
+                        marginBottom: "20px",
+                      }}
                     >
                       <div className="list-card-content">
                         <CardMedia

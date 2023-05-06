@@ -9,8 +9,8 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import Tuto from "./pages/blog/Tuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
-import PDFBacklogCartView from "./pages/ressources/PDFBacklogCardView";
-import PDFSupport from "./pages/ressources/PDFSupportCardView";
+import CourseBacklogPdf from "./pages/ressources/Cours/PdfCoursBacklog";
+import PDFCourseView from "./pages/ressources/Cours/PdfCourseView";
 import PublicRoutes from "./utils/PublicRoutes";
 import Register from "./pages/register/Register";
 import Login from "./pages/login/Login";
@@ -41,13 +41,13 @@ function RoutesProvider() {
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
-          <Route path="/pdfbacklog" element={<PDFBacklogCartView />} />
-          <Route path="/pdfsupport" element={<PDFSupport />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/jpo" element={<Jpo />} />
           <Route path="/studentprojects" element={<StudentsProjects />} />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
+          <Route path="/pdfsupport" element={<PDFCourseView />} />
+          <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
           {/* 404 Page */}
         </Route>
         <Route path="*" element={<NotFound />} />

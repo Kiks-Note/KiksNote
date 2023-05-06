@@ -52,7 +52,7 @@ const Dropzone = (props) => {
         border: "2px dashed gray",
         padding: "20px",
         textAlign: "center",
-        width: "50%",
+        width: "90%",
       }}
     >
       <input {...getInputProps()} />
