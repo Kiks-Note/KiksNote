@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import {
-  Container,
   Box,
   ToggleButtonGroup,
   ToggleButton,
@@ -16,7 +15,6 @@ import {
   Button,
   CardMedia,
   Tooltip,
-  TablePagination,
   Grid,
   TextField,
   InputAdornment,
@@ -28,6 +26,7 @@ import AddIcon from "@mui/icons-material/Add";
 import BackpackIcon from "@mui/icons-material/Backpack";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import SearchIcon from "@mui/icons-material/SearchRounded";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import CreateCoursModal from "./CreateCoursModal";
 
@@ -65,8 +64,6 @@ const Ressources = () => {
 
   const [courses, setCourses] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-
-  const currentYear = new Date().getFullYear();
 
   const [courseTitle, setCourseTitle] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
@@ -207,36 +204,47 @@ const Ressources = () => {
     createNewCours();
   };
 
-  const filteredCoursesCurrentYear = courses.filter(
-    (course) =>
-      course.data.date.startsWith((currentYear - 1).toString()) ||
-      course.data.date.startsWith(currentYear.toString())
-  );
+  const today = new Date();
+  const currentYear =
+    today.getMonth() >= 8 ? today.getFullYear() : today.getFullYear() - 1;
+  const lastYear = currentYear - 1;
+  const startCurrentYear = new Date(currentYear, 8, 1);
+  const endCurrentYear = new Date(currentYear + 1, 7, 31);
+  const startLastYear = new Date(lastYear, 8, 1);
+  const endLastYear = new Date(lastYear + 1, 7, 31);
 
-  const filteredCoursesLastYear = courses.filter(
-    (course) =>
-      course.data.date.startsWith((currentYear - 2).toString()) ||
-      course.data.date.startsWith((currentYear - 1).toString())
-  );
+  const filteredCoursesCurrentYear = courses.filter((course) => {
+    const courseDate = new Date(course.data.date);
+    return courseDate >= startCurrentYear && courseDate <= endCurrentYear;
+  });
+
+  const filteredCoursesLastYear = courses.filter((course) => {
+    const courseDate = new Date(course.data.date);
+    return courseDate >= startLastYear && courseDate <= endLastYear;
+  });
 
   return (
     <>
       <div className="cours-container">
-        <Container
-          sx={{
+        <div
+          style={{
             display: "flex",
             flexDirection: "column",
             marginLeft: "0px",
+            width: "100%",
           }}
         >
-          <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
-            Mes Cours
-          </Typography>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ flexGrow: 1 }}
+          ></Typography>
           <div className="header-cours">
             <Box
               sx={{
                 width: "20%",
                 display: "flex",
+                padding: "20px",
               }}
             >
               <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -256,13 +264,14 @@ const Ressources = () => {
               </div>
             </Box>
             <div className="search-bar-container">
-              <form noValidate autoComplete="off">
+              <form noValidate autoComplete="off" style={{ width: "100%" }}>
                 <TextField
                   id="outlined-basic"
-                  label="Search"
+                  label="Rechercher votre Cours"
                   variant="outlined"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  sx={{ width: "100%" }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -316,21 +325,12 @@ const Ressources = () => {
             courseDescription={courseDescription}
             setCourseDescription={setCourseDescription}
           />
-        </Container>
+        </div>
 
         {view === "module" ? (
           <>
-            <Container
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-                width: "100%",
-                margin: 0,
-                paddingTop: "20px",
-              }}
-            >
-              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
+            <div className="grid-view-cours ">
+              <h1>Année {`${currentYear}  - ${currentYear + 1} `}</h1>
               <Grid container spacing={2}>
                 {(searchTerm.length > 0
                   ? [...filteredCoursesCurrentYear].filter(
@@ -342,37 +342,66 @@ const Ressources = () => {
                     )
                   : [...filteredCoursesCurrentYear]
                 ).map((course) => (
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <Card
                       sx={{
-                        height: "45vh",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-between",
+                        height: "300px",
                       }}
-                      onClick={() => navigate(`/cours/${course.id}`)}
+                      onClick={() => navigate(`/coursinfo/${course.id}`)}
                     >
                       <CardMedia
-                        style={{ resizeMode: "contain" }}
-                        src={course.data.imageCourseUrl}
-                        width="100%"
-                        title="Contemplative Reptile"
+                        sx={{
+                          width: "100%",
+                          minHeight: "150px",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
                         component="img"
+                        src={course.data.imageCourseUrl}
+                        alt="course image"
+                        style={{
+                          objectFit: "cover",
+                          objectPosition: "center",
+                          width: "100%",
+                          minHeight: "150px",
+                        }}
                       />
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
+
+                      <CardContent sx={{ padding: "10px", height: "120px" }}>
+                        <h2 gutterBottom variant="h3" component="div">
                           {course.data.title}
-                        </Typography>
+                        </h2>
                         <Typography variant="body2" color="text.secondary">
                           {course.data.description}
                         </Typography>
+                        <Tooltip title="Open">
+                          <IconButton
+                            onClick={() => navigate(`/coursinfo/${course.id}`)}
+                          >
+                            <OpenInNewIcon />
+                          </IconButton>
+                        </Tooltip>
                         <Tooltip title="BackLog">
-                          <IconButton onClick={pdfBacklogRoute}>
+                          <IconButton
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              pdfBacklogRoute();
+                            }}
+                          >
                             <BackpackIcon />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Support">
-                          <IconButton onClick={pdfSupportRoute}>
+                          <IconButton
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              pdfSupportRoute();
+                            }}
+                          >
                             <PictureAsPdfIcon />
                           </IconButton>
                         </Tooltip>
@@ -381,18 +410,9 @@ const Ressources = () => {
                   </Grid>
                 ))}
               </Grid>
-            </Container>
-            <Container
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-                width: "100%",
-                margin: 0,
-                paddingTop: "20px",
-              }}
-            >
-              <h1>Année {`${currentYear - 2}  - ${currentYear - 1} `}</h1>
+            </div>
+            <div className="grid-view-cours ">
+              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
               <Grid container spacing={2}>
                 {(searchTerm.length > 0
                   ? [...filteredCoursesLastYear].filter(
@@ -404,37 +424,66 @@ const Ressources = () => {
                     )
                   : [...filteredCoursesLastYear]
                 ).map((course) => (
-                  <Grid item xs={12} sm={6} md={4}>
+                  <Grid item xs={12} sm={6} md={3}>
                     <Card
                       sx={{
-                        height: "45vh",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "space-between",
+                        height: "300px",
                       }}
-                      onClick={() => navigate(`/cours/${course.id}`)}
+                      onClick={() => navigate(`/coursinfo/${course.id}`)}
                     >
                       <CardMedia
-                        style={{ resizeMode: "contain" }}
-                        src={course.data.imageCourseUrl}
-                        width="100%"
-                        title="Contemplative Reptile"
+                        sx={{
+                          width: "100%",
+                          minHeight: "150px",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
                         component="img"
+                        src={course.data.imageCourseUrl}
+                        alt="course image"
+                        style={{
+                          objectFit: "cover",
+                          objectPosition: "center",
+                          width: "100%",
+                          minHeight: "150px",
+                        }}
                       />
-                      <CardContent>
-                        <Typography gutterBottom variant="h5" component="div">
+
+                      <CardContent sx={{ padding: "10px", height: "120px" }}>
+                        <h2 gutterBottom variant="h3" component="div">
                           {course.data.title}
-                        </Typography>
+                        </h2>
                         <Typography variant="body2" color="text.secondary">
                           {course.data.description}
                         </Typography>
+                        <Tooltip title="Open">
+                          <IconButton
+                            onClick={() => navigate(`/coursinfo/${course.id}`)}
+                          >
+                            <OpenInNewIcon />
+                          </IconButton>
+                        </Tooltip>
                         <Tooltip title="BackLog">
-                          <IconButton onClick={pdfBacklogRoute}>
+                          <IconButton
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              pdfBacklogRoute();
+                            }}
+                          >
                             <BackpackIcon />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Support">
-                          <IconButton onClick={pdfSupportRoute}>
+                          <IconButton
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              pdfSupportRoute();
+                            }}
+                          >
                             <PictureAsPdfIcon />
                           </IconButton>
                         </Tooltip>
@@ -443,20 +492,12 @@ const Ressources = () => {
                   </Grid>
                 ))}
               </Grid>
-            </Container>
+            </div>
           </>
         ) : (
           <>
-            <Container
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                width: "100%",
-                margin: 0,
-                paddingTop: "20px",
-              }}
-            >
-              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
+            <div className="list-view-cours">
+              <h1>Année {`${currentYear}  - ${currentYear + 1} `}</h1>
               {(searchTerm.length > 0
                 ? [...filteredCoursesCurrentYear].filter(
                     (course) =>
@@ -470,7 +511,10 @@ const Ressources = () => {
                 (course) => (
                   console.log(course),
                   (
-                    <Card className="list-card">
+                    <Card
+                      className="list-card"
+                      onClick={() => navigate(`/coursinfo/${course.id}`)}
+                    >
                       <div className="list-card-content">
                         <CardMedia
                           className="list-card-image"
@@ -478,34 +522,21 @@ const Ressources = () => {
                           title={course.data.title}
                         />
                         <div className="list-card-details">
-                          <CardContent>
-                            <Typography variant="h5" component="h2">
+                          <CardContent sx={{ padding: "10px" }}>
+                            <h2 gutterBottom variant="h3" component="div">
                               {course.data.title}
-                            </Typography>
+                            </h2>
                             <Typography variant="body2" color="text.secondary">
                               {course.data.description}
                             </Typography>
-                          </CardContent>
-                          <div className="list-card-actions">
-                            <Tooltip title="Ouvrir le cours">
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                onClick={() => navigate(`/cours/${course.id}`)}
+                            <Tooltip title="Open">
+                              <IconButton
+                                onClick={() =>
+                                  navigate(`/coursinfo/${course.id}`)
+                                }
                               >
-                                Ouvrir
-                              </Button>
-                            </Tooltip>
-                            <Tooltip title="Télécharger en PDF">
-                              <Button
-                                variant="contained"
-                                color="secondary"
-                                size="small"
-                                startIcon={<PictureAsPdfIcon />}
-                              >
-                                PDF
-                              </Button>
+                                <OpenInNewIcon />
+                              </IconButton>
                             </Tooltip>
                             <Tooltip title="BackLog">
                               <IconButton onClick={pdfBacklogRoute}>
@@ -517,24 +548,16 @@ const Ressources = () => {
                                 <PictureAsPdfIcon />
                               </IconButton>
                             </Tooltip>
-                          </div>
+                          </CardContent>
                         </div>
                       </div>
                     </Card>
                   )
                 )
               )}
-            </Container>
-            <Container
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                width: "100%",
-                margin: 0,
-                paddingTop: "20px",
-              }}
-            >
-              <h1>Année {`${currentYear - 2}  - ${currentYear - 1} `}</h1>
+            </div>
+            <div className="list-view-cours">
+              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
               {(searchTerm.length > 0
                 ? [...filteredCoursesLastYear].filter(
                     (course) =>
@@ -548,7 +571,10 @@ const Ressources = () => {
                 (course) => (
                   console.log(course),
                   (
-                    <Card className="list-card">
+                    <Card
+                      className="list-card"
+                      onClick={() => navigate(`/coursinfo/${course.id}`)}
+                    >
                       <div className="list-card-content">
                         <CardMedia
                           className="list-card-image"
@@ -556,34 +582,21 @@ const Ressources = () => {
                           title={course.data.title}
                         />
                         <div className="list-card-details">
-                          <CardContent>
-                            <Typography variant="h5" component="h2">
+                          <CardContent sx={{ padding: "10px" }}>
+                            <h2 gutterBottom variant="h3" component="div">
                               {course.data.title}
-                            </Typography>
+                            </h2>
                             <Typography variant="body2" color="text.secondary">
                               {course.data.description}
                             </Typography>
-                          </CardContent>
-                          <div className="list-card-actions">
-                            <Tooltip title="Ouvrir le cours">
-                              <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                onClick={() => navigate(`/cours/${course.id}`)}
+                            <Tooltip title="Open">
+                              <IconButton
+                                onClick={() =>
+                                  navigate(`/coursinfo/${course.id}`)
+                                }
                               >
-                                Ouvrir
-                              </Button>
-                            </Tooltip>
-                            <Tooltip title="Télécharger en PDF">
-                              <Button
-                                variant="contained"
-                                color="secondary"
-                                size="small"
-                                startIcon={<PictureAsPdfIcon />}
-                              >
-                                PDF
-                              </Button>
+                                <OpenInNewIcon />
+                              </IconButton>
                             </Tooltip>
                             <Tooltip title="BackLog">
                               <IconButton onClick={pdfBacklogRoute}>
@@ -595,14 +608,14 @@ const Ressources = () => {
                                 <PictureAsPdfIcon />
                               </IconButton>
                             </Tooltip>
-                          </div>
+                          </CardContent>
                         </div>
                       </div>
                     </Card>
                   )
                 )
               )}
-            </Container>
+            </div>
           </>
         )}
       </div>

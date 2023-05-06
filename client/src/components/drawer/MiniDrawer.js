@@ -438,7 +438,7 @@ export default function MiniDrawer({ element }) {
           )}
         </List>
       </Drawer>
-      <Box component="main">
+      <Box component="main" sx={{ width: "100%" }}>
         <>{element}</>
       </Box>
     </Box>

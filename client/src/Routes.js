@@ -41,13 +41,13 @@ function RoutesProvider() {
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
-          <Route path="/cours" element={<Cours />} />
-          <Route path="/cours/:id" element={<CoursInfo />} />
           <Route path="/pdfbacklog" element={<PDFBacklogCartView />} />
           <Route path="/pdfsupport" element={<PDFSupport />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/jpo" element={<Jpo />} />
           <Route path="/studentprojects" element={<StudentsProjects />} />
+          <Route path="/cours" element={<Cours />} />
+          <Route path="/coursinfo/:id" element={<CoursInfo />} />
           {/* 404 Page */}
         </Route>
         <Route path="*" element={<NotFound />} />

@@ -1,5 +1,5 @@
 .cours-container {
-    width: 1650px;
+    width: 100%;
     height: 100%;
 }
 
@@ -52,4 +52,24 @@ img.img-dropdown-zone {
     width: 100%;
     align-items: center;
     justify-content: center;
+}
+
+.list-card {
+    display: flex;
+    align-items: center;
+}
+
+.list-card-image {
+    width: 100px;
+    height: auto;
+    margin-right: 10px;
+}
+
+.list-card-details {
+    flex: 1;
+}
+
+.list-card-buttons {
+    display: flex;
+    justify-content: flex-end;
 }
