@@ -19,39 +19,39 @@ import {
 } from "@mui/material";
 // import AddIcon from "@mui/icons-material/Add";
 // import RemoveIcon from "@mui/icons-material/Remove";
-import PDF from "../overview/020_android_backlog_projet-flashcard.pdf";
+
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "./PdfView.scss";
 
-function PdfView() {
+function PdfView(linkpop) {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [title, setTitle] = useState(null);
   const [description, setDescription] = useState(null);
   const [loading, setLoading] = useState(false);
   const [scale, setScale] = useState(1.0);
+  const [link, setLink] = useState(null);
   const theme = useTheme();
+
+  useEffect(() => {
+    (async () => {
+     setLink(linkpop.link);
+    })();
+  }, []);
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
     setLoading(true);
   };
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = PDF;
+    link.href = link;
     link.download = "backlog.pdf";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
-  // const zoomIn = () => {
-  //   setScale((prevScale) => prevScale + 0.1);
-  // };
-
-  // const zoomOut = () => {
-  //   setScale((prevScale) => prevScale - 0.1);
-  // };
   const goToPrevPage = () =>
     setPageNumber(pageNumber - 1 <= 1 ? 1 : pageNumber - 1);
 
@@ -79,20 +79,6 @@ function PdfView() {
     resolver: yupResolver(schema),
   });
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    console.log(name + value);
-    switch (name) {
-      case "title":
-        setTitle(value);
-        break;
-      case "description":
-        setDescription(value);
-        break;
-      default:
-        break;
-    }
-  };
   const renderPage = (page) => {
     const canvas = document.getElementById(`canvas-${page.pageNumber}`);
     if (canvas) {
@@ -191,7 +177,7 @@ function PdfView() {
               </IconButton>
             </div>
             <Document
-              file={PDF}
+              file={link}
               options={{ workerSrc: "/pdf.worker.js" }}
               onLoadSuccess={onDocumentLoadSuccess}
             >

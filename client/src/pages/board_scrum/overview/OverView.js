@@ -22,6 +22,7 @@ function OverView(props) {
   const [stories, setStories] = useState({});
   var [boards, setBoards] = useState({});
   const [display, setDisplay] = useState(false);
+  const [pdfLink, setPdfLink] = useState("");
 
   const moveToOverView = () => {
     var x = JSON.parse(localStorage.getItem("tabs")) || [];
@@ -31,7 +32,7 @@ function OverView(props) {
     props.addTab({
       id: props.id + "pdf",
       tab: "pdf",
-      component: <PdfView />,
+      component: <PdfView link={pdfLink} />,
       closeable: true,
     });
   };
@@ -49,6 +50,7 @@ function OverView(props) {
 
       wsComments.onmessage = (message) => {
         var data = JSON.parse(message.data);
+        setPdfLink(data.pdf_link);
         setRelease((releases = data.release));
         setBoards((boards = data.boards));
         setStories(data.stories);
@@ -77,9 +79,14 @@ function OverView(props) {
         </Grid>
         <Grid item xs={12} md={3}>
           <Box>
-            <Button variant="contained" onClick={moveToOverView}>
-              Backlog
-            </Button>
+            {pdfLink.length != 0 ? (
+              <Button variant="contained" onClick={moveToOverView}>
+                Backlog
+              </Button>
+            ) : (
+              <></>
+            )}
+
             <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
               Release / Sprint
             </Typography>

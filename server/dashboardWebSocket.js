@@ -48,7 +48,13 @@ module.exports = (app, db, connection, pathname) => {
           (snapshot) => {
             const data = snapshot.data();
             connection.sendUTF(
-              JSON.stringify([data.requested, data.acceptance, data.toDo, data.inProgress, data.done])
+              JSON.stringify([
+                data.requested,
+                data.acceptance,
+                data.toDo,
+                data.inProgress,
+                data.done,
+              ])
             );
           },
           (err) => {
@@ -93,7 +99,14 @@ module.exports = (app, db, connection, pathname) => {
           }
         });
       });
-      connection.sendUTF(JSON.stringify({ stories: stories, release: dataReturn[0], boards: boards }));
+      connection.sendUTF(
+        JSON.stringify({
+          stories: stories,
+          release: dataReturn[0],
+          boards: boards,
+          pdf_link: data.pdf_link,
+        })
+      );
     });
   }
 };
@@ -102,7 +115,9 @@ async function addDashboard(groups, studentId, db) {
   const dashboardSnapshot = await db.collection("dashboard").get();
 
   for (var group of groups) {
-    const haveGroupId = dashboardSnapshot.docs.some((doc) => doc.data().groupId === group.id);
+    const haveGroupId = dashboardSnapshot.docs.some(
+      (doc) => doc.data().groupId === group.id
+    );
     if (!haveGroupId) {
       var newDashboard = await db.collection("dashboard").add({
         students: group.data.students,
@@ -112,7 +127,8 @@ async function addDashboard(groups, studentId, db) {
         favorite: "false",
         group_name: "new dashboard",
         sprint_name: "new sprint",
-        image: "https://fastly.picsum.photos/id/991/500/300.jpg?hmac=1p97FU0H7zdBmUCEezOKZxNtpCCjzQSQqwvE38ivx40",
+        image:
+          "https://fastly.picsum.photos/id/991/500/300.jpg?hmac=1p97FU0H7zdBmUCEezOKZxNtpCCjzQSQqwvE38ivx40",
         pdf_link: "link",
         release: group.data.release,
       });
@@ -148,7 +164,9 @@ async function addDashboard(groups, studentId, db) {
           release[i][y].boardId = res.id;
         }
       }
-      db.collection("dashboard").doc(newDashboard.id).update({ release: release });
+      db.collection("dashboard")
+        .doc(newDashboard.id)
+        .update({ release: release });
     }
   }
 }
