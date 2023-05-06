@@ -234,11 +234,7 @@ const Ressources = () => {
             width: "100%",
           }}
         >
-          <Typography
-            variant="h6"
-            gutterBottom
-            sx={{ flexGrow: 1 }}
-          ></Typography>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}></Typography>
           <div className="header-cours">
             <Box
               sx={{
@@ -372,7 +368,7 @@ const Ressources = () => {
                       />
 
                       <CardContent sx={{ padding: "10px", height: "120px" }}>
-                        <h2 gutterBottom variant="h3" component="div">
+                        <h2 variant="h3" component="div">
                           {course.data.title}
                         </h2>
                         <Typography variant="body2" color="text.secondary">
@@ -454,7 +450,7 @@ const Ressources = () => {
                       />
 
                       <CardContent sx={{ padding: "10px", height: "120px" }}>
-                        <h2 gutterBottom variant="h3" component="div">
+                        <h2 variant="h3" component="div">
                           {course.data.title}
                         </h2>
                         <Typography variant="body2" color="text.secondary">
@@ -526,7 +522,7 @@ const Ressources = () => {
                         />
                         <div className="list-card-details">
                           <CardContent sx={{ padding: "10px" }}>
-                            <h2 gutterBottom variant="h3" component="div">
+                            <h2 variant="h3" component="div">
                               {course.data.title}
                             </h2>
                             <Typography variant="body2" color="text.secondary">
@@ -589,7 +585,7 @@ const Ressources = () => {
                         />
                         <div className="list-card-details">
                           <CardContent sx={{ padding: "10px" }}>
-                            <h2 gutterBottom variant="h3" component="div">
+                            <h2 variant="h3" component="div">
                               {course.data.title}
                             </h2>
                             <Typography variant="body2" color="text.secondary">
