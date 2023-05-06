@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+
+import { toast, ToastContainer } from "react-toastify";
+
 import download from "downloadjs";
 
 import axios from "axios";
@@ -7,42 +11,115 @@ import axios from "axios";
 import React from "react";
 
 import {
-  IconButton,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   DialogContentText,
-  Container,
   Typography,
   Divider,
   Card,
-  Tooltip,
   CardContent,
 } from "@mui/material";
 
+import UpdateCoursDialog from "./UpdateCoursDialog";
+
+import { makeStyles } from "@mui/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
-import { red, deepPurple } from "@mui/material/colors";
 
 import PDFCourseView from "./PdfCourseView";
 import CourseBacklogPdf from "./PdfCoursBacklog";
 import "./CoursInfo.scss";
+import "react-toastify/dist/ReactToastify.css";
+
+const useStyles = makeStyles({
+  updateButton: {
+    "&:hover": {
+      backgroundColor: "#731d6d",
+    },
+  },
+  deleteButton: {
+    "&:hover": {
+      backgroundColor: "#a60000",
+    },
+  },
+});
+
+const options = {
+  autoClose: 2000,
+  className: "",
+  position: toast.POSITION.TOP_RIGHT,
+  theme: "colored",
+};
+
+export const toastSuccess = (message) => {
+  toast.success(message, options);
+};
+
+export const toastFail = (message) => {
+  toast.error(message, options);
+};
 
 const CoursInfo = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [coursData, SetCoursData] = useState([]);
+  const [coursTitle, setCoursTitle] = useState("");
+  const [coursDate, setCoursDate] = useState("");
+  const [coursDescription, setCoursDescription] = useState("");
+  const [coursCampusNumerique, setCoursCampusNumerique] = useState(false);
+  const [selectedClass, setSelectedClass] = useState("");
+  const [coursPrivate, setCoursPrivate] = useState(false);
+  const [allpo, setAllPo] = useState([]);
+  const [allclass, setAllclass] = useState([]);
+  const [coursOwner, setCoursOwner] = useState("");
 
   const [openCours, setOpenCours] = useState(false);
   const [openBacklog, setOpenBacklog] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [fileCours, setFileCours] = useState(null);
   const [fileBacklog, setFileBacklog] = useState(null);
+  const [fileImg, setFileImg] = useState(null);
+
+  const { control } = useForm({
+    mode: "onTouched",
+  });
+
+  const getAllPo = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/instructors")
+        .then((res) => {
+          setAllPo(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getAllClass = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/classes")
+        .then((res) => {
+          setAllclass(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const getCoursId = async () => {
     try {
@@ -84,13 +161,19 @@ const CoursInfo = () => {
       await axios
         .post(`http://localhost:5050/ressources/cours/upload-pdf`, formData)
         .then((res) => {
+          toastSuccess(`Votre pdf cours ${fileNameCourse} a bien été uploadé`);
+          console.log(res.status);
           console.log(res.data);
         })
         .catch((err) => {
+          toastFail(
+            `Le pdf que vous essayez d'uploader rencontre un problème.`
+          );
           console.log(err);
         });
     } catch (error) {
       console.error(error);
+      toastFail(`Le pdf que vous essayez d'uploader rencontre un problème.`);
     }
   };
 
@@ -101,19 +184,27 @@ const CoursInfo = () => {
       formData.append("courseClass", coursData.courseClass);
       formData.append("title", coursData.title);
       formData.append("courseId", id);
+
       await axios
         .post(
           `http://localhost:5050/ressources/cours/backlog/upload-pdf`,
           formData
         )
         .then((res) => {
-          console.log(res);
+          console.log(res.status);
+          toastSuccess(
+            `Votre pdf backlog ${fileNameBacklog} a bien été uploadé`
+          );
         })
         .catch((err) => {
           console.log(err);
+          toastFail(
+            `Le pdf que vous essayez d'uploader rencontre un problème.`
+          );
         });
     } catch (error) {
       console.error(error);
+      toastFail(`Le pdf que vous essayez d'uploader rencontre un problème.`);
     }
   };
 
@@ -131,6 +222,16 @@ const CoursInfo = () => {
 
   const handleCloseBacklogDialog = () => {
     setOpenBacklog(false);
+  };
+
+  const handleClickOpenUpdateDialog = () => {
+    setOpenUpdate(true);
+    getAllPo();
+    getAllClass();
+  };
+
+  const handleCloseUpdateDialog = () => {
+    setOpenUpdate(false);
   };
 
   const handleClickOpenDeleteDialog = () => {
@@ -193,6 +294,10 @@ const CoursInfo = () => {
   const backToListCours = () => {
     deleteCours(id);
     navigate("/cours");
+  };
+
+  const onSubmit = async () => {
+    console.log("Cours modifié (PS: C'est faux)");
   };
 
   useEffect(() => {
@@ -452,14 +557,45 @@ const CoursInfo = () => {
               >
                 <Button
                   startIcon={<EditIcon />}
-                  sx={{ bgcolor: deepPurple[700], color: "white", mr: 1 }}
+                  onClick={() => handleClickOpenUpdateDialog()}
+                  sx={{
+                    bgcolor: "#94258c",
+                    fontWeight: "bold",
+                    color: "white",
+                    mr: 1,
+                  }}
+                  className={useStyles().updateButton}
                 >
                   Modifier
                 </Button>
+                <UpdateCoursDialog
+                  openUpdate={openUpdate}
+                  handleClose={handleCloseUpdateDialog}
+                  imgCours={coursData.imageCourseUrl}
+                  setCoursTitle={setCoursTitle}
+                  setCoursDate={setCoursDate}
+                  setCoursDescription={setCoursDescription}
+                  setCoursCampusNumerique={setCoursCampusNumerique}
+                  coursCampusNumerique={coursCampusNumerique}
+                  coursPrivate={coursPrivate}
+                  setCoursPrivate={setCoursPrivate}
+                  selectedClass={selectedClass}
+                  setSelectedClass={setSelectedClass}
+                  onSubmit={onSubmit}
+                  allpo={allpo}
+                  allclass={allclass}
+                  setCoursOwner={setCoursOwner}
+                  control={control}
+                />
                 <Button
                   startIcon={<DeleteIcon />}
                   onClick={() => handleClickOpenDeleteDialog()}
-                  sx={{ bgcolor: red[700], color: "white" }}
+                  sx={{
+                    bgcolor: "#FF0000",
+                    fontWeight: "bold",
+                    color: "white",
+                  }}
+                  className={useStyles().deleteButton}
                 >
                   Supprimer
                 </Button>
@@ -477,6 +613,7 @@ const CoursInfo = () => {
           </div>
         </div>
       </div>
+      <ToastContainer></ToastContainer>
     </div>
   );
 };

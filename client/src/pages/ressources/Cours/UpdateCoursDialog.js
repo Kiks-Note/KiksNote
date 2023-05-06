@@ -20,33 +20,9 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import Dropzone from "./Dropzone";
 
-import "./Cours.scss";
-import "react-toastify/dist/ReactToastify.css";
-
-const CreateCoursModal = (props) => {
+const UpdateCoursDialog = (props) => {
   return (
-    <Dialog
-      sx={{
-        "& .MuiDialog-paper": {
-          width: "100%",
-          height: "80%",
-          maxHeight: "calc(100% - 64px)",
-          margin: "32px auto",
-          overflowY: "visible",
-          overflowX: "hidden",
-          position: "fixed",
-          top: "40%",
-          left: "55%",
-          transform: "translate(-50%, -50%)",
-          "@media (max-width: 600px)": {
-            width: "100%",
-            maxHeight: "100%",
-            margin: 0,
-          },
-        },
-      }}
-      open={props.open}
-    >
+    <Dialog open={props.openUpdate} onClose={props.handleClose}>
       <DialogActions>
         <IconButton onClick={props.handleClose}>
           <CloseIcon />
@@ -63,8 +39,8 @@ const CreateCoursModal = (props) => {
               label="Nom du cours"
               variant="standard"
               type="text"
-              defaultValue={props.courseTitle}
-              onChange={(e) => props.setCourseTitle(e.target.value)}
+              defaultValue=""
+              onChange={(e) => props.setCoursTitle(e.target.value)}
               sx={{
                 width: "80%",
               }}
@@ -76,8 +52,8 @@ const CreateCoursModal = (props) => {
               label=" "
               variant="standard"
               type="date"
-              defaultValue={props.courseDate}
-              onChange={(e) => props.setCourseDate(e.target.value)}
+              defaultValue=""
+              onChange={(e) => props.setCoursDate(e.target.value)}
             />
           </div>
 
@@ -86,6 +62,7 @@ const CreateCoursModal = (props) => {
               Drag and drop an image file here, or click to select an image
               file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
             </p>
+            <img src={props.imgCours} alt="logo du cours" />
             <Dropzone
               onDrop={props.handleDrop}
               onFileChange={props.handleFileChange}
@@ -101,19 +78,6 @@ const CreateCoursModal = (props) => {
                 </section>
               )}
             </Dropzone>
-            {props.rejectedFiles.length > 0 && (
-              <div>
-                <h4>Rejected files:</h4>
-                <ul>
-                  {props.rejectedFiles.map((file) => (
-                    <li key={file.name}>
-                      {file.name} - {file.size} bytes - {file.type}
-                      <button onClick={props.handleRemove(file)}>Remove</button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
 
           <div className="switch-btn-container">
@@ -130,9 +94,9 @@ const CreateCoursModal = (props) => {
                   marginBottom: "10px",
                 }}
                 labelId="campus-numerique-label"
-                checked={props.courseCampusNumerique}
+                checked={props.coursCampusNumerique}
                 onChange={(event) =>
-                  props.setCourseCampusNumerique(event.target.checked)
+                  props.setCoursCampusNumerique(event.target.checked)
                 }
               />
             </FormControl>
@@ -149,9 +113,9 @@ const CreateCoursModal = (props) => {
                   marginBottom: "10px",
                 }}
                 labelId="campus-numerique-label"
-                checked={props.coursePrivate}
+                checked={props.coursPrivate}
                 onChange={(event) =>
-                  props.setCoursePrivate(event.target.checked)
+                  props.setCoursPrivate(event.target.checked)
                 }
               />
             </FormControl>
@@ -191,7 +155,7 @@ const CreateCoursModal = (props) => {
                   value={props.allpo.find((po) => po.id === value) || ""}
                   onChange={(event, newValue) => {
                     onChange(newValue ? newValue.id : "");
-                    props.setCourseOwner(
+                    props.setCoursOwner(
                       newValue
                         ? `${newValue.lastname.toUpperCase()} ${
                             newValue.firstname
@@ -227,8 +191,8 @@ const CreateCoursModal = (props) => {
             sx={{
               width: "100%",
             }}
-            defaultValue={props.courseDescription}
-            onChange={(e) => props.setCourseDescription(e.target.value)}
+            defaultValue=""
+            onChange={(e) => props.setCoursDescription(e.target.value)}
           />
 
           <Button
@@ -247,5 +211,4 @@ const CreateCoursModal = (props) => {
     </Dialog>
   );
 };
-
-export default CreateCoursModal;
+export default UpdateCoursDialog;
