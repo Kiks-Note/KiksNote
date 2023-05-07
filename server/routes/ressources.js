@@ -262,12 +262,7 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
 
   app.delete("/ressources/cours/:id", async (req, res) => {
     try {
-      const {
-        courseClass,
-        title,
-        fileNameCours = null,
-        fileNameBacklog = null,
-      } = req.body;
+      const { courseClass, title } = req.body;
 
       const resourceRef = db.collection("cours").doc(req.params.id);
       const resource = await resourceRef.get();
@@ -280,39 +275,12 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
 
       const folderPath = `${courseClass}/${title}`;
 
-      const filePng = bucket.file(`${folderPath}/${title}.png`);
-      if (await filePng.exists()) {
-        await filePng.delete();
-      } else {
-        console.log(`File ${folderPath}/${title}.png does not exist`);
-      }
+      const [files] = await bucket.getFiles({
+        prefix: `${folderPath}/`,
+      });
 
-      if (fileNameCours !== null) {
-        const fileCoursePdf = bucket.file(
-          `${courseClass}/${title}/${fileNameCours}`
-        );
-        const exists = await fileCoursePdf.exists();
-        if (exists) {
-          await fileCoursePdf.delete();
-        } else {
-          console.log(
-            `File ${courseClass}/${title}/${fileNameCours} does not exist`
-          );
-        }
-      }
-
-      if (fileNameBacklog !== null) {
-        const fileBacklogPdf = bucket.file(
-          `${courseClass}/${title}/${fileNameBacklog}`
-        );
-        const exists = await fileBacklogPdf.exists();
-        if (exists) {
-          await fileBacklogPdf.delete();
-        } else {
-          console.log(
-            `File ${courseClass}/${title}/${fileNameBacklog} does not exist`
-          );
-        }
+      for (const file of files) {
+        await file.delete();
       }
 
       return res.status(200).send("Cours supprimé avec succès");
