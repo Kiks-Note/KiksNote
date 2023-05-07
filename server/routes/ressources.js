@@ -1,4 +1,77 @@
 module.exports = (app, db, bucket, mime, upload, multer, fs) => {
+  app.get("/ressources/classes", async (req, res) => {
+    try {
+      const snapshot = await db.collection("class").get();
+      const classes = [];
+      snapshot.forEach((doc) => {
+        classes.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      });
+      res.status(200).send(classes);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send(error);
+    }
+  });
+
+  // Route pour récupérer tous les cours
+  app.get("/ressources/cours", async (req, res) => {
+    try {
+      const resourcesRef = db.collection("cours");
+      const snapshot = await resourcesRef.get();
+      const resources = [];
+      snapshot.forEach((doc) => {
+        resources.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+      res.status(200).json({
+        cours: resources,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Erreur lors de la récupération des cours.");
+    }
+  });
+
+  // Route pour récupérer un cours par son id
+  app.get("/ressources/cours/:id", async (req, res) => {
+    try {
+      const resourceRef = await db.collection("cours").doc(req.params.id).get();
+      if (!resourceRef.exists) {
+        return res.status(404).send("Cours non trouvé");
+      } else {
+        return res.status(200).send({
+          id: resourceRef.id,
+          data: resourceRef.data(),
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Erreur lors de la récupération du cours.");
+    }
+  });
+
+  // Route pour récuperer dans la collection users, tous les users qui ont le status de po
+  app.get("/ressources/instructors", async (req, res) => {
+    try {
+      const snapshot = await db
+        .collection("users")
+        .where("status", "in", ["po", "pedago"])
+        .get();
+      const users = snapshot.docs.map((doc) => {
+        return { id: doc.id, ...doc.data() };
+      });
+      res.status(200).json(users);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Erreur lors de la récupération des utilisateurs.");
+    }
+  });
+
   // Route pour créer un nouveau cours
   app.post("/ressources/cours", async (req, res) => {
     try {
@@ -204,62 +277,7 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
     });
   });
 
-  app.get("/ressources/classes", async (req, res) => {
-    try {
-      const snapshot = await db.collection("class").get();
-      const classes = [];
-      snapshot.forEach((doc) => {
-        classes.push({
-          id: doc.id,
-          ...doc.data(),
-        });
-      });
-      res.status(200).send(classes);
-    } catch (error) {
-      console.error(error);
-      res.status(500).send(error);
-    }
-  });
-
-  // Route pour récupérer tous les cours
-  app.get("/ressources/cours", async (req, res) => {
-    try {
-      const resourcesRef = db.collection("cours");
-      const snapshot = await resourcesRef.get();
-      const resources = [];
-      snapshot.forEach((doc) => {
-        resources.push({
-          id: doc.id,
-          data: doc.data(),
-        });
-      });
-      res.status(200).json({
-        cours: resources,
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Erreur lors de la récupération des cours.");
-    }
-  });
-
-  // Route pour récupérer un cours par son id
-  app.get("/ressources/cours/:id", async (req, res) => {
-    try {
-      const resourceRef = await db.collection("cours").doc(req.params.id).get();
-      if (!resourceRef.exists) {
-        return res.status(404).send("Cours non trouvé");
-      } else {
-        return res.status(200).send({
-          id: resourceRef.id,
-          data: resourceRef.data(),
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Erreur lors de la récupération du cours.");
-    }
-  });
-
+  // Route pour supprimer un cours complet
   app.delete("/ressources/cours/:id", async (req, res) => {
     try {
       const { courseClass, title } = req.body;
@@ -287,43 +305,6 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
     } catch (err) {
       console.error(err);
       return res.status(500).send("Erreur lors de la suppression du cours.");
-    }
-  });
-
-  // Route pour récuperer dans la collection users, tous les users qui ont le status de po
-  app.get("/ressources/instructors", async (req, res) => {
-    try {
-      const snapshot = await db
-        .collection("users")
-        .where("status", "in", ["po", "pedago"])
-        .get();
-      const users = snapshot.docs.map((doc) => {
-        return { id: doc.id, ...doc.data() };
-      });
-      res.status(200).json(users);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Erreur lors de la récupération des utilisateurs.");
-    }
-  });
-
-  app.get("/jpo", async (req, res) => {
-    try {
-      const jpoRef = db.collection("blog_evenements");
-      const snapshot = await jpoRef.get();
-      console.log(snapshot.docs);
-      const jpo = snapshot.docs.map((doc) => {
-        return {
-          id: doc.id,
-          title: doc.data().title,
-          description: doc.data().description,
-          date: doc.data().creation_date,
-        };
-      });
-      res.status(200).json(jpo);
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Erreur lors de la récupération des évenements.");
     }
   });
 };

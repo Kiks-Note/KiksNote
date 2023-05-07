@@ -136,10 +136,12 @@ const CoursInfo = () => {
     }
   };
 
-  const deleteCours = async (cours_id) => {
+  const deleteCours = async (cours_id, courseClass, title) => {
     try {
       await axios
-        .delete(`http://localhost:5050/ressources/cours/${cours_id}`)
+        .delete(`http://localhost:5050/ressources/cours/${cours_id}`, {
+          data: { courseClass, title },
+        })
         .then((res) => {
           console.log(res);
         })
@@ -291,9 +293,10 @@ const CoursInfo = () => {
   const pdfBacklogNavigate = (urlBacklogPdf) =>
     navigate("/pdfbacklog", { state: { urlBacklogPdf } });
 
-  const backToListCours = () => {
-    deleteCours(id);
+  const deleteCompleteCours = () => {
+    deleteCours(id, coursData.courseClass, coursData.title);
     navigate("/cours");
+    window.location.reload();
   };
 
   const onSubmit = async () => {
@@ -605,7 +608,7 @@ const CoursInfo = () => {
                   </DialogTitle>
                   <DialogActions>
                     <Button onClick={handleCloseDeleteDialog}>Non</Button>
-                    <Button onClick={backToListCours}>Oui</Button>
+                    <Button onClick={deleteCompleteCours}>Oui</Button>
                   </DialogActions>
                 </Dialog>
               </div>
