@@ -22,6 +22,7 @@ const {
   todayRequests,
   liveCategories,
   liveInventory,
+  borrowedList,
 } = require("./controllers/inventory");
 
 module.exports = function (wsI) {
@@ -60,6 +61,10 @@ module.exports = function (wsI) {
       case "/liveInventory":
         liveInventory(request, connection);
         console.log("liveInventory");
+        break;
+      case "/adminBorrowedList":
+        borrowedList(request, connection);
+        console.log("adminBorrowedList");
         break;
       default:
         break;

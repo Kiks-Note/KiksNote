@@ -99,7 +99,10 @@ export default function BorrowedList() {
               width: "100%",
               cursor: "pointer",
             }}
-            onClick={() => setOpenDialog(true)}
+            onClick={() => {
+              setOpenDialog(true);
+              // setGroupeEmails(params.row.groupe);
+            }}
           >
             {params.row.groupe && <p>{params.row.groupe}</p>}
           </div>
@@ -153,7 +156,9 @@ export default function BorrowedList() {
           item.request && timeConverter(item.request.endDate)
         ).format("DD.MM.YYYY"),
         groupe:
-          item.request && item.request.groupe ? item.request.groupe : "Aucun",
+          item.request && item.request.group
+            ? item.request.group.length
+            : "Aucun",
       };
     });
 
@@ -192,9 +197,7 @@ export default function BorrowedList() {
               pageSize={pageSize}
               onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
               rowsPerPageOptions={[15, 30, 50]}
-              // sx={{background: "white"}}
               disableSelectionOnClick
-              sx={{background: "white"}}
               localeText={{
                 noRowsLabel: "Pas de résultats",
                 noResultsOverlayLabel: "Aucun résultat.",
