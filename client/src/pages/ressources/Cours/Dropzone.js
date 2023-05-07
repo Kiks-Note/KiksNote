@@ -49,10 +49,14 @@ const Dropzone = (props) => {
     <div
       {...getRootProps()}
       style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
         border: "2px dashed gray",
         padding: "20px",
         textAlign: "center",
-        width: "90%",
+        width: "75%",
       }}
     >
       <input {...getInputProps()} />
@@ -69,8 +73,12 @@ const Dropzone = (props) => {
           </div>
         </>
       ) : imageData ? (
-        <div>
-          <img src={imageData} alt="preview" style={{ maxWidth: "100%" }} />
+        <div style={{ display: "flex", width: "100%", height: "100%" }}>
+          <img
+            src={imageData}
+            alt="preview"
+            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "cover" }}
+          />
         </div>
       ) : (
         <>
@@ -78,6 +86,7 @@ const Dropzone = (props) => {
             className="img-dropdown-zone"
             src={DropZoneImg}
             alt="dropdown-zone-img"
+            style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "cover" }}
           />
         </>
       )}

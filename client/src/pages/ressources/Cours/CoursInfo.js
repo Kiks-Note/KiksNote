@@ -68,7 +68,7 @@ const CoursInfo = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [coursData, SetCoursData] = useState([]);
+  const [coursData, setCoursData] = useState([]);
   const [coursTitle, setCoursTitle] = useState("");
   const [coursDate, setCoursDate] = useState("");
   const [coursDescription, setCoursDescription] = useState("");
@@ -126,7 +126,7 @@ const CoursInfo = () => {
       await axios
         .get(`http://localhost:5050/ressources/cours/${id}`)
         .then((res) => {
-          SetCoursData(res.data.data);
+          setCoursData(res.data.data);
         })
         .catch((err) => {
           console.log(err);
@@ -163,7 +163,13 @@ const CoursInfo = () => {
       await axios
         .post(`http://localhost:5050/ressources/cours/upload-pdf`, formData)
         .then((res) => {
-          toastSuccess(`Votre pdf cours ${fileNameCourse} a bien été uploadé`);
+          if (res.status === 200) {
+            toastSuccess(
+              `Votre pdf cours ${fileNameCourse} a bien été uploadé`
+            );
+            handleCloseCoursDialog();
+            window.location.reload();
+          }
           console.log(res.status);
           console.log(res.data);
         })
@@ -193,10 +199,13 @@ const CoursInfo = () => {
           formData
         )
         .then((res) => {
-          console.log(res.status);
-          toastSuccess(
-            `Votre pdf backlog ${fileNameBacklog} a bien été uploadé`
-          );
+          if (res.status === 200) {
+            toastSuccess(
+              `Votre pdf cours ${fileNameBacklog} a bien été uploadé`
+            );
+            handleCloseBacklogDialog();
+            window.location.reload();
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -252,8 +261,8 @@ const CoursInfo = () => {
     uploadBacklogPdf();
   };
 
-  const handleFileChangeCours = (event) => {
-    setFileCours(event.target.files[0]);
+  const handleFileChangeCours = (e) => {
+    setFileCours(e.target.files[0]);
   };
 
   const handleFileChangeBacklog = (event) => {
@@ -359,6 +368,14 @@ const CoursInfo = () => {
                         variant="contained"
                         color="primary"
                         size="small"
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#df005a",
+                          "&:hover": {
+                            backgroundColor: "#c81776",
+                          },
+                        }}
                         onClick={(event) => {
                           event.stopPropagation();
                           handleDownload(
@@ -385,8 +402,14 @@ const CoursInfo = () => {
                       }}
                     >
                       <Button
-                        variant="contained"
-                        color="primary"
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#df005a",
+                          "&:hover": {
+                            backgroundColor: "#c81776",
+                          },
+                        }}
                         onClick={handleClickOpenCoursDialog}
                         startIcon={<UploadIcon />}
                       >
@@ -439,6 +462,14 @@ const CoursInfo = () => {
                         variant="contained"
                         color="primary"
                         size="small"
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#df005a",
+                          "&:hover": {
+                            backgroundColor: "#c81776",
+                          },
+                        }}
                         onClick={(event) => {
                           event.stopPropagation();
                           handleDownload(
@@ -465,8 +496,14 @@ const CoursInfo = () => {
                       }}
                     >
                       <Button
-                        variant="contained"
-                        color="primary"
+                        sx={{
+                          color: "white",
+                          fontWeight: "bold",
+                          backgroundColor: "#df005a",
+                          "&:hover": {
+                            backgroundColor: "#c81776",
+                          },
+                        }}
                         onClick={handleClickOpenBacklogDialog}
                         startIcon={<UploadIcon />}
                       >

@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
+import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 
 import Dropzone from "./Dropzone";
 
@@ -232,15 +233,20 @@ const CreateCoursModal = (props) => {
           />
 
           <Button
-            color="primary"
             sx={{
-              marginLeft: "30%",
-              marginRight: "30%",
-              marginTop: "10px",
+              margin: "30px",
+              padding: "10px",
+              backgroundColor: "#7a52e1",
+              color: "white",
+              fontWeight: "bold",
+              "&:hover": {
+                backgroundColor: "#5c38b8",
+              },
             }}
             onClick={props.onSubmit}
+            startIcon={<AddCircleRoundedIcon />}
           >
-            Submit
+            Créer votre cours
           </Button>
         </FormControl>
       </DialogContent>

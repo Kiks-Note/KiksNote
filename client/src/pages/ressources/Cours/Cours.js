@@ -95,7 +95,6 @@ const Ressources = () => {
   };
 
   const handleFileChange = (fileData) => {
-    console.log("File data:", fileData);
     setCourseImageBase64(fileData);
   };
 
@@ -156,8 +155,9 @@ const Ressources = () => {
 
   const createNewCours = async () => {
     try {
-      await axios
-        .post("http://localhost:5050/ressources/cours", {
+      const response = await axios.post(
+        "http://localhost:5050/ressources/cours",
+        {
           title: courseTitle,
           description: courseDescription,
           date: courseDate,
@@ -166,24 +166,16 @@ const Ressources = () => {
           owner: courseOwner,
           private: coursePrivate,
           imageBase64: courseImageBase64,
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            toastSuccess(`Votre cours ${courseTitle}  a bien été ajoutés`);
-          }
-          console.log(res.status);
-          console.log(res.data);
-        })
-        .catch((err) => {
-          if (err.response.status === 400) {
-            toastWarning("Veuillez remplir tous les champs.");
-          }
-          if (err.response.status === 500) {
-            toastFail("Erreur lors de la création de votre cours.");
-          }
-        });
+        }
+      );
+      if (response.status === 200) {
+        return response.data;
+      }
     } catch (error) {
-      console.error(error);
+      if (error.response.status === 400) {
+        toastWarning("Veuillez remplir tous les champs.");
+      }
+      throw error;
     }
   };
 
@@ -201,7 +193,15 @@ const Ressources = () => {
   const pdfSupportRoute = () => navigate("/pdfSupport");
 
   const onSubmit = async () => {
-    createNewCours();
+    try {
+      await createNewCours();
+      handleClose();
+      toastSuccess(`Votre cours ${courseTitle} a bien été ajouté`);
+      getAllCours();
+    } catch (error) {
+      console.error(error);
+      toastFail("Erreur lors de la création de votre cours.");
+    }
   };
 
   const today = new Date();
@@ -282,12 +282,20 @@ const Ressources = () => {
               <>
                 <div className="btn-add-cours">
                   <Button
-                    variant="contained"
-                    color="primary"
-                    aria-label="add"
+                    sx={{
+                      margin: "30px",
+                      padding: "10px",
+                      backgroundColor: "#7a52e1",
+                      color: "white",
+                      fontWeight: "bold",
+                      "&:hover": {
+                        backgroundColor: "#5c38b8",
+                      },
+                    }}
+                    startIcon={<AddIcon />}
                     onClick={createCourse}
                   >
-                    Ajouter un cours <AddIcon />
+                    Ajouter un cours
                   </Button>
                 </div>
               </>
@@ -503,57 +511,50 @@ const Ressources = () => {
                         .includes(searchTerm.toLowerCase())
                   )
                 : [...filteredCoursesCurrentYear]
-              ).map(
-                (course) => (
-                  console.log(course),
-                  (
-                    <Card
-                      className="list-card"
-                      onClick={() => navigate(`/coursinfo/${course.id}`)}
-                      sx={{
-                        marginBottom: "20px",
-                      }}
-                    >
-                      <div className="list-card-content">
-                        <CardMedia
-                          className="list-card-image"
-                          src={course.data.imageCourseUrl}
-                          title={course.data.title}
-                        />
-                        <div className="list-card-details">
-                          <CardContent sx={{ padding: "10px" }}>
-                            <h2 variant="h3" component="div">
-                              {course.data.title}
-                            </h2>
-                            <Typography variant="body2" color="text.secondary">
-                              {course.data.description}
-                            </Typography>
-                            <Tooltip title="Open">
-                              <IconButton
-                                onClick={() =>
-                                  navigate(`/coursinfo/${course.id}`)
-                                }
-                              >
-                                <OpenInNewIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="BackLog">
-                              <IconButton onClick={pdfBacklogRoute}>
-                                <BackpackIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Support">
-                              <IconButton onClick={pdfSupportRoute}>
-                                <PictureAsPdfIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </CardContent>
-                        </div>
-                      </div>
-                    </Card>
-                  )
-                )
-              )}
+              ).map((course) => (
+                <Card
+                  className="list-card"
+                  onClick={() => navigate(`/coursinfo/${course.id}`)}
+                  sx={{
+                    marginBottom: "20px",
+                  }}
+                >
+                  <div className="list-card-content">
+                    <CardMedia
+                      className="list-card-image"
+                      src={course.data.imageCourseUrl}
+                      title={course.data.title}
+                    />
+                    <div className="list-card-details">
+                      <CardContent sx={{ padding: "10px" }}>
+                        <h2 variant="h3" component="div">
+                          {course.data.title}
+                        </h2>
+                        <Typography variant="body2" color="text.secondary">
+                          {course.data.description}
+                        </Typography>
+                        <Tooltip title="Open">
+                          <IconButton
+                            onClick={() => navigate(`/coursinfo/${course.id}`)}
+                          >
+                            <OpenInNewIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="BackLog">
+                          <IconButton onClick={pdfBacklogRoute}>
+                            <BackpackIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Support">
+                          <IconButton onClick={pdfSupportRoute}>
+                            <PictureAsPdfIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </CardContent>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
             <div className="list-view-cours">
               <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
@@ -566,57 +567,50 @@ const Ressources = () => {
                         .includes(searchTerm.toLowerCase())
                   )
                 : [...filteredCoursesLastYear]
-              ).map(
-                (course) => (
-                  console.log(course),
-                  (
-                    <Card
-                      className="list-card"
-                      onClick={() => navigate(`/coursinfo/${course.id}`)}
-                      sx={{
-                        marginBottom: "20px",
-                      }}
-                    >
-                      <div className="list-card-content">
-                        <CardMedia
-                          className="list-card-image"
-                          src={course.data.imageCourseUrl}
-                          title={course.data.title}
-                        />
-                        <div className="list-card-details">
-                          <CardContent sx={{ padding: "10px" }}>
-                            <h2 variant="h3" component="div">
-                              {course.data.title}
-                            </h2>
-                            <Typography variant="body2" color="text.secondary">
-                              {course.data.description}
-                            </Typography>
-                            <Tooltip title="Open">
-                              <IconButton
-                                onClick={() =>
-                                  navigate(`/coursinfo/${course.id}`)
-                                }
-                              >
-                                <OpenInNewIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="BackLog">
-                              <IconButton onClick={pdfBacklogRoute}>
-                                <BackpackIcon />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title="Support">
-                              <IconButton onClick={pdfSupportRoute}>
-                                <PictureAsPdfIcon />
-                              </IconButton>
-                            </Tooltip>
-                          </CardContent>
-                        </div>
-                      </div>
-                    </Card>
-                  )
-                )
-              )}
+              ).map((course) => (
+                <Card
+                  className="list-card"
+                  onClick={() => navigate(`/coursinfo/${course.id}`)}
+                  sx={{
+                    marginBottom: "20px",
+                  }}
+                >
+                  <div className="list-card-content">
+                    <CardMedia
+                      className="list-card-image"
+                      src={course.data.imageCourseUrl}
+                      title={course.data.title}
+                    />
+                    <div className="list-card-details">
+                      <CardContent sx={{ padding: "10px" }}>
+                        <h2 variant="h3" component="div">
+                          {course.data.title}
+                        </h2>
+                        <Typography variant="body2" color="text.secondary">
+                          {course.data.description}
+                        </Typography>
+                        <Tooltip title="Open">
+                          <IconButton
+                            onClick={() => navigate(`/coursinfo/${course.id}`)}
+                          >
+                            <OpenInNewIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="BackLog">
+                          <IconButton onClick={pdfBacklogRoute}>
+                            <BackpackIcon />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Support">
+                          <IconButton onClick={pdfSupportRoute}>
+                            <PictureAsPdfIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </CardContent>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
           </>
         )}
