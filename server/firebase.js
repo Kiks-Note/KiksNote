@@ -10,4 +10,5 @@ const app = initializeApp({
 
 const db = getFirestore();
 const auth = getAuth();
+
 module.exports = {db, auth, FieldValue};

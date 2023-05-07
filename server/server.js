@@ -27,10 +27,14 @@ const wsI = new webSocketServer({
   autoAcceptConnections: false,
 });
 
-require("./routes/auth")(app, db, auth, authClient, signInWithEmailAndPassword);
+
+// require("./routes/auth")(app, db, auth, authClient, signInWithEmailAndPassword);
 
 const inventoryRoutes = require("./inventoryRoutes");
+const authRoutes = require("./authRoutes");
 app.use("/inventory", inventoryRoutes(wsI));
+app.use("/auth", authRoutes);
+
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

@@ -27,6 +27,7 @@ import {useTheme} from "@mui/material/styles";
 import {ColorModeContext} from "../../utils/Theme";
 import {accountAuthService} from "../../services/accountAuth";
 import axios from "axios";
+import useFirebase from "../../hooks/useFirebase";
 
 const drawerWidth = 275;
 const admin = true;
@@ -141,11 +142,11 @@ const adminRoutes = [
 
 export default function MiniDrawer({element}) {
   const [open, setOpen] = React.useState(false);
-  const user = userObj;
   const colorMode = React.useContext(ColorModeContext);
   const theme = useTheme();
   /// Function for open or Close Drawer
   const navigate = useNavigate();
+  const {logout} = useFirebase();
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -399,7 +400,8 @@ export default function MiniDrawer({element}) {
           ].map((page) => (
             <ListItem
               onClick={() => {
-                navigate(page.route, {replace: true});
+                // navigate(page.route, {replace: true});
+                navigate("/login", {replace: true});
               }}
               key={page.id}
               disablePadding
@@ -411,7 +413,9 @@ export default function MiniDrawer({element}) {
                   justifyContent: "center",
                   px: 2.5,
                 }}
-                onClick={handleLogout}
+                onClick={() => {
+                  logout();
+                }}
               >
                 <ListItemIcon
                   sx={{

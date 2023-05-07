@@ -20,6 +20,7 @@ import imgLogin from "./../../assets/img/login_img.svg";
 import "./Login.scss";
 import useFirebase from "../../hooks/useFirebase";
 import {Toaster, toast} from "react-hot-toast";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -54,25 +55,6 @@ const Login = () => {
     event.preventDefault();
   };
 
-  // const login = async (email, password) => {
-  //   await axios
-  //     .post("http://localhost:5050/auth/login", {
-  //       email,
-  //       password,
-  //     })
-  //     .then((res) => {
-  //       console.log(res.data.userUid);
-  //       localStorage.setItem("userUid", res.data.userUid);
-  //       localStorage.setItem("user", JSON.stringify(res.data.user));
-  //       accountAuthService.saveTokens(res.data.token, res.data.refreshToken);
-  //       navigate("/");
-  //     })
-  //     .catch(
-  //       (err) => setMessageError(err.response.data),
-  //       console.log(errorMessage)
-  //     );
-  // };
-
   const login = async () => {
     if (!email || !password) {
       toast.error("Veuillez remplir tous les champs !");
@@ -84,11 +66,31 @@ const Login = () => {
         email,
         password
       );
-
       const token = await loggedInUser.user.getIdToken();
-      cookies.set("token", token, {path: "/"});
 
-      navigate("/dashboard");
+      await axios
+        .post("http://localhost:5050/auth/login", {
+          token,
+        })
+        .then(() => {
+          cookies.set("token", token, {
+            path: "/",
+            secure: true,
+            sameSite: "none",
+            expires: new Date(Date.now() + 604807200),
+          });
+          cookies.set("lastConnectionAt", Date.now() + 604807200, {
+            path: "/",
+            secure: true,
+            sameSite: "none",
+            expires: new Date(Date.now() + 604807200),
+          });
+          navigate("/");
+        })
+        .catch((err) => {
+          console.log(err.message);
+          toast.error(err.response.data.message);
+        });
     } catch (e) {
       if (e.message.includes("auth/invalid-email")) {
         toast.error("Cet email n'est associé à aucun compte !");
