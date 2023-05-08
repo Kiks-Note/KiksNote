@@ -37,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
     },
     main:{backgroundcolor:'white!',width: '100%',
     height: '100%'},
-    main::before:{},
+    main:{},
     ro: {
         flexGrow: 1,
     }
@@ -47,35 +47,31 @@ function ArbreFonctionnel() {
     const [selectedProject, setSelectedProject] = useState(null);
 
     const handleProjectSelect = (project) => {
+        console.log(project)
         setSelectedProject(project);
     };
 
     const projects = [
         { id: 1, name: 'Nouveau projet', content:null },
         { id: 2, name: 'Projet 2', content: {
-            id: 'root',
-            label: 'Root',
+            name: 'Root',
             children: [
                 {
-                    id: 'node1',
-                    label: 'Node 1',
+                    name: 'Node 1',
                     children: [
                         
                     ],
                 },
                 {
-                    id: 'node2',
-                    label: 'Node 2',
+                    name: 'Node 2',
                 },
             ],
         } },
         { id: 3, name: 'Projet 3', content: {
-            id: 'root',
-            label: 'Root',
+            name: 'Root',
             children: [
                 {
-                    id: 'node1',
-                    label: 'Node 1',
+                    name: 'Node 1',
                     children: [
                         
                     ],
@@ -147,7 +143,7 @@ function ArbreFonctionnel() {
             {/* Mode d'édition du projet sélectionné */}
             <main className={classes.main}>
                 {selectedProject ? (
-                   <Arbre data={}></Arbre>
+                   <Arbre data={selectedProject.content}></Arbre>
                 ) : (
                     <Typography variant="h5">Sélectionnez un projet ou cré</Typography>
                 )}
