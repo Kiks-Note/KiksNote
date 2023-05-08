@@ -12,37 +12,30 @@ import {
   Input,
   Button,
   IconButton,
-  Alert,
   Box,
   Grid,
   Typography,
 } from "@mui/material";
-// import AddIcon from "@mui/icons-material/Add";
-// import RemoveIcon from "@mui/icons-material/Remove";
+
 
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "./PdfView.scss";
 
-function PdfView(linkpop) {
+function PdfView(props) {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [title, setTitle] = useState(null);
-  const [description, setDescription] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [scale, setScale] = useState(1.0);
   const [link, setLink] = useState(null);
   const theme = useTheme();
 
   useEffect(() => {
     (async () => {
-     setLink(linkpop.link);
+     setLink(props.link);
     })();
   }, []);
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
-    setLoading(true);
   };
   const handleDownload = () => {
     const link = document.createElement("a");
@@ -62,12 +55,6 @@ function PdfView(linkpop) {
     description: yup
       .string()
       .max(200, "La description ne doit pas dépasser 200 caractères"),
-    acceptanceCriteria: yup
-      .string()
-      .max(
-        200,
-        "Les critères d'acceptation ne doit pas dépasser 200 caractères"
-      ),
   });
 
   const {
@@ -104,7 +91,10 @@ function PdfView(linkpop) {
     };
     console.log(formData);
     try {
-      const response = await axios.post("http://localhost:5050/", formData);
+      const response = await axios.post(
+        "http://localhost:5050/dashboard-creation/"+props.dashboardId+"/stories",
+        formData
+      );
       console.log(response.data);
       reset(); // Efface les champs après la soumission réussie
     } catch (error) {
@@ -135,25 +125,6 @@ function PdfView(linkpop) {
                 {pageNumber} / {numPages}
               </Typography>
 
-              {/* <IconButton
-                variant="contained"
-                className="button"
-                disabled={scale <= 0.5}
-                onClick={zoomOut}
-              >
-                <RemoveIcon sx={{ color: theme.palette.custom.iconPdf }} />
-              </IconButton>
-              <Typography> Zoom: {(scale * 100).toFixed(0)}%</Typography> */}
-
-              {/* <IconButton
-                variant="contained"
-                sx={{ color: theme.palette.custom.iconPdf }}
-                onClick={zoomIn}
-                disabled={scale >= 2}
-                className="button"
-              >
-                <AddIcon sx={{ color: theme.palette.custom.iconPdf }} />
-              </IconButton> */}
               <IconButton
                 aria-label="download"
                 variant="contained"
@@ -233,25 +204,6 @@ function PdfView(linkpop) {
                 {errors.description && (
                   <Typography variant="subtitle1" color="error">
                     {errors.description.message}
-                  </Typography>
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                <InputLabel id="acceptance-criteria">
-                  {" "}
-                  Critères d'acceptation{" "}
-                </InputLabel>
-                <Input
-                  id="acceptance-criteria"
-                  aria-describedby="acceptance-criteria"
-                  multiline
-                  {...register("acceptanceCriteria")}
-                  type="text"
-                  name="acceptanceCriteria"
-                />
-                {errors.acceptanceCriteria && (
-                  <Typography variant="subtitle1" color="error">
-                    {errors.acceptanceCriteria.message}
                   </Typography>
                 )}
               </Grid>

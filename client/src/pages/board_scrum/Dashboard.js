@@ -73,8 +73,8 @@ function Dashboard(props) {
     .filter((person) => person.favorite === true)
     .sort((a, b) => a - b);
 
-  //var connectedStudent = localStorage.getItem("userUid");
-  var connectedStudent = "nFVLL3s1TYtZsjFZPnmw";
+  var connectedStudent = localStorage.getItem("userUid");
+
 
   useEffect(() => {
     const fetchMembers = async () => {

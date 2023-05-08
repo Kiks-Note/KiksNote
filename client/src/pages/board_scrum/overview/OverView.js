@@ -32,7 +32,7 @@ function OverView(props) {
     props.addTab({
       id: props.id + "pdf",
       tab: "pdf",
-      component: <PdfView link={pdfLink} />,
+      component: <PdfView link={pdfLink} dashboardId={props.id} />,
       closeable: true,
     });
   };

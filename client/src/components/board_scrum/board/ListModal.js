@@ -63,7 +63,6 @@ export default function ListModal({
   } = useForm({
     resolver: yupResolver(schema),
   });
-console.log(errors);
   const onSubmit = (data) => {
     console.log(info);
     try {
