@@ -27,6 +27,9 @@ import BackpackIcon from "@mui/icons-material/Backpack";
 import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import LockRoundedIcon from "@mui/icons-material/LockRounded";
+import NoBackpackRoundedIcon from "@mui/icons-material/NoBackpackRounded";
+import NoSimRoundedIcon from "@mui/icons-material/NoSimRounded";
 
 import CreateCoursModal from "./CreateCoursModal";
 
@@ -58,7 +61,7 @@ const Ressources = () => {
   const loggedUser = localStorage.getItem("user");
   const loggedUserParsed = JSON.parse(loggedUser);
   var userStatus = loggedUserParsed.status;
-  // var studentClass = loggedUserParsed.class;
+  // var userClass = loggedUserParsed.class;
 
   const [view, setView] = useState("module");
 
@@ -267,7 +270,7 @@ const Ressources = () => {
                   variant="outlined"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  sx={{ width: "100%" }}
+                  sx={{ width: "80%" }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -354,7 +357,15 @@ const Ressources = () => {
                         justifyContent: "space-between",
                         height: "300px",
                       }}
-                      onClick={() => navigate(`/coursinfo/${course.id}`)}
+                      /* eslint-disable no-unused-expressions */
+                      onClick={() => {
+                        userStatus !== "etudiant" &&
+                        course.data.private === true
+                          ? navigate(`/coursinfo/${course.id}`)
+                          : course.data.private === false
+                          ? navigate(`/coursinfo/${course.id}`)
+                          : "";
+                      }}
                     >
                       <CardMedia
                         sx={{
@@ -382,33 +393,78 @@ const Ressources = () => {
                         <Typography variant="body2" color="text.secondary">
                           {course.data.description}
                         </Typography>
-                        <Tooltip title="Open">
-                          <IconButton
-                            onClick={() => navigate(`/coursinfo/${course.id}`)}
-                          >
-                            <OpenInNewIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="BackLog">
-                          <IconButton
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              pdfBacklogRoute();
-                            }}
-                          >
-                            <BackpackIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Support">
-                          <IconButton
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              pdfSupportRoute();
-                            }}
-                          >
-                            <PictureAsPdfIcon />
-                          </IconButton>
-                        </Tooltip>
+                        {userStatus === "etudiant" &&
+                        course.data.private === true ? (
+                          <>
+                            <Tooltip title="Private">
+                              <LockRoundedIcon />
+                            </Tooltip>
+                          </>
+                        ) : (
+                          <>
+                            <Tooltip title="Open">
+                              <IconButton
+                                onClick={() =>
+                                  navigate(`/coursinfo/${course.id}`)
+                                }
+                              >
+                                <OpenInNewIcon />
+                              </IconButton>
+                            </Tooltip>
+                            {course.data.pdfLinkBackLog ? (
+                              <>
+                                <Tooltip title="BackLog">
+                                  <IconButton
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      pdfBacklogRoute();
+                                    }}
+                                  >
+                                    <BackpackIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            ) : (
+                              <>
+                                <Tooltip title="BackLog">
+                                  <IconButton
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                    }}
+                                  >
+                                    <NoBackpackRoundedIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            )}
+                            {course.data.pdfLinkCours ? (
+                              <>
+                                <Tooltip title="Support">
+                                  <IconButton
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      pdfSupportRoute();
+                                    }}
+                                  >
+                                    <PictureAsPdfIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            ) : (
+                              <>
+                                <Tooltip title="Support">
+                                  <IconButton
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                    }}
+                                  >
+                                    <NoSimRoundedIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            )}
+                          </>
+                        )}
                       </CardContent>
                     </Card>
                   </Grid>
@@ -436,7 +492,14 @@ const Ressources = () => {
                         justifyContent: "space-between",
                         height: "300px",
                       }}
-                      onClick={() => navigate(`/coursinfo/${course.id}`)}
+                      onClick={() =>
+                        userStatus !== "etudiant" &&
+                        course.data.private === true
+                          ? navigate(`/coursinfo/${course.id}`)
+                          : course.data.private === false
+                          ? navigate(`/coursinfo/${course.id}`)
+                          : ""
+                      }
                     >
                       <CardMedia
                         sx={{
@@ -464,33 +527,78 @@ const Ressources = () => {
                         <Typography variant="body2" color="text.secondary">
                           {course.data.description}
                         </Typography>
-                        <Tooltip title="Open">
-                          <IconButton
-                            onClick={() => navigate(`/coursinfo/${course.id}`)}
-                          >
-                            <OpenInNewIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="BackLog">
-                          <IconButton
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              pdfBacklogRoute();
-                            }}
-                          >
-                            <BackpackIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Support">
-                          <IconButton
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              pdfSupportRoute();
-                            }}
-                          >
-                            <PictureAsPdfIcon />
-                          </IconButton>
-                        </Tooltip>
+                        {userStatus === "etudiant" &&
+                        course.data.private === true ? (
+                          <>
+                            <Tooltip title="Private">
+                              <LockRoundedIcon />
+                            </Tooltip>
+                          </>
+                        ) : (
+                          <>
+                            <Tooltip title="Open">
+                              <IconButton
+                                onClick={() =>
+                                  navigate(`/coursinfo/${course.id}`)
+                                }
+                              >
+                                <OpenInNewIcon />
+                              </IconButton>
+                            </Tooltip>
+                            {course.data.pdfLinkBackLog ? (
+                              <>
+                                <Tooltip title="BackLog">
+                                  <IconButton
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      pdfBacklogRoute();
+                                    }}
+                                  >
+                                    <BackpackIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            ) : (
+                              <>
+                                <Tooltip title="BackLog">
+                                  <IconButton
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                    }}
+                                  >
+                                    <NoBackpackRoundedIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            )}
+                            {course.data.pdfLinkCours ? (
+                              <>
+                                <Tooltip title="Support">
+                                  <IconButton
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      pdfSupportRoute();
+                                    }}
+                                  >
+                                    <PictureAsPdfIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            ) : (
+                              <>
+                                <Tooltip title="Support">
+                                  <IconButton
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                    }}
+                                  >
+                                    <NoSimRoundedIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            )}
+                          </>
+                        )}
                       </CardContent>
                     </Card>
                   </Grid>
