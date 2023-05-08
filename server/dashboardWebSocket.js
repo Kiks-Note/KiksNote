@@ -102,9 +102,10 @@ connection.on("message", (message) => {
 
       const dashboardRef = db.collection("dashboard").doc(dashboardId);
       const boardRef = dashboardRef.collection("board");
+      const storieRef = dashboardRef.collection("stories");
       const snapshotDashboard = await dashboardRef.get();
       const snapshotBoard = await boardRef.get();
-
+      const snapshotStorie = await storieRef.get();
       const data = snapshotDashboard.data();
       dataReturn.push(data.release);
 
@@ -130,6 +131,9 @@ connection.on("message", (message) => {
           }
         });
       });
+      snapshotStorie.forEach((doc) => {
+        stories.push(doc.data());
+      });
       connection.sendUTF(
         JSON.stringify({
           stories: stories,
@@ -139,6 +143,7 @@ connection.on("message", (message) => {
         })
       );
     });
+
   }
 };
 
