@@ -45,11 +45,6 @@ export default function DetailCard(props) {
   const closeModal = () => {
     setShowModal(false);
   };
-
-  const handleDescriptionClick = () => {
-    setIsEditingDescription(true);
-  };
-
   const handleDescriptionChange = (event) => {
     setDescriptionValue(event.target.value);
   };
@@ -118,8 +113,6 @@ export default function DetailCard(props) {
     } catch (error) {}
   };
   const deleteCard = () => {
-    console.log(info.id);
-    console.log(props.columnId);
     try {
       axios.delete(
         "http://localhost:5050/dashboard/" +
@@ -187,7 +180,7 @@ export default function DetailCard(props) {
               color: label.color,
               height: "80%",
             }}
-          ></CircleIcon>
+          />
           <p
             style={{
               flexDirection: "column",
@@ -211,7 +204,7 @@ export default function DetailCard(props) {
     <Button
       onClick={() => {
         setShowModal(!showModal);
-        setType("addlabels");
+        setType("labels");
       }}
     >
       <AddIcon></AddIcon>
@@ -429,6 +422,8 @@ export default function DetailCard(props) {
         columnId={props.columnId}
         info={info}
         type={type}
+        labelList={props.labelList}
+        label={props.Label}
       />
     </>
   );

@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import CloseIcon from "@mui/icons-material/Close";
-import { ChromePicker } from "react-color";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -30,7 +29,7 @@ const schema = yup.object().shape({
     .array()
     .of(
       yup.object().shape({
-        id: yup.number().required(),
+        id: yup.string().required(),
         name: yup.string().required(),
         color: yup.string().required(),
       })
@@ -47,9 +46,16 @@ export default function ListModal({
   info,
   stories,
   type,
+  labelList,
+  label,
 }) {
   const { assignedTo } = info;
   const [selectedAssignees, setSelectedAssignees] = useState(assignedTo);
+  const [labels, setLabels] = useState([]);
+
+  useEffect(() => {
+    setLabels(labelList);
+  }, []);
   const {
     control,
     handleSubmit,
@@ -57,9 +63,32 @@ export default function ListModal({
   } = useForm({
     resolver: yupResolver(schema),
   });
-
+console.log(errors);
   const onSubmit = (data) => {
-    console.log(data);
+    console.log(info);
+    try {
+      axios.put(
+        "http://localhost:5050/dashboard/" +
+          dashboardId +
+          "/board/" +
+          boardId +
+          "/column/" +
+          columnId +
+          "/editCard",
+        {
+          id: info.id,
+          title: info.name,
+          desc: info.desc,
+          storyId: info.storyId,
+          color: info.color,
+          assignedTo: info.assignedTo,
+          labels: data.labels,
+        }
+      );
+      closeModal();
+    } catch (error) {
+      console.error(error);
+    }
   };
   const handleAssigneesChange = (event) => {
     setSelectedAssignees(event.target.value);
@@ -92,11 +121,6 @@ export default function ListModal({
       console.error(error);
     }
   };
-  const labels = [
-    { id: 1, name: "label1", color: "#FF0000" },
-    { id: 2, name: "label2", color: "#00FF00" },
-    { id: 3, name: "label3", color: "#0000FF" },
-  ];
 
   let titleModal;
   switch (type) {
@@ -108,9 +132,6 @@ export default function ListModal({
       break;
     case "labels":
       titleModal = "Choix de label";
-      break;
-    case "addlabels":
-      titleModal = "Ajout de label";
       break;
     default:
       titleModal = "";
@@ -185,7 +206,7 @@ export default function ListModal({
                 <Controller
                   name="labels"
                   control={control}
-                  defaultValue={[]}
+                  defaultValue={label}
                   render={({ field: { onChange, value } }) => (
                     <Autocomplete
                       multiple
@@ -241,12 +262,6 @@ export default function ListModal({
                 <Button variant="contained" onClick={handleSubmit(onSubmit)}>
                   Ajouter
                 </Button>
-              </Box>
-            )}
-            {type === "addlabels" && (
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
-              <h2>A faire </h2>
-                {/* faire l'ajout des labels avec ChromePicker*/}
               </Box>
             )}
           </Box>

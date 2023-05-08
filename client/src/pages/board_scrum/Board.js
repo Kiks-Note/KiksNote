@@ -14,12 +14,7 @@ import { w3cwebsocket } from "websocket";
 function TransitionComponent(props) {
   return <Slide {...props} direction="up" />;
 }
-const LabelList = [
-  { name: "Feature", color: "#E6BE65" },
-  { name: "Urgent", color: "#FF0000" },
-  { name: "Fix", color: "#6c25be" },
-  { name: "Documentation", color: "#2596be" },
-];
+
 const taskStatus = {
   requested: {
     name: "Stories",
@@ -48,9 +43,9 @@ const taskStatus = {
 function Board(props) {
   const labelChange = () => setLabel(!label);
   const [columns, setColumns] = useState(taskStatus);
+  const [labelList, setLabelList] = useState([]);
   const [label, setLabel] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
-  const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -69,8 +64,9 @@ function Board(props) {
       wsComments.onmessage = (message) => {
         const data = JSON.parse(message.data);
         setColumns({
-          ...data,
+          ...data.board,
         });
+        setLabelList(data.labels);
       };
     })();
   }, []);
@@ -85,12 +81,6 @@ function Board(props) {
       newColumns
     );
   }
-  const handleMenuOpen = (event, columnId) => {
-    setMenuAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = () => {
-    setMenuAnchorEl(null);
-  };
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
     if (
@@ -281,7 +271,7 @@ function Board(props) {
                                         }}
                                       >
                                         <CardBoard
-                                          labelList={LabelList}
+                                          labelList={labelList}
                                           card_info={item}
                                           snapshot={snapshot}
                                           label={label}
@@ -290,7 +280,7 @@ function Board(props) {
                                           stories={columns[0].items}
                                           dashboardId={props.dashboardId}
                                           boardId={props.boardId}
-                                        ></CardBoard>
+                                        />
                                       </div>
                                     );
                                   }}

@@ -23,6 +23,7 @@ export default function CardBoard(props) {
 
   const info = props.card_info;
 
+
   var color = info.color;
 
   const assignedTo = props.card_info.assignedTo;
@@ -56,7 +57,7 @@ export default function CardBoard(props) {
   if (info.labels != null) {
     Label = info.labels.map((label) => {
       for (const labelProps of props.labelList) {
-        if (labelProps.name.toLowerCase() == label.toLowerCase()) {
+        if (labelProps.name.toLowerCase() == label.name.toLowerCase()) {
           return labelProps;
         }
       }
@@ -182,6 +183,7 @@ export default function CardBoard(props) {
           boardId={props.boardId}
           stories={props.stories}
           handleClose={handleClose}
+          labelList={props.labelList}
         />
       </Modal>
     </div>

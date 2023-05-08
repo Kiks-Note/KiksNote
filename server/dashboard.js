@@ -358,54 +358,92 @@ module.exports = (app, db, ws, parse) => {
     console.log("Creating dashboard...");
     try {
       console.log(req.body.release);
-      //  const dashboardRef = await db.collection("dashboard").add({
-      //   ...req.body
-      //  });
-      //   for (var i in release) {
-      //     for (var y in release[i]) {
-      //       var res = await db
-      //         .collection("dashboard")
-      //         .doc(dashboardRef.id)
-      //         .collection("board")
-      //         .add({
-      //           requested: {
-      //             name: "Stories",
-      //             items: [],
-      //           },
-      //           acceptance: {
-      //             name: "Critère d'acceptation",
-      //             items: [],
-      //           },
-      //           toDo: {
-      //             name: "To Do",
-      //             items: [],
-      //           },
-      //           inProgress: {
-      //             name: "In progress",
-      //             items: [],
-      //           },
-      //           done: {
-      //             name: "Done",
-      //             items: [],
-      //           },
-      //         });
-      //       release[i][y].boardId = res.id;
-      //     }
-      //   }
-      //   db.collection("dashboard")
-      //     .doc(newDashboard.id)
-      //     .update({ release: release });
-       res.status(200).send({
-         message: "Dashboard created successfully",
-         id: dashboardRef.id,
-       });
-       console.log("Dashboard created successfully");
+      const dashboardRef = await db.collection("dashboard").add({
+        ...req.body,
+      });
+      var stories = await db
+        .collection("dashboard")
+        .doc(dashboardRef.id)
+        .collection("stories");
+      for (var i in release) {
+        for (var y in release[i]) {
+          var res = await db
+            .collection("dashboard")
+            .doc(dashboardRef.id)
+            .collection("board")
+            .add({
+              requested: {
+                name: "Stories",
+                items: [],
+              },
+              acceptance: {
+                name: "Critère d'acceptation",
+                items: [],
+              },
+              toDo: {
+                name: "To Do",
+                items: [],
+              },
+              inProgress: {
+                name: "In progress",
+                items: [],
+              },
+              done: {
+                name: "Done",
+                items: [],
+              },
+              definitionOfDone: {
+                name: "Do",
+                items: [],
+              },
+              definitionOfFun: {
+                name: "DoF",
+                items: [],
+              },
+            });
+          release[i][y].boardId = res.id;
+        }
+      }
+      db.collection("dashboard")
+        .doc(newDashboard.id)
+        .update({ release: release });
+      res.status(200).send({
+        message: "Dashboard created successfully",
+        id: dashboardRef.id,
+      });
+      console.log("Dashboard created successfully");
     } catch (error) {
       console.error("Error creating dashboard", error);
       // Server error
       res
         .status(500)
         .send({ message: "An error occurred while creating the dashboard" });
+    }
+  });
+  // Route pour créer une nouvelle histoire
+  app.post("/dashboard-creation/:dashboardId/stories", async (req, res) => {
+    try {
+      const { dashboardId } = req.params;
+      const { title, content } = req.body;
+
+      const dashboardRef = db.collection("dashboard").doc(dashboardId);
+
+      // Vérifier que le document existe
+      const dashboard = await dashboardRef.get();
+      if (!dashboard.exists) {
+        return res.status(404).send("Le dashboard spécifié n'existe pas.");
+      }
+
+      // Ajouter la nouvelle histoire à la collection "stories" du document "dashboard"
+      const newStory = { title, content };
+      const storiesRef = dashboardRef.collection("stories");
+      const result = await storiesRef.add(newStory);
+
+      // Retourner la réponse avec l'ID de la nouvelle histoire créée
+      res.status(201).send({ id: result.id });
+    } catch (error) {
+      console.error("Erreur lors de la création d'une histoire:", error);
+      res.status(500).send("Erreur lors de la création d'une histoire.");
     }
   });
 };

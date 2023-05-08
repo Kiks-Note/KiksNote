@@ -36,10 +36,29 @@ module.exports = (app, db, connection, pathname) => {
   }
   if (pathname === "/board") {
     console.log("je suis dans /board");
-    connection.on("message", (message) => {
-      var json = JSON.parse(message.utf8Data);
-      var dashboardId = json.dashboardId;
-      var boardId = json.boardId;
+connection.on("message", (message) => {
+  var json = JSON.parse(message.utf8Data);
+  var dashboardId = json.dashboardId;
+  var boardId = json.boardId;
+
+  // Variables pour stocker les informations récupérées
+  var labelsData = [];
+  var boardData = [];
+
+  // Récupérer les données des labels
+  db.collection("dashboard")
+    .doc(dashboardId)
+    .collection("labels")
+    .get()
+    .then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        labelsData.push({
+          id: doc.id,
+          name: doc.data().name,
+          color: doc.data().color,
+        });
+      });
+      // Récupérer les données du board
       db.collection("dashboard")
         .doc(dashboardId)
         .collection("board")
@@ -47,21 +66,33 @@ module.exports = (app, db, connection, pathname) => {
         .onSnapshot(
           (snapshot) => {
             const data = snapshot.data();
-            connection.sendUTF(
-              JSON.stringify([
-                data.requested,
-                data.acceptance,
-                data.toDo,
-                data.inProgress,
-                data.done,
-              ])
-            );
+            boardData = [
+              data.requested,
+              data.acceptance,
+              data.toDo,
+              data.inProgress,
+              data.done,
+            ];
+            // Envoyer les données récupérées
+            const responseData = {
+              labels: labelsData,
+              board: boardData,
+            };
+            connection.sendUTF(JSON.stringify(responseData));
           },
           (err) => {
             console.log(`Encountered error: ${err}`);
           }
         );
+    })
+    .catch((error) => {
+      console.error(
+        "Erreur lors de la récupération de la sous-collection:",
+        error
+      );
     });
+});
+
   }
   if (pathname === "/overview") {
     console.log("je suis dans /overview");
