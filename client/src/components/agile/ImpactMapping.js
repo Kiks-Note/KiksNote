@@ -1,4 +1,4 @@
-import React,{useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -10,111 +10,171 @@ import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useSelector, useDispatch } from "react-redux";
 
-
-import Card from './Card';
-
+import Card from "./Card";
 
 const ImpactMapping = () => {
+  const { goals, actors, impacts, deliverables } = useSelector(
+    (state) => state.impactMapping
+  );
+  const [showCard, setShowCard] = useState(false);
+  const [columnIndex, setColumnIndex] = useState("");
 
-    const impactMapping = useSelector((state) => state.impactMapping);
+  const [cardObjectif, setCardObjectif] = useState([]);
+  const [cardActors, setCardActors] = useState([]);
+  const [cardImpacts, setCardImpacts] = useState([]);
+  const [cardDeliverables, setCardDeliverables] = useState([]);
 
-    const [showCard, setShowCard] = useState(false);
-    const [columnIndex, setColumnIndex] = useState('');
-
-    const [cardObjectif, setCardObjectif] = useState([]);
-    const [cardActors, setCardActors] = useState([]);
-    const [cardImpacts, setCardImpacts] = useState([]);
-    const [cardDeliverables, setCardDeliverables] = useState([]);
-
-
-    useEffect(() => {
-        console.log('impact', impactMapping);
-        setCardObjectif(impactMapping.goals);
-        setCardActors(impactMapping.actors);
-        setCardImpacts(impactMapping.impacts);
-        setCardDeliverables(impactMapping.deliverables);
-    }, [impactMapping]);
+  useEffect(() => {
+    console.log("impactMapping:", { goals, actors, impacts, deliverables });
+    setCardObjectif(goals);
+    setCardActors(actors);
+    setCardImpacts(impacts);
+    setCardDeliverables(deliverables);
+  }, [goals, actors, impacts, deliverables]);
 
   const addCard = (index) => {
-    console.log("addCard");
+    // console.log("addCard");
     setShowCard(true);
     setColumnIndex(index.toString());
   };
 
   const handleButtonForm = () => {
     setShowCard(false);
-    setColumnIndex('');
+    setColumnIndex("");
   };
 
   return (
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell align="center" >Objectif</TableCell>
-              <TableCell align="center">Acteurs</TableCell>
-              <TableCell align="center">Impacts</TableCell>
-              <TableCell align="center">Deliverables</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-                {cardObjectif.map((texte, index)=>{
-                    return <Card title='Objectif' type="card" column={0} texte={texte} key={index} index={index}/>
-                })}
-                {showCard && columnIndex === '0' && (
-                    <Card type="form" column={0} onCloseForm={handleButtonForm}/>
-                )}
-                <IconButton
-                    aria-label="add"
-                    onClick={() => addCard(0)}
-                >
-                  <AddIcon />
-                </IconButton>
-              </TableCell>
+    <TableContainer
+      component={Paper}
+      sx={{
+        width: "100%",
+        height: "100%",
+        padding: 2,
+      }}
+    >
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell align="center" sx={{ border: "2px solid black" }}>
+              Objectif
+            </TableCell>
+            <TableCell align="center" sx={{ border: "2px solid black" }}>
+              Acteurs
+            </TableCell>
+            <TableCell align="center" sx={{ border: "2px solid black" }}>
+              Impacts
+            </TableCell>
+            <TableCell align="center" sx={{ border: "2px solid black" }}>
+              Deliverables
+            </TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell
+              align="center"
+              sx={{ padding: 2, width: "20%", border: "1px solid black" }}
+            >
+              {cardObjectif.map((goal, index) => {
+                return (
+                  <Card
+                    title="Objectif"
+                    type="card"
+                    column={0}
+                    texte={goal.text}
+                    key={index}
+                    index={index}
+                    defineColor={goal.color}
+                  />
+                );
+              })}
+              {showCard && columnIndex === "0" && (
+                <Card type="form" column={0} onCloseForm={handleButtonForm} />
+              )}
+              <IconButton aria-label="add" onClick={() => addCard(0)}>
+                <AddIcon />
+              </IconButton>
+            </TableCell>
 
-              <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-              {cardActors.map((texte, index)=>{
-                    return <Card title='Acteur' type="card" column={1} texte={texte} key={index} index={index}/>
-                })}
-              {showCard && columnIndex === '1' && (
-                    <Card type="form" column={1} onCloseForm={handleButtonForm}/>
-                )}
-                <IconButton aria-label="add"  onClick={() => addCard(1)}>
-                  <AddIcon />
-                </IconButton>
-              </TableCell>
+            <TableCell
+              align="center"
+              sx={{ padding: 2, width: "20%", border: "1px solid black" }}
+            >
+              {cardActors.map((goal, index) => {
+                return (
+                  <Card
+                    title="Acteur"
+                    type="card"
+                    column={1}
+                    texte={goal.text}
+                    key={index}
+                    index={index}
+                    defineColor={goal.color}
+                  />
+                );
+              })}
+              {showCard && columnIndex === "1" && (
+                <Card type="form" column={1} onCloseForm={handleButtonForm} />
+              )}
+              <IconButton aria-label="add" onClick={() => addCard(1)}>
+                <AddIcon />
+              </IconButton>
+            </TableCell>
 
-              <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-              {cardImpacts.map((texte, index)=>{
-                    return <Card title='Impact' type="card" column={2} texte={texte} key={index} index={index}/>
-                })}
-                {showCard && columnIndex === '2' && (
-                    <Card type="form" column={2} onCloseForm={handleButtonForm}/>
-                )}
-                <IconButton aria-label="add"  onClick={() => addCard(2)}>
-                  <AddIcon />
-                </IconButton>
-              </TableCell>
+            <TableCell
+              align="center"
+              sx={{ padding: 2, width: "20%", border: "1px solid black" }}
+            >
+              {cardImpacts.map((goal, index) => {
+                return (
+                  <Card
+                    title="Impact"
+                    type="card"
+                    column={2}
+                    texte={goal.text}
+                    key={index}
+                    index={index}
+                    defineColor={goal.color}
+                  />
+                );
+              })}
+              {showCard && columnIndex === "2" && (
+                <Card type="form" column={2} onCloseForm={handleButtonForm} />
+              )}
+              <IconButton aria-label="add" onClick={() => addCard(2)}>
+                <AddIcon />
+              </IconButton>
+            </TableCell>
 
-              <TableCell align="center" sx={{ padding: 2, width:'20%', border: '1px solid black'}}>
-              {cardDeliverables.map((index, texte)=>{
-                    return <Card title="Deliverables" column={3} type="card" texte={texte} key={index} index={index}/>
-                })}
-                
-              {showCard && columnIndex === '3' && (
-                    <Card type="form" column={3} onCloseForm={handleButtonForm}/>
-                )}
-                <IconButton aria-label="add"  onClick={() => addCard(3)}>
-                  <AddIcon />
-                </IconButton>
-              </TableCell>
-              
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
+            <TableCell
+              align="center"
+              sx={{ padding: 2, width: "20%", border: "1px solid black" }}
+            >
+              {cardDeliverables.map((goal, index) => {
+                return (
+                  <Card
+                    title="Deliverables"
+                    type="card"
+                    column={3}
+                    texte={goal.text}
+                    key={index}
+                    index={index}
+                    defineColor={goal.color}
+                  />
+                );
+              })}
+
+              {showCard && columnIndex === "3" && (
+                <Card type="form" column={3} onCloseForm={handleButtonForm} />
+              )}
+              <IconButton aria-label="add" onClick={() => addCard(3)}>
+                <AddIcon />
+              </IconButton>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
