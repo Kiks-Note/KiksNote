@@ -192,8 +192,8 @@ const Ressources = () => {
     setOpen(true);
   };
 
-  const pdfBacklogRoute = () => navigate("/pdfBacklog");
-  const pdfSupportRoute = () => navigate("/pdfSupport");
+  // const pdfBacklogRoute = () => navigate("/pdfBacklog");
+  // const pdfSupportRoute = () => navigate("/pdfSupport");
 
   const onSubmit = async () => {
     try {
@@ -417,7 +417,7 @@ const Ressources = () => {
                                   <IconButton
                                     onClick={(event) => {
                                       event.stopPropagation();
-                                      pdfBacklogRoute();
+                                      // pdfBacklogRoute();
                                     }}
                                   >
                                     <BackpackIcon />
@@ -443,7 +443,7 @@ const Ressources = () => {
                                   <IconButton
                                     onClick={(event) => {
                                       event.stopPropagation();
-                                      pdfSupportRoute();
+                                      // pdfSupportRoute();
                                     }}
                                   >
                                     <PictureAsPdfIcon />
@@ -551,7 +551,7 @@ const Ressources = () => {
                                   <IconButton
                                     onClick={(event) => {
                                       event.stopPropagation();
-                                      pdfBacklogRoute();
+                                      // pdfBacklogRoute();
                                     }}
                                   >
                                     <BackpackIcon />
@@ -577,7 +577,7 @@ const Ressources = () => {
                                   <IconButton
                                     onClick={(event) => {
                                       event.stopPropagation();
-                                      pdfSupportRoute();
+                                      // pdfSupportRoute();
                                     }}
                                   >
                                     <PictureAsPdfIcon />
@@ -649,12 +649,16 @@ const Ressources = () => {
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="BackLog">
-                          <IconButton onClick={pdfBacklogRoute}>
+                          <IconButton
+                          // onClick={pdfBacklogRoute}
+                          >
                             <BackpackIcon />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Support">
-                          <IconButton onClick={pdfSupportRoute}>
+                          <IconButton
+                          // onClick={pdfSupportRoute}
+                          >
                             <PictureAsPdfIcon />
                           </IconButton>
                         </Tooltip>
@@ -705,12 +709,16 @@ const Ressources = () => {
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="BackLog">
-                          <IconButton onClick={pdfBacklogRoute}>
+                          <IconButton
+                          // onClick={pdfBacklogRoute}
+                          >
                             <BackpackIcon />
                           </IconButton>
                         </Tooltip>
                         <Tooltip title="Support">
-                          <IconButton onClick={pdfSupportRoute}>
+                          <IconButton
+                          // onClick={pdfSupportRoute}
+                          >
                             <PictureAsPdfIcon />
                           </IconButton>
                         </Tooltip>

@@ -368,19 +368,14 @@ const CoursInfo = () => {
     setFileBacklog(event.target.files[0]);
   };
 
-  const handleDownload = async (urlFilePdf, filePdfName) => {
-    try {
-      const response = await axios.get(urlFilePdf, {
-        responseType: "blob",
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", filePdfName);
-      document.body.appendChild(link);
-    } catch (error) {
-      console.error(error);
-    }
+  const handleDownload = (url) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.target = "_blank";
+    link.setAttribute("download", "file.pdf");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   const handleFileChange = (fileData) => {
@@ -482,7 +477,7 @@ const CoursInfo = () => {
                             width: "100%",
                             marginBottom: "20px",
                           }}
-                          onClick={() => pdfCoursNavigate(pdfLink.url)}
+                          // onClick={() => pdfCoursNavigate(pdfLink.url)}
                         >
                           <CardContent
                             sx={{
@@ -508,7 +503,7 @@ const CoursInfo = () => {
                               }}
                               onClick={(event) => {
                                 event.stopPropagation();
-                                handleDownload();
+                                handleDownload(pdfLink.url);
                               }}
                             >
                               <DownloadIcon />
@@ -647,6 +642,10 @@ const CoursInfo = () => {
                                 "&:hover": {
                                   backgroundColor: "#1f8dba",
                                 },
+                              }}
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                handleDownload(pdfLink.url);
                               }}
                             >
                               <DownloadIcon />
