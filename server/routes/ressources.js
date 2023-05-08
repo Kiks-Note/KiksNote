@@ -152,6 +152,82 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
       res.status(500).send("Erreur lors de la création du cours.");
     }
   });
+  app.post("/update/ressources/cours/:id", async (req, res) => {
+    try {
+      const {
+        title,
+        description,
+        date,
+        campus_numerique,
+        courseClass,
+        owner,
+        private,
+        imageBase64,
+      } = req.body;
+
+      if (
+        !title ||
+        !description ||
+        !date ||
+        !courseClass ||
+        !owner ||
+        !imageBase64
+      ) {
+        return res
+          .status(400)
+          .send("Veuillez remplir tous les champs obligatoires.");
+      }
+
+      const mimeType = "image/png";
+      const fileExtension = mime.extension(mimeType);
+      const fileName = `${title}.${fileExtension}`;
+
+      const buffer = Buffer.from(
+        imageBase64.replace(/^data:image\/\w+;base64,/, ""),
+        "base64"
+      );
+      const file = bucket.file(`${courseClass}/${title}/${fileName}`);
+
+      const options = {
+        metadata: {
+          contentType: mimeType || "image/jpeg",
+          cacheControl: "public, max-age=31536000",
+        },
+      };
+
+      await file.save(buffer, options);
+
+      const [url] = await file.getSignedUrl({
+        action: "read",
+        expires: "03-17-2025",
+      });
+
+      const resourcesRef = db.collection("cours");
+      const resourceId = req.params.id;
+
+      await resourcesRef.doc(resourceId).update({
+        title,
+        description,
+        date,
+        campus_numerique,
+        courseClass,
+        owner,
+        private,
+        imageCourseUrl: url,
+      });
+
+      const updatedResourceData = await resourcesRef.doc(resourceId).get();
+
+      res.status(200).json({
+        cours_id: resourceId,
+        cours_updated_datas: updatedResourceData._fieldsProto,
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Erreur lors de la modification du cours.");
+    }
+  });
+
   // Route pour uploader le fichier cours pdf dans Firebase Storage en fonction du nom de la classe et du nom du cours
   app.post("/ressources/cours/upload-pdf", (req, res) => {
     upload(req, res, (err) => {
