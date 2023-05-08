@@ -39,7 +39,7 @@ const UpdateCoursDialog = (props) => {
               label="Nom du cours"
               variant="standard"
               type="text"
-              defaultValue=""
+              defaultValue={props.coursTitle}
               onChange={(e) => props.setCoursTitle(e.target.value)}
               sx={{
                 width: "80%",
@@ -52,7 +52,7 @@ const UpdateCoursDialog = (props) => {
               label=" "
               variant="standard"
               type="date"
-              defaultValue=""
+              defaultValue={props.coursDate}
               onChange={(e) => props.setCoursDate(e.target.value)}
             />
           </div>
@@ -62,7 +62,6 @@ const UpdateCoursDialog = (props) => {
               Drag and drop an image file here, or click to select an image
               file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
             </p>
-            <img src={props.imgCours} alt="logo du cours" />
             <Dropzone
               onDrop={props.handleDrop}
               onFileChange={props.handleFileChange}
@@ -191,7 +190,7 @@ const UpdateCoursDialog = (props) => {
             sx={{
               width: "100%",
             }}
-            defaultValue=""
+            defaultValue={props.coursDescription}
             onChange={(e) => props.setCoursDescription(e.target.value)}
           />
 
