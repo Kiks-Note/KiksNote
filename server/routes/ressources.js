@@ -1,3 +1,5 @@
+const admin = require("firebase-admin");
+
 module.exports = (app, db, bucket, mime, upload, multer, fs) => {
   app.get("/ressources/classes", async (req, res) => {
     try {
@@ -150,7 +152,6 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
       res.status(500).send("Erreur lors de la création du cours.");
     }
   });
-
   // Route pour uploader le fichier cours pdf dans Firebase Storage en fonction du nom de la classe et du nom du cours
   app.post("/ressources/cours/upload-pdf", (req, res) => {
     upload(req, res, (err) => {
@@ -167,6 +168,8 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
         const fileName = req.file.originalname;
 
         const fileRef = bucket.file(`${folderPath}/${fileName}`);
+
+        let pdfLinkCours;
 
         fileRef
           .createWriteStream({
@@ -188,19 +191,27 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
               .then((url) => {
                 const courseId = req.body.courseId;
 
-                const pdfLinkCours = url.toString();
+                pdfLinkCours = url.toString();
 
-                db.collection("cours").doc(courseId).update({
-                  pdfLinkCours: pdfLinkCours,
-                });
-
+                db.collection("cours")
+                  .doc(courseId)
+                  .update({
+                    pdfLinkCours: admin.firestore.FieldValue.arrayUnion({
+                      url: pdfLinkCours,
+                      name: fileName,
+                      type: fileType,
+                      size: fileSize,
+                    }),
+                  });
+              })
+              .then(() => {
                 res.json({
                   success: true,
                   file: {
                     name: fileName,
                     type: fileType,
                     size: fileSize,
-                    url: url,
+                    url: pdfLinkCours,
                   },
                 });
               })
@@ -231,6 +242,8 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
 
         const fileRef = bucket.file(`${folderPath}/${fileName}`);
 
+        let pdfLinkBackLog;
+
         fileRef
           .createWriteStream({
             metadata: {
@@ -251,19 +264,27 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
               .then((url) => {
                 const courseId = req.body.courseId;
 
-                const pdfLinkBackLog = url.toString();
+                pdfLinkBackLog = url.toString();
 
-                db.collection("cours").doc(courseId).update({
-                  pdfLinkBackLog: pdfLinkBackLog,
-                });
-
+                db.collection("cours")
+                  .doc(courseId)
+                  .update({
+                    pdfLinkBackLog: admin.firestore.FieldValue.arrayUnion({
+                      url: pdfLinkBackLog,
+                      name: fileName,
+                      type: fileType,
+                      size: fileSize,
+                    }),
+                  });
+              })
+              .then(() => {
                 res.status(200).send({
                   success: true,
                   file: {
                     name: fileName,
                     type: fileType,
                     size: fileSize,
-                    url: url,
+                    url: pdfLinkBackLog,
                   },
                 });
               })
