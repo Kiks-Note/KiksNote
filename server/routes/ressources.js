@@ -152,6 +152,8 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
       res.status(500).send("Erreur lors de la création du cours.");
     }
   });
+
+  // Route pour update les datas d'un cours par son id
   app.post("/update/ressources/cours/:id", async (req, res) => {
     try {
       const {
@@ -240,7 +242,7 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
         const fileType = mime.lookup(filePath);
         const fileSize = req.file.size;
 
-        const folderPath = `${req.body.courseClass}/${req.body.title}`;
+        const folderPath = `${req.body.courseClass}/${req.body.title}/Cours`;
         const fileName = req.file.originalname;
 
         const fileRef = bucket.file(`${folderPath}/${fileName}`);
@@ -313,7 +315,7 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
         const fileType = mime.lookup(filePath);
         const fileSize = req.file.size;
 
-        const folderPath = `${req.body.courseClass}/${req.body.title}`;
+        const folderPath = `${req.body.courseClass}/${req.body.title}/Backlogs`;
         const fileName = req.file.originalname;
 
         const fileRef = bucket.file(`${folderPath}/${fileName}`);
@@ -374,8 +376,95 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
     });
   });
 
+  // Route pour supprimer un fichier cours pdf de Firebase Storage et dans l'array pdfLinksCours dans le document de la collection cours
+  app.delete("/ressources/cours/delete-pdf", (req, res) => {
+    const { courseClass, title, fileName, pdfLinkCours, courseId } = req.body;
+
+    const fileRef = bucket.file(`${courseClass}/${title}/Cours/${fileName}`);
+
+    fileRef
+      .delete()
+      .then(() => {
+        db.collection("cours")
+          .doc(courseId)
+          .get()
+          .then((doc) => {
+            const pdfLinks = doc.data().pdfLinkCours;
+            const updatedPdfLinks = pdfLinks.filter(
+              (pdfLink) =>
+                pdfLink.name !== fileName && pdfLink.url !== pdfLinkCours
+            );
+
+            db.collection("cours")
+              .doc(courseId)
+              .update({ pdfLinkCours: updatedPdfLinks })
+              .then(() => {
+                res.json({
+                  success: true,
+                  message: `File ${fileName} successfully deleted.`,
+                });
+              })
+              .catch((error) => {
+                console.error(error);
+                res.status(400).json({ error: error.message });
+              });
+          })
+          .catch((error) => {
+            console.error(error);
+            res.status(400).json({ error: error.message });
+          });
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(400).json({ error: error.message });
+      });
+  });
+
+  // Route pour supprimer un fichier backlog pdf dans Firebase Storage et dans l'array pdfLinksBacklog dans le document de la collection cours
+  app.delete("/ressources/backlog/delete-pdf", (req, res) => {
+    const { courseClass, title, fileName, pdfLinkBackLog, courseId } = req.body;
+    const fileRef = bucket.file(`${courseClass}/${title}/Backlogs/${fileName}`);
+
+    fileRef
+      .delete()
+      .then(() => {
+        db.collection("cours")
+          .doc(courseId)
+          .get()
+          .then((doc) => {
+            const pdfLinks = doc.data().pdfLinkBackLog;
+            const updatedPdfLinks = pdfLinks.filter(
+              (pdfLink) =>
+                pdfLink.name !== fileName && pdfLink.url !== pdfLinkBackLog
+            );
+
+            db.collection("cours")
+              .doc(courseId)
+              .update({ pdfLinkBackLog: updatedPdfLinks })
+              .then(() => {
+                res.json({
+                  success: true,
+                  message: `File ${fileName} successfully deleted.`,
+                });
+              })
+              .catch((error) => {
+                console.error(error);
+                res.status(400).json({ error: error.message });
+              });
+          })
+          .catch((error) => {
+            console.error(error);
+            res.status(400).json({ error: error.message });
+          });
+      })
+      .catch((error) => {
+        console.error(error);
+        res.status(400).json({ error: error.message });
+      });
+  });
+
   // Route pour supprimer un cours complet
-  app.delete("/ressources/cours/:id", async (req, res) => {
+  app.delete("delete/ressources/cours/:id", async (req, res) => {
     try {
       const { courseClass, title } = req.body;
 
