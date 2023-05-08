@@ -87,6 +87,9 @@ const CoursInfo = () => {
   const [fileBacklog, setFileBacklog] = useState(null);
   const [fileImg, setFileImg] = useState(null);
 
+  const [pdfLinksCours, setPdfLinksCours] = useState([]);
+  const [pdfLinksBacklog, setPdfLinksBacklog] = useState([]);
+
   const { control } = useForm({
     mode: "onTouched",
   });
@@ -127,6 +130,8 @@ const CoursInfo = () => {
         .get(`http://localhost:5050/ressources/cours/${id}`)
         .then((res) => {
           setCoursData(res.data.data);
+          setPdfLinksCours(res.data.data.pdfLinkCours);
+          setPdfLinksBacklog(res.data.data.pdfLinkBackLog);
         })
         .catch((err) => {
           console.log(err);
@@ -164,9 +169,7 @@ const CoursInfo = () => {
         .post(`http://localhost:5050/ressources/cours/upload-pdf`, formData)
         .then((res) => {
           if (res.status === 200) {
-            toastSuccess(
-              `Votre pdf cours ${fileNameCourse} a bien été uploadé`
-            );
+            toastSuccess(`Votre pdf cours a bien été uploadé`);
             handleCloseCoursDialog();
             window.location.reload();
           }
@@ -200,9 +203,7 @@ const CoursInfo = () => {
         )
         .then((res) => {
           if (res.status === 200) {
-            toastSuccess(
-              `Votre pdf cours ${fileNameBacklog} a bien été uploadé`
-            );
+            toastSuccess(`Votre pdf backlog a bien été uploadé`);
             handleCloseBacklogDialog();
             window.location.reload();
           }
@@ -269,24 +270,9 @@ const CoursInfo = () => {
     setFileBacklog(event.target.files[0]);
   };
 
-  const getPdfFileName = (pdfUrl) => {
-    const parts = pdfUrl.split("/");
-    const fileName = parts[parts.length - 1];
-    const fileNameParts = fileName.split("?");
-    return fileNameParts[0];
-  };
-
   const handleDownload = (url, filename) => {
     download(url, filename);
   };
-
-  const fileNameCourse = coursData.pdfLinkCours
-    ? getPdfFileName(coursData.pdfLinkCours)
-    : "";
-
-  const fileNameBacklog = coursData.pdfLinkBackLog
-    ? getPdfFileName(coursData.pdfLinkBackLog)
-    : "";
 
   const coursePdfUploaded = coursData.hasOwnProperty("pdfLinkCours")
     ? true
@@ -349,25 +335,57 @@ const CoursInfo = () => {
               <Divider />
               <div className="list-course-pdf">
                 {coursePdfUploaded === true ? (
-                  <Card
-                    sx={{
-                      width: "100%",
-                    }}
-                    onClick={() => pdfCoursNavigate(coursData.pdfLinkCours)}
-                  >
-                    <CardContent
-                      sx={{
+                  <>
+                    {pdfLinksCours.map((pdfLink, index) => (
+                      <Card
+                        key={index}
+                        sx={{
+                          width: "100%",
+                          marginBottom: "20px",
+                        }}
+                        onClick={() => pdfCoursNavigate(pdfLink.url)}
+                      >
+                        <CardContent
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-around",
+                            width: "100%",
+                            alignItems: "center",
+                          }}
+                        >
+                          <h4 style={{ flexGrow: 1 }}>{pdfLink.name}</h4>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            sx={{
+                              color: "white",
+                              fontWeight: "bold",
+                              backgroundColor: "#df005a",
+                              "&:hover": {
+                                backgroundColor: "#c81776",
+                              },
+                            }}
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              handleDownload(pdfLink.url, pdfLink.name);
+                            }}
+                            startIcon={<DownloadIcon />}
+                          >
+                            Cours
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    <div
+                      style={{
                         display: "flex",
-                        justifyContent: "space-around",
+                        justifyContent: "center",
                         width: "100%",
-                        alignItems: "center",
+                        paddingTop: "30px",
                       }}
                     >
-                      <h4 style={{ flexGrow: 1 }}>{fileNameCourse}</h4>
                       <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
                         sx={{
                           color: "white",
                           fontWeight: "bold",
@@ -376,19 +394,33 @@ const CoursInfo = () => {
                             backgroundColor: "#c81776",
                           },
                         }}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handleDownload(
-                            coursData.pdfLinkCours,
-                            fileNameCourse
-                          );
-                        }}
-                        startIcon={<DownloadIcon />}
+                        onClick={handleClickOpenCoursDialog}
+                        startIcon={<UploadIcon />}
                       >
-                        Cours
+                        Upload Cours
                       </Button>
-                    </CardContent>
-                  </Card>
+                      <Dialog open={openCours} onClose={handleCloseCoursDialog}>
+                        <DialogTitle>Upload Cours PDF</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            Choissisez votre fichier PDF à upload
+                          </DialogContentText>
+                          <input type="file" onChange={handleFileChangeCours} />
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={handleCloseCoursDialog}>
+                            Cancel
+                          </Button>
+                          <Button
+                            onClick={handleUploadCoursPdf}
+                            disabled={!fileCours}
+                          >
+                            Upload
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <p className="text-center p-5 font-bold">
@@ -443,25 +475,53 @@ const CoursInfo = () => {
                 <h2>Contenu du BackLog</h2>
                 <Divider />
                 {backlogCoursePdfUploaded === true ? (
-                  <Card
-                    sx={{
-                      width: "100%",
-                    }}
-                    onClick={() => pdfBacklogNavigate(coursData.pdfLinkBackLog)}
-                  >
-                    <CardContent
-                      sx={{
+                  <>
+                    {pdfLinksBacklog.map((pdfLink, index) => (
+                      <Card
+                        key={index}
+                        sx={{
+                          width: "100%",
+                          marginBottom: "20px",
+                        }}
+                        onClick={() => pdfBacklogNavigate(pdfLink.url)}
+                      >
+                        <CardContent
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-around",
+                            width: "100%",
+                            alignItems: "center",
+                          }}
+                        >
+                          <h4 style={{ flexGrow: 1 }}>{pdfLink.name}</h4>
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            sx={{
+                              color: "white",
+                              fontWeight: "bold",
+                              backgroundColor: "#df005a",
+                              "&:hover": {
+                                backgroundColor: "#c81776",
+                              },
+                            }}
+                            startIcon={<DownloadIcon />}
+                          >
+                            Cours
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    <div
+                      style={{
                         display: "flex",
-                        justifyContent: "space-around",
+                        justifyContent: "center",
                         width: "100%",
-                        alignItems: "center",
+                        paddingTop: "30px",
                       }}
                     >
-                      <h4 style={{ flexGrow: 1 }}>{fileNameBacklog}</h4>
                       <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
                         sx={{
                           color: "white",
                           fontWeight: "bold",
@@ -470,19 +530,40 @@ const CoursInfo = () => {
                             backgroundColor: "#c81776",
                           },
                         }}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          handleDownload(
-                            coursData.pdfLinkBackLog,
-                            fileNameBacklog
-                          );
-                        }}
-                        startIcon={<DownloadIcon />}
+                        onClick={handleClickOpenBacklogDialog}
+                        startIcon={<UploadIcon />}
                       >
-                        BackLog
+                        Upload BackLog
                       </Button>
-                    </CardContent>
-                  </Card>
+                      <Dialog
+                        open={openBacklog}
+                        onClose={handleCloseBacklogDialog}
+                      >
+                        <DialogTitle>Upload Backlog PDF</DialogTitle>
+                        <DialogContent>
+                          <DialogContentText>
+                            Veuillez upload votre fichier pdf que vous
+                            souhaitez.
+                          </DialogContentText>
+                          <input
+                            type="file"
+                            onChange={handleFileChangeBacklog}
+                          />
+                        </DialogContent>
+                        <DialogActions>
+                          <Button onClick={handleCloseBacklogDialog}>
+                            Annuler
+                          </Button>
+                          <Button
+                            onClick={handleUploadBackLogPdf}
+                            disabled={!fileBacklog}
+                          >
+                            Uploader
+                          </Button>
+                        </DialogActions>
+                      </Dialog>
+                    </div>
+                  </>
                 ) : (
                   <>
                     <p className="text-center p-5 font-bold">
