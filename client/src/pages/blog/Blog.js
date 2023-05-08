@@ -24,6 +24,7 @@ function Blog() {
     (async () => {
       const ws = new w3cwebsocket("ws://localhost:5050/blog");
 
+
       ws.onmessage = (message) => {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
@@ -99,6 +100,7 @@ function Blog() {
                       id={blog.id}
                       like={blog.like}
                       dislike={blog.dislike}
+                      participants={blog.participants}
                     />
                   ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}

@@ -2,11 +2,15 @@ module.exports = (app, pathname, db, connection) => {
   if (pathname === "/blog") {
     console.log("je suis dans blog");
     db.collection("blog_evenements").onSnapshot(
-      (snapshot) => {
-        const documents = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+      async (snapshot) => {
+        const documents = [];
+        for (const doc of snapshot.docs) {
+          const event = doc.data();
+          const participantsSnapshot = await doc.ref.collection("participants").get();
+          const participants = participantsSnapshot.docs.map((doc) => doc.data());
+          event.participants = participants;
+          documents.push({ id: doc.id, ...event });
+        }
         connection.sendUTF(JSON.stringify(documents));
       },
       (err) => {

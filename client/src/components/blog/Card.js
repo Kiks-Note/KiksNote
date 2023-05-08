@@ -15,6 +15,8 @@ import axios from "axios";
 import Comment from "./Comment";
 import { useNavigate } from "react-router-dom";
 import PreviewIcon from "@mui/icons-material/Preview";
+import SimpleDialog from "./PopUpBlog";
+
 
 import FormControlLabel from "@mui/material/FormControlLabel";
 
@@ -27,6 +29,7 @@ export default function ImgMediaCard({
   id,
   type,
   event,
+  participants,
 }) {
   const deleteBlog = function () {
     axios
@@ -38,18 +41,6 @@ export default function ImgMediaCard({
         console.log(err);
       });
   };
-
-  const participation = function () {
-    axios
-      .post(`http://localhost:5050/blog_event/${id}/participation`)
-      .then((res) => {
-        console.log(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
 
 
 
@@ -162,20 +153,15 @@ export default function ImgMediaCard({
               <Button onClick={deleteBlog}>Supprimer</Button>
             </CardActions>
 
-
-
-
             <CardActions>
-              <FormControlLabel
-                control={<Checkbox
+              <FormControlLabel control={<Checkbox />} label="Participation" />
 
-                />}
-                label="Participation"
+
+
+              <SimpleDialog
+                participants={participants}
+
               />
-              <IconButton >
-                <PreviewIcon />
-              </IconButton>
-
             </CardActions>
           </Card>
         </Grid>

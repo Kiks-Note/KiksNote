@@ -31,9 +31,26 @@ module.exports = (app, db) => {
     res.send(snapshot.docs.map((doc) => doc.data()));
   });
 
+  // app.get("/blog", async (req, res) => {
+  //   const snapshot = await db.collection("blog_evenements").get();
+
+  //   res.send(snapshot.docs.map((doc) => doc.data()));
+  // });
+
   app.get("/blog", async (req, res) => {
     const snapshot = await db.collection("blog_evenements").get();
-    res.send(snapshot.docs.map((doc) => doc.data()));
+    const data = [];
+
+    for (const doc of snapshot.docs) {
+      const event = doc.data();
+      const participantsSnapshot = await doc.ref.collection("participants").get();
+      const participants = participantsSnapshot.docs.map((doc) => doc.data());
+      console.log(participants + "participants");
+      event.participants = participants;
+      data.push(event);
+    }
+
+    res.send(data);
   });
 
   //post a new comment on a tutorial
@@ -130,5 +147,9 @@ module.exports = (app, db) => {
     const snapshot = await db.collection("blog_evenements").doc(req.params.id).get();
     res.send(snapshot.data());
   })
+
+
+
+
 };
 
