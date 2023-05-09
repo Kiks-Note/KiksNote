@@ -464,7 +464,7 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
   });
 
   // Route pour supprimer un cours complet
-  app.delete("delete/ressources/cours/:id", async (req, res) => {
+  app.delete("/delete/ressources/cours/:id", async (req, res) => {
     try {
       const { courseClass, title } = req.body;
 

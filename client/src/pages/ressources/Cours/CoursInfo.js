@@ -157,23 +157,6 @@ const CoursInfo = () => {
     }
   };
 
-  const deleteCours = async (cours_id, courseClass, title) => {
-    try {
-      await axios
-        .delete(`http://localhost:5050/ressources/cours/${cours_id}`, {
-          data: { courseClass, title },
-        })
-        .then((res) => {
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const uploadCoursPdf = async () => {
     try {
       const formData = new FormData();
@@ -315,6 +298,23 @@ const CoursInfo = () => {
       //   toastWarning("Veuillez remplir tous les champs.");
       // }
       throw error;
+    }
+  };
+
+  const deleteCours = async (cours_id, courseClass, title) => {
+    try {
+      await axios
+        .delete(`http://localhost:5050/delete/ressources/cours/${cours_id}`, {
+          data: { courseClass, title },
+        })
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
     }
   };
 
