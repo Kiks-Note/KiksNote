@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -16,14 +16,9 @@ import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
@@ -63,7 +58,7 @@ const headCells = [
     id: "name",
     numeric: false,
     disablePadding: true,
-    label: "Name",
+    label: "Nom",
   },
   {
     id: "desc",
@@ -142,10 +137,6 @@ EnhancedTableHead.propTypes = {
 function EnhancedTableToolbar(props) {
   const [openModal, setOpenModal] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const handleClick = () => {
-    setOpen(!open);
-  };
-
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -186,7 +177,7 @@ function EnhancedTableToolbar(props) {
           variant="subtitle1"
           component="div"
         >
-          {numSelected} selected
+          {numSelected} selectionné(s)
         </Typography>
       ) : (
         <Typography
@@ -195,7 +186,7 @@ function EnhancedTableToolbar(props) {
           variant="subtitle1"
           component="div"
         >
-          Selectionnez une or plusieurs stories
+          Sélectionner une ou plusieurs stories
         </Typography>
       )}
 
@@ -222,10 +213,9 @@ function EnhancedTableToolbar(props) {
                   releases={releases}
                   selectedStories={props.selected}
                   dashboardId={props.dashboardId}
-                ></NestedListRelease>
+                />
               </DialogContentText>
             </DialogContent>
-            <DialogActions></DialogActions>
           </Dialog>
         </div>
       ) : (
@@ -363,8 +353,8 @@ export default function StoryList(props) {
   const isSelected = (id) => selected.indexOf(id) !== -1;
 
   return (
-    <Box sx={{ width: "100%" }}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
+    <Box sx={{ width: "100%", position: "relative" }}>
+      <Paper sx={{ width: "100%", mb: 2, minHeight: "75vh" }}>
         <EnhancedTableToolbar
           numSelected={selected.length}
           selected={selected}
@@ -372,9 +362,7 @@ export default function StoryList(props) {
           dashboardId={props.dashboardId}
         />
         <TableContainer>
-          <Table
-            sx={{ minHeight: "75vh", overflow: "scroll", marginTop: "-10vh" }}
-          >
+          <Table sx={{ overflow: "scroll", minHeight: "20vh" }}>
             <EnhancedTableHead
               numSelected={selected.length}
               order={order}
@@ -438,13 +426,18 @@ export default function StoryList(props) {
           </Table>
         </TableContainer>
         <TablePagination
+          sx={{ position: "absolute", bottom: 0, right: 0 }}
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
           count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
+          labelRowsPerPage="Par page"
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
+          labelDisplayedRows={({ from, to, count }) =>
+            `${from} - ${to} sur ${count}`
+          }
         />
       </Paper>
     </Box>

@@ -17,7 +17,6 @@ module.exports = (app, db, connection, pathname) => {
       db.collection("dashboard").onSnapshot(
         (snapshot) => {
           const data = [];
-          var add = true;
           addDashboard(groups, studentId, db);
           snapshot.forEach((doc) => {
             doc.data().students?.forEach((student) => {
@@ -165,7 +164,7 @@ async function addDashboard(groups, studentId, db) {
         sprint_name: "new sprint",
         image:
           "https://fastly.picsum.photos/id/991/500/300.jpg?hmac=1p97FU0H7zdBmUCEezOKZxNtpCCjzQSQqwvE38ivx40",
-        pdf_link: "link",
+        pdf_link: "",
         release: group.data.release,
       });
       release = group.data.release;

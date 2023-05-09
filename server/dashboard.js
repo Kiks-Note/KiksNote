@@ -1,3 +1,5 @@
+const moment = require("moment");
+const { FieldValue } = require("firebase/firestore");
 module.exports = (app, db, ws, parse) => {
   app.put("/dashboard/:dashboardId/:favorite", async (req, res) => {
     await db
@@ -270,197 +272,147 @@ module.exports = (app, db, ws, parse) => {
     }
   );
 
-    app.post("/dashboard/:dashboardId/moveStories", async (req, res) => {
-      console.log("Stories moving");
-      try {
-        const dashboardRef = db
-          .collection("dashboard")
-          .doc(req.params.dashboardId);
-        var storiesToMove = { name: "Stories", items: [] };
-        const boards = dashboardRef.collection("board");
-        const snapshotSource = await boards.get();
-        await snapshotSource.forEach(async (board) => {
-          var storiesToKeep = { name: "Stories", items: [] };
-          board.data().requested.items.forEach((story) => {
-            if (req.body.storiesId.includes(story.id)) {
-              storiesToMove.items.push(story);
-            } else {
-              storiesToKeep.items.push(story);
-            }
-          });
-          for (var column in board.data()) {
-            if (column != "requested") {
-              cardToMove = { name: column, items: [] };
-              cardToKeep = { name: column, items: [] };
-              await board.data()[column].items.forEach((card) => {
-                if (req.body.storiesId.includes(card.storyId)) {
-                  cardToMove.items.push(card);
-                } else {
-                  cardToKeep.items.push(card);
-                }
-              });
-              await boards.doc(board.id).update({ [column]: cardToKeep });
-              await boards
-                .doc(req.body.boardId)
-                .update({ [column]: cardToMove });
-            }
+  app.post("/dashboard/:dashboardId/moveStories", async (req, res) => {
+    console.log("Stories moving");
+    try {
+      const dashboardRef = db
+        .collection("dashboard")
+        .doc(req.params.dashboardId);
+      var storiesToMove = { name: "Stories", items: [] };
+      const boards = dashboardRef.collection("board");
+      const snapshotSource = await boards.get();
+      await snapshotSource.forEach(async (board) => {
+        var storiesToKeep = { name: "Stories", items: [] };
+        board.data().requested.items.forEach((story) => {
+          if (req.body.storiesId.includes(story.id)) {
+            storiesToMove.items.push(story);
+          } else {
+            storiesToKeep.items.push(story);
           }
-          await boards.doc(board.id).update({ ["requested"]: storiesToKeep });
         });
-        await boards
-          .doc(req.body.boardId)
-          .update({ ["requested"]: storiesToMove });
-
-        console.log("Stories moved");
-      } catch (error) {
-        console.error("Fuck" + error);
-        // Server error
-        res
-          .status(500)
-          .send({ message: "An error occurred while moving the stories" });
-      }
-    });
-    app.post("/dashboard-creation", async (req, res) => {
-      console.log("Creating dashboard...");
-      try {
-        console.log(req.body.release);
-        const dashboardRef = await db.collection("dashboard").add({
-          ...req.body,
-        });
-        var stories = await db
-          .collection("dashboard")
-          .doc(dashboardRef.id)
-          .collection("stories");
-        for (var i in release) {
-          for (var y in release[i]) {
-            var res = await db
-              .collection("dashboard")
-              .doc(dashboardRef.id)
-              .collection("board")
-              .add({
-                requested: {
-                  name: "Stories",
-                  items: [],
-                },
-                acceptance: {
-                  name: "Critère d'acceptation",
-                  items: [],
-                },
-                toDo: {
-                  name: "To Do",
-                  items: [],
-                },
-                inProgress: {
-                  name: "In progress",
-                  items: [],
-                },
-                done: {
-                  name: "Done",
-                  items: [],
-                },
-                definitionOfDone: {
-                  name: "DoD",
-                  items: [],
-                },
-                definitionOfFun: {
-                  name: "DoF",
-                  items: [],
-                },
-              });
-            release[i][y].boardId = res.id;
-          }
-        }
-        db.collection("dashboard")
-          .doc(newDashboard.id)
-          .update({ release: release });
-
-        // Creation of the "labels" collection and its documents
-        const labels = [
-          { name: "Urgent", color: "#FF4136" },
-          { name: "Correction", color: "#9FE2BF" },
-          { name: "Important", color: "#AA4A44" },
-          { name: "Refactorisation", color: " #2ECC40" },
-          { name: "Optimisation", color: "#FF851B" },
-          { name: "Refonte", color: "#39CCCC" },
-          { name: "Incomplet", color: "#FFDC00" },
-          { name: "Nouveau", color: "#B10DC9" },
-          { name: "Tâche technique", color: "#0074D9" },
-          { name: "Recherche ", color: " #008080" },
-        ];
-
-        const batch = db.batch();
-        labels.forEach((label) => {
-          const labelRef = db.collection("labels").doc();
-          batch.set(labelRef, label);
-        });
-        await batch.commit();
-
-        res.status(200).send({
-          message: "Dashboard created successfully",
-          id: dashboardRef.id,
-        });
-        console.log("Dashboard created successfully");
-      } catch (error) {
-        console.error("Error creating dashboard", error);
-        // Server error
-        res
-          .status(500)
-          .send({ message: "An error occurred while creating the dashboard" });
-      }
-    });
-
-    //PATH to create stories
-    app.post("/dashboard-creation/:dashboardId/stories", async (req, res) => {
-      try {
-        const { dashboardId } = req.params;
-
-        const dashboardRef = db.collection("dashboard").doc(dashboardId);
-        // Vérifier que le document existe
-        const dashboard = await dashboardRef.get();
-        if (!dashboard.exists) {
-          return res.status(404).send("Le dashboard spécifié n'existe pas.");
-        }
-
-        const allBoardRef = dashboardRef.collection("board");
-        const snapshotAllBoardRef = await allBoardRef.get();
-        var highestId = 0;
-        var color = getRandomColor();
-        snapshotAllBoardRef.forEach((doc) => {
-          for (var column in doc.data()) {
-            doc.data()[column].items.forEach((card) => {
-              if (column == "requested") {
-                while (card.color == color) {
-                  color = getRandomColor();
-                }
-              }
-              if (parseInt(highestId) < parseInt(card.id)) {
-                highestId = card.id;
+        for (var column in board.data()) {
+          if (column != "requested") {
+            cardToMove = { name: column, items: [] };
+            cardToKeep = { name: column, items: [] };
+            await board.data()[column].items.forEach((card) => {
+              if (req.body.storiesId.includes(card.storyId)) {
+                cardToMove.items.push(card);
+              } else {
+                cardToKeep.items.push(card);
               }
             });
+            await boards.doc(board.id).update({ [column]: cardToKeep });
+            await boards.doc(req.body.boardId).update({ [column]: cardToMove });
           }
-        });
-        console.log(highestId);
-        const id = (parseInt(highestId) + 2).toString();
-        newCard = {
-          id: id,
-          name: req.body.name,
-          desc: req.body.desc,
-          assignedTo: [],
-          labels: [],
-          color: color,
-          storyId: id,
-        };
-        // Ajouter la nouvelle histoire à la collection "stories" du document "dashboard"
-        const storiesRef = dashboardRef.collection("stories");
-        const result = await storiesRef.add(newCard);
+        }
+        await boards.doc(board.id).update({ ["requested"]: storiesToKeep });
+      });
+      await boards
+        .doc(req.body.boardId)
+        .update({ ["requested"]: storiesToMove });
 
-        // Retourner la réponse avec l'ID de la nouvelle histoire créée
-        res.status(201).send({ id: result.id });
-      } catch (error) {
-        console.error("Erreur lors de la création d'une histoire:", error);
-        res.status(500).send("Erreur lors de la création d'une histoire.");
+      console.log("Stories moved");
+    } catch (error) {
+      console.error("Fuck" + error);
+      // Server error
+      res
+        .status(500)
+        .send({ message: "An error occurred while moving the stories" });
+    }
+  });
+  app.post("/dashboard-creation", async (req, res) => {
+    console.log("Creating dashboard...");
+    try {
+      const releases = createReleases(
+        req.body.starting_date,
+        req.body.ending_date
+      );
+      const dashboardRef = await createDashboard(releases, req.body);
+
+      const batch = db.batch();
+      const labels = [
+        { name: "Urgent", color: "#FF4136" },
+        { name: "Correction", color: "#9FE2BF" },
+        { name: "Important", color: "#AA4A44" },
+        { name: "Refactorisation", color: " #2ECC40" },
+        { name: "Optimisation", color: "#FF851B" },
+        { name: "Refonte", color: "#39CCCC" },
+        { name: "Incomplet", color: "#FFDC00" },
+        { name: "Nouveau", color: "#B10DC9" },
+        { name: "Tâche technique", color: "#0074D9" },
+        { name: "Recherche ", color: " #008080" },
+      ];
+      const labelsRef = dashboardRef.collection("labels");
+      labels.forEach((label) => {
+        batch.set(labelsRef.doc(), label);
+      });
+      await batch.commit();
+
+      res.status(200).send({
+        message: "Dashboard created successfully",
+        id: dashboardRef.id,
+      });
+      console.log("Dashboard created successfully");
+    } catch (error) {
+      console.error("Error creating dashboard", error);
+      res
+        .status(500)
+        .send({ message: "An error occurred while creating the dashboard" });
+    }
+  });
+
+  //PATH to create stories
+  app.post("/dashboard-creation/:dashboardId/stories", async (req, res) => {
+    try {
+      const { dashboardId } = req.params;
+
+      const dashboardRef = db.collection("dashboard").doc(dashboardId);
+      // Vérifier que le document existe
+      const dashboard = await dashboardRef.get();
+      if (!dashboard.exists) {
+        return res.status(404).send("Le dashboard spécifié n'existe pas.");
       }
-    });
+
+      const allBoardRef = dashboardRef.collection("board");
+      const snapshotAllBoardRef = await allBoardRef.get();
+      var highestId = 0;
+      var color = getRandomColor();
+      snapshotAllBoardRef.forEach((doc) => {
+        for (var column in doc.data()) {
+          doc.data()[column].items.forEach((card) => {
+            if (column == "requested") {
+              while (card.color == color) {
+                color = getRandomColor();
+              }
+            }
+            if (parseInt(highestId) < parseInt(card.id)) {
+              highestId = card.id;
+            }
+          });
+        }
+      });
+      console.log(highestId);
+      const id = (parseInt(highestId) + 2).toString();
+      newCard = {
+        id: id,
+        name: req.body.name,
+        desc: req.body.desc,
+        assignedTo: [],
+        labels: [],
+        color: color,
+        storyId: id,
+      };
+      // Ajouter la nouvelle histoire à la collection "stories" du document "dashboard"
+      const storiesRef = dashboardRef.collection("stories");
+      const result = await storiesRef.add(newCard);
+
+      // Retourner la réponse avec l'ID de la nouvelle histoire créée
+      res.status(201).send({ id: result.id });
+    } catch (error) {
+      console.error("Erreur lors de la création d'une histoire:", error);
+      res.status(500).send("Erreur lors de la création d'une histoire.");
+    }
+  });
 
   // Getter to Column Field
   function getColumnField(columnId) {
@@ -496,6 +448,81 @@ module.exports = (app, db, ws, parse) => {
         return item;
       }
     });
+  }
+
+  function createReleases(startingDate, endingDate) {
+    const releaseDuration = 28; // 4 weeks
+    const sprintDuration = 7; // 1 week
+    const releaseCount = Math.ceil(
+      moment(endingDate).diff(moment(startingDate), "days") / releaseDuration
+    );
+
+    const releases = [];
+    for (let i = 0; i < releaseCount; i++) {
+      const releaseStart = moment(startingDate)
+        .add(i * releaseDuration, "days")
+        .toDate();
+      const releaseEnd = moment(releaseStart)
+        .add(releaseDuration, "days")
+        .toDate();
+      const sprints = createSprints(releaseStart, releaseEnd, sprintDuration);
+      releases.push({
+        sprints,
+      });
+    }
+    return { Release: releases };
+  }
+
+  function createSprints(releaseStart, releaseEnd, sprintDuration) {
+    const sprintCount = Math.ceil(
+      moment(releaseEnd).diff(moment(releaseStart), "days") / sprintDuration
+    );
+
+    const sprints = [];
+    for (let i = 0; i < sprintCount; i++) {
+      const sprintStart = moment(releaseStart)
+        .add(i * sprintDuration, "days")
+        .toDate();
+      const sprintEnd = moment(sprintStart)
+        .add(sprintDuration, "days")
+        .toDate();
+      sprints.push({
+        name: `Sprint ${i + 1}`,
+        starting_date: sprintStart,
+        ending_date: sprintEnd,
+      });
+    }
+    return sprints;
+  }
+
+  async function createDashboard(releases, body) {
+    const dashboardRef = await db.collection("dashboard").add({
+      students: body.students,
+      starting_date: body.starting_date,
+      ending_date: body.ending_date,
+      favorite: false,
+      group_name: body.group_name,
+      sprint_name: body.sprint_name,
+      image: "https://picsum.photos/600",
+      pdf_link: "",
+      release: releases,
+    });
+    const boardRef = dashboardRef.collection("board");
+    await createBoard(boardRef);
+    return dashboardRef;
+  }
+
+  async function createBoard(boardRef) {
+    const board = {
+      requested: { name: "Stories", items: [] },
+      acceptance: { name: "Critère d'acceptation", items: [] },
+      toDo: { name: "To Do", items: [] },
+      inProgress: { name: "In progress", items: [] },
+      done: { name: "Done", items: [] },
+      definitionOfDone: { name: "DoD", items: [] },
+      definitionOfFun: { name: "DoF", items: [] },
+    };
+    await boardRef.add(board);
   }
 };
 

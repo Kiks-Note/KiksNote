@@ -30,7 +30,7 @@ import CloseIcon from "@mui/icons-material/Close";
 
 const schema = yup.object().shape({
   sprint_name: yup.string().required("Donnez un nom à votre sprint."),
-  sprint_group: yup.string().required("Donnez un nom à votre groupe."),
+  group_name: yup.string().required("Donnez un nom à votre groupe."),
   ending_date: yup
     .date()
     .min(new Date(), "La date de fin doit être postérieure à aujourd'hui")
@@ -91,25 +91,27 @@ function DialogDashbord(props) {
   //Function to close the dialog
   const handleClose = () => {
     reset();
-    setValueMembers();
+    setValueMembers([]);
     onClose();
   };
+
   //SUBMIT FONCTION
   const onSubmit = async (data) => {
+    console.log(data);
+    const students = data.students.map((user) => user.uid);
     const dataForm = {
-      students: data.students,
+      students: students,
       starting_date: data.starting_date,
       ending_date: data.ending_date,
       favorite: "false",
       group_name: data.group_name,
-      sprint_name: data.group_name,
-      image: "",
+      sprint_name: data.sprint_name,
+      image: "https://picsum.photos/600",
       pdf_link: "",
-      release: {},
     };
     try {
       axios
-        .post(`http://localhost:5050/dashboard-creation`, { dataForm })
+        .post(`http://localhost:5050/dashboard-creation`,  dataForm )
         .then((res) => {
           handleClose();
         });
@@ -214,9 +216,9 @@ function DialogDashbord(props) {
               <InputLabel id="label_name_sprint">Nom du group*</InputLabel>
               <TextField
                 fullWidth
-                {...register("sprint_group")}
-                error={!!errors.sprint_group}
-                helperText={errors.sprint_group?.message}
+                {...register("group_name")}
+                error={!!errors.group_name}
+                helperText={errors.group_name?.message}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
