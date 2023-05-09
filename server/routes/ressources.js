@@ -153,8 +153,8 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
     }
   });
 
-  // Route pour update les datas d'un cours par son id
-  app.post("/update/ressources/cours/:id", async (req, res) => {
+  // Route pour mettre à jour les données d'un cours existant avec son id
+  app.put("/ressources/cours/:id", async (req, res) => {
     try {
       const {
         title,
@@ -167,47 +167,55 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
         imageBase64,
       } = req.body;
 
-      if (
-        !title ||
-        !description ||
-        !date ||
-        !courseClass ||
-        !owner ||
-        !imageBase64
-      ) {
+      const courseId = req.params.id;
+
+      if (!title || !description || !date || !courseClass || !owner) {
         return res
           .status(400)
           .send("Veuillez remplir tous les champs obligatoires.");
+      }
+
+      const resourcesRef = db.collection("cours");
+      const course = await resourcesRef.doc(courseId).get();
+
+      if (!course.exists) {
+        return res
+          .status(404)
+          .send("Le cours que vous essayez de modifier n'existe pas.");
       }
 
       const mimeType = "image/png";
       const fileExtension = mime.extension(mimeType);
       const fileName = `${title}.${fileExtension}`;
 
-      const buffer = Buffer.from(
-        imageBase64.replace(/^data:image\/\w+;base64,/, ""),
-        "base64"
-      );
-      const file = bucket.file(`${courseClass}/${title}/${fileName}`);
+      let imageCourseUrl = course._fieldsProto.imageCourseUrl.stringValue;
 
-      const options = {
-        metadata: {
-          contentType: mimeType || "image/jpeg",
-          cacheControl: "public, max-age=31536000",
-        },
-      };
+      // Si une nouvelle image est fournie, la mettre à jour sur Firebase Storage
+      if (imageBase64) {
+        const buffer = Buffer.from(
+          imageBase64.replace(/^data:image\/\w+;base64,/, ""),
+          "base64"
+        );
+        const file = bucket.file(`${courseClass}/${title}/${fileName}`);
 
-      await file.save(buffer, options);
+        const options = {
+          metadata: {
+            contentType: mimeType || "image/jpeg",
+            cacheControl: "public, max-age=31536000",
+          },
+        };
 
-      const [url] = await file.getSignedUrl({
-        action: "read",
-        expires: "03-17-2025",
-      });
+        await file.save(buffer, options);
 
-      const resourcesRef = db.collection("cours");
-      const resourceId = req.params.id;
+        const [url] = await file.getSignedUrl({
+          action: "read",
+          expires: "03-17-2025",
+        });
 
-      await resourcesRef.doc(resourceId).update({
+        imageCourseUrl = url;
+      }
+
+      await resourcesRef.doc(courseId).update({
         title,
         description,
         date,
@@ -215,14 +223,14 @@ module.exports = (app, db, bucket, mime, upload, multer, fs) => {
         courseClass,
         owner,
         private,
-        imageCourseUrl: url,
+        imageCourseUrl,
       });
 
-      const updatedResourceData = await resourcesRef.doc(resourceId).get();
+      const updatedCourseData = await resourcesRef.doc(courseId).get();
 
       res.status(200).json({
-        cours_id: resourceId,
-        cours_updated_datas: updatedResourceData._fieldsProto,
+        cours_id: courseId,
+        cours_updated_datas: updatedCourseData._fieldsProto,
       });
     } catch (err) {
       console.error(err);
