@@ -10,6 +10,7 @@ import {
   Link,
   IconButton,
   InputAdornment,
+  useTheme
 } from "@mui/material";
 import MailIcon from "@mui/icons-material/Mail";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
@@ -130,6 +131,7 @@ const Login = () => {
           >
             <Typography
               component="h1"
+              color="text.primary"
               sx={{
                 fontSize: 30,
                 fontWeight: "bold",
@@ -166,7 +168,7 @@ const Login = () => {
                   defaultValue={email}
                   onChange={onChangeEmail}
                   sx={{
-                    input: { color: 'black' }
+                    input: { color: 'text.primary' }
                   }}
                   error={errorEmail}
                   helperText={messageEmail}
@@ -198,7 +200,7 @@ const Login = () => {
                   defaultValue={password}
                   onChange={onChangePassword}
                   sx={{
-                    input: { color: 'black' }
+                    input: { color: 'text.primary' },
                   }}
                   error={errorPassword}
                   helperText={messagePassword}
@@ -232,6 +234,7 @@ const Login = () => {
                   sx={{
                     color: "#7a52e1",
                     textDecoration: "none",
+                    cursor: "pointer"
                   }}
                 >
                   Mot de passe oublie ?
@@ -243,7 +246,8 @@ const Login = () => {
                   className="login-button"
                   sx={{
                     backgroundColor: "#7a52e1",
-                    color: "white"
+                    color: "white",
+                    cursor: "pointer"
                   }}
                   variant="contained"
                 >
@@ -260,9 +264,10 @@ const Login = () => {
                   color: "#7a52e1",
                   textDecoration: "none",
                   fontWeight: "bold",
+                  cursor: "pointer"
                 }}
               >
-             Inscription
+                Inscription
               </Link>
             </p>
           </Container>

@@ -17,7 +17,6 @@
     left: 10%;
     position: absolute;
     top: 50%;
-    background-color: white;
     -ms-transform: translateY(-50%);
     transform: translateY(-50%);
     width: 80%;
@@ -43,7 +42,4 @@
 }
 .login-page-container{
     height: 100vh;
-    background: -moz-linear-gradient(left, #94258C 50%, #E70062 100%);
-    background: -webkit-linear-gradient(left, #94258C 50%, #E70062 100%);
-    background: linear-gradient(to right, #94258C 50%, #E70062 100%);
 }
