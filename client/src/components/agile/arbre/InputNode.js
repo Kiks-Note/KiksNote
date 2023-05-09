@@ -17,7 +17,6 @@ const InputNode = ({ node, sendName }) => {
           sendName(data);
           setSend(true)
         }
-        // Placez ici le code que vous souhaitez exécuter lorsque la touche Entrée est pressée
       }
     };
 

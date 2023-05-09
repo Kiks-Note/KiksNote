@@ -52,7 +52,11 @@ function ArbreFonctionnel() {
     };
 
     const projects = [
-        { id: 1, name: 'Nouveau projet', content:null },
+        { id: 1, name: 'Nouveau projet', content:{
+            name: 'Root',
+            children: [
+            ],
+          } },
         { id: 2, name: 'Projet 2', content: {
             name: 'Root',
             children: [
@@ -143,7 +147,7 @@ function ArbreFonctionnel() {
             {/* Mode d'édition du projet sélectionné */}
             <main className={classes.main}>
                 {selectedProject ? (
-                   <Arbre data={selectedProject.content}></Arbre>
+                   <Arbre projet={selectedProject}></Arbre>
                 ) : (
                     <Typography variant="h5">Sélectionnez un projet ou cré</Typography>
                 )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Tree from 'react-d3-tree';
 import Button from '@material-ui/core/Button';
@@ -18,9 +18,10 @@ import InputNode from './arbre/InputNode'
 
 const useStyles = makeStyles((theme) => ({
   treeContainer: {
-    height: '500px',
-    width: '100%',
+    height: '100vh',
+    width: '100vh',
     transform: 'rotate(180deg)',
+    color:'white'
   },
   treeMarker: {
     position: 'relative',
@@ -53,15 +54,33 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     marginRight: theme.spacing(1),
   },
+  node__leaf :{
+    color:' green',
+    /* Let's also make the radius of leaf nodes larger */
+    r: 40,
+  }
 }));
 
-const Arbre = ({data}) => {
+const Arbre = ({projet}) => {
   const classes = useStyles();
   const [showToolbar,setShowToolbar] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
   const [showInput, setShowInput] = useState(false);
+  const [currentProjetId, setCurrentProjetId] = useState(null)
   const [showInputFor, setShowInputFor] = useState(null)
+  const [treeData,setTreeData] = useState({
+    name: 'Root',
+    children: [
+    ],
+  });
+  
 
+  useEffect(() => {
+   if(currentProjetId == null || projet.id != currentProjetId){
+    setTreeData(projet.content)
+    setCurrentProjetId(projet.id)
+   }
+  }, [projet]);
 
   const handleNodeMouseOver = (event) => {
     console.log(event)
@@ -71,19 +90,14 @@ const Arbre = ({data}) => {
   const handleNodeMouseOut = () => {
     setHoveredNode(null);
   };
+
+  /*TOOOOLLLLBBBARRR*/
   const buttons = [
     { label: 0, description: 'Description de l\'action 1', clas : 'addButton', icon: <AddIcon />},
     { label: 1, description: 'Description de l\'action 2', clas : 'editButton',icon: <EditIcon />  },
     { label: 2, description: 'Description de l\'action 3', clas : 'deleteButton',icon: <DeleteIcon /> },
   ];
 
-  const [treeData,setTreeData] = useState(!data ?{
-    name: 'Root',
-    children: [
-    ],
-  }:data);
-  
- 
 
   const addNode = (node) => {
  var  nouvelBranche = { name: 'Nouveau', children:[] }   
@@ -91,8 +105,7 @@ const Arbre = ({data}) => {
     nouvelBranche.name = generateUniqueName(nouvelBranche.name, treeData);
   } 
     const updatedTreeData = findAndReplaceObject(node.name, nouvelBranche, treeData,'ajout');
-    setTreeData(updatedTreeData)
-    
+    setTreeData(updatedTreeData)  
   }
 
   const editNode = (data) => {
@@ -114,6 +127,8 @@ const deleteNode = (node) => {
     const updatedTreeData = findAndReplaceObject(node.name, null, treeData,'retirer');
     console.log(updatedTreeData)
     setTreeData(updatedTreeData)
+    
+
 }
 
   const handleButtonToolbar = ( index,node, event)=> {
@@ -133,8 +148,6 @@ const deleteNode = (node) => {
         
   }
 
-
-
   const findAndReplaceObject = (targetName, newBranch, treeData, mode) => {
     var updateTreeData = { ...treeData };
     if (updateTreeData.name === targetName) {
@@ -146,7 +159,9 @@ const deleteNode = (node) => {
             updateTreeData = {...newBranch};
           }
            else if(mode == 'retirer'){
-            updateTreeData.children.pop()
+            //updateTreeData.children.pop()
+            updateTreeData.children = updateTreeData.children.filter(child => child.name !== targetName);
+
         }
         }
     } else if (updateTreeData.children) {
@@ -159,7 +174,7 @@ const deleteNode = (node) => {
 
 
 
-
+/*FINNNNN TOOOOLBAR*/
 
   const renderForeignObjectNode = ({
     nodeDatum,
@@ -247,6 +262,7 @@ const deleteNode = (node) => {
         translate={translate}
         separation={{ siblings: 0.5, nonSiblings: 0.5 }}
         nodeSize={nodeSize }
+        leafNodeClassName={classes.node__leaf}
         renderCustomNodeElement={(rd3tProps) =>
             renderForeignObjectNode({ ...rd3tProps, foreignObjectProps })
           }
