@@ -323,11 +323,15 @@ module.exports = (app, db, ws, parse) => {
   app.post("/dashboard-creation", async (req, res) => {
     console.log("Creating dashboard...");
     try {
-      const releases = createReleases(
+      const dashboardRef = await createDashboard(req.body);
+
+      const releases = await createReleases(
         req.body.starting_date,
-        req.body.ending_date
+        req.body.ending_date,
+        dashboardRef
       );
-      const dashboardRef = await createDashboard(releases, req.body);
+      console.log(releases);
+      dashboardRef.update({ release: JSON.parse(JSON.stringify(releases)) });
 
       const batch = db.batch();
       const labels = [
@@ -450,53 +454,70 @@ module.exports = (app, db, ws, parse) => {
     });
   }
 
-
-
-function createReleases(startingDate, endingDate) {
-  const releaseDuration = 28; // 4 weeks
-  const sprintDuration = 7; // 1 week
-  const releaseCount = Math.ceil(
-    moment(endingDate).diff(moment(startingDate), "days") / releaseDuration
-  );
-
-  const releases = {};
-  for (let i = 0; i < releaseCount; i++) {
-    const releaseStart = moment(startingDate)
-      .add(i * releaseDuration, "days")
-      .toDate();
-    const releaseEnd = moment(releaseStart)
-      .add(releaseDuration, "days")
-      .toDate();
-    const sprints = createSprints(releaseStart, releaseEnd, sprintDuration);
-    releases[`Release ${i + 1}`] = sprints;
-  }
-  return releases;
-}
-
-
-  function createSprints(releaseStart, releaseEnd, sprintDuration) {
-    const sprintCount = Math.ceil(
-      moment(releaseEnd).diff(moment(releaseStart), "days") / sprintDuration
+  async function createReleases(startingDate, endingDate, dashboardRef) {
+    const releaseDuration = 28; // 4 weeks
+    const sprintDuration = 7; // 1 week
+    const releaseCount = Math.ceil(
+      moment(endingDate).diff(moment(startingDate), "days") / releaseDuration
     );
 
-    const sprints = [];
-    for (let i = 0; i < sprintCount; i++) {
-      const sprintStart = moment(releaseStart)
-        .add(i * sprintDuration, "days")
+    const releases = {};
+    for (let i = 0; i < releaseCount; i++) {
+      const releaseStart = moment(startingDate)
+        .add(i * releaseDuration, "days")
         .toDate();
-      const sprintEnd = moment(sprintStart)
-        .add(sprintDuration, "days")
+      const releaseEnd = moment(releaseStart)
+        .add(releaseDuration, "days")
         .toDate();
-      sprints.push({
-        name: `Sprint ${i + 1}`,
-        starting_date: sprintStart,
-        ending_date: sprintEnd,
-      });
+      const sprints = await createSprints(
+        releaseStart,
+        releaseEnd,
+        sprintDuration,
+        dashboardRef
+      );
+      releases[`Release ${i + 1}`] = sprints;
     }
-    return sprints;
+    await Promise.all(Object.values(releases));
+    return releases;
   }
 
-  async function createDashboard(releases, body) {
+async function createSprints(
+  releaseStart,
+  releaseEnd,
+  sprintDuration,
+  dashboardRef
+) {
+  const sprintCount = Math.ceil(
+    moment(releaseEnd).diff(moment(releaseStart), "days") / sprintDuration
+  );
+  const sprints = [];
+  for (let i = 0; i < sprintCount; i++) {
+    const boardRef = await dashboardRef.collection("board").add({
+      requested: { name: "Stories", items: [] },
+      acceptance: { name: "Critère d'acceptation", items: [] },
+      toDo: { name: "To Do", items: [] },
+      inProgress: { name: "In progress", items: [] },
+      done: { name: "Done", items: [] },
+      definitionOfDone: { name: "DoD", items: [] },
+      definitionOfFun: { name: "DoF", items: [] },
+    });
+
+    const boardId = boardRef.id;
+    const sprintStart = moment(releaseStart)
+      .add(i * sprintDuration, "days")
+      .toDate();
+    const sprintEnd = moment(sprintStart).add(sprintDuration, "days").toDate();
+    sprints.push({
+      name: `Sprint ${i + 1}`,
+      starting_date: moment(sprintStart),
+      ending_date: moment(sprintEnd),
+      boardId: boardId,
+    });
+  }
+  return sprints;
+}
+
+  async function createDashboard(body) {
     const dashboardRef = await db.collection("dashboard").add({
       students: body.students,
       starting_date: moment(body.starting_date),
@@ -506,25 +527,10 @@ function createReleases(startingDate, endingDate) {
       sprint_name: body.sprint_name,
       image: "https://picsum.photos/600",
       pdf_link: "",
-      release: releases,
     });
-    const boardRef = dashboardRef.collection("board");
-    await createBoard(boardRef);
     return dashboardRef;
   }
 
-  async function createBoard(boardRef) {
-    const board = {
-      requested: { name: "Stories", items: [] },
-      acceptance: { name: "Critère d'acceptation", items: [] },
-      toDo: { name: "To Do", items: [] },
-      inProgress: { name: "In progress", items: [] },
-      done: { name: "Done", items: [] },
-      definitionOfDone: { name: "DoD", items: [] },
-      definitionOfFun: { name: "DoF", items: [] },
-    };
-    await boardRef.add(board);
-  }
 };
 
 const getRandomColor = () => {
