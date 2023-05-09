@@ -450,28 +450,29 @@ module.exports = (app, db, ws, parse) => {
     });
   }
 
-  function createReleases(startingDate, endingDate) {
-    const releaseDuration = 28; // 4 weeks
-    const sprintDuration = 7; // 1 week
-    const releaseCount = Math.ceil(
-      moment(endingDate).diff(moment(startingDate), "days") / releaseDuration
-    );
 
-    const releases = [];
-    for (let i = 0; i < releaseCount; i++) {
-      const releaseStart = moment(startingDate)
-        .add(i * releaseDuration, "days")
-        .toDate();
-      const releaseEnd = moment(releaseStart)
-        .add(releaseDuration, "days")
-        .toDate();
-      const sprints = createSprints(releaseStart, releaseEnd, sprintDuration);
-      releases.push({
-        sprints,
-      });
-    }
-    return { Release: releases };
+
+function createReleases(startingDate, endingDate) {
+  const releaseDuration = 28; // 4 weeks
+  const sprintDuration = 7; // 1 week
+  const releaseCount = Math.ceil(
+    moment(endingDate).diff(moment(startingDate), "days") / releaseDuration
+  );
+
+  const releases = {};
+  for (let i = 0; i < releaseCount; i++) {
+    const releaseStart = moment(startingDate)
+      .add(i * releaseDuration, "days")
+      .toDate();
+    const releaseEnd = moment(releaseStart)
+      .add(releaseDuration, "days")
+      .toDate();
+    const sprints = createSprints(releaseStart, releaseEnd, sprintDuration);
+    releases[`Release ${i + 1}`] = sprints;
   }
+  return releases;
+}
+
 
   function createSprints(releaseStart, releaseEnd, sprintDuration) {
     const sprintCount = Math.ceil(
@@ -498,8 +499,8 @@ module.exports = (app, db, ws, parse) => {
   async function createDashboard(releases, body) {
     const dashboardRef = await db.collection("dashboard").add({
       students: body.students,
-      starting_date: body.starting_date,
-      ending_date: body.ending_date,
+      starting_date: moment(body.starting_date),
+      ending_date: moment(body.ending_date),
       favorite: false,
       group_name: body.group_name,
       sprint_name: body.sprint_name,
