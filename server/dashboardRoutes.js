@@ -25,7 +25,7 @@ module.exports = function (connection, pathname) {
     createCard
   );
   router.post("/:dashboardId/moveStories", moveStories);
-  router.put("/creation", createDashboards);
+  router.post("/creation", createDashboards);
   router.post("/creation/:dashboardId/stories", createStory);
   router.put(
     "/:dashboardId/board/:boardId/column/:columnId/editCard",

@@ -104,7 +104,7 @@ export default function Profil() {
         );
         const formattedDate = format(date, "yyyy-MM-dd");
         setUserProfil({
-          // id: userUid,
+          id: user?.id,
           firstname: data.firstname,
           lastname: data.lastname,
           description: data.description,

@@ -18,12 +18,11 @@ module.exports = function (connection, pathname,upload) {
     upload.single("image"),
     updateBackgroundImage
   );
-  router.post("/student", getStudent);
+  router.get("/student", getStudent);
 
   switch (pathname) {
     case "/profil":
       profilRequests(connection);
-      console.log("profil");
       break;
     default:
       break;
