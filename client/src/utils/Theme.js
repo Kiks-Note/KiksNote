@@ -1,8 +1,10 @@
 import * as React from "react";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
+import {ThemeProvider, createTheme} from "@mui/material/styles";
 import App from "../App";
 import { frFR } from "@mui/material/locale";
 import CssBaseline from "@mui/material/CssBaseline";
+import {FirebaseContextProvider} from "../hooks/useFirebase";
+
 export const ColorModeContext = React.createContext();
 
 export default function ToggleColorMode() {
@@ -62,11 +64,13 @@ export default function ToggleColorMode() {
   );
 
   return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <App />
-      </ThemeProvider>
-    </ColorModeContext.Provider>
+    <FirebaseContextProvider>
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={theme}>
+           <CssBaseline />
+          <App />
+        </ThemeProvider>
+      </ColorModeContext.Provider>
+    </FirebaseContextProvider>
   );
 }

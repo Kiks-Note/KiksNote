@@ -432,7 +432,141 @@ module.exports = (app, db, ws, parse) => {
       console.error("Erreur lors de la création d'une histoire:", error);
       res.status(500).send("Erreur lors de la création d'une histoire.");
     }
-  });
+});
+  /// PATH to update a info card
+  app.put(
+    "/dashboard/:dashboardId/board/:boardId/column/:columnId/editCard",
+    async (req, res) => {
+      const data = req.body;
+      const columnId = req.params.columnId;
+      console.log("columnId:", columnId);
+      try {
+        const boardRef = db
+          .collection("dashboard")
+          .doc(req.params.dashboardId)
+          .collection("board")
+          .doc(req.params.boardId);
+        const boardSnapshot = await boardRef.get();
+
+        const columns = boardSnapshot.data();
+
+        let updatedItems;
+        var name = "";
+
+        switch (columnId.toString()) {
+          case "0":
+            updatedItems = setColumnItems(columns.requested.items, data);
+            name = "Stories";
+            break;
+          case "1":
+            updatedItems = setColumnItems(columns.acceptance.items, data);
+            name = "Critère d'acceptation";
+            break;
+          case "2":
+            updatedItems = setColumnItems(columns.toDo.items, data);
+            name = "ToDo";
+            break;
+          case "3":
+            updatedItems = setColumnItems(columns.inProgress.items, data);
+            name = "InProgress";
+            break;
+          case "4":
+            updatedItems = setColumnItems(columns.done.items, data);
+            name = "Done";
+            break;
+          default:
+            throw new Error("Invalid column ID");
+        }
+
+        await boardRef.update({
+          [getColumnField(parseInt(columnId))]: {
+            items: updatedItems,
+            name: name,
+          },
+        });
+
+        console.log("card edited");
+        res.send({message: "Card edited successfully"});
+      } catch (error) {
+        console.error(error);
+        res
+          .status(500)
+          .send({error: "An error occurred while editing the card"});
+      }
+    }
+  );
+  /// PATH to delete a card
+  app.delete(
+    "/dashboard/:dashboardId/board/:boardId/column/:columnId/card/:cardId",
+    async (req, res) => {
+      try {
+        const dashboardRef = db
+          .collection("dashboard")
+          .doc(req.params.dashboardId);
+        const boardRef = dashboardRef
+          .collection("board")
+          .doc(req.params.boardId);
+        const snapshot = await boardRef.get();
+        const columns = snapshot.data();
+        let column;
+        let columnName;
+        switch (req.params.columnId) {
+          case "0":
+            column = columns.requested;
+            columnName = "requested";
+            break;
+          case "1":
+            column = columns.acceptance;
+            columnName = "acceptance";
+            break;
+          case "2":
+            column = columns.toDo;
+            columnName = "toDo";
+            break;
+          case "3":
+            column = columns.inProgress;
+            columnName = "inProgress";
+            break;
+          case "4":
+            column = columns.done;
+            columnName = "done";
+            break;
+          default:
+            // Invalid column id
+            res.status(400).send({message: "Invalid column id"});
+            return;
+        }
+
+        const cards = column.items || [];
+        const cardIndex = cards.findIndex((card) => {
+          if (card.id == req.params.cardId) {
+            return card.id;
+          }
+        });
+        console.log(cardIndex);
+        if (cardIndex == -1) {
+          // Card not found
+          res.status(404).send({message: "Card not found"});
+          return;
+        }
+
+        column.items = cards.filter(
+          (card) => card.id != parseInt(req.params.cardId)
+        );
+        await boardRef.update({[columnName]: column});
+
+        // Card deleted successfully
+        res.status(204).send({message: "Card deleted successfully"});
+        console.log("Card deleted successfully");
+      } catch (error) {
+        console.error(error);
+        // Server error
+        res
+          .status(500)
+          .send({message: "An error occurred while deleting the card"});
+      }
+    }
+  );
 
   // Getter to Column Field
   function getColumnField(columnId) {

@@ -1,49 +1,10 @@
-import React, { useState } from "react";
-
-import {
-  TextField,
-  Typography,
-  Container,
-  Button,
-  Link,
-  IconButton,
-  InputAdornment,
-  FormControl,
-  InputLabel,
-  FormHelperText,
-  Select, MenuItem
-} from "@mui/material";
-
-import { parseISO, isValid } from 'date-fns';
-import { format, parse } from 'date-fns';
-
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import MailIcon from "@mui/icons-material/Mail";
-import CalendarMonthRoundedIcon from '@mui/icons-material/CalendarMonthRounded';
-import HttpsRoundedIcon from '@mui/icons-material/HttpsRounded';
-
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import React, {useState, useEffect} from "react";
+import {Link} from "react-router-dom";
+import Divider from "@mui/material/Divider";
 import axios from "axios";
-
-import signupImg from '../../assets/img/signup-art.svg'
+import {toast, ToastContainer} from "react-toastify";
 import "./Register.scss";
-
-const options = {
-  autoClose: 2000,
-  className: '',
-  position: toast.POSITION.TOP_RIGHT,
-  theme: "colored"
-};
-
-export const toastSuccess = message => {
-  toast.success(message, options);
-}
-
-export const toastFail = message => {
-  toast.error(message, options);
-}
+import {ReactComponent as ReactLogo} from "../../assets/img/undraw_Sign_up_n6im.svg";
 
 const Register = () => {
   const [userFirstName, setUserFirstName] = useState("");
@@ -73,7 +34,23 @@ const Register = () => {
   const [errorStatus, setErrorStatus] = useState(false);
   const [errorClass, setErrorClass] = useState(false);
 
-  const regex = /@edu\.esiee-it\.fr/;
+  const toastFail = (message) => {
+    toast.error(message, options);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setFormErrors(validate());
+    setIsSubmit(true);
+  };
+
+  useEffect(() => {
+    // console.log(formErrors);
+    if (Object.keys(formErrors).length === 0 && isSubmit) {
+      register();
+      setIsSubmit(false);
+    }
+  });
 
   const register = async () => {
     await axios
@@ -212,30 +189,20 @@ const Register = () => {
             }}
           >
             Inscription
-          </Typography>
-          <form className="p-15 form" onSubmit={onSubmit}>
-            <Container
-              fixed
-              maxWidth="lg"
-              sx={{
-                padding: "10px",
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <AccountBoxIcon
-                sx={{
-                  marginTop: "20px",
-                  marginRight: "10px",
-                  color: "#7a52e1",
-                }}
-              />
-              <TextField
-                variant="standard"
-                fullWidth
-                label="Nom"
+          </h1>
+          <Divider
+            variant="middle"
+            style={{background: "#fff", height: "1px"}}
+          />
+          <form className="p-15 form">
+            <div className="m-4">
+              <input
                 id="input-lastname"
-                defaultValue={userLastName}
+                className=" text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                type="text"
+                name="lastname"
+                placeholder="Nom"
+                value={userLastName}
                 onChange={(e) => setUserLastName(e.target.value)}
                 sx={{
                   input: { color: 'black' }
@@ -265,7 +232,11 @@ const Register = () => {
                 fullWidth
                 label="Prénom"
                 id="input-firstname"
-                defaultValue={userFirstName}
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                type="text"
+                name="firstname"
+                placeholder="Prénom"
+                value={userFirstName}
                 onChange={(e) => setUserFirstName(e.target.value)}
                 sx={{
                   input: { color: 'black' }
@@ -295,6 +266,9 @@ const Register = () => {
                 fullWidth
                 label="Adresse email"
                 id="input-email"
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                type="email"
+                name="email"
                 placeholder="votrecompte@edu.esiee-it.fr"
                 defaultValue={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
@@ -304,25 +278,14 @@ const Register = () => {
                 error={errorEmail}
                 helperText={messageEmail}
               />
-            </Container>
-            <Container
-              fixed
-              maxWidth="lg"
-              sx={{
-                padding: "10px",
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <CalendarMonthRoundedIcon
-                sx={{
-                  marginTop: "20px",
-                  marginRight: "10px",
-                  color: "#7a52e1",
-                }}
-              />
-              <TextField
-                label="Date de naissance"
+              <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                {formErrors.email}
+              </span>
+            </div>
+            <div className="m-4">
+              <input
+                id="input-birthdate"
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="date"
                 fullWidth
                 sx={{
@@ -356,6 +319,7 @@ const Register = () => {
                 fullWidth
                 label="Mot de passe"
                 id="input-password"
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="password"
                 name="password"
                 defaultValue={userPassword}
@@ -388,6 +352,7 @@ const Register = () => {
                 fullWidth
                 label="Confirmer le mot de passe"
                 id="input-confirmpassword"
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="password"
                 name="password"
                 defaultValue={userConfirmPassword}
