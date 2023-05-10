@@ -76,7 +76,7 @@ ws.on("request", (request) => {
   require("./blog_back.js")(app, db);
   require("./blog_backWebSocket.js")(app, pathname, db, connection);
   require("./routes/call")(app, db, connection, pathname);
-  require("./dashboard")(app, db, ws, parse);
+  require("./dashboard")(app, pathname, db, connection);
   require("./routes/groupscreation")(app, db);
   require("./userInfo")(app, pathname, db, connection, upload, path, fs);
 });
