@@ -89,7 +89,7 @@ const Login = () => {
         })
         .catch((err) => {
           console.log(err.message);
-          toast.error(err.response.data.message);
+          toast.error(err.message);
         });
     } catch (e) {
       if (e.message.includes("auth/invalid-email")) {

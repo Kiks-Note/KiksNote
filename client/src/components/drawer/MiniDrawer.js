@@ -40,6 +40,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import BookIcon from "@mui/icons-material/Book";
 
 import Logo from "./../../assets/logo/logo.png";
+import useFirebase from "../../hooks/useFirebase";
 
 /// Drawer width where is open
 const drawerWidth = 240;
@@ -93,9 +94,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function MiniDrawer({ element }) {
-  const loggedUser = localStorage.getItem("user");
-  const loggedUserParsed = JSON.parse(loggedUser);
-  var userStatus = loggedUserParsed.status;
+  const { user } = useFirebase();
   const history = createBrowserHistory();
   const [open, setOpen] = React.useState(false);
   const colorMode = React.useContext(ColorModeContext);
@@ -154,7 +153,7 @@ export default function MiniDrawer({ element }) {
         <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
     },
-    ...(userStatus !== "Pédago"
+    ...(user && user?.status !== "Pédago"
       ? [
           {
             id: 5,

@@ -92,7 +92,7 @@ function PdfView(props) {
     console.log(formData);
     try {
       const response = await axios.post(
-        "http://localhost:5050/dashboard-creation/"+props.dashboardId+"/stories",
+        "http://localhost:5050/dashboard/creation/"+props.dashboardId+"/stories",
         formData
       );
       console.log(response.data);

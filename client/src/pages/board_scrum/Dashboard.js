@@ -12,6 +12,7 @@ import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import TablePagination from "@mui/material/TablePagination";
 import ModalCreateSprint from "../../components/board_scrum/dashboard/ModalCreateSprint";
 import { w3cwebsocket } from "websocket";
+import useFirebase from "../../hooks/useFirebase";
 
 let maDate = new Date();
 
@@ -21,6 +22,7 @@ function Dashboard(props) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [members, setMembers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -72,13 +74,10 @@ function Dashboard(props) {
   let favoris = rows
     .filter((person) => person.favorite === true)
     .sort((a, b) => a - b);
-
-  var connectedStudent = localStorage.getItem("userUid");
-
-
+  const { user } = useFirebase();
   useEffect(() => {
     const fetchMembers = async () => {
-      const response = await axios.get("http://localhost:5050/members");
+      const response = await axios.get("http://localhost:5050/profil/student");
       setMembers(response.data);
     };
     fetchMembers();
@@ -88,8 +87,8 @@ function Dashboard(props) {
       wsComments.onopen = function (e) {
         console.log("[open] Connection established");
         console.log("Sending to server");
-        console.log("student", connectedStudent);
-        wsComments.send(JSON.stringify(connectedStudent));
+        console.log("student", user.id);
+        wsComments.send(JSON.stringify(user?.id));
       };
 
       wsComments.onmessage = (message) => {
@@ -124,6 +123,7 @@ function Dashboard(props) {
           listDashboards.push(dashboardFront);
         });
         setRows(listDashboards);
+        setLoading(false);
       };
     })();
   }, []);
@@ -188,27 +188,29 @@ function Dashboard(props) {
 
       {view === "module" ? (
         <Grid container spacing={2}>
-          {rows
-            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-            .map((dashboard) => (
-              <Grid item xs={3} key={dashboard.id}>
-                <CardDashBoard
-                  addTab={props.addTab}
-                  picture={dashboard.picture}
-                  sprint_group={dashboard.sprint_group}
-                  fav={dashboard.favorite}
-                  isFavoris={favorisTell}
-                  id={dashboard.id}
-                />
-              </Grid>
-            ))}
+          {!loading &&
+            rows
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((dashboard) => (
+                <Grid item xs={3} key={dashboard.id}>
+                  <CardDashBoard
+                    addTab={props.addTab}
+                    picture={dashboard.picture}
+                    sprint_group={dashboard.sprint_group}
+                    fav={dashboard.favorite}
+                    isFavoris={favorisTell}
+                    id={dashboard.id}
+                  />
+                </Grid>
+              ))}
         </Grid>
       ) : (
+        !loading &&
         rows.length > 0 && (
           <TableBoard
             id={props.id}
             addTab={props.addTab}
-            rows={rows}
+            rows={!loading && rows}
             addFavorite={favorisTell}
             deleteBoards={deleteBoards}
           />
@@ -216,6 +218,7 @@ function Dashboard(props) {
       )}
 
       {view === "module" ? (
+        !loading &&
         rows.length > 0 && (
           <Box
             sx={{
@@ -228,7 +231,7 @@ function Dashboard(props) {
             <TablePagination
               component="div"
               rowsPerPageOptions={[5, 10, 25, { label: "Tout", value: -1 }]}
-              count={rows.length}
+              count={!loading && rows.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}

@@ -111,7 +111,7 @@ function DialogDashbord(props) {
     };
     try {
       axios
-        .post(`http://localhost:5050/dashboard-creation`,  dataForm )
+        .post(`http://localhost:5050/dashboard/creation`,  dataForm )
         .then((res) => {
           handleClose();
         });

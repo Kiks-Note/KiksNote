@@ -326,7 +326,7 @@ const updateCategory = async (req, res) => {
   }
 };
 
-const liveCategories = async (request, connection) => {
+const liveCategories = async (connection) => {
   db.collection("inventoryCategories")
     .doc("7UKjabIg2uFyz1504U2K")
     .onSnapshot((snapshot) => {
@@ -334,7 +334,7 @@ const liveCategories = async (request, connection) => {
     });
 };
 
-const todayRequests = async (request, connection) => {
+const todayRequests = async ( connection) => {
   db.collection("inventory_requests")
     .where("createdAt", "<=", moment().format("DD/MM/YYYY"))
     .where("status", "==", "pending")
@@ -367,7 +367,7 @@ const todayRequests = async (request, connection) => {
     );
 };
 
-const liveInventory = async (request, connection) => {
+const liveInventory = async ( connection) => {
   db.collection("inventory").onSnapshot((snapshot) => {
     const inventory = snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -378,7 +378,7 @@ const liveInventory = async (request, connection) => {
   });
 };
 
-const borrowedList = async (request, connection) => {
+const borrowedList = async ( connection) => {
   db.collection("inventory")
     .where("status", "==", "borrowed")
     .onSnapshot(
