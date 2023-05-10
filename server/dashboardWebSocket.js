@@ -35,63 +35,84 @@ module.exports = (app, db, connection, pathname) => {
   }
   if (pathname === "/board") {
     console.log("je suis dans /board");
-connection.on("message", (message) => {
-  var json = JSON.parse(message.utf8Data);
-  var dashboardId = json.dashboardId;
-  var boardId = json.boardId;
+    connection.on("message", (message) => {
+      var json = JSON.parse(message.utf8Data);
+      var dashboardId = json.dashboardId;
+      var boardId = json.boardId;
 
-  // Variables pour stocker les informations récupérées
-  var labelsData = [];
-  var boardData = [];
+      // Variables pour stocker les informations récupérées
+      var labelsData = [];
+      var boardData = [];
+      var nameBoard = "";
 
-  // Récupérer les données des labels
-  db.collection("dashboard")
-    .doc(dashboardId)
-    .collection("labels")
-    .get()
-    .then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        labelsData.push({
-          id: doc.id,
-          name: doc.data().name,
-          color: doc.data().color,
-        });
-      });
-      // Récupérer les données du board
+      // Récupérer les données des labels
       db.collection("dashboard")
         .doc(dashboardId)
-        .collection("board")
-        .doc(boardId)
-        .onSnapshot(
-          (snapshot) => {
-            const data = snapshot.data();
-            boardData = [
-              data.requested,
-              data.acceptance,
-              data.toDo,
-              data.inProgress,
-              data.done,
-            ];
-            // Envoyer les données récupérées
-            const responseData = {
-              labels: labelsData,
-              board: boardData,
-            };
-            connection.sendUTF(JSON.stringify(responseData));
-          },
-          (err) => {
-            console.log(`Encountered error: ${err}`);
-          }
-        );
-    })
-    .catch((error) => {
-      console.error(
-        "Erreur lors de la récupération de la sous-collection:",
-        error
-      );
-    });
-});
+        .collection("labels")
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            labelsData.push({
+              id: doc.id,
+              name: doc.data().name,
+              color: doc.data().color,
+            });
+          });
+          db.collection("dashboard")
+            .doc(dashboardId)
+            .get()
+            .then((querySnapshot) => {
+              const dashboardData = querySnapshot.data();
+              Object.keys(dashboardData.release).forEach((releaseKey) => {
+                const releaseSprints = dashboardData.release[releaseKey];
+                releaseSprints.forEach((sprint) => {
+                  if (sprint.boardId === boardId) {
+                    nameBoard = sprint.name;
+                  }
+                });
+              });
+            })
+            .catch((error) => {
+              console.error("Error getting dashboard data:", error);
+            });
+          // Récupérer les données du board
+          db.collection("dashboard")
+            .doc(dashboardId)
+            .collection("board")
+            .doc(boardId)
+            .onSnapshot(
+              (snapshot) => {
+                const data = snapshot.data();
+                boardData = [
+                  data.requested,
+                  data.acceptance,
+                  data.toDo,
+                  data.inProgress,
+                  data.done,
+                  data.definitionOfDone,
+                  data.definitionOfFun,
+                ];
 
+                // Envoyer les données récupérées
+                const responseData = {
+                  labels: labelsData,
+                  board: boardData,
+                  name: nameBoard,
+                };
+                connection.sendUTF(JSON.stringify(responseData));
+              },
+              (err) => {
+                console.log(`Encountered error: ${err}`);
+              }
+            );
+        })
+        .catch((error) => {
+          console.error(
+            "Erreur lors de la récupération de la sous-collection:",
+            error
+          );
+        });
+    });
   }
   if (pathname === "/overview") {
     console.log("je suis dans /overview");
@@ -142,7 +163,6 @@ connection.on("message", (message) => {
         })
       );
     });
-
   }
 };
 

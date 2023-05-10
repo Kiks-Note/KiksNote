@@ -15,34 +15,10 @@ function TransitionComponent(props) {
   return <Slide {...props} direction="up" />;
 }
 
-const taskStatus = {
-  requested: {
-    name: "Stories",
-    items: [],
-  },
-  acceptance: {
-    name: "Critère d'acceptation",
-    items: [],
-  },
-
-  toDo: {
-    name: "To Do",
-    items: [],
-  },
-
-  inProgress: {
-    name: "In progress",
-    items: [],
-  },
-  done: {
-    name: "Done",
-    items: [],
-  },
-};
-
-function Board(props) {
+export default function Board(props) {
   const labelChange = () => setLabel(!label);
-  const [columns, setColumns] = useState(taskStatus);
+  const [columns, setColumns] = useState({});
+  const [boardName, setBoardName] = useState("");
   const [labelList, setLabelList] = useState([]);
   const [label, setLabel] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -67,6 +43,7 @@ function Board(props) {
           ...data.board,
         });
         setLabelList(data.labels);
+        setBoardName(data.name);
       };
     })();
   }, []);
@@ -192,14 +169,13 @@ function Board(props) {
           </Alert>
         )}
         <Typography style={{ textAlign: "center" }} variant="h5">
-          Scrum Board
+          {boardName}
         </Typography>
         <Switch
           checked={label}
           onChange={labelChange}
           inputProps={{ "aria-label": "controlled" }}
         />
-        <p>Label name</p>
         <div className="board_container_all">
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
@@ -300,11 +276,10 @@ function Board(props) {
                   </div>
                 </div>
               );
-            })}
+            }})}
           </DragDropContext>
         </div>
       </div>
     </>
   );
 }
-export default Board;

@@ -98,6 +98,14 @@ module.exports = (app, db, ws, parse) => {
             column = columns.done;
             columnName = "done";
             break;
+          case "5":
+            column = columns.definitionOfDone;
+            columnName = "definitionOfDone";
+            break;
+          case "6":
+            column = columns.definitionOfFun;
+            columnName = "definitionOfFun";
+            break;
           default:
             res.status(400).send({ message: "Invalid column id" });
             return;
@@ -235,6 +243,14 @@ module.exports = (app, db, ws, parse) => {
           case "4":
             column = columns.done;
             columnName = "done";
+            break;
+          case "5":
+            column = columns.definitionOfDone;
+            columnName = "definitionOfDone";
+            break;
+          case "6":
+            column = columns.definitionOfFun;
+            columnName = "definitionOfFun";
             break;
           default:
             // Invalid column id
