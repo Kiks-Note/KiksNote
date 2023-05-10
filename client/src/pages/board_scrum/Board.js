@@ -276,7 +276,7 @@ export default function Board(props) {
                   </div>
                 </div>
               );
-            }})}
+            })}
           </DragDropContext>
         </div>
       </div>
