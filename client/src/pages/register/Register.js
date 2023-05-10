@@ -4,35 +4,29 @@ import Divider from "@mui/material/Divider";
 import axios from "axios";
 import {toast, ToastContainer} from "react-toastify";
 import "./Register.scss";
-import {ReactComponent as ReactLogo} from "../../assets/img/undraw_Sign_up_n6im.svg";
+import { ReactComponent as ReactLogo } from "../../assets/img/signup-art.svg";
 
 const Register = () => {
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-  const [userBirthDate, setUserBirthDate] = useState(new Date());
+  const [userBirthDate, setUserBirthDate] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const [userConfirmPassword, setUserConfirmPassword] = useState("");
   const [userStatus, setUserStatus] = useState("");
   const [userClass, setUserClass] = useState("");
+  const [formErrors, setFormErrors] = useState({});
+  const [isSubmit, setIsSubmit] = useState(false);
 
-  const [messageFirstName, setMessageFirstName] = useState("");
-  const [messageLastName, setMessageLastName] = useState("");
-  const [messageEmail, setMessageEmail] = useState("");
-  const [messageBirthDate, setMessageBirthDate] = useState("");
-  const [messagePassword, setMessagePassword] = useState("");
-  const [messageConfirmPassword, setMessageConfirmPassword] = useState("");
-  const [messageStatus, setMessageStatus] = useState("");
-  const [messageClass, setMessageClass] = useState("");
+  const options = {
+    autoClose: 2000,
+    className: "",
+    position: toast.POSITION.TOP_RIGHT,
+  };
 
-  const [errorFirstName, setErrorFirstName] = useState(false);
-  const [errorLastName, setErrorLastName] = useState(false);
-  const [errorEmail, setErrorEmail] = useState(false);
-  const [errorBirthDate, setErrorBirthDate] = useState(false);
-  const [errorPassword, setErrorPassword] = useState(false);
-  const [errorConfirmPassword, setErrorConfirmPassword] = useState(false);
-  const [errorStatus, setErrorStatus] = useState(false);
-  const [errorClass, setErrorClass] = useState(false);
+  const toastSuccess = (message) => {
+    toast.success(message, options);
+  };
 
   const toastFail = (message) => {
     toast.error(message, options);
@@ -54,12 +48,17 @@ const Register = () => {
 
   const register = async () => {
     await axios
-      .post("http://localhost:5050/auth/signup", {
-        userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass
+      .post("http://localhost:5050/register", {
+        userEmail,
+        userPassword,
+        userFirstName,
+        userLastName,
+        userBirthDate,
+        userStatus,
+        userClass,
       })
       .then((res) => {
-        console.log(res.status)
-        if (res.status === 200) {
+        if (res.data.message === "User created successfully") {
           toastSuccess("Utilisateur enregistré");
         } else {
           toastFail("Utilisateur non enregistré");
@@ -71,123 +70,55 @@ const Register = () => {
       });
   };
 
-  const verifInputErrors = (lastname, firstname, email, password, confirmpassword, status, student_class, birthdate) => {
-    if (lastname === "") {
-      setErrorLastName(true)
-      setMessageLastName("Le nom est requis")
+  const validate = () => {
+    const errors = {};
+    const email_regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    const emailedu_regex = /^[^\s@]+@edu\.esiee-it\.fr$/;
+
+    if (userLastName === "") {
+      errors.lastname = "Le nom est requis!";
     }
-    else{
-      setErrorLastName(false)
-      setMessageLastName("")
+    if (userFirstName === "") {
+      errors.firstname = "Le prénom est requis!";
     }
-    if (firstname === "") {
-      setErrorFirstName(true)
-      setMessageFirstName("Le prénom est requis")
+    if (userEmail === "") {
+      errors.email = "L'adresse mail est requis !";
+    } else if (!email_regex.test(userEmail)) {
+      errors.email = "Ce n'est pas un format d'e-mail valide !";
     }
-    else{
-      setErrorFirstName(false)
-      setMessageFirstName("")
+    if (userPassword === "") {
+      errors.password = "Mot de passe requis";
+    } else if (userPassword.length < 6) {
+      errors.password = "Le mot de passe doit comporter plus de 6 caractères";
+    } else if (userPassword.length > 24) {
+      errors.password =
+        "Le mot de passe ne peut pas dépasser plus de 24 caractères";
     }
-    if (email === "") {
-      setErrorEmail(true);
-      setMessageEmail("L'adresse email est requis");
+    if (userConfirmPassword === "") {
+      errors.confirmPassword = "Confirmez le mot de passe";
+    } else if (userPassword !== userConfirmPassword) {
+      errors.confirmPassword = "Le mot de passe ne correspond pas";
     }
-    else if (regex.test(email)) {
-      setErrorEmail(false);
-      setMessageEmail("");
+    if (userStatus === "") {
+      errors.status = "Choisissez le statut";
+    } else if (userStatus === "etudiant" && !emailedu_regex.test(userEmail)) {
+      errors.email = "Courriel edu introuvable";
     }
-    else {
-      setErrorEmail(true);
-      setMessageEmail("L'adresse mail que vous avez rentrés n'est pas conforme. Celle-ci doit  par @edu.esiee-it.fr");
+    if (userStatus === "etudiant" && userClass === "") {
+      errors.class = "Indiquez votre classe";
     }
-    if (password === "") {
-      setErrorPassword(true);
-      setMessagePassword("Mot de passe requis");
-    } else if (password.length < 6) {
-      setErrorPassword(true);
-      setMessagePassword("Le mot de passe doit comporter plus de 6 caractères");
-    } else if (password.length > 24) {
-      setErrorPassword(true);
-      setMessagePassword("Le mot de passe ne peut pas dépasser plus de 24 caractères");
+    if (userBirthDate === "") {
+      errors.birthdate = "Remplir";
     }
-    else {
-      setErrorPassword(false);
-      setMessagePassword("");
-    }
-    if (confirmpassword === "") {
-      setErrorConfirmPassword(true)
-      setMessageConfirmPassword("Confirmez le mot de passe");
-    } else if (password !== confirmpassword) {
-      setErrorConfirmPassword(true)
-      setMessageConfirmPassword("Le mot de passe ne correspond pas");
-    }
-    else{
-      setErrorConfirmPassword(false)
-      setMessageConfirmPassword("");
-    }
-    if (status === "") {
-      setErrorStatus(true)
-      setMessageStatus("Choisissez le statut");
-    } else if (student_class === "etudiant" && !regex.test(email)) {
-      setErrorStatus(true)
-      setMessageEmail("Courriel edu introuvable");
-    }
-    else{
-      setErrorStatus(false)
-      setMessageStatus("");
-    }
-    if (status === "etudiant" && student_class === "") {
-      setErrorClass(true)
-      setMessageClass("Indiquez votre classe")
-    }
-    else{
-      setErrorClass(false);
-      setMessageClass("")
-    }
-    if (birthdate === "") {
-      setErrorBirthDate(true)
-      setMessageBirthDate("La date de naissance est requis");
-    }
-    else{
-      setErrorBirthDate(false)
-      setMessageBirthDate("");
-    }
+
+    return errors;
   };
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    await register();
-    verifInputErrors(userLastName, userFirstName, userEmail, userPassword, userConfirmPassword, userStatus, userClass, userBirthDate);
-  };
-
-  const handleDateChange = (event) => {
-    const { value } = event.target;
-    const parsedDate = parseISO(value);
-
-    if (isValid(parsedDate)) {
-      setUserBirthDate(parsedDate);
-      setErrorBirthDate(false);
-      setMessageBirthDate('');
-    } else {
-      setUserBirthDate(null);
-      setErrorBirthDate(true);
-      setMessageBirthDate('Invalid date');
-    }
-  };
-  
   return (
     <div className="register">
       <div className="register-header">
         <div className="container-register">
-          <Typography
-            component="h1"
-            sx={{
-              fontSize: 30,
-              fontWeight: "bold",
-              marginBottom: "20px",
-              textAlign: "center",
-            }}
-          >
+          <h1 className="text-4l font-extrabold m-4 text-center">
             Inscription
           </h1>
           <Divider
@@ -204,33 +135,13 @@ const Register = () => {
                 placeholder="Nom"
                 value={userLastName}
                 onChange={(e) => setUserLastName(e.target.value)}
-                sx={{
-                  input: { color: 'black' }
-                }}
-                error={errorLastName}
-                helperText={messageLastName}
               />
-            </Container>
-            <Container
-              fixed
-              maxWidth="lg"
-              sx={{
-                padding: "10px",
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <AccountBoxIcon
-                sx={{
-                  marginTop: "20px",
-                  marginRight: "10px",
-                  color: "#7a52e1",
-                }}
-              />
-              <TextField
-                variant="standard"
-                fullWidth
-                label="Prénom"
+              <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                {formErrors.lastname}
+              </span>
+            </div>
+            <div className="m-4">
+              <input
                 id="input-firstname"
                 className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="text"
@@ -238,45 +149,20 @@ const Register = () => {
                 placeholder="Prénom"
                 value={userFirstName}
                 onChange={(e) => setUserFirstName(e.target.value)}
-                sx={{
-                  input: { color: 'black' }
-                }}
-                error={errorFirstName}
-                helperText={messageFirstName}
               />
-            </Container>
-            <Container
-              fixed
-              maxWidth="lg"
-              sx={{
-                padding: "10px",
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <MailIcon
-                sx={{
-                  marginTop: "20px",
-                  marginRight: "10px",
-                  color: "#7a52e1",
-                }}
-              />
-              <TextField
-                variant="standard"
-                fullWidth
-                label="Adresse email"
+              <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                {formErrors.firstname}
+              </span>
+            </div>
+            <div className="m-4">
+              <input
                 id="input-email"
                 className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="email"
                 name="email"
                 placeholder="votrecompte@edu.esiee-it.fr"
-                defaultValue={userEmail}
+                value={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
-                sx={{
-                  input: { color: 'black' }
-                }}
-                error={errorEmail}
-                helperText={messageEmail}
               />
               <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
                 {formErrors.email}
@@ -287,147 +173,115 @@ const Register = () => {
                 id="input-birthdate"
                 className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="date"
-                fullWidth
-                sx={{
-                  input: { color: 'black' }
-                }}
-                id="input-birthdate"
-                value={userBirthDate ? format(userBirthDate, 'yyyy-MM-dd') : ''}
-                onChange={handleDateChange}
-                error={errorBirthDate}
-                helperText={messageBirthDate}
+                name="birthdate"
+                placeholder="Date de Naissance"
+                value={userBirthDate}
+                onChange={(e) => setUserBirthDate(e.target.value)}
               />
-            </Container>
-            <Container
-              fixed
-              maxWidth="lg"
-              sx={{
-                padding: "10px",
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <HttpsRoundedIcon
-                sx={{
-                  marginTop: "20px",
-                  marginRight: "10px",
-                  color: "#7a52e1",
-                }}
-              />
-              <TextField
-                variant="standard"
-                fullWidth
-                label="Mot de passe"
+              <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                {formErrors.birthdate}
+              </span>
+            </div>
+            <div className="m-4">
+              <input
                 id="input-password"
                 className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="password"
                 name="password"
-                defaultValue={userPassword}
+                placeholder="Mot de passe"
+                value={userPassword}
                 onChange={(e) => setUserPassword(e.target.value)}
-                sx={{
-                  input: { color: 'black' }
-                }}
-                error={errorPassword}
-                helperText={messagePassword}
               />
-            </Container>
-            <Container
-              fixed
-              maxWidth="lg"
-              sx={{
-                padding: "10px",
-                display: "flex",
-                flexDirection: "row",
-              }}
-            >
-              <HttpsRoundedIcon
-                sx={{
-                  marginTop: "20px",
-                  marginRight: "10px",
-                  color: "#7a52e1",
-                }}
-              />
-              <TextField
-                variant="standard"
-                fullWidth
-                label="Confirmer le mot de passe"
+              <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                {formErrors.password}
+              </span>
+            </div>
+            <div className="m-4">
+              <input
                 id="input-confirmpassword"
                 className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="password"
-                name="password"
-                defaultValue={userConfirmPassword}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={userConfirmPassword}
                 onChange={(e) => setUserConfirmPassword(e.target.value)}
-                sx={{
-                  input: { color: 'black' }
-                }}
-                error={errorConfirmPassword}
-                helperText={messageConfirmPassword}
               />
-            </Container>
-
-            <Container sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-              <FormControl sx={{ m: 1, minWidth: 120 }} error={errorStatus}>
-                <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
-                <Select variant="filled" id="input-status" sx={{ color: 'black' }} label="Status" value={userStatus} onChange={(e) => setUserStatus(e.target.value)}>
-                  <MenuItem value="etudiant">Étudiant</MenuItem>
-                  <MenuItem value="po">PO</MenuItem>
-                  <MenuItem value="pedago">Pedago</MenuItem>
-                </Select>
-                {errorStatus && <FormHelperText>{messageStatus}</FormHelperText>}
-              </FormControl>
+              <span className="flex mt-1 text-sm text-red-600 dark:text-red-500">
+                {formErrors.confirmPassword}
+              </span>
+            </div>
+            <div className="m-4 select-div">
+              <label
+                id="label-status"
+                className="block mb-2 text-sm font-medium text-gray-900"
+                htmlFor="input-status"
+              >
+                <select
+                  name="status"
+                  id="input-status"
+                  onChange={(e) => setUserStatus(e.target.value)}
+                >
+                  <option disabled={true} value="">
+                    --Status--
+                  </option>
+                  <option value="etudiant">Étudiant</option>
+                  <option value="po">PO</option>
+                  <option value="pedago">Pedago</option>
+                </select>
+              </label>
               {userStatus === "etudiant" ? (
-
-                <FormControl sx={{ m: 1, minWidth: 120 }} error={errorClass}>
-                  <InputLabel id="demo-simple-select-helper-label">Classe</InputLabel>
-                  <Select variant="filled" id="input-class" sx={{ color: 'black' }} value={userClass} onChange={(e) => setUserClass(e.target.value)}>
-                    <MenuItem value="L1-paris">L1-Paris</MenuItem>
-                    <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
-                    <MenuItem value="L2-paris">L2-Paris</MenuItem>
-                    <MenuItem value="L2-cergy">L2-Cergy</MenuItem>
-                    <MenuItem value="L3-paris">L3-Paris</MenuItem>
-                    <MenuItem value="L3-cergy">L3-Cergy</MenuItem>
-                    <MenuItem value="M1-lead">M1-LeadDev</MenuItem>
-                    <MenuItem value="M1-gaming">M1-Gaming</MenuItem>
-                    <MenuItem value="M2-lead">M2-LeadDev</MenuItem>
-                    <MenuItem value="M2-gaming">M2-Gaming</MenuItem>
-                  </Select>
-                  {errorClass && <FormHelperText>{messageClass}</FormHelperText>}
-                </FormControl>
+                <label
+                  id="label-class"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                  htmlFor="input-class"
+                >
+                  <select
+                    name="status"
+                    id="input-class"
+                    onChange={(e) => setUserClass(e.target.value)}
+                  >
+                    <option disabled={true} value="">
+                      --Classe--
+                    </option>
+                    <option value="L1-paris">L1-Paris</option>
+                    <option value="L1-cergy">L1-Cergy</option>
+                    <option value="L2-paris">L2-Paris</option>
+                    <option value="L2-cergy">L2-Cergy</option>
+                    <option value="L3-paris">L3-Paris</option>
+                    <option value="L3-cergy">L3-Cergy</option>
+                    <option value="M1-lead">M1-LeadDev</option>
+                    <option value="M1-gaming">M1-Gaming</option>
+                    <option value="M2-lead">M2-LeadDev</option>
+                    <option value="M2-gaming">M2-Gaming</option>
+                  </select>
+                </label>
               ) : (
                 <div></div>
               )}
-            </Container>
+            </div>
             <div className="flex justify-center">
-              <Button
-                sx={{
-                  backgroundColor: "#7a52e1",
-                  color: 'white'
-                }}
-                variant="contained"
+              <button
                 id="btn-register"
                 className="bg-[#7751d9] hover:bg-[#ab278e] text-white text-sm font-base py-1 px-3 rounded "
                 type="submit"
+                onClick={handleSubmit}
               >
                 S'inscrire
-              </Button>
+              </button>
             </div>
           </form>
           <div className="text-xs font-medium text-center m-3">
             <p>Vous avez déjà un compte</p>
             <Link
-              href="/login"
-              sx={{
-                color: "#7a52e1",
-                textDecoration: "none",
-                fontWeight: "bold",
-              }}
+              className="text-xs font-medium text-[#B312FF] dark:text-[#B312FF] hover:underline"
+              to="/login"
             >
               Se connecter
             </Link>
           </div>
         </div>
         <div className="image-container">
-          <img className="image py-3" src={signupImg} alt="SignUp"></img>
+          <ReactLogo className="image py-3"></ReactLogo>
         </div>
       </div>
       <ToastContainer></ToastContainer>

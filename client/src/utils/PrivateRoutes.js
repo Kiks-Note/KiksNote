@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import {Navigate, Outlet, useNavigate} from "react-router-dom";
-import MiniDrawer from "../components/navbar/Navbar";
+import MiniDrawer from "../components/drawer/MiniDrawer";
 import useFirebase from "../hooks/useFirebase";
 import Cookies from "universal-cookie";
 
