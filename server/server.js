@@ -6,6 +6,7 @@ const app = express();
 const { parse } = require("url");
 const webSocketServer = require("websocket").server;
 const http = require("http");
+/// MULTER CONFIG FOR UPLOAD ON SERVER
 const multer = require("multer");
 const DIR = "uploads/";
 const storage = multer.diskStorage({
@@ -61,16 +62,9 @@ wsI.on("request", (request) => {
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
 
-  // require("./blog_back.js")(app, pathname, db, connection);
-  // require("./routes/call")(app, db, connection, pathname);
-  // require("./dashboardWebSocket")(app, db, connection, pathname);
-  // require("./routes/groupscreation")(app, db);
-  // require("./calendar")(app, db);
-  // require("./calendarWebSocket")(app, db, connection, pathname);
-  // require("./userInfo")(app, pathname, db, connection, upload, path, fs);
-app.use("/inventory", inventoryRoutes(connection, pathname));
-app.use("/dashboard", dashboardRoutes(connection, pathname));
-app.use("/profil", profilRoutes(connection, pathname, upload));
+  app.use("/inventory", inventoryRoutes(connection, pathname));
+  app.use("/dashboard", dashboardRoutes(connection, pathname));
+  app.use("/profil", profilRoutes(connection, pathname, upload));
 
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);

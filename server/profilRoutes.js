@@ -10,7 +10,7 @@ const {
 } = require("./controllers/profil");
 
 module.exports = function (connection, pathname,upload) {
-  // Accept wsI as an argument
+  // Route Profil
 
   router.put("/:userId", upload.single("image"), updateProfil);
   router.put(

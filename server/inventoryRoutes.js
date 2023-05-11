@@ -25,7 +25,7 @@ const {
 } = require("./controllers/inventory");
 
 module.exports = function (connection, pathname) {
-  // Accept wsI as an argument
+  // Route Inventory
   router.get("/", inventory);
   router.get("/device/:deviceId", inventoryDeviceId);
   router.post("/", addDevice);

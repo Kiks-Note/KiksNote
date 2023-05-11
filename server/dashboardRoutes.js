@@ -17,7 +17,7 @@ const {
 } = require("./controllers/dashboard");
 
 module.exports = function (connection, pathname) {
-  // Accept wsI as an argument
+  // Route Dashboard
   router.put("/:dashboardId/:favorite", favorite);
   router.put("/:dashboardId/board/:boardId/setCards", changeIndex);
   router.put(

@@ -1,28 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import MiniDrawerNotConnected from "../components/drawer/MiniDrawerNotConnected";
-import { accountAuthService } from "../services/accountAuth";
+import useFirebase from "../hooks/useFirebase";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
+import Cookies from "universal-cookie";
 
 function PublicRoutes() {
+  const cookies = new Cookies();
+    const { user } = useFirebase();
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    // Check if user is authenticated asynchronously using the accountAuthService.isLogged()
-    const checkAuth = async () => {
-      try {
-        const result = await accountAuthService.isLogged();
-        setAuthenticated(result);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    checkAuth();
+  useEffect(() => {
+    console.log(user);
+    const token = cookies.get("token");
+
+    if ( !token || !user) {
+      setAuthenticated(false);
+      setLoading(false);
+    }
+
   }, []);
 
   // Show loading indicator while authentication check is in progress

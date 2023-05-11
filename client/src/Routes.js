@@ -29,7 +29,6 @@ function RoutesProvider() {
         <Route element={<PublicRoutes />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
-          <Route path="*" element={<NotFound />} />
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
