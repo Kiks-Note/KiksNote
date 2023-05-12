@@ -1,0 +1,11 @@
+.calendar {
+  height: 10px;
+  background-color: #f5f5f5;
+}
+
+.days,
+.year,
+.month,
+.monthAndYearWrapper {
+  display: none;
+}

@@ -1,12 +1,23 @@
-import { Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import {useEffect} from "react";
+// import useAuth from "../../hooks/useAuth";
+import useFirebase from "../../hooks/useFirebase";
 
 function Home() {
+  const {user} = useFirebase();
+
   return (
-    <Box>
-      <Typography variant="h2">Bienvenue sur Code Note</Typography>
-      <img src="logo.png" alt="Code Note" />
-    </Box>
+    <div className="home">
+      <h1>Home</h1>
+      <p
+        style={{
+          color: "white",
+          fontSize: "20px",
+          fontFamily: "poppins-bold",
+        }}
+      >
+        Welcome {user.firstname}
+      </p>
+    </div>
   );
 }
 
