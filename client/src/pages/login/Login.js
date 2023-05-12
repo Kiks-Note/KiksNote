@@ -33,6 +33,7 @@ const Login = () => {
   const [messageEmail, setMessageEmail] = useState("");
   const [messagePassword, setMessagePassword] = useState("");
   const regex = /@edu\.esiee-it\.fr/;
+  const theme = useTheme();
 
   const navigate = useNavigate();
 
@@ -121,7 +122,7 @@ const Login = () => {
             backgroundColor: "#7a52e1",
           }}
         ></Container>
-        <div className="login-header">
+        <div className="login-header" style={{ backgroundColor: theme.palette.background.paper}}>
           <Container
             sx={{
               marginTop: "20%",
@@ -237,7 +238,7 @@ const Login = () => {
                     cursor: "pointer"
                   }}
                 >
-                  Mot de passe oublie ?
+                  Mot de passe oublié ?
                 </Link>
               </Container>
               <Box textAlign="center" className="button-box-login">
@@ -256,8 +257,8 @@ const Login = () => {
               </Box>
             </form>
 
-            <p className="text-sm font-medium text-center m-3">
-              Pas encore de compte? Créez-en un{" "}
+            <p className="text-sm font-medium text-center m-3 font-bold">
+              Pas encore de compte ? Créez-en un{" "}
               <Link
                 href="/signup"
                 sx={{
@@ -267,7 +268,7 @@ const Login = () => {
                   cursor: "pointer"
                 }}
               >
-                Inscription
+               Ici
               </Link>
             </p>
           </Container>

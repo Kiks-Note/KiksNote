@@ -202,7 +202,7 @@ const Register = () => {
   
   return (
     <div className="register">
-      <div className="register-header">
+      <div className="register-header" style={{ backgroundColor: theme.palette.background.paper }}>
         <div className="container-register">
           <Typography
             component="h1"
