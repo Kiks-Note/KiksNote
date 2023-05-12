@@ -279,7 +279,7 @@ const CoursInfo = () => {
   ) => {
     try {
       axios
-        .post(`http://localhost:5050/update/ressources/cours/${id}`, {
+        .put(`http://localhost:5050/ressources/cours/${id}`, {
           title: title,
           description: description,
           date: date,
@@ -294,9 +294,9 @@ const CoursInfo = () => {
           console.log(error);
         });
     } catch (error) {
-      // if (error.response.status === 400) {
-      //   toastWarning("Veuillez remplir tous les champs.");
-      // }
+      if (error.response.status === 400) {
+        toastWarning("Veuillez remplir tous les champs.");
+      }
       throw error;
     }
   };
