@@ -49,11 +49,11 @@ const wsI = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
-
+const authRoutes = require("./authRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
-const authRoutes = require("./authRoutes");
+const blogRoutes = require("./blogRoutes");
 
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
@@ -65,6 +65,7 @@ wsI.on("request", (request) => {
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
+  app.use("/blog", blogRoutes(connection, pathname));
 
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
