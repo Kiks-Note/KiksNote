@@ -89,8 +89,6 @@ module.exports = (app, db) => {
 
   app.post("/tutos/newtutos", async (req, res) => {
     const { title, description, photo } = req.body;
-  app.post("/tutos/newtutos", async (req, res) => {
-    const { title, description, photo } = req.body;
 
     if (title == null || title == "") {
       return res.status(400).send("Title is required");
