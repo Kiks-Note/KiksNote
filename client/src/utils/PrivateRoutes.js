@@ -1,52 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Navigate, Outlet, useNavigate } from "react-router-dom";
 import MiniDrawer from "../components/drawer/MiniDrawer";
-import { accountAuthService } from "../services/accountAuth";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
+import useFirebase from "../hooks/useFirebase";
+import Cookies from "universal-cookie";
+import axios from "axios";
 
 function PrivateRoutes() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const { user, logout } = useFirebase();
+  const cookies = new Cookies();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is authenticated asynchronously using the accountAuthService.isLogged()
-    const checkAuth = async () => {
-      try {
-        const result = await accountAuthService.isLogged();
-        setAuthenticated(result);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const lastConnectionAt = cookies.get("lastConnectionAt");
+    const token = cookies.get("token");
+    const currentTime = Date.now();
 
-    checkAuth();
+    if (lastConnectionAt <= currentTime || !token) {
+      logout();
+      navigate("/login");
+    }
+
+    (async () => {
+      await axios
+        .post("http://localhost:5050/auth/login", {
+          token,
+        })
+        .catch((err) => {
+          logout();
+          navigate("/login");
+        });
+    })();
+
+    console.log(lastConnectionAt, currentTime);
   }, []);
 
-  // Show loading indicator while authentication check is in progress
-  if (loading) {
-    return (
-      <Box sx={{ display: "flex" }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  // If user is authenticated, allow access to all pages
-  if (authenticated) {
-    return <MiniDrawer element={<Outlet />} />;
-  }
-
-  // If user is not authenticated, redirect to login page only if user is not already on the login page
-  const currentLocation = window.location.pathname;
-  if (currentLocation == "/") {
-    return <Navigate to="/login" />;
-  }
-
-  // If user is not authenticated and already on login page, allow access to login page
-  return <Outlet />;
+  return user && <MiniDrawer element={<Outlet />} />;
 }
 
 export default PrivateRoutes;

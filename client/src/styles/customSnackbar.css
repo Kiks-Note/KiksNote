@@ -1,0 +1,34 @@
+.snackbar-button-green {
+  color: #4caf50;
+  margin-right: 10px;
+}
+
+.snackbar-button-green:hover {
+  color: #388e3c;
+  background-color: #ffffff1a;
+}
+
+.snackbar-button-red {
+  color: #f44336;
+}
+
+.snackbar-button-red:hover {
+  color: #d32f2f;
+  background-color: #ffffff1a;
+}
+
+.css-g9qqj4 {
+  /* background-color: #ffffff !important; */
+  font-family: "poppins-regular" !important;
+}
+.css-hfutr2-MuiSvgIcon-root-MuiSelect-icon {
+  color: #ffffff !important;
+}
+
+.css-nxo287-MuiInputBase-input-MuiOutlinedInput-input,
+.css-1jy569b-MuiFormLabel-root-MuiInputLabel-root,
+.css-i4bv87-MuiSvgIcon-root,
+.css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root {
+  /* color: #ffffff !important; */
+  font-family: "poppins-regular" !important;
+}

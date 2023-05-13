@@ -2,17 +2,12 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { v4: uuidv4 } = require("uuid");
-const path = require("path");
-const fs = require("fs");
-const dotenv = require("dotenv").config();
 const app = express();
-const { db, auth, storageFirebase } = require("./firebase");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
+const { db, storageFirebase } = require("./firebase");
+const { parse } = require("url");
 const webSocketServer = require("websocket").server;
 const http = require("http");
-const { parse } = require("url");
-const saltRounds = parseInt(process.env.SALTY_ROUNDS);
+/// MULTER CONFIG FOR UPLOAD ON SERVER
 const multer = require("multer");
 const mime = require("mime-types");
 
@@ -32,22 +27,23 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1024 * 1024 * 5 },
-  fileFilter: function (req, file, cb) {
-    if (file.mimetype !== "application/pdf") {
-      return cb(new Error("Le fichier doit être un PDF"));
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype == "image/png" ||
+      file.mimetype == "image/jpg" ||
+      file.mimetype == "image/jpeg" ||
+      file.mimetype == "application/pdf"
+    ) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error("Only .png, .jpg, .jpeg and .pdf format allowed!"));
     }
     cb(null, true);
   },
 }).single("file");
 
 const bucket = storageFirebase.bucket();
-
-const {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  authClient,
-} = require("./firebase_auth");
 
 app.use(express.json());
 app.use(cors());
@@ -58,39 +54,40 @@ app.use("/uploads", express.static("uploads"));
 const PORT = process.env.PORT || 5050;
 const server = http.createServer(app);
 
-server.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`);
-});
-
-const ws = new webSocketServer({
+const wsI = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
+const authRoutes = require("./authRoutes");
+const inventoryRoutes = require("./inventoryRoutes");
+const dashboardRoutes = require("./dashboardRoutes");
+const profilRoutes = require("./profilRoutes");
+const blogRoutes = require("./blogRoutes");
 
-ws.on("request", (request) => {
+app.use("/auth", authRoutes);
+wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
-  console.log("request.httpServer => ", request);
-  console.log("request.url => ", request.pathname);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
 
-  require("./blog_back.js")(app, pathname, db, connection);
-  require("./routes/call")(app, db, connection, pathname);
-  require("./dashboard")(app, db, ws, parse);
-  require("./routes/groupscreation")(app, db);
-  require("./userInfo")(app, pathname, db, connection, upload, path, fs);
+  app.use("/inventory", inventoryRoutes(connection, pathname));
+  app.use("/dashboard", dashboardRoutes(connection, pathname));
+  app.use("/profil", profilRoutes(connection, pathname, upload));
+  app.use("/blog", blogRoutes(connection, pathname));
+  app.use("/ressources")(app, db, bucket, mime, upload, multer, fs);
+
+  connection.on("error", (error) => {
+    console.log(`WebSocket Error: ${error}`);
+  });
+
+  connection.on("close", (reasonCode, description) => {
+    console.log(
+      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
+    );
+  });
 });
 
-require("./routes/auth")(
-  app,
-  db,
-  bcrypt,
-  saltRounds,
-  auth,
-  authClient,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
-);
-
-require("./routes/ressources")(app, db, bucket, mime, upload, multer, fs);
+server.listen(PORT, () => {
+  console.log(`Listening on port ${PORT}`);
+});

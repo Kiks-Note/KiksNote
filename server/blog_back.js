@@ -1,19 +1,4 @@
 module.exports = (app, pathname, db, connection) => {
-  if (pathname === "/blog") {
-    console.log("je suis dans blog");
-    db.collection("blog_evenements").onSnapshot(
-      (snapshot) => {
-        const documents = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        connection.sendUTF(JSON.stringify(documents));
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
-  }
   if (pathname === "/tuto") {
     console.log("je suis dans tuto");
     db.collection("blog_tutos").onSnapshot(
@@ -48,7 +33,6 @@ module.exports = (app, pathname, db, connection) => {
         });
     });
   }
-
   // get all tutos
   app.get("/tutos", async (req, res) => {
     const snapshot = await db.collection("blog_tutos").get();
@@ -79,35 +63,6 @@ module.exports = (app, pathname, db, connection) => {
     res.send(snapshot.docs.map((doc) => doc.data()));
   });
 
-  //post a new comment on a tutorial
-  app.post("/blog/:id/comments", async (req) => {
-    await db
-      .collection("blog_tutos")
-      .doc(req.params.id)
-      .collection("comment")
-      .add({
-        content: req.body.message,
-        date: new Date(),
-        user_id: 12,
-        user_status: "etudiant",
-      });
-  });
-
-  //update tutorial likes and dislikes
-  app.put("/blog/:id/likes", async (req) => {
-    await db.collection("blog_tutos").doc(req.params.id).update({
-      like: req.body.like,
-      dislike: req.body.dislike,
-    });
-  });
-
-  //update tutorial visibility
-  app.put("/blog/:id/visibility", async (req) => {
-    await db.collection("blog_tutos").doc(req.params.id).update({
-      visibility: req.body.visibility,
-    });
-  });
-
   app.post("/tutos/newtutos", async (req, res) => {
     const { title, description, photo } = req.body;
 
@@ -133,28 +88,4 @@ module.exports = (app, pathname, db, connection) => {
     }
   });
 
-  app.post("/blog/newblog", async (req, res) => {
-    const { title, description, photo } = req.body;
-
-    if (title == null || title == "") {
-      return res.status(400).send("Title is required");
-    }
-    if (description == null || description == "") {
-      return res.status(400).send("Description is required");
-    }
-    if (photo == null || photo == "") {
-      return res.status(400).send("Photo is required");
-    }
-
-    try {
-      await db.collection("blog_evenements").doc().set({
-        title: title,
-        description: description,
-        photo: photo,
-      });
-      res.send("Document successfully written!");
-    } catch (err) {
-      res.status(500).send(err);
-    }
-  });
 };
