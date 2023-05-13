@@ -16,6 +16,7 @@ import Comment from "./Comment";
 import { useNavigate } from "react-router-dom";
 import PreviewIcon from "@mui/icons-material/Preview";
 import SimpleDialog from "./PopUpBlog";
+import useFirebase from "../../hooks/useFirebase";
 
 import FormControlLabel from "@mui/material/FormControlLabel";
 
@@ -55,16 +56,14 @@ export default function ImgMediaCard({
   // };
 
   const [isChecked, setIsChecked] = useState(false);
-  const loggedUser = localStorage.getItem("user");
-  const loggedUserParsed = JSON.parse(loggedUser);
-  const userId = loggedUserParsed.id;
+  const { user } = useFirebase();
 
   function handleCheckboxClick() {
     setIsChecked(!isChecked);
     axios
       .post(`http://localhost:5050/blog_event/${id}/participants`, {
         isChecked: !isChecked,
-        userId: userId,
+        userId: user?.id,
       })
       .then((res) => {
         console.log(res);

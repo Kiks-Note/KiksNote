@@ -94,6 +94,7 @@ function Blog() {
                         id={blog.id}
                         like={blog.like}
                         dislike={blog.dislike}
+                        participants={blog.participants}
                       />
                     ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}
