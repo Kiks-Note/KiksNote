@@ -148,7 +148,16 @@ module.exports = (app, db) => {
     res.send(snapshot.data());
   })
 
+  app.post("/blog_event/:id/participants", async (req, res) => {
+    const dbRef = firebase.database().ref("blog_evenements/" + id + "/participants/" + userId);
 
+    await db
+      .collection("blog_evenements")
+      .doc(req.params.id)
+      .collection("participants")
+
+  }
+  );
 
 
 };

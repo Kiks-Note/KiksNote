@@ -24,7 +24,6 @@ function Blog() {
     (async () => {
       const ws = new w3cwebsocket("ws://localhost:5050/blog");
 
-
       ws.onmessage = (message) => {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
@@ -65,16 +64,14 @@ function Blog() {
                   <SearchBar title={blog} />
                 </Grid>
                 <Grid item xs={2}>
-
-
                   <Button
-
-
+                    sx={{ marginLeft: "3rem", marginTop: "0.5rem" }}
+                    size="medium"
                     variant="contained"
                     color="primary"
                     onClick={(e) => toggleDrawerModify(e, true)}
                   >
-                    New blog
+                    Ajoutez
                   </Button>
                   <SideBarModify
                     open={openModify}
