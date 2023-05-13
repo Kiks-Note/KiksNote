@@ -3,10 +3,31 @@ const moment = require("moment");
 
 // FAVORITE
 const favorite = async (req, res) => {
-  await db
-    .collection("dashboard")
-    .doc(req.params.dashboardId)
-    .update({ favorite: req.params.favorite });
+  const { dashboardId } = req.params;
+
+  try {
+    // const userId = req.user.uid; // Obtenez l'ID de l'utilisateur connecté à partir de l'objet de requête (après l'authentification)
+
+    // Récupérer le tableau de bord spécifique
+    const dashboardRef = db.collection("dashboard").doc(dashboardId);
+    const dashboardDoc = await dashboardRef.get();
+
+    const dashboardData = dashboardDoc.data();
+
+    // Inverser la valeur de favori
+    const newFavoriteValue = !dashboardData.favorite;
+
+    // Mettre à jour le tableau de bord avec la nouvelle valeur de favori
+    await dashboardRef.update({ favorite: newFavoriteValue });
+
+    res.status(200).json({ success: true, favorite: newFavoriteValue });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error: "Une erreur s'est produite lors de la mise à jour du favori.",
+    });
+  }
 };
 
 // CHANGE  PUT Index -
@@ -122,6 +143,7 @@ const createCard = async (req, res) => {
     res.status(500).send({ message: "Server error" });
   }
 };
+
 // Move stories
 const moveStories = async (req, res) => {
   console.log("Stories moving");
@@ -167,7 +189,7 @@ const moveStories = async (req, res) => {
       .send({ message: "An error occurred while moving the stories" });
   }
 };
-//
+//Path to create Dashboard
 const createDashboards = async (req, res) => {
   console.log("Creating dashboard...");
   try {
@@ -210,6 +232,35 @@ const createDashboards = async (req, res) => {
     res
       .status(500)
       .send({ message: "An error occurred while creating the dashboard" });
+  }
+};
+//Path to delete a dashboard
+const deleteDashboard = async (req, res) => {
+  const { dashboardId } = req.params;
+
+  try {
+    // Vérifier si le tableau de bord existe
+    const dashboardRef = db.collection("dashboard").doc(dashboardId);
+    const dashboardDoc = await dashboardRef.get();
+    if (!dashboardDoc.exists) {
+      res.status(404).json({
+        success: false,
+        error: "Le tableau de bord spécifié n'existe pas.",
+      });
+      return;
+    }
+
+    // Supprimer le tableau de bord
+    await dashboardRef.delete();
+
+    res.status(200).json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      error:
+        "Une erreur s'est produite lors de la suppression du tableau de bord.",
+    });
   }
 };
 //PATH to create stories
@@ -509,121 +560,121 @@ const getRandomColor = () => {
   return color;
 };
 
-const dashboardRequests = async ( connection) => {
-     connection.on("message", async (message) => {
-       const studentId = JSON.parse(message.utf8Data);
-       groups = [];
+const dashboardRequests = async (connection) => {
+  connection.on("message", async (message) => {
+    const studentId = JSON.parse(message.utf8Data);
+    groups = [];
 
-       await db
-         .collection("groups")
-         .where("students", "array-contains", studentId)
-         .onSnapshot((snapshot) => {
-           snapshot.forEach((doc) => {
-             groups.push({ id: doc.id, data: doc.data() });
-           });
-         });
-       db.collection("dashboard").onSnapshot(
-         (snapshot) => {
-           const data = [];
-           addDashboard(groups, studentId, db);
-           snapshot.forEach((doc) => {
-             doc.data().students?.forEach((student) => {
-               if (student == studentId) {
-                 data.push({ ...doc.data(), id: doc.id });
-               }
-             });
-           });
-           connection.sendUTF(JSON.stringify(data));
-         },
-         (err) => {
-           console.log(`Encountered error: ${err}`);
-         }
-       );
-     });
+    await db
+      .collection("groups")
+      .where("students", "array-contains", studentId)
+      .onSnapshot((snapshot) => {
+        snapshot.forEach((doc) => {
+          groups.push({ id: doc.id, data: doc.data() });
+        });
+      });
+    db.collection("dashboard").onSnapshot(
+      (snapshot) => {
+        const data = [];
+        addDashboard(groups, studentId, db);
+        snapshot.forEach((doc) => {
+          doc.data().students?.forEach((student) => {
+            if (student == studentId) {
+              data.push({ ...doc.data(), id: doc.id });
+            }
+          });
+        });
+        connection.sendUTF(JSON.stringify(data));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
+  });
 };
 
-const boardRequests = async ( connection) => {
-   connection.on("message", (message) => {
-     var json = JSON.parse(message.utf8Data);
-     var dashboardId = json.dashboardId;
-     var boardId = json.boardId;
+const boardRequests = async (connection) => {
+  connection.on("message", (message) => {
+    var json = JSON.parse(message.utf8Data);
+    var dashboardId = json.dashboardId;
+    var boardId = json.boardId;
 
-     // Variables pour stocker les informations récupérées
-     var labelsData = [];
-     var boardData = [];
-     var nameBoard = "";
+    // Variables pour stocker les informations récupérées
+    var labelsData = [];
+    var boardData = [];
+    var nameBoard = "";
 
-     // Récupérer les données des labels
-     db.collection("dashboard")
-       .doc(dashboardId)
-       .collection("labels")
-       .get()
-       .then((querySnapshot) => {
-         querySnapshot.forEach((doc) => {
-           labelsData.push({
-             id: doc.id,
-             name: doc.data().name,
-             color: doc.data().color,
-           });
-         });
-         db.collection("dashboard")
-           .doc(dashboardId)
-           .get()
-           .then((querySnapshot) => {
-             const dashboardData = querySnapshot.data();
-             Object.keys(dashboardData.release).forEach((releaseKey) => {
-               const releaseSprints = dashboardData.release[releaseKey];
-               releaseSprints.forEach((sprint) => {
-                 if (sprint.boardId === boardId) {
-                   nameBoard = sprint.name;
-                 }
-               });
-             });
-           })
-           .catch((error) => {
-             console.error("Error getting dashboard data:", error);
-           });
-         // Récupérer les données du board
-         db.collection("dashboard")
-           .doc(dashboardId)
-           .collection("board")
-           .doc(boardId)
-           .onSnapshot(
-             (snapshot) => {
-               const data = snapshot.data();
-               boardData = [
-                 data.requested,
-                 data.acceptance,
-                 data.toDo,
-                 data.inProgress,
-                 data.done,
-                 data.definitionOfDone,
-                 data.definitionOfFun,
-               ];
+    // Récupérer les données des labels
+    db.collection("dashboard")
+      .doc(dashboardId)
+      .collection("labels")
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          labelsData.push({
+            id: doc.id,
+            name: doc.data().name,
+            color: doc.data().color,
+          });
+        });
+        db.collection("dashboard")
+          .doc(dashboardId)
+          .get()
+          .then((querySnapshot) => {
+            const dashboardData = querySnapshot.data();
+            Object.keys(dashboardData.release).forEach((releaseKey) => {
+              const releaseSprints = dashboardData.release[releaseKey];
+              releaseSprints.forEach((sprint) => {
+                if (sprint.boardId === boardId) {
+                  nameBoard = sprint.name;
+                }
+              });
+            });
+          })
+          .catch((error) => {
+            console.error("Error getting dashboard data:", error);
+          });
+        // Récupérer les données du board
+        db.collection("dashboard")
+          .doc(dashboardId)
+          .collection("board")
+          .doc(boardId)
+          .onSnapshot(
+            (snapshot) => {
+              const data = snapshot.data();
+              boardData = [
+                data.requested,
+                data.acceptance,
+                data.toDo,
+                data.inProgress,
+                data.done,
+                data.definitionOfDone,
+                data.definitionOfFun,
+              ];
 
-               // Envoyer les données récupérées
-               const responseData = {
-                 labels: labelsData,
-                 board: boardData,
-                 name: nameBoard,
-               };
-               connection.sendUTF(JSON.stringify(responseData));
-             },
-             (err) => {
-               console.log(`Encountered error: ${err}`);
-             }
-           );
-       })
-       .catch((error) => {
-         console.error(
-           "Erreur lors de la récupération de la sous-collection:",
-           error
-         );
-       });
-   });
+              // Envoyer les données récupérées
+              const responseData = {
+                labels: labelsData,
+                board: boardData,
+                name: nameBoard,
+              };
+              connection.sendUTF(JSON.stringify(responseData));
+            },
+            (err) => {
+              console.log(`Encountered error: ${err}`);
+            }
+          );
+      })
+      .catch((error) => {
+        console.error(
+          "Erreur lors de la récupération de la sous-collection:",
+          error
+        );
+      });
+  });
 };
 
-const overviewRequests = async ( connection) => {
+const overviewRequests = async (connection) => {
   connection.on("message", async (message) => {
     var dashboardId = JSON.parse(message.utf8Data);
     var dataReturn = [];
@@ -676,12 +727,12 @@ const overviewRequests = async ( connection) => {
 async function addDashboard(groups, studentId, db) {
   const dashboardSnapshot = await db.collection("dashboard").get();
 
-  for (var group of groups) {
+  for (const group of groups) {
     const haveGroupId = dashboardSnapshot.docs.some(
       (doc) => doc.data().groupId === group.id
     );
     if (!haveGroupId) {
-      var newDashboard = await db.collection("dashboard").add({
+      const newDashboard = await db.collection("dashboard").add({
         students: group.data.students,
         groupId: group.id,
         starting_date: group.data.starting_date,
@@ -694,50 +745,56 @@ async function addDashboard(groups, studentId, db) {
         pdf_link: "",
         release: group.data.release,
       });
-      release = group.data.release;
-      for (var i in release) {
-        for (var y in release[i]) {
-          var res = await db
+      // Add labels collection creation
+      const labelsRef = newDashboard.collection("labels");
+      const labels = [
+        { name: "Urgent", color: "#FF4136" },
+        { name: "Correction", color: "#9FE2BF" },
+        { name: "Important", color: "#AA4A44" },
+        { name: "Refactorisation", color: " #2ECC40" },
+        { name: "Optimisation", color: "#FF851B" },
+        { name: "Refonte", color: "#39CCCC" },
+        { name: "Incomplet", color: "#FFDC00" },
+        { name: "Nouveau", color: "#B10DC9" },
+        { name: "Tâche technique", color: "#0074D9" },
+        { name: "Recherche ", color: " #008080" },
+      ];
+
+      for (const label of labels) {
+        await labelsRef.add(label);
+      }
+
+      const release = group.data.release;
+      for (const i in release) {
+        for (const y in release[i]) {
+          const res = await db
             .collection("dashboard")
             .doc(newDashboard.id)
             .collection("board")
             .add({
-              requested: {
-                name: "Stories",
-                items: [],
-              },
-              acceptance: {
-                name: "Critère d'acceptation",
-                items: [],
-              },
-              toDo: {
-                name: "To Do",
-                items: [],
-              },
-              inProgress: {
-                name: "In progress",
-                items: [],
-              },
-              done: {
-                name: "Done",
-                items: [],
-              },
+              requested: { name: "Stories", items: [] },
+              acceptance: { name: "Critère d'acceptation", items: [] },
+              toDo: { name: "To Do", items: [] },
+              inProgress: { name: "In progress", items: [] },
+              done: { name: "Done", items: [] },
+              definitionOfDone: { name: "DoD", items: [] },
+              definitionOfFun: { name: "DoF", items: [] },
             });
           release[i][y].boardId = res.id;
         }
       }
-      db.collection("dashboard")
-        .doc(newDashboard.id)
-        .update({ release: release });
+      await db.collection("dashboard").doc(newDashboard.id).update({ release });
     }
   }
 }
+
 module.exports = {
   changeIndex,
   favorite,
   createCard,
   moveStories,
   createDashboards,
+  deleteDashboard,
   createStory,
   editCard,
   deleteCard,

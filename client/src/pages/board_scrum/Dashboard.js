@@ -10,19 +10,22 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import TablePagination from "@mui/material/TablePagination";
-import ModalCreateSprint from "../../components/board_scrum/dashboard/ModalCreateSprint";
+import CreateDashboard from "./CreateDashboard";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 
 let maDate = new Date();
 
 function Dashboard(props) {
-  const [rows, setRows] = useState([]);
+  const [dashboard, setDashboard] = useState([]);
+  const [actifDashboard, setActifDashboard] = useState([]);
+  const [favorisDashboard, setFavorisDashboard] = useState([]);
   const [view, setView] = useState("module");
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { user } = useFirebase();
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -42,16 +45,20 @@ function Dashboard(props) {
     }
   };
   // * DELETE A BOARD
-  const deleteBoards = (id) => () => {
-    setTimeout(() => {
-      setRows((prevRows) => prevRows.filter((row) => row.id !== id));
-    });
-  };
+  async function deleteBoards(dashboardId) {
+    try {
+      await axios.delete(`http://localhost:5050/dashboard/${dashboardId}`);
+    } catch (error) {
+      console.error(error);
+      // Gérer l'erreur de manière appropriée, par exemple :
+      // throw new Error('Erreur lors de la mise à jour du document');
+    }
+  }
   // * TO MAKE A BOARD IN FAVORI
-  async function favorisTell(dashboardId, favorite) {
+  async function favorisTell(dashboardId) {
     try {
       await axios.put(
-        `http://localhost:5050/dashboard-favorite/${dashboardId}`
+        `http://localhost:5050/dashboard/favorite/${dashboardId}`
       );
     } catch (error) {
       console.error(error);
@@ -59,90 +66,94 @@ function Dashboard(props) {
       // throw new Error('Erreur lors de la mise à jour du document');
     }
   }
-
-  // * DEFINE BOARDS WHO IS ACTIF
-  let actif = rows.filter((board) => {
-    const startDate = new Date(board.start);
-    const endDate = new Date(board.end);
-    const maDateValue = maDate.valueOf();
-    return (
-      startDate.valueOf() <= maDateValue && maDateValue <= endDate.valueOf()
-    );
-  });
-
-  // * DEFINE BOARDS WHO IS IN  FAVORIS
-  let favoris = rows
-    .filter((person) => person.favorite === true)
-    .sort((a, b) => a - b);
-  const { user } = useFirebase();
   useEffect(() => {
     const fetchMembers = async () => {
-      const response = await axios.get("http://localhost:5050/profil/student");
-      setMembers(response.data);
+      try {
+        const response = await axios.get(
+          "http://localhost:5050/profil/student"
+        );
+        setMembers(response.data);
+      } catch (error) {
+        console.error(error);
+      }
     };
-    fetchMembers();
-    (async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
 
-      wsComments.onopen = function (e) {
-        console.log("[open] Connection established");
-        console.log("Sending to server");
-        console.log("student", user.id);
-        wsComments.send(JSON.stringify(user?.id));
-      };
+    const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
 
-      wsComments.onmessage = (message) => {
+    wsComments.onopen = function (e) {
+      console.log("[open] Connection established");
+      console.log("Sending to server");
+      console.log("student", user?.id);
+      wsComments.send(JSON.stringify(user?.id));
+    };
+
+    wsComments.onmessage = (message) => {
+      try {
         const data = JSON.parse(message.data);
-        var dashboards = data;
-        var listDashboards = [];
-        dashboards.forEach((dashboard) => {
+        const listDashboards = data.map((dashboarddto) => {
           const startDate = new Date(
-            dashboard.starting_date._seconds * 1000 +
-              dashboard.starting_date._nanoseconds / 100000
+            dashboarddto.starting_date._seconds * 1000 +
+              dashboarddto.starting_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
-
           const endDate = new Date(
-            dashboard.ending_date._seconds * 1000 +
-              dashboard.ending_date._nanoseconds / 100000
+            dashboarddto.ending_date._seconds * 1000 +
+              dashboarddto.ending_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
 
-          let favorite = dashboard.favorite === "true";
-
-          var dashboardFront = {
-            id: dashboard.id,
-            sprint_name: dashboard.sprint_name,
-            sprint_group: dashboard.group_name,
+          return {
+            id: dashboarddto.id,
+            sprint_name: dashboarddto.sprint_name,
+            sprint_group: dashboarddto.group_name,
             start: startDate,
             end: endDate,
             backlog: "lien",
-            favorite: favorite,
+            favorite: dashboarddto.favorite,
             favoriteDate: "",
-            students: dashboard.students,
-            picture: dashboard.image,
+            students: dashboarddto.students,
+            picture: dashboarddto.image,
           };
-          listDashboards.push(dashboardFront);
         });
-        setRows(listDashboards);
+
+        setDashboard(listDashboards);
         setLoading(false);
-      };
-    })();
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchMembers();
+
+    return () => {
+      wsComments.close();
+    };
   }, []);
+
+  useEffect(() => {
+    const maDate = new Date();
+    const maDateValue = maDate.valueOf();
+
+    const actifDashboards = dashboard.filter((board) => {
+      const startDate = new Date(board.start).valueOf();
+      const endDate = new Date(board.end).valueOf();
+      return startDate <= maDateValue && maDateValue <= endDate;
+    });
+    setActifDashboard(actifDashboards);
+    const favorisDashboards = dashboard.filter(
+      (board) => board.favorite === true
+    );
+
+    setFavorisDashboard(favorisDashboards);
+  }, [dashboard]);
 
   function renderList(list, name) {
     return (
-      <div>
+      <div sx={{ width: "100%" }}>
         <Typography variant="h6" gutterBottom>
           {name}
         </Typography>
-        <List
-          style={{
-            overflow: "auto",
-            display: "-webkit-inline-box",
-            width: "100%",
-          }}
-        >
+        <Grid container spacing={1}>
           {list.map((person) => (
-            <ListItem key={person.id} style={{ maxWidth: "345px" }}>
+            <Grid item xs={4} key={person.id}>
               <CardDashBoard
                 addTab={props.addTab}
                 key={person.id}
@@ -152,17 +163,19 @@ function Dashboard(props) {
                 isFavoris={favorisTell}
                 id={person.id}
               />
-            </ListItem>
+            </Grid>
           ))}
-        </List>
-        <Divider sx={{ width: " 100%", margin: 2 }} />
+        </Grid>
+        {/* <Divider sx={{ width: " 100%", margin: 2 }} /> */}
       </div>
     );
   }
   return (
     <div style={{ marginLeft: "1%", marginTop: "1%" }}>
-      {favoris.length > 0 && renderList(favoris, "Espace de travail favoris")}
-      {actif.length > 0 && renderList(actif, "Espace de travail actif")}
+      {favorisDashboard.length > 0 &&
+        renderList(favorisDashboard, "Espace de travail favoris")}
+      {actifDashboard.length > 0 &&
+        renderList(actifDashboard, "Espace de travail actif")}
 
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
         <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
@@ -182,35 +195,35 @@ function Dashboard(props) {
               <ViewListIcon />
             </ToggleButton>
           </ToggleButtonGroup>
-          <ModalCreateSprint members={members} />
+          <CreateDashboard members={members} />
         </div>
       </Box>
 
       {view === "module" ? (
         <Grid container spacing={2}>
           {!loading &&
-            rows
+            dashboard
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((dashboard) => (
-                <Grid item xs={3} key={dashboard.id}>
+              .map((board) => (
+                <Grid item xs={3} key={board.id}>
                   <CardDashBoard
                     addTab={props.addTab}
-                    picture={dashboard.picture}
-                    sprint_group={dashboard.sprint_group}
-                    fav={dashboard.favorite}
+                    picture={board.picture}
+                    sprint_group={board.sprint_group}
+                    fav={board.favorite}
                     isFavoris={favorisTell}
-                    id={dashboard.id}
+                    id={board.id}
                   />
                 </Grid>
               ))}
         </Grid>
       ) : (
         !loading &&
-        rows.length > 0 && (
+        dashboard.length > 0 && (
           <TableBoard
             id={props.id}
             addTab={props.addTab}
-            rows={!loading && rows}
+            rows={!loading && dashboard}
             addFavorite={favorisTell}
             deleteBoards={deleteBoards}
           />
@@ -219,7 +232,7 @@ function Dashboard(props) {
 
       {view === "module" ? (
         !loading &&
-        rows.length > 0 && (
+        dashboard.length > 0 && (
           <Box
             sx={{
               flexGrow: 1,
@@ -231,7 +244,7 @@ function Dashboard(props) {
             <TablePagination
               component="div"
               rowsPerPageOptions={[5, 10, 25, { label: "Tout", value: -1 }]}
-              count={!loading && rows.length}
+              count={!loading && dashboard.length}
               rowsPerPage={rowsPerPage}
               page={page}
               onPageChange={handleChangePage}

@@ -20,7 +20,7 @@ const updateProfil = async (req, res) => {
       ""
     );
   }
-console.log(req.body);
+  console.log(req.body);
   // Add the new image URL to userDataToUpdate
   const userDataToUpdate = {
     ...req.body,
@@ -136,8 +136,6 @@ function createProgrammingLanguageArray(programmingLanguageString) {
 }
 const profilRequests = async (connection) => {
   connection.on("message", (message) => {
-    console.log("message => ", message);
-    console.log("message.utf8Data => ", message.utf8Data);
     const studentId = JSON.parse(message.utf8Data);
 
     const docRef = db.collection("users").doc(studentId);
