@@ -58,7 +58,7 @@ export default function PopUpBlog(props) {
     const handleClose = () => {
         setOpen(false);
     };
-
+    console.log(props.participants)
     return (
         <div>
             <IconButton
@@ -74,7 +74,7 @@ export default function PopUpBlog(props) {
                     Liste des participants
                 </BootstrapDialogTitle>
                 <DialogContent dividers>
-                    {props.participants.map((participant) => (
+                    {props.participants && props.participants.map((participant) => (
                         <Typography gutterBottom>
                             {participant.uid}
                         </Typography>

@@ -15,11 +15,12 @@ module.exports = function (connection, pathname) {
   router.put("/:id/visibility", updateBlogVisibility);
   router.put("/:id/likes", addBlogLike);
   router.post("/:id/comments", addBlogComment);
+  
 
   switch (pathname) {
     case "/blog":
       blogRequests(connection);
-      console.log("dashboard");
+      console.log("blog");
       break;
     default:
       break;

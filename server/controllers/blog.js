@@ -54,6 +54,8 @@ const addBlogComment = async (req, res) => {
     });
 };
 
+
+
 const blogRequests = async (connection) => {
   db.collection("blog_evenements").onSnapshot(
     (snapshot) => {
@@ -75,4 +77,5 @@ module.exports = {
   updateBlogVisibility,
   addNewBlog,
   blogRequests,
+
 };
