@@ -57,6 +57,8 @@ function PdfView(props) {
       .max(200, "La description ne doit pas dépasser 200 caractères"),
   });
 
+  const {
+    register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
