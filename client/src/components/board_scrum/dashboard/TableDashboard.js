@@ -16,15 +16,20 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 
-export default function TableBoard({ rows, addFavorite, deleteBoards }) {
-  const navigate = useNavigate();
+export default function TableBoard({ id, addTab, rows, addFavorite, deleteBoards }) {
+  /* const moveToOverView = () => {
+    x.push({ id: id, idDb: id, type: "overView", label: `OverView ${sprint_group}` });
+    localStorage.setItem("tabs", JSON.stringify(x));
 
-  const moveToOverView = () => {
-    const id = 1;
-    navigate("/boardOverview/" + id);
-  };
+    addTab({
+      id: id,
+      tab: "OverView " + sprint_group,
+      component: <OverView id={id} addTab={addTab} />,
+      closeable: true,
+    });
+  };*/
+  // TODO : fix this
 
   const columns = [
     {
@@ -56,11 +61,14 @@ export default function TableBoard({ rows, addFavorite, deleteBoards }) {
       getActions: (params) => [
         <GridActionsCellItem
           icon={
-            <Button color="inherit" onClick={() => moveToOverView()}>
+            <Button
+              color="inherit"
+              // onClick={() => moveToOverView()}
+            >
               Accéder au board
             </Button>
           }
-          onClick={() => moveToOverView()}
+          //onClick={() => moveToOverView()}
           showInMenu
         />,
         <GridActionsCellItem

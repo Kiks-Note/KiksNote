@@ -20,13 +20,14 @@ import {
 
 import ProfilFormUpdate from "../../components/profil/ProfilFormUpdate.js";
 import ProfilSkeleton from "../../components/profil/ProfilSkeleton";
-function Profil() {
+import useFirebase from "../../hooks/useFirebase";
+export default function Profil() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const radioGroupRef = React.useRef(null);
-  const userUid = localStorage.getItem("userUid");
-  const [user, setUser] = useState({});
+  const { user } = useFirebase();
+  const [userProfil, setUserProfil] = useState({});
   const fileInputRef = useRef(null);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -57,7 +58,7 @@ function Profil() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5050/profil/background/${user.id}`,
+        `http://localhost:5050/profil/background/${userProfil.id}`,
         formData,
         {
           headers: {
@@ -76,7 +77,7 @@ function Profil() {
 
     if (newImage) {
       sendData(newImage);
-      setUser((prevState) => ({
+      setUserProfil((prevState) => ({
         ...prevState,
         imagebackground: URL.createObjectURL(newImage),
       }));
@@ -90,8 +91,8 @@ function Profil() {
       wsComments.onopen = function (e) {
         console.log("[open] Connection established");
         console.log("Sending to server");
-        console.log("uid", userUid);
-        wsComments.send(JSON.stringify(userUid));
+        console.log("uid", user?.id);
+        wsComments.send(JSON.stringify(user?.id));
       };
 
       wsComments.onmessage = (message) => {
@@ -102,8 +103,8 @@ function Profil() {
             userInfo.dateofbirth._nanoseconds / 1000000
         );
         const formattedDate = format(date, "yyyy-MM-dd");
-        setUser({
-          id: userUid,
+        setUserProfil({
+          id: user?.id,
           firstname: data.firstname,
           lastname: data.lastname,
           description: data.description,
@@ -139,7 +140,7 @@ function Profil() {
         rgba(0, 0, 0, 0.5),
         rgba(0, 0, 0, 0.5)
       ),
-      url(${user.imagebackground})`,
+      url(${userProfil.imagebackground})`,
             }}
           >
             <IconButton
@@ -180,19 +181,22 @@ function Profil() {
               TransitionProps={{ onEntering: handleEntering }}
             >
               <DialogContent>
-                <ProfilFormUpdate onClose={handleCloseDialog} user={user} />
+                <ProfilFormUpdate
+                  onClose={handleCloseDialog}
+                  user={userProfil}
+                />
               </DialogContent>
             </Dialog>
 
             <Avatar
-              src={user.image}
+              src={userProfil.image}
               sx={{ width: "150px", height: "150px", border: "3px solid #fff" }}
             />
             <Typography variant="h4">
-              {user.firstname} {user.lastname}
+              {userProfil.firstname} {userProfil.lastname}
             </Typography>
             <Typography variant="h6">
-              {user.job} chez {user.company}
+              {userProfil.job} chez {userProfil.company}
             </Typography>
           </Box>
 
@@ -208,16 +212,20 @@ function Profil() {
             <Typography variant="h4">Informations</Typography>
           </Box>
           <Box className="itemBox">
-            {user && user.status === "etudiant" && (
-              <Typography variant="h6">Classe :{user.class}</Typography>
+            {userProfil && userProfil.status === "etudiant" && (
+              <Typography variant="h6">Classe :{userProfil.class}</Typography>
             )}
-            <Typography variant="h6">Email : {user.email}</Typography>
-            <Typography variant="h6">Téléphone : {user.phoneNumber}</Typography>
+            <Typography variant="h6">Email : {userProfil.email}</Typography>
+            <Typography variant="h6">
+              Téléphone : {userProfil.phoneNumber}
+            </Typography>
             <Typography variant="h6">
               Langages de programmation :{" "}
-              {user.programmationLanguage.map((language) => `${language}, `)}
+              {userProfil.programmationLanguage.map(
+                (language) => `${language}, `
+              )}
             </Typography>
-            <Typography variant="h6">Discord : {user.discord}</Typography>
+            <Typography variant="h6">Discord : {userProfil.discord}</Typography>
           </Box>
           <Box
             sx={{
@@ -231,9 +239,9 @@ function Profil() {
             <Typography variant="h4">Description</Typography>
           </Box>
           <Box className="itemBox">
-            <Typography variant="h6">{user.description}</Typography>
+            <Typography variant="h6">{userProfil.description}</Typography>
           </Box>
-          {user && user.linkedin && user.git && (
+          {userProfil && userProfil.linkedin && userProfil.git && (
             <>
               <Box
                 sx={{
@@ -247,20 +255,20 @@ function Profil() {
                 <Typography variant="h4">Liens Utiles</Typography>
               </Box>
               <Box className="linkBox">
-                {user && user.git && (
+                {userProfil && userProfil.git && (
                   <IconButton
                     aria-label="github"
-                    href={user.git}
+                    href={userProfil.git}
                     target="_blank"
                     rel="noopener"
                   >
                     <GitHubIcon />
                   </IconButton>
                 )}
-                {user && user.linkedin && (
+                {userProfil && userProfil.linkedin && (
                   <IconButton
                     aria-label="linkendIn"
-                    href={user.linkedin}
+                    href={userProfil.linkedin}
                     target="_blank"
                     rel="noopener"
                   >
@@ -277,4 +285,3 @@ function Profil() {
     </>
   );
 }
-export default Profil;

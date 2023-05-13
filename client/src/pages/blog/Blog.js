@@ -12,9 +12,6 @@ import SideBarModify from "../../components/blog/NewBlog.js";
 import { Toaster } from "react-hot-toast";
 
 function Blog() {
-  const loggedUser = localStorage.getItem("user");
-  const loggedUserParsed = JSON.parse(loggedUser);
-  var userStatus = loggedUserParsed.status;
   const [blog, setBlog] = useState([]);
   const [blogId, setBlogId] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -23,7 +20,6 @@ function Blog() {
   useEffect(() => {
     (async () => {
       const ws = new w3cwebsocket("ws://localhost:5050/blog");
-
       ws.onmessage = (message) => {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
@@ -52,7 +48,10 @@ function Blog() {
           <Grid item xs={2}>
             <TagFilter />
           </Grid>
-          <Grid item xs={10}>
+          <Grid
+            item
+            xs={10}
+          >
             <Grid
               container
               direction={"column"}
@@ -65,13 +64,11 @@ function Blog() {
                 </Grid>
                 <Grid item xs={2}>
                   <Button
-                    sx={{ marginLeft: "3rem", marginTop: "0.5rem" }}
-                    size="medium"
                     variant="contained"
                     color="primary"
                     onClick={(e) => toggleDrawerModify(e, true)}
                   >
-                    Ajoutez
+                    New blog
                   </Button>
                   <SideBarModify
                     open={openModify}
@@ -89,17 +86,16 @@ function Blog() {
               >
                 {!loading
                   ? blog.map((blog) => (
-                    <ImgMediaCard
-                      image={blog.photo}
-                      title={blog.title}
-                      description={blog.description}
-                      key={blog.id}
-                      id={blog.id}
-                      like={blog.like}
-                      dislike={blog.dislike}
-                      participants={blog.participants}
-                    />
-                  ))
+                      <ImgMediaCard
+                        image={blog.photo}
+                        title={blog.title}
+                        description={blog.description}
+                        key={blog.id}
+                        id={blog.id}
+                        like={blog.like}
+                        dislike={blog.dislike}
+                      />
+                    ))
                   : Array.from(new Array(9)).map(() => <TutoSkeleton />)}
               </Grid>
             </Grid>

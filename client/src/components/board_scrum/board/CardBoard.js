@@ -23,6 +23,9 @@ export default function CardBoard(props) {
 
   const info = props.card_info;
 
+
+  var color = info.color;
+
   const assignedTo = props.card_info.assignedTo;
   const assignedToAvatars = assignedTo.slice(0, 2).map((person) => {
     return <Avatar key={person.id} alt={person.name} src={person.photo} sx={{ width: 24, height: 24 }} />;
@@ -54,7 +57,7 @@ export default function CardBoard(props) {
   if (info.labels != null) {
     Label = info.labels.map((label) => {
       for (const labelProps of props.labelList) {
-        if (labelProps.name.toLowerCase() == label.toLowerCase()) {
+        if (labelProps.name.toLowerCase() == label.name.toLowerCase()) {
           return labelProps;
         }
       }
@@ -84,6 +87,9 @@ export default function CardBoard(props) {
         marginBottom: "0.5rem",
         padding: "0.5rem",
         position: "relative",
+        borderStyle: "solid",
+        borderColor: color,
+        borderWidth: "3px",
       }}
     >
       <div
@@ -98,14 +104,22 @@ export default function CardBoard(props) {
             expanded={states.expanded}
             onClick={handleAccordion}
             style={{
-              backgroundColor: props.snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
+              backgroundColor: props.snapshot.isDragging
+                ? "#FFFFFF"
+                : "#FFFFFF",
               boxShadow: "none",
               marginTop: "5%",
             }}
           >
-            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="panel1a-content"
+              id="panel1a-header"
+            >
               <div>
-                <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  {Labels}
+                </div>
                 <Typography variant="body1" color="black">
                   {info.name}
                 </Typography>
@@ -123,7 +137,9 @@ export default function CardBoard(props) {
           </Accordion>
         ) : (
           <div>
-            <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              {Labels}
+            </div>
             <Typography variant="body1" color="black">
               {info.name}
             </Typography>
@@ -132,17 +148,43 @@ export default function CardBoard(props) {
         <InfoIcon
           onClick={handleOpen}
           color="primary"
-          style={{ marginLeft: "0.5rem", position: "absolute", right: "6%", top: "5%" }}
+          style={{
+            marginLeft: "0.5rem",
+            position: "absolute",
+            right: "6%",
+            top: "5%",
+          }}
         />
       </div>
-      <Box style={{ display: "flex", alignItems: "center", justifyContent: " space-between" }}>
-        <Stack direction="row" spacing={1} width={"100%"} justifyContent={"flex-end"}>
+      <Box
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: " space-between",
+        }}
+      >
+        <Stack
+          direction="row"
+          spacing={1}
+          width={"100%"}
+          justifyContent={"flex-end"}
+        >
           {assignedToAvatars}
           {moreAvatar}
         </Stack>
       </Box>
       <Modal open={states.open} onClose={handleClose}>
-        <DetailCard info={info} list_name={props.list_name} Label={Label} columnId={props.columnId}></DetailCard>
+        <DetailCard
+          info={info}
+          list_name={props.list_name}
+          Label={Label}
+          columnId={props.columnId}
+          dashboardId={props.dashboardId}
+          boardId={props.boardId}
+          stories={props.stories}
+          handleClose={handleClose}
+          labelList={props.labelList}
+        />
       </Modal>
     </div>
   );

@@ -1,9 +1,10 @@
 {
   "dependencies": {
-    "draft-js": "^0.11.7",
-    "draftjs-to-html": "^0.9.1",
-    "html-to-draftjs": "^1.5.0",
-    "react-draft-wysiwyg": "^1.15.0",
-    "react-quill": "^2.0.0"
+    "@mui/material": "^5.11.12",
+    "@mui/styled-engine-sc": "^5.11.11",
+    "@mui/styles": "^5.11.12",
+    "date-fns": "^2.29.3",
+    "react-day-picker": "^8.6.0",
+    "styled-components": "^5.3.8"
   }
 }
