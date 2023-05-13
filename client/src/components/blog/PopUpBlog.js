@@ -50,6 +50,8 @@ BootstrapDialogTitle.propTypes = {
 };
 
 export default function PopUpBlog(props) {
+
+    
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {

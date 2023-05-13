@@ -54,15 +54,30 @@ const addBlogComment = async (req, res) => {
     });
 };
 
+const deleteBlog = async (req, res) => {
+  await db.collection("blog_evenements").doc(req.params.id).delete();
+    res.send("Document successfully deleted!");
+};
+
+const getDescriptions = async (req, res) => {
+  const snapshot = await db.collection("blog_evenements").doc(req.params.id).get();
+    res.send(snapshot.data());
+};
+
+
 
 
 const blogRequests = async (connection) => {
   db.collection("blog_evenements").onSnapshot(
-    (snapshot) => {
-      const documents = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    async (snapshot) => {
+      const documents = [];
+      for (const doc of snapshot.docs) {
+        const event = doc.data();
+        const participantsSnapshot = await doc.ref.collection("participants").get();
+        const participants = participantsSnapshot.docs.map((doc) => doc.data());
+        event.participants = participants;
+        documents.push({ id: doc.id, ...event });
+      }
       connection.sendUTF(JSON.stringify(documents));
     },
     (err) => {
@@ -77,5 +92,7 @@ module.exports = {
   updateBlogVisibility,
   addNewBlog,
   blogRequests,
+  deleteBlog,
+  getDescriptions,
 
 };

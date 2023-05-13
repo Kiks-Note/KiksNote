@@ -24,6 +24,7 @@ function Blog() {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
         setBlog(dataFromServer);
+        console.log(dataFromServer);
         setLoading(false);
       };
     })();

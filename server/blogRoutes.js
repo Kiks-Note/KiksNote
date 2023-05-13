@@ -2,11 +2,13 @@ const express = require("express");
 const router = express.Router();
 
 const {
+  deleteBlog,
   addBlogComment,
   addBlogLike,
   updateBlogVisibility,
   addNewBlog,
   blogRequests,
+  getDescriptions,
 } = require("./controllers/blog");
 
 module.exports = function (connection, pathname) {
@@ -15,6 +17,9 @@ module.exports = function (connection, pathname) {
   router.put("/:id/visibility", updateBlogVisibility);
   router.put("/:id/likes", addBlogLike);
   router.post("/:id/comments", addBlogComment);
+  router.delete("/:id", deleteBlog);
+  router.get("/:id", getDescriptions);
+
   
 
   switch (pathname) {
