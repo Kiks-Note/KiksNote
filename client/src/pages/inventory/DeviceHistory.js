@@ -69,7 +69,15 @@ const DeviceHistory = () => {
         width: "100vw",
       }}
     >
-      <Containers>
+      <Containers
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+          paddingBlock: "2rem",
+        }}
+      >
         {!loading && (
           <>
             <ImageView src={device.image} alt={device.label} />
