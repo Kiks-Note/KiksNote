@@ -169,6 +169,7 @@ const deviceRequests = async (req, res) => {
 
 const acceptRequest = async (req, res) => {
   const {deviceId, requestId} = req.params;
+  const {admin} = req.body;
 
   try {
     const deviceRef = await db.collection("inventory").doc(deviceId);
@@ -182,6 +183,7 @@ const acceptRequest = async (req, res) => {
     await requestRef.update({
       status: "accepted",
       acceptedAt: new Date(),
+      accepedBy: admin,
     });
 
     res.send("Request accepted");
@@ -192,6 +194,7 @@ const acceptRequest = async (req, res) => {
 
 const rejectRequest = async (req, res) => {
   const {deviceId, requestId} = req.params;
+  const {admin} = req.body;
 
   try {
     const deviceRef = await db.collection("inventory").doc(deviceId);
@@ -205,6 +208,7 @@ const rejectRequest = async (req, res) => {
     await requestRef.update({
       status: "refused",
       refusedAt: new Date(),
+      refusedBy: admin,
     });
 
     res.send("Request refused");
@@ -338,6 +342,8 @@ const todayRequests = async (request, connection) => {
   db.collection("inventory_requests")
     .where("createdAt", "<=", moment().format("DD/MM/YYYY"))
     .where("status", "==", "pending")
+    .orderBy("createdAt", "desc")
+    .limit(5)
     .onSnapshot(
       (snapshot) => {
         const request = snapshot.docs.map((doc) => ({

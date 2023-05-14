@@ -34,8 +34,8 @@ module.exports = function (wsI) {
   router.delete("/device/:deviceId", deleteDevice);
   router.post("/request/:deviceId", makeRequest);
   router.get("/requests/:deviceId", deviceRequests);
-  router.put("/accept/:deviceId/:requestId", acceptRequest);
-  router.put("/reject/:deviceId/:requestId", rejectRequest);
+  router.put("/acceptRequest/:deviceId/:requestId", acceptRequest);
+  router.put("/refuseRequest/:deviceId/:requestId", rejectRequest);
   router.get("/request/:requestId", getRequests);
   router.put("/request/:requestId", updateRequest);
   router.get("/categories", getCategories);
