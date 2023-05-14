@@ -3,13 +3,12 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { v4: uuidv4 } = require("uuid");
 const app = express();
-const { db, storageFirebase } = require("./firebase");
+const dotenv = require("dotenv").config();
 const { parse } = require("url");
 const webSocketServer = require("websocket").server;
 const http = require("http");
 /// MULTER CONFIG FOR UPLOAD ON SERVER
 const multer = require("multer");
-const mime = require("mime-types");
 
 const DIR = "uploads/";
 
@@ -43,8 +42,6 @@ const upload = multer({
   },
 }).single("file");
 
-const bucket = storageFirebase.bucket();
-
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -63,6 +60,7 @@ const inventoryRoutes = require("./inventoryRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
+const coursRoutes = require("./coursRoutes");
 
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
@@ -75,8 +73,6 @@ wsI.on("request", (request) => {
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
-  app.use("/ressources")(app, db, bucket, mime, upload, multer, fs);
-
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
@@ -87,6 +83,8 @@ wsI.on("request", (request) => {
     );
   });
 });
+
+app.use("/ressources", coursRoutes()); // --> Resssources Cours
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
