@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Blog from "./pages/blog/Blog";
 import Tuto from "./pages/blog/Tuto";
 import TabList from "./pages/board_scrum/tabs/TabBoard";
@@ -15,9 +15,9 @@ import Login from "./pages/login/Login";
 import Presence from "./pages/presence/Presence";
 import Register from "./pages/register/Register";
 import PrivateRoutes from "./utils/PrivateRoutes";
+import DeviceHistory from "./pages/inventory/DeviceHistory";
 
 function RoutesProvider() {
-
   return (
     <BrowserRouter>
       <Routes>
@@ -25,39 +25,28 @@ function RoutesProvider() {
         <Route path="/signup" element={<Register />} />
         <Route element={<PrivateRoutes />}>
           <Route path="/appel" element={<Appel />} />
-          <Route path="/presence/:id" element={<Presence/>} />
+          <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groups" element={<Groups />} />
-          <Route path="/" element={<Home/>} />
+          <Route path="/" element={<Home />} />
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
 
           {/* INVENTORY */}
-          <Route
-            path="/inventory"
-            element={<InventoryHome />} 
-          />
-          <Route
-            path="/inventory/requests"
-            element={<InventoryRequests />} 
-          />
-          <Route
-            path="/inventory/devices"
-            element={<InventoryDevices />}
-          />
+          <Route path="/inventory" element={<InventoryHome />} />
+          <Route path="/inventory/requests" element={<InventoryRequests />} />
+          <Route path="/inventory/devices" element={<InventoryDevices />} />
           <Route
             path="/inventory/admin/dashboard"
-            element={<InventoryAdminDashboard />} 
+            element={<InventoryAdminDashboard />}
           />
 
-          <Route
-            path="/inventory/admin/list"
-            element={<InventoryList />} 
-          />
+          <Route path="/inventory/admin/list" element={<InventoryList />} />
           <Route
             path="/inventory/admin/borrowed"
             element={<InventoryListBorrowed />}
           />
+          <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
         </Route>
       </Routes>
     </BrowserRouter>
