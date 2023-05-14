@@ -304,7 +304,7 @@ const CoursInfo = () => {
   const deleteCours = async (cours_id, courseClass, title) => {
     try {
       await axios
-        .delete(`http://localhost:5050/delete/ressources/cours/${cours_id}`, {
+        .delete(`http://localhost:5050/ressources/cours/${cours_id}`, {
           data: { courseClass, title },
         })
         .then((res) => {

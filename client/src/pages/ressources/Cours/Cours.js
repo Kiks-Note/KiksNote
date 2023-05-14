@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+// import { user } from "../../../hooks/useFirebase";
+
 import {
   Box,
   ToggleButtonGroup,
@@ -57,6 +59,12 @@ export const toastFail = (message) => {
 
 const Ressources = () => {
   let navigate = useNavigate();
+
+  // const { user } = useFirebase();
+
+  // var userStatus = user?.status;
+
+  // console.log(userStatus);
 
   const loggedUser = localStorage.getItem("user");
   const loggedUserParsed = JSON.parse(loggedUser);
