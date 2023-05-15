@@ -2,7 +2,8 @@ const { db } = require("../firebase");
 
 //add new Blog
 const addNewBlog = async (req, res) => {
-  const { title, description, photo } = req.body;
+  const { title, description, photo, editorState, inputEditorState, event } =
+    req.body;
 
   if (title == null || title == "") {
     return res.status(400).send("Title is required");
@@ -19,6 +20,9 @@ const addNewBlog = async (req, res) => {
       title: title,
       description: description,
       photo: photo,
+      editorState: editorState,
+      inputEditorState: inputEditorState,
+      event: event,
     });
     res.send("Document successfully written!");
   } catch (err) {
