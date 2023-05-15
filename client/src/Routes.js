@@ -39,7 +39,7 @@ function RoutesProvider() {
           <Route path="/appel" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groups" element={<Groups />} />
-          <Route path="/tabList" element={<TabList />} />
+          <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
