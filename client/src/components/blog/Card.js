@@ -15,7 +15,7 @@ import axios from "axios";
 import Comment from "./Comment";
 import { useNavigate } from "react-router-dom";
 import PreviewIcon from "@mui/icons-material/Preview";
-import SimpleDialog from "./PopUpBlog";
+import PopUpBlog from "./PopUpBlog";
 import useFirebase from "../../hooks/useFirebase";
 
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -33,7 +33,7 @@ export default function ImgMediaCard({
 }) {
   const deleteBlog = function () {
     axios
-      .delete(`http://localhost:5050/blog_event/${id}`)
+      .delete(`http://localhost:5050/blog/${id}`)
       .then((res) => {
         console.log(res);
       })
@@ -42,27 +42,13 @@ export default function ImgMediaCard({
       });
   };
 
-  // const handleCheckboxClick = () => {
-  //   setIsChecked(!isChecked);
-  //   axios
-  //     .post(`http://localhost:5050/blog_event/${id}/participants`, {
-  //       isChecked: !isChecked,
-
-  //     })
-  //     .then((res) => {
-  //       console.log(res);
-  //     }
-  //     )
-  // };
-
   const [isChecked, setIsChecked] = useState(false);
   const { user } = useFirebase();
 
   function handleCheckboxClick() {
     setIsChecked(!isChecked);
     axios
-      .post(`http://localhost:5050/blog_event/${id}/participants`, {
-        isChecked: !isChecked,
+      .put(`http://localhost:5050/blog/${id}/participant`, {
         userId: user?.id,
       })
       .then((res) => {
@@ -107,8 +93,8 @@ export default function ImgMediaCard({
               // alt="green iguana"
               height="10"
               image={image}
-            // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
-            // sx={{maxHeight: 250}}
+              // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
+              // sx={{maxHeight: 250}}
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
@@ -145,8 +131,8 @@ export default function ImgMediaCard({
               // alt="green iguana"
               height="10"
               image={image}
-            // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
-            // sx={{maxHeight: 250}}
+              // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
+              // sx={{maxHeight: 250}}
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
@@ -187,7 +173,7 @@ export default function ImgMediaCard({
                 label="Participation"
               />
 
-              <SimpleDialog participants={participants} />
+              <PopUpBlog participants={participants} />
             </CardActions>
           </Card>
         </Grid>

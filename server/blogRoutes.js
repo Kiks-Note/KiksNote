@@ -9,16 +9,20 @@ const {
   addNewBlog,
   blogRequests,
   getDescriptions,
+  addParticipant,
+  getParticipant,
 } = require("./controllers/blog");
 
 module.exports = function (connection, pathname) {
   // Route Dashboard
-  router.post("/newblog", addNewBlog);
+  router.post("", addNewBlog);
   router.put("/:id/visibility", updateBlogVisibility);
   router.put("/:id/likes", addBlogLike);
   router.post("/:id/comments", addBlogComment);
   router.delete("/:id", deleteBlog);
   router.get("/:id", getDescriptions);
+  router.put("/:id/participant", addParticipant);
+  router.post("/participant", getParticipant);
 
   
 

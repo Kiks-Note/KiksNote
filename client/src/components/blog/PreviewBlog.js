@@ -19,7 +19,7 @@ function PreviewBlog() {
 
             console.log(id);
 
-            await axios.get(`http://localhost:5050/blog_event/${id}`).then((res) => {
+            await axios.get(`http://localhost:5050/blog/${id}`).then((res) => {
                 setData(res.data);
                 console.log(res.data);
             }).catch((err) => {

@@ -25,6 +25,7 @@ function Blog() {
         console.log("Got message from server ", dataFromServer);
         setBlog(dataFromServer);
         console.log(dataFromServer);
+        console.log(blog);
         setLoading(false);
       };
     })();
@@ -49,10 +50,7 @@ function Blog() {
           <Grid item xs={2}>
             <TagFilter />
           </Grid>
-          <Grid
-            item
-            xs={10}
-          >
+          <Grid item xs={10}>
             <Grid
               container
               direction={"column"}

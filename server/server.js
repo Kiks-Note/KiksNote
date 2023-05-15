@@ -66,7 +66,6 @@ wsI.on("request", (request) => {
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
-  app.use("/blog_event", blogRoutes(connection, pathname));
 
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
