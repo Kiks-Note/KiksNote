@@ -164,7 +164,7 @@ export default function MiniDrawer({ element }) {
               {
                 id: 12,
                 name: "Coding Board",
-                route: "/tabList",
+                route: "/tableau-de-bord",
                 icon: (
                   <DashboardIcon
                     sx={{ color: theme.palette.custom.iconDrawer }}

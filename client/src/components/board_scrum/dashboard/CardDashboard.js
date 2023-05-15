@@ -31,17 +31,19 @@ export default function CardDashboard({
     var x = JSON.parse(localStorage.getItem("tabs")) || [];
     x.push({
       id: id,
-      idDb: id,
-      type: "overView",
       label: `OverView ${sprint_group}`,
+      closeable: true,
+      tab: "OverView " + sprint_group,
+      component: (<OverView id={id} addTab={addTab} />),
     });
     localStorage.setItem("tabs", JSON.stringify(x));
 
     addTab({
       id: id,
+      label: `OverView ${sprint_group}`,
+      closeable: true,
       tab: "OverView " + sprint_group,
       component: <OverView id={id} addTab={addTab} />,
-      closeable: true,
     });
   };
   return (
@@ -56,7 +58,7 @@ export default function CardDashboard({
         backgroundRepeat: "no-repeat",
         opacity: 0.8,
         position: "relative",
-        cursor:"pointer"
+        cursor: "pointer",
       }}
     >
       <CardContent>

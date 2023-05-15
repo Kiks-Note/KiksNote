@@ -33,7 +33,7 @@ module.exports = function (connection, pathname) {
     "/:dashboardId/board/:boardId/column/:columnId/editCard",
     editCard
   );
-  router.get(
+  router.delete(
     "/:dashboardId/board/:boardId/column/:columnId/card/:cardId",
     deleteCard
   );

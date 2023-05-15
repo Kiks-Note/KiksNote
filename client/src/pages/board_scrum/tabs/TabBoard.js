@@ -1,56 +1,25 @@
-import React, { useState, useCallback } from "react";
-import TabsDemo from "./Tabs";
-
+import React, { useState, useCallback, useEffect } from "react";
+import Tab from "./Tabs";
 import Dashboard from "../Dashboard";
-const TabBoard = () => {
-  const [data, setData] = useState([
-    {
-      id: 0,
-      label: "",
-      closeable: false,
-      tab: "Dashboard",
-      component: (
-        <Dashboard
-          addTab={(item) => {
-            setData((prevData) => {
-              let isExist = false;
-              const newData = prevData.map((tab) => {
-                if (tab.id === item.id) {
-                  isExist = true;
-                  setActiveIndex(tab.id);
-                  return tab;
-                }
-                return tab;
-              });
-              if (!isExist) {
-                newData.push(item);
-                setActiveIndex(newData[newData.length - 1].id);
-              }
-              return newData;
-            });
-          }}
-        />
-      ),
-    },
-  ]);
 
-  const [activeIndex, setActiveIndex] = useState(0);
+export default function TabBoard() {
+  const [data, setData] = useState([]);
+
+  const [activeIndex, setActiveIndex] = useState("Dashbaord");
 
   const handleChange = useCallback((event, activeTab) => {
     localStorage.setItem("activeTab", JSON.stringify(activeTab));
     setActiveIndex(activeTab);
-  });
+  }, []);
 
   const handleClose = useCallback(
     (tabToDelete) => {
-      localStorage.setItem("activeTab", JSON.stringify(0));
+      console.log("on ferme");
 
-      const tabToDeleteIndex = data.findIndex(
-        (tab) => tab.id === tabToDelete.id
-      );
       const updatedTabs = data.filter((tab) => tab.id !== tabToDelete.id);
-      setActiveIndex(updatedTabs[0].id); // Doesn't work...
-
+      setActiveIndex(updatedTabs[0]?.id || "Dashbaord");
+      localStorage.setItem("activeTab", JSON.stringify(activeIndex));
+      console.log(activeIndex);
       const newStorageTabs =
         JSON.parse(localStorage.getItem("tabs"))?.filter(
           (tab) => tab.id !== tabToDelete.id
@@ -66,14 +35,87 @@ const TabBoard = () => {
     [data]
   );
 
+  useEffect(() => {
+    let activeTab = JSON.parse(localStorage.getItem("activeTab"));
+    let tabs = JSON.parse(localStorage.getItem("tabs"));
+    let filteredTabs = [];
+
+    if (tabs && tabs.length === 0) {
+      setActiveIndex("Dashboard");
+      filteredTabs.push({
+        id: "Dashboard",
+        label: "Dashboard",
+        closeable: false,
+        tab: "Dashboard",
+        component: (
+          <Dashboard
+            addTab={(item) => {
+              setData((prevData) => {
+                const existingTab = prevData.find((tab) => tab.id === item.id);
+
+                if (existingTab) {
+                  setActiveIndex(existingTab.id);
+                  return prevData;
+                } else {
+                  const newData = [...prevData, item];
+                  setActiveIndex(newData[newData.length - 1].id);
+                  return newData;
+                }
+              });
+            }}
+          />
+        ),
+      });
+    } else {
+      setActiveIndex(activeTab);
+      filteredTabs = tabs
+        ? tabs.filter((tab, index, self) => {
+            return self.findIndex((t) => t.id === tab.id) === index;
+          })
+        : [];
+      if (!filteredTabs.find((tab) => tab.id === "Dashboard")) {
+        // Add the Dashboard tab if it's not already present
+        filteredTabs.push({
+          id: "Dashboard",
+          label: "Dashboard",
+          closeable: false,
+          tab: "Dashboard",
+          component: (
+            <Dashboard
+              addTab={(item) => {
+                setData((prevData) => {
+                  const existingTab = prevData.find(
+                    (tab) => tab.id === item.id
+                  );
+
+                  if (existingTab) {
+                    setActiveIndex(existingTab.id);
+                    return prevData;
+                  } else {
+                    const newData = [...prevData, item];
+                    setActiveIndex(newData[newData.length - 1].id);
+                    return newData;
+                  }
+                });
+              }}
+            />
+          ),
+        });
+      }
+    }
+
+    localStorage.setItem("tabs", JSON.stringify(filteredTabs));
+    console.log(filteredTabs);
+
+    setData(filteredTabs);
+  }, []);
+
   return (
-    <TabsDemo
+    <Tab
       handleClose={handleClose}
       handleChange={handleChange}
       tabs={data}
       selectedTab={activeIndex}
     />
   );
-};
-
-export default TabBoard;
+}

@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import PropTypes from "prop-types";
 import {
   DataGrid,
   GridToolbarQuickFilter,
@@ -12,24 +13,36 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import StarIcon from "@mui/icons-material/Star";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Button } from "@mui/material";
+import LaunchIcon from "@mui/icons-material/Launch";
+import OverView from "../../../pages/board_scrum/overview/OverView";
 
-export default function TableBoard({ id, addTab, rows, addFavorite, deleteBoards }) {
-  /* const moveToOverView = () => {
-    x.push({ id: id, idDb: id, type: "overView", label: `OverView ${sprint_group}` });
+TableDashboard.propTypes = {
+  addTab: PropTypes.func.isRequired,
+  rows: PropTypes.array.isRequired,
+};
+TableDashboard.defaultProps = {
+  addTab: () => {},
+};
+export default function TableDashboard({ addTab, rows }) {
+  const moveToOverView = (event) => {
+    var x = JSON.parse(localStorage.getItem("tabs")) || [];
+    x.push({
+      id: event.id,
+      label: `OverView ${event.row.sprint_group}`,
+      closeable: true,
+      tab: "OverView " + event.row.sprint_group,
+      component: <OverView id={event.id} addTab={addTab} />,
+    });
     localStorage.setItem("tabs", JSON.stringify(x));
 
     addTab({
-      id: id,
-      tab: "OverView " + sprint_group,
-      component: <OverView id={id} addTab={addTab} />,
+      id: event.id,
+      label: `OverView ${event.row.sprint_group}`,
       closeable: true,
+      tab: "OverView " + event.row.sprint_group,
+      component: <OverView id={event.id} addTab={addTab} />,
     });
-  };*/
-  // TODO : fix this
+  };
 
   const columns = [
     {
@@ -55,43 +68,15 @@ export default function TableBoard({ id, addTab, rows, addFavorite, deleteBoards
     {
       field: "actions",
       type: "actions",
-      headerName: "Parametres",
+      headerName: "Accès au board",
       flex: 1,
       disableReorder: true,
       getActions: (params) => [
         <GridActionsCellItem
-          icon={
-            <Button
-              color="inherit"
-              // onClick={() => moveToOverView()}
-            >
-              Accéder au board
-            </Button>
-          }
-          //onClick={() => moveToOverView()}
-          showInMenu
+          label="Accéder au board"
+          icon={<LaunchIcon />}
+          onClick={() => moveToOverView(params)}
         />,
-        <GridActionsCellItem
-          icon={<DeleteIcon sx={{ color: "red" }} />}
-          label="Supprimer le board"
-          onClick={deleteBoards(params.id)}
-          showInMenu
-        />,
-        params.row.favorite === true ? (
-          <GridActionsCellItem
-            icon={<StarIcon sx={{ color: "purple" }} />}
-            onClick={addFavorite(params.id, params.favorite)}
-            label="Supprimer un favoris "
-            showInMenu
-          />
-        ) : (
-          <GridActionsCellItem
-            icon={<StarBorderIcon sx={{ color: "purple" }} />}
-            onClick={addFavorite(params.id)}
-            label="Mettre en favoris"
-            showInMenu
-          />
-        ),
       ],
     },
   ];
@@ -111,8 +96,12 @@ export default function TableBoard({ id, addTab, rows, addFavorite, deleteBoards
           }}
         >
           <GridToolbarQuickFilter
-            quickFilterParser={(searchInput) => searchInput.split(",").map((value) => value.trim())}
-            quickFilterFormatter={(quickFilterValues) => quickFilterValues.join(", ")}
+            quickFilterParser={(searchInput) =>
+              searchInput.split(",").map((value) => value.trim())
+            }
+            quickFilterFormatter={(quickFilterValues) =>
+              quickFilterValues.join(", ")
+            }
             debounceMs={200} // time before applying the new quick filter value
             placeholder="Recherche"
           />

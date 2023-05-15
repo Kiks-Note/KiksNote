@@ -30,7 +30,7 @@ function OverView(props) {
     localStorage.setItem("tabs", JSON.stringify(x));
 
     props.addTab({
-      id: props.id + "pdf",
+      id: props.id,
       tab: "pdf",
       component: <PdfView link={pdfLink} dashboardId={props.id} />,
       closeable: true,

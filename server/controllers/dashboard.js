@@ -33,6 +33,7 @@ const favorite = async (req, res) => {
 // CHANGE  PUT Index -
 const changeIndex = async (req, res) => {
   var data = req.body;
+  console.log(data);
   await db
     .collection("dashboard")
     .doc(req.params.dashboardId)
@@ -44,6 +45,8 @@ const changeIndex = async (req, res) => {
       toDo: data[2],
       inProgress: data[3],
       done: data[4],
+      definitionOfDone: data[5],
+      definitionOfFun: data[6],
     });
 };
 /// PATH to add a info card
@@ -163,8 +166,8 @@ const moveStories = async (req, res) => {
       });
       for (var column in board.data()) {
         if (column != "requested") {
-          cardToMove = { name: column, items: [] };
-          cardToKeep = { name: column, items: [] };
+          cardToMove = { name: column.name, items: [] };
+          cardToKeep = { name: column.name, items: [] };
           await board.data()[column].items.forEach((card) => {
             if (req.body.storiesId.includes(card.storyId)) {
               cardToMove.items.push(card);
@@ -402,6 +405,14 @@ const deleteCard = async (req, res) => {
         column = columns.done;
         columnName = "done";
         break;
+      case "5":
+        column = columns.definitionOfDone;
+        columnName = "definitionOfDone";
+        break;
+      case "6":
+        column = columns.definitionOfFun;
+        columnName = "definitionOfFun";
+        break;
       default:
         // Invalid column id
         res.status(400).send({ message: "Invalid column id" });
@@ -451,6 +462,10 @@ function getColumnField(columnId) {
       return "inProgress";
     case "4":
       return "done";
+    case "5":
+      return "definitionOfDone";
+    case "6":
+      return "definitionOfFun";
     default:
       throw new Error("Invalid column ID");
   }
@@ -635,6 +650,8 @@ const boardRequests = async (connection) => {
             console.error("Error getting dashboard data:", error);
           });
         // Récupérer les données du board
+        console.log(boardId);
+        console.log(dashboardId);
         db.collection("dashboard")
           .doc(dashboardId)
           .collection("board")
@@ -732,12 +749,12 @@ async function addDashboard(groups, studentId, db) {
       (doc) => doc.data().groupId === group.id
     );
     if (!haveGroupId) {
-      const newDashboard = await db.collection("dashboard").add({
+      var newDashboard = await db.collection("dashboard").add({
         students: group.data.students,
         groupId: group.id,
         starting_date: group.data.starting_date,
         ending_date: group.data.ending_date,
-        favorite: "false",
+        favorite: false,
         group_name: "new dashboard",
         sprint_name: "new sprint",
         image:
@@ -764,10 +781,10 @@ async function addDashboard(groups, studentId, db) {
         await labelsRef.add(label);
       }
 
-      const release = group.data.release;
-      for (const i in release) {
-        for (const y in release[i]) {
-          const res = await db
+      release = group.data.release;
+      for (var i in release) {
+        for (var y in release[i]) {
+          var res = await db
             .collection("dashboard")
             .doc(newDashboard.id)
             .collection("board")

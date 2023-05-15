@@ -7,7 +7,7 @@ import Tuto from "./pages/blog/Tuto";
 import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
-import TabList from "./pages/board_scrum/tabs/TabBoard";
+import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";

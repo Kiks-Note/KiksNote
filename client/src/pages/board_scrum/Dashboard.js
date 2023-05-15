@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import TableBoard from "../../components/board_scrum/dashboard/TableDashboard";
+import TableDashboard from "../../components/board_scrum/dashboard/TableDashboard";
 import CardDashBoard from "../../components/board_scrum/dashboard/CardDashboard";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import { Divider, List, ListItem, Typography } from "@mui/material";
+import { Typography,Grid } from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -13,20 +12,20 @@ import TablePagination from "@mui/material/TablePagination";
 import CreateDashboard from "./CreateDashboard";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
+import ListCardDashboard from "../../components/board_scrum/dashboard/ListCardDashboard";
 
-let maDate = new Date();
+
 
 function Dashboard(props) {
   const [dashboard, setDashboard] = useState([]);
   const [actifDashboard, setActifDashboard] = useState([]);
   const [favorisDashboard, setFavorisDashboard] = useState([]);
   const [view, setView] = useState("module");
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useFirebase();
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -39,21 +38,11 @@ function Dashboard(props) {
   // * FUNCTION
 
   //* CHANGE THE VIEW OF THE CARD BOARD
-  const viewChange = (event, nextView) => {
+  const viewChange = (nextView) => {
     if (nextView !== null) {
       setView(nextView);
     }
   };
-  // * DELETE A BOARD
-  async function deleteBoards(dashboardId) {
-    try {
-      await axios.delete(`http://localhost:5050/dashboard/${dashboardId}`);
-    } catch (error) {
-      console.error(error);
-      // Gérer l'erreur de manière appropriée, par exemple :
-      // throw new Error('Erreur lors de la mise à jour du document');
-    }
-  }
   // * TO MAKE A BOARD IN FAVORI
   async function favorisTell(dashboardId) {
     try {
@@ -145,37 +134,22 @@ function Dashboard(props) {
     setFavorisDashboard(favorisDashboards);
   }, [dashboard]);
 
-  function renderList(list, name) {
-    return (
-      <div sx={{ width: "100%" }}>
-        <Typography variant="h6" gutterBottom>
-          {name}
-        </Typography>
-        <Grid container spacing={1}>
-          {list.map((person) => (
-            <Grid item xs={4} key={person.id}>
-              <CardDashBoard
-                addTab={props.addTab}
-                key={person.id}
-                picture={person.picture}
-                sprint_group={person.sprint_group}
-                fav={person.favorite}
-                isFavoris={favorisTell}
-                id={person.id}
-              />
-            </Grid>
-          ))}
-        </Grid>
-        {/* <Divider sx={{ width: " 100%", margin: 2 }} /> */}
-      </div>
-    );
-  }
   return (
     <div style={{ marginLeft: "1%", marginTop: "1%" }}>
       {favorisDashboard.length > 0 &&
-        renderList(favorisDashboard, "Espace de travail favoris")}
+        ListCardDashboard(
+          favorisDashboard,
+          "Espace de travail favoris",
+          props,
+          favorisTell
+        )}
       {actifDashboard.length > 0 &&
-        renderList(actifDashboard, "Espace de travail actif")}
+        ListCardDashboard(
+          actifDashboard,
+          "Espace de travail actif",
+          props,
+          favorisTell
+        )}
 
       <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
         <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
@@ -220,12 +194,9 @@ function Dashboard(props) {
       ) : (
         !loading &&
         dashboard.length > 0 && (
-          <TableBoard
-            id={props.id}
+          <TableDashboard
             addTab={props.addTab}
             rows={!loading && dashboard}
-            addFavorite={favorisTell}
-            deleteBoards={deleteBoards}
           />
         )
       )}
