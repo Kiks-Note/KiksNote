@@ -1,44 +1,40 @@
-import React, { useState, useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import React, { useEffect } from "react";
+import {Navigate, Outlet, useNavigate} from "react-router-dom";
 import MiniDrawer from "../components/drawer/MiniDrawer";
-import { accountAuthService } from "../services/accountAuth";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
+import useFirebase from "../hooks/useFirebase";
+import Cookies from "universal-cookie";
+import axios from "axios";
 
 function PrivateRoutes() {
-  const [authenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const {user, logout} = useFirebase();
+  const cookies = new Cookies();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is authenticated asynchronously using the accountAuthService.isLogged()
-    const checkAuth = async () => {
-      try {
-        const result = await accountAuthService.isLogged();
-        setAuthenticated(result);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const lastConnectionAt = cookies.get("lastConnectionAt");
+    const token = cookies.get("token");
+    const currentTime = Date.now();
 
-    checkAuth();
+    if (lastConnectionAt <= currentTime || !token) {
+      logout();
+      navigate("/login");
+    }
+
+    (async () => {
+      await axios
+        .post("http://localhost:5050/auth/login", {
+          token,
+        })
+        .catch((err) => {
+          logout();
+          navigate("/login");
+        });
+    })();
+
+    console.log(lastConnectionAt, currentTime);
   }, []);
 
-  // Show loading indicator while authentication check is in progress
-  if (loading) {
-    return (
-      <Box sx={{ display: "flex" }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-  // Redirect user to login page if user not authenticated
-  return authenticated ? (
-    <MiniDrawer element={<Outlet />} />
-  ) : (
-    <Navigate to="/login" />
-  );
+  return user && <MiniDrawer element={<Outlet />} />;
 }
 
 export default PrivateRoutes;

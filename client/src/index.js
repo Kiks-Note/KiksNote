@@ -1,13 +1,11 @@
-import React from "react";
+import axios from "axios";
+import React, {useEffect} from "react";
 import ReactDOM from "react-dom/client";
+import {AuthProvider} from "./hooks/useAuth";
 import { Provider } from 'react-redux'
 import Theme from "./utils/Theme";
-
-import "./index.css";
-import App from "./App";
-import { store } from './redux/store';
-
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
 root.render(
   <Provider store={store}>
     {/* <App /> */}

@@ -1,26 +1,26 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-
+import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
+import LockIcon from "@mui/icons-material/Lock";
+import MailIcon from "@mui/icons-material/Mail";
 import {
-  TextField,
-  Typography,
-  Container,
   Box,
   Button,
-  Link,
+  Container,
   IconButton,
   InputAdornment,
+  Link,
+  TextField,
+  Typography,
 } from "@mui/material";
-import MailIcon from "@mui/icons-material/Mail";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
-import LockIcon from "@mui/icons-material/Lock";
+import Cookies from "universal-cookie";
+import {signInWithEmailAndPassword} from "firebase/auth";
 
-import axios from "axios";
-
-import { accountAuthService } from "../../services/accountAuth";
-
+import imgLogin from "./../../assets/img/login_img.svg";
 import "./Login.scss";
-import imgLogin from "./../../assets/img/login-welcome.svg";
+import useFirebase from "../../hooks/useFirebase";
+import {Toaster, toast} from "react-hot-toast";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -32,6 +32,8 @@ const Login = () => {
   const [messageEmail, setMessageEmail] = useState("");
   const [messagePassword, setMessagePassword] = useState("");
   const regex = /@edu\.esiee-it\.fr/;
+  const cookies = new Cookies();
+  const {auth} = useFirebase();
 
   const navigate = useNavigate();
 
@@ -53,26 +55,55 @@ const Login = () => {
     event.preventDefault();
   };
 
-
-
-  const login = async (email, password) => {
-    await axios
-      .post("http://localhost:5050/auth/login", {
+  const login = async () => {
+    if (!email || !password) {
+      toast.error("Veuillez remplir tous les champs !");
+      return;
+    }
+    try {
+      const loggedInUser = await signInWithEmailAndPassword(
+        auth,
         email,
-        password,
-      })
-      .then((res) => {
-        console.log(res.data.userUid)
-        localStorage.setItem("userUid", res.data.userUid)
-        localStorage.setItem("user", JSON.stringify(res.data.user))
-        accountAuthService.saveTokens(res.data.token, res.data.refreshToken);
-        navigate("/");
-      })
-      .catch(
-        (err) => setMessageError(err.response.data),
-        console.log(errorMessage)
+        password
       );
-  }
+      const token = await loggedInUser.user.getIdToken();
+
+      await axios
+        .post("http://localhost:5050/auth/login", {
+          token,
+        })
+        .then(() => {
+          cookies.set("token", token, {
+            path: "/",
+            secure: true,
+            sameSite: "none",
+            expires: new Date(Date.now() + 604807200),
+          });
+          cookies.set("lastConnectionAt", Date.now() + 604807200, {
+            path: "/",
+            secure: true,
+            sameSite: "none",
+            expires: new Date(Date.now() + 604807200),
+          });
+          navigate("/");
+        })
+        .catch((err) => {
+          console.log(err.message);
+          toast.error(err.message);
+        });
+    } catch (e) {
+      if (e.message.includes("auth/invalid-email")) {
+        toast.error("Cet email n'est associé à aucun compte !");
+        return;
+      }
+      if (e.message.includes("auth/wrong-password")) {
+        toast.error("Mot de passe incorrect !");
+        return;
+      }
+      toast.error("Une erreur est survenue");
+      console.log(e);
+    }
+  };
 
   const verifInputErrors = (email, password) => {
     if (email === "") {
@@ -109,6 +140,7 @@ const Login = () => {
 
   return (
     <div className="login-page-container">
+      <Toaster />
       <div className="login">
         <Container
           className="login-image-box"
@@ -213,7 +245,7 @@ const Login = () => {
                           {showPassword ? (
                             <VisibilityOff />
                           ) : (
-                            <Visibility style={{ color: "#7a52e1" }} />
+                            <Visibility style={{color: "#7a52e1"}} />
                           )}
                         </IconButton>
                       </InputAdornment>
@@ -253,7 +285,7 @@ const Login = () => {
             </form>
 
             <p className="text-sm font-medium text-center m-3">
-              Pas encore de compte? Créez-en un{" "}
+              Pas encore de compte? Creez-en un{" "}
               <Link
                 href="/signup"
                 sx={{
