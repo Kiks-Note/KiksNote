@@ -34,7 +34,7 @@ export default function CardDashboard({
       label: `OverView ${sprint_group}`,
       closeable: true,
       tab: "OverView " + sprint_group,
-      component: (<OverView id={id} addTab={addTab} />),
+      component: <OverView id={id} addTab={addTab} />,
     });
     localStorage.setItem("tabs", JSON.stringify(x));
 

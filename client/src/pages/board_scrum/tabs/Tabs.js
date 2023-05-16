@@ -37,28 +37,24 @@ export default function TabDemo({
             key={tab.id}
             value={tab.id}
             label={
-              typeof tab.tab === "string" ? (
-                <span>
-                  {tab.tab}
-                  {tab.closeable && (
-                    <a
-                      className="closeTab"
-                      title={"Close tab"}
-                      onClick={() => handleClose(tab)}
-                    >
-                      <CloseIcon />
-                    </a>
-                  )}
-                </span>
-              ) : (
-                tab.tab
-              )
+              <span>
+                {tab.label}
+                {tab.closeable && (
+                  <a
+                    className="closeTab"
+                    title={"Close tab"}
+                    onClick={() => handleClose(tab)}
+                  >
+                    <CloseIcon />
+                  </a>
+                )}
+              </span>
             }
           />
         ))}
       </Tabs>
       {activeTabs.map((tab) =>
-        activeTab === tab.id ? (
+        activeTab == tab.id ? (
           <TabContainer key={tab.id}>{tab.component}</TabContainer>
         ) : null
       )}

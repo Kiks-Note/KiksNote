@@ -2,7 +2,14 @@ import React, { useState, useEffect } from "react";
 import Board from "../../../pages/board_scrum/Board";
 import "./CardBoard.css";
 
-const CardBoard = ({ title, startingDate, endingDate, id, dashboardId, addTab }) => {
+const CardBoard = ({
+  title,
+  startingDate,
+  endingDate,
+  id,
+  dashboardId,
+  addTab,
+}) => {
   const moveToOverView = () => {
     var x = JSON.parse(localStorage.getItem("tabs")) || [];
     x.push({ id: id, type: "board", label: title, dashboardId: dashboardId });
@@ -54,10 +61,17 @@ const CardBoard = ({ title, startingDate, endingDate, id, dashboardId, addTab })
     <div className="card" onClick={moveToOverView}>
       <h2 className="title">{title}</h2>
       <div className="progress-bar-container" style={{ textAlign: "center" }}>
-        {progressPercentage == 0 && <p style={{ color: "black" }}>Sprint non commencé</p>}
-        <div className="progress-bar" style={{ width: `${progressPercentage}%` }}>
+        {progressPercentage == 0 && (
+          <p style={{ color: "black" }}>Sprint non commencé</p>
+        )}
+        <div
+          className="progress-bar"
+          style={{ width: `${progressPercentage}%` }}
+        >
           {progressPercentage == 100 && <p>sprint finis</p>}
-          {progressPercentage != 100 && progressPercentage != 0 && <p>Sprint en cours</p>}
+          {progressPercentage != 100 && progressPercentage != 0 && (
+            <p>Sprint en cours</p>
+          )}
         </div>
       </div>
     </div>

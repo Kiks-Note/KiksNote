@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import PropTypes from "prop-types";
 import TableDashboard from "../../components/board_scrum/dashboard/TableDashboard";
 import CardDashBoard from "../../components/board_scrum/dashboard/CardDashboard";
 import Box from "@mui/material/Box";
-import { Typography,Grid } from "@mui/material";
+import { Typography, Grid } from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -14,9 +15,13 @@ import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import ListCardDashboard from "../../components/board_scrum/dashboard/ListCardDashboard";
 
-
-
-function Dashboard(props) {
+Dashboard.propTypes = {
+  addTab: PropTypes.func.isRequired,
+};
+Dashboard.defaultProps = {
+  addTab: () => {},
+};
+export default function Dashboard(addTab) {
   const [dashboard, setDashboard] = useState([]);
   const [actifDashboard, setActifDashboard] = useState([]);
   const [favorisDashboard, setFavorisDashboard] = useState([]);
@@ -140,14 +145,14 @@ function Dashboard(props) {
         ListCardDashboard(
           favorisDashboard,
           "Espace de travail favoris",
-          props,
+          addTab,
           favorisTell
         )}
       {actifDashboard.length > 0 &&
         ListCardDashboard(
           actifDashboard,
           "Espace de travail actif",
-          props,
+          addTab,
           favorisTell
         )}
 
@@ -181,7 +186,7 @@ function Dashboard(props) {
               .map((board) => (
                 <Grid item xs={3} key={board.id}>
                   <CardDashBoard
-                    addTab={props.addTab}
+                    addTab={addTab}
                     picture={board.picture}
                     sprint_group={board.sprint_group}
                     fav={board.favorite}
@@ -194,10 +199,7 @@ function Dashboard(props) {
       ) : (
         !loading &&
         dashboard.length > 0 && (
-          <TableDashboard
-            addTab={props.addTab}
-            rows={!loading && dashboard}
-          />
+          <TableDashboard addTab={addTab} rows={!loading && dashboard} />
         )
       )}
 
@@ -233,5 +235,3 @@ function Dashboard(props) {
     </div>
   );
 }
-
-export default Dashboard;
