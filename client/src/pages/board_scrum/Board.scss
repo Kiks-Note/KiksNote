@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding:15px;
+  padding: 15px;
 }
 .board_container_table_add_column {
   display: flex;
@@ -36,6 +36,8 @@
 .grid-container {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  grid-gap: 5px;
+  grid-gap: 30px;
+  grid-row-gap: 50px;
+  grid-column-gap: inherit;
   margin: 20px;
 }
