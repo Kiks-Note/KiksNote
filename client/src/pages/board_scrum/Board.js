@@ -176,7 +176,7 @@ export default function Board(props) {
           onChange={labelChange}
           inputProps={{ "aria-label": "controlled" }}
         />
-        <div className="board_container_all">
+        <div className="board_container_all grid-container">
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
           >
