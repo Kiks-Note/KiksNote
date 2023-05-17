@@ -147,7 +147,7 @@ export default function AdvancedDashboardForm(props) {
           <CloseIcon />
         </IconButton>
       </DialogActions>
-      <DialogTitle>Création d'un dashbaord</DialogTitle>
+      <DialogTitle>Création d'un dashboard</DialogTitle>
       <DialogContent dividers>
         <Box
           component="form"

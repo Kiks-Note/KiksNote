@@ -50,7 +50,7 @@ function a11yProps(index) {
 
 export default function StatTab(props) {
   var boards = props.boards;
-
+  console.log(boards);
   ChartJS.register(
     ArcElement,
     Tooltip,
@@ -93,38 +93,6 @@ export default function StatTab(props) {
       position: "bottom",
     },
   };
-  const optionsBurnUp = {
-    responsive: true,
-    title: {
-      display: true,
-      text: "Burn-Up Chart",
-    },
-    scales: {
-      xAxes: [
-        {
-          type: "time",
-          time: {
-            unit: "day",
-            displayFormats: {
-              day: "MMM DD",
-            },
-          },
-        },
-      ],
-      yAxes: [
-        {
-          ticks: {
-            beginAtZero: true,
-          },
-        },
-      ],
-    },
-    legend: {
-      display: true,
-      position: "bottom",
-    },
-  };
-
   const dataBurnDown = {
     labels: [
       "2023-03-01",
@@ -150,32 +118,6 @@ export default function StatTab(props) {
       },
     ],
   };
-  const dataBurnUp = {
-    labels: [
-      "2023-03-01",
-      "2023-03-02",
-      "2023-03-03",
-      "2023-03-04",
-      "2023-03-05",
-      "2023-03-06",
-      "2023-03-07",
-    ],
-    datasets: [
-      {
-        label: "Réalisé",
-        data: [6, 10, 14, 18, 24, 29, 35],
-        fill: false,
-        borderColor: "green",
-      },
-      {
-        label: "Total",
-        data: [6, 12, 18, 24, 30, 36, 42],
-        fill: false,
-        borderColor: "red",
-      },
-    ],
-  };
-
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -211,9 +153,9 @@ export default function StatTab(props) {
                   {
                     label: "nombre de tâches",
                     data: [
-                      board["data"]["toDo"],
-                      board["data"]["inProgress"],
-                      board["data"]["done"],
+                      board["data"]["toDo"]["count"],
+                      board["data"]["inProgress"]["count"],
+                      board["data"]["done"]["count"],
                     ],
                     backgroundColor: [
                       "rgba(255, 99, 132, 0.2)",
@@ -234,28 +176,23 @@ export default function StatTab(props) {
         );
       })}
 
-      <TabPanel
-        value={value}
-        index={boards.length}
-        style={{
-          height: "75vh",
-          maxHeight: "80vh",
-        }}
-      >
-        <Typography variant="h4">BurnDown</Typography>
-        <Line data={dataBurnDown} options={optionsBurnDown} />
-      </TabPanel>
-      <TabPanel
-        value={value}
-        index={boards.length + 1}
-        style={{
-          height: "75vh",
-          maxHeight: "80vh",
-        }}
-      >
-        <Typography variant="h4">BurnUp</Typography>
-        <Line data={dataBurnUp} options={optionsBurnUp} />
-      </TabPanel>
+      {boards.map((board) => {
+        index += 1;
+        return (
+          <TabPanel
+            key={index}
+            value={value}
+            index={index}
+            style={{
+              height: "75vh",
+              maxHeight: "80vh",
+            }}
+          >
+            <Typography variant="h4">Burnddown {board["name"]}</Typography>
+            <Line data={dataBurnDown} options={optionsBurnDown} />
+          </TabPanel>
+        );
+      })}
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}
@@ -271,8 +208,16 @@ export default function StatTab(props) {
               <Tab key={item} label={board["name"]} {...a11yProps(indexTab)} />
             );
           })}
-          <Tab label="BurnDown" {...a11yProps(boards.length)} />
-          <Tab label="BurnUp" {...a11yProps(boards.length + 1)} />
+          {boards.map((board, item) => {
+            indexTab += 1;
+            return (
+              <Tab
+                key={item}
+                label='Burdown {board["name"]}'
+                {...a11yProps(indexTab)}
+              />
+            );
+          })}
         </Tabs>
       </Box>
     </Box>

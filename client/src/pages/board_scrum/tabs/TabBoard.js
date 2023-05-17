@@ -5,7 +5,7 @@ import Dashboard from "../Dashboard";
 export default function TabBoard() {
   const [data, setData] = useState([]);
 
-  const [activeIndex, setActiveIndex] = useState("Dashbaord");
+  const [activeIndex, setActiveIndex] = useState("Dashboard");
 
   const handleChange = useCallback((event, activeTab) => {
     localStorage.setItem("activeTab", JSON.stringify(activeTab));
@@ -17,7 +17,7 @@ export default function TabBoard() {
       console.log("on ferme");
 
       const updatedTabs = data.filter((tab) => tab.id !== tabToDelete.id);
-      setActiveIndex(updatedTabs[0]?.id || "Dashbaord");
+      setActiveIndex(updatedTabs[0]?.id || "Dashboard");
       localStorage.setItem("activeTab", JSON.stringify(activeIndex));
       console.log(activeIndex);
       const newStorageTabs =
