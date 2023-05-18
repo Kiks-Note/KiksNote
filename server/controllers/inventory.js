@@ -361,7 +361,7 @@ const liveCategories = async (connection) => {
 
 const todayRequests = async (connection) => {
   db.collection("inventory_requests")
-    .where("createdAt", "<=", moment().format("DD/MM/YYYY"))
+    .where("createdAt", "<=", new Date())
     .where("status", "==", "pending")
     .orderBy("createdAt", "desc")
     .limit(5)

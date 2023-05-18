@@ -48,7 +48,7 @@ module.exports = function (connection, pathname) {
   switch (pathname) {
     case "/todayRequests":
       todayRequests(connection);
-      console.log("todayRequests");
+      console.log(pathname);
       break;
     case "/liveCategories":
       liveCategories(connection);

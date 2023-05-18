@@ -21,24 +21,24 @@ import {
   TableRow,
   TextField,
   Tooltip,
-  Typography
+  Typography,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { toast, Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router";
-import { w3cwebsocket } from "websocket";
+import React, {useEffect, useState} from "react";
+import {toast, Toaster} from "react-hot-toast";
+import {useNavigate} from "react-router";
+import {w3cwebsocket} from "websocket";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
 import ModalForm from "../../components/inventory/ModalForm";
 import SideBarModify from "../../components/inventory/SideBarModify";
-import { UserListDialog } from "../../components/inventory/UserListDialog";
+import {UserListDialog} from "../../components/inventory/UserListDialog";
 import timeConverter from "../../functions/TimeConverter";
 import theme from "../../theme";
 import "./inventory.css";
 // import useAuth from "../../hooks/useAuth";
-import CheckIcon from '@mui/icons-material/Check';
+import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import FaInfoCircle from "@mui/icons-material/Info";
 import useFirebase from "../../hooks/useFirebase";
@@ -338,6 +338,7 @@ const InventoryAdminDashboard = () => {
 
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
+        console.log(data);
         setTodayRequests(data);
       };
     })();
@@ -364,9 +365,12 @@ const InventoryAdminDashboard = () => {
 
   const handleAcceptRequest = async (requestId, deviceId) => {
     await axios
-      .put(`http://localhost:5050/inventory/acceptRequest/${deviceId}/${requestId}`, {
-        admin: user.id
-      })
+      .put(
+        `http://localhost:5050/inventory/acceptRequest/${deviceId}/${requestId}`,
+        {
+          admin: user.id,
+        }
+      )
       .then(() => {
         toast.success("Demande acceptée avec succès");
       })
@@ -378,9 +382,12 @@ const InventoryAdminDashboard = () => {
 
   const handleRefuseRequest = async (requestId, deviceId) => {
     await axios
-      .put(`http://localhost:5050/inventory/refuseRequest/${deviceId}/${requestId}`, {
-        admin: user.id
-      })
+      .put(
+        `http://localhost:5050/inventory/refuseRequest/${deviceId}/${requestId}`,
+        {
+          admin: user.id,
+        }
+      )
       .then(() => {
         toast.success("Demande refusée avec succès");
       })
@@ -641,7 +648,12 @@ const InventoryAdminDashboard = () => {
                         <Tooltip title="Accepter">
                           <IconButton
                             sx={{color: "#00FF00"}}
-                            onClick={() => handleAcceptRequest(r.request.id, r.request.deviceId)}
+                            onClick={() =>
+                              handleAcceptRequest(
+                                r.request.id,
+                                r.request.deviceId
+                              )
+                            }
                           >
                             <CheckIcon />
                           </IconButton>
@@ -649,7 +661,12 @@ const InventoryAdminDashboard = () => {
                         <Tooltip title="Refuser">
                           <IconButton
                             sx={{color: "#FF0000"}}
-                            onClick={() => handleRefuseRequest(r.request.id, r.request.deviceId)}
+                            onClick={() =>
+                              handleRefuseRequest(
+                                r.request.id,
+                                r.request.deviceId
+                              )
+                            }
                           >
                             <CloseIcon />
                           </IconButton>

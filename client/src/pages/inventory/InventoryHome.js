@@ -18,7 +18,7 @@ import {useNavigate} from "react-router-dom";
 import SideBarModify from "../../components/inventory/SideBarModify";
 import Snackbar from "../../components/inventory/CustomSnackBar";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
@@ -300,7 +300,7 @@ function InventoryHome() {
                     <InvBox
                       image={item.image}
                       label={item.label}
-                      reference={item.ref}
+                      reference={item.reference}
                       category={item.category}
                       campus={
                         item.campus.charAt(0).toUpperCase() +
