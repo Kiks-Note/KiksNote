@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 
+import useFirebase from "../../../hooks/useFirebase";
+
 import axios from "axios";
 
 import React from "react";
@@ -72,9 +74,8 @@ export const toastFail = (message) => {
 };
 
 const CoursInfo = () => {
-  const loggedUser = localStorage.getItem("user");
-  const loggedUserParsed = JSON.parse(loggedUser);
-  var userStatus = loggedUserParsed.status;
+  const { user } = useFirebase();
+  const userStatus = user?.status;
 
   const { id } = useParams();
   const navigate = useNavigate();
