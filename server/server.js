@@ -54,6 +54,7 @@ const inventoryRoutes = require("./inventoryRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
+const callRoutes = require("./callRoutes");
 
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
@@ -77,6 +78,7 @@ wsI.on("request", (request) => {
     );
   });
 });
+app.use("/call", callRoutes)
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
