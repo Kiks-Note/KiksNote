@@ -18,6 +18,7 @@ import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import EmpathyMap from "./pages/agile/EmpathyMap";
 
 function RoutesProvider() {
 
@@ -43,6 +44,7 @@ function RoutesProvider() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
+          <Route path="/empathymap" element={<EmpathyMap />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
