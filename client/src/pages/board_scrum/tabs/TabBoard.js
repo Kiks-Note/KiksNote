@@ -17,6 +17,7 @@ export default function TabBoard() {
       console.log("on ferme");
 
       const updatedTabs = data.filter((tab) => tab.id !== tabToDelete.id);
+      console.log(updatedTabs[0]?.id);
       setActiveIndex(updatedTabs[0]?.id || "Dashboard");
       localStorage.setItem("activeTab", JSON.stringify(activeIndex));
       console.log(activeIndex);
@@ -31,6 +32,7 @@ export default function TabBoard() {
         tab.tabIndex = index;
       });
       localStorage.setItem("tabs", JSON.stringify(newStorageTabs));
+      localStorage.setItem("activeTab", JSON.stringify(newStorageTabs));
     },
     [data]
   );
@@ -105,7 +107,7 @@ export default function TabBoard() {
     }
 
     localStorage.setItem("tabs", JSON.stringify(filteredTabs));
-    console.log(filteredTabs);
+    // console.log(filteredTabs);
 
     setData(filteredTabs);
   }, []);

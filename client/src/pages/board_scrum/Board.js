@@ -56,9 +56,13 @@ export default function Board(props) {
       newColumns
     );
   }
-  const onDragEnd = (result, columns, setColumns) => {
+  const onDragEnd = async (result, columns, setColumns) => {
     if (!result.destination) return;
 
+    const source = result.source;
+    const destination = result.destination;
+    const sourceColumn = columns[source.droppableId];
+    const destColumn = columns[destination.droppableId];
     const sourceId = result.source.droppableId;
     const destinationId = result.destination.droppableId;
     console.log("source" + sourceId);
@@ -66,18 +70,23 @@ export default function Board(props) {
 
     if (sourceId === destinationId) {
       // Déplacement au sein de la même colonne
-      const column = columns[sourceId];
-      const items = [...column.items];
-      const [removed] = items.splice(result.source.index, 1);
-      items.splice(result.destination.index, 0, removed);
-
-      setColumns((prevColumns) => ({
-        ...prevColumns,
-        [sourceId]: {
-          ...column,
-          items: items,
+      const copiedItems = [...sourceColumn.items];
+      const [removed] = copiedItems.splice(source.index, 1);
+      copiedItems.splice(destination.index, 0, removed);
+      changeCardIndex({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: copiedItems,
         },
-      }));
+      });
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: copiedItems,
+        },
+      });
     } else {
       // Déplacement entre deux colonnes différentes
       const sourceColumn = columns[sourceId];
@@ -106,23 +115,32 @@ export default function Board(props) {
         );
         return;
       }
-
       const sourceItems = [...sourceColumn.items];
-      const destinationItems = [...destinationColumn.items];
-      const [removed] = sourceItems.splice(result.source.index, 1);
-      destinationItems.splice(result.destination.index, 0, removed);
-
-      setColumns((prevColumns) => ({
-        ...prevColumns,
-        [sourceId]: {
+      const destItems = [...destColumn.items];
+      const [removed] = sourceItems.splice(source.index, 1);
+      destItems.splice(destination.index, 0, removed);
+      changeCardIndex({
+        ...columns,
+        [source.droppableId]: {
           ...sourceColumn,
           items: sourceItems,
         },
-        [destinationId]: {
-          ...destinationColumn,
-          items: destinationItems,
+        [destination.droppableId]: {
+          ...destColumn,
+          items: destItems,
         },
-      }));
+      });
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+        [destination.droppableId]: {
+          ...destColumn,
+          items: destItems,
+        },
+      });
     }
   };
 

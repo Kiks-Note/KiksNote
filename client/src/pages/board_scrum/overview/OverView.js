@@ -60,82 +60,87 @@ function OverView(props) {
   }, []);
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2} sx={{ m: 2 }}>
-        <Grid item xs={12} md={4}>
-          <Typography variant="h4">Stories</Typography>
+    <>
+      <Grid container spacing={1} sx={{ ml: 1 }}>
+        <Grid item xs={12} md={5}>
           {display ? (
-            <StoryList
-              stories={stories}
-              sprints={releases}
-              dashboardId={props.id}
-            />
+            <>
+              <Typography variant="h4">Stories</Typography>
+              <StoryList
+                stories={stories}
+                sprints={releases}
+                dashboardId={props.id}
+              />
+              <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
+                Release / Sprint
+              </Typography>
+              <List
+                style={{
+                  maxHeight: "40vh",
+                  display: "flex",
+                  borderStyle: "solid",
+                  borderColor: "white",
+                  borderWidth: "1px",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  overflow: "auto",
+                  borderRadius: "7%",
+                }}
+              >
+                {Object.keys(releases).map((item, i) => (
+                  <ListItem key={i}>
+                    <Box sx={{ width: "100%" }}>
+                      <Accordion>
+                        <AccordionSummary
+                          expandIcon={<ExpandMoreIcon />}
+                          aria-controls="panel1a-content"
+                          id="panel1a-header"
+                        >
+                          <Typography>{item}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails sx={{ width: "100%" }}>
+                          <Box sx={{ width: "100%" }}>
+                            <CardSprint
+                              key={i + 1}
+                              addTab={props.addTab}
+                              release={releases[item]}
+                              dashboardId={props.id}
+                            />
+                          </Box>
+                        </AccordionDetails>
+                      </Accordion>
+                    </Box>
+                  </ListItem>
+                ))}
+              </List>
+            </>
           ) : (
             <></>
           )}
         </Grid>
-        <Grid item xs={12} md={4}>
-          {display ? <StatTab dashboardId={props.id} boards={boards} /> : <></>}
-        </Grid>
-        <Grid item xs={12} md={3}>
-          <Box>
-            {pdfLink.length != 0 ? (
-              <Button variant="contained" onClick={moveToOverView}>
-                Backlog
-              </Button>
-            ) : (
-              <></>
-            )}
-
-            <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
-              Release / Sprint
-            </Typography>
-            <List
-              style={{
-                minHeight: "70vh",
-                maxHeight: "75vh",
-                display: "flex",
-                borderStyle: "solid",
-                borderColor: "white",
-                borderWidth: "1px",
-                flexDirection: "column",
-                alignItems: "center",
-                overflow: "auto",
-                borderRadius: "5%",
-                marginLeft: "5%",
-                marginTop: "8%",
-              }}
-            >
-              {Object.keys(releases).map((item, i) => (
-                <ListItem key={i}>
-                  <Box sx={{ width: "100%" }}>
-                    <Accordion>
-                      <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1a-content"
-                        id="panel1a-header"
-                      >
-                        <Typography>{item}</Typography>
-                      </AccordionSummary>
-                      <AccordionDetails sx={{ width: "100%" }}>
-                        <Box sx={{ width: "100%" }}>
-                          <CardSprint
-                            key={i+1}
-                            addTab={props.addTab}
-                            release={releases[item]}
-                            dashboardId={props.id}
-                          />
-                        </Box>
-                      </AccordionDetails>
-                    </Accordion>
-                  </Box>
-                </ListItem>
-              ))}
-            </List>
-          </Box>
+        <Grid item xs={12} md={6}>
+          {display ? (
+            <>
+              <Box>
+                {pdfLink.length != 0 ? (
+                  <Button variant="contained" onClick={moveToOverView}>
+                    Backlog
+                  </Button>
+                ) : (
+                  <></>
+                )}
+              </Box>{" "}
+              <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
+               Statistiques
+              </Typography>
+              <StatTab dashboardId={props.id} boards={boards} />{" "}
+            </>
+          ) : (
+            <></>
+          )}
         </Grid>
       </Grid>
-    </Box>
+    </>
   );
 }
 export default OverView;
