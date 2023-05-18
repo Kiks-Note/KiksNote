@@ -6,7 +6,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SettingsIcon from '@mui/icons-material/Settings';
-import { PopUp } from "../../components/groups/Popup";
+import { PopUp } from "../../components/groups/PopUp";
 import "./Groups.scss";
 
 // pour le sotckage des groupes, convertir la date de sprint avec le new Date de firebase
@@ -14,7 +14,8 @@ import "./Groups.scss";
 function App() {
     const [columns, setColumns] = useState();
     const [lock, setLock] = useState(true);
-    const[classStudents, setClassStudents] = useState();
+    const [classStudents, setClassStudents] = useState();
+    const [settings, setSettings] = useState();
 
     // For PO view
 
@@ -100,7 +101,6 @@ function App() {
     function resetButton() {
         document.querySelector('input[type="text"]').value = "";
         fetchAndSetData();
-        
     }
 
     function generateGroupCase(event) {
@@ -147,6 +147,26 @@ function App() {
         }
 
         return array;
+    }
+
+    const handlePopupData = (data) => {
+        setClassStudents(data.classChoose);
+        setSettings(data);
+    };
+
+    function saveGroups() {
+        setLock(true);
+        var groupsKey = Object.keys(columns).filter((key) => key.startsWith("g"));
+
+        groupsKey.forEach(group => {
+            axios.post(`http://localhost:5050/groupes/exportGroups`, {
+                start_date: new Date(settings.start_date),
+                end_date: new Date(settings.end_date),
+                students: columns[group].items.map(student => student.id),
+                po_id: "todo",
+                release: "waiting"
+            });
+        });
     }
 
     function randomGeneration() {
@@ -205,8 +225,6 @@ function App() {
             }
             columns[students[0]].items = [];
             setColumns({ ...columns });
-
-            console.log(columns);
         }
     }
 
@@ -219,7 +237,7 @@ function App() {
         }
     }
 
-    function settings() {
+    function settingsPopUp() {
 
     }
 
@@ -228,7 +246,7 @@ function App() {
     }
 
     if (!classStudents) {
-        return <PopUp />
+        return <PopUp onPopupData={handlePopupData} />
     }
 
 
@@ -256,7 +274,7 @@ function App() {
                     <button className="input-button">
                         {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
                     </button>
-                    <button className="input-button" onClick={settings}>
+                    <button className="input-button" onClick={settingsPopUp}>
                         <SettingsIcon className="input-svg" />
                     </button>
                 </div>
@@ -327,7 +345,7 @@ function App() {
                                                                                     }}
                                                                                     className="post-it"
                                                                                 >
-                                                                                    <p>{item.name}</p>
+                                                                                    <p>{item.firstname}</p>
                                                                                 </div>
                                                                             );
                                                                         }}
@@ -408,7 +426,7 @@ function App() {
                                                                                     }}
                                                                                     className="post-it"
                                                                                 >
-                                                                                    <p>{item.name}</p>
+                                                                                    <p>{item.firstname}</p>
                                                                                 </div>
                                                                             );
                                                                         }}
@@ -430,6 +448,7 @@ function App() {
                         })}
                     </DragDropContext>
                 </div>
+                <button onClick={saveGroups} >Valider</button>
             </div></>
     );
 }

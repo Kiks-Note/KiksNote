@@ -8,4 +8,22 @@ const getStudents = async (req, res) => {
 
 }
 
-module.exports = { getStudents }
+const sendGroups = async (req, res) => {
+    try {
+        const newGroupRef = db.collection("groups").doc();
+        await newGroupRef.set({
+            start_date: req.body.start_date,
+            end_date: req.body.end_date,
+            students: req.body.students,
+            po_id: req.body.po_id,
+            release: req.body.release,
+        });
+
+        res.status(200).send("Groups successfully added!");
+    } catch (error) {
+        res.status(500).send(error);
+    }
+}
+
+
+module.exports = { getStudents,sendGroups }
