@@ -16,6 +16,7 @@ function App() {
     const [lock, setLock] = useState(true);
     const [classStudents, setClassStudents] = useState();
     const [settings, setSettings] = useState();
+    const [showSettings, setShowSettings] = useState(false);
 
     // For PO view
 
@@ -152,7 +153,12 @@ function App() {
     const handlePopupData = (data) => {
         setClassStudents(data.classChoose);
         setSettings(data);
+        setShowSettings(false);
     };
+
+    const handleClosePopUp = (showFalse) => {
+        setShowSettings(showFalse);
+    }
 
     function saveGroups() {
         setLock(true);
@@ -164,7 +170,6 @@ function App() {
                 end_date: new Date(settings.end_date),
                 students: columns[group].items.map(student => student.id),
                 po_id: "todo",
-                release: "waiting"
             });
         });
     }
@@ -237,8 +242,9 @@ function App() {
         }
     }
 
-    function settingsPopUp() {
 
+    function settingsPopUp() {
+        setShowSettings(true);
     }
 
     if (!columns) {
@@ -246,13 +252,14 @@ function App() {
     }
 
     if (!classStudents) {
-        return <PopUp onPopupData={handlePopupData} />
+        return <PopUp onPopupData={handlePopupData} dataPopUp={null} showPopUp={null} />;
     }
 
 
     return (
         <>
             <div>
+                {showSettings ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
                 <h1 style={{ textAlign: "center" }}>Création de Groupes</h1>
                 <div className="groups-inputs">
                     <input

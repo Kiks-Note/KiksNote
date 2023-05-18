@@ -16,7 +16,6 @@ const sendGroups = async (req, res) => {
             end_date: req.body.end_date,
             students: req.body.students,
             po_id: req.body.po_id,
-            release: req.body.release,
         });
 
         res.status(200).send("Groups successfully added!");
