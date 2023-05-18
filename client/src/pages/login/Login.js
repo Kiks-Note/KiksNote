@@ -154,7 +154,7 @@ const Login = () => {
             backgroundColor: "#7a52e1",
           }}
         ></Container>
-        <div className="login-header" style={{ backgroundColor: theme.palette.background.paper}}>
+        <div className="login-header" style={{ backgroundColor: theme.palette.background.container}}>
           <Container
             sx={{
               marginTop: "20%",
