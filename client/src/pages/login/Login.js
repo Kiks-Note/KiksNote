@@ -26,9 +26,12 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setMessageError] = useState("");
-  const ip = process.env.REACT_APP_IP;
-
-  const auth = getAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [errorPassword, setErrorPassword] = useState(false);
+  const [messageEmail, setMessageEmail] = useState("");
+  const [messagePassword, setMessagePassword] = useState("");
+  const regex = /@edu\.esiee-it\.fr/;
 
   const navigate = useNavigate();
 
@@ -100,34 +103,8 @@ const Login = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        userCredential.user.getIdToken().then(async (idToken) => {
-          console.log(userCredential.user);
-          await axios
-            .post(`http://${ip}:5050/auth/login`, {
-              idToken,
-            })
-            .then((res) => {
-              accountAuthService.saveTokens(
-                res.data.token,
-                userCredential.user.stsTokenManager.refreshToken
-              );
-              localStorage.setItem("user_uid", userCredential.user.uid);
-              navigate("/");
-            })
-            .catch(
-              (err) => setMessageError(err.response.data),
-              console.log(errorMessage)
-            );
-        });
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode);
-        console.log(errorMessage);
-      });
+    login(email, password);
+    verifInputErrors(email, password);
   };
 
   return (
@@ -188,6 +165,9 @@ const Login = () => {
                   id="input-email"
                   defaultValue={email}
                   onChange={onChangeEmail}
+                  sx={{
+                    input: { color: 'black' }
+                  }}
                   error={errorEmail}
                   helperText={messageEmail}
                 />
@@ -217,6 +197,9 @@ const Login = () => {
                   id="input-password"
                   defaultValue={password}
                   onChange={onChangePassword}
+                  sx={{
+                    input: { color: 'black' }
+                  }}
                   error={errorPassword}
                   helperText={messagePassword}
                   InputProps={{
@@ -260,6 +243,7 @@ const Login = () => {
                   className="login-button"
                   sx={{
                     backgroundColor: "#7a52e1",
+                    color: "white",
                   }}
                   variant="contained"
                 >
@@ -271,7 +255,7 @@ const Login = () => {
             <p className="text-sm font-medium text-center m-3">
               Pas encore de compte? Créez-en un{" "}
               <Link
-                href="/signup"
+                href="/register"
                 sx={{
                   color: "#7a52e1",
                   textDecoration: "none",

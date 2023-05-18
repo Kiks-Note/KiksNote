@@ -7,24 +7,80 @@ import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import "./Groups.scss";
 
-
-
 function App() {
     // For PO view
-    const getStudents = (classStudents) => {
-        axios.get("http://localhost:5050/users").then((res) => {
-            const students = [];
-            res.data.user.forEach(element => {
-                if (element.class === classStudents) students.push(element);
-            });
-            return res.data
-        });
-    }
+    /*    const getStudents = (classStudents) => {
+          axios.get("http://localhost:5050/users").then((res) => {
+               const students = [];
+              res.data.user.forEach(element => {
+                  if (element.class === classStudents) students.push(element);
+              });
+              return students 
+          });
+      }  */
+    const tasks = [
+        {
+            id: "1",
+            name: "Lucie",
+        },
+        {
+            id: "2",
+            name: "Celian",
+        },
+        {
+            id: "3",
+            name: "Killian",
+        },
+        {
+            id: "4",
+            name: "Antoine",
+        },
+        {
+            id: "5",
+            name: "Johan",
+        },
+        {
+            id: "6",
+            name: "Rui",
+        },
+        {
+            id: "7",
+            name: "Louis",
+        },
+        {
+            id: "8",
+            name: "Jules",
+        },
+        {
+            id: "9",
+            name: "Mohammed",
+        },
+        {
+            id: "10",
+            name: "Eddy",
+        },
+        {
+            id: "11",
+            name: "Lucas",
+        },
+        {
+            id: "12",
+            name: "Alan",
+        },
+        {
+            id: "13",
+            name: "Etienne",
+        },
+        {
+            id: "14",
+            name: "Adrien",
+        },
+    ];
 
     const colContent = {
         students: {
             name: "Students",
-            items: getStudents("L2-paris"),
+            items: tasks,
         },
     };
 
@@ -44,6 +100,10 @@ function App() {
             const destColumn = columns[destination.droppableId];
             const sourceItems = [...sourceColumn.items];
             const destItems = [...destColumn.items];
+            let nsgp = parseInt(document.querySelector('input[type="text"]').value);
+
+            if (destItems.length === nsgp) { return; /* TODO make a pretty toast*/ }
+
             const [removed] = sourceItems.splice(source.index, 1);
             destItems.splice(destination.index, 0, removed);
 
@@ -80,6 +140,7 @@ function App() {
     };
 
     function resetButton() {
+        document.querySelector('input[type="text"]').value = '';
         setColumns(colContent);
     }
 
@@ -154,7 +215,6 @@ function App() {
                 } else {
                     groupItems = studentsArrayRandom.slice(i, i + nsgp);
                 }
-                console.log(nbNotFull);
                 const updatedGroup = {
                     ...columns[groupKey],
                     items: groupItems,
@@ -164,7 +224,7 @@ function App() {
                 groupIndex++;
             }
             setColumns({ ...columns });
-            console.log(columns);
+            document.querySelector('input[type="text"]').value = '';
         }
     }
 
