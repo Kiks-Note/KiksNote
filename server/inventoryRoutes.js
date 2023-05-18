@@ -19,13 +19,14 @@ const {
   addCategory,
   deleteCategory,
   updateCategory,
+  getDeviceRequests,
   todayRequests,
   liveCategories,
   liveInventory,
   borrowedList,
 } = require("./controllers/inventory");
 
-module.exports = function (wsI) {
+module.exports = function (connection, pathname) {
   // Accept wsI as an argument
   router.get("/", inventory);
   router.get("/device/:deviceId", inventoryDeviceId);
@@ -42,34 +43,28 @@ module.exports = function (wsI) {
   router.put("/category", addCategory);
   router.delete("/category/:category", deleteCategory);
   router.put("/category/:oldCategory", updateCategory);
+  router.get("/deviceRequests/:deviceId", getDeviceRequests);
 
-  wsI.on("request", async function (request) {
-    const connection = request.accept(null, request.origin);
-    const {pathname} = parse(request.httpRequest.url);
-    connection ? console.log("connected") : console.log("not connected");
-    console.log(pathname);
-
-    switch (pathname) {
-      case "/todayRequests":
-        todayRequests(request, connection);
-        console.log("todayRequests");
-        break;
-      case "/liveCategories":
-        liveCategories(request, connection);
-        console.log("liveCategories");
-        break;
-      case "/liveInventory":
-        liveInventory(request, connection);
-        console.log("liveInventory");
-        break;
-      case "/adminBorrowedList":
-        borrowedList(request, connection);
-        console.log("adminBorrowedList");
-        break;
-      default:
-        break;
-    }
-  });
+  switch (pathname) {
+    case "/todayRequests":
+      todayRequests(connection);
+      console.log("todayRequests");
+      break;
+    case "/liveCategories":
+      liveCategories(connection);
+      console.log("liveCategories");
+      break;
+    case "/liveInventory":
+      liveInventory(connection);
+      console.log("liveInventory");
+      break;
+    case "/adminBorrowedList":
+      borrowedList(connection);
+      console.log("adminBorrowedList");
+      break;
+    default:
+      break;
+  }
 
   return router;
 };

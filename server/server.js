@@ -27,64 +27,32 @@ const wsI = new webSocketServer({
   autoAcceptConnections: false,
 });
 
-
-// require("./routes/auth")(app, db, auth, authClient, signInWithEmailAndPassword);
-
 const inventoryRoutes = require("./inventoryRoutes");
 const authRoutes = require("./authRoutes");
-app.use("/inventory", inventoryRoutes(wsI));
 app.use("/auth", authRoutes);
 
+wsI.on("request", (request) => {
+  const connection = request.accept(null, request.origin);
+  const {pathname} = parse(request.httpRequest.url);
+  console.log("pathname => ", pathname);
+  connection ? console.log("connection ok") : console.log("connection failed");
+
+  app.use("/inventory", inventoryRoutes(connection, pathname));
+  // app.use("/dashboard", dashboardRoutes(connection, pathname));
+  // app.use("/profil", profilRoutes(connection, pathname, upload));
+  // app.use("/blog", blogRoutes(connection, pathname));
+
+  connection.on("error", (error) => {
+    console.log(`WebSocket Error: ${error}`);
+  });
+
+  connection.on("close", (reasonCode, description) => {
+    console.log(
+      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
+    );
+  });
+});
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });
-
-// app.post("/register", (req, res) => {
-//   const {
-//     userEmail,
-//     userPassword,
-//     userFirstName,
-//     userLastName,
-//     userBirthDate,
-//     userStatus,
-//     userClass,
-//   } = req.body;
-//   auth
-//     .createUser({
-//       email: userEmail,
-//       password: userPassword,
-//     })
-//     .then((user) => {
-//       if (userClass === "") {
-//         db.collection("users")
-//           .doc(user.uid)
-//           .set({
-//             firstname: userFirstName,
-//             lastname: userLastName,
-//             password: bcrypt.hashSync(userPassword, saltRounds),
-//             dateofbirth: new Date(userBirthDate),
-//             status: userStatus,
-//             email: userEmail,
-//           });
-//       } else {
-//         db.collection("users")
-//           .doc(user.uid)
-//           .set({
-//             firstname: userFirstName,
-//             lastname: userLastName,
-//             password: bcrypt.hashSync(userPassword, saltRounds),
-//             dateofbirth: new Date(userBirthDate),
-//             status: userStatus,
-//             email: userEmail,
-//             class: userClass,
-//           });
-//       }
-//       res.send({message: "User created successfully"});
-//     })
-//     .catch((err) => {
-//       console.log(err);
-//     });
-// });
-
-// const wss = new WebSocket.Server({ server });

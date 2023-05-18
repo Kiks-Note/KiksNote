@@ -15,12 +15,16 @@ const inventory = async (req, res) => {
 };
 
 const inventoryDeviceId = async (req, res) => {
-  const {deviceId} = req.params;
+  try {
+    const {deviceId} = req.params;
 
-  const docRef = db.collection("inventory").doc(deviceId);
-  const doc = await docRef.get();
+    const docRef = db.collection("inventory").doc(deviceId);
+    const doc = await docRef.get();
 
-  res.status(200).send(doc.data());
+    res.status(200).send({...doc.data(), id: doc.id});
+  } catch (err) {
+    res.status(500).send(err);
+  }
 };
 
 const addDevice = async (req, res) => {
@@ -139,7 +143,7 @@ const makeRequest = async (req, res) => {
       deviceId: deviceId,
       startDate: new Date(startDate),
       endDate: new Date(endDate),
-      createdAt: moment().format("DD/MM/YYYY"),
+      createdAt: new Date(),
       requesterId: requesterId,
       reason: requestReason,
       group: persons,
@@ -330,7 +334,24 @@ const updateCategory = async (req, res) => {
   }
 };
 
-const liveCategories = async (request, connection) => {
+const getDeviceRequests = async (req, res) => {
+  try {
+    const {deviceId} = req.params;
+
+    const snapshot = await db
+      .collection("inventory_requests")
+      .where("deviceId", "==", deviceId)
+      .get();
+
+    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    res.status(200).send(documents);
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
+const liveCategories = async (connection) => {
   db.collection("inventoryCategories")
     .doc("7UKjabIg2uFyz1504U2K")
     .onSnapshot((snapshot) => {
@@ -338,7 +359,7 @@ const liveCategories = async (request, connection) => {
     });
 };
 
-const todayRequests = async (request, connection) => {
+const todayRequests = async (connection) => {
   db.collection("inventory_requests")
     .where("createdAt", "<=", moment().format("DD/MM/YYYY"))
     .where("status", "==", "pending")
@@ -373,7 +394,7 @@ const todayRequests = async (request, connection) => {
     );
 };
 
-const liveInventory = async (request, connection) => {
+const liveInventory = async (connection) => {
   db.collection("inventory").onSnapshot((snapshot) => {
     const inventory = snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -384,7 +405,7 @@ const liveInventory = async (request, connection) => {
   });
 };
 
-const borrowedList = async (request, connection) => {
+const borrowedList = async (connection) => {
   db.collection("inventory")
     .where("status", "==", "borrowed")
     .onSnapshot(
@@ -439,6 +460,7 @@ module.exports = {
   addCategory,
   deleteCategory,
   updateCategory,
+  getDeviceRequests,
   todayRequests,
   liveCategories,
   liveInventory,
