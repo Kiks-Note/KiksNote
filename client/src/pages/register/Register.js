@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from "react";
-import {Link} from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Divider from "@mui/material/Divider";
 import axios from "axios";
-import {toast, ToastContainer} from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "./Register.scss";
 import { ReactComponent as ReactLogo } from "../../assets/img/signup-art.svg";
 
@@ -35,20 +35,20 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setFormErrors(validate());
+    register();
     setIsSubmit(true);
   };
 
   useEffect(() => {
     // console.log(formErrors);
     if (Object.keys(formErrors).length === 0 && isSubmit) {
-      register();
       setIsSubmit(false);
     }
   });
 
   const register = async () => {
     await axios
-      .post("http://localhost:5050/register", {
+      .post("http://localhost:5050/auth/signup", {
         userEmail,
         userPassword,
         userFirstName,
@@ -123,7 +123,7 @@ const Register = () => {
           </h1>
           <Divider
             variant="middle"
-            style={{background: "#fff", height: "1px"}}
+            style={{ background: "#fff", height: "1px" }}
           />
           <form className="p-15 form">
             <div className="m-4">

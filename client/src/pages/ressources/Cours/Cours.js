@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// import { user } from "../../../hooks/useFirebase";
+import useFirebase from "../../../hooks/useFirebase";
 
 import {
   Box,
@@ -60,16 +60,8 @@ export const toastFail = (message) => {
 const Ressources = () => {
   let navigate = useNavigate();
 
-  // const { user } = useFirebase();
-
-  // var userStatus = user?.status;
-
-  // console.log(userStatus);
-
-  const loggedUser = localStorage.getItem("user");
-  const loggedUserParsed = JSON.parse(loggedUser);
-  var userStatus = loggedUserParsed.status;
-  // var userClass = loggedUserParsed.class;
+  const { user } = useFirebase();
+  const userStatus = user?.status;
 
   const [view, setView] = useState("module");
 
