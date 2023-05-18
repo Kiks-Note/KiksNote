@@ -158,13 +158,13 @@ const createCours = async (req, res) => {
 
     const resourcesRef = db.collection("cours");
     const newResource = await resourcesRef.add({
-      title,
-      description,
-      date,
-      campus_numerique,
-      courseClass,
-      owner,
-      private,
+      title: title,
+      description: description,
+      date: new Date(date),
+      campus_numerique: campus_numerique,
+      courseClass: courseClass,
+      owner: owner,
+      private: private,
       imageCourseUrl: url,
     });
 
@@ -242,14 +242,14 @@ const updateCours = async (req, res) => {
     }
 
     await resourcesRef.doc(courseId).update({
-      title,
-      description,
-      date,
-      campus_numerique,
-      courseClass,
-      owner,
-      private,
-      imageCourseUrl,
+      title: title,
+      description: description,
+      date: new Date(date),
+      campus_numerique: campus_numerique,
+      courseClass: courseClass,
+      owner: owner,
+      private: private,
+      imageCourseUrl: imageCourseUrl,
     });
 
     const updatedCourseData = await resourcesRef.doc(courseId).get();

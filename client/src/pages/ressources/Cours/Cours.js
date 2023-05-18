@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import useFirebase from "../../../hooks/useFirebase";
+import timeConverter from "../../../functions/TimeConverter";
 
 import {
   Box,
@@ -192,9 +193,6 @@ const Ressources = () => {
     setOpen(true);
   };
 
-  // const pdfBacklogRoute = () => navigate("/pdfBacklog");
-  // const pdfSupportRoute = () => navigate("/pdfSupport");
-
   const onSubmit = async () => {
     try {
       await createNewCours();
@@ -217,12 +215,12 @@ const Ressources = () => {
   const endLastYear = new Date(lastYear + 1, 7, 31);
 
   const filteredCoursesCurrentYear = courses.filter((course) => {
-    const courseDate = new Date(course.data.date);
+    const courseDate = timeConverter(course.data.date); // Utiliser timeConverter pour convertir le timestamp en date
     return courseDate >= startCurrentYear && courseDate <= endCurrentYear;
   });
 
   const filteredCoursesLastYear = courses.filter((course) => {
-    const courseDate = new Date(course.data.date);
+    const courseDate = timeConverter(course.data.date); // Utiliser timeConverter pour convertir le timestamp en date
     return courseDate >= startLastYear && courseDate <= endLastYear;
   });
 

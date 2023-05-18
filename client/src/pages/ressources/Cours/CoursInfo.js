@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
+import moment from "moment";
 
 import useFirebase from "../../../hooks/useFirebase";
 
@@ -758,7 +759,11 @@ const CoursInfo = () => {
                 />
                 <div className="flex">
                   <h4 className="font-bold">Date de Sprint : </h4>
-                  <p className="pl-2">{coursData.date}</p>
+                  <p className="pl-2">
+                    {coursData?.date &&
+                      coursData.date._seconds &&
+                      moment.unix(coursData.date._seconds).format("DD.MM.YYYY")}
+                  </p>
                 </div>
                 <h2
                   style={{
@@ -857,7 +862,13 @@ const CoursInfo = () => {
                         handleFileChange={handleFileChange}
                         handleDrop={handleDrop}
                         coursTitle={coursData.title}
-                        coursDate={coursData.date}
+                        coursDate={
+                          coursData?.date &&
+                          coursData.date._seconds &&
+                          moment
+                            .unix(coursData.date._seconds)
+                            .format("DD.MM.YYYY")
+                        }
                         coursDescription={coursData.description}
                         setCoursTitle={setCoursTitle}
                         setCoursDate={setCoursDate}
