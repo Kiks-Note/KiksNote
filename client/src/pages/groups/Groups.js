@@ -7,9 +7,10 @@ import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SettingsIcon from '@mui/icons-material/Settings';
 import { PopUp } from "../../components/groups/PopUp";
+import moment from "moment";
+
 import "./Groups.scss";
 
-// pour le sotckage des groupes, convertir la date de sprint avec le new Date de firebase
 
 function App() {
     const [columns, setColumns] = useState();
@@ -166,8 +167,8 @@ function App() {
 
         groupsKey.forEach(group => {
             axios.post(`http://localhost:5050/groupes/exportGroups`, {
-                start_date: new Date(settings.start_date),
-                end_date: new Date(settings.end_date),
+                start_date: settings.start_date,
+                end_date: settings.end_date,
                 students: columns[group].items.map(student => student.id),
                 po_id: "todo",
             });
