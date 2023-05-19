@@ -15,7 +15,6 @@ import {
   TextField,
 } from "@mui/material";
 import {
-  Close as CloseIcon,
   Person as PersonIcon,
   Label as LabelIcon,
   Delete as DeleteIcon,

@@ -62,9 +62,6 @@ export default function Dashboard() {
     const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
 
     wsComments.onopen = function (e) {
-      console.log("[open] Connection established");
-      console.log("Sending to server");
-      console.log("student", user.id);
       wsComments.send(JSON.stringify(user.id));
     };
 

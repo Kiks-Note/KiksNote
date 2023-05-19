@@ -22,8 +22,6 @@ export default function ButtonAddCard(props) {
   };
 
   const handleAddCard = () => {
-    console.log(cardTitle);
-    console.log(props.columnId);
     if (cardTitle != "") {
       axios
         .put(

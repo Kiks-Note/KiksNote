@@ -27,8 +27,6 @@ export default function Board({ boardId, dashboardId }) {
       const wsComments = new w3cwebsocket(`ws://localhost:5050/board`);
 
       wsComments.onopen = function (e) {
-        console.log("[open] Connection established");
-        console.log("Sending to server");
         wsComments.send(
           JSON.stringify({
             dashboardId: dashboardId,
@@ -66,8 +64,6 @@ export default function Board({ boardId, dashboardId }) {
     const destColumn = columns[destination.droppableId];
     const sourceId = result.source.droppableId;
     const destinationId = result.destination.droppableId;
-    console.log("source" + sourceId);
-    console.log("destinationId" + destinationId);
 
     if (sourceId === destinationId) {
       // Déplacement au sein de la même colonne

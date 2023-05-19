@@ -23,7 +23,6 @@ export default function CardBoardOverview({
 }) {
   const dispatch = useDispatch();
   const moveToOverView = () => {
-    console.log("Board" + id);
     const boardTab = {
       id: id,
       label: `Board ${title}`,

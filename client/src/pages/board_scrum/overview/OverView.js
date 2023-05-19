@@ -31,7 +31,6 @@ function OverView({ id }) {
   const dispatch = useDispatch();
 
   const moveToOverView = () => {
-    console.log("backlog"+id);
     const pdfViewTab = {
       id: "Backlog" + id,
       label: "Backlog ",
@@ -48,9 +47,6 @@ function OverView({ id }) {
       const wsComments = new w3cwebsocket(`ws://localhost:5050/overview`);
 
       wsComments.onopen = function (e) {
-        console.log("[open] Connection established");
-        console.log("Sending to server");
-        console.log("dashboard", id);
         wsComments.send(JSON.stringify(id));
       };
 

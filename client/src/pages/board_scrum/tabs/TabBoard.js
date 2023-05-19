@@ -25,7 +25,6 @@ export default function TabBoard() {
       dispatch(removeTab(tabToDelete));
 
       const newActiveTab = updatedTabs[0].id;
-      console.log(newActiveTab);
       dispatch(setActiveTab(newActiveTab));
     },
     [tabs, activeTab, dispatch]

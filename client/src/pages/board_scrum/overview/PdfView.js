@@ -87,18 +87,15 @@ function PdfView({ linkPdf, dashboardId }) {
     );
   };
   async function onSubmit(data) {
-    console.log(data);
     const formData = {
       name: data.title,
       desc: data.description,
     };
-    console.log(formData);
     try {
       const response = await axios.post(
         "http://localhost:5050/dashboard/creation/" + dashboardId + "/stories",
         formData
       );
-      console.log(response.data);
       reset(); // Efface les champs après la soumission réussie
     } catch (error) {
       console.error(error);

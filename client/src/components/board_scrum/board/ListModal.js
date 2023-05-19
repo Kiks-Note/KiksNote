@@ -64,7 +64,6 @@ export default function ListModal({
     resolver: yupResolver(schema),
   });
   const onSubmit = (data) => {
-    console.log(info);
     try {
       axios.put(
         "http://localhost:5050/dashboard/" +
