@@ -5,8 +5,7 @@ import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CardBoard from "../../components/board_scrum/board/CardBoard";
 import { Typography } from "@mui/material";
 import ButtonAddCard from "../../components/board_scrum/board/ButtonAddCard";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
+import { Toaster, toast } from "react-hot-toast";
 import Slide from "@mui/material/Slide";
 import { Switch } from "@mui/material";
 import { w3cwebsocket } from "websocket";
@@ -21,7 +20,6 @@ export default function Board(props) {
   const [boardName, setBoardName] = useState("");
   const [labelList, setLabelList] = useState([]);
   const [label, setLabel] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -58,56 +56,65 @@ export default function Board(props) {
       newColumns
     );
   }
-  const onDragEnd = (result, columns, setColumns) => {
+  const onDragEnd = async (result, columns, setColumns) => {
     if (!result.destination) return;
-    if (
-      result.destination.droppableId === "0" &&
-      result.source.droppableId !== "0"
-    ) {
-      setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000); // DELETE AFTER 3 SEC
-      return;
-    } else if (
-      result.destination.droppableId !== "0" &&
-      result.source.droppableId === "0"
-    ) {
-      setErrorMessage(
-        "Impossible de déplacer une storie dans une autre colonne"
-      );
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 5000); // DELETE AFTER 5 SEC
-      return;
-    }
-    console.log(result.destination.droppableId);
-    if (
-      result.destination.droppableId === "1" &&
-      result.source.droppableId !== "1"
-    ) {
-      setErrorMessage("Impossible de déplacer cet élément dans cette colonne");
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 3000); // DELETE AFTER 3 SEC
-      return;
-    } else if (
-      result.destination.droppableId !== "1" &&
-      result.source.droppableId === "1"
-    ) {
-      setErrorMessage(
-        "Impossible de déplacer un critère d'acceptation dans une autre colonne"
-      );
-      setTimeout(() => {
-        setErrorMessage("");
-      }, 5000); // DELETE AFTER 5 SEC
-      return;
-    }
+
     const source = result.source;
     const destination = result.destination;
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
-    if (source.droppableId !== destination.droppableId) {
+    const sourceId = result.source.droppableId;
+    const destinationId = result.destination.droppableId;
+    console.log("source" + sourceId);
+    console.log("destinationId" + destinationId);
+
+    if (sourceId === destinationId) {
+      // Déplacement au sein de la même colonne
+      const copiedItems = [...sourceColumn.items];
+      const [removed] = copiedItems.splice(source.index, 1);
+      copiedItems.splice(destination.index, 0, removed);
+      changeCardIndex({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: copiedItems,
+        },
+      });
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: copiedItems,
+        },
+      });
+    } else {
+      // Déplacement entre deux colonnes différentes
+      const sourceColumn = columns[sourceId];
+      const destinationColumn = columns[destinationId];
+      if (
+        destinationId === "0" ||
+        sourceId === "1" ||
+        destinationId === "5" ||
+        sourceId === "6"
+      ) {
+        toast.error("Impossible de déplacer cet élément dans cette colonne", {
+          duration: 5000,
+        });
+        return;
+      } else if (
+        sourceId === "0" ||
+        destinationId === "1" ||
+        sourceId === "5" ||
+        destinationId === "6"
+      ) {
+        toast.error(
+          "Impossible de déplacer une storie dans une autre colonne",
+          {
+            duration: 5000,
+          }
+        );
+        return;
+      }
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
       const [removed] = sourceItems.splice(source.index, 1);
@@ -134,40 +141,12 @@ export default function Board(props) {
           items: destItems,
         },
       });
-    } else {
-      const copiedItems = [...sourceColumn.items];
-      const [removed] = copiedItems.splice(source.index, 1);
-      copiedItems.splice(destination.index, 0, removed);
-      changeCardIndex({
-        ...columns,
-        [source.droppableId]: {
-          ...sourceColumn,
-          items: copiedItems,
-        },
-      });
-      setColumns({
-        ...columns,
-        [source.droppableId]: {
-          ...sourceColumn,
-          items: copiedItems,
-        },
-      });
     }
   };
 
   return (
     <>
       <div>
-        {errorMessage && (
-          <Alert
-            severity="warning"
-            variant="filled"
-            TransitionComponent={TransitionComponent}
-          >
-            <AlertTitle>Attention</AlertTitle>
-            {errorMessage}
-          </Alert>
-        )}
         <Typography style={{ textAlign: "center" }} variant="h5">
           {boardName}
         </Typography>
@@ -176,7 +155,8 @@ export default function Board(props) {
           onChange={labelChange}
           inputProps={{ "aria-label": "controlled" }}
         />
-        <div className="board_container_all">
+        <Toaster />
+        <div className="board_container_all grid-container">
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
           >
@@ -210,7 +190,7 @@ export default function Board(props) {
                               padding: 4,
                               width: 260,
                               minHeight: 30,
-                              maxHeight: "75vh",
+                              maxHeight: "40vh",
                               overflow: "auto",
                               height: "auto",
                             }}

@@ -711,16 +711,39 @@ const overviewRequests = async (connection) => {
       dataReturn.map((release) => {
         for (var r in release) {
           release[r].map((x) => {
-            if (doc.id == x.boardId) {
-              boards.push({
+            if (doc.id === x.boardId) {
+              const toDoItems = doc.data().toDo.items;
+              const inProgressItems = doc.data().inProgress.items;
+              const doneItems = doc.data().done.items;
+              const end = x.ending_date;
+             const start = x.starting_date;
+
+              const board = {
                 id: doc.id,
                 name: r + " / " + x.name,
                 data: {
-                  toDo: doc.data().toDo.items.length,
-                  inProgress: doc.data().inProgress.items.length,
-                  done: doc.data().done.items.length,
+                  toDo: {
+                    count: toDoItems.length,
+                    items: toDoItems,
+                    ending_date: end,
+                    starting_date: start,
+                  },
+                  inProgress: {
+                    count: inProgressItems.length,
+                    items: inProgressItems,
+                    ending_date: end,
+                    starting_date: start,
+                  },
+                  done: {
+                    count: doneItems.length,
+                    items: doneItems,
+                    ending_date: end,
+                    starting_date: start,
+                  },
                 },
-              });
+              };
+
+              boards.push(board);
               stories = stories.concat(doc.data().requested.items);
             }
           });

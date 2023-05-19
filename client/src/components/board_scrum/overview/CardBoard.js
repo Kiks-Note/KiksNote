@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Board from "../../../pages/board_scrum/Board";
 import "./CardBoard.css";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const CardBoard = ({
   title,
@@ -58,23 +61,21 @@ const CardBoard = ({
   const progressPercentage = Math.round(timeLeft.progress * 100);
 
   return (
-    <div className="card" onClick={moveToOverView}>
-      <h2 className="title">{title}</h2>
-      <div className="progress-bar-container" style={{ textAlign: "center" }}>
-        {progressPercentage == 0 && (
-          <p style={{ color: "black" }}>Sprint non commencé</p>
+    <Box className="card" onClick={moveToOverView}>
+      <Typography variant="h6" className="title">
+        {title}
+      </Typography>
+      <Box sx={{ textAlign: "center" }}>
+        {progressPercentage === 0 && (
+          <Typography>Sprint non commencé</Typography>
         )}
-        <div
-          className="progress-bar"
-          style={{ width: `${progressPercentage}%` }}
-        >
-          {progressPercentage == 100 && <p>sprint finis</p>}
-          {progressPercentage != 100 && progressPercentage != 0 && (
-            <p>Sprint en cours</p>
-          )}
-        </div>
-      </div>
-    </div>
+        <LinearProgress variant="determinate" value={progressPercentage} />
+        {progressPercentage === 100 && <Typography>Sprint terminé</Typography>}
+        {progressPercentage !== 100 && progressPercentage !== 0 && (
+          <Typography>Sprint en cours</Typography>
+        )}
+      </Box>
+    </Box>
   );
 };
 
