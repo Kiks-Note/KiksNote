@@ -1,10 +1,14 @@
+
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
 import PostIt from "./PostIt";
+import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import html2pdf from "html2pdf.js";
+
 
 const tasks = [
   {
@@ -95,7 +99,6 @@ const taskStatus = {
     items: [],
   },
 };
-
 export default function EmpathyMap() {
   const [columns, setColumns] = useState(taskStatus);
 
@@ -137,120 +140,163 @@ export default function EmpathyMap() {
     }
   };
 
+  const exportToPDF = () => {
+    const element = document.getElementById("pdf-content");
+    const opt = {
+      margin: [0, 0, 0, 0], // Marge du document PDF
+      filename: "empathy-map.pdf", // Nom du fichier PDF résultant
+      image: { type: "jpeg", quality: 0.98 }, // Type d'image et qualité
+      html2canvas: { scale: 2 }, // Échelle pour améliorer la qualité de l'image
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" }, // Format et orientation du document PDF
+    };
+
+    html2pdf().set(opt).from(element).save();
+
+    // html2pdf()
+    //   .set(opt)
+    //   .from(element)
+    //   .toPdf()
+    //   .get("pdf")
+    //   .then((pdf) => {
+    //     // Convertir le PDF en ArrayBuffer
+    //     return pdf.output("arraybuffer");
+    //   })
+    //   .then((buffer) => {
+    //     // Envoyer le fichier PDF vers votre endpoint
+    //     const formData = new FormData();
+    //     formData.append(
+    //       "pdfFile",
+    //       new Blob([buffer], { type: "application/pdf" }),
+    //       "empathy-map.pdf"
+    //     );
+
+    //     return axios.post("URL_DE_VOTRE_ENDPOINT", formData);
+    //   })
+    //   .then((response) => {
+    //     // Gérer la réponse de l'endpoint, par exemple afficher un message de réussite
+    //     console.log("PDF envoyé avec succès !");
+    //   })
+    //   .catch((error) => {
+    //     // Gérer les erreurs, par exemple afficher un message d'erreur
+    //     console.error("Erreur lors de l'envoi du PDF :", error);
+    //   });
+  };
+
   return (
-    <div>
-      <Typography
-        variant="h3"
-        
-      >
-        Empathy Map de Adrien
-      </Typography>
-      <div
-        className="parent"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gridTemplateRows: "repeat(4, 1fr)",
-          gridColumnGap: "10px",
-          gridRowGap: "10px",
-          height: "90vh",
-        }}
-      >
-        <DragDropContext
-          onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+    <>
+      <div style={{margin:2}}>
+        <Typography variant="h6">Empathy Map de Adrien</Typography>
+        <Button variant="contained" onClick={exportToPDF}>
+          Exporter mon EmpathyMap
+        </Button>
+        <div
+          className="parent"
+          id="pdf-content"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateRows: "repeat(4, 1fr)",
+            gridColumnGap: "10px",
+            gridRowGap: "10px",
+            height: "90vh",
+          }}
         >
-          {Object.entries(columns).map(([columnId, column]) => {
-            return (
-              <div
-                style={{
-                  backgroundColor: column.color,
-                  height: "100%",
-                  gridArea: column.params,
-                  padding: "10px",
-                  borderRadius: "4%",
-                }}
-                key={columnId}
-              >
+          <DragDropContext
+            onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+          >
+            {Object.entries(columns).map(([columnId, column]) => {
+              return (
                 <div
                   style={{
+                    backgroundColor: column.color,
+                    height: "100%",
+                    gridArea: column.params,
                     padding: "10px",
-                    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
                     borderRadius: "4%",
-                    display: "flex",
-                    alignItems: "center",
+                    height: "100%",
                   }}
+                  key={columnId}
                 >
-                  <Typography
-                    variant="h6"
+                  <div
                     style={{
-                      fontWeight: "bold",
-                      color: "black",
-                      marginLeft: "5%",
+                      padding: "10px",
+                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                      borderRadius: "4%",
+                      display: "flex",
+                      alignItems: "center",
                     }}
                   >
-                    {column.name}
-                  </Typography>
-                  <IconButton
-                    aria-label="Add"
-                    color="primary"
-                    size="small"
-                    style={{ marginLeft: "auto" }}
-                    //onClick={handleAddButtonClick} // Ajoutez votre fonction de gestion de l'ajout ici
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </div>
+                    <Typography
+                      variant="h6"
+                      style={{
+                        fontWeight: "bold",
+                        color: "black",
+                        marginLeft: "5%",
+                      }}
+                    >
+                      {column.name}
+                    </Typography>
+                    <IconButton
+                      aria-label="Add"
+                      color="primary"
+                      size="small"
+                      style={{ marginLeft: "auto" }}
+                      //onClick={handleAddButtonClick} // Ajoutez votre fonction de gestion de l'ajout ici
+                    >
+                      <AddIcon />
+                    </IconButton>
+                  </div>
 
-                <Droppable droppableId={columnId} key={columnId}>
-                  {(provided, snapshot) => {
-                    return (
-                      <div
-                        {...provided.droppableProps}
-                        ref={provided.innerRef}
-                        style={{
-                          background: snapshot.isDraggingOver
-                            ? "#ed6c0247"
-                            : "#ebecf0",
-                          display: "block",
-                          background: "#00000030",
-                          minHeight: 30,
-                          maxHeight: "39vh",
-                          overflow: "auto",
-                          height: "auto",
-                          borderRadius: "4%",
-                        }}
-                      >
-                        {column.items.map((item, index) => {
-                          return (
-                            <Draggable
-                              key={item.id}
-                              draggableId={item.id}
-                              index={index}
-                            >
-                              {(provided, snapshot) => {
-                                return (
-                                  <div
-                                    ref={provided.innerRef}
-                                    {...provided.draggableProps}
-                                    {...provided.dragHandleProps}
-                                  >
-                                    <PostIt text={item.content} />
-                                  </div>
-                                );
-                              }}
-                            </Draggable>
-                          );
-                        })}
-                        {provided.placeholder}
-                      </div>
-                    );
-                  }}
-                </Droppable>
-              </div>
-            );
-          })}
-        </DragDropContext>
+                  <Droppable droppableId={columnId} key={columnId}>
+                    {(provided, snapshot) => {
+                      return (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          style={{
+                            display: "flex",
+                            background: "#00000030",
+                            minHeight: 30,
+                            maxHeight: "90%",
+                            overflow: "auto",
+                            height: "auto",
+                            borderRadius: "4%",
+                            flexWrap:"wrap"
+                          }}
+                        >
+                          {column.items.map((item, index) => {
+                            return (
+                              <Draggable
+                                key={item.id}
+                                draggableId={item.id}
+                                index={index}
+                              >
+                                {(provided, snapshot) => {
+                                  return (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                    >
+                                      <PostIt text={item.content} />
+                                    </div>
+                                  );
+                                }}
+                              </Draggable>
+                            );
+                          })}
+                          {provided.placeholder}
+                        </div>
+                      );
+                    }}
+                  </Droppable>
+                </div>
+              );
+            })}
+          </DragDropContext>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
+
