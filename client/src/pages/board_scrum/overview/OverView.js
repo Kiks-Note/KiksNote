@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import {
   Accordion,
   AccordionSummary,
@@ -15,26 +16,30 @@ import StatTab from "../../../components/board_scrum/overview/StatTab";
 import StoryList from "../../../components/board_scrum/overview/StoryList";
 import Grid from "@mui/material/Grid";
 import { w3cwebsocket } from "websocket";
-import PdfView from "./PdfView";
+import PropTypes from "prop-types";
+import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
 
-function OverView(props) {
+OverView.propTypes = {
+  id: PropTypes.string.isRequired,
+};
+function OverView({ id }) {
   var [releases, setRelease] = useState({});
   const [stories, setStories] = useState({});
   var [boards, setBoards] = useState({});
   const [display, setDisplay] = useState(false);
   const [pdfLink, setPdfLink] = useState("");
+  const dispatch = useDispatch();
 
   const moveToOverView = () => {
-    var x = JSON.parse(localStorage.getItem("tabs")) || [];
-    x.push({ id: props.id + "pdf", idDb: -1, type: "pdf", label: "pdf" });
-    localStorage.setItem("tabs", JSON.stringify(x));
-
-    props.addTab({
-      id: props.id,
-      tab: "pdf",
-      component: <PdfView link={pdfLink} dashboardId={props.id} />,
+    const overViewTab = {
+      id: id,
+      label: "Backlog ",
       closeable: true,
-    });
+      component: "PdfView",
+      data: { id, pdfLink },
+    };
+    dispatch(addTab(overViewTab));
+    dispatch(setActiveTab(overViewTab.id));
   };
 
   useEffect(() => {
@@ -44,8 +49,8 @@ function OverView(props) {
       wsComments.onopen = function (e) {
         console.log("[open] Connection established");
         console.log("Sending to server");
-        console.log("dashboard", props.id);
-        wsComments.send(JSON.stringify(props.id));
+        console.log("dashboard", id);
+        wsComments.send(JSON.stringify(id));
       };
 
       wsComments.onmessage = (message) => {
@@ -65,17 +70,13 @@ function OverView(props) {
         <Grid item xs={12} md={4}>
           <Typography variant="h4">Stories</Typography>
           {display ? (
-            <StoryList
-              stories={stories}
-              sprints={releases}
-              dashboardId={props.id}
-            />
+            <StoryList stories={stories} sprints={releases} dashboardId={id} />
           ) : (
             <></>
           )}
         </Grid>
         <Grid item xs={12} md={4}>
-          {display ? <StatTab dashboardId={props.id} boards={boards} /> : <></>}
+          {display ? <StatTab dashboardId={id} boards={boards} /> : <></>}
         </Grid>
         <Grid item xs={12} md={3}>
           <Box>
@@ -121,9 +122,8 @@ function OverView(props) {
                         <Box sx={{ width: "100%" }}>
                           <CardSprint
                             key={i}
-                            addTab={props.addTab}
                             release={releases[item]}
-                            dashboardId={props.id}
+                            dashboardId={id}
                           />
                         </Box>
                       </AccordionDetails>

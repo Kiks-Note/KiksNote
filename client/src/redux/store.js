@@ -1,10 +1,12 @@
-import { configureStore } from '@reduxjs/toolkit';
-import impactMappingSlice from './slices/impactMappingSlice';
+import { configureStore, getDefaultMiddleware } from "@reduxjs/toolkit";
+import impactMappingSlice from "./slices/impactMappingSlice";
+import tabBoardSlice from "./slices/tabBoardSlice";
+import thunk from "redux-thunk";
 
-//Slices used to make it usable in every file you want
 export const store = configureStore({
-    reducer: {
-        impactMapping: impactMappingSlice,
-        tabBoard: tabBoardSlice,
-    },
-})
+  reducer: {
+    impactMapping: impactMappingSlice,
+    tabBoard: tabBoardSlice,
+  },
+  middleware: [...getDefaultMiddleware(), thunk],
+});

@@ -1,16 +1,15 @@
 import axios from "axios";
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import {AuthProvider} from "./hooks/useAuth";
-import "./index.css";
+import { AuthProvider } from "./hooks/useAuth";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 import Theme from "./utils/Theme";
-import {FirebaseContextProvider} from "./hooks/useFirebase";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
-  <>
+  <Provider store={store}>
     <Theme />
-  </>
+  </Provider>
 );

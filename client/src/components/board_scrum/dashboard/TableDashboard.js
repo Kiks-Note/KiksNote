@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
 import {
   DataGrid,
   GridToolbarQuickFilter,
@@ -14,34 +15,24 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
 import LaunchIcon from "@mui/icons-material/Launch";
-import OverView from "../../../pages/board_scrum/overview/OverView";
+import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
 
 TableDashboard.propTypes = {
-  addTab: PropTypes.func.isRequired,
   rows: PropTypes.array.isRequired,
 };
-TableDashboard.defaultProps = {
-  addTab: () => {},
-};
-export default function TableDashboard({ addTab, rows }) {
-  const moveToOverView = (event) => {
-    var x = JSON.parse(localStorage.getItem("tabs")) || [];
-    x.push({
-      id: event.id,
-      label: `OverView ${event.row.sprint_group}`,
-      closeable: true,
-      tab: "OverView " + event.row.sprint_group,
-      component: <OverView id={event.id} addTab={addTab} />,
-    });
-    localStorage.setItem("tabs", JSON.stringify(x));
 
-    addTab({
+export default function TableDashboard({ rows }) {
+  const dispatch = useDispatch();
+  const moveToOverView = (event) => {
+    const overViewTab = {
       id: event.id,
       label: `OverView ${event.row.sprint_group}`,
       closeable: true,
-      tab: "OverView " + event.row.sprint_group,
-      component: <OverView id={event.id} addTab={addTab} />,
-    });
+      component: "OverView",
+      data: event.id,
+    };
+    dispatch(addTab(overViewTab));
+    dispatch(setActiveTab(overViewTab.id));
   };
 
   const columns = [

@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import PropTypes from "prop-types";
 import TableDashboard from "../../components/board_scrum/dashboard/TableDashboard";
 import CardDashBoard from "../../components/board_scrum/dashboard/CardDashboard";
 import Box from "@mui/material/Box";
@@ -15,13 +14,8 @@ import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import ListCardDashboard from "../../components/board_scrum/dashboard/ListCardDashboard";
 
-Dashboard.propTypes = {
-  addTab: PropTypes.func.isRequired,
-};
-Dashboard.defaultProps = {
-  addTab: () => {},
-};
-export default function Dashboard(addTab) {
+export default function Dashboard() {
+  const { user } = useFirebase();
   const [dashboard, setDashboard] = useState([]);
   const [actifDashboard, setActifDashboard] = useState([]);
   const [favorisDashboard, setFavorisDashboard] = useState([]);
@@ -30,15 +24,6 @@ export default function Dashboard(addTab) {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useFirebase();
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
 
   // * FUNCTION
 
@@ -48,6 +33,7 @@ export default function Dashboard(addTab) {
       setView(nextView);
     }
   };
+
   // * TO MAKE A BOARD IN FAVORI
   async function favorisTell(dashboardId) {
     try {
@@ -60,6 +46,7 @@ export default function Dashboard(addTab) {
       // throw new Error('Erreur lors de la mise à jour du document');
     }
   }
+
   useEffect(() => {
     const fetchMembers = async () => {
       try {
@@ -77,8 +64,8 @@ export default function Dashboard(addTab) {
     wsComments.onopen = function (e) {
       console.log("[open] Connection established");
       console.log("Sending to server");
-      console.log("student", user?.id);
-      wsComments.send(JSON.stringify(user?.id));
+      console.log("student", user.id);
+      wsComments.send(JSON.stringify(user.id));
     };
 
     wsComments.onmessage = (message) => {
@@ -107,29 +94,28 @@ export default function Dashboard(addTab) {
             picture: dashboarddto.image,
           };
         });
-
         setDashboard(listDashboards);
         setLoading(false);
       } catch (error) {
+        setLoading(true);
         console.error(error);
       }
     };
 
     fetchMembers();
-
-    return () => {
-      wsComments.close();
-    };
   }, []);
 
   useEffect(() => {
     const maDate = new Date();
-    const maDateValue = maDate.valueOf();
+    const day = maDate.getDate().toString().padStart(2, "0");
+    const month = (maDate.getMonth() + 1).toString().padStart(2, "0");
+    const year = maDate.getFullYear().toString();
+    const maDateFormatted = `${day}/${month}/${year}`;
 
     const actifDashboards = dashboard.filter((board) => {
-      const startDate = new Date(board.start).valueOf();
-      const endDate = new Date(board.end).valueOf();
-      return startDate <= maDateValue && maDateValue <= endDate;
+      const startDate = board.start;
+      const endDate = board.end;
+      return startDate <= maDateFormatted && maDateFormatted <= endDate;
     });
     setActifDashboard(actifDashboards);
     const favorisDashboards = dashboard.filter(
@@ -139,20 +125,27 @@ export default function Dashboard(addTab) {
     setFavorisDashboard(favorisDashboards);
   }, [dashboard]);
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   return (
     <div style={{ marginLeft: "1%", marginTop: "1%" }}>
       {favorisDashboard.length > 0 &&
         ListCardDashboard(
           favorisDashboard,
           "Espace de travail favoris",
-          addTab,
           favorisTell
         )}
       {actifDashboard.length > 0 &&
         ListCardDashboard(
           actifDashboard,
           "Espace de travail actif",
-          addTab,
           favorisTell
         )}
 
@@ -186,7 +179,6 @@ export default function Dashboard(addTab) {
               .map((board) => (
                 <Grid item xs={3} key={board.id}>
                   <CardDashBoard
-                    addTab={addTab}
                     picture={board.picture}
                     sprint_group={board.sprint_group}
                     fav={board.favorite}
@@ -198,9 +190,7 @@ export default function Dashboard(addTab) {
         </Grid>
       ) : (
         !loading &&
-        dashboard.length > 0 && (
-          <TableDashboard addTab={addTab} rows={!loading && dashboard} />
-        )
+        dashboard.length > 0 && <TableDashboard rows={!loading && dashboard} />
       )}
 
       {view === "module" ? (

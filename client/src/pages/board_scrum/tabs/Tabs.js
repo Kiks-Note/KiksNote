@@ -3,16 +3,22 @@ import PropTypes from "prop-types";
 import { Tabs, Tab } from "@material-ui/core";
 import CloseIcon from "@mui/icons-material/Clear";
 import TabContainer from "./TabContainer";
+import Dashboard from "../Dashboard";
+import Overview from "../overview/OverView";
+
 TabDemo.propTypes = {
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
       id: PropTypes.string.isRequired,
-      component: PropTypes.oneOfType([PropTypes.object, PropTypes.func])
-        .isRequired,
+      component: PropTypes.string.isRequired,
       closeable: PropTypes.bool.isRequired,
+      data: PropTypes.object, // Ajoutez ici la définition du type des données pour chaque composant si nécessaire
     }).isRequired
   ).isRequired,
+  selectedTab: PropTypes.string.isRequired,
+  handleChange: PropTypes.func.isRequired,
+  handleClose: PropTypes.func.isRequired,
 };
 
 export default function TabDemo({
@@ -54,8 +60,12 @@ export default function TabDemo({
         ))}
       </Tabs>
       {activeTabs.map((tab) =>
-        activeTab == tab.id ? (
-          <TabContainer key={tab.id}>{tab.component}</TabContainer>
+        activeTab === tab.id ? (
+          <TabContainer key={tab.id}>
+            {tab.component === "Dashboard" && <Dashboard />}
+            {tab.component === "OverView" && <Overview id={tab.id} />}
+            {/* Ajoutez des conditions pour d'autres composants ici */}
+          </TabContainer>
         ) : null
       )}
     </>
