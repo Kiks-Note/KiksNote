@@ -6,15 +6,16 @@ import CardBoard from "../../components/board_scrum/board/CardBoard";
 import { Typography } from "@mui/material";
 import ButtonAddCard from "../../components/board_scrum/board/ButtonAddCard";
 import { Toaster, toast } from "react-hot-toast";
-import Slide from "@mui/material/Slide";
 import { Switch } from "@mui/material";
 import { w3cwebsocket } from "websocket";
+import { PropTypes } from "prop-types";
 
-function TransitionComponent(props) {
-  return <Slide {...props} direction="up" />;
-}
 
-export default function Board(props) {
+Board.propTypes = {
+  dashboardId: PropTypes.string.isRequired,
+  boardId: PropTypes.string.isRequired,
+};
+export default function Board({ boardId, dashboardId }) {
   const labelChange = () => setLabel(!label);
   const [columns, setColumns] = useState({});
   const [boardName, setBoardName] = useState("");
@@ -30,8 +31,8 @@ export default function Board(props) {
         console.log("Sending to server");
         wsComments.send(
           JSON.stringify({
-            dashboardId: props.dashboardId,
-            boardId: props.boardId,
+            dashboardId: dashboardId,
+            boardId: boardId,
           })
         );
       };
@@ -49,9 +50,9 @@ export default function Board(props) {
   async function changeCardIndex(newColumns) {
     await axios.put(
       "http://localhost:5050/dashboard/" +
-        props.dashboardId +
+        dashboardId +
         "/board/" +
-        props.boardId +
+        boardId +
         "/setCards",
       newColumns
     );
@@ -234,8 +235,8 @@ export default function Board(props) {
                                           list_name={column.name}
                                           columnId={columnId}
                                           stories={columns[0].items}
-                                          dashboardId={props.dashboardId}
-                                          boardId={props.boardId}
+                                          dashboardId={dashboardId}
+                                          boardId={boardId}
                                         />
                                       </div>
                                     );
@@ -250,8 +251,8 @@ export default function Board(props) {
                     </Droppable>
                     <ButtonAddCard
                       columnId={columnId}
-                      dashboardId={props.dashboardId}
-                      boardId={props.boardId}
+                      dashboardId={dashboardId}
+                      boardId={boardId}
                     />
                   </div>
                 </div>

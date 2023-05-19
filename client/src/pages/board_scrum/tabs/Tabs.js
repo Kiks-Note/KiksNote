@@ -5,6 +5,8 @@ import CloseIcon from "@mui/icons-material/Clear";
 import TabContainer from "./TabContainer";
 import Dashboard from "../Dashboard";
 import Overview from "../overview/OverView";
+import PdfView from "../overview/PdfView";
+import Board from "../Board";
 
 TabDemo.propTypes = {
   tabs: PropTypes.arrayOf(
@@ -64,6 +66,18 @@ export default function TabDemo({
           <TabContainer key={tab.id}>
             {tab.component === "Dashboard" && <Dashboard />}
             {tab.component === "OverView" && <Overview id={tab.id} />}
+            {tab.component === "PdfView" && (
+              <PdfView
+                linkPdf={tab.data.pdfLink}
+                dashboardId={tab.data.dashboardId}
+              />
+            )}
+            {tab.component === "Board" && (
+              <Board
+                boardId={tab.data.boardId}
+                dashboardId={tab.data.dashboardId}
+              />
+            )}
             {/* Ajoutez des conditions pour d'autres composants ici */}
           </TabContainer>
         ) : null

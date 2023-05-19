@@ -31,15 +31,16 @@ function OverView({ id }) {
   const dispatch = useDispatch();
 
   const moveToOverView = () => {
-    const overViewTab = {
-      id: id,
+    console.log("backlog"+id);
+    const pdfViewTab = {
+      id: "Backlog" + id,
       label: "Backlog ",
       closeable: true,
       component: "PdfView",
-      data: { id, pdfLink },
+      data: { dashboardId: id, pdfLink: pdfLink },
     };
-    dispatch(addTab(overViewTab));
-    dispatch(setActiveTab(overViewTab.id));
+    dispatch(addTab(pdfViewTab));
+    dispatch(setActiveTab(pdfViewTab.id));
   };
 
   useEffect(() => {
@@ -74,7 +75,7 @@ function OverView({ id }) {
               <StoryList
                 stories={stories}
                 sprints={releases}
-                dashboardId={props.id}
+                dashboardId={id}
               />
               <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
                 Release / Sprint
@@ -106,10 +107,9 @@ function OverView({ id }) {
                         <AccordionDetails sx={{ width: "100%" }}>
                           <Box sx={{ width: "100%" }}>
                             <CardSprint
-                              key={i + 1}
-                              addTab={props.addTab}
+                              key={id}
                               release={releases[item]}
-                              dashboardId={props.id}
+                              dashboardId={id}
                             />
                           </Box>
                         </AccordionDetails>
@@ -136,9 +136,9 @@ function OverView({ id }) {
                 )}
               </Box>{" "}
               <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
-               Statistiques
+                Statistiques
               </Typography>
-              <StatTab dashboardId={props.id} boards={boards} />{" "}
+              <StatTab dashboardId={id} boards={boards} />{" "}
             </>
           ) : (
             <></>

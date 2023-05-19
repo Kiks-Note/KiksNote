@@ -1,29 +1,38 @@
 import React, { useState, useEffect } from "react";
-import Board from "../../../pages/board_scrum/Board";
+import { useDispatch } from "react-redux";
 import "./CardBoard.css";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import LinearProgress from "@mui/material/LinearProgress";
+import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
+import PropTypes from "prop-types";
 
-const CardBoard = ({
+CardBoardOverview.propTypes = {
+  title: PropTypes.string.isRequired,
+  startingDate: PropTypes.string.isRequired,
+  endingDate: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  dashboardId: PropTypes.string.isRequired,
+};
+export default function CardBoardOverview({
   title,
   startingDate,
   endingDate,
   id,
   dashboardId,
-  addTab,
-}) => {
+}) {
+  const dispatch = useDispatch();
   const moveToOverView = () => {
-    var x = JSON.parse(localStorage.getItem("tabs")) || [];
-    x.push({ id: id, type: "board", label: title, dashboardId: dashboardId });
-    localStorage.setItem("tabs", JSON.stringify(x));
-
-    addTab({
+    console.log("Board" + id);
+    const boardTab = {
       id: id,
-      tab: "Board" + title,
-      component: <Board boardId={id} dashboardId={dashboardId} />,
+      label: `Board ${title}`,
       closeable: true,
-    });
+      component: "Board",
+      data: { boardId: id, dashboardId: dashboardId },
+    };
+    dispatch(addTab(boardTab));
+    dispatch(setActiveTab(boardTab.id));
   };
 
   const [timeLeft, setTimeLeft] = useState(getTimeLeft());
@@ -77,6 +86,4 @@ const CardBoard = ({
       </Box>
     </Box>
   );
-};
-
-export default CardBoard;
+}
