@@ -1,157 +1,256 @@
-import React, { useState } from 'react';
-import Button from '@mui/material/Button';
-import PostIt from './PostIt';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import React, { useState } from "react";
+import Button from "@mui/material/Button";
+import { Typography } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import IconButton from "@mui/material/IconButton";
+import PostIt from "./PostIt";
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
+const tasks = [
+  {
+    id: "1",
+    content: "Board EduScrum",
+  },
+  {
+    id: "2",
+    content: "Création de sprint agile très très long",
+  },
+  {
+    id: "3",
+    content: "BurnDown chart",
+  },
+  {
+    id: "4",
+    content: "Ajout du backlog",
+  },
+  {
+    id: "5",
+    content: "Sprint retro",
+  },
+  {
+    id: "6",
+    content:
+      "Exemple avec un titre de carte très long pour voir si c'est moche... Finalement ça rend plutôt bien même avec un titre de carte très long",
+  },
+  {
+    id: "7",
+    content: "Sprint retro",
+  },
+  {
+    id: "8",
+    content: "Sprint retro",
+  },
+  {
+    id: "9",
+    content: "Sprint retro",
+  },
+  {
+    id: "10",
+    content: "Sprint retro",
+  },
+  {
+    id: "11",
+    content: "Sprint retro",
+  },
+  {
+    id: "12",
+    content: "Sprint retro",
+  },
+  {
+    id: "13",
+    content: "Sprint retro",
+  },
+];
+
+const taskStatus = {
+  think: {
+    name: "Penser et ressentir",
+    color: "#ff0000",
+    params: "1 / 1 / 3 / 3",
+    items: [
+      {
+        id: "78",
+        content: "test",
+      },
+    ],
+    isRequested: true,
+    isDragDisabled: true, // disable the drag on the "Stories" column
+  },
+  see: {
+    name: "Voir",
+    color: "#0000ff",
+    params: "1 / 3 / 3 / 5",
+    items: tasks,
+  },
+  do: {
+    name: "Dire et faire",
+    color: "#9ACD32",
+    params: "3 / 1 / 5 / 3",
+    items: [],
+  },
+  hear: {
+    name: "Entendre",
+    color: "#FFFF00",
+    params: "3 / 3 / 5 / 5",
+    items: [],
+  },
+};
 
 export default function EmpathyMap() {
-  const [postIts, setPostIts] = useState([]);
+  const [columns, setColumns] = useState(taskStatus);
 
-  const addPostIt = () => {
-    const newPostIt = `Contenu du post-it ${postIts.length + 1}`;
-    setPostIts([...postIts, newPostIt]);
-  };
-
-  const handleDragEnd = (result) => {
-    console.log(result);
+  const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
 
-    const items = Array.from(postIts);
-    const [itemPlace] = items.splice(result.source.index, 1);
-    items.splice(result.destination.index, 0, itemPlace);
+    const source = result.source;
+    const destination = result.destination;
+    const sourceColumn = columns[source.droppableId];
+    const destColumn = columns[destination.droppableId];
 
-    setPostIts(items);
+    if (source.droppableId !== destination.droppableId) {
+      const sourceItems = [...sourceColumn.items];
+      const destItems = [...destColumn.items];
+      const [removed] = sourceItems.splice(source.index, 1);
+      destItems.splice(destination.index, 0, removed);
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: sourceItems,
+        },
+        [destination.droppableId]: {
+          ...destColumn,
+          items: destItems,
+        },
+      });
+    } else {
+      const copiedItems = [...sourceColumn.items];
+      const [removed] = copiedItems.splice(source.index, 1);
+      copiedItems.splice(destination.index, 0, removed);
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: copiedItems,
+        },
+      });
+    }
   };
 
   return (
     <div>
-      <h1>Empathy Map</h1>
-      <Button variant="contained" onClick={addPostIt}>
-        POST-IT
-      </Button>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div
-          className="parent"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gridTemplateRows: "repeat(4, 1fr)",
-            gridColumnGap: "10px",
-            gridRowGap: "10px",
-            height: "90vh",
-          }}
+      <Typography
+        variant="h3"
+        
+      >
+        Empathy Map de Adrien
+      </Typography>
+      <div
+        className="parent"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateRows: "repeat(4, 1fr)",
+          gridColumnGap: "10px",
+          gridRowGap: "10px",
+          height: "90vh",
+        }}
+      >
+        <DragDropContext
+          onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
         >
-          <Droppable droppableId="parent">
-            {(provided) => (
+          {Object.entries(columns).map(([columnId, column]) => {
+            return (
               <div
-                {...provided.droppableProps}
-                ref={provided.innerRef}
+                style={{
+                  backgroundColor: column.color,
+                  height: "100%",
+                  gridArea: column.params,
+                  padding: "10px",
+                  borderRadius: "4%",
+                }}
+                key={columnId}
               >
-                {postIts.map((postIt, index) => (
-                  <Draggable
-                    key={index}
-                    draggableId={`post-it-${index}`}
-                    index={index}
+                <div
+                  style={{
+                    padding: "10px",
+                    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                    borderRadius: "4%",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    style={{
+                      fontWeight: "bold",
+                      color: "black",
+                      marginLeft: "5%",
+                    }}
                   >
-                    {(provided) => (
+                    {column.name}
+                  </Typography>
+                  <IconButton
+                    aria-label="Add"
+                    color="primary"
+                    size="small"
+                    style={{ marginLeft: "auto" }}
+                    //onClick={handleAddButtonClick} // Ajoutez votre fonction de gestion de l'ajout ici
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </div>
+
+                <Droppable droppableId={columnId} key={columnId}>
+                  {(provided, snapshot) => {
+                    return (
                       <div
-                        {...provided.draggableProps}
-                        {...provided.dragHandleProps}
+                        {...provided.droppableProps}
                         ref={provided.innerRef}
+                        style={{
+                          background: snapshot.isDraggingOver
+                            ? "#ed6c0247"
+                            : "#ebecf0",
+                          display: "block",
+                          background: "#00000030",
+                          minHeight: 30,
+                          maxHeight: "39vh",
+                          overflow: "auto",
+                          height: "auto",
+                          borderRadius: "4%",
+                        }}
                       >
-                        <PostIt text={postIt} />
+                        {column.items.map((item, index) => {
+                          return (
+                            <Draggable
+                              key={item.id}
+                              draggableId={item.id}
+                              index={index}
+                            >
+                              {(provided, snapshot) => {
+                                return (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                  >
+                                    <PostIt text={item.content} />
+                                  </div>
+                                );
+                              }}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
                       </div>
-                    )}
-                  </Draggable>
-                ))}
-                {provided.placeholder}
+                    );
+                  }}
+                </Droppable>
               </div>
-            )}
-          </Droppable>
-          <div
-            className="div1"
-            style={{
-              gridArea: "1 / 1 / 3 / 3",
-              backgroundColor: "red",
-            }}
-          >
-            <Droppable droppableId="div1">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{ height: "100%" }}
-                >
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </div>
-          <div
-            className="div2"
-            style={{
-              gridArea: "1 / 3 / 3 / 5",
-              backgroundColor: "blue",
-            }}
-          >
-            <Droppable droppableId="div2">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{ height: "100%" }}
-                >
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </div>
-          <div
-            className="div3"
-            style={{
-              gridArea: "3 / 1 / 5 / 3",
-              backgroundColor: "green",
-            }}
-          >
-            <Droppable droppableId="div3">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{ height: "100%" }}
-                >
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </div>
-          <div
-            className="div4"
-            style={{
-              gridArea: "3 / 3 / 5 / 5",
-              backgroundColor: "yellow",
-            }}
-          >
-            <Droppable droppableId="div4">
-              {(provided) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  style={{ height: "100%" }}
-                >
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </div>
-        </div>
-      </DragDropContext>
+            );
+          })}
+        </DragDropContext>
+      </div>
     </div>
   );
 }
-
-
-
-
-
-
-
