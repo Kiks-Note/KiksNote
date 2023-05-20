@@ -86,11 +86,14 @@ const CoursInfo = () => {
   const [coursDate, setCoursDate] = useState("");
   const [coursDescription, setCoursDescription] = useState("");
   const [coursCampusNumerique, setCoursCampusNumerique] = useState(false);
-  const [selectedClass, setSelectedClass] = useState("");
+  const [courseIdClass, setCourseIdClass] = useState("");
   const [coursPrivate, setCoursPrivate] = useState(false);
   const [allpo, setAllPo] = useState([]);
   const [allclass, setAllclass] = useState([]);
+  const [courseClass, setCourseClass] = useState([]);
   const [coursOwner, setCoursOwner] = useState("");
+
+  const [isCoursDataLoaded, setIsCoursDataLoaded] = useState(false);
 
   const [openCours, setOpenCours] = useState(false);
   const [openBacklog, setOpenBacklog] = useState(false);
@@ -150,6 +153,22 @@ const CoursInfo = () => {
           setCoursData(res.data.data);
           setPdfLinksCours(res.data.data.pdfLinkCours);
           setPdfLinksBacklog(res.data.data.pdfLinkBackLog);
+          setIsCoursDataLoaded(true);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getClassId = async (classId) => {
+    try {
+      await axios
+        .get(`http://localhost:5050/ressources/class/${classId}`)
+        .then((res) => {
+          setCourseClass(res.data);
         })
         .catch((err) => {
           console.log(err);
@@ -417,7 +436,7 @@ const CoursInfo = () => {
         coursDescription,
         coursDate,
         coursCampusNumerique,
-        selectedClass,
+        courseIdClass,
         coursOwner,
         coursPrivate,
         coursImageBase64
@@ -433,6 +452,14 @@ const CoursInfo = () => {
   useEffect(() => {
     getCoursId();
   }, []);
+
+  useEffect(() => {
+    if (isCoursDataLoaded) {
+      getClassId(coursData.courseClass);
+    }
+  }, [isCoursDataLoaded]);
+
+  console.log(courseClass);
 
   return (
     <>
@@ -775,7 +802,9 @@ const CoursInfo = () => {
                   Classe concernée
                 </h2>
                 <Divider />
-                <p className="pl-2">{coursData.courseClass}</p>
+                {courseClass && courseClass.data && courseClass.data.name && (
+                  <p className="pl-2">{courseClass.data.name}</p>
+                )}
                 <h2
                   style={{
                     marginTop: "10px",
@@ -878,10 +907,10 @@ const CoursInfo = () => {
                         coursCampusNumerique={coursData.campus_numerique}
                         coursPrivate={coursData.private}
                         setCoursPrivate={setCoursPrivate}
-                        selectedClass={selectedClass}
-                        setSelectedClass={setSelectedClass}
+                        courseIdClass={courseIdClass}
+                        setCourseIdClass={setCourseIdClass}
                         rejectedFiles={rejectedFiles}
-                        currentClass = {coursData.courseClass}
+                        currentClass={coursData.courseClass}
                         onSubmit={onSubmit}
                         allpo={allpo}
                         allclass={allclass}

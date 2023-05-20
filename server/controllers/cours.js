@@ -90,6 +90,23 @@ const getCoursById = async (req, res) => {
   }
 };
 
+const getClassById = async (req, res) => {
+  try {
+    const classRef = await db.collection("class").doc(req.params.id).get();
+    if (!classRef.exists) {
+      return res.status(404).send("Classe non trouvée");
+    } else {
+      return res.status(200).send({
+        id: classRef.id,
+        data: classRef.data(),
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération de la classe.");
+  }
+};
+
 const getInstructors = async (req, res) => {
   try {
     const snapshot = await db
@@ -494,6 +511,7 @@ module.exports = {
   getAllCours,
   getAllClasses,
   getCoursById,
+  getClassById,
   getInstructors,
   createCours,
   updateCours,

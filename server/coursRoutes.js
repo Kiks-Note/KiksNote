@@ -5,6 +5,7 @@ const {
   getAllCours,
   getAllClasses,
   getCoursById,
+  getClassById,
   getInstructors,
   createCours,
   updateCours,
@@ -21,6 +22,7 @@ module.exports = function () {
   router.get("/classes", getAllClasses);
   router.get("/instructors", getInstructors);
   router.get("/cours/:id", getCoursById);
+  router.get("/class/:id", getClassById);
   router.post("/cours", createCours);
   router.put("/cours/:id", updateCours);
   router.post("/cours/upload-pdf", uploadCoursPdf);

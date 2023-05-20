@@ -63,6 +63,7 @@ const Ressources = () => {
 
   const { user } = useFirebase();
   const userStatus = user?.status;
+  const userClass = user?.class;
 
   const [view, setView] = useState("module");
 
@@ -75,6 +76,7 @@ const Ressources = () => {
   const [courseCampusNumerique, setCourseCampusNumerique] = useState(false);
   const [courseOwner, setCourseOwner] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
+  const [idSelectedClass, setIdSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
 
@@ -166,7 +168,7 @@ const Ressources = () => {
           description: courseDescription,
           date: courseDate,
           campus_numerique: courseCampusNumerique,
-          courseClass: selectedClass,
+          courseClass: idSelectedClass,
           owner: courseOwner,
           private: coursePrivate,
           imageBase64: courseImageBase64,
@@ -223,6 +225,8 @@ const Ressources = () => {
     const courseDate = timeConverter(course.data.date); // Utiliser timeConverter pour convertir le timestamp en date
     return courseDate >= startLastYear && courseDate <= endLastYear;
   });
+
+  console.log("nom_cours : " + selectedClass + "id : " + idSelectedClass);
 
   return (
     <>
@@ -323,6 +327,7 @@ const Ressources = () => {
             setCoursePrivate={setCoursePrivate}
             selectedClass={selectedClass}
             setSelectedClass={setSelectedClass}
+            setIdSelectedClass={setIdSelectedClass}
             allclass={allclass}
             control={control}
             allpo={allpo}

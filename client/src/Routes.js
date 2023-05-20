@@ -11,7 +11,7 @@ import PDFCourseView from "./pages/ressources/Cours/PdfCourseView";
 import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
-import Jpo from "./pages/ressources/jpo/jpo";
+import Jpo from "./pages/ressources/JPO/jpo";
 import StudentsProjects from "./pages/students_project/StudentsProjects";
 import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";

@@ -161,7 +161,13 @@ const CreateCoursModal = (props) => {
           <div className="select-class-allpo-container">
             <Select
               value={props.selectedClass}
-              onChange={(event) => props.setSelectedClass(event.target.value)}
+              onChange={(event) => {
+                props.setSelectedClass(event.target.value);
+                const selectedCours = props.allclass.find(
+                  (cours) => cours.name === event.target.value
+                );
+                props.setIdSelectedClass(selectedCours ? selectedCours.id : "");
+              }}
               displayEmpty
               renderValue={(value) => value || "Choisir la classe"}
             >
