@@ -150,7 +150,10 @@ const UpdateCoursDialog = (props) => {
                       option.firstname
                     }`
                   }
-                  value={props.allpo.find((po) => po.name === value) || props.currentPO}
+                  value={
+                    props.allpo.find((po) => po.name === value) ||
+                    props.currentPO
+                  }
                   onChange={(event, newValue) => {
                     onChange(newValue ? newValue.id : "");
                     props.setCoursOwner(
