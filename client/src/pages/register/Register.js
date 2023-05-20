@@ -77,7 +77,7 @@ const Register = () => {
 
   const register = async () => {
     await axios
-      .post("http://localhost:5050/auth/signup", {
+      .post("http://localhost:5050/auth/inscription", {
         userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass
       })
       .then((res) => {
