@@ -909,38 +909,46 @@ const CoursInfo = () => {
                       >
                         Modifier
                       </Button>
-                      <UpdateCoursDialog
-                        openUpdate={openUpdate}
-                        handleClose={handleCloseUpdateDialog}
-                        handleFileChange={handleFileChange}
-                        handleDrop={handleDrop}
-                        coursTitle={coursData.title}
-                        coursDate={
-                          coursData?.date &&
-                          coursData.date._seconds &&
-                          moment
-                            .unix(coursData.date._seconds)
-                            .format("YYYY-MM-DD")
-                        }
-                        coursDescription={coursData.description}
-                        setCoursTitle={setCoursTitle}
-                        setCoursDate={setCoursDate}
-                        setCoursDescription={setCoursDescription}
-                        setCoursCampusNumerique={setCoursCampusNumerique}
-                        coursCampusNumerique={coursData.campus_numerique}
-                        coursPrivate={coursData.private}
-                        setCoursPrivate={setCoursPrivate}
-                        courseIdClass={courseIdClass}
-                        setCourseIdClass={setCourseIdClass}
-                        rejectedFiles={rejectedFiles}
-                        currentClass={coursData.courseClass}
-                        onSubmit={onSubmit}
-                        allpo={allpo}
-                        allclass={allclass}
-                        currentPO={coursData.owner}
-                        setCoursOwnerId={setCoursOwnerId}
-                        control={control}
-                      />
+                      {courseClass && 
+                        courseClass.data && 
+                        courseClass.data.name && 
+                        courseOwerData &&
+                        courseOwerData.data &&
+                        courseOwerData.data.lastname &&
+                        courseOwerData.data.firstname &&(
+                        <UpdateCoursDialog
+                          openUpdate={openUpdate}
+                          handleClose={handleCloseUpdateDialog}
+                          handleFileChange={handleFileChange}
+                          handleDrop={handleDrop}
+                          coursTitle={coursData.title}
+                          coursDate={
+                            coursData?.date &&
+                            coursData.date._seconds &&
+                            moment
+                              .unix(coursData.date._seconds)
+                              .format("YYYY-MM-DD")
+                          }
+                          coursDescription={coursData.description}
+                          setCoursTitle={setCoursTitle}
+                          setCoursDate={setCoursDate}
+                          setCoursDescription={setCoursDescription}
+                          setCoursCampusNumerique={setCoursCampusNumerique}
+                          coursCampusNumerique={coursData.campus_numerique}
+                          coursPrivate={coursData.private}
+                          setCoursPrivate={setCoursPrivate}
+                          courseIdClass={courseIdClass}
+                          setCourseIdClass={setCourseIdClass}
+                          rejectedFiles={rejectedFiles}
+                          currentClass={courseClass.data.name}  
+                          onSubmit={onSubmit}
+                          allpo={allpo}
+                          allclass={allclass}
+                          currentPO={courseOwerData.data.lastname.toUpperCase() + " " + courseOwerData.data.firstname}
+                          setCoursOwnerId={setCoursOwnerId}
+                          control={control}
+                        />
+                      )}
                       <Button
                         startIcon={<DeleteIcon />}
                         onClick={() => handleClickOpenDeleteDialog()}
