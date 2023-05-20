@@ -123,6 +123,23 @@ const getInstructors = async (req, res) => {
   }
 };
 
+const getInstructorById = async (req, res) => {
+  try {
+    const instructorRef = await db.collection("users").doc(req.params.id).get();
+    if (!instructorRef.exists) {
+      return res.status(404).send("Instructeur non trouvé");
+    } else {
+      return res.status(200).send({
+        id: instructorRef.id,
+        data: instructorRef.data(),
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération de l'instructeur.");
+  }
+};
+
 const createCours = async (req, res) => {
   try {
     const {
@@ -513,6 +530,7 @@ module.exports = {
   getCoursById,
   getClassById,
   getInstructors,
+  getInstructorById,
   createCours,
   updateCours,
   uploadCoursPdf,

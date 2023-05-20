@@ -7,6 +7,7 @@ const {
   getCoursById,
   getClassById,
   getInstructors,
+  getInstructorById,
   createCours,
   updateCours,
   uploadCoursPdf, // not worked
@@ -21,6 +22,7 @@ module.exports = function () {
   router.get("/cours", getAllCours);
   router.get("/classes", getAllClasses);
   router.get("/instructors", getInstructors);
+  router.get("/instructor/:id", getInstructorById);
   router.get("/cours/:id", getCoursById);
   router.get("/class/:id", getClassById);
   router.post("/cours", createCours);

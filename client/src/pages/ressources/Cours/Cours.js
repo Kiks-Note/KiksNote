@@ -75,6 +75,7 @@ const Ressources = () => {
   const [courseDate, setCourseDate] = useState("");
   const [courseCampusNumerique, setCourseCampusNumerique] = useState(false);
   const [courseOwner, setCourseOwner] = useState("");
+  const [idSelectedOwner, setIdSelectedOwner] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [idSelectedClass, setIdSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
@@ -169,7 +170,7 @@ const Ressources = () => {
           date: courseDate,
           campus_numerique: courseCampusNumerique,
           courseClass: idSelectedClass,
-          owner: courseOwner,
+          owner: idSelectedOwner,
           private: coursePrivate,
           imageBase64: courseImageBase64,
         }
@@ -226,7 +227,7 @@ const Ressources = () => {
     return courseDate >= startLastYear && courseDate <= endLastYear;
   });
 
-  console.log("nom_cours : " + selectedClass + "id : " + idSelectedClass);
+  console.log("po_name : " + courseOwner + "po_id : " + idSelectedOwner);
 
   return (
     <>
@@ -332,6 +333,7 @@ const Ressources = () => {
             control={control}
             allpo={allpo}
             setCourseOwner={setCourseOwner}
+            setIdSelectedOwner={setIdSelectedOwner}
             courseDescription={courseDescription}
             setCourseDescription={setCourseDescription}
           />

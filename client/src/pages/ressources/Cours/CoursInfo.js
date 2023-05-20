@@ -91,7 +91,8 @@ const CoursInfo = () => {
   const [allpo, setAllPo] = useState([]);
   const [allclass, setAllclass] = useState([]);
   const [courseClass, setCourseClass] = useState([]);
-  const [coursOwner, setCoursOwner] = useState("");
+  const [coursOwnerId, setCoursOwnerId] = useState("");
+  const [courseOwerData, setCourseOwerData] = useState([]);
 
   const [isCoursDataLoaded, setIsCoursDataLoaded] = useState(false);
 
@@ -115,12 +116,27 @@ const CoursInfo = () => {
 
   const classes = useStyles();
 
-  const getAllPo = async () => {
+  const getAllInstructors = async () => {
     try {
       await axios
         .get("http://localhost:5050/ressources/instructors")
         .then((res) => {
           setAllPo(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getInstructorById = async (instructorId) => {
+    try {
+      await axios
+        .get(`http://localhost:5050/ressources/instructor/${instructorId}`)
+        .then((res) => {
+          setCourseOwerData(res.data);
         })
         .catch((err) => {
           console.log(err);
@@ -357,7 +373,7 @@ const CoursInfo = () => {
 
   const handleClickOpenUpdateDialog = () => {
     setOpenUpdate(true);
-    getAllPo();
+    getAllInstructors();
     getAllClass();
     setCoursDate(moment.unix(coursData.date._seconds).format("yyyy-MM-DD"));
   };
@@ -437,7 +453,7 @@ const CoursInfo = () => {
         coursDate,
         coursCampusNumerique,
         courseIdClass,
-        coursOwner,
+        coursOwnerId,
         coursPrivate,
         coursImageBase64
       );
@@ -456,10 +472,9 @@ const CoursInfo = () => {
   useEffect(() => {
     if (isCoursDataLoaded) {
       getClassId(coursData.courseClass);
+      getInstructorById(coursData.owner);
     }
   }, [isCoursDataLoaded]);
-
-  console.log(courseClass);
 
   return (
     <>
@@ -815,7 +830,15 @@ const CoursInfo = () => {
                 </h2>
                 <Divider />
                 <div className="list-po-pedago-container">
-                  <p className="po-p">{coursData.owner}</p>
+                  {courseOwerData &&
+                    courseOwerData.data &&
+                    courseOwerData.data.lastname &&
+                    courseOwerData.data.firstname && (
+                      <p className="po-p">
+                        {courseOwerData.data.lastname.toUpperCase()}{" "}
+                        {courseOwerData.data.firstname}
+                      </p>
+                    )}
                 </div>
                 <h2
                   style={{
@@ -915,7 +938,7 @@ const CoursInfo = () => {
                         allpo={allpo}
                         allclass={allclass}
                         currentPO={coursData.owner}
-                        setCoursOwner={setCoursOwner}
+                        setCoursOwnerId={setCoursOwnerId}
                         control={control}
                       />
                       <Button

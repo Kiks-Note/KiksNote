@@ -205,6 +205,7 @@ const CreateCoursModal = (props) => {
                           }`
                         : null
                     );
+                    props.setIdSelectedOwner(newValue ? newValue.id : ""); // Ajout de cette ligne pour définir l'ID du PO
                   }}
                   renderInput={(params) => (
                     <TextField
