@@ -11,52 +11,31 @@ import ListCall from "../listCall/ListCall";
 
 function Home() {
   const {user} = useFirebase();
-  const doc = new jsPDF();
-
-
-  const htmlTable = `
-  <table>
-    <thead>
-      <tr>
-        <th>Column 1</th>
-        <th>Column 2</th>
-        <th>Column 3</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Row 1 Data 1</td>
-        <td>Row 1 Data 2</td>
-        <td>Row 1 Data 3</td>
-      </tr>
-      <tr>
-        <td>Row 2 Data 1</td>
-        <td>Row 2 Data 2</td>
-        <td>Row 2 Data 3</td>
-      </tr>
-    </tbody>
-  </table>
-`;
-
-//  doc.text('Hello, World! fddddsdffgxdfgc', 10, 10);
-
-autoTable(doc, {
-  head: [['Name', 'Email', 'Country']],
-  body: [
-    ['David', 'david@example.com', 'Sweden'],
-    ['Castille', 'castille@example.com', 'Spain'],
-    
-  ],
-})
-
-
-//  autoTable(doc, { html: htmlTable });
 
 
 
-  const pdfBuffer = doc.output();
 
   const sendMail = async () => {
+    const doc = new jsPDF();
+
+    const studentListCall = [
+      {'name': 'David', 'classe': "L1TP", 'course': 'HTML/CSS', 'date': '22/09/2022', 'presence' : true},
+      {'name': 'Antoine', 'classe': "L1TP", 'course': 'HTML/CSS', 'date': '22/09/2022', 'presence' : true},
+      {'name': 'Jean', 'classe': "L1TP", 'course': 'HTML/CSS', 'date': '22/09/2022', 'presence' : false},
+      {'name': 'Mohamed', 'classe': "L1TP", 'course': 'HTML/CSS', 'date': '22/09/2022', 'presence' : true},
+      {'name': 'Celine', 'classe': "L1TP", 'course': 'HTML/CSS', 'date': '22/09/2022', 'presence' : true},
+    ]
+
+    autoTable(doc, {
+      head: [['Nom', 'Classe', 'Cours', "Date", "Presence"]],
+      body: studentListCall.map((student) => {
+          let presence = student["presence"] ? "Present(e)" : "Absent(e)";
+          return [student["name"], student["classe"], student["course"], student["date"], presence];
+        })
+    })
+
+    const pdfBuffer = doc.output();
+
     axios.post("http://localhost:5050/call/exportCall", {
       pdfBuffer : pdfBuffer
     }).then(
@@ -70,12 +49,6 @@ autoTable(doc, {
     const doc = new jsPDF();
 
 
-
-    // doc.text("<h1>Hello world!<h1> <h5> subtitle</h5>", 10, 10);
-    // doc.html(`<h1>Hello world!<h1> <h5> subtitle</h5>`)
-    // doc.save("a4.pdf");
-
-    // Source HTMLElement or a string containing HTML.
     let content = document.createElement('div');
     content.style.color = "#000";
 
