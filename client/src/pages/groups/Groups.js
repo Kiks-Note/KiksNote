@@ -1,34 +1,55 @@
-import React, { useState } from "react";
+import React, { useState,useEffect,useCallback } from "react";
 import axios from 'axios';
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CachedIcon from "@mui/icons-material/Cached";
 import LockIcon from "@mui/icons-material/Lock";
 import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
+import SettingsIcon from '@mui/icons-material/Settings';
+import { PopUp } from "../../components/groups/PopUp";
+import moment from "moment";
+
 import "./Groups.scss";
 
 
-
 function App() {
+    const [columns, setColumns] = useState();
+    const [lock, setLock] = useState(true);
+    const [classStudents, setClassStudents] = useState();
+    const [settings, setSettings] = useState();
+    const [showSettings, setShowSettings] = useState(false);
+
     // For PO view
-    const getStudents = (classStudents) => {
-        axios.get("http://localhost:5050/users").then((res) => {
-            const students = [];
-            res.data.user.forEach(element => {
-                if (element.class === classStudents) students.push(element);
-            });
-            return res.data
-        });
-    }
 
-    const colContent = {
-        students: {
-            name: "Students",
-            items: getStudents("L2-paris"),
-        },
-    };
+    const getStudents = useCallback(async () => {
+        try {
+            const res = await axios.get(`http://localhost:5050/groupes/${classStudents}`);
+            return res.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    },[classStudents]);
 
-    const [columns, setColumns] = useState(colContent);
+    const fetchData = useCallback(async () => {
+        const studentsData = await getStudents();
+        const colContent = {
+            students: {
+                name: "Students",
+                items: studentsData,
+            },
+        };
+        return colContent;
+    },[getStudents]);
+
+    const fetchAndSetData = useCallback(async () => {
+        const colContent = await fetchData();
+        setColumns(colContent);
+    },[fetchData]);
+
+    useEffect(() => {
+        fetchAndSetData();
+    }, [fetchAndSetData]);
 
     function moveOnClick(columnId, student, columns) {
         columns[columnId].items.push(student);
@@ -80,15 +101,16 @@ function App() {
     };
 
     function resetButton() {
-        setColumns(colContent);
+        document.querySelector('input[type="text"]').value = "";
+        fetchAndSetData();
     }
 
     function generateGroupCase(event) {
         if (!isNaN(event.target.value) && event.target.value) {
             const number = event.target.value;
-            const numberOfStudents = columns.students.items.length; //TODO update in function of BDD link
+            const numberOfStudents = columns.students.items.length;
 
-            let copiedColContent = { ...colContent };
+            let copiedColContent = { ...columns};
 
             let numberOfCase = Math.floor(numberOfStudents / number);
 
@@ -106,7 +128,7 @@ function App() {
             setColumns(copiedColContent);
         } else {
             //TODO make a toast here
-            setColumns(colContent);
+            fetchAndSetData();
         }
     }
     function shuffle(array) {
@@ -129,15 +151,60 @@ function App() {
         return array;
     }
 
+    const handlePopupData = (data) => {
+        setClassStudents(data.classChoose);
+        setSettings(data);
+        setShowSettings(false);
+    };
+
+    const handleClosePopUp = (showFalse) => {
+        setShowSettings(showFalse);
+    }
+
+    function saveGroups() {
+        setLock(true);
+        var groupsKey = Object.keys(columns).filter((key) => key.startsWith("g"));
+
+        groupsKey.forEach(group => {
+            axios.post(`http://localhost:5050/groupes/exportGroups`, {
+                start_date: settings.start_date,
+                end_date: settings.end_date,
+                students: columns[group].items.map(student => student.id),
+                po_id: "todo",
+            });
+        });
+    }
+
     function randomGeneration() {
         let nsgp = parseInt(document.querySelector('input[type="text"]').value); // Number of students per groups
         if (!nsgp) {
             alert(
-                "Merci de renseigner d'abords le nombre de groupe d'élèves par groupe souhaité"
+                "Merci de renseigner d'abord le nombre de groupe d'élèves par groupe souhaité"
             );
         } else {
+
+            const numberOfStudents = columns.students.items.length;
+
+            let copiedColContent = { ...fetchData() };
+
+            let numberOfCase = Math.floor(numberOfStudents / nsgp);
+
+            if (numberOfStudents % nsgp !== 0) {
+                numberOfCase++;
+            }
+
+            for (let index = 1; index < numberOfCase + 1; index++) {
+                copiedColContent[`g${index}`] = {
+                    name: `Groupe ${index}`,
+                    items: [],
+                };
+            }
+
+            setColumns(copiedColContent);
+
             var studentsArrayRandom = shuffle(columns.students.items);
             var groups = Object.keys(columns).filter((key) => key.startsWith("g"));
+            var students = Object.keys(columns).filter((key) => key.startsWith("s"));
             var groupIndex = 0;
 
             var numberGroup = groups.length;
@@ -154,7 +221,6 @@ function App() {
                 } else {
                     groupItems = studentsArrayRandom.slice(i, i + nsgp);
                 }
-                console.log(nbNotFull);
                 const updatedGroup = {
                     ...columns[groupKey],
                     items: groupItems,
@@ -163,206 +229,235 @@ function App() {
 
                 groupIndex++;
             }
+            columns[students[0]].items = [];
             setColumns({ ...columns });
-            console.log(columns);
         }
     }
 
+    function lockGroups() {
+        if (lock) {
+            setLock(false);
+        }
+        else {
+            setLock(true);
+        }
+    }
+
+
+    function settingsPopUp() {
+        setShowSettings(true);
+    }
+
+    if (!columns) {
+        return <p>Loading...</p>;
+    }
+
+    if (!classStudents) {
+        return <PopUp onPopupData={handlePopupData} dataPopUp={null} showPopUp={null} />;
+    }
+
+
     return (
-        <div>
-            <h1 style={{ textAlign: "center" }}>Création de Groupes</h1>
-            <div className="groups-inputs">
-                <input
-                    type="text"
-                    list="students-list"
-                    placeholder="Eleves/groupes"
-                    onChange={generateGroupCase}
-                />
-                <datalist id="students-list">
-                    <option value={3}></option>
-                    <option value={4}></option>
-                    <option value={5}></option>
-                </datalist>
-                <button className="input-button" onClick={resetButton}>
-                    <CachedIcon className="icon-svg" />
-                </button>
-                <button className="input-button" onClick={randomGeneration}>
-                    <CasinoIcon className="icon-svg" />
-                </button>
-                <button className="input-button">
-                    <LockOpenIcon className="icon-svg" />
-                </button>
-            </div>
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    height: "100%",
-                    flexWrap: "wrap",
-                }}
-            >
-                <DragDropContext onDragEnd={onDragEnd}>
-                    {Object.entries(columns).map(([columnId, column], index) => {
-                        if (index === 0) {
-                            return (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        width: "100%",
-                                    }}
-                                    key={columnId}
-                                >
-                                    <div style={{ margin: 8 }} className="group-div">
-                                        <Droppable droppableId={columnId} key={columnId}>
-                                            {(provided, snapshot) => {
-                                                return (
-                                                    <div
-                                                        {...provided.droppableProps}
-                                                        ref={provided.innerRef}
-                                                        style={{
-                                                            background: snapshot.isDraggingOver
-                                                                ? "#e697b3"
-                                                                : "#252525",
-                                                            padding: 4,
-                                                            width: "100%",
-                                                            minHeight: 140,
-                                                            maxHeight: 500,
-                                                            overflow: "auto",
-                                                            height: "auto",
-                                                        }}
-                                                        className="group"
-                                                    >
-                                                        {column.items.map((item, index) => {
-                                                            return (
-                                                                <Draggable
-                                                                    key={item.id}
-                                                                    draggableId={item.id}
-                                                                    index={index}
-                                                                >
-                                                                    {(provided, snapshot) => {
-                                                                        return (
-                                                                            <div
-                                                                                ref={provided.innerRef}
-                                                                                {...provided.draggableProps}
-                                                                                {...provided.dragHandleProps}
-                                                                                style={{
-                                                                                    userSelect: "none",
-                                                                                    padding: 16,
-                                                                                    marginBottom: 8,
-                                                                                    minHeight: "60px",
-                                                                                    borderRadius: 3,
-                                                                                    backgroundColor: snapshot.isDragging
-                                                                                        ? "#7d0229"
-                                                                                        : "#f50057",
-                                                                                    color: "white",
-                                                                                    ...provided.draggableProps.style,
-                                                                                }}
-                                                                                className="post-it"
-                                                                            >
-                                                                                <p>{item.name}</p>
-                                                                            </div>
-                                                                        );
-                                                                    }}
-                                                                </Draggable>
-                                                            );
-                                                        })}
-                                                        {provided.placeholder}
-                                                    </div>
-                                                );
-                                            }}
-                                        </Droppable>
+        <>
+            <div>
+                {showSettings ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
+                <h1 style={{ textAlign: "center" }}>Création de Groupes</h1>
+                <div className="groups-inputs">
+                    <input
+                        type="text"
+                        list="students-list"
+                        placeholder="Eleves/groupes"
+                        onChange={generateGroupCase} />
+                    <datalist id="students-list">
+                        <option value={3}></option>
+                        <option value={4}></option>
+                        <option value={5}></option>
+                    </datalist>
+                    <button className="input-button" onClick={resetButton}>
+                        <CachedIcon className="icon-svg" />
+                    </button>
+                    <button className="input-button" onClick={randomGeneration}>
+                        <CasinoIcon className="icon-svg" />
+                    </button>
+                    <button className="input-button">
+                        {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
+                    </button>
+                    <button className="input-button" onClick={settingsPopUp}>
+                        <SettingsIcon className="input-svg" />
+                    </button>
+                </div>
+                <div
+                    style={{
+                        display: "flex",
+                        justifyContent: "center",
+                        height: "100%",
+                        flexWrap: "wrap",
+                    }}
+                >
+                    <DragDropContext onDragEnd={onDragEnd}>
+                        {Object.entries(columns).map(([columnId, column], index) => {
+                            if (index === 0 && columns.students.items.length > 0) {
+                                return (
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            width: "100%",
+                                        }}
+                                        key={columnId}
+                                    >
+                                        <div style={{ margin: 8 }} className="group-div">
+                                            <Droppable droppableId={columnId} key={columnId}>
+                                                {(provided, snapshot) => {
+                                                    return (
+                                                        <div
+                                                            {...provided.droppableProps}
+                                                            ref={provided.innerRef}
+                                                            style={{
+                                                                backgroundColor: snapshot.isDraggingOver ? "#e697b3" : "#252525",
+                                                                padding: 4,
+                                                                width: "100%",
+                                                                minHeight: 140,
+                                                                maxHeight: 500,
+                                                                overflow: "auto",
+                                                                height: "auto",
+                                                                ...(!lock && { backgroundColor: "#999999", opacity: 0.5, pointerEvents: "none" })
+                                                            }}
+                                                            className="group"
+                                                        >
+                                                            {column.items.map((item, index) => {
+                                                                return (
+                                                                    <Draggable
+                                                                        key={item.id}
+                                                                        draggableId={item.id}
+                                                                        index={index}
+                                                                    >
+                                                                        {(provided, snapshot) => {
+                                                                            return (
+                                                                                <div
+                                                                                    ref={provided.innerRef}
+                                                                                    {...provided.draggableProps}
+                                                                                    {...provided.dragHandleProps}
+                                                                                    style={{
+                                                                                        userSelect: "none",
+                                                                                        padding: 16,
+                                                                                        marginBottom: 8,
+                                                                                        minHeight: "60px",
+                                                                                        borderRadius: 3,
+                                                                                        backgroundColor: snapshot.isDragging
+                                                                                            ? "#7d0229"
+                                                                                            : "#f50057",
+                                                                                        color: "white",
+                                                                                        ...provided.draggableProps.style,
+                                                                                    }}
+                                                                                    className="post-it"
+                                                                                >
+                                                                                    <p>{item.firstname}</p>
+                                                                                </div>
+                                                                            );
+                                                                        }}
+                                                                    </Draggable>
+                                                                );
+                                                            })}
+                                                            {provided.placeholder}
+                                                        </div>
+                                                    );
+                                                }}
+                                            </Droppable>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        } else {
-                            return (
-                                <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        alignItems: "center",
-                                        width: "45 %",
-                                    }}
-                                    key={columnId}
-                                >
-                                    {" "}
-                                    <h2>{column.name}</h2>
-                                    <div style={{ margin: 8 }}>
-                                        <Droppable droppableId={columnId} key={columnId}>
-                                            {(provided, snapshot) => {
-                                                return (
-                                                    <div
-                                                        {...provided.droppableProps}
-                                                        ref={provided.innerRef}
-                                                        style={{
-                                                            background: snapshot.isDraggingOver
-                                                                ? "#e697b3"
-                                                                : "#252525",
-                                                            padding: 4,
-                                                            width: 250,
-                                                            minHeight: 140,
-                                                            maxHeight: 500,
-                                                            overflow: "auto",
-                                                            height: "auto",
-                                                        }}
-                                                        className="group"
-                                                        onClick={() => {
-                                                            if (columns.students.items.length > 0) {
-                                                                const student = columns.students.items.pop();
-                                                                moveOnClick(columnId, student, columns);
-                                                                setColumns({ ...columns });
-                                                            }
-                                                        }}
-                                                    >
-                                                        {column.items.map((item, index) => {
-                                                            return (
-                                                                <Draggable
-                                                                    key={item.id}
-                                                                    draggableId={item.id}
-                                                                    index={index}
-                                                                >
-                                                                    {(provided, snapshot) => {
-                                                                        return (
-                                                                            <div
-                                                                                ref={provided.innerRef}
-                                                                                {...provided.draggableProps}
-                                                                                {...provided.dragHandleProps}
-                                                                                style={{
-                                                                                    userSelect: "none",
-                                                                                    padding: 16,
-                                                                                    marginBottom: 8,
-                                                                                    minHeight: "60px",
-                                                                                    borderRadius: 3,
-                                                                                    backgroundColor: snapshot.isDragging
-                                                                                        ? "#7d0229"
-                                                                                        : "#f50057",
-                                                                                    color: "white",
-                                                                                    ...provided.draggableProps.style,
-                                                                                }}
-                                                                                className="post-it"
-                                                                            >
-                                                                                <p>{item.name}</p>
-                                                                            </div>
-                                                                        );
-                                                                    }}
-                                                                </Draggable>
-                                                            );
-                                                        })}
-                                                        {provided.placeholder}
-                                                    </div>
-                                                );
-                                            }}
-                                        </Droppable>
+                                );
+                            } else if (index !== 0) {
+                                return (
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            alignItems: "center",
+                                            width: "45 %",
+                                        }}
+                                        key={columnId}
+                                    >
+                                        {" "}
+                                        <h2>{column.name}</h2>
+                                        <div style={{ margin: 8 }}>
+                                            <Droppable droppableId={columnId} key={columnId}>
+                                                {(provided, snapshot) => {
+                                                    return (
+                                                        <div
+                                                            {...provided.droppableProps}
+                                                            ref={provided.innerRef}
+                                                            style={{
+                                                                backgroundColor: snapshot.isDraggingOver ? "#e697b3" : "#252525",
+                                                                padding: 4,
+                                                                width: 250,
+                                                                minHeight: 140,
+                                                                maxHeight: 500,
+                                                                overflow: "auto",
+                                                                height: "auto",
+                                                                ...(!lock && { backgroundColor: "#999999", opacity: 0.5, pointerEvents: "none" })
+                                                            }}
+                                                            className="group"
+                                                            onClick={() => {
+                                                                if (columns.students.items.length > 0) {
+                                                                    const student = columns.students.items.pop();
+                                                                    moveOnClick(columnId, student, columns);
+                                                                    setColumns({ ...columns });
+                                                                }
+                                                            }}
+                                                        >
+                                                            {column.items.map((item, index) => {
+                                                                return (
+                                                                    <Draggable
+                                                                        key={item.id}
+                                                                        draggableId={item.id}
+                                                                        index={index}
+                                                                    >
+                                                                        {(provided, snapshot) => {
+                                                                            return (
+                                                                                <div
+                                                                                    ref={provided.innerRef}
+                                                                                    {...provided.draggableProps}
+                                                                                    {...provided.dragHandleProps}
+                                                                                    style={{
+                                                                                        userSelect: "none",
+                                                                                        padding: 16,
+                                                                                        marginBottom: 8,
+                                                                                        minHeight: "60px",
+                                                                                        borderRadius: 3,
+                                                                                        backgroundColor: snapshot.isDragging
+                                                                                            ? "#7d0229"
+                                                                                            : "#f50057",
+                                                                                        color: "white",
+                                                                                        ...provided.draggableProps.style,
+                                                                                    }}
+                                                                                    className="post-it"
+                                                                                >
+                                                                                    <p>{item.firstname}</p>
+                                                                                </div>
+                                                                            );
+                                                                        }}
+                                                                    </Draggable>
+                                                                );
+                                                            })}
+                                                            {provided.placeholder}
+                                                        </div>
+                                                    );
+                                                }}
+                                            </Droppable>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        }
-                    })}
-                </DragDropContext>
-            </div>
-        </div>
+                                );
+                            }
+                            else {
+                                return <span></span>;
+                            }
+                        })}
+                    </DragDropContext>
+                </div>
+                <button onClick={saveGroups} >Valider</button>
+            </div></>
     );
 }
 export default App;

@@ -32,13 +32,10 @@ function RoutesProvider() {
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
-          <Route path="/appel" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groups" element={<Groups />} />
+          <Route path="/groupes" element={<Groups />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel" element={<Appel />} />
-          <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groups" element={<Groups />} />
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
