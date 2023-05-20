@@ -18,23 +18,19 @@ import {
 } from "chart.js";
 import { Doughnut, Line } from "react-chartjs-2";
 
-
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
     <div
+      key={index}
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
+      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
     </div>
   );
 }
@@ -52,7 +48,9 @@ function a11yProps(index) {
   };
 }
 
-export default function StatTab() {
+export default function StatTab(props) {
+  var boards = props.boards;
+
   ChartJS.register(
     ArcElement,
     Tooltip,
@@ -95,37 +93,37 @@ export default function StatTab() {
       position: "bottom",
     },
   };
-const optionsBurnUp = {
-  responsive: true,
-  title: {
-    display: true,
-    text: "Burn-Up Chart",
-  },
-  scales: {
-    xAxes: [
-      {
-        type: "time",
-        time: {
-          unit: "day",
-          displayFormats: {
-            day: "MMM DD",
+  const optionsBurnUp = {
+    responsive: true,
+    title: {
+      display: true,
+      text: "Burn-Up Chart",
+    },
+    scales: {
+      xAxes: [
+        {
+          type: "time",
+          time: {
+            unit: "day",
+            displayFormats: {
+              day: "MMM DD",
+            },
           },
         },
-      },
-    ],
-    yAxes: [
-      {
-        ticks: {
-          beginAtZero: true,
+      ],
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
         },
-      },
-    ],
-  },
-  legend: {
-    display: true,
-    position: "bottom",
-  },
-};
+      ],
+    },
+    legend: {
+      display: true,
+      position: "bottom",
+    },
+  };
 
   const dataBurnDown = {
     labels: [
@@ -152,58 +150,40 @@ const optionsBurnUp = {
       },
     ],
   };
-const dataBurnUp = {
-  labels: [
-    "2023-03-01",
-    "2023-03-02",
-    "2023-03-03",
-    "2023-03-04",
-    "2023-03-05",
-    "2023-03-06",
-    "2023-03-07",
-  ],
-  datasets: [
-    {
-      label: "Réalisé",
-      data: [6, 10, 14, 18, 24, 29, 35],
-      fill: false,
-      borderColor: "green",
-    },
-    {
-      label: "Total",
-      data: [6, 12, 18, 24, 30, 36, 42],
-      fill: false,
-      borderColor: "red",
-    },
-  ],
-};
-
-  const dataDoughnut = {
-    labels: ["To Do", "In Progress", "Done"],
+  const dataBurnUp = {
+    labels: [
+      "2023-03-01",
+      "2023-03-02",
+      "2023-03-03",
+      "2023-03-04",
+      "2023-03-05",
+      "2023-03-06",
+      "2023-03-07",
+    ],
     datasets: [
       {
-        label: "nombre de tâches",
-        data: [12, 19, 3],
-        backgroundColor: [
-          "rgba(255, 99, 132, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-        ],
-        borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-        ],
-        borderWidth: 1,
+        label: "Réalisé",
+        data: [6, 10, 14, 18, 24, 29, 35],
+        fill: false,
+        borderColor: "green",
+      },
+      {
+        label: "Total",
+        data: [6, 12, 18, 24, 30, 36, 42],
+        fill: false,
+        borderColor: "red",
       },
     ],
   };
+
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  var index = -1;
+  var indexTab = -1;
   return (
     <Box
       style={{
@@ -211,31 +191,52 @@ const dataBurnUp = {
         maxHeight: "80vh",
       }}
     >
+      {boards.map((board) => {
+        index += 1;
+        return (
+          <TabPanel
+            key={index}
+            value={value}
+            index={index}
+            style={{
+              height: "75vh",
+              maxHeight: "80vh",
+            }}
+          >
+            <Typography variant="h4">{board["name"]}</Typography>
+            <Doughnut
+              data={{
+                labels: ["To Do", "In Progress", "Done"],
+                datasets: [
+                  {
+                    label: "nombre de tâches",
+                    data: [
+                      board["data"]["toDo"],
+                      board["data"]["inProgress"],
+                      board["data"]["done"],
+                    ],
+                    backgroundColor: [
+                      "rgba(255, 99, 132, 0.2)",
+                      "rgba(255, 206, 86, 0.2)",
+                      "rgba(75, 192, 192, 0.2)",
+                    ],
+                    borderColor: [
+                      "rgba(255, 99, 132, 1)",
+                      "rgba(255, 206, 86, 1)",
+                      "rgba(75, 192, 192, 1)",
+                    ],
+                    borderWidth: 1,
+                  },
+                ],
+              }}
+            />
+          </TabPanel>
+        );
+      })}
+
       <TabPanel
         value={value}
-        index={0}
-        style={{
-          height: "75vh",
-          maxHeight: "80vh",
-        }}
-      >
-        <Typography variant="h4">Statistique Globale</Typography>
-        <Doughnut data={dataDoughnut} />
-      </TabPanel>
-      <TabPanel
-        value={value}
-        index={1}
-        style={{
-          height: "75vh",
-          maxHeight: "80vh",
-        }}
-      >
-        <Typography variant="h4">Statistique Sprint 1</Typography>
-        <Doughnut data={dataDoughnut} />
-      </TabPanel>
-      <TabPanel
-        value={value}
-        index={2}
+        index={boards.length}
         style={{
           height: "75vh",
           maxHeight: "80vh",
@@ -246,7 +247,7 @@ const dataBurnUp = {
       </TabPanel>
       <TabPanel
         value={value}
-        index={3}
+        index={boards.length + 1}
         style={{
           height: "75vh",
           maxHeight: "80vh",
@@ -264,10 +265,14 @@ const dataBurnUp = {
           allowScrollButtonsMobile
           aria-label="scrollable force tabs example"
         >
-          <Tab label="Statistique globale" {...a11yProps(0)} />
-          <Tab label="Statistique Sprint 1" {...a11yProps(1)} />
-          <Tab label="BurnDown" {...a11yProps(2)} />
-          <Tab label="BurnUp" {...a11yProps(2)} />
+          {boards.map((board, item) => {
+            indexTab += 1;
+            return (
+              <Tab key={item} label={board["name"]} {...a11yProps(indexTab)} />
+            );
+          })}
+          <Tab label="BurnDown" {...a11yProps(boards.length)} />
+          <Tab label="BurnUp" {...a11yProps(boards.length + 1)} />
         </Tabs>
       </Box>
     </Box>

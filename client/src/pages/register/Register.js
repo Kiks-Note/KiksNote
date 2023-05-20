@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import {Link} from "react-router-dom";
 import Divider from "@mui/material/Divider";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import "./Register.scss";
-import { ReactComponent as ReactLogo } from "../../assets/img/undraw_Sign_up_n6im.svg";
+import { ReactComponent as ReactLogo } from "../../assets/img/signup-art.svg";
 
 const Register = () => {
   const [userFirstName, setUserFirstName] = useState("");
@@ -39,7 +39,7 @@ const Register = () => {
   };
 
   useEffect(() => {
-    console.log(formErrors);
+    // console.log(formErrors);
     if (Object.keys(formErrors).length === 0 && isSubmit) {
       register();
       setIsSubmit(false);
@@ -123,13 +123,13 @@ const Register = () => {
           </h1>
           <Divider
             variant="middle"
-            style={{ background: "#fff", height: "1px" }}
+            style={{background: "#fff", height: "1px"}}
           />
           <form className="p-15 form">
             <div className="m-4">
               <input
                 id="input-lastname"
-                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className=" text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="text"
                 name="lastname"
                 placeholder="Nom"
@@ -143,7 +143,7 @@ const Register = () => {
             <div className="m-4">
               <input
                 id="input-firstname"
-                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="text"
                 name="firstname"
                 placeholder="Prénom"
@@ -157,7 +157,7 @@ const Register = () => {
             <div className="m-4">
               <input
                 id="input-email"
-                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="email"
                 name="email"
                 placeholder="votrecompte@edu.esiee-it.fr"
@@ -171,7 +171,7 @@ const Register = () => {
             <div className="m-4">
               <input
                 id="input-birthdate"
-                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="date"
                 name="birthdate"
                 placeholder="Date de Naissance"
@@ -185,7 +185,7 @@ const Register = () => {
             <div className="m-4">
               <input
                 id="input-password"
-                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="password"
                 name="password"
                 placeholder="Mot de passe"
@@ -199,7 +199,7 @@ const Register = () => {
             <div className="m-4">
               <input
                 id="input-confirmpassword"
-                className="input text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                className="text-gray-900 text-sm focus:ring-blue-500 focus:border-blue-500 block w-full dark:border-gray-600 dark:placeholder-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 type="password"
                 name="confirmPassword"
                 placeholder="Confirm Password"
