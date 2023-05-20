@@ -3,6 +3,8 @@ import {useEffect} from "react";
 import useFirebase from "../../hooks/useFirebase";
 import axios from "axios";
 import { jsPDF } from 'jspdf';
+import  autoTable from "jspdf-autotable";
+
 import ListCall from "../listCall/ListCall";
 
 
@@ -10,7 +12,47 @@ import ListCall from "../listCall/ListCall";
 function Home() {
   const {user} = useFirebase();
   const doc = new jsPDF();
-  doc.text('Hello, World! fddddsdffgxdfgc', 10, 10);
+
+
+  const htmlTable = `
+  <table>
+    <thead>
+      <tr>
+        <th>Column 1</th>
+        <th>Column 2</th>
+        <th>Column 3</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Row 1 Data 1</td>
+        <td>Row 1 Data 2</td>
+        <td>Row 1 Data 3</td>
+      </tr>
+      <tr>
+        <td>Row 2 Data 1</td>
+        <td>Row 2 Data 2</td>
+        <td>Row 2 Data 3</td>
+      </tr>
+    </tbody>
+  </table>
+`;
+
+//  doc.text('Hello, World! fddddsdffgxdfgc', 10, 10);
+
+autoTable(doc, {
+  head: [['Name', 'Email', 'Country']],
+  body: [
+    ['David', 'david@example.com', 'Sweden'],
+    ['Castille', 'castille@example.com', 'Spain'],
+    
+  ],
+})
+
+
+//  autoTable(doc, { html: htmlTable });
+
+
 
   const pdfBuffer = doc.output();
 
