@@ -340,6 +340,7 @@ const CoursInfo = () => {
     setOpenUpdate(true);
     getAllPo();
     getAllClass();
+    setCoursDate(moment.unix(coursData.date._seconds).format("yyyy-MM-DD"));
   };
 
   const handleCloseUpdateDialog = () => {
@@ -867,7 +868,7 @@ const CoursInfo = () => {
                           coursData.date._seconds &&
                           moment
                             .unix(coursData.date._seconds)
-                            .format("DD.MM.YYYY")
+                            .format("YYYY-MM-DD")
                         }
                         coursDescription={coursData.description}
                         setCoursTitle={setCoursTitle}
@@ -880,9 +881,11 @@ const CoursInfo = () => {
                         selectedClass={selectedClass}
                         setSelectedClass={setSelectedClass}
                         rejectedFiles={rejectedFiles}
+                        currentClass = {coursData.courseClass}
                         onSubmit={onSubmit}
                         allpo={allpo}
                         allclass={allclass}
+                        currentPO={coursData.owner}
                         setCoursOwner={setCoursOwner}
                         control={control}
                       />

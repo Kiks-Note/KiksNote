@@ -52,7 +52,7 @@ const UpdateCoursDialog = (props) => {
               label=" "
               variant="standard"
               type="date"
-              defaultValue={props.coursDate}
+              defaultValue={props.coursDate || props.coursDate}
               onChange={(e) => props.setCoursDate(e.target.value)}
             />
           </div>
@@ -125,9 +125,8 @@ const UpdateCoursDialog = (props) => {
               value={props.selectedClass}
               onChange={(event) => props.setSelectedClass(event.target.value)}
               displayEmpty
-              renderValue={(value) => value || "Choisir la classe"}
+              renderValue={(value) => value || props.currentClass}
             >
-              <MenuItem value="">Choisir une option</MenuItem>
               {props.allclass.map((cours) => (
                 <MenuItem key={cours.id} value={cours.name}>
                   {cours.name}
@@ -151,7 +150,7 @@ const UpdateCoursDialog = (props) => {
                       option.firstname
                     }`
                   }
-                  value={props.allpo.find((po) => po.id === value) || ""}
+                  value={props.allpo.find((po) => po.name === value) || props.currentPO}
                   onChange={(event, newValue) => {
                     onChange(newValue ? newValue.id : "");
                     props.setCoursOwner(
