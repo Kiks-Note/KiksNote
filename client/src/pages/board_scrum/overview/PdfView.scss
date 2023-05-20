@@ -1,14 +1,6 @@
 .container {
   display: flex;
   flex-direction: column;
-  height: 100%;
-}
-
-.root {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  background-color: #f6f6f6;
 }
 
 .nav {
@@ -16,8 +8,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 10px;
-  height: 38px;
-  background-color: #f6f6f6;
+  height: 5vh;
   border-bottom: 1px solid #ddd;
 }
 
@@ -32,10 +23,13 @@
   text-transform: none;
 }
 
-.container_pdf {
+.react-pdf__Document {
+  width: 100%;
+  min-width: 90%;
+  max-width: 100%;
+  height: 700px;
   position: relative;
   overflow: auto;
-  height: fit-content;
 }
 
 .page {
@@ -54,5 +48,4 @@
   margin-top: 10px;
   text-align: center;
   font-size: 14px;
-  color: #000000;
 }
