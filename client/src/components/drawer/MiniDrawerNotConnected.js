@@ -288,7 +288,7 @@ export default function MiniDrawerNotConnected({ element }) {
           )}
         </List>
       </Drawer>
-      <Box component="main">
+      <Box component="main" sx={{width: '100%'}}>
         <>{element}</>
       </Box>
     </Box>

@@ -7,6 +7,7 @@ import Tuto from "./pages/blog/Tuto";
 import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
+import Agile from "./pages/agile/Agile";
 import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
@@ -34,18 +35,16 @@ function RoutesProvider() {
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
-          <Route path="/appel" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groups" element={<Groups />} />
+          <Route path="/groupes" element={<Groups />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel" element={<Appel />} />
-          <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groups" element={<Groups />} />
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
-          <Route path="/empathymap" element={<EmpathyMap />} />
+          <Route path="/agile" element={<Agile/>}/>
+          <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           <Route path="/persona" element={<Personas />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
