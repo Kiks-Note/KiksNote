@@ -18,75 +18,97 @@ function AppelEleve() {
   const { user } = useFirebase();
   const open = useRef();
   const msg = useRef();
-  let generated = false;
+  const generated = useRef(false);
   const id = useRef();
 
   useEffect(() => {
-    if (!generated) {
+    if (!generated.current) {
       getCall();
-      generated = true;
+      generated.current = true;
     }
   }, []);
+
   const addGif = (gif) => {
-    const chatCopy = [...Call.chats];
-    chatCopy.unshift({
-      id: chatCopy.length + 1,
-      date: new Date().getDay.toString(),
-      username: user.firstname,
-      content: gif.images.fixed_height_small.url,
-      isGif: true,
-    });
-    const callCopy = Call;
-    callCopy.chats = chatCopy;
-    setCall(callCopy);
+    const chatCopy = [
+      {
+        id: Call.chats.length + 1,
+        date: new Date().getDay().toString(),
+        username: user.firstname,
+        content: gif.images.fixed_height_small.url,
+        isGif: true,
+      },
+      ...Call.chats,
+    ];
+
+    setCall((prevCall) => ({
+      ...prevCall,
+      chats: chatCopy,
+    }));
+
     open.current.close();
     updateCall();
   };
 
   const addMsg = () => {
-    const chatCopy = [...Call.chats];
-    chatCopy.unshift({
-      id: chatCopy.length + 1,
-      date: new Date().getDay.toString(),
-      username: user.firstname,
-      content: msg.current.value,
-      isGif: false,
-    });
-    const callCopy = Call;
-    callCopy.chats = chatCopy;
-    setCall(callCopy);
+    const chatCopy = [
+      {
+        id: Call.chats.length + 1,
+        date: new Date().getDay().toString(),
+        username: user.firstname,
+        content: msg.current.value,
+        isGif: false,
+      },
+      ...Call.chats,
+    ];
+
+    setCall((prevCall) => ({
+      ...prevCall,
+      chats: chatCopy,
+    }));
+
     updateCall();
   };
+
   const updateCall = async () => {
-    const res = await axios
-      .post(`http://localhost:5050/call/updatecall`, {
+    try {
+      const res = await axios.put(`http://localhost:5050/call/updatecall`, {
         id: id.current,
         object: Call,
-      })
-      .then((res) => {
-        console.log(res);
       });
+      console.log(res);
+    } catch (error) {
+      console.error("Error updating call:", error);
+    }
   };
-  const getCall = () => {
-    axios.get("http://localhost:5050/call/calls").then((res) => {
-      id.current = res.data.at(-1).id;
-      delete res.data.at(-1).id;
-      setCall(res.data.at(-1));
-      (async () => {
-        const wsComments = new w3cwebsocket(`ws://localhost:5050/Call`);
 
+  const getCall = async () => {
+    try {
+      const response = await axios.get("http://localhost:5050/call/calls");
+      const data = response.data;
+
+      const latestCall = data[data.length - 1];
+      const { id: callId, ...callData } = latestCall;
+
+      id.current = callId;
+      setCall(callData);
+
+      if (!id) {
+        const wsComments = new w3cwebsocket(`ws://localhost:5050/call`);
         wsComments.onopen = function (e) {
           console.log("[open] Connection established");
           console.log("Sending to server");
           wsComments.send(JSON.stringify({ CallId: id }));
         };
+
         wsComments.onmessage = (message) => {
           console.log(message);
           const data = JSON.parse(message.data);
           setCall(data);
         };
-      })();
-    });
+      }
+    } catch (error) {
+      console.error("Error retrieving call data:", error);
+    }
   };
 
   return (
