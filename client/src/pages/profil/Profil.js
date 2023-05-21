@@ -129,7 +129,7 @@ export default function Profil() {
         setIsLoading(true);
       };
     })();
-  }, [userUid]);
+  }, []);
   return (
     <>
       {isLoading ? (

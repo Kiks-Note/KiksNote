@@ -5,11 +5,12 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 
 import {
   addImpactMappingActors,
@@ -26,15 +27,7 @@ import {
   editImpactMappingDeliverable,
 } from "../../redux/slices/impactMappingSlice";
 
-const BasicCard = ({
-  title,
-  type,
-  column,
-  texte,
-  onCloseForm,
-  index,
-  defineColor,
-}) => {
+const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor, }) => {
   const [text, setText] = useState("");
   const dispatch = useDispatch();
   const [color, setColor] = useState("");
@@ -42,8 +35,8 @@ const BasicCard = ({
   const { goals, actors, impacts, deliverables } = useSelector(
     (state) => state.impactMapping
   );
+  const navigate = useNavigate();
   useEffect(() => {
-    // console.log("type", index, texte, defineColor);
     setColor(defineColor);
     setText(texte);
   }, [goals, actors, impacts, deliverables]);
@@ -95,18 +88,22 @@ const BasicCard = ({
   };
 
   const toggleEditForm = () => {
-    if ( isEditing ){
+    if (isEditing) {
       setColor('');
       setText('');
-    }else{
+    } else {
       setColor(defineColor);
       setText(texte);
     }
     setIsEditing((prev) => !prev);
-  }
+  };
 
-  const onHandleEdit = () =>{
-    console.log(index,text,color)
+  const goToEmpathyMap = () => {
+    console.log("goToEmpathyMap")
+    navigate('/agile/empathy-map');
+  }
+  const onHandleEdit = () => {
+    console.log(index, text, color)
     switch (column) {
       case 0:
         dispatch(editImpactMappingGoal({ index: index, text: text, color: color }));
@@ -254,13 +251,16 @@ const BasicCard = ({
             <>
               <Typography variant="body2">{texte}</Typography>
               <CardActions sx={{ justifyContent: "flex-end" }}>
-            <Button size="small" onClick={() => toggleEditForm()}>
-              Edit
-            </Button>
-            <Button size="small" color="error" onClick={() => deleteButton()}>
-              Supprimer
-            </Button>
-          </CardActions>
+                {column === 1 && (
+                  <Button size="small" color="success" onClick={() => goToEmpathyMap()}> Allez vers Empathy Map </Button>
+                )}
+                <Button size="small" onClick={() => toggleEditForm()}>
+                  Modifier
+                </Button>
+                <Button size="small" color="error" onClick={() => deleteButton()}>
+                  Supprimer
+                </Button>
+              </CardActions>
             </>
           )}
         </CardContent>
