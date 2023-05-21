@@ -896,17 +896,37 @@ const CoursInfo = () => {
                       {coursData.private === false ? "Public" : "Privé"}
                     </p>
                   </div>
-                  <Button
-                    startIcon={<CallRoundedIcon />}
-                    sx={{
-                      backgroundColor: "#009800",
-                      color: "#ffffff",
-                    }}
-                    className={useStyles().callButton}
-                  >
-                    Rejoindre la session
-                  </Button>
+                  {userStatus === "po" ? (
+                    <>
+                      <Button
+                        startIcon={<CallRoundedIcon />}
+                        sx={{
+                          backgroundColor: "#009800",
+                          color: "#ffffff",
+                        }}
+                        className={classes.callButton}
+                      >
+                        Lancer l'appel
+                      </Button>
+                    </>
+                  ) : userStatus === "etudiant" ? (
+                    <>
+                      <Button
+                        startIcon={<CallRoundedIcon />}
+                        sx={{
+                          backgroundColor: "#009800",
+                          color: "#ffffff",
+                        }}
+                        className={classes.joinCallButton}
+                      >
+                        Rejoindre l'appel
+                      </Button>
+                    </>
+                  ) : (
+                    <div></div>
+                  )}
                 </div>
+
                 {userStatus === "etudiant" ? (
                   ""
                 ) : (
