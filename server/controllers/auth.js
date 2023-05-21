@@ -13,6 +13,7 @@ const login = async (req, res) => {
     res.status(401).json({ message: "Connexion non autorisée" });
   }
 };
+
 const register = async (req, res) => {
   const {
     userEmail,

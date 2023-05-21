@@ -18,6 +18,7 @@ const {
   addCategory,
   deleteCategory,
   updateCategory,
+  getDeviceRequests,
   todayRequests,
   liveCategories,
   liveInventory,
@@ -25,7 +26,7 @@ const {
 } = require("./controllers/inventory");
 
 module.exports = function (connection, pathname) {
-  // Route Inventory
+  // Accept wsI as an argument
   router.get("/", inventory);
   router.get("/device/:deviceId", inventoryDeviceId);
   router.post("/", addDevice);
@@ -33,18 +34,20 @@ module.exports = function (connection, pathname) {
   router.delete("/device/:deviceId", deleteDevice);
   router.post("/request/:deviceId", makeRequest);
   router.get("/requests/:deviceId", deviceRequests);
-  router.put("/accept/:deviceId/:requestId", acceptRequest);
-  router.put("/reject/:deviceId/:requestId", rejectRequest);
+  router.put("/acceptRequest/:deviceId/:requestId", acceptRequest);
+  router.put("/refuseRequest/:deviceId/:requestId", rejectRequest);
   router.get("/request/:requestId", getRequests);
   router.put("/request/:requestId", updateRequest);
   router.get("/categories", getCategories);
   router.put("/category", addCategory);
   router.delete("/category/:category", deleteCategory);
   router.put("/category/:oldCategory", updateCategory);
+  router.get("/deviceRequests/:deviceId", getDeviceRequests);
 
   switch (pathname) {
     case "/todayRequests":
       todayRequests(connection);
+      console.log(pathname);
       console.log("todayRequests");
       break;
     case "/liveCategories":
