@@ -3,19 +3,24 @@ import Button from "@mui/material/Button";
 import { TextField, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
-import PostIt from "./PostIt";
+import PostIt from "../../components/agile/PostIt";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import html2pdf from "html2pdf.js";
-
+import "../../components/agile/Postit.scss";
 const taskStatus = {
   think: {
     name: "Penser et ressentir",
     color: "#ff0000",
     params: "1 / 1 / 3 / 3",
-    items: [],
-    isRequested: true,
-    isDragDisabled: true, // disable the drag on the "Stories" column
+    items: [
+      {
+        id: "23",
+        content: "testss",
+      },
+    ],
   },
   see: {
     name: "Voir",
@@ -39,6 +44,8 @@ const taskStatus = {
 export default function EmpathyMap() {
   const [columns, setColumns] = useState(taskStatus);
   const [showTextField, setShowTextField] = useState(false);
+  const [newPostItContent, setNewPostItContent] = useState("");
+  const [selectedColumnId, setSelectedColumnId] = useState(null);
 
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
@@ -81,28 +88,35 @@ export default function EmpathyMap() {
   const addPostIt = (columnId) => {
     const newPostIt = {
       id: `postIt-${Date.now()}`,
-      content: "À modifier",
+      content: newPostItContent,
     };
-  
+
     // Add the new PostIt to the specific column
     const updatedItems = [...columns[columnId].items, newPostIt];
     const updatedColumn = {
       ...columns[columnId],
       items: updatedItems,
     };
-  
+
     setColumns({
       ...columns,
       [columnId]: updatedColumn,
     });
+
+    setShowTextField(false); // Hide the TextField and button after adding the post-it
+    setNewPostItContent(""); // Reset the new post-it content
   };
 
-  const handleChange = () => {
-    console.log("test");
-  }
+  const handleChange = (event) => {
+    setNewPostItContent(event.target.value);
+  };
 
-  const handleClickAddButton = () => {
+  const handleClickAddButton = (columnId) => {
+    setSelectedColumnId(columnId);
     setShowTextField(true);
+  };
+  const cancelClick = () => {
+    setShowTextField(false);
   };
 
   const exportToPDF = () => {
@@ -149,7 +163,7 @@ export default function EmpathyMap() {
 
   return (
     <>
-      <div style={{margin:2}}>
+      <div style={{ margin: 2 }}>
         <Typography variant="h6">Empathy Map de Adrien</Typography>
         <Button variant="contained" onClick={exportToPDF}>
           Exporter mon EmpathyMap
@@ -206,7 +220,7 @@ export default function EmpathyMap() {
                       color="primary"
                       size="small"
                       style={{ marginLeft: "auto" }}
-                      onClick={() => addPostIt(columnId)}// Ajoutez votre fonction de gestion de l'ajout ici
+                      onClick={() => handleClickAddButton(columnId)}
                     >
                       <AddIcon />
                     </IconButton>
@@ -226,9 +240,46 @@ export default function EmpathyMap() {
                             overflow: "auto",
                             height: "auto",
                             borderRadius: "4%",
-                            flexWrap:"wrap"
+                            flexWrap: "wrap",
                           }}
                         >
+                          {selectedColumnId === columnId && showTextField ? (
+                            <div className="empathy-post-it">
+                              <TextField
+                                variant="outlined"
+                                autoFocus
+                                value={newPostItContent}
+                                onChange={handleChange}
+                                style={{ marginRight: "10px" }}
+                                InputProps={{
+                                  style: {
+                                    color: "#130d6b",
+                                    fontFamily: "Permanent Marker, cursive",
+                                  },
+                                }}
+                                placeholder="Saisissez un titre pour cette carte…"
+                              />
+                              <IconButton
+                                aria-label="Add"
+                                color="success"
+                                size="small"
+                                disabled={!newPostItContent}
+                                onClick={() => addPostIt(columnId)}
+                              >
+                                <CheckCircleIcon />
+                              </IconButton>
+                              <IconButton
+                                aria-label="Cancel"
+                                color="error"
+                                size="small"
+                                onClick={cancelClick}
+                              >
+                                <CancelIcon />
+                              </IconButton>
+                            </div>
+                          ) : (
+                            <></>
+                          )}
                           {column.items.map((item, index) => {
                             return (
                               <Draggable
@@ -243,25 +294,7 @@ export default function EmpathyMap() {
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
                                     >
-                                      {showTextField ? (
-                                        <>
-                                          <TextField
-                                            variant="outlined"
-                                            autoFocus
-                                            value="aezaea"
-                                            onChange={handleChange}
-                                            style={{ marginRight: "10px" }}
-                                            InputProps={{
-                                              style: { color: "#5e5e5e" },
-                                            }}
-                                            multiline
-                                            rows={2}
-                                            placeholder="Saisissez un titre pour cette carte…"
-                                          />
-                                        </>
-                                      ) : (
-                                        <PostIt text={item.content} />
-                                      )}
+                                      <PostIt text={item.content} />
                                     </div>
                                   );
                                 }}
