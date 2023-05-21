@@ -9,7 +9,6 @@ import InvBox from "../../components/inventory/InvBox";
 import ModalForm from "../../components/inventory/ModalForm";
 import LoanRequestForm from "../../components/inventory/LoanRequestForm";
 import SideBarRequest from "../../components/inventory/SideBarRequest";
-import userObj from "../../userObj";
 import AddIcon from "@mui/icons-material/Add";
 import AccessibilityNewRoundedIcon from "@mui/icons-material/AccessibilityNewRounded";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
@@ -34,7 +33,6 @@ function InventoryHome() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
-  const user = userObj;
   const navigate = useNavigate();
 
   const toggleDrawerAdd = (event, open) => {

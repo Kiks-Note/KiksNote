@@ -9,6 +9,7 @@ import {
   Container,
   IconButton,
   InputAdornment,
+  useTheme,
   Link,
   TextField,
   Typography,
@@ -32,6 +33,7 @@ const Login = () => {
   const [messageEmail, setMessageEmail] = useState("");
   const [messagePassword, setMessagePassword] = useState("");
   const regex = /@edu\.esiee-it\.fr/;
+  const theme = useTheme();
   const cookies = new Cookies();
   const {auth} = useFirebase();
 
@@ -89,7 +91,7 @@ const Login = () => {
         })
         .catch((err) => {
           console.log(err.message);
-          toast.error(err.response.data.message);
+          toast.error(err.message);
         });
     } catch (e) {
       if (e.message.includes("auth/invalid-email")) {
@@ -108,25 +110,29 @@ const Login = () => {
   const verifInputErrors = (email, password) => {
     if (email === "") {
       setErrorEmail(true);
-      setMessageEmail("Email requis");
-    } else if (regex.test(email)) {
+      setMessageEmail("L'adresse email est requis");
+    }
+    else if (regex.test(email)) {
       setErrorEmail(false);
       setMessageEmail("");
-    } else {
+    }
+    else {
       setErrorEmail(true);
       setMessageEmail("L'email doit finir par @edu.esiee-it.fr");
     }
     if (password === "") {
       setErrorPassword(true);
-      setMessagePassword("Password requis");
-    } else if (password.length >= 6) {
+      setMessagePassword("Le mot de passe est requis");
+    }
+    else if (password.length >= 6) {
       setErrorPassword(false);
       setMessagePassword("");
-    } else {
+    }
+    else {
       setErrorPassword(true);
       setMessagePassword("Le mot de passe est incorrect");
     }
-  };
+  }
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -148,7 +154,7 @@ const Login = () => {
             backgroundColor: "#7a52e1",
           }}
         ></Container>
-        <div className="login-header">
+        <div className="login-header" style={{ backgroundColor: theme.palette.background.container}}>
           <Container
             sx={{
               marginTop: "20%",
@@ -158,6 +164,7 @@ const Login = () => {
           >
             <Typography
               component="h1"
+              color="text.primary"
               sx={{
                 fontSize: 30,
                 fontWeight: "bold",
@@ -193,6 +200,9 @@ const Login = () => {
                   id="input-email"
                   defaultValue={email}
                   onChange={onChangeEmail}
+                  sx={{
+                    input: { color: 'text.primary' }
+                  }}
                   error={errorEmail}
                   helperText={messageEmail}
                 />
@@ -222,6 +232,9 @@ const Login = () => {
                   id="input-password"
                   defaultValue={password}
                   onChange={onChangePassword}
+                  sx={{
+                    input: { color: 'text.primary' },
+                  }}
                   error={errorPassword}
                   helperText={messagePassword}
                   InputProps={{
@@ -254,9 +267,10 @@ const Login = () => {
                   sx={{
                     color: "#7a52e1",
                     textDecoration: "none",
+                    cursor: "pointer"
                   }}
                 >
-                  Mot de passe oublie ?
+                  Mot de passe oublié ?
                 </Link>
               </Container>
               <Box textAlign="center" className="button-box-login">
@@ -265,6 +279,8 @@ const Login = () => {
                   className="login-button"
                   sx={{
                     backgroundColor: "#7a52e1",
+                    color: "white",
+                    cursor: "pointer"
                   }}
                   variant="contained"
                 >
@@ -273,17 +289,18 @@ const Login = () => {
               </Box>
             </form>
 
-            <p className="text-sm font-medium text-center m-3">
-              Pas encore de compte? Creez-en un{" "}
+            <p className="text-sm font-medium text-center m-3 font-bold">
+              Pas encore de compte ? Créez-en un{" "}
               <Link
                 href="/signup"
                 sx={{
                   color: "#7a52e1",
                   textDecoration: "none",
                   fontWeight: "bold",
+                  cursor: "pointer"
                 }}
               >
-                ici
+               Ici
               </Link>
             </p>
           </Container>

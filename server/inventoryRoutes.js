@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {db} = require("./firebase");
-const {parse} = require("url");
+
 
 const {
   inventory,
@@ -49,6 +48,7 @@ module.exports = function (connection, pathname) {
     case "/todayRequests":
       todayRequests(connection);
       console.log(pathname);
+      console.log("todayRequests");
       break;
     case "/liveCategories":
       liveCategories(connection);

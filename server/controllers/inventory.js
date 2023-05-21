@@ -351,6 +351,7 @@ const getDeviceRequests = async (req, res) => {
   }
 };
 
+
 const liveCategories = async (connection) => {
   db.collection("inventoryCategories")
     .doc("7UKjabIg2uFyz1504U2K")
@@ -395,6 +396,7 @@ const todayRequests = async (connection) => {
 };
 
 const liveInventory = async (connection) => {
+
   db.collection("inventory").onSnapshot((snapshot) => {
     const inventory = snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -404,6 +406,7 @@ const liveInventory = async (connection) => {
     connection.sendUTF(JSON.stringify(inventory));
   });
 };
+
 
 const borrowedList = async (connection) => {
   db.collection("inventory")
