@@ -244,7 +244,7 @@ export default function EmpathyMap() {
                           }}
                         >
                           {selectedColumnId === columnId && showTextField ? (
-                            <div className="empathy-post-it">
+                            <div className="empathy-post-it empathy-post-it--custom">
                               <TextField
                                 variant="outlined"
                                 autoFocus
