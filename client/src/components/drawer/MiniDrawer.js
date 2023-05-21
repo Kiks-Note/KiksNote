@@ -184,7 +184,7 @@ export default function MiniDrawer({ element }) {
               {
                 id: 14,
                 name: "Coding Agile",
-                route: "#",
+                route: "/agile",
                 icon: (
                   <TimelineIcon
                     sx={{ color: theme.palette.custom.iconDrawer }}
@@ -432,7 +432,7 @@ export default function MiniDrawer({ element }) {
           )}
         </List>
       </Drawer>
-      <Box component="main" sx={{ width: "100%" }}>
+      <Box component="main"  sx={{width: '100%'}}>
         <>{element}</>
       </Box>
     </Box>

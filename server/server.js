@@ -62,6 +62,12 @@ wsI.on("request", (request) => {
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
 
+  require("./blog_back.js")(app, pathname, db, connection);
+  require("./routes/call")(app, db, connection, pathname);
+  require("./dashboard")(app, db, ws, parse);
+  require("./routes/groupscreation")(app, db);
+  require("./userInfo")(app, db, upload, path, fs);
+  require("./userInfoWebSocket")(app, db, connection, pathname);
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
