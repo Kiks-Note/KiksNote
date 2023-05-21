@@ -8,6 +8,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -28,40 +30,48 @@ import {
 } from "../../redux/slices/impactMappingSlice";
 
 const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor, }) => {
+  const navigate = useNavigate();
+  const { goals, actors, impacts, deliverables } = useSelector(
+    (state) => state.impactMapping
+  );
   const [text, setText] = useState("");
   const dispatch = useDispatch();
   const [color, setColor] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const { goals, actors, impacts, deliverables } = useSelector(
-    (state) => state.impactMapping
-  );
-  const navigate = useNavigate();
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
+
   useEffect(() => {
     setColor(defineColor);
     setText(texte);
   }, [goals, actors, impacts, deliverables]);
 
+
   const onHandleClick = () => {
-    switch (column) {
-      case 0:
-        dispatch(addImpactMappingGoals({ text: text, color: color }));
-        break;
-      case 1:
-        dispatch(addImpactMappingActors({ text: text, color: color }));
-        break;
-      case 2:
-        dispatch(addImpactMappingImpacts({ text: text, color: color }));
-        break;
-      case 3:
-        dispatch(
-          addImpactMappingDeliverables({ text: text, color: color })
-        );
-        break;
-      default:
-        break;
+    if (text !== '' && text !== undefined && text !== null) {
+      switch (column) {
+        case 0:
+          dispatch(addImpactMappingGoals({ text: text, color: color }));
+          break;
+        case 1:
+          dispatch(addImpactMappingActors({ text: text, color: color }));
+          break;
+        case 2:
+          dispatch(addImpactMappingImpacts({ text: text, color: color }));
+          break;
+        case 3:
+          dispatch(
+            addImpactMappingDeliverables({ text: text, color: color })
+          );
+          break;
+        default:
+          break;
+      }
+      console.log(text, color);
+      onCloseForm();
+    } else {
+      setOpenSnackbar(true);
     }
-    console.log(text, color);
-    onCloseForm();
   };
 
   const deleteButton = () => {
@@ -101,7 +111,7 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
   const goToEmpathyMap = () => {
     console.log("goToEmpathyMap")
     navigate('/agile/empathy-map');
-  }
+  };
   const onHandleEdit = () => {
     console.log(index, text, color)
     switch (column) {
@@ -122,7 +132,14 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
     }
     console.log("edit", index);
     toggleEditForm();
-  }
+  };
+
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
   return (
     <Card
       sx={{
@@ -165,10 +182,12 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={color || defineColor || ''}
+              value={color || ""}
               onChange={handleColorChange}
+              displayEmpty
               sx={{ width: "100%", mt: 1 }}
             >
+              <MenuItem value="" disabled>Choississez une couleur</MenuItem>
               <MenuItem value="#FFC0CB">Rose</MenuItem>
               <MenuItem value="#ADD8E6">Bleu clair</MenuItem>
               <MenuItem value="#90EE90">Vert clair</MenuItem>
@@ -229,6 +248,7 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={color}
+                placeholder="Choississez votre Couleur"
                 onChange={handleColorChange}
                 sx={{ width: "100%", mt: 1 }}
               >
@@ -236,7 +256,7 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
                 <MenuItem value="#ADD8E6">Bleu clair</MenuItem>
                 <MenuItem value="#90EE90">Vert clair</MenuItem>
                 <MenuItem value="#FFD700">Or</MenuItem>
-                <MenuItem value="#FFA07A">Saon</MenuItem>
+                <MenuItem value="#FFA07A">Saumon</MenuItem>
               </Select>
               <CardActions sx={{ justifyContent: "flex-end" }}>
                 <Button size="small" onClick={() => toggleEditForm()}>
@@ -252,7 +272,10 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
               <Typography variant="body2">{texte}</Typography>
               <CardActions sx={{ justifyContent: "flex-end" }}>
                 {column === 1 && (
-                  <Button size="small" color="success" onClick={() => goToEmpathyMap()}> Allez vers Empathy Map </Button>
+                  <CardActions >
+                    <Button size="small" color="success" onClick={() => goToEmpathyMap()}> Allez vers Empathy Map </Button>
+                    <Button size="small" color="success" >Allez vers Persona</Button>
+                  </CardActions>
                 )}
                 <Button size="small" onClick={() => toggleEditForm()}>
                   Modifier
@@ -265,6 +288,16 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
           )}
         </CardContent>
       )}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: '100%' }}>
+          Veuillez remplir le texte avant de confirmer.
+        </Alert>
+      </Snackbar>
     </Card>
   );
 };
