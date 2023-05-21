@@ -83,7 +83,8 @@ const CoursInfo = () => {
 
   const [coursData, setCoursData] = useState([]);
   const [coursTitle, setCoursTitle] = useState("");
-  const [coursDate, setCoursDate] = useState("");
+  const [courseDateStart, setCourseDateStart] = useState("");
+  const [courseDateEnd, setCourseDateEnd] = useState("");
   const [coursDescription, setCoursDescription] = useState("");
   const [coursCampusNumerique, setCoursCampusNumerique] = useState(false);
   const [courseIdClass, setCourseIdClass] = useState("");
@@ -307,7 +308,8 @@ const CoursInfo = () => {
   const updateCours = async (
     title,
     description,
-    date,
+    dateStartSprint,
+    dateEndSprint,
     distanciel,
     coursClass,
     owner,
@@ -319,14 +321,20 @@ const CoursInfo = () => {
         .put(`http://localhost:5050/ressources/cours/${id}`, {
           title: title,
           description: description,
-          date: date,
+          dateStartSprint: dateStartSprint,
+          dateEndSprint: dateEndSprint,
           campus_numerique: distanciel,
           courseClass: coursClass,
           owner: owner,
           private: coursPrivate,
           imageBase64: imageBase64,
         })
-        .then(() => {})
+        .then((res) => {
+          if (res.status === 200) {
+            toastSuccess(`Votre cours ${coursTitle} a bien été modifié`);
+            window.location.reload();
+          }
+        })
         .catch((error) => {
           console.log(error);
         });
@@ -375,7 +383,12 @@ const CoursInfo = () => {
     setOpenUpdate(true);
     getAllInstructors();
     getAllClass();
-    setCoursDate(moment.unix(coursData.date._seconds).format("yyyy-MM-DD"));
+    setCourseDateStart(
+      moment.unix(coursData.dateStartSprint._seconds).format("yyyy-MM-DD")
+    );
+    setCourseDateEnd(
+      moment.unix(coursData.dateEndSprint._seconds).format("yyyy-MM-DD")
+    );
   };
 
   const handleCloseUpdateDialog = () => {
@@ -447,10 +460,10 @@ const CoursInfo = () => {
   const onSubmit = async () => {
     try {
       await updateCours(
-        // les nouvelles values du form
         coursTitle,
         coursDescription,
-        coursDate,
+        courseDateStart,
+        courseDateEnd,
         coursCampusNumerique,
         courseIdClass,
         coursOwnerId,
@@ -458,7 +471,6 @@ const CoursInfo = () => {
         coursImageBase64
       );
       handleCloseUpdateDialog();
-      toastSuccess(`Votre cours ${coursTitle} a bien été modifié`);
     } catch (error) {
       console.error(error);
       toastFail("Erreur lors de la modification de votre cours.");
@@ -801,11 +813,23 @@ const CoursInfo = () => {
                   alt="course-img"
                 />
                 <div className="flex">
-                  <h4 className="font-bold">Date de Sprint : </h4>
+                  <h4 className="font-bold">Date début de Sprint : </h4>
                   <p className="pl-2">
-                    {coursData?.date &&
-                      coursData.date._seconds &&
-                      moment.unix(coursData.date._seconds).format("DD.MM.YYYY")}
+                    {coursData?.dateStartSprint &&
+                      coursData.dateStartSprint._seconds &&
+                      moment
+                        .unix(coursData.dateStartSprint._seconds)
+                        .format("DD.MM.YYYY")}
+                  </p>
+                </div>
+                <div className="flex">
+                  <h4 className="font-bold">Date fin de Sprint : </h4>
+                  <p className="pl-2">
+                    {coursData?.dateEndSprint &&
+                      coursData.dateEndSprint._seconds &&
+                      moment
+                        .unix(coursData.dateEndSprint._seconds)
+                        .format("DD.MM.YYYY")}
                   </p>
                 </div>
                 <h2
@@ -909,46 +933,53 @@ const CoursInfo = () => {
                       >
                         Modifier
                       </Button>
-                      {courseClass && 
-                        courseClass.data && 
-                        courseClass.data.name && 
+                      {courseClass &&
+                        courseClass.data &&
+                        courseClass.data.name &&
                         courseOwerData &&
                         courseOwerData.data &&
                         courseOwerData.data.lastname &&
-                        courseOwerData.data.firstname &&(
-                        <UpdateCoursDialog
-                          openUpdate={openUpdate}
-                          handleClose={handleCloseUpdateDialog}
-                          handleFileChange={handleFileChange}
-                          handleDrop={handleDrop}
-                          coursTitle={coursData.title}
-                          coursDate={
-                            coursData?.date &&
-                            coursData.date._seconds &&
-                            moment
-                              .unix(coursData.date._seconds)
-                              .format("YYYY-MM-DD")
-                          }
-                          coursDescription={coursData.description}
-                          setCoursTitle={setCoursTitle}
-                          setCoursDate={setCoursDate}
-                          setCoursDescription={setCoursDescription}
-                          setCoursCampusNumerique={setCoursCampusNumerique}
-                          coursCampusNumerique={coursData.campus_numerique}
-                          coursPrivate={coursData.private}
-                          setCoursPrivate={setCoursPrivate}
-                          courseIdClass={courseIdClass}
-                          setCourseIdClass={setCourseIdClass}
-                          rejectedFiles={rejectedFiles}
-                          currentClass={courseClass.data.name}  
-                          onSubmit={onSubmit}
-                          allpo={allpo}
-                          allclass={allclass}
-                          currentPO={courseOwerData.data.lastname.toUpperCase() + " " + courseOwerData.data.firstname}
-                          setCoursOwnerId={setCoursOwnerId}
-                          control={control}
-                        />
-                      )}
+                        courseOwerData.data.firstname && (
+                          <UpdateCoursDialog
+                            openUpdate={openUpdate}
+                            handleClose={handleCloseUpdateDialog}
+                            handleFileChange={handleFileChange}
+                            handleDrop={handleDrop}
+                            coursTitle={coursData.title}
+                            coursDate={
+                              coursData?.date &&
+                              coursData.date._seconds &&
+                              moment
+                                .unix(coursData.date._seconds)
+                                .format("YYYY-MM-DD")
+                            }
+                            coursDescription={coursData.description}
+                            setCoursTitle={setCoursTitle}
+                            courseDateStart={courseDateStart}
+                            setCourseDateStart={setCourseDateStart}
+                            courseDateEnd={courseDateEnd}
+                            setCourseDateEnd={setCourseDateEnd}
+                            setCoursDescription={setCoursDescription}
+                            setCoursCampusNumerique={setCoursCampusNumerique}
+                            coursCampusNumerique={coursData.campus_numerique}
+                            coursPrivate={coursData.private}
+                            setCoursPrivate={setCoursPrivate}
+                            courseIdClass={courseIdClass}
+                            setCourseIdClass={setCourseIdClass}
+                            rejectedFiles={rejectedFiles}
+                            currentClass={courseClass.data.name}
+                            onSubmit={onSubmit}
+                            allpo={allpo}
+                            allclass={allclass}
+                            currentPO={
+                              courseOwerData.data.lastname.toUpperCase() +
+                              " " +
+                              courseOwerData.data.firstname
+                            }
+                            setCoursOwnerId={setCoursOwnerId}
+                            control={control}
+                          />
+                        )}
                       <Button
                         startIcon={<DeleteIcon />}
                         onClick={() => handleClickOpenDeleteDialog()}

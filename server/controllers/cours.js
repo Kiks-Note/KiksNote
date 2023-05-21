@@ -229,19 +229,6 @@ const updateCours = async (req, res) => {
 
     const courseId = req.params.id;
 
-    if (
-      !title ||
-      !description ||
-      !dateStartSprint ||
-      !dateEndSprint ||
-      !courseClass ||
-      !owner
-    ) {
-      return res
-        .status(400)
-        .send("Veuillez remplir tous les champs obligatoires.");
-    }
-
     const resourcesRef = db.collection("cours");
     const course = await resourcesRef.doc(courseId).get();
 
@@ -251,14 +238,45 @@ const updateCours = async (req, res) => {
         .send("Le cours que vous essayez de modifier n'existe pas.");
     }
 
-    const mimeType = "image/png";
-    const fileExtension = mime.extension(mimeType);
-    const fileName = `${title}.${fileExtension}`;
+    let updatedData = {};
 
-    let imageCourseUrl = course._fieldsProto.imageCourseUrl.stringValue;
+    if (title) {
+      updatedData.title = title;
+    }
 
-    // Si une nouvelle image est fournie, la mettre à jour sur Firebase Storage
+    if (description) {
+      updatedData.description = description;
+    }
+
+    if (dateStartSprint) {
+      updatedData.dateStartSprint = new Date(dateStartSprint);
+    }
+
+    if (dateEndSprint) {
+      updatedData.dateEndSprint = new Date(dateEndSprint);
+    }
+
+    if (campus_numerique) {
+      updatedData.campus_numerique = campus_numerique;
+    }
+
+    if (courseClass) {
+      updatedData.courseClass = courseClass;
+    }
+
+    if (owner) {
+      updatedData.owner = owner;
+    }
+
+    if (private) {
+      updatedData.private = private;
+    }
+
     if (imageBase64) {
+      const mimeType = "image/png";
+      const fileExtension = mime.extension(mimeType);
+      const fileName = `${title}.${fileExtension}`;
+
       const buffer = Buffer.from(
         imageBase64.replace(/^data:image\/\w+;base64,/, ""),
         "base64"
@@ -279,20 +297,10 @@ const updateCours = async (req, res) => {
         expires: "03-17-2025",
       });
 
-      imageCourseUrl = url;
+      updatedData.imageCourseUrl = url;
     }
 
-    await resourcesRef.doc(courseId).update({
-      title: title,
-      description: description,
-      dateStartSprint: new Date(dateStartSprint),
-      dateEndSprint: new Date(dateEndSprint),
-      campus_numerique: campus_numerique,
-      courseClass: courseClass,
-      owner: owner,
-      private: private,
-      imageCourseUrl: imageCourseUrl,
-    });
+    await resourcesRef.doc(courseId).update(updatedData);
 
     const updatedCourseData = await resourcesRef.doc(courseId).get();
 

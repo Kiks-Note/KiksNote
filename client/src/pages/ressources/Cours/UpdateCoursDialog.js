@@ -42,18 +42,36 @@ const UpdateCoursDialog = (props) => {
               defaultValue={props.coursTitle}
               onChange={(e) => props.setCoursTitle(e.target.value)}
               sx={{
-                width: "80%",
+                width: "100%",
               }}
             />
+          </div>
+          <div className="title-cours-date-container">
+            <p className="p-1">Date de début</p>
             <TextField
               className="textfield"
               id="date"
               name="date"
-              label=" "
               variant="standard"
               type="date"
-              defaultValue={props.coursDate || props.coursDate}
-              onChange={(e) => props.setCoursDate(e.target.value)}
+              defaultValue={props.courseDateStart}
+              onChange={(e) => props.setCourseDateStart(e.target.value)}
+              sx={{
+                width: "32%",
+              }}
+            />
+            <p className="p-1">Date de fin</p>
+            <TextField
+              className="textfield"
+              id="date"
+              name="date"
+              variant="standard"
+              type="date"
+              defaultValue={props.courseDateEnd}
+              onChange={(e) => props.setCourseDateEnd(e.target.value)}
+              sx={{
+                width: "32%",
+              }}
             />
           </div>
 
@@ -122,8 +140,8 @@ const UpdateCoursDialog = (props) => {
 
           <div className="select-class-allpo-container">
             <Select
-              value={props.selectedClass}
-              onChange={(event) => props.setSelectedClass(event.target.value)}
+              value={props.courseIdClass}
+              onChange={(event) => props.setCourseIdClass(event.target.value)}
               displayEmpty
               renderValue={(value) => value || props.currentClass}
             >
@@ -156,7 +174,7 @@ const UpdateCoursDialog = (props) => {
                   }
                   onChange={(event, newValue) => {
                     onChange(newValue ? newValue.id : "");
-                    props.setCoursOwner(
+                    props.setCoursOwnerId(
                       newValue
                         ? `${newValue.lastname.toUpperCase()} ${
                             newValue.firstname
