@@ -6,6 +6,7 @@ import GifBoxIcon from "@mui/icons-material/GifBox";
 import Popup from "reactjs-popup";
 import axios from "axios";
 import { w3cwebsocket } from "websocket";
+import useFirebase from "../../hooks/useFirebase";
 
 function AppelEleve() {
   const [Call, setCall] = useState({
@@ -14,17 +15,15 @@ function AppelEleve() {
     student_scan: [],
     chats: [],
   });
-  const [Users, setUsers] = useState([]);
+  const { user } = useFirebase();
   const open = useRef();
   const msg = useRef();
   let generated = false;
   const id = useRef();
-  const userID = localStorage.getItem("user_uid");
 
   useEffect(() => {
     if (!generated) {
       getCall();
-      getUsers();
       generated = true;
     }
   }, []);
@@ -33,7 +32,7 @@ function AppelEleve() {
     chatCopy.unshift({
       id: chatCopy.length + 1,
       date: new Date().getDay.toString(),
-      username: Users.firstname,
+      username: user.firstname,
       content: gif.images.fixed_height_small.url,
       isGif: true,
     });
@@ -49,7 +48,7 @@ function AppelEleve() {
     chatCopy.unshift({
       id: chatCopy.length + 1,
       date: new Date().getDay.toString(),
-      username: Users.firstname,
+      username: user.firstname,
       content: msg.current.value,
       isGif: false,
     });
@@ -60,7 +59,7 @@ function AppelEleve() {
   };
   const updateCall = async () => {
     const res = await axios
-      .post(`http://localhost:5050/updatecall`, {
+      .post(`http://localhost:5050/call/updatecall`, {
         id: id.current,
         object: Call,
       })
@@ -69,7 +68,7 @@ function AppelEleve() {
       });
   };
   const getCall = () => {
-    axios.get("http://localhost:5050/calls").then((res) => {
+    axios.get("http://localhost:5050/call/calls").then((res) => {
       id.current = res.data.at(-1).id;
       delete res.data.at(-1).id;
       setCall(res.data.at(-1));
@@ -89,14 +88,7 @@ function AppelEleve() {
       })();
     });
   };
-  const getUsers = () => {
-    axios
-      .get(`http://localhost:5050/user`, { params: { id: userID } })
-      .then((res) => {
-        console.log(res.data);
-        setUsers(res.data);
-      });
-  };
+
   return (
     <div className="ContentEleve">
       <div className="DivChatEleve">
