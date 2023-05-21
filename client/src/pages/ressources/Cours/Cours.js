@@ -72,7 +72,8 @@ const Ressources = () => {
 
   const [courseTitle, setCourseTitle] = useState("");
   const [courseDescription, setCourseDescription] = useState("");
-  const [courseDate, setCourseDate] = useState("");
+  const [courseDateStart, setCourseDateStart] = useState("");
+  const [courseDateEnd, setCourseDateEnd] = useState("");
   const [courseCampusNumerique, setCourseCampusNumerique] = useState(false);
   const [courseOwner, setCourseOwner] = useState("");
   const [idSelectedOwner, setIdSelectedOwner] = useState("");
@@ -187,7 +188,8 @@ const Ressources = () => {
         {
           title: courseTitle,
           description: courseDescription,
-          date: courseDate,
+          dateStartSprint: courseDateStart,
+          dateEndSprint: courseDateEnd,
           campus_numerique: courseCampusNumerique,
           courseClass: idSelectedClass,
           owner: idSelectedOwner,
@@ -246,16 +248,14 @@ const Ressources = () => {
   const endLastYear = new Date(lastYear + 1, 7, 31);
 
   const filteredCoursesCurrentYear = courses.filter((course) => {
-    const courseDate = timeConverter(course.data.date); // Utiliser timeConverter pour convertir le timestamp en date
+    const courseDate = timeConverter(course.data.dateStartSprint);
     return courseDate >= startCurrentYear && courseDate <= endCurrentYear;
   });
 
   const filteredCoursesLastYear = courses.filter((course) => {
-    const courseDate = timeConverter(course.data.date); // Utiliser timeConverter pour convertir le timestamp en date
+    const courseDate = timeConverter(course.data.dateStartSprint);
     return courseDate >= startLastYear && courseDate <= endLastYear;
   });
-
-  console.log(userClassConnected);
 
   return (
     <>
@@ -347,8 +347,10 @@ const Ressources = () => {
             onSubmit={onSubmit}
             courseTitle={courseTitle}
             setCourseTitle={setCourseTitle}
-            courseDate={courseDate}
-            setCourseDate={setCourseDate}
+            courseDateStart={courseDateStart}
+            setCourseDateStart={setCourseDateStart}
+            courseDateEnd={courseDateEnd}
+            setCourseDateEnd={setCourseDateEnd}
             rejectedFiles={rejectedFiles}
             courseCampusNumerique={courseCampusNumerique}
             setCourseCampusNumerique={setCourseCampusNumerique}

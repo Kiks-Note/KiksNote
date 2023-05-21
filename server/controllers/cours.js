@@ -141,7 +141,8 @@ const createCours = async (req, res) => {
     const {
       title,
       description,
-      date,
+      dateStartSprint,
+      dateEndSprint,
       campus_numerique,
       courseClass,
       owner,
@@ -152,7 +153,8 @@ const createCours = async (req, res) => {
     if (
       !title ||
       !description ||
-      !date ||
+      !dateStartSprint ||
+      !dateEndSprint ||
       !courseClass ||
       !owner ||
       !imageBase64
@@ -190,7 +192,8 @@ const createCours = async (req, res) => {
     const newResource = await resourcesRef.add({
       title: title,
       description: description,
-      date: new Date(date),
+      dateStartSprint: new Date(dateStartSprint),
+      dateEndSprint: new Date(dateEndSprint),
       campus_numerique: campus_numerique,
       courseClass: courseClass,
       owner: owner,
@@ -215,7 +218,8 @@ const updateCours = async (req, res) => {
     const {
       title,
       description,
-      date,
+      dateStartSprint,
+      dateEndSprint,
       campus_numerique,
       courseClass,
       owner,
@@ -225,7 +229,14 @@ const updateCours = async (req, res) => {
 
     const courseId = req.params.id;
 
-    if (!title || !description || !date || !courseClass || !owner) {
+    if (
+      !title ||
+      !description ||
+      !dateStartSprint ||
+      !dateEndSprint ||
+      !courseClass ||
+      !owner
+    ) {
       return res
         .status(400)
         .send("Veuillez remplir tous les champs obligatoires.");
@@ -274,7 +285,8 @@ const updateCours = async (req, res) => {
     await resourcesRef.doc(courseId).update({
       title: title,
       description: description,
-      date: new Date(date),
+      dateStartSprint: new Date(dateStartSprint),
+      dateEndSprint: new Date(dateEndSprint),
       campus_numerique: campus_numerique,
       courseClass: courseClass,
       owner: owner,
