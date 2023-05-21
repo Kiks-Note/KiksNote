@@ -57,6 +57,8 @@ const blogRoutes = require("./blogRoutes");
 const groupsRoute = require("./groupsRoutes");
 
 
+const inventoryRoutes = require("./inventoryRoutes");
+const authRoutes = require("./authRoutes");
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
@@ -78,7 +80,6 @@ wsI.on("request", (request) => {
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
-
   connection.on("close", (reasonCode, description) => {
     console.log(
       `WebSocket closed with reasonCode ${reasonCode} and description ${description}`

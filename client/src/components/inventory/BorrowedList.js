@@ -81,10 +81,10 @@ export default function BorrowedList() {
     {field: "id", headerName: "ID", width: 100},
     {field: "deviceId", headerName: "Matériel ID", width: 225},
     {field: "label", headerName: "Nom", width: 200},
-    {field: "ref", headerName: "Référence", width: 175},
+    {field: "reference", headerName: "Référence", width: 175},
     {field: "category", headerName: "Catégorie", width: 150},
     {field: "campus", headerName: "Campus", width: 100},
-    {field: "requester", headerName: "Demandeur", width: 250},
+    {field: "requesterId", headerName: "Demandeur", width: 250},
     {field: "startDate", headerName: "Debut", width: 130},
     {field: "endDate", headerName: "Fin", width: 130},
     {
@@ -100,7 +100,7 @@ export default function BorrowedList() {
               cursor: "pointer",
             }}
             onClick={() => {
-              setOpenDialog(true);
+              params.row.groupe != "Aucun" && setOpenDialog(true);
               // setGroupeEmails(params.row.groupe);
             }}
           >
@@ -109,30 +109,30 @@ export default function BorrowedList() {
         );
       },
     },
-    {
-      field: "action",
-      headerName: "Action",
-      width: 100,
-      renderCell: (params) => {
-        return (
-          <div
-            style={{
-              display: "flex",
-              width: "100%",
-            }}
-          >
-            <EditRoundedIcon
-              style={{color: "black", cursor: "pointer"}}
-              sx={{mr: 2}}
-              onClick={(e) => {
-                setClickedDeviceId(params.row.deviceId);
-                toggleDrawerModify(e, true);
-              }}
-            />
-          </div>
-        );
-      },
-    },
+    // {
+    //   field: "action",
+    //   headerName: "Action",
+    //   width: 100,
+    //   renderCell: (params) => {
+    //     return (
+    //       <div
+    //         style={{
+    //           display: "flex",
+    //           width: "100%",
+    //         }}
+    //       >
+    //         <EditRoundedIcon
+    //           style={{color: "black", cursor: "pointer"}}
+    //           sx={{mr: 2}}
+    //           onClick={(e) => {
+    //             setClickedDeviceId(params.row.deviceId);
+    //             toggleDrawerModify(e, true);
+    //           }}
+    //         />
+    //       </div>
+    //     );
+    //   },
+    // },
   ];
 
   const rows = data
@@ -145,10 +145,10 @@ export default function BorrowedList() {
         id: i,
         deviceId: item.device.id,
         label: item.device.label,
-        ref: item.device.ref,
+        reference: item.device.reference,
         category: item.device.category,
         campus: item.device.campus,
-        requester: item.request && item.request.requester,
+        requesterId: item.request && item.request.requesterId,
         startDate:
           item.request &&
           moment(timeConverter(item.request.startDate)).format("DD.MM.YYYY"),
@@ -156,7 +156,7 @@ export default function BorrowedList() {
           item.request && timeConverter(item.request.endDate)
         ).format("DD.MM.YYYY"),
         groupe:
-          item.request && item.request.group
+          item.request && item.request.group.length > 0
             ? item.request.group.length
             : "Aucun",
       };
