@@ -7,6 +7,7 @@ import Tuto from "./pages/blog/Tuto";
 import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
+import Agile from "./pages/agile/Agile";
 import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
@@ -18,6 +19,7 @@ import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import EmpathyMap from "./pages/agile/EmpathyMap";
 
 function RoutesProvider() {
 
@@ -40,6 +42,8 @@ function RoutesProvider() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
+          <Route path="/agile" element={<Agile/>}/>
+          <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
