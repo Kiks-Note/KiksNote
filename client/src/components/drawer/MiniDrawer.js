@@ -198,7 +198,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 6,
       name: "Inventaire",
-      route: "#",
+      route: "/inventory",
       icon: <InventoryIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {

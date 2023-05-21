@@ -55,10 +55,6 @@ const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const groupsRoute = require("./groupsRoutes");
-
-
-const inventoryRoutes = require("./inventoryRoutes");
-const authRoutes = require("./authRoutes");
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
@@ -66,12 +62,6 @@ wsI.on("request", (request) => {
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
-  require("./blog_back.js")(app, pathname, db, connection);
-  require("./routes/call")(app, db, connection, pathname);
-  require("./dashboard")(app, db, ws, parse);
-  require("./routes/groupscreation")(app, db);
-  require("./userInfo")(app, db, upload, path, fs);
-  require("./userInfoWebSocket")(app, db, connection, pathname);
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
