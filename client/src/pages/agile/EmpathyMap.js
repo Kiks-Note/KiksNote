@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
-import { TextField, Typography } from "@mui/material";
+import { Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
 import PostIt from "./PostIt";
@@ -8,12 +8,74 @@ import axios from "axios";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import html2pdf from "html2pdf.js";
 
+
+const tasks = [
+  {
+    id: "1",
+    content: "Board EduScrum",
+  },
+  {
+    id: "2",
+    content: "Création de sprint agile très très long",
+  },
+  {
+    id: "3",
+    content: "BurnDown chart",
+  },
+  {
+    id: "4",
+    content: "Ajout du backlog",
+  },
+  {
+    id: "5",
+    content: "Sprint retro",
+  },
+  {
+    id: "6",
+    content:
+      "Exemple avec un titre de carte très long pour voir si c'est moche... Finalement ça rend plutôt bien même avec un titre de carte très long",
+  },
+  {
+    id: "7",
+    content: "Sprint retro",
+  },
+  {
+    id: "8",
+    content: "Sprint retro",
+  },
+  {
+    id: "9",
+    content: "Sprint retro",
+  },
+  {
+    id: "10",
+    content: "Sprint retro",
+  },
+  {
+    id: "11",
+    content: "Sprint retro",
+  },
+  {
+    id: "12",
+    content: "Sprint retro",
+  },
+  {
+    id: "13",
+    content: "Sprint retro",
+  },
+];
+
 const taskStatus = {
   think: {
     name: "Penser et ressentir",
     color: "#ff0000",
     params: "1 / 1 / 3 / 3",
-    items: [],
+    items: [
+      {
+        id: "78",
+        content: "test",
+      },
+    ],
     isRequested: true,
     isDragDisabled: true, // disable the drag on the "Stories" column
   },
@@ -21,7 +83,7 @@ const taskStatus = {
     name: "Voir",
     color: "#0000ff",
     params: "1 / 3 / 3 / 5",
-    items: [],
+    items: tasks,
   },
   do: {
     name: "Dire et faire",
@@ -38,7 +100,6 @@ const taskStatus = {
 };
 export default function EmpathyMap() {
   const [columns, setColumns] = useState(taskStatus);
-  const [showTextField, setShowTextField] = useState(false);
 
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
@@ -76,33 +137,6 @@ export default function EmpathyMap() {
         },
       });
     }
-  };
-
-  const addPostIt = (columnId) => {
-    const newPostIt = {
-      id: `postIt-${Date.now()}`,
-      content: "À modifier",
-    };
-  
-    // Add the new PostIt to the specific column
-    const updatedItems = [...columns[columnId].items, newPostIt];
-    const updatedColumn = {
-      ...columns[columnId],
-      items: updatedItems,
-    };
-  
-    setColumns({
-      ...columns,
-      [columnId]: updatedColumn,
-    });
-  };
-
-  const handleChange = () => {
-    console.log("test");
-  }
-
-  const handleClickAddButton = () => {
-    setShowTextField(true);
   };
 
   const exportToPDF = () => {
@@ -206,7 +240,7 @@ export default function EmpathyMap() {
                       color="primary"
                       size="small"
                       style={{ marginLeft: "auto" }}
-                      onClick={() => addPostIt(columnId)}// Ajoutez votre fonction de gestion de l'ajout ici
+                      //onClick={handleAddButtonClick} // Ajoutez votre fonction de gestion de l'ajout ici
                     >
                       <AddIcon />
                     </IconButton>
@@ -243,25 +277,7 @@ export default function EmpathyMap() {
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
                                     >
-                                      {showTextField ? (
-                                        <>
-                                          <TextField
-                                            variant="outlined"
-                                            autoFocus
-                                            value="aezaea"
-                                            onChange={handleChange}
-                                            style={{ marginRight: "10px" }}
-                                            InputProps={{
-                                              style: { color: "#5e5e5e" },
-                                            }}
-                                            multiline
-                                            rows={2}
-                                            placeholder="Saisissez un titre pour cette carte…"
-                                          />
-                                        </>
-                                      ) : (
-                                        <PostIt text={item.content} />
-                                      )}
+                                      <PostIt text={item.content} />
                                     </div>
                                   );
                                 }}

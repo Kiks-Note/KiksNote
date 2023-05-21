@@ -7,6 +7,7 @@ import Tuto from "./pages/blog/Tuto";
 import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
+import Agile from "./pages/agile/Agile";
 import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
@@ -44,7 +45,8 @@ function RoutesProvider() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
-          <Route path="/empathymap" element={<EmpathyMap />} />
+          <Route path="/agile" element={<Agile/>}/>
+          <Route path="/agile/empathymap" element={<EmpathyMap />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />

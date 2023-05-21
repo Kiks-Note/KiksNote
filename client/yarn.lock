@@ -2879,10 +2879,10 @@
     "@react-pdf/png-js" "^2.2.0"
     cross-fetch "^3.1.5"
 
-"@react-pdf/layout@^3.5.1":
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/@react-pdf/layout/-/layout-3.5.1.tgz#247b46b8006b8229f79f1e5c7a11db25a1888492"
-  integrity sha512-htBnbSNrftYo/iAIi1WjdrCiYVOwT0NVmiQDmGKwugE0qFPpbYm1gdjkb7CKXJdOEVncPipG5LDuTrQLvUkHFw==
+"@react-pdf/layout@^3.6.0":
+  version "3.6.0"
+  resolved "https://registry.yarnpkg.com/@react-pdf/layout/-/layout-3.6.0.tgz#799101f95cb12a76f289cf0c4297a9e61285662a"
+  integrity sha512-xrcVWxtXpobW0iqTd8OmMCVMmeGUM46PYq7B1MGR1fI1QG/EKe4HzFdhSdd0werZYj+t1TRC8+tVSX5POs5SYA==
   dependencies:
     "@babel/runtime" "^7.20.13"
     "@react-pdf/fns" "2.0.1"
@@ -2894,7 +2894,7 @@
     "@react-pdf/types" "^2.3.1"
     "@react-pdf/yoga" "^4.1.2"
     cross-fetch "^3.1.5"
-    emoji-regex "^8.0.0"
+    emoji-regex "^10.2.1"
     queue "^6.0.1"
 
 "@react-pdf/pdfkit@^3.0.2":
@@ -2938,13 +2938,13 @@
     svg-arc-to-cubic-bezier "^3.2.0"
 
 "@react-pdf/renderer@^3.1.8":
-  version "3.1.8"
-  resolved "https://registry.yarnpkg.com/@react-pdf/renderer/-/renderer-3.1.8.tgz#748d20648516b5f09e6b4040bfebee2ba4106ea5"
-  integrity sha512-/oxjZLd/rcqkhXzWLwOUrjG/Ol2ZVmDCneuKG1Qmruyko3g++QIlp/141BGHN4JXGvcK9JbO8cBYRhAdwKLIWw==
+  version "3.1.9"
+  resolved "https://registry.yarnpkg.com/@react-pdf/renderer/-/renderer-3.1.9.tgz#886bfb0b6263d96303adcf8ea63ee776ff0ef4ad"
+  integrity sha512-kfEH7O+Jy7aihbUqrT9Ej1gx8/twRWvFMfHlACr29QsN+s+w0XzWpHCvbjkinVFABYcvsenluiirik6mf4qwRQ==
   dependencies:
     "@babel/runtime" "^7.20.13"
     "@react-pdf/font" "^2.3.4"
-    "@react-pdf/layout" "^3.5.1"
+    "@react-pdf/layout" "^3.6.0"
     "@react-pdf/pdfkit" "^3.0.2"
     "@react-pdf/primitives" "^3.0.0"
     "@react-pdf/render" "^3.2.4"
@@ -2989,6 +2989,16 @@
   integrity sha512-OlMZkFrJDj4GyKZ70thiObwwPVZ52B7mlPyfzwa+sgwsioqHXg9nMWOO+7SQFNUbbOGagMUu0bCuTv+iXYZuaQ==
   dependencies:
     "@babel/runtime" "^7.20.13"
+
+"@reduxjs/toolkit@^1.9.3":
+  version "1.9.5"
+  resolved "https://registry.yarnpkg.com/@reduxjs/toolkit/-/toolkit-1.9.5.tgz#d3987849c24189ca483baa7aa59386c8e52077c4"
+  integrity sha512-Rt97jHmfTeaxL4swLRNPD/zV4OxTes4la07Xc4hetpUW/vc75t5m1ANyxG6ymnEQ2FsLQsoMlYB2vV1sO3m8tQ==
+  dependencies:
+    immer "^9.0.21"
+    redux "^4.2.1"
+    redux-thunk "^2.4.2"
+    reselect "^4.1.8"
 
 "@remix-run/router@1.4.0":
   version "1.4.0"
@@ -5936,6 +5946,11 @@ emittery@^0.8.1:
   resolved "https://registry.yarnpkg.com/emittery/-/emittery-0.8.1.tgz#bb23cc86d03b30aa75a7f734819dee2e1ba70860"
   integrity sha512-uDfvUjVrfGJJhymx/kz6prltenw1u7WrCg1oa94zYY8xxVpLLUu045LAT0dhDZdXG58/EpPL/5kA180fQ/qudg==
 
+emoji-regex@^10.2.1:
+  version "10.2.1"
+  resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-10.2.1.tgz#a41c330d957191efd3d9dfe6e1e8e1e9ab048b3f"
+  integrity sha512-97g6QgOk8zlDRdgq1WxwgTMgEWGVAQvB5Fdpgc1MkNy56la5SKP9GsMXKDOdqwn90/41a8yPwIGk1Y6WVbeMQA==
+
 emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
@@ -7487,6 +7502,11 @@ immediate@~3.0.5:
   version "3.0.6"
   resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.0.6.tgz#9db1dbd0faf8de6fbe0f5dd5e56bb606280de69b"
   integrity sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==
+
+immer@^9.0.21:
+  version "9.0.21"
+  resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.21.tgz#1e025ea31a40f24fb064f1fef23e931496330176"
+  integrity sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==
 
 immer@^9.0.7:
   version "9.0.19"
@@ -11022,7 +11042,7 @@ react-redux@^7.2.0:
     prop-types "^15.7.2"
     react-is "^17.0.2"
 
-react-redux@^8.0.4:
+react-redux@^8.0.4, react-redux@^8.0.5:
   version "8.0.5"
   resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-8.0.5.tgz#e5fb8331993a019b8aaf2e167a93d10af469c7bd"
   integrity sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==
@@ -11268,7 +11288,12 @@ redux-logger@^3.0.6:
   dependencies:
     deep-diff "^0.3.5"
 
-redux@^4.0.0, redux@^4.0.4, redux@^4.2.0:
+redux-thunk@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/redux-thunk/-/redux-thunk-2.4.2.tgz#b9d05d11994b99f7a91ea223e8b04cf0afa5ef3b"
+  integrity sha512-+P3TjtnP0k/FEjcBL5FZpoovtvrTNT/UXd4/sluaSyrURlSlhLSzEdfsTBW7WsKB6yPvgd7q/iZPICFjW4o57Q==
+
+redux@^4.0.0, redux@^4.0.4, redux@^4.2.0, redux@^4.2.1:
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/redux/-/redux-4.2.1.tgz#c08f4306826c49b5e9dc901dee0452ea8fce6197"
   integrity sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==
@@ -11382,10 +11407,15 @@ requires-port@^1.0.0:
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha512-KigOCHcocU3XODJxsu8i/j8T9tzT4adHiecwORRQ0ZZFcp7ahwXuRU1m+yuO90C5ZUyGeGfocHDI14M3L3yDAQ==
 
-reselect@^4.1.6, reselect@^4.1.7:
+reselect@^4.1.6:
   version "4.1.7"
   resolved "https://registry.yarnpkg.com/reselect/-/reselect-4.1.7.tgz#56480d9ff3d3188970ee2b76527bd94a95567a42"
   integrity sha512-Zu1xbUt3/OPwsXL46hvOOoQrap2azE7ZQbokq61BQfiXvhewsKDwhMeZjTX9sX0nvw1t/U5Audyn1I9P/m9z0A==
+
+reselect@^4.1.7, reselect@^4.1.8:
+  version "4.1.8"
+  resolved "https://registry.yarnpkg.com/reselect/-/reselect-4.1.8.tgz#3f5dc671ea168dccdeb3e141236f69f02eaec524"
+  integrity sha512-ab9EmR80F/zQTMNeneUr4cv+jSwPJgIlvEmVwLerwrWVbpLlBuls9XHzIeTFy4cegU2NHBp3va0LKOzU5qFEYQ==
 
 resolve-cwd@^3.0.0:
   version "3.0.0"
