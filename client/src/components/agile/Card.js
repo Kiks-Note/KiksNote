@@ -20,8 +20,11 @@ import {
   deleteImpactMappingDeliverables,
   deleteImpactMappingGoals,
   deleteImpactMappingImpacts,
+  editImpactMappingGoal,
+  editImpactMappingActor,
+  editImpactMappingImpact,
+  editImpactMappingDeliverable,
 } from "../../redux/slices/impactMappingSlice";
-import { decomposeColor } from "@material-ui/core";
 
 const BasicCard = ({
   title,
@@ -35,10 +38,15 @@ const BasicCard = ({
   const [text, setText] = useState("");
   const dispatch = useDispatch();
   const [color, setColor] = useState("");
-
+  const [isEditing, setIsEditing] = useState(false);
+  const { goals, actors, impacts, deliverables } = useSelector(
+    (state) => state.impactMapping
+  );
   useEffect(() => {
-    console.log("type", index);
-  }, []);
+    // console.log("type", index, texte, defineColor);
+    setColor(defineColor);
+    setText(texte);
+  }, [goals, actors, impacts, deliverables]);
 
   const onHandleClick = () => {
     switch (column) {
@@ -46,14 +54,14 @@ const BasicCard = ({
         dispatch(addImpactMappingGoals({ text: text, color: color }));
         break;
       case 1:
-        dispatch(addImpactMappingActors({ actors: text, color: color }));
+        dispatch(addImpactMappingActors({ text: text, color: color }));
         break;
       case 2:
-        dispatch(addImpactMappingImpacts({ impacts: text, color: color }));
+        dispatch(addImpactMappingImpacts({ text: text, color: color }));
         break;
       case 3:
         dispatch(
-          addImpactMappingDeliverables({ deliverables: text, color: color })
+          addImpactMappingDeliverables({ text: text, color: color })
         );
         break;
       default:
@@ -85,6 +93,39 @@ const BasicCard = ({
   const handleColorChange = (e) => {
     setColor(e.target.value);
   };
+
+  const toggleEditForm = () => {
+    if ( isEditing ){
+      setColor('');
+      setText('');
+    }else{
+      setColor(defineColor);
+      setText(texte);
+    }
+    setIsEditing((prev) => !prev);
+  }
+
+  const onHandleEdit = () =>{
+    console.log(index,text,color)
+    switch (column) {
+      case 0:
+        dispatch(editImpactMappingGoal({ index: index, text: text, color: color }));
+        break;
+      case 1:
+        dispatch(editImpactMappingActor({ index: index, text: text, color: color }));
+        break;
+      case 2:
+        dispatch(editImpactMappingImpact({ index: index, text: text, color: color }));
+        break;
+      case 3:
+        dispatch(editImpactMappingDeliverable({ index: index, text: text, color: color }));
+        break;
+      default:
+        break;
+    }
+    console.log("edit", index);
+    toggleEditForm();
+  }
   return (
     <Card
       sx={{
@@ -97,7 +138,7 @@ const BasicCard = ({
     >
       <div
         style={{
-          backgroundColor: defineColor,
+          backgroundColor: color || defineColor,
         }}
       >
         &nbsp;
@@ -105,13 +146,6 @@ const BasicCard = ({
 
       {type == "form" && (
         <CardContent sx={{ padding: "1" }}>
-          <div
-            style={{
-              backgroundColor: color,
-            }}
-          >
-            &nbsp;
-          </div>
           <FormControl
             sx={{
               width: "100%",
@@ -121,7 +155,6 @@ const BasicCard = ({
               sx={{
                 width: "100%",
               }}
-              label="Texte"
               aria-describedby="my-helper-text"
               multiline
               rows={4}
@@ -135,7 +168,7 @@ const BasicCard = ({
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={color}
+              value={color || defineColor || ''}
               onChange={handleColorChange}
               sx={{ width: "100%", mt: 1 }}
             >
@@ -156,17 +189,80 @@ const BasicCard = ({
           </CardActions>
         </CardContent>
       )}
-      {type == "card" && (
+      {/* {type == "card" && (
         <CardContent>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             {title} #{index + 1}
           </Typography>
           <Typography variant="body2">{texte}</Typography>
           <CardActions sx={{ justifyContent: "flex-end" }}>
+            <Button size="small" onClick={toggleEditForm}>
+              Modifier
+            </Button>
             <Button size="small" color="error" onClick={() => deleteButton()}>
               Supprimer
             </Button>
           </CardActions>
+        </CardContent>
+      )} */}
+      {type == "card" && (
+        <CardContent>
+          <Typography sx={{ mb: 1.5 }} color="text.secondary">
+            {title} #{index + 1}
+          </Typography>
+          {isEditing ? (
+            <FormControl sx={{ width: "100%" }}>
+              <TextField
+                sx={{
+                  width: "100%",
+                }}
+                label="Texte"
+                aria-describedby="my-helper-text"
+                multiline
+                rows={4}
+                InputLabelProps={{ shrink: true }}
+                variant="outlined"
+                placeholder="Veuillez écrire votre texte ici"
+                fullWidth
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                wrap="true"
+              />
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={color}
+                onChange={handleColorChange}
+                sx={{ width: "100%", mt: 1 }}
+              >
+                <MenuItem value="#FFC0CB">Rose</MenuItem>
+                <MenuItem value="#ADD8E6">Bleu clair</MenuItem>
+                <MenuItem value="#90EE90">Vert clair</MenuItem>
+                <MenuItem value="#FFD700">Or</MenuItem>
+                <MenuItem value="#FFA07A">Saon</MenuItem>
+              </Select>
+              <CardActions sx={{ justifyContent: "flex-end" }}>
+                <Button size="small" onClick={() => toggleEditForm()}>
+                  Annuler
+                </Button>
+                <Button size="small" onClick={() => onHandleEdit()}>
+                  Confirmer
+                </Button>
+              </CardActions>
+            </FormControl>
+          ) : (
+            <>
+              <Typography variant="body2">{texte}</Typography>
+              <CardActions sx={{ justifyContent: "flex-end" }}>
+            <Button size="small" onClick={() => toggleEditForm()}>
+              Edit
+            </Button>
+            <Button size="small" color="error" onClick={() => deleteButton()}>
+              Supprimer
+            </Button>
+          </CardActions>
+            </>
+          )}
         </CardContent>
       )}
     </Card>

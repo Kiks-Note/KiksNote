@@ -100,16 +100,16 @@ const ImpactMapping = () => {
               align="center"
               sx={{ padding: 2, width: "20%", border: "1px solid black" }}
             >
-              {cardActors.map((goal, index) => {
+              {cardActors.map((actor, index) => {
                 return (
                   <Card
                     title="Acteur"
                     type="card"
                     column={1}
-                    texte={goal.text}
+                    texte={actor.text}
                     key={index}
                     index={index}
-                    defineColor={goal.color}
+                    defineColor={actor.color}
                   />
                 );
               })}
@@ -125,16 +125,16 @@ const ImpactMapping = () => {
               align="center"
               sx={{ padding: 2, width: "20%", border: "1px solid black" }}
             >
-              {cardImpacts.map((goal, index) => {
+              {cardImpacts.map((impact, index) => {
                 return (
                   <Card
                     title="Impact"
                     type="card"
                     column={2}
-                    texte={goal.text}
+                    texte={impact.text}
                     key={index}
                     index={index}
-                    defineColor={goal.color}
+                    defineColor={impact.color}
                   />
                 );
               })}
@@ -150,16 +150,16 @@ const ImpactMapping = () => {
               align="center"
               sx={{ padding: 2, width: "20%", border: "1px solid black" }}
             >
-              {cardDeliverables.map((goal, index) => {
+              {cardDeliverables.map((deliverable, index) => {
                 return (
                   <Card
                     title="Deliverables"
                     type="card"
                     column={3}
-                    texte={goal.text}
+                    texte={deliverable.text}
                     key={index}
                     index={index}
-                    defineColor={goal.color}
+                    defineColor={deliverable.color}
                   />
                 );
               })}

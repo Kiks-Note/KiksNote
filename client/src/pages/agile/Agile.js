@@ -1,5 +1,4 @@
 import React from "react";
-import Card from "../../components/agile/Card";
 import ImpactMapping from "../../components/agile/ImpactMapping";
 import { Grid } from "@material-ui/core";
 
