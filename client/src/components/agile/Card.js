@@ -108,10 +108,7 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
     setIsEditing((prev) => !prev);
   };
 
-  const goToEmpathyMap = () => {
-    console.log("goToEmpathyMap")
-    navigate('/agile/empathy-map');
-  };
+
   const onHandleEdit = () => {
     console.log(index, text, color)
     switch (column) {
@@ -205,22 +202,6 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
           </CardActions>
         </CardContent>
       )}
-      {/* {type == "card" && (
-        <CardContent>
-          <Typography sx={{ mb: 1.5 }} color="text.secondary">
-            {title} #{index + 1}
-          </Typography>
-          <Typography variant="body2">{texte}</Typography>
-          <CardActions sx={{ justifyContent: "flex-end" }}>
-            <Button size="small" onClick={toggleEditForm}>
-              Modifier
-            </Button>
-            <Button size="small" color="error" onClick={() => deleteButton()}>
-              Supprimer
-            </Button>
-          </CardActions>
-        </CardContent>
-      )} */}
       {type == "card" && (
         <CardContent>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
@@ -273,8 +254,8 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
               <CardActions sx={{ justifyContent: "flex-end" }}>
                 {column === 1 && (
                   <CardActions >
-                    <Button size="small" color="success" onClick={() => goToEmpathyMap()}> Allez vers Empathy Map </Button>
-                    <Button size="small" color="success" >Allez vers Persona</Button>
+                    <Button size="small" color="success" onClick={() => navigate('/agile/empathy-map')}> Allez vers Empathy Map </Button>
+                    <Button size="small" color="success" onClick={() => navigate('/agile/persona')}>Allez vers Persona</Button>
                   </CardActions>
                 )}
                 <Button size="small" onClick={() => toggleEditForm()}>

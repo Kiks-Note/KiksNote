@@ -22,6 +22,7 @@ import Register from "./pages/register/Register";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import EmpathyMap from "./pages/agile/EmpathyMap";
+import Personas from "./pages/agile/Personas";
 
 function RoutesProvider() {
   return (
@@ -48,6 +49,7 @@ function RoutesProvider() {
           <Route path="/profil" element={<Profil />} />
           <Route path="/agile" element={<Agile/>}/>
           <Route path="/agile/empathy-map" element={<EmpathyMap />} />
+          <Route path="/agile/persona" element={<Personas />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
