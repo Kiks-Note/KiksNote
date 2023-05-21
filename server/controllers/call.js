@@ -52,6 +52,7 @@ const updateCall = async (req, res) => {
     .doc(req.body.id)
     .update(req.body.object)
     .then(() => {
+      console.log("c'est modifié");
       res.send("modification effectué");
     })
     .catch((err) => {

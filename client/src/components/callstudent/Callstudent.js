@@ -22,6 +22,20 @@ function AppelEleve() {
   const id = useRef();
 
   useEffect(() => {
+    const wsComments = new w3cwebsocket(`ws://localhost:5050/call`);
+    if (!id) {
+      wsComments.onopen = function (e) {
+        console.log("[open] Connection established");
+        console.log("Sending to server");
+        wsComments.send(JSON.stringify({ CallId: id }));
+      };
+
+      wsComments.onmessage = (message) => {
+        console.log(message);
+        const data = JSON.parse(message.data);
+        setCall(data);
+      };
+    }
     if (!generated.current) {
       getCall();
       generated.current = true;
@@ -91,21 +105,6 @@ function AppelEleve() {
 
       id.current = callId;
       setCall(callData);
-
-      if (!id) {
-        const wsComments = new w3cwebsocket(`ws://localhost:5050/call`);
-        wsComments.onopen = function (e) {
-          console.log("[open] Connection established");
-          console.log("Sending to server");
-          wsComments.send(JSON.stringify({ CallId: id }));
-        };
-
-        wsComments.onmessage = (message) => {
-          console.log(message);
-          const data = JSON.parse(message.data);
-          setCall(data);
-        };
-      }
     } catch (error) {
       console.error("Error retrieving call data:", error);
     }
