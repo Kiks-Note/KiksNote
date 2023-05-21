@@ -5,6 +5,9 @@ const multer = require("multer");
 const fs = require("fs");
 const mime = require("mime-types");
 const bucket = storageFirebase.bucket();
+const path = require("path");
+
+const DIR = "uploads/";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -20,17 +23,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  fileFilter: (req, file, cb) => {
-    if (
-      file.mimetype == "image/png" ||
-      file.mimetype == "image/jpg" ||
-      file.mimetype == "image/jpeg" ||
-      file.mimetype == "application/pdf"
-    ) {
-      cb(null, true);
-    } else {
-      cb(null, false);
-      return cb(new Error("Only .png, .jpg, .jpeg and .pdf format allowed!"));
+  limits: { fileSize: 1024 * 1024 * 5 },
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype !== "application/pdf") {
+      return cb(new Error("Le fichier doit être un PDF"));
     }
     cb(null, true);
   },
@@ -298,50 +294,64 @@ const updateCours = async (req, res) => {
   }
 };
 
-const uploadCoursPdf = (req, res) => {
-  const filePath = req.file.path;
-  const fileType = mime.lookup(filePath);
-  const fileSize = req.file.size;
-  const folderPath = `${req.body.courseClass}/${req.body.title}/Cours`;
-  const fileName = req.file.originalname;
+const uploadCoursPdf = async (req, res) => {
+  try {
+    await upload(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Error uploading file." });
+      } else if (err) {
+        res.status(400).json({ error: err.message });
+      } else {
+        if (!req.file) {
+          // Check if file was uploaded
+          res.status(400).json({ error: "No file uploaded." });
+          return;
+        }
 
-  const fileRef = bucket.file(`${folderPath}/${fileName}`);
+        const filePath = req.file.path;
+        const fileType = mime.lookup(filePath);
+        const fileSize = req.file.size;
 
-  let pdfLinkCours;
+        const folderPath = `${req.body.courseClass}/${req.body.title}/Cours`;
+        const fileName = req.file.originalname;
 
-  fileRef
-    .createWriteStream({
-      metadata: {
-        contentType: fileType || "application/pdf",
-        cacheControl: "public, max-age=31536000",
-      },
-    })
-    .on("error", (error) => {
-      console.error(error);
-      res.status(400).json({ error: error.message });
-    })
-    .on("finish", () => {
-      fileRef
-        .getSignedUrl({
-          action: "read",
-          expires: "03-17-2025",
-        })
-        .then((url) => {
-          const courseId = req.body.courseId;
+        const fileRef = bucket.file(`${folderPath}/${fileName}`);
 
-          pdfLinkCours = url.toString();
+        let pdfLinkCours;
 
-          db.collection("cours")
-            .doc(courseId)
-            .update({
-              pdfLinkCours: FieldValue.arrayUnion({
-                url: pdfLinkCours,
-                name: fileName,
-                type: fileType,
-                size: fileSize,
-              }),
-            })
-            .then(() => {
+        fileRef
+          .createWriteStream({
+            metadata: {
+              contentType: fileType || "application/pdf",
+              cacheControl: "public, max-age=31536000",
+            },
+          })
+          .on("error", (error) => {
+            console.error(error);
+            res.status(400).json({ error: error.message });
+          })
+          .on("finish", async () => {
+            try {
+              const url = await fileRef.getSignedUrl({
+                action: "read",
+                expires: "03-17-2025",
+              });
+
+              const courseId = req.body.courseId;
+              pdfLinkCours = url.toString();
+
+              await db
+                .collection("cours")
+                .doc(courseId)
+                .update({
+                  pdfLinkCours: FieldValue.arrayUnion({
+                    url: pdfLinkCours,
+                    name: fileName,
+                    type: fileType,
+                    size: fileSize,
+                  }),
+                });
+
               res.json({
                 success: true,
                 file: {
@@ -351,87 +361,105 @@ const uploadCoursPdf = (req, res) => {
                   url: pdfLinkCours,
                 },
               });
-            })
-            .catch((error) => {
+            } catch (error) {
               console.error(error);
               res.status(400).json({ error: error.message });
-            });
-        });
-    })
-    .end(fs.readFileSync(filePath));
+            }
+          })
+          .end(fs.readFileSync(filePath));
+      }
+    });
+  } catch (err) {
+    if (err instanceof multer.MulterError) {
+      res.status(400).json({ error: "Error uploading file." });
+    } else {
+      res.status(400).json({ error: err.message });
+    }
+  }
 };
 
 const uploadBackLogPdf = async (req, res) => {
   try {
-    upload(req, res);
+    await upload(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Error uploading file." });
+      } else if (err) {
+        res.status(400).json({ error: err.message });
+      } else {
+        if (!req.file) {
+          // Check if file was uploaded
+          res.status(400).json({ error: "No file uploaded." });
+          return;
+        }
+        const filePath = req.file.path;
+        const fileType = mime.lookup(filePath);
+        const fileSize = req.file.size;
 
-    const filePath = req.file.path;
-    const fileType = mime.lookup(filePath);
-    const fileSize = req.file.size;
+        const folderPath = `${req.body.courseClass}/${req.body.title}/Backlogs`;
+        const fileName = req.file.originalname;
 
-    const folderPath = `${req.body.courseClass}/${req.body.title}/Backlogs`;
-    const fileName = req.file.originalname;
+        const fileRef = bucket.file(`${folderPath}/${fileName}`);
 
-    const fileRef = bucket.file(`${folderPath}/${fileName}`);
+        let pdfLinkBackLog;
 
-    let pdfLinkBackLog;
-
-    const stream = fileRef.createWriteStream({
-      metadata: {
-        contentType: fileType || "application/pdf",
-        cacheControl: "public, max-age=31536000",
-      },
-    });
-
-    stream.on("error", (error) => {
-      console.error(error);
-      res.status(400).json({ error: error.message });
-    });
-
-    stream.on("finish", async () => {
-      try {
-        const url = await fileRef.getSignedUrl({
-          action: "read",
-          expires: "03-17-2025",
-        });
-
-        const courseId = req.body.courseId;
-
-        pdfLinkBackLog = url.toString();
-
-        await db
-          .collection("cours")
-          .doc(courseId)
-          .update({
-            pdfLinkBackLog: FieldValue.arrayUnion({
-              url: pdfLinkBackLog,
-              name: fileName,
-              type: fileType,
-              size: fileSize,
-            }),
-          });
-
-        res.status(200).send({
-          success: true,
-          file: {
-            name: fileName,
-            type: fileType,
-            size: fileSize,
-            url: pdfLinkBackLog,
+        const stream = fileRef.createWriteStream({
+          metadata: {
+            contentType: fileType || "application/pdf",
+            cacheControl: "public, max-age=31536000",
           },
         });
-      } catch (error) {
-        console.error(error);
-        res.status(400).send({ error: error.message });
+
+        stream.on("error", (error) => {
+          console.error(error);
+          res.status(400).json({ error: error.message });
+        });
+
+        stream
+          .on("finish", async () => {
+            try {
+              const url = await fileRef.getSignedUrl({
+                action: "read",
+                expires: "03-17-2025",
+              });
+
+              const courseId = req.body.courseId;
+
+              pdfLinkBackLog = url.toString();
+
+              await db
+                .collection("cours")
+                .doc(courseId)
+                .update({
+                  pdfLinkBackLog: FieldValue.arrayUnion({
+                    url: pdfLinkBackLog,
+                    name: fileName,
+                    type: fileType,
+                    size: fileSize,
+                  }),
+                });
+
+              res.status(200).send({
+                success: true,
+                file: {
+                  name: fileName,
+                  type: fileType,
+                  size: fileSize,
+                  url: pdfLinkBackLog,
+                },
+              });
+            } catch (error) {
+              console.error(error);
+              res.status(400).json({ error: error.message });
+            }
+          })
+          .end(fs.readFileSync(filePath));
       }
     });
-
-    stream.end(fs.readFileSync(filePath));
-  } catch (error) {
-    if (error instanceof multer.MulterError) {
+  } catch (err) {
+    if (err instanceof multer.MulterError) {
       res.status(400).json({ error: "Error uploading file." });
     } else {
-      res.status(400).json({ error: error.message });
+      res.status(400).json({ error: err.message });
     }
   }
 };
@@ -467,22 +495,22 @@ const deleteCoursPdf = async (req, res) => {
 
 const deleteBackLogPdf = async (req, res) => {
   try {
-    const { courseClass, title, fileName, pdfLinkCours, courseId } = req.body;
+    const { courseClass, title, fileName, pdfLinkBackLog, courseId } = req.body;
 
-    const fileRef = bucket.file(`${courseClass}/${title}/Cours/${fileName}`);
+    const fileRef = bucket.file(`${courseClass}/${title}/Backlogs/${fileName}`);
 
     await fileRef.delete();
 
     const doc = await db.collection("cours").doc(courseId).get();
-    const pdfLinks = doc.data().pdfLinkCours;
+    const pdfLinks = doc.data().pdfLinkBackLog;
     const updatedPdfLinks = pdfLinks.filter(
-      (pdfLink) => pdfLink.name !== fileName && pdfLink.url !== pdfLinkCours
+      (pdfLink) => pdfLink.name !== fileName && pdfLink.url !== pdfLinkBackLog
     );
 
     await db
       .collection("cours")
       .doc(courseId)
-      .update({ pdfLinkCours: updatedPdfLinks });
+      .update({ pdfLinkBackLog: updatedPdfLinks });
 
     res.json({
       success: true,
