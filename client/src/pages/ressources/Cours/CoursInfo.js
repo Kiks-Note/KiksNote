@@ -812,7 +812,7 @@ const CoursInfo = () => {
                   src={coursData.imageCourseUrl}
                   alt="course-img"
                 />
-                <div className="flex">
+                <div className="display-date">
                   <h4 className="font-bold">Date début de Sprint : </h4>
                   <p className="pl-2">
                     {coursData?.dateStartSprint &&
@@ -822,7 +822,7 @@ const CoursInfo = () => {
                         .format("DD.MM.YYYY")}
                   </p>
                 </div>
-                <div className="flex">
+                <div className="display-date">
                   <h4 className="font-bold">Date fin de Sprint : </h4>
                   <p className="pl-2">
                     {coursData?.dateEndSprint &&

@@ -395,7 +395,7 @@ const Ressources = () => {
                         sx={{
                           display: "flex",
                           flexDirection: "column",
-                          justifyContent: "space-between",
+                          justifyContent: "space-evenly",
                           height: "300px",
                         }}
                         /* eslint-disable no-unused-expressions */
@@ -419,12 +419,6 @@ const Ressources = () => {
                           component="img"
                           src={course.data.imageCourseUrl}
                           alt="course image"
-                          style={{
-                            objectFit: "contain",
-                            objectPosition: "center",
-                            width: "100%",
-                            minHeight: "150px",
-                          }}
                         />
 
                         <CardContent sx={{ padding: "10px", height: "120px" }}>
@@ -559,12 +553,7 @@ const Ressources = () => {
                           component="img"
                           src={course.data.imageCourseUrl}
                           alt="course image"
-                          style={{
-                            objectFit: "cover",
-                            objectPosition: "center",
-                            width: "100%",
-                            minHeight: "150px",
-                          }}
+                          
                         />
 
                         <CardContent sx={{ padding: "10px", height: "120px" }}>

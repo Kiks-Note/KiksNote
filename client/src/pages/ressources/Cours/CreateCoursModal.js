@@ -71,35 +71,38 @@ const CreateCoursModal = (props) => {
               }}
             />
           </div>
-          <div className="title-cours-date-container">
-            <p className="p-1">Date de début</p>
-            <TextField
-              className="textfield"
-              id="date"
-              name="date"
-              variant="standard"
-              type="date"
-              defaultValue={props.courseDateStart}
-              onChange={(e) => props.setCourseDateStart(e.target.value)}
-              sx={{
-                width: "32%",
-              }}
-            />
-            <p className="p-1">Date de fin</p>
-            <TextField
-              className="textfield"
-              id="date"
-              name="date"
-              variant="standard"
-              type="date"
-              defaultValue={props.courseDateEnd}
-              onChange={(e) => props.setCourseDateEnd(e.target.value)}
-              sx={{
-                width: "32%",
-              }}
-            />
+          <div className="cours-date-container">
+            <div className="title-cours-date-container">
+              <p className="p-1">Date de début</p>
+              <TextField
+                className="textfield"
+                id="date"
+                name="date"
+                variant="standard"
+                type="date"
+                defaultValue={props.courseDateStart}
+                onChange={(e) => props.setCourseDateStart(e.target.value)}
+                sx={{
+                  width: "50%",
+                }}
+              />
+            </div>
+            <div className="title-cours-date-container">
+              <p className="p-1">Date de fin</p>
+              <TextField
+                className="textfield"
+                id="date"
+                name="date"
+                variant="standard"
+                type="date"
+                defaultValue={props.courseDateEnd}
+                onChange={(e) => props.setCourseDateEnd(e.target.value)}
+                sx={{
+                  width: "50%",
+                }}
+              />
+            </div>
           </div>
-
           <div className="dropzone-coursimg-container">
             <p className="info-dropdown-img">
               Drag and drop an image file here, or click to select an image
