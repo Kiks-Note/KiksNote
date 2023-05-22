@@ -15,6 +15,7 @@ function AppelEleve() {
     student_scan: [],
     chats: [],
   });
+  const callToUpdate = useRef();
   const { user } = useFirebase();
   const open = useRef();
   const msg = useRef();
@@ -43,10 +44,12 @@ function AppelEleve() {
   }, []);
 
   const addGif = (gif) => {
+    const date = new Date();
     const chatCopy = [
       {
         id: Call.chats.length + 1,
-        date: new Date().getDay().toString(),
+        date:
+          date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds(),
         username: user.firstname,
         content: gif.images.fixed_height_small.url,
         isGif: true,
@@ -58,28 +61,30 @@ function AppelEleve() {
       ...prevCall,
       chats: chatCopy,
     }));
-
     open.current.close();
+    callToUpdate.current.chats = chatCopy;
+
     updateCall();
   };
 
   const addMsg = () => {
+    const date = new Date();
     const chatCopy = [
       {
         id: Call.chats.length + 1,
-        date: new Date().getDay().toString(),
+        date:
+          date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds(),
         username: user.firstname,
         content: msg.current.value,
         isGif: false,
       },
       ...Call.chats,
     ];
-
     setCall((prevCall) => ({
       ...prevCall,
       chats: chatCopy,
     }));
-
+    callToUpdate.current.chats = chatCopy;
     updateCall();
   };
 
@@ -87,7 +92,7 @@ function AppelEleve() {
     try {
       const res = await axios.put(`http://localhost:5050/call/updatecall`, {
         id: id.current,
-        object: Call,
+        object: callToUpdate.current,
       });
       console.log(res);
     } catch (error) {
@@ -105,6 +110,7 @@ function AppelEleve() {
 
       id.current = callId;
       setCall(callData);
+      callToUpdate.current = callData;
     } catch (error) {
       console.error("Error retrieving call data:", error);
     }

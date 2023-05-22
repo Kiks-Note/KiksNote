@@ -43,7 +43,7 @@ function AppelProf() {
   }, [call]);
 
   const getCall = () => {
-    axios.get("http://localhost:5050/calls").then((res) => {
+    axios.get("http://localhost:5050/call/calls").then((res) => {
       tempCall = res.data.at(-1);
       GenerateQrcode();
       (() => {
@@ -69,6 +69,7 @@ function AppelProf() {
   };
 
   const GenerateQrcode = () => {
+    console.log(ip);
     QRCode.toDataURL(
       `http://${ip}:3000/Presence/${tempCall.id}`,
       {
