@@ -1,5 +1,22 @@
 const { db } = require("../firebase");
 
+const getAllStudentsProjects = async (req, res) => {
+  try {
+    const snapshot = await db.collection("students_projects").get();
+    const projects_students = [];
+    snapshot.forEach((doc) => {
+      projects_students.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+    res.status(200).send(projects_students);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la création du projet étudiant.");
+  }
+};
+
 const createStudentProject = async (req, res) => {
   try {
     const {
@@ -8,6 +25,8 @@ const createStudentProject = async (req, res) => {
       RepoProjectLink,
       membersProject = [],
       typeProject,
+      descriptionProject,
+      imgProject,
       counterRef,
     } = req.body;
 
@@ -16,7 +35,10 @@ const createStudentProject = async (req, res) => {
       nameProject: nameProject,
       RepoProjectLink: RepoProjectLink,
       typeProject: typeProject,
+      descriptionProject: descriptionProject,
+      imgProject: imgProject,
       counterRef: counterRef,
+      createdProjectAt: new Date(),
     };
 
     const groupMembers = membersProject.map((member, index) => ({
@@ -42,5 +64,6 @@ const createStudentProject = async (req, res) => {
 };
 
 module.exports = {
+  getAllStudentsProjects,
   createStudentProject,
 };
