@@ -45,9 +45,9 @@ const StudentsProjects = () => {
       <Box
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-        <Button variant="contained" color="primary" onClick={handleClickOpen}>
+        <button onClick={handleClickOpen}>
           Projet
-        </Button>
+        </button>
         <Dialog open={open} onClose={handleClose}>
           <DialogTitle>Mon formulaire</DialogTitle>
           <DialogContent>
@@ -74,120 +74,94 @@ const StudentsProjects = () => {
       </Box>
       <Box className="grid-view-top-projects ">
         <h1>Les projets mis en avant</h1>
-        <Grid container spacing={2}>
-          {/* {(searchTerm.length > 0
-            ? [...filteredCoursesCurrentYear].filter(
-                (course) =>
-                  course.data.title &&
-                  course.data.title
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase())
-              )
-            : [...filteredCoursesCurrentYear]
-          ).map((course) => ( */}
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
+          <Grid item xs={12} sm={6} md={3}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                height: "300px",
+              }}
+              /* eslint-disable no-unused-expressions */
+              onClick={() => {
+
+              }}
+            > 
+              <CardMedia
                 sx={{
+                  width: "100%",
+                  minHeight: "150px",
                   display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "300px",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
-                /* eslint-disable no-unused-expressions */
-                onClick={() => {
-
+                component="img"
+                src=""
+                alt="course image"
+                style={{
+                  objectFit: "contain",
+                  objectPosition: "center",
+                  width: "100%",
+                  minHeight: "150px",
                 }}
-              > 
-                <CardMedia
-                  sx={{
-                    width: "100%",
-                    minHeight: "150px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  component="img"
-                  src=""
-                  alt="course image"
-                  style={{
-                    objectFit: "contain",
-                    objectPosition: "center",
-                    width: "100%",
-                    minHeight: "150px",
-                  }}
-                />
+              />
 
-                <CardContent sx={{ padding: "10px", height: "120px" }}>
-                  <h2 variant="h3" component="div">
-                    Titre du projet
-                  </h2>
-                  <Typography variant="body2" color="text.secondary">
-                    Description du projet
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            {/* ))} */}
+              <CardContent sx={{ padding: "10px", height: "120px" }}>
+                <h2 variant="h3" component="div">
+                  Titre du projet
+                </h2>
+                <Typography variant="body2" color="text.secondary">
+                  Description du projet
+                </Typography>
+              </CardContent>
+            </Box>
           </Grid>
         </Box>
         <Box sx={{
           marginTop: "50px"
         }} className="grid-view-projects">
         <h1>Tous les projets</h1>
-        <Grid container spacing={2}>
-          {/* {(searchTerm.length > 0
-            ? [...filteredCoursesCurrentYear].filter(
-                (course) =>
-                  course.data.title &&
-                  course.data.title
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase())
-              )
-            : [...filteredCoursesCurrentYear]
-          ).map((course) => ( */}
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
+          <Grid item xs={12} sm={6} md={3}>
+            <Box 
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                height: "300px",
+              }}
+              /* eslint-disable no-unused-expressions */
+              onClick={() => {
+
+              }}
+            >
+              <CardMedia
                 sx={{
+                  width: "100%",
+                  minHeight: "150px",
                   display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "300px",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
-                /* eslint-disable no-unused-expressions */
-                onClick={() => {
-
+                component="img"
+                src=""
+                alt="course image"
+                style={{
+                  objectFit: "contain",
+                  objectPosition: "center",
+                  width: "100%",
+                  minHeight: "150px",
                 }}
-              >
-                <CardMedia
-                  sx={{
-                    width: "100%",
-                    minHeight: "150px",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                  component="img"
-                  src=""
-                  alt="course image"
-                  style={{
-                    objectFit: "contain",
-                    objectPosition: "center",
-                    width: "100%",
-                    minHeight: "150px",
-                  }}
-                />
+              />
 
-                <CardContent sx={{ padding: "10px", height: "120px" }}>
-                  <h2 variant="h3" component="div">
-                    Titre du projet
-                  </h2>
-                  <Typography variant="body2" color="text.secondary">
-                    Description du projet
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid>
-            {/* ))} */}
+              <CardContent sx={{ padding: "10px", height: "120px" }}>
+                <h2 variant="h3" component="div">
+                  Titre du projet
+                </h2>
+                <Typography variant="body2" color="text.secondary">
+                  Description du projet
+                </Typography>
+              </CardContent>
+            </Box>
           </Grid>
         </Box>
     </div>
