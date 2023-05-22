@@ -1,14 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  CardMedia,
-  FormControl,
-  IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { CardMedia, IconButton, TextField, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
@@ -16,54 +7,42 @@ import axios from "axios";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-
+import useFirebase from "../../hooks/useFirebase";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
 
-
 export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
   const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [photo, setPhoto] = useState("");
-  const [image, setImage] = useState("");
+  const [thumbnail, setThumbnail] = useState("");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [inputEditorState, setInputEditorState] = useState("");
-  const [event, setEvent] = useState("");
-
+  const { user } = useFirebase();
   const handleEditorChange = (e) => {
     setEditorState(e);
     setInputEditorState(draftToHtml(convertToRaw(e.getCurrentContent())));
+  };
 
-  }
-
-  console.log(inputEditorState);
 
   const newBlog = async (e) => {
     e.preventDefault();
 
-    if (!title || !description || !photo || !editorState || !inputEditorState || !event) {
-      console.log(title, description, photo, editorState);
+    if (!title || !thumbnail || !editorState || !inputEditorState) {
+      console.log(title, thumbnail, editorState);
       toast.error("Veuillez remplir tous les champs");
       return;
     }
 
     const blog = {
       title,
-      description,
-      photo,
+      thumbnail,
       editorState,
       inputEditorState,
-      event
-
-
+      created_by:user.id,
     };
     try {
-      const response = await axios.post(
-        `http://localhost:5050/blog`,
-        blog
-      );
+      const response = await axios.post(`http://localhost:5050/blog`, blog);
 
       toast.success("Tuto ajouté avec succès");
       console.log(response.data);
@@ -75,7 +54,6 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
 
   const list = () => (
     <>
-
       <Box
         sx={{
           width: 1450,
@@ -87,8 +65,6 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
         }}
         role="presentation"
       >
-
-
         <Typography
           variant="h6"
           sx={{
@@ -96,29 +72,6 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
           }}
         >
           Ajout d'un nouveau blog
-
-          <div>
-            <Editor
-
-              placeholder='Write your blog here...'
-
-              editorState={editorState}
-
-              toolbarClassName="toolbarClassName"
-              wrapperClassName="wrapperClassName"
-              editorClassName="editorClassName"
-              onEditorStateChange={handleEditorChange}
-              editorStyle={{ border: "1px solid black", minHeight: "180px", padding: "10px", borderRadius: "5px", boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)" }}
-
-            />
-
-            {/* <textarea  disabled value={
-              draftToHtml(convertToRaw(editorState.getCurrentContent()))
-
-            }>
-
-            </textarea> */}
-          </div>
         </Typography>
 
         <IconButton
@@ -135,8 +88,6 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
         </IconButton>
 
         <>
-
-
           <TextField
             sx={{ marginBottom: 2 }}
             id="outlined-search"
@@ -150,52 +101,36 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             InputProps={{ className: "input" }}
           />
 
-
-          <TextField
-
-            sx={{ marginBottom: 2 }}
-            id="outlined-search"
-            type={"text"}
-            name="Description"
-            label="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            fullWidth
-            InputLabelProps={{ className: "inputLabel" }}
-            InputProps={{ className: "input" }}
-          >
-
-          </TextField >
-
-          <TextField
-
-            sx={{ marginBottom: 2 }}
-            id="outlined-search"
-            type={"text"}
-            name="Event"
-            label="Event"
-            value={event}
-            onChange={(e) => setEvent(e.target.value)}
-            fullWidth
-            InputLabelProps={{ className: "inputLabel" }}
-            InputProps={{ className: "input" }}
-          >
-
-          </TextField >
-
+          <div>
+            <Editor
+              placeholder="Faites chauffer le clavier "
+              editorState={editorState}
+              toolbarClassName="toolbarClassName"
+              wrapperClassName="wrapperClassName"
+              editorClassName="editorClassName"
+              onEditorStateChange={handleEditorChange}
+              editorStyle={{
+                border: "1px solid black",
+                minHeight: "180px",
+                padding: "10px",
+                borderRadius: "5px",
+                boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+              }}
+            />
+          </div>
           <TextField
             sx={{ marginBottom: 2 }}
             id="outlined-search"
             label="Image"
             type={"text"}
             name="image"
-            value={photo}
-            onChange={(e) => setPhoto(e.target.value)}
+            value={thumbnail}
+            onChange={(e) => setThumbnail(e.target.value)}
             fullWidth
             InputLabelProps={{ className: "inputLabel" }}
             InputProps={{ className: "input" }}
           />
-          {photo && (
+          {thumbnail && (
             <>
               <Typography
                 variant="subtitle2"
@@ -211,14 +146,9 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
                 sx={{ marginBottom: 2, borderRadius: 2 }}
                 component="img"
                 height="140"
-                image={photo ? photo : ""}
+                image={thumbnail ? thumbnail : ""}
                 alt=""
               />
-
-
-
-
-
             </>
           )}
 
@@ -253,5 +183,3 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
     </div>
   );
 }
-
-

@@ -10,7 +10,7 @@ import DialogActions from "@mui/material/DialogActions";
 import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
 import Typography from "@mui/material/Typography";
-import PreviewIcon from "@mui/icons-material/Preview";
+import ListIcon from "@mui/icons-material/List";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -86,11 +86,9 @@ export default function PopUpBlog(props) {
     <div>
       <IconButton onClick={handleClickOpen}>
         {" "}
-        <PreviewIcon/>
-        
+        <ListIcon />
       </IconButton>
       <BootstrapDialog
-      
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}

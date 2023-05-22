@@ -30,7 +30,6 @@ export default function ImgMediaCard({
   type,
   event,
   participants,
-  
 }) {
   const deleteBlog = function () {
     axios
@@ -62,19 +61,17 @@ export default function ImgMediaCard({
     navigate(`/blog/${id}`);
   }
 
-
-
-const [likeCount, setLikeCount] = useState(like); 
-function handleLike() {
-  axios
-    .post(`http://localhost:5050/blog/${id}/like`)
-    .then((res) => {
-      setLikeCount(res.data.likeCount); // Mettre à jour likeCount avec la nouvelle valeur de likes renvoyée par le backend
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-}
+  const [likeCount, setLikeCount] = useState(like);
+  function handleLike() {
+    axios
+      .post(`http://localhost:5050/blog/${id}/like`)
+      .then((res) => {
+        setLikeCount(res.data.likeCount); // Mettre à jour likeCount avec la nouvelle valeur de likes renvoyée par le backend
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   const [dislikeCount, setDislikeCount] = useState(dislike);
   function handleDislike() {
@@ -87,7 +84,6 @@ function handleLike() {
         console.log(err);
       });
   }
-
 
   // console.log(id);
 
@@ -118,11 +114,9 @@ function handleLike() {
           <Card sx={{ maxWidth: 380, m: 2 }}>
             <CardMedia
               component="img"
-              // alt="green iguana"
               height="10"
               image={image}
-              // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
-              // sx={{maxHeight: 250}}
+              sx={{ maxHeight: 250 }}
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
@@ -158,20 +152,16 @@ function handleLike() {
           <Card sx={{ maxWidth: 380, m: 2 }}>
             <CardMedia
               component="img"
-              // alt="green iguana"
               height="10"
               image={image}
-              // image="https://cdn.code.daypilot.org/image/big/7sca734yufgatkpbudmqro7tga/vue-resource-calendar-open-source.png"
-              // sx={{maxHeight: 250}}
+              sx={{ maxHeight: 250 }}
             />
             <CardContent>
               <Typography gutterBottom variant="h5" component="div">
                 {title}
-                {/*yo*/}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 {description}
-                {/*sisi*/}
               </Typography>
             </CardContent>
             <CardContent>
@@ -192,14 +182,14 @@ function handleLike() {
               />
 
               <Button size="small" onClick={handleClick}>
-                Ouvrir
+                En savoir plus
               </Button>
+              {user.id }
               <Button onClick={deleteBlog}>Supprimer</Button>
             </CardActions>
 
             <CardActions>
               <FormControlLabel
-                
                 checked={isChecked}
                 onChange={handleCheckboxClick}
                 control={<Checkbox />}
