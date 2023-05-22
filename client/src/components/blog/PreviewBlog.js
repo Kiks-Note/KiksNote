@@ -34,14 +34,7 @@ function PreviewBlog() {
 
   return (
     <div>
-      <Button
-        variant="contained"
-        onClick={() => {
-          window.history.back();
-        }}
-      >
-        Retour à la page de blog{" "}
-      </Button>
+      
       {data && (
         <Card>
           <CardHeader title={data.title} />
@@ -57,6 +50,15 @@ function PreviewBlog() {
         </Card>
       )}
       <br />
+
+      <Button
+        variant="contained"
+        onClick={() => {
+          window.history.back();
+        }}
+      >
+        Retour à la page de blog{" "}
+      </Button>
     </div>
   );
 }

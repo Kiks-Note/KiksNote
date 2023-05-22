@@ -74,6 +74,8 @@ export default function PopUpBlog(props) {
     fetchUserDetails();
   }, []);
 
+  
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -84,9 +86,11 @@ export default function PopUpBlog(props) {
     <div>
       <IconButton onClick={handleClickOpen}>
         {" "}
-        <PreviewIcon />
+        <PreviewIcon/>
+        
       </IconButton>
       <BootstrapDialog
+      
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -100,11 +104,14 @@ export default function PopUpBlog(props) {
         <DialogContent dividers>
           {participantDetail &&
             participantDetail.map((participant) => (
-              <div key={participant.id}>
+              <div
+                key={participant.id}
+                style={{ display: "flex", alignItems: "center" }}
+              >
                 {participant.image && (
                   <Avatar src={participant.image} alt={participant.firstname} />
                 )}
-                <Typography gutterBottom>
+                <Typography gutterBottom style={{ marginLeft: "10px" }}>
                   {participant.firstname} {participant.lastname}
                 </Typography>
               </div>

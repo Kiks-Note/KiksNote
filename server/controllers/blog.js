@@ -37,13 +37,8 @@ const updateBlogVisibility = async (req, res) => {
   });
 };
 
-// Add Blog Like
-const addBlogLike = async (req, res) => {
-  await db.collection("blog_tutos").doc(req.params.id).update({
-    like: req.body.like,
-    dislike: req.body.dislike,
-  });
-};
+
+
 // Add Blog Comment
 const addBlogComment = async (req, res) => {
   await db
@@ -146,9 +141,102 @@ const blogRequests = async (connection) => {
   );
 };
 
+// const addLike = async (req, res) => {
+//   const blogId = req.params.id;
+//   const { like } = req.body;
+
+//   try {
+//     await db.collection("blog_evenements").doc(blogId).update({
+//       like: like,
+//     });
+//     res.status(200).send("Like ajouté avec succès.");
+//   } catch (err) {
+//     res.status(500).send(err.message);
+//   }
+// };
+
+// const addDislike = async (req, res) => {
+//   const blogId = req.params.id;
+//   const { dislike } = req.body;
+
+//   try {
+//     await db.collection("blog_evenements").doc(blogId).update({
+//       dislike: dislike,
+//     });
+//     res.status(200).send("Dislike ajouté avec succès.");
+//   } catch (err) {
+//     res.status(500).send(err.message);
+//   }
+// };
+
+
+const addLike = async (req, res) => {
+  const blogId = req.params.id;
+  const userId = req.body.userId;
+
+  const likesRef = db
+    .collection("blog_evenements")
+    .doc(blogId)
+    .collection("like");
+
+  // Check if the user already liked the blog
+  const likeDoc = await likesRef.doc(userId).get();
+
+  if (likeDoc.exists) {
+    // The user already liked the blog, remove their like
+    await likesRef.doc(userId).delete();
+    res.status(200).send({ likeCount: 0, dislikeCount: 0 });
+  } else {
+    // The user didn't like the blog, add their like
+    await likesRef.doc(userId).set({});
+    const snapshot = await likesRef.get();
+    const likeCount = snapshot.size;
+    const dislikesRef = db
+      .collection("blog_evenements")
+      .doc(blogId)
+      .collection("dislike");
+    const dislikesSnapshot = await dislikesRef.get();
+    const dislikeCount = dislikesSnapshot.size;
+    res.status(200).send({ likeCount, dislikeCount });
+  }
+};
+
+const addDislike = async (req, res) => {
+  const blogId = req.params.id;
+  const userId = req.body.userId;
+
+  const dislikesRef = db
+    .collection("blog_evenements")
+    .doc(blogId)
+    .collection("dislike");
+
+  // Check if the user already disliked the blog
+  const dislikeDoc = await dislikesRef.doc(userId).get();
+
+  if (dislikeDoc.exists) {
+    // The user already disliked the blog, remove their dislike
+    await dislikesRef.doc(userId).delete();
+    res.status(200).send({ likeCount: 0, dislikeCount: 0 });
+  } else {
+    // The user didn't dislike the blog, add their dislike
+    await dislikesRef.doc(userId).set({});
+    const snapshot = await dislikesRef.get();
+    const dislikeCount = snapshot.size;
+    const likesRef = db
+      .collection("blog_evenements")
+      .doc(blogId)
+      .collection("like");
+    const likesSnapshot = await likesRef.get();
+    const likeCount = likesSnapshot.size;
+    res.status(200).send({ likeCount, dislikeCount });
+  }
+};
+
+
+
+
 module.exports = {
   addBlogComment,
-  addBlogLike,
   updateBlogVisibility,
   addNewBlog,
   blogRequests,
@@ -156,4 +244,6 @@ module.exports = {
   getDescriptions,
   addParticipant,
   getParticipant,
+  addLike,
+  addDislike,
 };

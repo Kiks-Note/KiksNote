@@ -30,6 +30,7 @@ export default function ImgMediaCard({
   type,
   event,
   participants,
+  
 }) {
   const deleteBlog = function () {
     axios
@@ -60,6 +61,33 @@ export default function ImgMediaCard({
   function handleClick() {
     navigate(`/blog/${id}`);
   }
+
+
+
+const [likeCount, setLikeCount] = useState(like); 
+function handleLike() {
+  axios
+    .post(`http://localhost:5050/blog/${id}/like`)
+    .then((res) => {
+      setLikeCount(res.data.likeCount); // Mettre à jour likeCount avec la nouvelle valeur de likes renvoyée par le backend
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+}
+
+  const [dislikeCount, setDislikeCount] = useState(dislike);
+  function handleDislike() {
+    axios
+      .post(`http://localhost:5050/blog/${id}/dislike`)
+      .then((res) => {
+        setDislikeCount(res.data.dislikeCount);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
 
   // console.log(id);
 
@@ -112,11 +140,13 @@ export default function ImgMediaCard({
               <Checkbox
                 icon={<ThumbUpOffAltIcon />}
                 checkedIcon={<ThumbUpIcon />}
+                onClick={handleLike}
               />
               {dislike}
               <Checkbox
                 icon={<ThumbDownOffAltIcon />}
                 checkedIcon={<ThumbDownAltIcon color={"error"} />}
+                onClick={handleDislike}
               />
               <Comment tutoId={id} />
               <Button size="small">Commencer</Button>
@@ -148,15 +178,17 @@ export default function ImgMediaCard({
               <Typography color="black">{event}</Typography>
             </CardContent>
             <CardActions>
-              {like}
+              {likeCount}
               <Checkbox
                 icon={<ThumbUpOffAltIcon />}
                 checkedIcon={<ThumbUpIcon />}
+                onClick={handleLike}
               />
-              {dislike}
+              {dislikeCount}
               <Checkbox
                 icon={<ThumbDownOffAltIcon />}
                 checkedIcon={<ThumbDownAltIcon color={"error"} />}
+                onClick={handleDislike}
               />
 
               <Button size="small" onClick={handleClick}>
@@ -167,6 +199,7 @@ export default function ImgMediaCard({
 
             <CardActions>
               <FormControlLabel
+                
                 checked={isChecked}
                 onChange={handleCheckboxClick}
                 control={<Checkbox />}
