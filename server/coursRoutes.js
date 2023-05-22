@@ -10,8 +10,8 @@ const {
   getInstructorById,
   createCours,
   updateCours,
-  uploadCoursPdf, // not worked
-  uploadBackLogPdf, // not tested
+  uploadCoursPdf,
+  uploadBackLogPdf,
   deleteCoursPdf,
   deleteBackLogPdf,
   deleteCours,
