@@ -30,7 +30,6 @@ const CreateCoursModal = (props) => {
       sx={{
         "& .MuiDialog-paper": {
           width: "100%",
-          height: "80%",
           maxHeight: "calc(100% - 64px)",
           margin: "32px auto",
           overflowY: "visible",

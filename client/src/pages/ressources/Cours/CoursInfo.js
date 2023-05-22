@@ -505,7 +505,7 @@ const CoursInfo = () => {
               display: "flex",
               flexDirection: "row",
               flexWrap: "wrap",
-              width: "100%",
+              width: "95%",
               padding: "50px",
             }}
           >
@@ -513,11 +513,9 @@ const CoursInfo = () => {
             <Divider variant="middle" />
             <div className="main-cours-container">
               <div className="cours-left-side-container">
-                <div className="list-po-pedago-container">
-                  <p className="p-description-coursinfo">
-                    {coursData.description}
-                  </p>
-                </div>
+                <p className="p-description-coursinfo">
+                  {coursData.description}
+                </p>
                 <h2>Contenu du Cours</h2>
                 <Divider />
                 <div className="list-course-pdf">

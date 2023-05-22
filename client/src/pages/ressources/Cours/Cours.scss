@@ -28,11 +28,11 @@
 
 .title-cours-date-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     margin-bottom: 20px;
-    width: 50%;
+    width: 100%;
 }
 
 .dropzone-coursimg-container {
