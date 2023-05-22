@@ -17,17 +17,17 @@ function PrivateRoutes() {
 
     if (lastConnectionAt <= currentTime || !token) {
       logout();
-      navigate("/login");
+      navigate("/connexion");
     }
 
     (async () => {
       await axios
-        .post("http://localhost:5050/auth/login", {
+        .post("http://localhost:5050/auth/connexion", {
           token,
         })
         .catch((err) => {
           logout();
-          navigate("/login");
+          navigate("/connexion");
         });
     })();
 

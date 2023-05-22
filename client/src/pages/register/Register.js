@@ -77,7 +77,7 @@ const Register = () => {
 
   const register = async () => {
     await axios
-      .post("http://localhost:5050/auth/signup", {
+      .post("http://localhost:5050/auth/inscription", {
         userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass
       })
       .then((res) => {
@@ -452,7 +452,7 @@ const Register = () => {
           <div className="text-xs font-medium text-center m-3">
             <p style={{ color: theme.palette.text.primary, fontWeight: "bold" }} >Vous avez déjà un compte ?
               <Link
-                href="/login"
+                href="/connexion"
                 sx={{
                   color: "#7a52e1",
                   textDecoration: "none",

@@ -4,35 +4,116 @@ import "./Callstudent.scss";
 import SendIcon from "@mui/icons-material/Send";
 import GifBoxIcon from "@mui/icons-material/GifBox";
 import Popup from "reactjs-popup";
+import axios from "axios";
+import { w3cwebsocket } from "websocket";
+import useFirebase from "../../hooks/useFirebase";
 
 function AppelEleve() {
-  const [ChatsEleve, setChats] = useState([]);
+  const [Call, setCall] = useState({
+    id_lesson: "",
+    qrcode: "",
+    student_scan: [],
+    chats: [],
+  });
+  const callToUpdate = useRef();
+  const { user } = useFirebase();
   const open = useRef();
   const msg = useRef();
+  const generated = useRef(false);
+  const id = useRef();
+
+  useEffect(() => {
+    const wsComments = new w3cwebsocket(`ws://localhost:5050/call`);
+    if (!id) {
+      wsComments.onopen = function (e) {
+        console.log("[open] Connection established");
+        console.log("Sending to server");
+        wsComments.send(JSON.stringify({ CallId: id }));
+      };
+
+      wsComments.onmessage = (message) => {
+        console.log(message);
+        const data = JSON.parse(message.data);
+        setCall(data);
+      };
+    }
+    if (!generated.current) {
+      getCall();
+      generated.current = true;
+    }
+  }, []);
 
   const addGif = (gif) => {
-    const chatCopy = [...ChatsEleve];
-    chatCopy.unshift({
-      id: ChatsEleve.length + 1,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: gif.images.fixed_height_small.url,
-      isGif: true,
-    });
-    setChats(chatCopy);
+    const date = new Date();
+    const chatCopy = [
+      {
+        id: Call.chats.length + 1,
+        date:
+          date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds(),
+        username: user.firstname,
+        content: gif.images.fixed_height_small.url,
+        isGif: true,
+      },
+      ...Call.chats,
+    ];
+
+    setCall((prevCall) => ({
+      ...prevCall,
+      chats: chatCopy,
+    }));
     open.current.close();
+    callToUpdate.current.chats = chatCopy;
+
+    updateCall();
   };
 
   const addMsg = () => {
-    const chatCopy = [...ChatsEleve];
-    chatCopy.unshift({
-      id: ChatsEleve.length + 1,
-      date: "07/12/2022 14:43",
-      username: "jules",
-      content: msg.current.value,
-      isGif: false,
-    });
-    setChats(chatCopy);
+    const date = new Date();
+    const chatCopy = [
+      {
+        id: Call.chats.length + 1,
+        date:
+          date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds(),
+        username: user.firstname,
+        content: msg.current.value,
+        isGif: false,
+      },
+      ...Call.chats,
+    ];
+    setCall((prevCall) => ({
+      ...prevCall,
+      chats: chatCopy,
+    }));
+    callToUpdate.current.chats = chatCopy;
+    updateCall();
+  };
+
+  const updateCall = async () => {
+    try {
+      const res = await axios.put(`http://localhost:5050/call/updatecall`, {
+        id: id.current,
+        object: callToUpdate.current,
+      });
+      console.log(res);
+    } catch (error) {
+      console.error("Error updating call:", error);
+    }
+  };
+
+  const getCall = async () => {
+    try {
+      const response = await axios.get("http://localhost:5050/call/calls");
+      const data = response.data;
+
+      const latestCall = data[data.length - 1];
+      const { id: callId, ...callData } = latestCall;
+
+      id.current = callId;
+      setCall(callData);
+      callToUpdate.current = callData;
+    } catch (error) {
+      console.error("Error retrieving call data:", error);
+    }
   };
 
   return (
@@ -40,7 +121,7 @@ function AppelEleve() {
       <div className="DivChatEleve">
         <h1>Chat</h1>
         <div className="ChatEleve">
-          {ChatsEleve.map((chat) => {
+          {Call.chats.map((chat) => {
             return (
               <div className="ChatContentEleve" key={chat.id}>
                 <div className="ChatContentHeaderEleve">

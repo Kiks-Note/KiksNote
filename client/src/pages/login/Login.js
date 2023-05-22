@@ -71,7 +71,7 @@ const Login = () => {
       const token = await loggedInUser.user.getIdToken();
 
       await axios
-        .post("http://localhost:5050/auth/login", {
+        .post("http://localhost:5050/auth/connexion", {
           token,
         })
         .then(() => {
@@ -292,7 +292,7 @@ const Login = () => {
             <p className="text-sm font-medium text-center m-3 font-bold">
               Pas encore de compte ? Créez-en un{" "}
               <Link
-                href="/signup"
+                href="/inscription"
                 sx={{
                   color: "#7a52e1",
                   textDecoration: "none",

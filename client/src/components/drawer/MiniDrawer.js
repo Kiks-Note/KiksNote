@@ -249,7 +249,7 @@ export default function MiniDrawer({ element }) {
   //To logout
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate("/connexion");
   };
   // MiniDrawer Types
   MiniDrawer.propTypes = {

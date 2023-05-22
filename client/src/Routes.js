@@ -36,8 +36,8 @@ function RoutesProvider() {
         {/* EXAMPLES */}
 
         <Route element={<PublicRoutes />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Register />} />
+          <Route path="/connexion" element={<Login />} />
+          <Route path="/inscription" element={<Register />} />
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
