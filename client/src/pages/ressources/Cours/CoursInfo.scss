@@ -1,3 +1,12 @@
+main {
+    width: 90% !important;
+}
+
+.cours-info-container {
+    height: 100vh;
+    padding: 50px;
+}
+
 .main-cours-container {
     display: flex;
     justify-content: space-between;
@@ -69,4 +78,11 @@ p.po-p {
     padding: 10px;
     border: 1px solid lightgrey;
     border-radius: 10px;
+}
+
+.display-date {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
 }
