@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
@@ -12,7 +12,7 @@ import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
 import Jpo from "./pages/ressources/jpo/jpo";
-import StudentsProjects from "./pages/students_project/StudentsProjects";
+import StudentsProjects from "./pages/ressources//students_project/StudentsProjects";
 import Agile from "./pages/agile/Agile";
 import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
@@ -58,7 +58,7 @@ function RoutesProvider() {
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
           <Route path="/pdfsupport" element={<PDFCourseView />} />
           <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
-          <Route path="/agile" element={<Agile/>}/>
+          <Route path="/agile" element={<Agile />} />
           <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           <Route path="/agile/persona" element={<Personas />} />
           {/* INVENTORY */}
