@@ -3,6 +3,10 @@ import axios, { all } from "axios";
 
 import useFirebase from "../../../hooks/useFirebase";
 
+import CreateProjectDialog from "./CreateProjectDialog";
+
+import { useForm } from "react-hook-form";
+
 import {
   Button,
   Dialog,
@@ -30,8 +34,18 @@ const StudentsProjects = () => {
   const { user } = useFirebase();
   const userStatus = user?.status;
 
+  const [open, setOpen] = useState(false);
+
   const [projects, setProjects] = useState([]);
   const [allclass, setAllclass] = useState([]);
+  const [allstudents, setAllStudents] = useState([]);
+
+  const [nameProject, setNameProject] = useState("");
+  const [repoProjectLink, setRepoProjectLink] = useState("");
+  const [membersProject, setMembersProject] = useState([]);
+  const [typeProject, setTypeProject] = useState("");
+  const [descriptionProject, setDescriptionProject] = useState("");
+  const [imgProjectLink, setImgProjectLink] = useState("");
 
   const getAllProjects = async () => {
     try {
@@ -63,12 +77,54 @@ const StudentsProjects = () => {
     }
   };
 
+  const getAllStudents = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/students")
+        .then((res) => {
+          setAllStudents(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const publishStudentProject = async () => {
+    try {
+      await axios
+        .post("http://localhost:5050/ressources/students-projects", {
+          StudentId: user?.id,
+          nameProject: nameProject,
+          RepoProjectLink: repoProjectLink,
+          membersProject: membersProject,
+          typeProject: typeProject,
+          descriptionProject: descriptionProject,
+          imgProject: imgProjectLink,
+          counterRef: 0,
+        })
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      throw error;
+    }
+  };
+
   useEffect(() => {
     getAllProjects();
     getAllClass();
+    getAllStudents();
   }, []);
 
-  const [open, setOpen] = useState(false);
+  const { control } = useForm({
+    mode: "onTouched",
+  });
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -78,18 +134,21 @@ const StudentsProjects = () => {
     setOpen(false);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
+    await publishStudentProject();
     event.preventDefault();
     setOpen(false);
   };
 
-  console.log(projects);
+  const sortedProjects = projects.sort((a, b) => b.counterRef - a.counterRef);
+  const topProjects = sortedProjects.slice(0, 10);
+  const filteredProjects = sortedProjects.slice(10);
 
   return (
     <div className="students-project-container">
       <div className="header-students-projects">
         <div className="search-bar-container">
-          <form noValidate autoComplete="off" style={{ width: "70%" }}>
+          <form noValidate autoComplete="off" style={{ width: "100%" }}>
             <TextField
               id="outlined-basic"
               label="Rechercher les projets"
@@ -131,35 +190,31 @@ const StudentsProjects = () => {
       <Card
         sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
       >
-        <Dialog open={open} onClose={handleClose}>
-          <DialogTitle>Mon formulaire</DialogTitle>
-          <DialogContent>
-            <form onSubmit={handleSubmit}>
-              <TextField label="Nom complet" fullWidth />
-              <TextField label="Adresse e-mail" fullWidth />
-              <TextField label="Message" fullWidth multiline rows={4} />
-              <input
-                type="file"
-                accept="image/*,video/*"
-                // onChange={handleFileChange}
-              />
-            </form>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Annuler
-            </Button>
-            <Button onClick={handleSubmit} color="primary">
-              Soumettre
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <CreateProjectDialog
+          open={open}
+          handleClose={handleClose}
+          handleSubmit={handleSubmit}
+          nameProject={nameProject}
+          setNameProject={setNameProject}
+          repoProjectLink={repoProjectLink}
+          setRepoProjectLink={setRepoProjectLink}
+          membersProject={membersProject}
+          setMembersProject={setMembersProject}
+          typeProject={typeProject}
+          setTypeProject={setTypeProject}
+          descriptionProject={descriptionProject}
+          setDescriptionProject={setDescriptionProject}
+          imgProjectLink={imgProjectLink}
+          setImgProjectLink={setImgProjectLink}
+          control={control}
+          allstudents={allstudents}
+        />
       </Card>
       <h1>Les projets mis en avant</h1>
-      <CarouselProjects projects={projects} />
+      <CarouselProjects projects={topProjects} />
       <h1>Tous les projets</h1>
       <Grid container spacing={2}>
-        {projects.map((project) => (
+        {filteredProjects.map((project) => (
           <Grid item xs={12} sm={6} md={3}>
             <Card
               sx={{
