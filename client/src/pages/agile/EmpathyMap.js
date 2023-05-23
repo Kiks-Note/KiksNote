@@ -15,12 +15,7 @@ const taskStatus = {
     name: "Penser et ressentir",
     color: "#ff0000",
     params: "1 / 1 / 3 / 3",
-    items: [
-      {
-        id: "23",
-        content: "testss",
-      },
-    ],
+    items: [],
   },
   see: {
     name: "Voir",
