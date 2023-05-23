@@ -54,7 +54,6 @@ export default function PopUpBlog(props) {
   const [open, setOpen] = useState(false);
   const [participantDetail, setParticipantDetail] = useState([]);
   useEffect(() => {
-    console.log(props.participants);
     const fetchUserDetails = async () => {
       try {
         const response = await axios.post(
@@ -63,7 +62,7 @@ export default function PopUpBlog(props) {
             userIds: props.participants,
           }
         );
-        console.log(response.data);
+        // console.log(response.data);
         setParticipantDetail(response.data);
 
         // Faire quelque chose avec les userDetails récupérés

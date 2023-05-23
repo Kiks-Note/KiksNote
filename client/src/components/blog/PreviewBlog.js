@@ -34,13 +34,12 @@ function PreviewBlog() {
 
   return (
     <div>
-      
       {data && (
         <Card>
           <CardHeader title={data.title} />
           <CardMedia
             component="img"
-            src={data.photo}
+            src={data.thumbnail}
             alt={data.title}
             sx={{ width: 300, height: 200 }}
           />

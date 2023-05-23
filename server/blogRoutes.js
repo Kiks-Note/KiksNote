@@ -13,11 +13,13 @@ const {
   getParticipant,
   addLike,
   addDislike,
+  getTags,
 } = require("./controllers/blog");
 
 module.exports = function (connection, pathname) {
   // Route Dashboard
   router.post("", addNewBlog);
+  router.get("/tag", getTags);
   router.put("/:id/visibility", updateBlogVisibility);
   router.post("/:id/comments", addBlogComment);
   router.delete("/:id", deleteBlog);
@@ -26,9 +28,6 @@ module.exports = function (connection, pathname) {
   router.post("/participant", getParticipant);
   router.put("/:id/like", addLike);
   router.put("/:id/dislike", addDislike);
-
-
-  
 
   switch (pathname) {
     case "/blog":

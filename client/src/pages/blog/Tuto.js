@@ -8,7 +8,7 @@ import TagFilter from "../../components/blog/TagFilter";
 import SearchBar from "../../components/blog/SearchBar";
 import { w3cwebsocket } from "websocket";
 import Button from "@mui/material/Button";
-import SideBarModify from "../../components/blog/NewBlog.js";
+import SideBarModify from "../../components/blog/form/NewBlog.js";
 import { Toaster } from "react-hot-toast";
 
 function Tuto() {

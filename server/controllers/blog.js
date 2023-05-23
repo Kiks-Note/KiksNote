@@ -1,4 +1,4 @@
-const { db } = require("../firebase");
+const { db, FieldValue } = require("../firebase");
 
 //add new Blog
 const addNewBlog = async (req, res) => {
@@ -24,6 +24,9 @@ const addNewBlog = async (req, res) => {
       created_at: new Date(),
       statut: "online",
       created_by: created_by,
+      participant: [],
+      like: [],
+      dislike: [],
       updated_at: "",
     });
     res.send("Document successfully written!");
@@ -70,31 +73,30 @@ const addParticipant = async (req, res) => {
   const blogId = req.params.id;
   const userId = req.body.userId;
   try {
-    const participantsRef = db
-      .collection("blog_evenements")
-      .doc(blogId)
-      .collection("participant"); // Correction : Utilisation de "participants" au lieu de "participant"
+    const blogRef = db.collection("blog_evenements").doc(blogId);
 
-    // Retrieve all participants in the collection
-    const participantsSnapshot = await participantsRef.get();
+    // Retrieve the blog document
+    const blogSnapshot = await blogRef.get();
 
-    // Check if the user is already a participant
-    let isParticipant = false;
-    participantsSnapshot.forEach((participantDoc) => {
-      if (participantDoc.id === userId) {
-        isParticipant = true;
-        return; // Exit the loop early if a match is found
+    if (blogSnapshot.exists) {
+      const blogData = blogSnapshot.data();
+
+      // Check if the user is already a participant
+      if (blogData.participant && blogData.participant.includes(userId)) {
+        // The user is already a participant, remove them
+        await blogRef.update({
+          participant: FieldValue.arrayRemove(userId),
+        });
+        res.status(200).send("Utilisateur supprimé des participants.");
+      } else {
+        // The user is not a participant, add them
+        await blogRef.update({
+          participant: FieldValue.arrayUnion(userId),
+        });
+        res.status(200).send("Utilisateur ajouté aux participants.");
       }
-    });
-
-    if (isParticipant) {
-      // The user is already a participant, remove them
-      await participantsRef.doc(userId).delete();
-      res.status(200).send("Utilisateur supprimé des participants.");
     } else {
-      // The user is not a participant, add them
-      await participantsRef.doc(userId).set({});
-      res.status(200).send("Utilisateur ajouté aux participants.");
+      res.status(404).send("Blog not found.");
     }
   } catch (error) {
     console.log(error);
@@ -115,7 +117,7 @@ const getParticipant = async (req, res) => {
         console.log("je suis dedans");
         const userData = userSnapshot.data();
         const { firstname, lastname, image } = userData;
-        userDetails.push({ id: userId, firstname, lastname, image });
+        userDetails.push({ id: user, firstname, lastname, image });
       }
     }
 
@@ -132,33 +134,6 @@ const blogRequests = async (connection) => {
       for (const doc of snapshot.docs) {
         const event = doc.data();
         const eventId = doc.id;
-
-        // Récupérer les participants
-        const participantsSnapshot = await doc.ref
-          .collection("participant")
-          .get();
-        const participant = participantsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        event.participant = participant;
-
-        // Récupérer les likes
-        const likesSnapshot = await doc.ref.collection("like").get();
-        const like = likesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        event.like = like;
-
-        // Récupérer les dislikes
-        const dislikesSnapshot = await doc.ref.collection("dislike").get();
-        const dislike = dislikesSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        event.dislike = dislike;
-
         documents.push({ id: eventId, ...event });
       }
       connection.sendUTF(JSON.stringify(documents));
@@ -173,30 +148,42 @@ const addLike = async (req, res) => {
   const blogId = req.params.id;
   const userId = req.body.userId;
   const blogRef = db.collection("blog_evenements").doc(blogId);
-  const likesRef = blogRef.collection("like");
-  const dislikesRef = blogRef.collection("dislike");
 
   try {
-    // Check if the user already liked the blog
-    const likeDocRef = likesRef.doc(userId);
-    const likeSnapshot = await likeDocRef.get();
-
-    if (likeSnapshot.exists) {
-      // The user already liked the blog, remove their like
-      await likeDocRef.delete();
-    } else {
-      // The user didn't like the blog, add their like with created_at field
-      await likeDocRef.set({ created_at: new Date() });
-
-      // Check if the user disliked the blog, if so, remove their dislike
-      const dislikeDocRef = dislikesRef.doc(userId);
-      const dislikeSnapshot = await dislikeDocRef.get();
-
-      if (dislikeSnapshot.exists) {
-        // The user disliked the blog, remove their dislike
-        await dislikeDocRef.delete();
+    await db.runTransaction(async (transaction) => {
+      const blogSnapshot = await transaction.get(blogRef);
+      if (!blogSnapshot.exists) {
+        res.status(404).send("Blog not found.");
+        return;
       }
-    }
+
+      const blogData = blogSnapshot.data();
+
+      if (blogData.like && blogData.like.includes(userId)) {
+        // The user already liked the blog, remove their like
+        transaction.update(blogRef, {
+          like: FieldValue.arrayRemove(userId),
+        });
+        if (blogData.dislike && blogData.dislike.includes(userId)) {
+          // The user disliked the blog, remove their dislike
+          transaction.update(blogRef, {
+            dislike: FieldValue.arrayRemove(userId),
+          });
+        }
+      } else {
+        // The user didn't like the blog, add their like
+        transaction.update(blogRef, {
+          like: FieldValue.arrayUnion(userId),
+        });
+
+        if (blogData.dislike && blogData.dislike.includes(userId)) {
+          // The user disliked the blog, remove their dislike
+          transaction.update(blogRef, {
+            dislike: FieldValue.arrayRemove(userId),
+          });
+        }
+      }
+    });
 
     res.status(200).send();
   } catch (error) {
@@ -208,32 +195,43 @@ const addLike = async (req, res) => {
 const addDislike = async (req, res) => {
   const blogId = req.params.id;
   const userId = req.body.userId;
-
   const blogRef = db.collection("blog_evenements").doc(blogId);
-  const dislikesRef = blogRef.collection("dislike");
-  const likesRef = blogRef.collection("like");
 
   try {
-    // Check if the user already disliked the blog
-    const dislikeDocRef = dislikesRef.doc(userId);
-    const dislikeSnapshot = await dislikeDocRef.get();
-
-    if (dislikeSnapshot.exists) {
-      // The user already disliked the blog, remove their dislike
-      await dislikeDocRef.delete();
-    } else {
-      // The user didn't dislike the blog, add their dislike with created_at field
-      await dislikeDocRef.set({ created_at: new Date() });
-
-      // Check if the user liked the blog, if so, remove their like
-      const likeDocRef = likesRef.doc(userId);
-      const likeSnapshot = await likeDocRef.get();
-
-      if (likeSnapshot.exists) {
-        // The user liked the blog, remove their like
-        await likeDocRef.delete();
+    await db.runTransaction(async (transaction) => {
+      const blogSnapshot = await transaction.get(blogRef);
+      if (!blogSnapshot.exists) {
+        res.status(404).send("Blog not found.");
+        return;
       }
-    }
+
+      const blogData = blogSnapshot.data();
+
+      if (blogData.dislike && blogData.dislike.includes(userId)) {
+        // The user already disliked the blog, remove their dislike
+        transaction.update(blogRef, {
+          dislike: FieldValue.arrayRemove(userId),
+        });
+        if (blogData.like && blogData.like.includes(userId)) {
+          // The user liked the blog, remove their like
+          transaction.update(blogRef, {
+            like: FieldValue.arrayRemove(userId),
+          });
+        }
+      } else {
+        // The user didn't dislike the blog, add their dislike
+        transaction.update(blogRef, {
+          dislike: FieldValue.arrayUnion(userId),
+        });
+
+        if (blogData.like && blogData.like.includes(userId)) {
+          // The user liked the blog, remove their like
+          transaction.update(blogRef, {
+            like: FieldValue.arrayRemove(userId),
+          });
+        }
+      }
+    });
 
     res.status(200).send();
   } catch (error) {
@@ -242,6 +240,26 @@ const addDislike = async (req, res) => {
   }
 };
 
+const getTags = async (req, res) => {
+  console.log("je recupere les tag");
+  try {
+    const snapshot = await db.collection("blog_tag").get();
+    const tags = [];
+
+    snapshot.forEach((doc) => {
+      tags.push({ id: doc.id, ...doc.data() });
+    });
+
+    res.send(tags);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des tags :", error);
+    res
+      .status(500)
+      .send("Une erreur s'est produite lors de la récupération des tags.");
+  }
+};
+
+
 module.exports = {
   addBlogComment,
   updateBlogVisibility,
@@ -249,6 +267,7 @@ module.exports = {
   blogRequests,
   deleteBlog,
   getDescriptions,
+  getTags,
   addParticipant,
   getParticipant,
   addLike,

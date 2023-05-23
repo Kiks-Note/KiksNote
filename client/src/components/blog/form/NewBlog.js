@@ -1,5 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { CardMedia, IconButton, TextField, Typography } from "@mui/material";
+import { IconButton, TextField, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
@@ -7,7 +7,7 @@ import axios from "axios";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import useFirebase from "../../hooks/useFirebase";
+import useFirebase from "../../../hooks/useFirebase";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
@@ -24,7 +24,12 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
     setInputEditorState(draftToHtml(convertToRaw(e.getCurrentContent())));
   };
 
-
+  const reset = () => {
+    setTitle("");
+    setThumbnail("");
+    setEditorState("");
+    setInputEditorState("");
+  };
   const newBlog = async (e) => {
     e.preventDefault();
 
@@ -39,12 +44,14 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
       thumbnail,
       editorState,
       inputEditorState,
-      created_by:user.id,
+      created_by: user.id,
+      type: "blog",
     };
     try {
       const response = await axios.post(`http://localhost:5050/blog`, blog);
 
       toast.success("Tuto ajouté avec succès");
+      reset();
       console.log(response.data);
     } catch (error) {
       toast.error("Une erreur est survenue");
@@ -71,7 +78,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             marginBottom: 4,
           }}
         >
-          Ajout d'un nouveau blog
+          Nouveau blog
         </Typography>
 
         <IconButton
@@ -82,6 +89,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
           }}
           onClick={(e) => {
             toggleDrawerModify(e, false);
+            reset();
           }}
         >
           <CloseIcon />
@@ -142,12 +150,16 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
               >
                 Aperçu de l'image :
               </Typography>
-              <CardMedia
-                sx={{ marginBottom: 2, borderRadius: 2 }}
+              <Box
                 component="img"
-                height="140"
-                image={thumbnail ? thumbnail : ""}
-                alt=""
+                sx={{
+                  height: 300,
+                  width: 350,
+                  maxHeight: { xs: 233, md: 167 },
+                  maxWidth: { xs: 350, md: 250 },
+                }}
+                alt="The house from the offer."
+                src={thumbnail ? thumbnail : ""}
               />
             </>
           )}

@@ -27,12 +27,16 @@ export default function CardBlog({ blog }) {
   const [isDisliked, setIsDisliked] = useState(false);
   const [isParticipant, setIsParticipant] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [infoBlog, setInfoBlog] = useState({});
+  const [loading, setLoading] = useState(true);
   const { user } = useFirebase();
   useEffect(() => {
     setIsLiked(blog.userLiked);
     setIsDisliked(blog.userDisliked);
     setIsParticipant(blog.userIsParticipant);
-  }, [blog]);
+    setInfoBlog(blog);
+    setLoading(false);
+  }, []);
   const deleteBlog = function () {
     axios
       .delete(`http://localhost:5050/blog/${blog.id}`)
@@ -46,7 +50,7 @@ export default function CardBlog({ blog }) {
 
   async function handleLike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${blog.id}/like`, {
+      await axios.put(`http://localhost:5050/blog/${infoBlog.id}/like`, {
         userId: user.id,
       });
     } catch (err) {
@@ -56,7 +60,7 @@ export default function CardBlog({ blog }) {
 
   async function handleDislike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${blog.id}/dislike`, {
+      await axios.put(`http://localhost:5050/blog/${infoBlog.id}/dislike`, {
         userId: user.id,
       });
     } catch (err) {
@@ -66,7 +70,7 @@ export default function CardBlog({ blog }) {
 
   const navigate = useNavigate();
   function handleClick() {
-    navigate(`/blog/${blog.id}`);
+    navigate(`/blog/${infoBlog.id}`);
   }
 
   function handleMenuOpen(event) {
@@ -79,7 +83,7 @@ export default function CardBlog({ blog }) {
 
   async function handleParticipate() {
     try {
-      await axios.put(`http://localhost:5050/blog/${blog.id}/participant`, {
+      await axios.put(`http://localhost:5050/blog/${infoBlog.id}/participant`, {
         userId: user.id,
       });
     } catch (err) {
@@ -89,78 +93,84 @@ export default function CardBlog({ blog }) {
 
   return (
     <>
-      <Grid item xs={2} sm={4} md={5}>
-        <Card sx={{ maxWidth: 380, m: 2 }}>
-          <CardHeader
-            title={<Typography variant="h4">{blog.title}</Typography>}
-            subheader={blog.created_at}
-            action={
-              user.id == blog.created_by ? (
-                <IconButton
-                  aria-label="more options"
-                  aria-controls="card-menu"
-                  aria-haspopup="true"
-                  onClick={handleMenuOpen}
-                >
-                  <MoreVertIcon />
-                </IconButton>
-              ) : (
-                <></>
-              )
-            }
-          />
-          <CardMedia
-            component="img"
-            height="10"
-            image={blog.thumbnail}
-            sx={{ maxHeight: 250 }}
-          />
-          <CardActions>
-            <IconButton onClick={handleLike}>
-              {isLiked ? (
-                <ThumbUpIcon color={"primary"} />
-              ) : (
-                <ThumbUpOffAltIcon />
-              )}
-            </IconButton>
-            <IconButton onClick={handleDislike}>
-              {isDisliked ? (
-                <ThumbDownAltIcon color={"error"} />
-              ) : (
-                <ThumbDownOffAltIcon />
-              )}
-            </IconButton>
-          </CardActions>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          {" "}
+          <Card sx={{ maxWidth: 380, m: 2 }}>
+            <CardHeader
+              title={<Typography variant="h4">{infoBlog.title}</Typography>}
+              subheader={infoBlog.created_at}
+              action={
+                user.id == infoBlog.created_by ? (
+                  <IconButton
+                    aria-label="more options"
+                    aria-controls="card-menu"
+                    aria-haspopup="true"
+                    onClick={handleMenuOpen}
+                  >
+                    <MoreVertIcon />
+                  </IconButton>
+                ) : (
+                  <></>
+                )
+              }
+            />
+            <CardMedia
+              component="img"
+              height="10"
+              image={infoBlog.thumbnail}
+              sx={{ maxHeight: 250 }}
+            />
+            <CardActions>
+              <IconButton onClick={handleLike}>
+                {isLiked ? (
+                  <ThumbUpIcon color={"primary"} />
+                ) : (
+                  <ThumbUpOffAltIcon />
+                )}
+              </IconButton>{" "}
+              {infoBlog.like.length}
+              <IconButton onClick={handleDislike}>
+                {isDisliked ? (
+                  <ThumbDownAltIcon color={"error"} />
+                ) : (
+                  <ThumbDownOffAltIcon />
+                )}
+              </IconButton>
+              {infoBlog.dislike.length}
+            </CardActions>
 
-          <CardActions>
-            {/* Bouton pour participer */}
-            <Button
-              size="small"
-              onClick={handleParticipate}
-              style={{ background: isParticipant ? "green" : "gray" }}
-            >
-              {isParticipant ? "Participant" : " Ne participe pas"}
-            </Button>
-            <Button size="small" onClick={handleClick}>
-              En savoir plus
-            </Button>
-            {/* Afficher d'autres boutons, composants, etc. */}
-            <PopUpBlog participants={blog.participants} />
-          </CardActions>
-        </Card>
-      </Grid>
-
-      <Menu
-        id="card-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={handleMenuClose}>
-          <Button onClick={deleteBlog}>Supprimer</Button>
-        </MenuItem>
-        <MenuItem onClick={handleMenuClose}>Modifier</MenuItem>
-      </Menu>
+            <CardActions>
+              {/* Bouton pour participer */}
+              <Button
+                size="small"
+                onClick={handleParticipate}
+                style={{ background: isParticipant ? "green" : "gray" }}
+              >
+                {isParticipant ? "Participant" : " Ne participe pas"}
+              </Button>
+              <Button size="small" onClick={handleClick}>
+                En savoir plus
+              </Button>
+              {/* Afficher d'autres boutons, composants, etc. */}
+              <PopUpBlog participants={infoBlog.participant} />
+            </CardActions>
+          </Card>
+          <Menu
+            id="card-menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleMenuClose}
+          >
+            <MenuItem onClick={handleMenuClose}>
+              <Button onClick={deleteBlog}>Supprimer</Button>
+            </MenuItem>
+            <MenuItem onClick={handleMenuClose}>Modifier</MenuItem>
+          </Menu>
+        </>
+      )}
     </>
   );
 }
