@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FormControl, InputLabel, MenuItem, Select, Button } from "@mui/material";
-import "./PopUp.scss";
+import "./Popup.scss";
 
 export const PopUp = ({ onPopupData, dataPopUp,showPopUp }) => {
     const [classChoose, setClassChoose] = useState("");

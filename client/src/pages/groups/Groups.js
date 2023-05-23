@@ -6,7 +6,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SettingsIcon from '@mui/icons-material/Settings';
-import { PopUp } from "../../components/groups/PopUp";
+import { PopUp } from "../../components/groups/Popup";
 import moment from "moment";
 
 import "./Groups.scss";

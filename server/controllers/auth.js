@@ -1,4 +1,4 @@
-const { auth,db } = require("../firebase");
+const { auth, db } = require("../firebase");
 const bcrypt = require("bcrypt");
 
 const saltRounds = 12;
@@ -13,7 +13,8 @@ const login = async (req, res) => {
     res.status(401).json({ message: "Connexion non autorisée" });
   }
 };
-const register = async (req,res) => {
+
+const register = async (req, res) => {
   const {
     userEmail,
     userPassword,
@@ -39,7 +40,7 @@ const register = async (req,res) => {
             dateofbirth: new Date(userBirthDate),
             status: userStatus,
             email: userEmail,
-            create_at: new Date()
+            create_at: new Date(),
           });
       } else {
         db.collection("users")
@@ -52,7 +53,7 @@ const register = async (req,res) => {
             status: userStatus,
             email: userEmail,
             class: userClass,
-            create_at: new Date()
+            create_at: new Date(),
           });
       }
       res.send({ message: "User created successfully" });
@@ -60,6 +61,6 @@ const register = async (req,res) => {
     .catch((err) => {
       console.log(err);
     });
-}
+};
 
-module.exports = { login,register };
+module.exports = { login, register };
