@@ -1,5 +1,21 @@
 const { db } = require("../firebase");
 
+const getAllStudents = async (req, res) => {
+  try {
+    const snapshot = await db
+      .collection("users")
+      .where("status", "in", ["etudiant"])
+      .get();
+    const users = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+    res.status(200).json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération des utilisateurs.");
+  }
+};
+
 const getAllStudentsProjects = async (req, res) => {
   try {
     const snapshot = await db.collection("students_projects").get();
@@ -64,6 +80,7 @@ const createStudentProject = async (req, res) => {
 };
 
 module.exports = {
+  getAllStudents,
   getAllStudentsProjects,
   createStudentProject,
 };
