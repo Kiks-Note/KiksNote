@@ -23,6 +23,7 @@ import {
 
 import SearchIcon from "@mui/icons-material/SearchRounded";
 
+import CarouselProjects from "./CarouselProjects";
 import "./StudentsProjects.scss";
 
 const StudentsProjects = () => {
@@ -82,7 +83,7 @@ const StudentsProjects = () => {
     setOpen(false);
   };
 
-  console.log(allclass);
+  console.log(projects);
 
   return (
     <div className="students-project-container">
@@ -155,46 +156,7 @@ const StudentsProjects = () => {
         </Dialog>
       </Card>
       <h1>Les projets mis en avant</h1>
-      <Grid item xs={12} sm={6} md={3}>
-        <Card
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-            height: "300px",
-          }}
-          /* eslint-disable no-unused-expressions */
-          onClick={() => {}}
-        >
-          <CardMedia
-            sx={{
-              width: "100%",
-              minHeight: "150px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            component="img"
-            src=""
-            alt="course image"
-            style={{
-              objectFit: "contain",
-              objectPosition: "center",
-              width: "100%",
-              minHeight: "150px",
-            }}
-          />
-
-          <CardContent sx={{ padding: "10px", height: "120px" }}>
-            <h2 variant="h3" component="div">
-              Titre du projet
-            </h2>
-            <Typography variant="body2" color="text.secondary">
-              Description du projet
-            </Typography>
-          </CardContent>
-        </Card>
-      </Grid>
+      <CarouselProjects projects={projects} />
       <h1>Tous les projets</h1>
       <Grid container spacing={2}>
         {projects.map((project) => (
