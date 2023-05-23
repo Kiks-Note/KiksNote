@@ -2,8 +2,15 @@ const { db, FieldValue } = require("../firebase");
 
 //add new Blog
 const addNewBlog = async (req, res) => {
-  const { title, thumbnail, editorState, inputEditorState, created_by } =
-    req.body;
+  const {
+    title,
+    thumbnail,
+    editorState,
+    inputEditorState,
+    created_by,
+    tag,
+    statut,
+  } = req.body;
 
   if (title == null || title == "") {
     return res.status(400).send("Title is required");
@@ -16,17 +23,18 @@ const addNewBlog = async (req, res) => {
   }
 
   try {
-    await db.collection("blog_evenements").doc().set({
+    await db.collection("blog").doc().set({
       title: title,
       thumbnail: thumbnail,
       editorState: editorState,
       inputEditorState: inputEditorState,
       created_at: new Date(),
-      statut: "online",
+      statut:statut,
       created_by: created_by,
       participant: [],
       like: [],
       dislike: [],
+      tag:tag,
       updated_at: "",
     });
     res.send("Document successfully written!");
@@ -57,15 +65,12 @@ const addBlogComment = async (req, res) => {
 };
 
 const deleteBlog = async (req, res) => {
-  await db.collection("blog_evenements").doc(req.params.id).delete();
+  await db.collection("blog").doc(req.params.id).delete();
   res.send("Document successfully deleted!");
 };
 
 const getDescriptions = async (req, res) => {
-  const snapshot = await db
-    .collection("blog_evenements")
-    .doc(req.params.id)
-    .get();
+  const snapshot = await db.collection("blog").doc(req.params.id).get();
   res.send(snapshot.data());
 };
 
@@ -73,7 +78,7 @@ const addParticipant = async (req, res) => {
   const blogId = req.params.id;
   const userId = req.body.userId;
   try {
-    const blogRef = db.collection("blog_evenements").doc(blogId);
+    const blogRef = db.collection("blog").doc(blogId);
 
     // Retrieve the blog document
     const blogSnapshot = await blogRef.get();
@@ -128,7 +133,7 @@ const getParticipant = async (req, res) => {
 };
 
 const blogRequests = async (connection) => {
-  db.collection("blog_evenements").onSnapshot(
+  db.collection("blog").onSnapshot(
     async (snapshot) => {
       const documents = [];
       for (const doc of snapshot.docs) {
@@ -147,7 +152,7 @@ const blogRequests = async (connection) => {
 const addLike = async (req, res) => {
   const blogId = req.params.id;
   const userId = req.body.userId;
-  const blogRef = db.collection("blog_evenements").doc(blogId);
+  const blogRef = db.collection("blog").doc(blogId);
 
   try {
     await db.runTransaction(async (transaction) => {
@@ -195,7 +200,7 @@ const addLike = async (req, res) => {
 const addDislike = async (req, res) => {
   const blogId = req.params.id;
   const userId = req.body.userId;
-  const blogRef = db.collection("blog_evenements").doc(blogId);
+  const blogRef = db.collection("blog").doc(blogId);
 
   try {
     await db.runTransaction(async (transaction) => {
@@ -258,7 +263,6 @@ const getTags = async (req, res) => {
       .send("Une erreur s'est produite lors de la récupération des tags.");
   }
 };
-
 
 module.exports = {
   addBlogComment,

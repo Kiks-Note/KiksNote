@@ -6,39 +6,70 @@ import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import axios from "axios";
 import * as React from "react";
 import { useEffect, useState } from "react";
+import { Rings } from "react-loader-spinner";
 import toast, { Toaster } from "react-hot-toast";
 import useFirebase from "../../../hooks/useFirebase";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
+import Autocomplete from "@mui/material/Autocomplete";
 
 export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
   const [title, setTitle] = useState("");
   const [thumbnail, setThumbnail] = useState("");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [inputEditorState, setInputEditorState] = useState("");
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { user } = useFirebase();
   const handleEditorChange = (e) => {
     setEditorState(e);
     setInputEditorState(draftToHtml(convertToRaw(e.getCurrentContent())));
   };
 
+  useEffect(() => {
+    fetchTags();
+    setLoading(false);
+  }, []);
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get("http://localhost:5050/blog/tag");
+      const tags = response.data;
+      console.log(tags);
+
+      // Mettre à jour l'état des tags avec les données récupérées
+      setTags(tags);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des tags :", error);
+    }
+  };
   const reset = () => {
     setTitle("");
     setThumbnail("");
     setEditorState("");
     setInputEditorState("");
+    setSelectedTags("");
   };
   const newBlog = async (e) => {
     e.preventDefault();
 
-    if (!title || !thumbnail || !editorState || !inputEditorState) {
+    if (
+      !title ||
+      !thumbnail ||
+      !editorState ||
+      !inputEditorState ||
+      !selectedTags
+    ) {
       console.log(title, thumbnail, editorState);
       toast.error("Veuillez remplir tous les champs");
       return;
     }
-
+    var statut = "online";
+    if (user.status == "etudiant") {
+      statut = "pending";
+    }
     const blog = {
       title,
       thumbnail,
@@ -46,6 +77,8 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
       inputEditorState,
       created_by: user.id,
       type: "blog",
+      tag: selectedTags,
+      statut: statut,
     };
     try {
       const response = await axios.post(`http://localhost:5050/blog`, blog);
@@ -108,7 +141,26 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             InputLabelProps={{ className: "inputLabel" }}
             InputProps={{ className: "input" }}
           />
-
+          <div>
+            <Autocomplete
+              multiple
+              id="tags"
+              options={tags}
+              getOptionLabel={(tag) => tag.name}
+              value={selectedTags}
+              onChange={(event, newValue) => {
+                setSelectedTags(newValue);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Tags"
+                  variant="outlined"
+                  size="small"
+                />
+              )}
+            />
+          </div>
           <div>
             <Editor
               placeholder="Faites chauffer le clavier "
@@ -120,9 +172,11 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
               editorStyle={{
                 border: "1px solid black",
                 minHeight: "180px",
+                height: "300px", // Taille fixe de l'éditeur de texte
                 padding: "10px",
                 borderRadius: "5px",
                 boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+                marginBottom: "16px",
               }}
             />
           </div>
@@ -166,7 +220,10 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
 
           <Button
             variant="contained"
-            sx={{ marginBottom: 2 }}
+            sx={{
+              marginBottom: 2,
+              width: "100%",
+            }}
             fullWidth
             onClick={(e) => {
               newBlog(e);
@@ -181,17 +238,41 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
   );
 
   return (
-    <div>
-      <React.Fragment>
-        <SwipeableDrawer
-          anchor={"right"}
-          open={open}
-          onClose={(e) => toggleDrawerModify(e, false)}
-          onOpen={(e) => toggleDrawerModify(e, true)}
+    <>
+      {!loading ? (
+        <div>
+          <React.Fragment>
+            <SwipeableDrawer
+              anchor={"right"}
+              open={open}
+              onClose={(e) => toggleDrawerModify(e, false)}
+              onOpen={(e) => toggleDrawerModify(e, true)}
+            >
+              {list("right")}
+            </SwipeableDrawer>
+          </React.Fragment>
+        </div>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}
         >
-          {list("right")}
-        </SwipeableDrawer>
-      </React.Fragment>
-    </div>
+          <Rings
+            height="200"
+            width="200"
+            color="#00BFFF"
+            radius="6"
+            wrapperStyle={{}}
+            wrapperClass="loader"
+            visible={true}
+            ariaLabel="rings-loading"
+          />
+        </div>
+      )}
+    </>
   );
 }

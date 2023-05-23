@@ -8,6 +8,8 @@ import { Rings } from "react-loader-spinner";
 import useFirebase from "../../hooks/useFirebase";
 import axios from "axios";
 
+
+
 function Blog() {
   const [blog, setBlog] = useState([]);
   const [filteredBlog, setFilteredBlog] = useState([]);
@@ -67,24 +69,10 @@ function Blog() {
           };
           allBlogs.push(blogFront);
         });
-
+        fetchTags();
         setBlog(allBlogs);
         setLoading(false);
       };
-      const fetchTags = async () => {
-        try {
-          const response = await axios.get("http://localhost:5050/blog/tag");
-          const tags = response.data;
-          console.log(tags);
-
-          // Mettre à jour l'état des tags avec les données récupérées
-          setTags(tags);
-        } catch (error) {
-          console.error("Erreur lors de la récupération des tags :", error);
-        }
-      };
-
-      fetchTags();
     })();
   }, []);
   useEffect(() => {
@@ -128,6 +116,18 @@ function Blog() {
     const { name, value } = event.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
   };
+    const fetchTags = async () => {
+      try {
+        const response = await axios.get("http://localhost:5050/blog/tag");
+        const tags = response.data;
+        console.log(tags);
+
+        // Mettre à jour l'état des tags avec les données récupérées
+        setTags(tags);
+      } catch (error) {
+        console.error("Erreur lors de la récupération des tags :", error);
+      }
+    };
 
   const toggleDrawerModify = (event, open) => {
     if (
@@ -192,15 +192,6 @@ function Blog() {
                     {tag.name}
                   </MenuItem>
                 ))}
-              </Select>
-              <Select
-                name="likes"
-                value={filter.likes}
-                onChange={handleFilterChange}
-              >
-                <MenuItem value="">Likes</MenuItem>
-                <MenuItem value="liked">Liked</MenuItem>
-                <MenuItem value="disliked">Disliked</MenuItem>
               </Select>
             </Box>
             <Button
