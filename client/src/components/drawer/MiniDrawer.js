@@ -4,7 +4,6 @@ import { ColorModeContext } from "../../utils/Theme";
 import { useTheme } from "@mui/material/styles";
 import { createBrowserHistory } from "history";
 import { styled } from "@mui/material/styles";
-import { accountAuthService } from "../../services/accountAuth";
 import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
@@ -38,8 +37,10 @@ import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import SchoolIcon from "@mui/icons-material/School";
 import BookIcon from "@mui/icons-material/Book";
+import EventIcon from "@mui/icons-material/Event";
 
 import Logo from "./../../assets/logo/logo.png";
+import useFirebase from "../../hooks/useFirebase";
 
 /// Drawer width where is open
 const drawerWidth = 240;
@@ -93,9 +94,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function MiniDrawer({ element }) {
-  const loggedUser = localStorage.getItem("user");
-  const loggedUserParsed = JSON.parse(loggedUser);
-  var userStatus = loggedUserParsed.status;
+  const { user, logout } = useFirebase();
   const history = createBrowserHistory();
   const [open, setOpen] = React.useState(false);
   const colorMode = React.useContext(ColorModeContext);
@@ -127,7 +126,7 @@ export default function MiniDrawer({ element }) {
         {
           id: 11,
           name: "Projet Étudiant",
-          route: "/projet-etudiant",
+          route: "/studentprojects",
           icon: <SchoolIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
         },
       ],
@@ -141,7 +140,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 3,
       name: "Cours",
-      route: "#",
+      route: "/cours",
       icon: (
         <LibraryBooksIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
@@ -154,7 +153,7 @@ export default function MiniDrawer({ element }) {
         <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
     },
-    ...(userStatus !== "Pédago"
+    ...(user && user?.status !== "Pédago"
       ? [
           {
             id: 5,
@@ -186,7 +185,7 @@ export default function MiniDrawer({ element }) {
               {
                 id: 14,
                 name: "Coding Agile",
-                route: "#",
+                route: "/agile",
                 icon: (
                   <TimelineIcon
                     sx={{ color: theme.palette.custom.iconDrawer }}
@@ -200,7 +199,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 6,
       name: "Inventaire",
-      route: "#",
+      route: "/inventory",
       icon: <InventoryIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {
@@ -249,9 +248,7 @@ export default function MiniDrawer({ element }) {
   };
   //To logout
   const handleLogout = () => {
-    accountAuthService.logout();
-    localStorage.removeItem("userUid");
-    localStorage.removeItem("user");
+    logout();
     navigate("/login");
   };
   // MiniDrawer Types
@@ -303,7 +300,7 @@ export default function MiniDrawer({ element }) {
                     px: 2.5,
                     ...(isPageActive(page) && {
                       backgroundColor: "rgba(0, 0, 0, 0.08)",
-                      borderRight: `4px solid ${theme.palette.secondary.main}`,
+                      borderRight: `4px solid ${theme.palette.secondary.main} !important`,
                     }),
                     "& svg": {
                       color: theme.palette.custom.iconDrawer,
@@ -333,7 +330,7 @@ export default function MiniDrawer({ element }) {
                   <List
                     component="div"
                     disablePadding
-                    sx={{ marginLeft: open ? 5 : 3 }}
+                    sx={{ marginLeft: open ? 5 : 0 }}
                   >
                     {page.children &&
                       page.children.map((child) => (
@@ -346,13 +343,13 @@ export default function MiniDrawer({ element }) {
                             sx={{
                               minHeight: 48,
                               justifyContent: "space-between",
+                              ...(isPageActive(child) && {
+                                backgroundColor: "rgba(0, 0, 0, 0.08)",
+                                borderRight: `4px solid ${theme.palette.secondary.main} !important`,
+                              }),
                               "& svg": {
                                 color: theme.palette.custom.iconDrawer,
                               },
-                              ...(isPageActive(child) && {
-                                backgroundColor: "rgba(0, 0, 0, 0.08)",
-                                borderRight: `4px solid ${theme.palette.secondary.main}`,
-                              }),
                             }}
                             onClick={() => handleToggle(child.id, child.route)}
                           >
@@ -385,7 +382,6 @@ export default function MiniDrawer({ element }) {
             {
               id: 1,
               name: "Déconnexion",
-              route: "#",
               icon: (
                 <LogoutOutlinedIcon
                   sx={{ color: theme.palette.custom.iconDrawer }}
@@ -437,7 +433,7 @@ export default function MiniDrawer({ element }) {
           )}
         </List>
       </Drawer>
-      <Box component="main">
+      <Box component="main"  sx={{width: '100%'}}>
         <>{element}</>
       </Box>
     </Box>
