@@ -28,6 +28,8 @@ import Register from "./pages/register/Register";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import EmpathyMap from "./pages/agile/EmpathyMap";
 import Personas from "./pages/agile/Personas";
+import Retrospective from "./pages/retrospective/Retrospective";
+import CreateRetro from "./pages/retrospective/CreateRetro";
 
 function RoutesProvider() {
   return (
@@ -77,7 +79,7 @@ function RoutesProvider() {
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
            <Route path="/createretro" element={<CreateRetro />} />
-                    <Route path="/retrospective/:retro_id" element={<Retrospective />} />
+            <Route path="/retrospective/:retro_id" element={<Retrospective />} />
           <Route path="*" element={<NotFound />} />
 
         </Route>
