@@ -8,10 +8,8 @@ const InputNode = ({ node, sendName }) => {
     const handleKeyDown = (event) => {
       
       if (event.key === 'Enter') {
-        console.log(node);
         var updateNode =  { ...node };
         updateNode.name = event.target.value;
-        
         if(!send){
           var data = {newBranch: updateNode, oldBranch: node.name}
           sendName(data);
@@ -32,7 +30,6 @@ const InputNode = ({ node, sendName }) => {
   }, [ sendName]);
 
   const handleInputChange = (e) => {
-   console.log('r')
   };
 
   return (
