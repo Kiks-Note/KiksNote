@@ -31,7 +31,7 @@ module.exports = function (connection, pathname) {
   router.post("/participant", getParticipant);
   router.put("/:id/like", addLike);
   router.put("/:id/dislike", addDislike);
-  router.get("", getTopCreators);
+  router.get("/created_by", getTopCreators);
 
 
   switch (pathname) {

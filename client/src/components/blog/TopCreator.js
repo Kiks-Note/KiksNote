@@ -12,8 +12,8 @@ function TopCreatorsChart() {
   const fetchData = async () => {
  
     try {
-      const response = await axios.get('http://localhost:5050/blog'); 
-      const blogs = response.data;
+        const response = await axios.get('http://localhost:5050/blog/created_by');
+        const blogs = response.data;
   
       const creatorsMap = new Map();
       blogs.forEach(blog => {
