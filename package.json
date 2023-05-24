@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@mui/material": "^5.11.12",
+    "@mui/styled-engine-sc": "^5.11.11",
+    "@mui/styles": "^5.11.12",
+    "date-fns": "^2.29.3",
+    "react-beautiful-dnd": "^13.1.1",
+    "react-day-picker": "^8.6.0",
+    "styled-components": "^5.3.8"
+  }
+}
