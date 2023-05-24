@@ -264,6 +264,31 @@ const getTags = async (req, res) => {
   }
 };
 
+const getTopCreators = async (req, res) => {
+  try {
+    const creatorsSnapshot = await db
+      .collection("blog")
+      .groupBy("created_by")
+      .orderBy("count", "desc")
+      .limit(10)
+      .get();
+
+    const topCreators = creatorsSnapshot.docs.map((doc) => {
+      const creatorData = doc.data();
+      return {
+        name: creatorData.created_by,
+        articleCount: creatorData.count,
+      };
+    });
+
+    res.status(200).json(topCreators);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des données des créateurs :", error);
+    res.status(500).json({ error: "Une erreur est survenue lors de la récupération des données des créateurs." });
+  }
+};
+
+
 module.exports = {
   addBlogComment,
   updateBlogVisibility,
@@ -276,4 +301,5 @@ module.exports = {
   getParticipant,
   addLike,
   addDislike,
+  getTopCreators
 };

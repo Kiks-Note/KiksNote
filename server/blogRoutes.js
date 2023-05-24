@@ -14,6 +14,9 @@ const {
   addLike,
   addDislike,
   getTags,
+  getTopCreators,
+
+  
 } = require("./controllers/blog");
 
 module.exports = function (connection, pathname) {
@@ -28,6 +31,8 @@ module.exports = function (connection, pathname) {
   router.post("/participant", getParticipant);
   router.put("/:id/like", addLike);
   router.put("/:id/dislike", addDislike);
+  router.get("", getTopCreators);
+
 
   switch (pathname) {
     case "/blog":

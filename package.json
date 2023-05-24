@@ -4,6 +4,7 @@
     "@mui/styled-engine-sc": "^5.11.11",
     "@mui/styles": "^5.11.12",
     "date-fns": "^2.29.3",
+    "react-chartjs-2": "^5.2.0",
     "react-day-picker": "^8.6.0",
     "styled-components": "^5.3.8"
   }

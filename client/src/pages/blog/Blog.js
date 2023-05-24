@@ -7,10 +7,12 @@ import { Toaster } from "react-hot-toast";
 import { Rings } from "react-loader-spinner";
 import useFirebase from "../../hooks/useFirebase";
 import axios from "axios";
+import TopCreatorsChart from "../../components/blog/TopCreator.js";
 
 
 
 function Blog() {
+
   const [blog, setBlog] = useState([]);
   const [filteredBlog, setFilteredBlog] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,53 +29,54 @@ function Blog() {
   console.log(filter);
   console.log(filteredBlog);
   useEffect(() => {
-    (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/blog");
+    const ws = new w3cwebsocket("ws://localhost:5050/blog");
 
-      ws.onopen = function (e) {
-        console.log("[open] Connection established");
-        console.log("Sending to server");
-      };
-      ws.onmessage = (message) => {
-        const dataFromServer = JSON.parse(message.data);
-        var blogs = dataFromServer;
-        var allBlogs = [];
-        blogs.forEach((blog) => {
-          const dateCreation = new Date(
-            blog.created_at._seconds * 1000 +
-              blog.created_at._nanoseconds / 100000
-          ).toLocaleDateString("fr");
+    ws.onopen = function (e) {
+      console.log("[open] Connection established");
+      console.log("Sending to server");
+    };
 
-          const userLiked = blog.like.includes(user.id);
-          const userDisliked = blog.dislike.includes(user.id);
-          const userIsParticipant = blog.participant.includes(user.id);
+    ws.onmessage = (message) => {
+      const dataFromServer = JSON.parse(message.data);
+      var blogs = dataFromServer;
+      var allBlogs = [];
+      blogs.forEach((blog) => {
+        const dateCreation = new Date(
+          blog.created_at._seconds * 1000 +
+            blog.created_at._nanoseconds / 100000
+        ).toLocaleDateString("fr");
 
-          const blogFront = {
-            id: blog.id,
-            created_at: dateCreation,
-            created_by: blog.created_by,
-            editorState: blog.editorState,
-            inputEditorState: blog.inputEditorState,
-            participant: blog.participant,
-            statut: blog.statut,
-            thumbnail: blog.thumbnail,
-            title: blog.title,
-            updated_at: blog.updated_at,
-            like: blog.like,
-            dislike: blog.dislike,
-            userLiked: userLiked,
-            userDisliked: userDisliked,
-            userIsParticipant: userIsParticipant,
-            type: blog.type,
-            tags: blog.tags,
-          };
-          allBlogs.push(blogFront);
-        });
-        fetchTags();
-        setBlog(allBlogs);
-        setLoading(false);
-      };
-    })();
+        const userLiked = blog.like.includes(user.id);
+        const userDisliked = blog.dislike.includes(user.id);
+        const userIsParticipant = blog.participant.includes(user.id);
+
+        const blogFront = {
+          id: blog.id,
+          created_at: dateCreation,
+          created_by: blog.created_by,
+          editorState: blog.editorState,
+          inputEditorState: blog.inputEditorState,
+          participant: blog.participant,
+          statut: blog.statut,
+          thumbnail: blog.thumbnail,
+          title: blog.title,
+          updated_at: blog.updated_at,
+          like: blog.like,
+          dislike: blog.dislike,
+          userLiked: userLiked,
+          userDisliked: userDisliked,
+          userIsParticipant: userIsParticipant,
+          type: blog.type,
+          tags: blog.tags,
+          
+        };
+        allBlogs.push(blogFront);
+      });
+
+      fetchTags();
+      setBlog(allBlogs);
+      setLoading(false);
+    };
   }, []);
   useEffect(() => {
     // Apply filters whenever they change
@@ -142,6 +145,7 @@ function Blog() {
 
   return (
     <>
+      <TopCreatorsChart />
       <Toaster />
       <Box>
         <Grid container spacing={2}>
