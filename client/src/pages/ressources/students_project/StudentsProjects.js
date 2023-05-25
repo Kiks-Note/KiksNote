@@ -1,18 +1,11 @@
 import { useState, useEffect } from "react";
-import axios, { all } from "axios";
+import { useForm } from "react-hook-form";
+import axios from "axios";
 
 import useFirebase from "../../../hooks/useFirebase";
 
-import CreateProjectDialog from "./CreateProjectDialog";
-
-import { useForm } from "react-hook-form";
-
 import {
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   TextField,
   Card,
   CardContent,
@@ -27,6 +20,7 @@ import {
 
 import SearchIcon from "@mui/icons-material/SearchRounded";
 
+import CreateProjectDialog from "./CreateProjectDialog";
 import CarouselProjects from "./CarouselProjects";
 import "./StudentsProjects.scss";
 
@@ -46,6 +40,11 @@ const StudentsProjects = () => {
   const [typeProject, setTypeProject] = useState("");
   const [descriptionProject, setDescriptionProject] = useState("");
   const [imgProjectLink, setImgProjectLink] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [idSelectedClass, setIdSelectedClass] = useState("");
+
+  const [selectedFilterClass, setSelectedFilterClass] = useState("");
+  const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
 
   const getAllProjects = async () => {
     try {
@@ -99,6 +98,7 @@ const StudentsProjects = () => {
           StudentId: user?.id,
           nameProject: nameProject,
           RepoProjectLink: repoProjectLink,
+          promoProject: idSelectedClass,
           membersProject: membersProject,
           typeProject: typeProject,
           descriptionProject: descriptionProject,
@@ -168,18 +168,22 @@ const StudentsProjects = () => {
         </div>
         <FormControl>
           <Select
-            labelId="demo-simple-select-label"
-            id="demo-simple-select"
+            value={selectedFilterClass}
+            onChange={(event) => {
+              setSelectedFilterClass(event.target.value);
+              const selectedClass = allclass.find(
+                (coursClass) => coursClass.name === event.target.value
+              );
+              setSelectedIdFilterClass(selectedClass ? selectedClass.id : "");
+            }}
             displayEmpty
-            sx={{ display: "flex", width: "100%" }}
+            renderValue={(value) => value || "Filtrer sur la promo"}
           >
-            <MenuItem value="" disabled>
-              Choississez une promo
-            </MenuItem>
+            <MenuItem value="">Choissisez votre promo</MenuItem>
             {allclass.map((promo) => (
               <MenuItem value={promo.name}>{promo.name}</MenuItem>
             ))}
-          </Select>{" "}
+          </Select>
         </FormControl>
         {userStatus === "etudiant" ? (
           <Button onClick={handleClickOpen}>Publier mon projet</Button>
@@ -198,6 +202,8 @@ const StudentsProjects = () => {
           setNameProject={setNameProject}
           repoProjectLink={repoProjectLink}
           setRepoProjectLink={setRepoProjectLink}
+          selectedClass={selectedClass}
+          setSelectedClass={setSelectedClass}
           membersProject={membersProject}
           setMembersProject={setMembersProject}
           typeProject={typeProject}
@@ -206,56 +212,67 @@ const StudentsProjects = () => {
           setDescriptionProject={setDescriptionProject}
           imgProjectLink={imgProjectLink}
           setImgProjectLink={setImgProjectLink}
+          setIdSelectedClass={setIdSelectedClass}
           control={control}
           allstudents={allstudents}
+          allclass={allclass}
         />
       </Card>
       <h1>Les projets mis en avant</h1>
-      <CarouselProjects projects={topProjects} />
+      <CarouselProjects
+        projects={topProjects}
+        selectedIdFilterClass={selectedIdFilterClass}
+      />
       <h1>Tous les projets</h1>
       <Grid container spacing={2}>
-        {filteredProjects.map((project) => (
-          <Grid item xs={12} sm={6} md={3}>
-            <Card
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "space-between",
-                height: "300px",
-              }}
-              onClick={() => {}}
-            >
-              <CardMedia
+        {filteredProjects
+          .filter((project) =>
+            selectedIdFilterClass !== ""
+              ? project.promoProject === selectedIdFilterClass
+              : true
+          )
+          .map((project) => (
+            <Grid item xs={12} sm={6} md={3}>
+              <Card
                 sx={{
-                  width: "100%",
-                  minHeight: "150px",
                   display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  flexDirection: "column",
+                  justifyContent: "space-between",
+                  height: "300px",
                 }}
-                component="img"
-                src={project.imgProject}
-                alt="course image"
-                style={{
-                  objectFit: "contain",
-                  objectPosition: "center",
-                  width: "100%",
-                  minHeight: "150px",
-                }}
-              />
+                onClick={() => {}}
+              >
+                <CardMedia
+                  sx={{
+                    width: "100%",
+                    minHeight: "150px",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                  component="img"
+                  src={project.imgProject}
+                  alt="course image"
+                  style={{
+                    objectFit: "contain",
+                    objectPosition: "center",
+                    width: "100%",
+                    minHeight: "150px",
+                  }}
+                />
 
-              <CardContent sx={{ padding: "10px", height: "120px" }}>
-                <h2 variant="h3" component="div">
-                  {project.nameProject}
-                </h2>
-                <Typography variant="body2" color="text.secondary">
-                  {project.descriptionProject}
-                </Typography>
-                <Button> </Button>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
+                <CardContent sx={{ padding: "10px", height: "120px" }}>
+                  <h2 variant="h3" component="div">
+                    {project.nameProject}
+                  </h2>
+                  <Typography variant="body2" color="text.secondary">
+                    {project.descriptionProject}
+                  </Typography>
+                  <Button> </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
       </Grid>
     </div>
   );

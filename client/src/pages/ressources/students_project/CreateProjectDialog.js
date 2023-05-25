@@ -68,6 +68,25 @@ const CreateProjectDialog = (props) => {
               DevOps
             </MenuItem>
           </Select>
+          <Select
+            value={props.selectedClass}
+            onChange={(event) => {
+              props.setSelectedClass(event.target.value);
+              const selectedCours = props.allclass.find(
+                (cours) => cours.name === event.target.value
+              );
+              props.setIdSelectedClass(selectedCours ? selectedCours.id : "");
+            }}
+            displayEmpty
+            renderValue={(value) => value || "Choisir la classe"}
+          >
+            <MenuItem value="">Choisir une option</MenuItem>
+            {props.allclass.map((cours) => (
+              <MenuItem key={cours.id} value={cours.name}>
+                {cours.name}
+              </MenuItem>
+            ))}
+          </Select>
           <Controller
             name="members"
             control={props.control}
