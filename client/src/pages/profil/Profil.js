@@ -114,7 +114,9 @@ export default function Profil() {
           git: data.git,
           company: data.company,
           class: data.class,
-          programmationLanguage: data.programmationLanguage,
+          programmationLanguage: data.programmationLanguage
+            ? data.programmationLanguage
+            : [],
           discord: data.discord,
           phoneNumber: data.phone,
           status: data.status,

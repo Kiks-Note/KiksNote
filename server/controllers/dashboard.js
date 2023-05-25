@@ -952,7 +952,6 @@ async function addDashboard(groups, db) {
         dashboardRef
       );
 
-      console.log(releases);
       dashboardRef.update({ release: JSON.parse(JSON.stringify(releases)) });
       // Add labels collection creation
       const labelsRef = dashboardRef.collection("labels");
