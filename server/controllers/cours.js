@@ -103,6 +103,26 @@ const getClassById = async (req, res) => {
   }
 };
 
+const createClass = async (req, res) => {
+  const { name, promo, site, cursus } = req.body;
+
+  try {
+    const classRef = await db.collection("class").add({
+      name: name,
+      promo: promo,
+      site: site,
+      cursus: cursus,
+    });
+    return res.status(200).send({
+      id: classRef.id,
+      message: "Classe créée avec succès.",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Erreur lors de la création de la classe.");
+  }
+};
+
 const getInstructors = async (req, res) => {
   try {
     const snapshot = await db
@@ -577,6 +597,7 @@ module.exports = {
   getAllClasses,
   getCoursById,
   getClassById,
+  createClass,
   getInstructors,
   getInstructorById,
   createCours,
