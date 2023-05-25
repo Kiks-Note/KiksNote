@@ -43,6 +43,8 @@ const StudentsProjects = () => {
   const [selectedClass, setSelectedClass] = useState("");
   const [idSelectedClass, setIdSelectedClass] = useState("");
 
+  const [selectedFilterTypeProject, setSelectedFilterTypeProject] =
+    useState("");
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
   const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
 
@@ -144,6 +146,10 @@ const StudentsProjects = () => {
   const topProjects = sortedProjects.slice(0, 10);
   const filteredProjects = sortedProjects.slice(10);
 
+  const allTypesProject = [
+    ...new Set(Object.values(projects).map((project) => project.typeProject)),
+  ];
+
   return (
     <div className="students-project-container">
       <div className="header-students-projects">
@@ -168,6 +174,21 @@ const StudentsProjects = () => {
         </div>
         <FormControl>
           <Select
+            value={selectedFilterTypeProject}
+            onChange={(event) => {
+              setSelectedFilterTypeProject(event.target.value);
+            }}
+            displayEmpty
+            renderValue={(value) => value || "Type"}
+          >
+            <MenuItem value="">Filtrer sur le type de projet</MenuItem>
+            {allTypesProject.map((type) => (
+              <MenuItem value={type}>{type}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <FormControl>
+          <Select
             value={selectedFilterClass}
             onChange={(event) => {
               setSelectedFilterClass(event.target.value);
@@ -177,9 +198,9 @@ const StudentsProjects = () => {
               setSelectedIdFilterClass(selectedClass ? selectedClass.id : "");
             }}
             displayEmpty
-            renderValue={(value) => value || "Filtrer sur la promo"}
+            renderValue={(value) => value || "Promo"}
           >
-            <MenuItem value="">Choissisez votre promo</MenuItem>
+            <MenuItem value="">Filtrer sur la promo</MenuItem>
             {allclass.map((promo) => (
               <MenuItem value={promo.name}>{promo.name}</MenuItem>
             ))}
@@ -221,6 +242,7 @@ const StudentsProjects = () => {
       <h1>Les projets mis en avant</h1>
       <CarouselProjects
         projects={topProjects}
+        selectedFilterType={selectedFilterTypeProject}
         selectedIdFilterClass={selectedIdFilterClass}
       />
       <h1>Tous les projets</h1>

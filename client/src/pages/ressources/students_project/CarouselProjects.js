@@ -11,11 +11,17 @@ import { EffectCoverflow, Pagination, Navigation } from "swiper";
 
 import "./CarouselProjects.scss";
 
-const CarouselProjects = ({ projects, selectedIdFilterClass }) => {
+const CarouselProjects = ({
+  projects,
+  selectedFilterType,
+  selectedIdFilterClass,
+}) => {
   const filteredProjects =
-    selectedIdFilterClass !== ""
+    selectedIdFilterClass !== "" && selectedFilterType !== ""
       ? projects.filter(
-          (project) => project.promoProject === selectedIdFilterClass
+          (project) =>
+            project.promoProject === selectedIdFilterClass &&
+            project.typeProject === selectedFilterType
         )
       : projects;
 
