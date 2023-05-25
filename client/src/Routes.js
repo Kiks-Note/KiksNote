@@ -63,6 +63,8 @@ function RoutesProvider() {
           <Route path="/agile" element={<Agile/>}/>
           <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           <Route path="/agile/persona" element={<Personas />} />
+          <Route path="/retro/createretro" element={<CreateRetro />} />
+          <Route path="/retrospective/:retro_id" element={<Retrospective />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
@@ -78,8 +80,6 @@ function RoutesProvider() {
             element={<InventoryListBorrowed />}
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
-           <Route path="/createretro" element={<CreateRetro />} />
-            <Route path="/retrospective/:retro_id" element={<Retrospective />} />
           <Route path="*" element={<NotFound />} />
 
         </Route>
