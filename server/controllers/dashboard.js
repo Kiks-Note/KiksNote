@@ -275,6 +275,14 @@ const createDashboards = async (req, res) => {
     labels.forEach((label) => {
       batch.set(labelsRef.doc(), label);
     });
+
+    const agileRef = dashboardRef.collection("agile");
+    await agileRef.add({
+      goals: [],
+      actors: [],
+      impacts: [],
+      deliverables: [],
+    });
     await batch.commit();
 
     res.status(200).send({
@@ -969,6 +977,14 @@ async function addDashboard(groups, db) {
       for (const label of labels) {
         await labelsRef.add(label);
       }
+
+      const agileRef = dashboardRef.collection("agile");
+      await agileRef.add({
+        goals: [],
+        actors: [],
+        impacts: [],
+        deliverables: [],
+      });
     }
   }
 }

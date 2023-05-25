@@ -7,6 +7,7 @@ import Dashboard from "../Dashboard";
 import Overview from "../overview/OverView";
 import PdfView from "../overview/PdfView";
 import Board from "../Board";
+import Tooltip from "@material-ui/core/Tooltip";
 
 TabDemo.propTypes = {
   tabs: PropTypes.arrayOf(
@@ -45,18 +46,22 @@ export default function TabDemo({
             key={tab.id}
             value={tab.id}
             label={
-              <span>
-                {tab.label}
-                {tab.closeable && (
-                  <a
-                    className="closeTab"
-                    title={"Close tab"}
-                    onClick={() => handleClose(tab)}
-                  >
-                    <CloseIcon />
-                  </a>
-                )}
-              </span>
+              <Tooltip title={tab.label}>
+                <span>
+                  {tab.label.length > 15
+                    ? `${tab.label.substring(0, 15)}...`
+                    : tab.label}
+                  {tab.closeable && (
+                    <a
+                      className="closeTab"
+                      title={"Close tab"}
+                      onClick={() => handleClose(tab)}
+                    >
+                      <CloseIcon />
+                    </a>
+                  )}
+                </span>
+              </Tooltip>
             }
           />
         ))}
