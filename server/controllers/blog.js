@@ -29,12 +29,12 @@ const addNewBlog = async (req, res) => {
       editorState: editorState,
       inputEditorState: inputEditorState,
       created_at: new Date(),
-      statut:statut,
+      statut: statut,
       created_by: created_by,
       participant: [],
       like: [],
       dislike: [],
-      tag:tag,
+      tag: tag,
       updated_at: "",
     });
     res.send("Document successfully written!");
@@ -245,8 +245,36 @@ const addDislike = async (req, res) => {
   }
 };
 
+const getTopCreators = async (req, res) => {
+  console.log("je recupere les top creators");
+  try {
+    const creatorsSnapshot = await db
+      .collection("blog")
+      .groupBy("created_by")
+      .orderBy("count", "desc")
+      .limit(10)
+      .get();
+
+    const topCreators = creatorsSnapshot.docs.map((doc) => {
+      const creatorData = doc.data();
+      console.log(creatorData);
+      return {
+        name: creatorData.created_by,
+        articleCount: creatorData.count,
+      };
+    });
+
+    res.status(200).json(topCreators);
+  } catch (error) {
+    console.error("Erreur lors de la récupération des données des créateurs :", error);
+    res.status(500).json({ error: "Une erreur est survenue lors de la récupération des données des créateurs." });
+  }
+
+};
+
+
 const getTags = async (req, res) => {
-  console.log("je recupere les tag");
+
   try {
     const snapshot = await db.collection("blog_tag").get();
     const tags = [];
@@ -264,29 +292,10 @@ const getTags = async (req, res) => {
   }
 };
 
-const getTopCreators = async (req, res) => {
-  try {
-    const creatorsSnapshot = await db
-      .collection("blog")
-      .groupBy("created_by")
-      .orderBy("count", "desc")
-      .limit(10)
-      .get();
 
-    const topCreators = creatorsSnapshot.docs.map((doc) => {
-      const creatorData = doc.data();
-      return {
-        name: creatorData.created_by,
-        articleCount: creatorData.count,
-      };
-    });
 
-    res.status(200).json(topCreators);
-  } catch (error) {
-    console.error("Erreur lors de la récupération des données des créateurs :", error);
-    res.status(500).json({ error: "Une erreur est survenue lors de la récupération des données des créateurs." });
-  }
-};
+
+
 
 
 module.exports = {
@@ -301,5 +310,5 @@ module.exports = {
   getParticipant,
   addLike,
   addDislike,
-  getTopCreators
+  getTopCreators,
 };

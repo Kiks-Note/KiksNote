@@ -16,7 +16,7 @@ const {
   getTags,
   getTopCreators,
 
-  
+
 } = require("./controllers/blog");
 
 module.exports = function (connection, pathname) {
