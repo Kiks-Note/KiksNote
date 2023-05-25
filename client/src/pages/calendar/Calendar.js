@@ -5,12 +5,11 @@ import axios from "axios";
 import CalendarStudent from "../../components/calendar/CalendarStudent";
 import CalendarPo from "../../components/calendar/CalendarPo";
 import CalendarViewPedago from "../../components/calendar/CalendarViewPedago";
+import useFirebase from "../../hooks/useFirebase";
 
 export default function Calendar() {
-  const loggedUser = localStorage.getItem("user");
-  const loggedUserParsed = JSON.parse(loggedUser);
-  const userStatus = loggedUserParsed.status;
-
+  const { user } = useFirebase();
+  console.log(user.status);
   useEffect(() => {
     // Ajoutez ici le code à exécuter après le rendu du composant
   }, []);
@@ -18,9 +17,9 @@ export default function Calendar() {
   return (
     <Grid container spacing={2} alignItems="center" justifyContent="center">
       <Grid item xs={10}>
-        {userStatus === "po" && <CalendarPo />}
-        {userStatus === "etudiant" && <CalendarStudent />}
-        {userStatus === "pedago" && <CalendarViewPedago />}
+        {user.status === "po" && <CalendarPo />}
+        {user.status === "etudiant" && <CalendarStudent />}
+        {user.status === "pedago" && <CalendarViewPedago />}
       </Grid>
     </Grid>
   );
