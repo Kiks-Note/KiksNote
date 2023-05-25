@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import { Tabs, Tab, IconButton } from "@material-ui/core";
+import { Tabs, Tab } from "@material-ui/core";
 import CloseIcon from "@mui/icons-material/Clear";
 import TabContainer from "./TabContainer";
 import "./Tab.scss";
@@ -44,9 +44,6 @@ export const TabsDemo = ({
                   <span>
                     {tab.tab}
                     {tab.closeable && (
-                      // <IconButton onClick={() => handleClose(tab.id)}>
-                      //   <CloseIcon />
-                      // </IconButton>
                       <a className="closeTab" title={"Close tab"} onClick={() => handleClose(tab)}>
                         <CloseIcon />
                       </a>

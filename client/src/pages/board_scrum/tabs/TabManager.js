@@ -11,7 +11,7 @@ const TabManager = ({}) => {
     {
       id: 0,
       title: "Dashboard",
-      content: <Dashboard addTab={addTab}></Dashboard>,
+      content: <Dashboard addTab={addTab}/>,
       closable: false,
     },
   ];

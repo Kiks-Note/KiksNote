@@ -5,7 +5,7 @@ import AddIcon from "@mui/icons-material/Add";
 import TextField from "@mui/material/TextField";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function ButtonAddCart(props) {
+export default function ButtonAddCard(props) {
   const [showTextField, setShowTextField] = useState(false);
   const [cardTitle, setCardTitle] = useState("");
   const handleClickAddButton = () => {
@@ -76,7 +76,11 @@ export default function ButtonAddCart(props) {
               marginTop: "10px",
             }}
           >
-            <Button variant="contained" onClick={() => handleAddCard()} disabled={!cardTitle}>
+            <Button
+              variant="contained"
+              onClick={() => handleAddCard()}
+              disabled={!cardTitle}
+            >
               Ajouter
             </Button>
             <Button startIcon={<CloseIcon />} onClick={handleCloseTextField}>
@@ -85,7 +89,11 @@ export default function ButtonAddCart(props) {
           </div>
         </>
       ) : (
-        <Button onClick={handleClickAddButton} variant="text" startIcon={<AddIcon />}>
+        <Button
+          onClick={handleClickAddButton}
+          variant="text"
+          startIcon={<AddIcon />}
+        >
           Ajouter une carte
         </Button>
       )}

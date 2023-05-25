@@ -74,13 +74,14 @@ function ProfilFormUpdate({ onClose, user }) {
     formData.append("linkedin", data.linkedin);
     formData.append("git", data.gitLink);
     formData.append("company", data.company);
-    if (user.statut === "etudiant") {
+    if (user.statut == "etudiant") {
       formData.append("class", data.class);
     }
     formData.append("programmationLanguage", programmationLanguages);
     formData.append("discord", data.discordName);
     formData.append("phone", data.phoneNumber);
     formData.append("image", pictureToUpload);
+    formData.append("description", data.description);
 
     try {
       const response = await axios.put(
@@ -92,7 +93,6 @@ function ProfilFormUpdate({ onClose, user }) {
           },
         }
       );
-      console.log(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -129,8 +129,6 @@ function ProfilFormUpdate({ onClose, user }) {
 
   const handleOnChange = async (event) => {
     const newImage = event.target?.files?.[0];
-    console.log("newImage" + newImage);
-
     if (newImage) {
       setImage(URL.createObjectURL(newImage));
       setPictureToUpload(newImage);
@@ -238,6 +236,7 @@ function ProfilFormUpdate({ onClose, user }) {
               id="description"
               aria-describedby="description"
               name="description"
+              onChange={(e) => setDescription(e.target.value)}
               minRows={2}
               maxRows={4}
               style={{

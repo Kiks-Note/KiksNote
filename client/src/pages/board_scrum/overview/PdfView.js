@@ -12,46 +12,39 @@ import {
   Input,
   Button,
   IconButton,
-  Alert,
   Box,
   Grid,
   Typography,
 } from "@mui/material";
-// import AddIcon from "@mui/icons-material/Add";
-// import RemoveIcon from "@mui/icons-material/Remove";
-import PDF from "../overview/020_android_backlog_projet-flashcard.pdf";
+
+
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "./PdfView.scss";
 
-function PdfView() {
+function PdfView(props) {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [title, setTitle] = useState(null);
-  const [description, setDescription] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [scale, setScale] = useState(1.0);
+  const [link, setLink] = useState(null);
   const theme = useTheme();
+
+  useEffect(() => {
+    (async () => {
+     setLink(props.link);
+    })();
+  }, []);
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
-    setLoading(true);
   };
   const handleDownload = () => {
     const link = document.createElement("a");
-    link.href = PDF;
+    link.href = link;
     link.download = "backlog.pdf";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
-  // const zoomIn = () => {
-  //   setScale((prevScale) => prevScale + 0.1);
-  // };
-
-  // const zoomOut = () => {
-  //   setScale((prevScale) => prevScale - 0.1);
-  // };
   const goToPrevPage = () =>
     setPageNumber(pageNumber - 1 <= 1 ? 1 : pageNumber - 1);
 
@@ -62,12 +55,6 @@ function PdfView() {
     description: yup
       .string()
       .max(200, "La description ne doit pas dépasser 200 caractères"),
-    acceptanceCriteria: yup
-      .string()
-      .max(
-        200,
-        "Les critères d'acceptation ne doit pas dépasser 200 caractères"
-      ),
   });
 
   const {
@@ -79,20 +66,6 @@ function PdfView() {
     resolver: yupResolver(schema),
   });
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    console.log(name + value);
-    switch (name) {
-      case "title":
-        setTitle(value);
-        break;
-      case "description":
-        setDescription(value);
-        break;
-      default:
-        break;
-    }
-  };
   const renderPage = (page) => {
     const canvas = document.getElementById(`canvas-${page.pageNumber}`);
     if (canvas) {
@@ -118,7 +91,10 @@ function PdfView() {
     };
     console.log(formData);
     try {
-      const response = await axios.post("http://localhost:5050/", formData);
+      const response = await axios.post(
+        "http://localhost:5050/dashboard/creation/"+props.dashboardId+"/stories",
+        formData
+      );
       console.log(response.data);
       reset(); // Efface les champs après la soumission réussie
     } catch (error) {
@@ -149,25 +125,6 @@ function PdfView() {
                 {pageNumber} / {numPages}
               </Typography>
 
-              {/* <IconButton
-                variant="contained"
-                className="button"
-                disabled={scale <= 0.5}
-                onClick={zoomOut}
-              >
-                <RemoveIcon sx={{ color: theme.palette.custom.iconPdf }} />
-              </IconButton>
-              <Typography> Zoom: {(scale * 100).toFixed(0)}%</Typography> */}
-
-              {/* <IconButton
-                variant="contained"
-                sx={{ color: theme.palette.custom.iconPdf }}
-                onClick={zoomIn}
-                disabled={scale >= 2}
-                className="button"
-              >
-                <AddIcon sx={{ color: theme.palette.custom.iconPdf }} />
-              </IconButton> */}
               <IconButton
                 aria-label="download"
                 variant="contained"
@@ -191,7 +148,7 @@ function PdfView() {
               </IconButton>
             </div>
             <Document
-              file={PDF}
+              file={link}
               options={{ workerSrc: "/pdf.worker.js" }}
               onLoadSuccess={onDocumentLoadSuccess}
             >
@@ -247,25 +204,6 @@ function PdfView() {
                 {errors.description && (
                   <Typography variant="subtitle1" color="error">
                     {errors.description.message}
-                  </Typography>
-                )}
-              </Grid>
-              <Grid item xs={12}>
-                <InputLabel id="acceptance-criteria">
-                  {" "}
-                  Critères d'acceptation{" "}
-                </InputLabel>
-                <Input
-                  id="acceptance-criteria"
-                  aria-describedby="acceptance-criteria"
-                  multiline
-                  {...register("acceptanceCriteria")}
-                  type="text"
-                  name="acceptanceCriteria"
-                />
-                {errors.acceptanceCriteria && (
-                  <Typography variant="subtitle1" color="error">
-                    {errors.acceptanceCriteria.message}
                   </Typography>
                 )}
               </Grid>

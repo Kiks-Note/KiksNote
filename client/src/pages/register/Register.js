@@ -6,16 +6,15 @@ import {
   Container,
   Button,
   Link,
-  IconButton,
-  InputAdornment,
   FormControl,
   InputLabel,
   FormHelperText,
-  Select, MenuItem
+  Select, MenuItem,
+  useTheme
 } from "@mui/material";
 
 import { parseISO, isValid } from 'date-fns';
-import { format, parse } from 'date-fns';
+import { format } from 'date-fns';
 
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import MailIcon from "@mui/icons-material/Mail";
@@ -72,6 +71,7 @@ const Register = () => {
   const [errorConfirmPassword, setErrorConfirmPassword] = useState(false);
   const [errorStatus, setErrorStatus] = useState(false);
   const [errorClass, setErrorClass] = useState(false);
+  const theme = useTheme();
 
   const regex = /@edu\.esiee-it\.fr/;
 
@@ -99,7 +99,7 @@ const Register = () => {
       setErrorLastName(true)
       setMessageLastName("Le nom est requis")
     }
-    else{
+    else {
       setErrorLastName(false)
       setMessageLastName("")
     }
@@ -107,7 +107,7 @@ const Register = () => {
       setErrorFirstName(true)
       setMessageFirstName("Le prénom est requis")
     }
-    else{
+    else {
       setErrorFirstName(false)
       setMessageFirstName("")
     }
@@ -144,7 +144,7 @@ const Register = () => {
       setErrorConfirmPassword(true)
       setMessageConfirmPassword("Le mot de passe ne correspond pas");
     }
-    else{
+    else {
       setErrorConfirmPassword(false)
       setMessageConfirmPassword("");
     }
@@ -155,7 +155,7 @@ const Register = () => {
       setErrorStatus(true)
       setMessageEmail("Courriel edu introuvable");
     }
-    else{
+    else {
       setErrorStatus(false)
       setMessageStatus("");
     }
@@ -163,7 +163,7 @@ const Register = () => {
       setErrorClass(true)
       setMessageClass("Indiquez votre classe")
     }
-    else{
+    else {
       setErrorClass(false);
       setMessageClass("")
     }
@@ -171,7 +171,7 @@ const Register = () => {
       setErrorBirthDate(true)
       setMessageBirthDate("La date de naissance est requis");
     }
-    else{
+    else {
       setErrorBirthDate(false)
       setMessageBirthDate("");
     }
@@ -197,13 +197,14 @@ const Register = () => {
       setMessageBirthDate('Invalid date');
     }
   };
-  
+
   return (
     <div className="register">
-      <div className="register-header">
+      <div className="register-header" style={{ backgroundColor: theme.palette.background.container }}>
         <div className="container-register">
           <Typography
             component="h1"
+            color="text.primary"
             sx={{
               fontSize: 30,
               fontWeight: "bold",
@@ -238,7 +239,7 @@ const Register = () => {
                 defaultValue={userLastName}
                 onChange={(e) => setUserLastName(e.target.value)}
                 sx={{
-                  input: { color: 'black' }
+                  input: { color: 'text.primary' }
                 }}
                 error={errorLastName}
                 helperText={messageLastName}
@@ -267,11 +268,11 @@ const Register = () => {
                 id="input-firstname"
                 defaultValue={userFirstName}
                 onChange={(e) => setUserFirstName(e.target.value)}
-                sx={{
-                  input: { color: 'black' }
-                }}
                 error={errorFirstName}
                 helperText={messageFirstName}
+                sx={{
+                  input: { color: 'text.primary' }
+                }}
               />
             </Container>
             <Container
@@ -298,11 +299,11 @@ const Register = () => {
                 placeholder="votrecompte@edu.esiee-it.fr"
                 defaultValue={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
-                sx={{
-                  input: { color: 'black' }
-                }}
                 error={errorEmail}
                 helperText={messageEmail}
+                sx={{
+                  input: { color: 'text.primary' }
+                }}
               />
             </Container>
             <Container
@@ -326,8 +327,9 @@ const Register = () => {
                 type="date"
                 fullWidth
                 sx={{
-                  input: { color: 'black' }
+                  input: { color: 'text.primary' },
                 }}
+
                 id="input-birthdate"
                 value={userBirthDate ? format(userBirthDate, 'yyyy-MM-dd') : ''}
                 onChange={handleDateChange}
@@ -361,7 +363,7 @@ const Register = () => {
                 defaultValue={userPassword}
                 onChange={(e) => setUserPassword(e.target.value)}
                 sx={{
-                  input: { color: 'black' }
+                  input: { color: 'text-primary' }
                 }}
                 error={errorPassword}
                 helperText={messagePassword}
@@ -393,7 +395,7 @@ const Register = () => {
                 defaultValue={userConfirmPassword}
                 onChange={(e) => setUserConfirmPassword(e.target.value)}
                 sx={{
-                  input: { color: 'black' }
+                  input: { color: 'text.primary' }
                 }}
                 error={errorConfirmPassword}
                 helperText={messageConfirmPassword}
@@ -403,7 +405,7 @@ const Register = () => {
             <Container sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
               <FormControl sx={{ m: 1, minWidth: 120 }} error={errorStatus}>
                 <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
-                <Select variant="filled" id="input-status" sx={{ color: 'black' }} label="Status" value={userStatus} onChange={(e) => setUserStatus(e.target.value)}>
+                <Select variant="filled" id="input-status" sx={{ color: 'text.primary' }} label="Status" value={userStatus} onChange={(e) => setUserStatus(e.target.value)}>
                   <MenuItem value="etudiant">Étudiant</MenuItem>
                   <MenuItem value="po">PO</MenuItem>
                   <MenuItem value="pedago">Pedago</MenuItem>
@@ -414,7 +416,7 @@ const Register = () => {
 
                 <FormControl sx={{ m: 1, minWidth: 120 }} error={errorClass}>
                   <InputLabel id="demo-simple-select-helper-label">Classe</InputLabel>
-                  <Select variant="filled" id="input-class" sx={{ color: 'black' }} value={userClass} onChange={(e) => setUserClass(e.target.value)}>
+                  <Select variant="filled" id="input-class" sx={{ color: 'text.primary' }} value={userClass} onChange={(e) => setUserClass(e.target.value)}>
                     <MenuItem value="L1-paris">L1-Paris</MenuItem>
                     <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
                     <MenuItem value="L2-paris">L2-Paris</MenuItem>
@@ -448,17 +450,20 @@ const Register = () => {
             </div>
           </form>
           <div className="text-xs font-medium text-center m-3">
-            <p>Vous avez déjà un compte</p>
-            <Link
-              href="/login"
-              sx={{
-                color: "#7a52e1",
-                textDecoration: "none",
-                fontWeight: "bold",
-              }}
-            >
-              Se connecter
-            </Link>
+            <p style={{ color: theme.palette.text.primary, fontWeight: "bold" }} >Vous avez déjà un compte ?
+              <Link
+                href="/login"
+                sx={{
+                  color: "#7a52e1",
+                  textDecoration: "none",
+                  fontWeight: "bold",
+                  marginLeft: "5px",
+                  cursor: "pointer"
+                }}
+              >
+                Se connecter
+              </Link>
+            </p>
           </div>
         </div>
         <div className="image-container">
