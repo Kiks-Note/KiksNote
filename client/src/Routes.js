@@ -6,8 +6,6 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import Tuto from "./pages/blog/Tuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
-import CourseBacklogPdf from "./pages/ressources/Cours/PdfCoursBacklog";
-import PDFCourseView from "./pages/ressources/Cours/PdfCourseView";
 import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
@@ -56,8 +54,6 @@ function RoutesProvider() {
           <Route path="/studentprojects" element={<StudentsProjects />} />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
-          <Route path="/pdfsupport" element={<PDFCourseView />} />
-          <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
           <Route path="/agile" element={<Agile />} />
           <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           <Route path="/agile/persona" element={<Personas />} />
