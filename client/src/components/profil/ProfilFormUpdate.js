@@ -74,7 +74,7 @@ function ProfilFormUpdate({ onClose, user }) {
     formData.append("linkedin", data.linkedin);
     formData.append("git", data.gitLink);
     formData.append("company", data.company);
-    if (user.statut === "etudiant") {
+    if (user.statut == "etudiant") {
       formData.append("class", data.class);
     }
     formData.append("programmationLanguage", programmationLanguages);

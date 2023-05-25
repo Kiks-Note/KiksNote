@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const DEFAULT_COLOR = ""
+const DEFAULT_COLOR = "#FFC0CB"
 //This is the redux store, this will help to store our impact mapping card
 const impactMappingSlice = createSlice({
   name: "impactMapping",
@@ -64,6 +64,39 @@ const impactMappingSlice = createSlice({
     deleteImpactMappingDeliverables: (state, action) => {
       state.deliverables.splice(action.payload.index, 1);
     },
+    editImpactMappingGoal: (state, action) => {
+      const { index, text, color } = action.payload;
+      const updatedGoal = {
+        text: text || state.goals[index].text,
+        color: color || state.goals[index].color,
+      };
+      state.goals[index] = updatedGoal;
+    },
+    editImpactMappingActor: (state, action) => {
+      const { index, text, color } = action.payload;
+      const updatedActor = {
+        text: text || state.actors[index].text,
+        color: color || state.actors[index].color,
+      };
+      state.actors[index] = updatedActor;
+    },
+    editImpactMappingImpact: (state, action) => {
+      const { index, text, color } = action.payload;
+      const updatedImpact = {
+        text: text || state.impacts[index].text,
+        color: color || state.impacts[index].color,
+      };
+      state.impacts[index] = updatedImpact;
+    }
+    ,
+    editImpactMappingDeliverable: (state, action) => {
+      const { index, text, color } = action.payload;
+      const updatedDeliverable = {
+        text: text || state.deliverables[index].text,
+        color: color || state.deliverables[index].color,
+      };
+      state.deliverables[index] = updatedDeliverable;
+    }
   },
 });
 
@@ -77,6 +110,10 @@ export const {
   deleteImpactMappingDeliverables,
   deleteImpactMappingGoals,
   deleteImpactMappingImpacts,
+  editImpactMappingGoal,
+  editImpactMappingActor,
+  editImpactMappingImpact,
+  editImpactMappingDeliverable,
 } = impactMappingSlice.actions;
 
 export default impactMappingSlice.reducer;

@@ -10,8 +10,9 @@ import SideBarModify from "./SideBarModify";
 import CustomSnackbar from "./CustomSnackBar";
 import axios from "axios";
 import {toast, Toaster} from "react-hot-toast";
-import {Avatar, Typography} from "@mui/material";
+import {Avatar, Button, Typography} from "@mui/material";
 import theme from "../../theme";
+import {useNavigate} from "react-router-dom";
 
 export default function TestDataGrid() {
   const [data, setData] = useState([]);
@@ -21,6 +22,7 @@ export default function TestDataGrid() {
   const [deviceId, setDeviceId] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [openModify, setOpenModify] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -87,9 +89,18 @@ export default function TestDataGrid() {
       width: 225,
       renderCell: (params) => {
         return (
-          <Typography sx={{fontFamily: "poppins-regular"}}>
-            {params.row.deviceId}
-          </Typography>
+          <Button
+            sx={{
+              fontFamily: "poppins-regular",
+              color: "white",
+              fontSize: 12,
+            }}
+            onClick={() => {
+              navigate("/deviceHistory/" + params.row.deviceId);
+            }}
+          >
+            <Typography sx={{fontSize: 14}}>{params.row.deviceId}</Typography>
+          </Button>
         );
       },
     },

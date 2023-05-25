@@ -9,6 +9,7 @@ import {
   Container,
   IconButton,
   InputAdornment,
+  useTheme,
   Link,
   TextField,
   Typography,
@@ -32,6 +33,7 @@ const Login = () => {
   const [messageEmail, setMessageEmail] = useState("");
   const [messagePassword, setMessagePassword] = useState("");
   const regex = /@edu\.esiee-it\.fr/;
+  const theme = useTheme();
   const cookies = new Cookies();
   const {auth} = useFirebase();
 
@@ -152,7 +154,7 @@ const Login = () => {
             backgroundColor: "#7a52e1",
           }}
         ></Container>
-        <div className="login-header">
+        <div className="login-header" style={{ backgroundColor: theme.palette.background.container}}>
           <Container
             sx={{
               marginTop: "20%",
@@ -162,6 +164,7 @@ const Login = () => {
           >
             <Typography
               component="h1"
+              color="text.primary"
               sx={{
                 fontSize: 30,
                 fontWeight: "bold",
@@ -198,7 +201,7 @@ const Login = () => {
                   defaultValue={email}
                   onChange={onChangeEmail}
                   sx={{
-                    input: { color: 'black' }
+                    input: { color: 'text.primary' }
                   }}
                   error={errorEmail}
                   helperText={messageEmail}
@@ -230,7 +233,7 @@ const Login = () => {
                   defaultValue={password}
                   onChange={onChangePassword}
                   sx={{
-                    input: { color: 'black' }
+                    input: { color: 'text.primary' },
                   }}
                   error={errorPassword}
                   helperText={messagePassword}
@@ -264,9 +267,10 @@ const Login = () => {
                   sx={{
                     color: "#7a52e1",
                     textDecoration: "none",
+                    cursor: "pointer"
                   }}
                 >
-                  Mot de passe oublie ?
+                  Mot de passe oublié ?
                 </Link>
               </Container>
               <Box textAlign="center" className="button-box-login">
@@ -275,7 +279,8 @@ const Login = () => {
                   className="login-button"
                   sx={{
                     backgroundColor: "#7a52e1",
-                    color: "white"
+                    color: "white",
+                    cursor: "pointer"
                   }}
                   variant="contained"
                 >
@@ -284,17 +289,18 @@ const Login = () => {
               </Box>
             </form>
 
-            <p className="text-sm font-medium text-center m-3">
-              Pas encore de compte? Creez-en un{" "}
+            <p className="text-sm font-medium text-center m-3 font-bold">
+              Pas encore de compte ? Créez-en un{" "}
               <Link
                 href="/signup"
                 sx={{
                   color: "#7a52e1",
                   textDecoration: "none",
                   fontWeight: "bold",
+                  cursor: "pointer"
                 }}
               >
-             Inscription
+               Ici
               </Link>
             </p>
           </Container>
