@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 
 import useFirebase from "../../../hooks/useFirebase";
 import timeConverter from "../../../functions/TimeConverter";
@@ -26,13 +27,9 @@ import {
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModule from "@mui/icons-material/ViewModule";
 import AddIcon from "@mui/icons-material/Add";
-import BackpackIcon from "@mui/icons-material/Backpack";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
-import NoBackpackRoundedIcon from "@mui/icons-material/NoBackpackRounded";
-import NoSimRoundedIcon from "@mui/icons-material/NoSimRounded";
 
 import CreateCoursModal from "./CreateCoursModal";
 
@@ -81,6 +78,10 @@ const Ressources = () => {
   const [idSelectedClass, setIdSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
+
+  // Variable useState Cards
+  const [courseOwnerData, setCourseOwnerData] = useState([]);
+  const [courseClassData, setCourseClassData] = useState([]);
 
   const [userClass, setUserClass] = useState([]);
 
@@ -166,6 +167,36 @@ const Ressources = () => {
     }
   };
 
+  const getCourseClassId = async (classId) => {
+    try {
+      await axios
+        .get(`http://localhost:5050/ressources/class/${classId}`)
+        .then((res) => {
+          setCourseClassData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getInstructorById = async (instructorId) => {
+    try {
+      await axios
+        .get(`http://localhost:5050/ressources/instructor/${instructorId}`)
+        .then((res) => {
+          setCourseOwnerData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const getAllClass = async () => {
     try {
       await axios
@@ -231,7 +262,7 @@ const Ressources = () => {
       await createNewCours();
       handleClose();
       toastSuccess(`Votre cours ${courseTitle} a bien été ajouté`);
-      getAllCours();
+      await getAllCours();
     } catch (error) {
       console.error(error);
       toastFail("Erreur lors de la création de votre cours.");
@@ -396,7 +427,7 @@ const Ressources = () => {
                           display: "flex",
                           flexDirection: "column",
                           justifyContent: "space-evenly",
-                          height: "300px",
+                          height: "450px",
                         }}
                         /* eslint-disable no-unused-expressions */
                         onClick={() => {
@@ -410,11 +441,12 @@ const Ressources = () => {
                       >
                         <CardMedia
                           sx={{
-                            width: "100%",
-                            minHeight: "150px",
                             display: "flex",
+                            width: "100%",
+                            maxHeight: "200px",
+                            minHeight: "200px",
                             justifyContent: "center",
-                            alignItems: "center",
+                            margin: "0",
                           }}
                           component="img"
                           src={course.data.imageCourseUrl}
@@ -427,6 +459,32 @@ const Ressources = () => {
                           </h2>
                           <Typography variant="body2" color="text.secondary">
                             {course.data.description}
+                          </Typography>
+
+                          {/* <Typography>
+                                {courseOwnerData &&
+                                  courseOwnerData.data &&
+                                  courseOwnerData.data.lastname.toUpperCase()}{" "}
+                                {courseOwnerData &&
+                                  courseOwnerData.data &&
+                                  courseOwnerData.data.firstname}
+                              </Typography> */}
+                          {/* <Typography>{courseClass}</Typography> */}
+                          <Typography>
+                            {"Début : "}
+                            {course &&
+                              course.data &&
+                              course.data.dateStartSprint &&
+                              moment
+                                .unix(course.data.dateStartSprint._seconds)
+                                .format("DD.MM.YYYY")}{" "}
+                            - {"Fin : "}
+                            {course &&
+                              course.data &&
+                              course.data.dateEndSprint &&
+                              moment
+                                .unix(course.data.dateEndSprint._seconds)
+                                .format("DD.MM.YYYY")}
                           </Typography>
                           {userStatus === "etudiant" &&
                           course.data.private === true ? (
@@ -446,58 +504,6 @@ const Ressources = () => {
                                   <OpenInNewIcon />
                                 </IconButton>
                               </Tooltip>
-                              {course.data.pdfLinkBackLog ? (
-                                <>
-                                  <Tooltip title="BackLog">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        // pdfBacklogRoute();
-                                      }}
-                                    >
-                                      <BackpackIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              ) : (
-                                <>
-                                  <Tooltip title="BackLog">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                      }}
-                                    >
-                                      <NoBackpackRoundedIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              )}
-                              {course.data.pdfLinkCours ? (
-                                <>
-                                  <Tooltip title="Support">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        // pdfSupportRoute();
-                                      }}
-                                    >
-                                      <PictureAsPdfIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              ) : (
-                                <>
-                                  <Tooltip title="Support">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                      }}
-                                    >
-                                      <NoSimRoundedIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              )}
                             </>
                           )}
                         </CardContent>
@@ -530,8 +536,8 @@ const Ressources = () => {
                         sx={{
                           display: "flex",
                           flexDirection: "column",
-                          justifyContent: "space-between",
-                          height: "300px",
+                          justifyContent: "space-evenly",
+                          height: "450px",
                         }}
                         onClick={() =>
                           userStatus !== "etudiant" &&
@@ -544,16 +550,16 @@ const Ressources = () => {
                       >
                         <CardMedia
                           sx={{
-                            width: "100%",
-                            minHeight: "150px",
                             display: "flex",
+                            width: "100%",
+                            maxHeight: "200px",
+                            minHeight: "200px",
                             justifyContent: "center",
-                            alignItems: "center",
+                            margin: "0",
                           }}
                           component="img"
                           src={course.data.imageCourseUrl}
                           alt="course image"
-                          
                         />
 
                         <CardContent sx={{ padding: "10px", height: "120px" }}>
@@ -581,58 +587,6 @@ const Ressources = () => {
                                   <OpenInNewIcon />
                                 </IconButton>
                               </Tooltip>
-                              {course.data.pdfLinkBackLog ? (
-                                <>
-                                  <Tooltip title="BackLog">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        // pdfBacklogRoute();
-                                      }}
-                                    >
-                                      <BackpackIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              ) : (
-                                <>
-                                  <Tooltip title="BackLog">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                      }}
-                                    >
-                                      <NoBackpackRoundedIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              )}
-                              {course.data.pdfLinkCours ? (
-                                <>
-                                  <Tooltip title="Support">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        // pdfSupportRoute();
-                                      }}
-                                    >
-                                      <PictureAsPdfIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              ) : (
-                                <>
-                                  <Tooltip title="Support">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                      }}
-                                    >
-                                      <NoSimRoundedIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              )}
                             </>
                           )}
                         </CardContent>
@@ -692,20 +646,6 @@ const Ressources = () => {
                               <OpenInNewIcon />
                             </IconButton>
                           </Tooltip>
-                          <Tooltip title="BackLog">
-                            <IconButton
-                            // onClick={pdfBacklogRoute}
-                            >
-                              <BackpackIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Support">
-                            <IconButton
-                            // onClick={pdfSupportRoute}
-                            >
-                              <PictureAsPdfIcon />
-                            </IconButton>
-                          </Tooltip>
                         </CardContent>
                       </div>
                     </div>
@@ -758,20 +698,6 @@ const Ressources = () => {
                               }
                             >
                               <OpenInNewIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="BackLog">
-                            <IconButton
-                            // onClick={pdfBacklogRoute}
-                            >
-                              <BackpackIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Support">
-                            <IconButton
-                            // onClick={pdfSupportRoute}
-                            >
-                              <PictureAsPdfIcon />
                             </IconButton>
                           </Tooltip>
                         </CardContent>
