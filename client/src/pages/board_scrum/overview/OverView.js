@@ -90,7 +90,7 @@ function OverView({ id }) {
                 }}
               >
                 {Object.keys(releases).map((item, i) => (
-                  <ListItem key={i}>
+                  <ListItem key={i+id}>
                     <Box sx={{ width: "100%" }}>
                       <Accordion>
                         <AccordionSummary
@@ -134,7 +134,7 @@ function OverView({ id }) {
               <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
                 Statistiques
               </Typography>
-              <StatTab dashboardId={id} boards={boards} />{" "}
+              <StatTab boards={boards} />{" "}
             </>
           ) : (
             <></>

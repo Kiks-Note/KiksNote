@@ -26,13 +26,15 @@ function a11yProps(index) {
   };
 }
 
-export default function StatTab(props) {
+StatTab.propTypes = {
+  boards: PropTypes.array.isRequired,
+};
+export default function StatTab({ boards }) {
   // useEffect(() => {
 
   // }, [props]);
 
-  var boards = props.boards;
-  console.log(boards);
+
   ChartJS.register(
     ArcElement,
     Tooltip,
@@ -127,10 +129,6 @@ export default function StatTab(props) {
               key={index}
               value={value}
               index={index}
-              // style={{
-              //   minHeight: "70vh",
-              //   maxHeight: "75vh",
-              // }}
             >
               <Typography variant="h4">{board["name"]}</Typography>
               <Box
@@ -153,10 +151,6 @@ export default function StatTab(props) {
             <TabPanel key={index} value={value} index={index}>
               <Typography variant="h4">{board["name"]}</Typography>
               <Box
-                // style={{
-                //   minHeight: "50vh",
-                //   maxHeight: "vh",
-                // }}
               >
                 <Doughnut
                   data={{

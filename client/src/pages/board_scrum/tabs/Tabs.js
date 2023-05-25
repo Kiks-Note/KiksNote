@@ -15,7 +15,7 @@ TabDemo.propTypes = {
       id: PropTypes.string.isRequired,
       component: PropTypes.string.isRequired,
       closeable: PropTypes.bool.isRequired,
-      data: PropTypes.object, // Ajoutez ici la définition du type des données pour chaque composant si nécessaire
+      data: PropTypes.any, // Ajoutez ici la définition du type des données pour chaque composant si nécessaire
     }).isRequired
   ).isRequired,
   selectedTab: PropTypes.string.isRequired,

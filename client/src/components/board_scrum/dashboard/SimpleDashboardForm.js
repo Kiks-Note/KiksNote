@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { format } from "date-fns";
@@ -10,6 +9,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
+import useFirebase from "../../../hooks/useFirebase";
 import {
   Button,
   Grid,
@@ -42,7 +42,10 @@ const schema = yup.object().shape({
         )
     ),
   starting_date: yup.date(),
-  students: yup.array().min(1, "Ajoutez au moins un membre."),
+  students: yup
+    .array()
+    .min(1, "Ajoutez au moins un membre.")
+    .max(4, "Maximum 4 membres autorisés."),
 });
 
 export default function SimpleDashboardForm(props) {
@@ -58,7 +61,7 @@ export default function SimpleDashboardForm(props) {
   } = useForm({
     resolver: yupResolver(schema),
   });
-
+  const { user } = useFirebase();
   const today = new Date();
   const defaultStartDate = format(today, "yyyy-MM-dd");
   //Function for the select to change member
@@ -97,6 +100,7 @@ export default function SimpleDashboardForm(props) {
   const onSubmit = async (data) => {
     console.log(data);
     const students = data.students.map((user) => user.uid);
+    students.push(user.id);
     const dataForm = {
       students: students,
       starting_date: data.starting_date,
@@ -106,6 +110,8 @@ export default function SimpleDashboardForm(props) {
       sprint_name: data.sprint_name,
       image: "https://picsum.photos/600",
       pdf_link: "",
+      groupId: "",
+      created_by: user.id,
     };
     try {
       axios

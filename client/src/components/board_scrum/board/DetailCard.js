@@ -24,10 +24,14 @@ import {
   Add as AddIcon,
   FormatListBulleted as FormatListBulletedIcon,
 } from "@mui/icons-material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import AutoGraphIcon from "@mui/icons-material/AutoGraph";
 import "./DetailCard.css";
 import ListModal from "./ListModal";
-
+import useFirebase from "../../../hooks/useFirebase";
+import "./DetailCard.css";
 export default function DetailCard(props) {
+  const { user } = useFirebase();
   const info = props.info;
   //NAME LISTENER
   const [isEditingName, setIsEditingName] = useState(false);
@@ -35,12 +39,12 @@ export default function DetailCard(props) {
   //DESCRIPTION LISTENER
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [descriptionValue, setDescriptionValue] = useState(info.desc);
-  // MODAL SETTINGS
-  const [open, setOpen] = useState(false);
-
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState("");
-
+  const [isAssigned, setIsAssigned] = useState(
+    info.assignedTo.includes(user.id)
+  );
+  const allowedColumnIds = ["0", "1", "5", "6"];
   const closeModal = () => {
     setShowModal(false);
   };
@@ -64,18 +68,11 @@ export default function DetailCard(props) {
     setNameValue(event.target.value);
     setIsEditingName(false);
   };
-
-  const saveName = (title) => {
+  const saveName = async (title) => {
     try {
-      axios.put(
-        "http://localhost:5050/dashboard/" +
-          props.dashboardId +
-          "/board/" +
-          props.boardId +
-          "/column/" +
-          props.columnId +
-          "/editCard",
-        {
+      let cardDto;
+      if (allowedColumnIds.includes(props.columnId)) {
+        cardDto = {
           id: info.id,
           title: title,
           desc: info.desc,
@@ -83,14 +80,21 @@ export default function DetailCard(props) {
           color: info.color,
           assignedTo: info.assignedTo,
           labels: info.labels,
-        }
-      );
-    } catch (error) {}
-  };
-
-  const saveDesc = () => {
-    try {
-      axios.put(
+        };
+      } else {
+        cardDto = {
+          id: info.id,
+          title: title,
+          desc: info.desc,
+          storyId: info.storyId,
+          color: info.color,
+          assignedTo: info.assignedTo,
+          labels: info.labels,
+          estimation: info.estimation,
+          advancement: info.advancement,
+        };
+      }
+      await axios.put(
         "http://localhost:5050/dashboard/" +
           props.dashboardId +
           "/board/" +
@@ -98,7 +102,18 @@ export default function DetailCard(props) {
           "/column/" +
           props.columnId +
           "/editCard",
-        {
+        cardDto
+      );
+    } catch (error) {
+      // Gérer les erreurs
+    }
+  };
+
+  const saveDesc = async () => {
+    try {
+      let cardDto;
+      if (allowedColumnIds.includes(props.columnId)) {
+        cardDto = {
           id: info.id,
           title: info.name,
           desc: descriptionValue,
@@ -106,14 +121,39 @@ export default function DetailCard(props) {
           color: info.color,
           assignedTo: info.assignedTo,
           labels: info.labels,
-        }
+        };
+      } else {
+        cardDto = {
+          id: info.id,
+          title: info.name,
+          desc: descriptionValue,
+          storyId: info.storyId,
+          color: info.color,
+          assignedTo: info.assignedTo,
+          labels: info.labels,
+          estimation: info.estimation,
+          advancement: info.advancement,
+        };
+      }
+      await axios.put(
+        "http://localhost:5050/dashboard/" +
+          props.dashboardId +
+          "/board/" +
+          props.boardId +
+          "/column/" +
+          props.columnId +
+          "/editCard",
+        cardDto
       );
       setIsEditingDescription(false);
-    } catch (error) {}
+    } catch (error) {
+      // Gérer les erreurs
+    }
   };
-  const deleteCard = () => {
+
+  const deleteCard = async () => {
     try {
-      axios.delete(
+      await axios.delete(
         "http://localhost:5050/dashboard/" +
           props.dashboardId +
           "/board/" +
@@ -124,20 +164,64 @@ export default function DetailCard(props) {
           info.id
       );
       props.handleClose();
-    } catch (error) {}
+    } catch (error) {
+      // Gérer les erreurs
+    }
   };
-  const style = {
-    position: "absolute",
-    top: "30%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 900,
-    boxShadow: 24,
-    margin: 0,
-  };
-  const style_card = {
-    display: "flex",
-    justifyContent: "space-between",
+
+  const assigneMe = async () => {
+    if (isAssigned) {
+      try {
+        // Enlever l'ID de l'utilisateur connecté de la liste assignedTo
+        const updatedAssignedTo = info.assignedTo.filter(
+          (userId) => userId !== user.id
+        );
+        await axios.put(
+          "http://localhost:5050/dashboard/" +
+            props.dashboardId +
+            "/board/" +
+            props.boardId +
+            "/column/" +
+            props.columnId +
+            "/editCard",
+          {
+            id: info.id,
+            title: info.name,
+            desc: info.desc,
+            storyId: info.storyId,
+            color: info.color,
+            assignedTo: updatedAssignedTo,
+            labels: info.labels,
+            estimation: info.estimation,
+            advancement: info.advancement,
+          }
+        );
+      } catch (error) {
+        // Gérer les erreurs
+      }
+      setIsAssigned(false); // Mettez à jour l'état pour indiquer que l'utilisateur n'est plus assigné
+      props.handleClose();
+      return;
+    }
+
+    try {
+      await axios.post(
+        "http://localhost:5050/dashboard/" +
+          props.dashboardId +
+          "/board/" +
+          props.boardId +
+          "/column/" +
+          props.columnId +
+          "/story/" +
+          info.id +
+          "/add-users",
+        { userIds: [user.id] }
+      );
+      setIsAssigned(true);
+      props.handleClose();
+    } catch (error) {
+      // Gérer les erreurs
+    }
   };
 
   const style_item_button = {
@@ -157,16 +241,10 @@ export default function DetailCard(props) {
   if (props.Label != null) {
     Labels = props.Label.map((label) => (
       <div
+        className="label-container"
         style={{
-          display: "flex",
           backgroundColor: label.color + "40",
           borderColor: label.color + "30",
-          borderStyle: "solid",
-          borderRadius: "3px",
-          marginRight: "2%",
-          width: "fit-content",
-          paddingRight: "3%",
-          paddingLeft: "1%",
         }}
       >
         <div
@@ -176,8 +254,8 @@ export default function DetailCard(props) {
             style={{
               flexDirection: "column",
               justifyContent: "center",
-              color: label.color,
               height: "80%",
+              color: label.color,
             }}
           />
           <p
@@ -212,205 +290,217 @@ export default function DetailCard(props) {
 
   return (
     <>
-      <Card sx={[style, { maxWidth: "60%", minWidth: "fit-content" }]}>
-        <div>
-          <CardHeader
-            title={
-              isEditingName ? (
-                <TextField
-                  value={nameValue}
-                  onChange={handleNameChange}
-                  onBlur={handleNameBlur}
-                />
+      <Card className="detail-card">
+        <CardHeader
+          title={
+            isEditingName ? (
+              <TextField
+                value={nameValue}
+                onChange={handleNameChange}
+                onBlur={handleNameBlur}
+              />
+            ) : (
+              <Typography
+                color="text.default"
+                variant="h5"
+                onClick={handleNameClick}
+              >
+                {nameValue}
+              </Typography>
+            )
+          }
+          subheader={
+            <Typography color="text.default">Dans {props.list_name}</Typography>
+          }
+          avatar={
+            <BallotIcon
+              sx={{
+                fontSize: 50,
+              }}
+              color="primary"
+            ></BallotIcon>
+          }
+          titleTypographyProps={{
+            variant: "h5",
+          }}
+        />
+        <CardContent className="card-content">
+          <div style={{ width: "-webkit-fill-available" }}>
+            <div>
+              <Typography sx={style_title} color="text.default">
+                {" "}
+                <LabelIcon style={{ color: "gray", marginRight: "5px" }} />
+                Label(s)
+              </Typography>
+              <Typography
+                sx={{
+                  display: "flex",
+                  marginLeft: "2vh",
+                  color: "text.default",
+                }}
+              >
+                {Labels}
+              </Typography>
+            </div>
+            <div>
+              <Typography sx={style_title}>
+                <NotesIcon style={{ color: "gray", marginRight: "5px" }} />
+                Description
+              </Typography>
+              {isEditingDescription || !info.desc ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                    flexDirection: "column",
+                  }}
+                >
+                  <TextField
+                    sx={{ width: "100%" }}
+                    value={descriptionValue}
+                    onChange={handleDescriptionChange}
+                    placeholder="Ajouter une description…"
+                    multiline
+                    maxRows={4}
+                    onBlur={() => setIsEditingDescription(true)}
+                  />
+                  <Box
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-evenly",
+                      margin: "5px",
+                      width: "100%",
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        setIsEditingDescription(false);
+                        saveDesc();
+                      }}
+                      disabled={!descriptionValue}
+                    >
+                      Enregistrer
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      color="secondary"
+                      onClick={() => {
+                        setIsEditingDescription(false);
+                        handleCancelClick();
+                      }}
+                      disabled={!descriptionValue}
+                    >
+                      Annuler
+                    </Button>
+                  </Box>
+                </Box>
               ) : (
                 <Typography
                   color="text.default"
-                  variant="h5"
-                  onClick={handleNameClick}
+                  onClick={() => setIsEditingDescription(true)}
+                  sx={style_text}
                 >
-                  {nameValue}
+                  {descriptionValue || "Ajouter une description…"}
                 </Typography>
-              )
-            }
-            subheader={
-              <Typography color="text.default">
-                Dans {props.list_name}
-              </Typography>
-            }
-            avatar={
-              <BallotIcon
-                sx={{
-                  fontSize: 50,
-                }}
-                color="primary"
-              ></BallotIcon>
-            }
-            titleTypographyProps={{
-              variant: "h5",
-            }}
-          />
-          <CardContent sx={style_card}>
-            <div style={{ width: "-webkit-fill-available" }}>
-              <div>
-                <Typography sx={style_title} color="text.default">
-                  {" "}
-                  <LabelIcon style={{ color: "gray", marginRight: "5px" }} />
-                  Label(s)
-                </Typography>
-                <Typography
-                  sx={{
-                    display: "flex",
-                    marginLeft: "2vh",
-                    color: "text.default",
-                  }}
-                >
-                  {Labels}
-                </Typography>
-              </div>
-              <div>
-                <Typography sx={style_title}>
-                  <NotesIcon style={{ color: "gray", marginRight: "5px" }} />
-                  Description
-                </Typography>
-                {isEditingDescription || !info.desc ? (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 1,
-                      flexDirection: "column",
-                    }}
-                  >
-                    <TextField
-                      sx={{ width: "100%" }}
-                      value={descriptionValue}
-                      onChange={handleDescriptionChange}
-                      placeholder="Ajouter une description…"
-                      multiline
-                      maxRows={4}
-                      onBlur={() => setIsEditingDescription(true)}
-                    />
-                    <Box
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-evenly",
-                        margin: "5px",
-                        width: "100%",
-                      }}
-                    >
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={() => {
-                          setIsEditingDescription(false);
-                          saveDesc();
-                        }}
-                        disabled={!descriptionValue}
-                      >
-                        Enregistrer
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={() => {
-                          setIsEditingDescription(false);
-                          handleCancelClick();
-                        }}
-                        disabled={!descriptionValue}
-                      >
-                        Annuler
-                      </Button>
-                    </Box>
-                  </Box>
-                ) : (
-                  <Typography
-                    color="text.default"
-                    onClick={() => setIsEditingDescription(true)}
-                    sx={style_text}
-                  >
-                    {descriptionValue || "Ajouter une description…"}
-                  </Typography>
-                )}
-              </div>
-            </div>
-            <List>
-              <ListItem disablePadding sx={style_item_button}>
-                <ListItemButton>
-                  <ListItemIcon>
-                    <PersonIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Rejoindre"
-                    primaryTypographyProps={{ color: "text.default" }}
-                  />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding sx={style_item_button}>
-                <ListItemButton
-                  onClick={() => {
-                    setShowModal(!showModal);
-                    setType("membres");
-                  }}
-                >
-                  <ListItemIcon>
-                    <PersonIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Membres"
-                    primaryTypographyProps={{ color: "text.default" }}
-                  />
-                </ListItemButton>
-              </ListItem>
-              {props.columnId != 0 ? (
-                <ListItem disablePadding sx={style_item_button}>
-                  <ListItemButton
-                    onClick={() => {
-                      setShowModal(!showModal);
-                      setType("stories");
-                    }}
-                  >
-                    <ListItemIcon>
-                      <FormatListBulletedIcon color="primary" />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Lier Story"
-                      primaryTypographyProps={{ color: "text.default" }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              ) : (
-                <></>
               )}
+            </div>
+          </div>
+          <List>
+            <ListItem disablePadding sx={style_item_button}>
+              <ListItemButton onClick={assigneMe}>
+                <ListItemIcon>
+                  <PersonIcon color="primary" />
+                </ListItemIcon>
+                <ListItemText
+                  primary={isAssigned ? "Déjà Rejoint" : "Rejoindre"}
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding sx={style_item_button}>
+              <ListItemButton
+                onClick={() => {
+                  setShowModal(!showModal);
+                  setType("membres");
+                }}
+              >
+                <ListItemIcon>
+                  <PersonAddIcon color="primary" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Membres"
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
+              </ListItemButton>
+            </ListItem>
+            {!allowedColumnIds.includes(props.columnId) && (
               <ListItem disablePadding sx={style_item_button}>
                 <ListItemButton
                   onClick={() => {
                     setShowModal(!showModal);
-                    setType("labels");
+                    setType("avancement");
                   }}
                 >
                   <ListItemIcon>
-                    <LabelIcon color="primary" />
+                    <AutoGraphIcon color="primary" />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Label(s)"
+                    primary="Avancement"
                     primaryTypographyProps={{ color: "text.default" }}
                   />
                 </ListItemButton>
               </ListItem>
+            )}
+            {!allowedColumnIds.includes(props.columnId) && (
               <ListItem disablePadding sx={style_item_button}>
-                <ListItemButton onClick={deleteCard}>
+                <ListItemButton
+                  onClick={() => {
+                    setShowModal(!showModal);
+                    setType("stories");
+                  }}
+                >
                   <ListItemIcon>
-                    <DeleteIcon color="primary" />
+                    <FormatListBulletedIcon color="primary" />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Supprimer"
+                    primary="Lier Story"
                     primaryTypographyProps={{ color: "text.default" }}
                   />
                 </ListItemButton>
               </ListItem>
-            </List>
-          </CardContent>
-        </div>
+            )}
+            <ListItem disablePadding sx={style_item_button}>
+              <ListItemButton
+                onClick={() => {
+                  setShowModal(!showModal);
+                  setType("labels");
+                }}
+              >
+                <ListItemIcon>
+                  <LabelIcon color="primary" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Label(s)"
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding sx={style_item_button}>
+              <ListItemButton onClick={deleteCard}>
+                <ListItemIcon>
+                  <DeleteIcon color="primary" />
+                </ListItemIcon>
+                <ListItemText
+                  primary="Supprimer"
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
+              </ListItemButton>
+            </ListItem>
+          </List>
+        </CardContent>
       </Card>
       <ListModal
         showModal={showModal}

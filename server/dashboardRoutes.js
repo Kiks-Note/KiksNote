@@ -12,6 +12,7 @@ const {
   createStory,
   editCard,
   deleteCard,
+  addUsersToStory,
   boardRequests,
   dashboardRequests,
   overviewRequests,
@@ -36,6 +37,10 @@ module.exports = function (connection, pathname) {
   router.delete(
     "/:dashboardId/board/:boardId/column/:columnId/card/:cardId",
     deleteCard
+  );
+  router.post(
+    "/:dashboardId/board/:boardId/column/:columnId/story/:storyId/add-users",
+    addUsersToStory
   );
 
   switch (pathname) {

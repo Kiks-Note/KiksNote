@@ -1,6 +1,6 @@
-const { db, FieldValue } = require("../firebase");
+const { db, Timestamp } = require("../firebase");
 const moment = require("moment");
-
+const { v4: uuidv4 } = require("uuid");
 // FAVORITE
 const favorite = async (req, res) => {
   const { dashboardId } = req.params;
@@ -59,7 +59,6 @@ const createCard = async (req, res) => {
     const columns = snapshot.data();
     const allBoardRef = dashboardRef.collection("board");
     const snapshotAllBoardRef = await allBoardRef.get();
-    var highestId = 0;
     var color = getRandomColor();
     snapshotAllBoardRef.forEach((doc) => {
       for (var column in doc.data()) {
@@ -68,9 +67,6 @@ const createCard = async (req, res) => {
             while (card.color == color) {
               color = getRandomColor();
             }
-          }
-          if (parseInt(highestId) < parseInt(card.id)) {
-            highestId = card.id;
           }
         });
       }
@@ -112,8 +108,7 @@ const createCard = async (req, res) => {
         return;
     }
 
-    console.log(highestId);
-    const id = (parseInt(highestId) + 2).toString();
+    const id = uuidv4();
     const cards = column.items || [];
     var newCard = {};
     if (columnName == "requested") {
@@ -126,6 +121,22 @@ const createCard = async (req, res) => {
         color: color,
         storyId: id,
       };
+    } else if (
+      columnName == "toDo" ||
+      columnName == "inProgress" ||
+      columnName == "done"
+    ) {
+      newCard = {
+        id: id,
+        name: data.title,
+        desc: "",
+        assignedTo: [],
+        labels: [],
+        color: "#fff",
+        storyId: "",
+        estimation: data.estimation,
+        advancement: "",
+      };
     } else {
       newCard = {
         id: id,
@@ -134,7 +145,6 @@ const createCard = async (req, res) => {
         assignedTo: [],
         labels: [],
         color: "#fff",
-        storyId: -1,
       };
     }
     column.items = [...cards, newCard];
@@ -152,52 +162,95 @@ const moveStories = async (req, res) => {
   console.log("Stories moving");
   try {
     const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
-    var storiesToMove = { name: "Stories", items: [] };
-    const boards = dashboardRef.collection("board");
-    const snapshotSource = await boards.get();
-    await snapshotSource.forEach(async (board) => {
-      var storiesToKeep = { name: "Stories", items: [] };
-      board.data().requested.items.forEach((story) => {
-        if (req.body.storiesId.includes(story.id)) {
-          storiesToMove.items.push(story);
-        } else {
-          storiesToKeep.items.push(story);
+    const sourceBoardId = req.params.boardId;
+    const destinationBoardId = req.body.boardId;
+    const storiesToMove = [];
+    const cardsToMove = {};
+
+    // Récupérer les histoires et tâches à déplacer
+    const sourceBoardSnapshot = await dashboardRef
+      .collection("board")
+      .doc(sourceBoardId)
+      .get();
+    const sourceBoardData = sourceBoardSnapshot.data();
+    const requestedItems = sourceBoardData.requested.items;
+    const otherColumns = Object.keys(sourceBoardData).filter(
+      (column) => column !== "requested"
+    );
+
+    requestedItems.forEach((story) => {
+      if (req.body.storiesId.includes(story.id)) {
+        storiesToMove.push(story);
+      }
+    });
+
+    otherColumns.forEach((column) => {
+      cardsToMove[column] = [];
+      sourceBoardData[column].items.forEach((card) => {
+        if (req.body.storiesId.includes(card.storyId)) {
+          cardsToMove[column].push(card);
         }
       });
-      for (var column in board.data()) {
-        if (column != "requested") {
-          cardToMove = { name: column.name, items: [] };
-          cardToKeep = { name: column.name, items: [] };
-          await board.data()[column].items.forEach((card) => {
-            if (req.body.storiesId.includes(card.storyId)) {
-              cardToMove.items.push(card);
-            } else {
-              cardToKeep.items.push(card);
-            }
-          });
-          await boards.doc(board.id).update({ [column]: cardToKeep });
-          await boards.doc(req.body.boardId).update({ [column]: cardToMove });
-        }
-      }
-      await boards.doc(board.id).update({ ["requested"]: storiesToKeep });
     });
-    await boards.doc(req.body.boardId).update({ ["requested"]: storiesToMove });
+
+    // Mettre à jour les tableaux source et destination
+    const batch = db.batch();
+
+    // Supprimer les histoires et tâches du tableau source
+    const sourceBoardRef = dashboardRef.collection("board").doc(sourceBoardId);
+    batch.update(sourceBoardRef, {
+      "requested.items": requestedItems.filter(
+        (story) => !req.body.storiesId.includes(story.id)
+      ),
+    });
+    otherColumns.forEach((column) => {
+      const sourceColumnRef = sourceBoardRef.collection("column").doc(column);
+      batch.update(sourceColumnRef, {
+        items: sourceBoardData[column].items.filter(
+          (card) => !req.body.storiesId.includes(card.storyId)
+        ),
+      });
+    });
+
+    // Ajouter les histoires et tâches dans le tableau de destination
+    const destinationBoardRef = dashboardRef
+      .collection("board")
+      .doc(destinationBoardId);
+    const destinationBoardSnapshot = await destinationBoardRef.get();
+    const destinationBoardData = destinationBoardSnapshot.data();
+    batch.update(destinationBoardRef, {
+      "requested.items": [
+        ...destinationBoardData.requested.items,
+        ...storiesToMove,
+      ],
+    });
+    otherColumns.forEach((column) => {
+      const destinationColumnRef = destinationBoardRef
+        .collection("column")
+        .doc(column);
+      batch.update(destinationColumnRef, {
+        items: [...destinationBoardData[column].items, ...cardsToMove[column]],
+      });
+    });
+
+    await batch.commit();
 
     console.log("Stories moved");
+    res.send({ message: "Stories moved successfully" });
   } catch (error) {
-    console.error("Fuck" + error);
-    // Server error
+    console.error(error);
     res
       .status(500)
       .send({ message: "An error occurred while moving the stories" });
   }
 };
+
 //Path to create Dashboard
 const createDashboards = async (req, res) => {
   console.log("Creating dashboard...");
   try {
-    const dashboardRef = await createDashboard(req.body);
-
+    const dashboardRef = await createDashboard(req.body, true);
+    console.log(req.body.starting_date);
     const releases = await createReleases(
       req.body.starting_date,
       req.body.ending_date,
@@ -280,7 +333,6 @@ const createStory = async (req, res) => {
 
     const allBoardRef = dashboardRef.collection("board");
     const snapshotAllBoardRef = await allBoardRef.get();
-    var highestId = 0;
     var color = getRandomColor();
     snapshotAllBoardRef.forEach((doc) => {
       for (var column in doc.data()) {
@@ -290,14 +342,10 @@ const createStory = async (req, res) => {
               color = getRandomColor();
             }
           }
-          if (parseInt(highestId) < parseInt(card.id)) {
-            highestId = card.id;
-          }
         });
       }
     });
-    console.log(highestId);
-    const id = (parseInt(highestId) + 2).toString();
+    const id = uuidv4();
     newCard = {
       id: id,
       name: req.body.name,
@@ -322,7 +370,6 @@ const createStory = async (req, res) => {
 const editCard = async (req, res) => {
   const data = req.body;
   const columnId = req.params.columnId;
-  console.log("columnId:", columnId);
   try {
     const boardRef = db
       .collection("dashboard")
@@ -338,29 +385,36 @@ const editCard = async (req, res) => {
 
     switch (columnId.toString()) {
       case "0":
-        updatedItems = setColumnItems(columns.requested.items, data);
+        updatedItems = setColumnItems(columns.requested.items, data, false);
         name = "Stories";
         break;
       case "1":
-        updatedItems = setColumnItems(columns.acceptance.items, data);
+        updatedItems = setColumnItems(columns.acceptance.items, data, false);
         name = "Critère d'acceptation";
         break;
       case "2":
-        updatedItems = setColumnItems(columns.toDo.items, data);
+        updatedItems = setColumnItems(columns.toDo.items, data, true);
         name = "ToDo";
         break;
       case "3":
-        updatedItems = setColumnItems(columns.inProgress.items, data);
+        updatedItems = setColumnItems(columns.inProgress.items, data, true);
         name = "InProgress";
         break;
       case "4":
-        updatedItems = setColumnItems(columns.done.items, data);
+        updatedItems = setColumnItems(columns.done.items, data, true);
         name = "Done";
+      case "5":
+        updatedItems = setColumnItems(columns.done.items, data, false);
+        name = "DoD";
+      case "6":
+        updatedItems = setColumnItems(columns.done.items, data, false);
+        name = "DoF";
         break;
       default:
         throw new Error("Invalid column ID");
     }
-
+    console.log(updatedItems);
+    console.log(name);
     await boardRef.update({
       [getColumnField(parseInt(columnId))]: {
         items: updatedItems,
@@ -422,6 +476,7 @@ const deleteCard = async (req, res) => {
     const cards = column.items || [];
     const cardIndex = cards.findIndex((card) => {
       if (card.id == req.params.cardId) {
+        console.log(card.id);
         return card.id;
       }
     });
@@ -432,9 +487,7 @@ const deleteCard = async (req, res) => {
       return;
     }
 
-    column.items = cards.filter(
-      (card) => card.id != parseInt(req.params.cardId)
-    );
+    column.items = cards.filter((card) => card.id != req.params.cardId);
     await boardRef.update({ [columnName]: column });
 
     // Card deleted successfully
@@ -446,6 +499,57 @@ const deleteCard = async (req, res) => {
     res
       .status(500)
       .send({ message: "An error occurred while deleting the card" });
+  }
+};
+/// Path to addUserToStory
+const addUsersToStory = async (req, res) => {
+  try {
+    const dashboardId = req.params.dashboardId;
+    const boardId = req.params.boardId;
+    const storyId = req.params.storyId;
+    const userIds = req.body.userIds;
+    const columnId = req.params.columnId;
+    const dashboardRef = db.collection("dashboard").doc(dashboardId);
+    const boardRef = dashboardRef.collection("board").doc(boardId);
+
+    // Récupérer le tableau et l'histoire
+    const boardSnapshot = await boardRef.get();
+    const boardData = boardSnapshot.data();
+
+    // Trouver la colonne en fonction de columnId
+    const columnField = getColumnField(parseInt(columnId));
+
+    // Trouver l'histoire dans la colonne
+    const storyIndex = boardData[columnField].items.findIndex(
+      (story) => story.id === storyId
+    );
+
+    if (storyIndex === -1) {
+      res.status(404).send({ message: "Story not found" });
+      return;
+    }
+
+    const story = boardData[columnField].items[storyIndex];
+
+    // Ajouter les utilisateurs à la liste assignedTo
+    userIds.forEach((userId) => {
+      if (!story.assignedTo.includes(userId)) {
+        story.assignedTo.push(userId);
+      }
+    });
+
+    // Mettre à jour l'histoire dans la colonne
+    boardData[columnField].items[storyIndex] = story;
+    await boardRef.update({
+      [`${columnField}.items`]: boardData[columnField].items,
+    });
+
+    res.send({ message: "Users added to the story successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "An error occurred while adding the users to the story",
+    });
   }
 };
 
@@ -471,10 +575,14 @@ function getColumnField(columnId) {
   }
 }
 //Setter ColumnItems
-function setColumnItems(columnItems, updatedItem) {
+function setColumnItems(
+  columnItems,
+  updatedItem,
+  includeEstimationAndAdvancement
+) {
   return columnItems.map((item) => {
     if (item.id === updatedItem.id) {
-      return {
+      const newItem = {
         id: updatedItem.id,
         name: updatedItem.title,
         desc: updatedItem.desc,
@@ -483,6 +591,13 @@ function setColumnItems(columnItems, updatedItem) {
         color: updatedItem.color,
         storyId: updatedItem.storyId,
       };
+
+      if (includeEstimationAndAdvancement) {
+        newItem.estimation = updatedItem.estimation;
+        newItem.advancement = updatedItem.advancement;
+      }
+
+      return newItem;
     } else {
       return item;
     }
@@ -492,10 +607,13 @@ function setColumnItems(columnItems, updatedItem) {
 async function createReleases(startingDate, endingDate, dashboardRef) {
   const releaseDuration = 28; // 4 weeks
   const sprintDuration = 7; // 1 week
+  console.log("startingDate " + startingDate);
+  console.log("endingDate " + endingDate);
+
   const releaseCount = Math.ceil(
     moment(endingDate).diff(moment(startingDate), "days") / releaseDuration
   );
-
+  console.log("releaseCount " + releaseCount);
   const releases = {};
   for (let i = 0; i < releaseCount; i++) {
     const releaseStart = moment(startingDate)
@@ -526,6 +644,7 @@ async function createSprints(
     moment(releaseEnd).diff(moment(releaseStart), "days") / sprintDuration
   );
   const sprints = [];
+
   for (let i = 0; i < sprintCount; i++) {
     const boardRef = await dashboardRef.collection("board").add({
       requested: { name: "Stories", items: [] },
@@ -541,28 +660,54 @@ async function createSprints(
     const sprintStart = moment(releaseStart)
       .add(i * sprintDuration, "days")
       .toDate();
-    const sprintEnd = moment(sprintStart).add(sprintDuration, "days").toDate();
+    let sprintEnd = moment(sprintStart).add(sprintDuration, "days").toDate();
+
+    // Vérification pour s'assurer que sprintEnd n'est pas plus grand que releaseEnd
+    if (sprintEnd > releaseEnd) {
+      sprintEnd = releaseEnd;
+    }
+
     sprints.push({
       name: `Sprint ${i + 1}`,
-      starting_date: moment(sprintStart),
-      ending_date: moment(sprintEnd),
+      starting_date: sprintStart,
+      ending_date: sprintEnd,
       boardId: boardId,
     });
   }
+
   return sprints;
 }
 
-async function createDashboard(body) {
-  const dashboardRef = await db.collection("dashboard").add({
-    students: body.students,
-    starting_date: moment(body.starting_date),
-    ending_date: moment(body.ending_date),
-    favorite: false,
-    group_name: body.group_name,
-    sprint_name: body.sprint_name,
-    image: "https://picsum.photos/600",
-    pdf_link: "",
-  });
+async function createDashboard(body, bool) {
+  var dashboardRef;
+  if (bool) {
+    dashboardRef = await db.collection("dashboard").add({
+      students: body.students,
+      starting_date: moment(body.starting_date),
+      ending_date: moment(body.ending_date),
+      favorite: false,
+      group_name: body.group_name,
+      sprint_name: body.sprint_name,
+      image: "https://picsum.photos/600",
+      pdf_link: "",
+      groupId: body.groupId,
+      created_by: body.created_by,
+    });
+  } else {
+    dashboardRef = await db.collection("dashboard").add({
+      students: body.students,
+      starting_date: body.starting_date,
+      ending_date: body.ending_date,
+      favorite: false,
+      group_name: body.group_name,
+      sprint_name: body.sprint_name,
+      image: "https://picsum.photos/600",
+      pdf_link: "",
+      groupId: body.groupId,
+      created_by: body.po_id,
+    });
+  }
+
   return dashboardRef;
 }
 
@@ -591,7 +736,7 @@ const dashboardRequests = async (connection) => {
     db.collection("dashboard").onSnapshot(
       (snapshot) => {
         const data = [];
-        addDashboard(groups, studentId, db);
+        addDashboard(groups, db);
         snapshot.forEach((doc) => {
           doc.data().students?.forEach((student) => {
             if (student == studentId) {
@@ -716,7 +861,7 @@ const overviewRequests = async (connection) => {
               const inProgressItems = doc.data().inProgress.items;
               const doneItems = doc.data().done.items;
               const end = x.ending_date;
-             const start = x.starting_date;
+              const start = x.starting_date;
 
               const board = {
                 id: doc.id,
@@ -764,7 +909,7 @@ const overviewRequests = async (connection) => {
   });
 };
 
-async function addDashboard(groups, studentId, db) {
+async function addDashboard(groups, db) {
   const dashboardSnapshot = await db.collection("dashboard").get();
 
   for (const group of groups) {
@@ -772,21 +917,45 @@ async function addDashboard(groups, studentId, db) {
       (doc) => doc.data().groupId === group.id
     );
     if (!haveGroupId) {
-      var newDashboard = await db.collection("dashboard").add({
+      var body = {
         students: group.data.students,
         groupId: group.id,
-        starting_date: group.data.starting_date,
-        ending_date: group.data.ending_date,
-        favorite: false,
-        group_name: "new dashboard",
-        sprint_name: "new sprint",
-        image:
-          "https://fastly.picsum.photos/id/991/500/300.jpg?hmac=1p97FU0H7zdBmUCEezOKZxNtpCCjzQSQqwvE38ivx40",
-        pdf_link: "",
-        release: group.data.release,
-      });
+        group_name: "Groupe de Travail",
+        sprint_name: "Cours",
+        starting_date: group.data.start_date,
+        ending_date: group.data.end_date,
+        po_id: group.data.po_id,
+      };
+      console.log(body);
+      const dashboardRef = await createDashboard(body, false);
+
+      const startingDate = new Date(
+        body.starting_date._seconds * 1000 +
+          body.starting_date._nanoseconds / 1000000
+      )
+        .toLocaleDateString("fr")
+        .split("/")
+        .reverse()
+        .join("-");
+
+      const endingDate = new Date(
+        body.ending_date._seconds * 1000 +
+          body.ending_date._nanoseconds / 1000000
+      )
+        .toLocaleDateString("fr")
+        .split("/")
+        .reverse()
+        .join("-");
+      const releases = await createReleases(
+        startingDate,
+        endingDate,
+        dashboardRef
+      );
+
+      console.log(releases);
+      dashboardRef.update({ release: JSON.parse(JSON.stringify(releases)) });
       // Add labels collection creation
-      const labelsRef = newDashboard.collection("labels");
+      const labelsRef = dashboardRef.collection("labels");
       const labels = [
         { name: "Urgent", color: "#FF4136" },
         { name: "Correction", color: "#9FE2BF" },
@@ -799,31 +968,9 @@ async function addDashboard(groups, studentId, db) {
         { name: "Tâche technique", color: "#0074D9" },
         { name: "Recherche ", color: " #008080" },
       ];
-
       for (const label of labels) {
         await labelsRef.add(label);
       }
-
-      release = group.data.release;
-      for (var i in release) {
-        for (var y in release[i]) {
-          var res = await db
-            .collection("dashboard")
-            .doc(newDashboard.id)
-            .collection("board")
-            .add({
-              requested: { name: "Stories", items: [] },
-              acceptance: { name: "Critère d'acceptation", items: [] },
-              toDo: { name: "To Do", items: [] },
-              inProgress: { name: "In progress", items: [] },
-              done: { name: "Done", items: [] },
-              definitionOfDone: { name: "DoD", items: [] },
-              definitionOfFun: { name: "DoF", items: [] },
-            });
-          release[i][y].boardId = res.id;
-        }
-      }
-      await db.collection("dashboard").doc(newDashboard.id).update({ release });
     }
   }
 }
@@ -838,6 +985,7 @@ module.exports = {
   createStory,
   editCard,
   deleteCard,
+  addUsersToStory,
   boardRequests,
   dashboardRequests,
   overviewRequests,

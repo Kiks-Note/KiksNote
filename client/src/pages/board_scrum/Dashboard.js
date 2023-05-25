@@ -13,6 +13,7 @@ import CreateDashboard from "./CreateDashboard";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import ListCardDashboard from "../../components/board_scrum/dashboard/ListCardDashboard";
+import { Rings } from "react-loader-spinner";
 
 export default function Dashboard() {
   const { user } = useFirebase();
@@ -48,16 +49,17 @@ export default function Dashboard() {
   }
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:5050/profil/student"
-        );
-        setMembers(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+ const fetchMembers = async () => {
+   try {
+     const response = await axios.get(
+       `http://localhost:5050/profil/student/${user.id}`
+     );
+     setMembers(response.data);
+   } catch (error) {
+     console.error(error);
+   }
+ };
+
 
     const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
 
@@ -77,7 +79,6 @@ export default function Dashboard() {
             dashboarddto.ending_date._seconds * 1000 +
               dashboarddto.ending_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
-
           return {
             id: dashboarddto.id,
             sprint_name: dashboarddto.sprint_name,
@@ -132,93 +133,119 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ marginLeft: "1%", marginTop: "1%" }}>
-      {favorisDashboard.length > 0 &&
-        ListCardDashboard(
-          favorisDashboard,
-          "Espace de travail favoris",
-          favorisTell
-        )}
-      {actifDashboard.length > 0 &&
-        ListCardDashboard(
-          actifDashboard,
-          "Espace de travail actif",
-          favorisTell
-        )}
-
-      <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
-        <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
-          Mon espace de travail
-        </Typography>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <ToggleButtonGroup
-            value={view}
-            exclusive
-            onChange={viewChange}
-            sx={{ margin: 1 }}
-          >
-            <ToggleButton value="module" aria-label="module">
-              <ViewModuleIcon />
-            </ToggleButton>
-            <ToggleButton value="list" aria-label="list">
-              <ViewListIcon />
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <CreateDashboard members={members} />
+    <>
+      {loading ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}
+        >
+          <Rings
+            height="200"
+            width="200"
+            color="#00BFFF"
+            radius="6"
+            wrapperStyle={{}}
+            wrapperClass="loader"
+            visible={true}
+            ariaLabel="rings-loading"
+          />
         </div>
-      </Box>
-
-      {view === "module" ? (
-        <Grid container spacing={2}>
-          {!loading &&
-            dashboard
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((board) => (
-                <Grid item xs={3} key={board.id}>
-                  <CardDashBoard
-                    picture={board.picture}
-                    sprint_group={board.sprint_group}
-                    fav={board.favorite}
-                    isFavoris={favorisTell}
-                    id={board.id}
-                  />
-                </Grid>
-              ))}
-        </Grid>
       ) : (
-        !loading &&
-        dashboard.length > 0 && <TableDashboard rows={!loading && dashboard} />
-      )}
+        <div style={{ marginLeft: "1%", marginTop: "1%" }}>
+          {favorisDashboard.length > 0 &&
+            ListCardDashboard(
+              favorisDashboard,
+              "Espace de travail favoris",
+              favorisTell
+            )}
+          {actifDashboard.length > 0 &&
+            ListCardDashboard(
+              actifDashboard,
+              "Espace de travail actif",
+              favorisTell
+            )}
 
-      {view === "module" ? (
-        !loading &&
-        dashboard.length > 0 && (
-          <Box
-            sx={{
-              flexGrow: 1,
-              marginTop: 3,
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <TablePagination
-              component="div"
-              rowsPerPageOptions={[5, 10, 25, { label: "Tout", value: -1 }]}
-              count={!loading && dashboard.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-              labelRowsPerPage="Par page"
-              labelDisplayedRows={({ from, to, count }) =>
-                `${from} - ${to} sur ${count}`
-              }
-            />
+          <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
+            <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
+              Mon espace de travail
+            </Typography>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <ToggleButtonGroup
+                value={view}
+                exclusive
+                onChange={viewChange}
+                sx={{ margin: 1 }}
+              >
+                <ToggleButton value="module" aria-label="module">
+                  <ViewModuleIcon />
+                </ToggleButton>
+                <ToggleButton value="list" aria-label="list">
+                  <ViewListIcon />
+                </ToggleButton>
+              </ToggleButtonGroup>
+              <CreateDashboard members={members} />
+            </div>
           </Box>
-        )
-      ) : (
-        <></>
+
+          {view === "module" ? (
+            <Grid container spacing={2}>
+              {!loading &&
+                dashboard
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((board) => (
+                    <Grid item xs={3} key={board.id}>
+                      <CardDashBoard
+                        picture={board.picture}
+                        sprint_group={board.sprint_group}
+                        fav={board.favorite}
+                        isFavoris={favorisTell}
+                        id={board.id}
+                      />
+                    </Grid>
+                  ))}
+            </Grid>
+          ) : (
+            !loading &&
+            dashboard.length > 0 && (
+              <TableDashboard rows={!loading && dashboard} />
+            )
+          )}
+
+          {view === "module" ? (
+            !loading &&
+            dashboard.length > 0 && (
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  marginTop: 3,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                <TablePagination
+                  component="div"
+                  rowsPerPageOptions={[5, 10, 25, { label: "Tout", value: -1 }]}
+                  count={!loading && dashboard.length}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  labelRowsPerPage="Par page"
+                  labelDisplayedRows={({ from, to, count }) =>
+                    `${from} - ${to} sur ${count}`
+                  }
+                />
+              </Box>
+            )
+          ) : (
+            <></>
+          )}
+        </div>
       )}
-    </div>
+    </>
   );
 }

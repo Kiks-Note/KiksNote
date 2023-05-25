@@ -18,7 +18,7 @@ module.exports = function (connection, pathname,upload) {
     upload.single("image"),
     updateBackgroundImage
   );
-  router.get("/student", getStudent);
+  router.get("/student/:userId", getStudent);
 
   switch (pathname) {
     case "/profil":

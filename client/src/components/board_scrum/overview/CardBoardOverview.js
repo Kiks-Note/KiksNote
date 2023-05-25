@@ -9,8 +9,8 @@ import PropTypes from "prop-types";
 
 CardBoardOverview.propTypes = {
   title: PropTypes.string.isRequired,
-  startingDate: PropTypes.string.isRequired,
-  endingDate: PropTypes.string.isRequired,
+  startingDate: PropTypes.number.isRequired,
+  endingDate: PropTypes.number.isRequired,
   id: PropTypes.string.isRequired,
   dashboardId: PropTypes.string.isRequired,
 };

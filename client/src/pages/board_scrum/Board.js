@@ -104,12 +104,9 @@ export default function Board({ boardId, dashboardId }) {
         sourceId === "5" ||
         destinationId === "6"
       ) {
-        toast.error(
-          "Impossible de déplacer une storie dans une autre colonne",
-          {
-            duration: 5000,
-          }
-        );
+        toast.error("Impossible de déplacer cet élément dans cette colonne", {
+          duration: 5000,
+        });
         return;
       }
       const sourceItems = [...sourceColumn.items];

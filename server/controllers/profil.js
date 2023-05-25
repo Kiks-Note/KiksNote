@@ -107,21 +107,28 @@ const updateBackgroundImage = async (req, res) => {
     });
 };
 const getStudent = async (req, res) => {
+  const { userId } = req.params;
+  if (!userId) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+
   db.collection("users")
-    .where("status", "==", "étudiant")
+    .where("status", "==", "etudiant")
     .get()
     .then((snapshot) => {
       const users = [];
       snapshot.forEach((doc) => {
-        console.log(doc);
         const data = doc.data();
-        const user = {
-          uid: doc.id,
-          firstname: data.firstname,
-          lastname: data.lastname,
-          image: data.image,
-        };
-        users.push(user);
+        if (doc.id !== userId && doc.data().id !== userId) {
+          const student = {
+            uid: doc.id,
+            firstname: data.firstname,
+            lastname: data.lastname,
+            image: data.image,
+          };
+          users.push(student);
+        }
       });
       res.send(users);
     })
@@ -130,6 +137,7 @@ const getStudent = async (req, res) => {
       res.send("Error fetching users.");
     });
 };
+
 
 function createProgrammingLanguageArray(programmingLanguageString) {
   return programmingLanguageString.split(",");
