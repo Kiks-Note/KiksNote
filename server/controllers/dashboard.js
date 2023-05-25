@@ -250,13 +250,12 @@ const createDashboards = async (req, res) => {
   console.log("Creating dashboard...");
   try {
     const dashboardRef = await createDashboard(req.body, true);
-    console.log(req.body.starting_date);
     const releases = await createReleases(
       req.body.starting_date,
       req.body.ending_date,
       dashboardRef
     );
-    console.log(releases);
+
     dashboardRef.update({ release: JSON.parse(JSON.stringify(releases)) });
 
     const batch = db.batch();
