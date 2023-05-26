@@ -9,3 +9,17 @@
     align-items: center;
     justify-content: space-between;
 }
+
+.student-project-form {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.student-project-dropzone {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}

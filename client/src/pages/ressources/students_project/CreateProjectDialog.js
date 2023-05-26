@@ -14,12 +14,15 @@ import {
   Autocomplete,
 } from "@mui/material";
 
+import Dropzone from "../Cours/Dropzone";
+
+import "./StudentsProjects.scss";
+
 const CreateProjectDialog = (props) => {
   return (
     <Dialog open={props.open} onClose={props.handleClose}>
-      <DialogTitle>Mon formulaire</DialogTitle>
       <DialogContent>
-        <form onSubmit={props.handleSubmit}>
+        <form onSubmit={props.handleSubmit} className="student-project-form">
           <TextField
             sx={{ marginBottom: "10px", marginTop: "5px" }}
             label="Nom du projet"
@@ -45,6 +48,23 @@ const CreateProjectDialog = (props) => {
               props.setDescriptionProject(event.target.value)
             }
           />
+          <div className="student-project-dropzone">
+            <Dropzone
+              onDrop={props.handleDrop}
+              onFileChange={props.handleFileChange}
+            >
+              {({ getRootProps, getInputProps }) => (
+                <section>
+                  <div {...getRootProps()}>
+                    <input {...getInputProps()} />
+                    <p>
+                      Drag and drop some files here, or click to select files
+                    </p>
+                  </div>
+                </section>
+              )}
+            </Dropzone>
+          </div>
           <Select
             sx={{ marginBottom: "10px" }}
             value={props.typeProject}
@@ -70,6 +90,7 @@ const CreateProjectDialog = (props) => {
           </Select>
           <Select
             value={props.selectedClass}
+            sx={{ marginBottom: "10px" }}
             onChange={(event) => {
               props.setSelectedClass(event.target.value);
               const selectedCours = props.allclass.find(
@@ -96,6 +117,7 @@ const CreateProjectDialog = (props) => {
                 id="member-select"
                 sx={{
                   width: "80%",
+                  marginBottom: "10px",
                 }}
                 defaultValue={props.membersProject}
                 options={props.allstudents}
@@ -132,20 +154,19 @@ const CreateProjectDialog = (props) => {
               />
             )}
           />
-          <TextField
-            sx={{ marginBottom: "10px", marginTop: "5px" }}
-            label="Image du projet"
-            fullWidth
-            defaultValue={props.imgProjectLink}
-            onChange={(event) => props.setImgProjectLink(event.target.value)}
-          />
         </form>
       </DialogContent>
       <DialogActions>
-        <Button onClick={props.handleClose} color="primary">
+        <Button
+          onClick={props.handleClose}
+          sx={{ backgroundColor: "#7a52e1", color: "white" }}
+        >
           Annuler
         </Button>
-        <Button onClick={props.handleSubmit} color="primary">
+        <Button
+          onClick={props.handleSubmit}
+          sx={{ backgroundColor: "#7a52e1", color: "white" }}
+        >
           Soumettre
         </Button>
       </DialogActions>

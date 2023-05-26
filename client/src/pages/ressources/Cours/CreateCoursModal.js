@@ -35,8 +35,8 @@ const CreateCoursModal = (props) => {
           overflowY: "visible",
           overflowX: "hidden",
           position: "fixed",
-          top: "40%",
-          left: "55%",
+          top: "45%",
+          left: "50%",
           transform: "translate(-50%, -50%)",
           "@media (max-width: 600px)": {
             width: "100%",

@@ -19,9 +19,11 @@ import {
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/SearchRounded";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
 import CreateProjectDialog from "./CreateProjectDialog";
 import CarouselProjects from "./CarouselProjects";
+import StudentProjectInfo from "./StudentProjectInfo";
 import "./StudentsProjects.scss";
 
 const StudentsProjects = () => {
@@ -29,6 +31,7 @@ const StudentsProjects = () => {
   const userStatus = user?.status;
 
   const [open, setOpen] = useState(false);
+  const [openProject, setOpenProject] = useState(false);
 
   const [projects, setProjects] = useState([]);
   const [allclass, setAllclass] = useState([]);
@@ -42,6 +45,8 @@ const StudentsProjects = () => {
   const [imgProjectLink, setImgProjectLink] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [idSelectedClass, setIdSelectedClass] = useState("");
+
+  const [selectedProjectData, setSelectedProjectData] = useState("");
 
   const [selectedFilterTypeProject, setSelectedFilterTypeProject] =
     useState("");
@@ -58,6 +63,17 @@ const StudentsProjects = () => {
         .catch((err) => {
           console.log(err);
         });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getStudentProjectById = async (projectId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5050/ressources/studentsprojects/${projectId}`
+      );
+      setSelectedProjectData(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -128,6 +144,15 @@ const StudentsProjects = () => {
     mode: "onTouched",
   });
 
+  const handleOpenProject = (projectId) => {
+    setOpenProject(true);
+    getStudentProjectById(projectId);
+  };
+
+  const handleCloseProject = () => {
+    setOpenProject(false);
+  };
+
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -154,14 +179,14 @@ const StudentsProjects = () => {
     <div className="students-project-container">
       <div className="header-students-projects">
         <div className="search-bar-container">
-          <form noValidate autoComplete="off" style={{ width: "100%" }}>
+          <form noValidate autoComplete="off" style={{ width: "80%" }}>
             <TextField
               id="outlined-basic"
               label="Rechercher les projets"
               variant="outlined"
               // value={searchTerm}
               // onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{ width: "100%" }}
+              sx={{ width: "80%" }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -172,9 +197,10 @@ const StudentsProjects = () => {
             />
           </form>
         </div>
-        <FormControl>
+        <FormControl sx={{ width: "30%" }}>
           <Select
             value={selectedFilterTypeProject}
+            sx={{ width: "50%" }}
             onChange={(event) => {
               setSelectedFilterTypeProject(event.target.value);
             }}
@@ -187,9 +213,10 @@ const StudentsProjects = () => {
             ))}
           </Select>
         </FormControl>
-        <FormControl>
+        <FormControl sx={{ width: "30%" }}>
           <Select
             value={selectedFilterClass}
+            sx={{ width: "50%" }}
             onChange={(event) => {
               setSelectedFilterClass(event.target.value);
               const selectedClass = allclass.find(
@@ -207,7 +234,12 @@ const StudentsProjects = () => {
           </Select>
         </FormControl>
         {userStatus === "etudiant" ? (
-          <Button onClick={handleClickOpen}>Publier mon projet</Button>
+          <Button
+            onClick={handleClickOpen}
+            sx={{ backgroundColor: "#7a52e1", color: "white", width: "20%" }}
+          >
+            Publier mon projet
+          </Button>
         ) : (
           <div></div>
         )}
@@ -244,6 +276,7 @@ const StudentsProjects = () => {
         projects={topProjects}
         selectedFilterType={selectedFilterTypeProject}
         selectedIdFilterClass={selectedIdFilterClass}
+        // handleOpenProject={() => handleOpenProject()}
       />
       <h1>Tous les projets</h1>
       <Grid container spacing={2}>
@@ -254,47 +287,56 @@ const StudentsProjects = () => {
               : true
           )
           .map((project) => (
-            <Grid item xs={12} sm={6} md={3}>
-              <Card
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                  height: "300px",
-                }}
-                onClick={() => {}}
-              >
-                <CardMedia
+            <>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card
                   sx={{
-                    width: "100%",
-                    minHeight: "150px",
                     display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "300px",
                   }}
-                  component="img"
-                  src={project.imgProject}
-                  alt="course image"
-                  style={{
-                    objectFit: "contain",
-                    objectPosition: "center",
-                    width: "100%",
-                    minHeight: "150px",
+                  onClick={() => {
+                    handleOpenProject(project.id);
                   }}
-                />
+                >
+                  <CardMedia
+                    sx={{
+                      width: "100%",
+                      minHeight: "150px",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    component="img"
+                    src={project.imgProject}
+                    alt="course image"
+                    style={{
+                      objectFit: "contain",
+                      objectPosition: "center",
+                      width: "100%",
+                      minHeight: "150px",
+                    }}
+                  />
 
-                <CardContent sx={{ padding: "10px", height: "120px" }}>
-                  <h2 variant="h3" component="div">
-                    {project.nameProject}
-                  </h2>
-                  <Typography variant="body2" color="text.secondary">
-                    {project.descriptionProject}
-                  </Typography>
-                  <Button> </Button>
-                </CardContent>
-              </Card>
-            </Grid>
+                  <CardContent sx={{ padding: "10px", height: "120px" }}>
+                    <h2 variant="h3" component="div">
+                      {project.nameProject}
+                    </h2>
+                    <Button>
+                      {project.counterRef} <FavoriteIcon />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </Grid>
+            </>
           ))}
+        <StudentProjectInfo
+          handleCloseProject={handleCloseProject}
+          openProject={openProject}
+          projectData={selectedProjectData}
+          creator={user?.email}
+        />
       </Grid>
     </div>
   );
