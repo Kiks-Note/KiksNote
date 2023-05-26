@@ -8,6 +8,8 @@ const addCall = async (req, res) => {
       qrcode: req.body.qrcode,
       student_scan: req.body.student_scan,
       chats: req.body.chats,
+      date: req.body.date,
+      status: req.body.date,
     })
     .then((doc) => {
       res.send(doc.id);
@@ -80,10 +82,32 @@ const callRequests = async (connection) => {
   });
 };
 
+const getCallsByLessonId = async (req, res) => {
+  await db
+    .collection("calls")
+    .where("id_lesson", "==", req.body.id) // Ajoutez la condition de filtrage ici
+    .orderBy("date", "asc")
+    .get()
+    .then((snapshot) => {
+      let item = {};
+      const data = [];
+      snapshot.forEach((doc) => {
+        item = doc.data();
+        item["id"] = doc.id;
+        data.push(item);
+      });
+      res.send(data);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
+
 module.exports = {
   getCall,
   getCalls,
   addCall,
   updateCall,
   callRequests,
+  getCallsByLessonId,
 };

@@ -7,6 +7,7 @@ const {
   updateCall,
   addCall,
   callRequests,
+  getCallsByLessonId,
 } = require("./controllers/call");
 
 module.exports = function (connection, pathname) {
@@ -15,6 +16,7 @@ module.exports = function (connection, pathname) {
   router.put("/updatecall", updateCall);
   router.get("/calls", getCalls);
   router.post("/getcall", getCall);
+  router.get("/getCallByLessonId", getCallsByLessonId);
 
   switch (pathname) {
     case "/call":

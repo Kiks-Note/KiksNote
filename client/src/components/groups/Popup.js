@@ -6,7 +6,7 @@ import {
   Select,
   Button,
 } from "@mui/material";
-import "./PopUp.scss";
+import "./Popup.scss";
 
 export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const [classChoose, setClassChoose] = useState("");
