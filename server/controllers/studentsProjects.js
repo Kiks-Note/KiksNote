@@ -16,6 +16,46 @@ const getAllStudents = async (req, res) => {
   }
 };
 
+const getStudentById = async (req, res) => {
+  try {
+    const studentRef = await db.collection("users").doc(req.params.id).get();
+    if (!studentRef.exists) {
+      return res.status(404).send("Etudiant non trouvé");
+    } else {
+      return res.status(200).send({
+        id: studentRef.id,
+        data: studentRef.data(),
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error("Erreur lors de la récupération de l'étudiant par ID.");
+  }
+};
+
+const getStudentProjectById = async (req, res) => {
+  const projectId = req.params.id;
+
+  try {
+    const projectSnapshot = await db
+      .collection("students_projects")
+      .doc(projectId)
+      .get();
+
+    if (!projectSnapshot.exists) {
+      res.status(404).send("Le projet spécifié n'a pas été trouvé.");
+      return;
+    }
+
+    const project = projectSnapshot.data();
+
+    res.status(200).json(project);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération du projet étudiant.");
+  }
+};
+
 const getAllStudentsProjects = async (req, res) => {
   try {
     const snapshot = await db.collection("students_projects").get();
@@ -83,6 +123,8 @@ const createStudentProject = async (req, res) => {
 
 module.exports = {
   getAllStudents,
+  getStudentById,
+  getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,
 };
