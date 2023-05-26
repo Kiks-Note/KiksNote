@@ -18,6 +18,9 @@ import {
   Typography,
   Button,
   CardMedia,
+  FormControl,
+  Select,
+  MenuItem,
   Tooltip,
   Grid,
   TextField,
@@ -78,6 +81,9 @@ const Ressources = () => {
   const [idSelectedClass, setIdSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
+
+  const [selectedFilterClass, setSelectedFilterClass] = useState("");
+  const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
 
   // Variable useState Cards
   const [courseOwnerData, setCourseOwnerData] = useState([]);
@@ -197,6 +203,27 @@ const Ressources = () => {
     }
   };
 
+  const loadCourseData = async (classId, instructorId) => {
+    try {
+      const courseClassPromise = axios.get(
+        `http://localhost:5050/ressources/class/${classId}`
+      );
+      const instructorPromise = axios.get(
+        `http://localhost:5050/ressources/instructor/${instructorId}`
+      );
+
+      const [courseClassResponse, instructorResponse] = await Promise.all([
+        courseClassPromise,
+        instructorPromise,
+      ]);
+
+      setCourseClassData(courseClassResponse.data);
+      setCourseOwnerData(instructorResponse.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const getAllClass = async () => {
     try {
       await axios
@@ -252,6 +279,12 @@ const Ressources = () => {
       }
     }
   }, [isAllCoursesDataLoaded]);
+
+  useEffect(() => {
+    filteredCoursesCurrentYear.forEach((course) => {
+      loadCourseData(course.data.courseClass, course.data.owner);
+    });
+  }, []);
 
   const createCourse = () => {
     setOpen(true);
@@ -343,6 +376,27 @@ const Ressources = () => {
                 />
               </form>
             </div>
+            <FormControl>
+              <Select
+                value={selectedFilterClass}
+                onChange={(event) => {
+                  setSelectedFilterClass(event.target.value);
+                  const selectedClass = allclass.find(
+                    (coursClass) => coursClass.name === event.target.value
+                  );
+                  setSelectedIdFilterClass(
+                    selectedClass ? selectedClass.id : ""
+                  );
+                }}
+                displayEmpty
+                renderValue={(value) => value || "Promo"}
+              >
+                <MenuItem value="">Filtrer sur la promo</MenuItem>
+                {allclass.map((promo) => (
+                  <MenuItem value={promo.name}>{promo.name}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             {userStatus === "po" ? (
               <>
                 <div className="btn-add-cours">
@@ -420,96 +474,100 @@ const Ressources = () => {
                       ? userClass.id === course.data.courseClass
                       : true
                   )
-                  .map((course) => (
-                    <Grid item xs={12} sm={6} md={3}>
-                      <Card
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-evenly",
-                          height: "450px",
-                        }}
-                        /* eslint-disable no-unused-expressions */
-                        onClick={() => {
-                          userStatus !== "etudiant" &&
-                          course.data.private === true
-                            ? navigate(`/coursinfo/${course.id}`)
-                            : course.data.private === false
-                            ? navigate(`/coursinfo/${course.id}`)
-                            : "";
-                        }}
-                      >
-                        <CardMedia
+                  .map((course) => {
+                    return (
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Card
                           sx={{
                             display: "flex",
-                            width: "100%",
-                            maxHeight: "200px",
-                            minHeight: "200px",
-                            justifyContent: "center",
-                            margin: "0",
+                            flexDirection: "column",
+                            justifyContent: "space-evenly",
+                            height: "450px",
                           }}
-                          component="img"
-                          src={course.data.imageCourseUrl}
-                          alt="course image"
-                        />
+                          /* eslint-disable no-unused-expressions */
+                          onClick={() => {
+                            userStatus !== "etudiant" &&
+                            course.data.private === true
+                              ? navigate(`/coursinfo/${course.id}`)
+                              : course.data.private === false
+                              ? navigate(`/coursinfo/${course.id}`)
+                              : "";
+                          }}
+                        >
+                          <CardMedia
+                            sx={{
+                              display: "flex",
+                              width: "100%",
+                              maxHeight: "200px",
+                              minHeight: "200px",
+                              justifyContent: "center",
+                              margin: "0",
+                            }}
+                            component="img"
+                            src={course.data.imageCourseUrl}
+                            alt="course image"
+                          />
 
-                        <CardContent sx={{ padding: "10px", height: "120px" }}>
-                          <h2 variant="h3" component="div">
-                            {course.data.title}
-                          </h2>
-                          <Typography variant="body2" color="text.secondary">
-                            {course.data.description}
-                          </Typography>
+                          <CardContent
+                            sx={{ padding: "10px", height: "120px" }}
+                          >
+                            <h2 variant="h3" component="div">
+                              {course.data.title}
+                            </h2>
+                            <Typography variant="body2" color="text.secondary">
+                              {course.data.description}
+                            </Typography>
 
-                          {/* <Typography>
-                                {courseOwnerData &&
-                                  courseOwnerData.data &&
-                                  courseOwnerData.data.lastname.toUpperCase()}{" "}
-                                {courseOwnerData &&
-                                  courseOwnerData.data &&
-                                  courseOwnerData.data.firstname}
-                              </Typography> */}
-                          {/* <Typography>{courseClass}</Typography> */}
-                          <Typography>
-                            {"Début : "}
-                            {course &&
-                              course.data &&
-                              course.data.dateStartSprint &&
-                              moment
-                                .unix(course.data.dateStartSprint._seconds)
-                                .format("DD.MM.YYYY")}{" "}
-                            - {"Fin : "}
-                            {course &&
-                              course.data &&
-                              course.data.dateEndSprint &&
-                              moment
-                                .unix(course.data.dateEndSprint._seconds)
-                                .format("DD.MM.YYYY")}
-                          </Typography>
-                          {userStatus === "etudiant" &&
-                          course.data.private === true ? (
-                            <>
-                              <Tooltip title="Private">
-                                <LockRoundedIcon />
-                              </Tooltip>
-                            </>
-                          ) : (
-                            <>
-                              <Tooltip title="Open">
-                                <IconButton
-                                  onClick={() =>
-                                    navigate(`/coursinfo/${course.id}`)
-                                  }
-                                >
-                                  <OpenInNewIcon />
-                                </IconButton>
-                              </Tooltip>
-                            </>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
+                            <Typography>
+                              {courseOwnerData &&
+                                courseOwnerData.data &&
+                                courseOwnerData.data.lastname.toUpperCase()}{" "}
+                              {courseOwnerData &&
+                                courseOwnerData.data &&
+                                courseOwnerData.data.firstname}
+                            </Typography>
+                            {/* <Typography>{courseClass}</Typography> */}
+                            <Typography>
+                              {"Début : "}
+                              {course &&
+                                course.data &&
+                                course.data.dateStartSprint &&
+                                moment
+                                  .unix(course.data.dateStartSprint._seconds)
+                                  .format("DD.MM.YYYY")}{" "}
+                              - {"Fin : "}
+                              {course &&
+                                course.data &&
+                                course.data.dateEndSprint &&
+                                moment
+                                  .unix(course.data.dateEndSprint._seconds)
+                                  .format("DD.MM.YYYY")}
+                            </Typography>
+                            {userStatus === "etudiant" &&
+                            course.data.private === true ? (
+                              <>
+                                <Tooltip title="Private">
+                                  <LockRoundedIcon />
+                                </Tooltip>
+                              </>
+                            ) : (
+                              <>
+                                <Tooltip title="Open">
+                                  <IconButton
+                                    onClick={() =>
+                                      navigate(`/coursinfo/${course.id}`)
+                                    }
+                                  >
+                                    <OpenInNewIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    );
+                  })}
               </Grid>
             </div>
             <div className="grid-view-cours ">

@@ -11,22 +11,18 @@ import { EffectCoverflow, Pagination, Navigation } from "swiper";
 
 import "./CarouselProjects.scss";
 
-const CarouselProjects = ({
-  projects,
-  selectedFilterType,
-  selectedIdFilterClass,
-}) => {
-  let filteredProjects = projects;
+const CarouselProjects = (props) => {
+  let filteredProjects = props.projects;
 
-  if (selectedIdFilterClass !== "") {
+  if (props.selectedIdFilterClass !== "") {
     filteredProjects = filteredProjects.filter(
-      (project) => project.promoProject === selectedIdFilterClass
+      (project) => project.promoProject === props.selectedIdFilterClass
     );
   }
 
-  if (selectedFilterType !== "") {
+  if (props.selectedFilterType !== "") {
     filteredProjects = filteredProjects.filter(
-      (project) => project.typeProject === selectedFilterType
+      (project) => project.typeProject === props.selectedFilterType
     );
   }
 
@@ -55,7 +51,11 @@ const CarouselProjects = ({
         >
           {filteredProjects.map((project) => (
             <SwiperSlide key={project.id}>
-              <Card>
+              <Card
+                onClick={() => {
+                  // props.handleOpenProject();
+                }}
+              >
                 <CardContent>
                   <CardMedia
                     component="img"
