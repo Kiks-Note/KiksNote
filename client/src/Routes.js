@@ -18,7 +18,7 @@ import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
-import PreviewBlog from "./components/blog/PreviewBlog";
+import DetailBlog from "./pages/blog/DetailBlog";
 
 function RoutesProvider() {
 
@@ -42,7 +42,7 @@ function RoutesProvider() {
           <Route path="/groups" element={<Groups />} />
           <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:id" element={<PreviewBlog />} />
+          <Route path="/blog/:id" element={<DetailBlog />} />
 
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />

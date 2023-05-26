@@ -12,7 +12,7 @@ import {
 import { EditorState, ContentState } from "draft-js";
 import htmlToDraft from "html-to-draftjs";
 
-function PreviewBlog() {
+function DetailBlog() {
   const [data, setData] = useState(null);
   const { id } = useParams();
 
@@ -62,4 +62,4 @@ function PreviewBlog() {
   );
 }
 
-export default PreviewBlog;
+export default DetailBlog;

@@ -241,31 +241,35 @@ const addDislike = async (req, res) => {
 };
 
 const getTopCreators = async (req, res) => {
-  console.log("je recupere les top creators");
   try {
+    console.log("Je récupère les top créateurs");
     const creatorsSnapshot = await db
       .collection("blog")
-      .groupBy("created_by")
-      .orderBy("count", "desc")
-      .limit(10)
+      .orderBy("created_by")
       .get();
 
-    const topCreators = creatorsSnapshot.docs.map((doc) => {
-      const creatorData = doc.data();
-      console.log(creatorData);
-      return {
-        name: creatorData.created_by,
-        articleCount: creatorData.count,
-      };
+    const creatorsMap = new Map();
+    creatorsSnapshot.docs.forEach((doc) => {
+      const creator = doc.data().created_by;
+      if (creatorsMap.has(creator)) {
+        creatorsMap.set(creator, creatorsMap.get(creator) + 1);
+      } else {
+        creatorsMap.set(creator, 1);
+      }
     });
 
-    res.status(200).json(topCreators);
+    const topCreators = Array.from(creatorsMap)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([name, articleCount]) => ({ name, articleCount }));
+
+    res.status(200).send(topCreators);
   } catch (error) {
     console.error(
       "Erreur lors de la récupération des données des créateurs :",
       error
     );
-    res.status(500).json({
+    res.status(500).send({
       error:
         "Une erreur est survenue lors de la récupération des données des créateurs.",
     });

@@ -91,14 +91,13 @@ function Blog() {
     if (filter.type !== "") {
       filteredBlogs = filteredBlogs.filter((blog) => blog.type === filter.type);
     }
-   console.log(filter.tags);
-   if (filter.tags !== "") {
-     filteredBlogs = filteredBlogs.filter(
-       (blog) =>
-         blog.tag.length > 0 && blog.tag.some((tag) => tag.id == filter.tags)
-     );
-   }
-   console.log(filteredBlogs);
+
+    if (filter.tags !== "") {
+      filteredBlogs = filteredBlogs.filter(
+        (blog) =>
+          blog.tag.length > 0 && blog.tag.some((tag) => tag.id == filter.tags)
+      );
+    }
 
     if (filter.sort === "asc") {
       filteredBlogs.sort((a, b) => {
@@ -117,23 +116,19 @@ function Blog() {
     const { name, value } = event.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
   };
- const fetchTags = async () => {
-   try {
-     const response = await axios.get("http://localhost:5050/blog/tag");
-     let tags = response.data;
-     console.log(tags);
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get("http://localhost:5050/blog/tag");
+      let tags = response.data;
+      const aucunTag = { id: "", name: "Aucun" };
+      tags = [aucunTag, ...tags];
 
-     // Add the "Aucun" tag to the tags array
-     const aucunTag = { id: "", name: "Aucun" };
-     tags = [aucunTag, ...tags];
-
-     // Update the state with the retrieved tags
-     setTags(tags);
-   } catch (error) {
-     console.error("Erreur lors de la récupération des tags :", error);
-   }
- };
-
+      // Update the state with the retrieved tags
+      setTags(tags);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des tags :", error);
+    }
+  };
 
   const toggleDrawerModify = (event, open) => {
     if (
@@ -148,11 +143,10 @@ function Blog() {
 
   return (
     <>
-      <TopCreatorsChart />
       <Toaster />
       <Box>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={8}>
             <Box
               style={{
                 display: "flex",
@@ -182,8 +176,8 @@ function Blog() {
                 value={filter.sort}
                 onChange={handleFilterChange}
               >
-                <MenuItem value="asc">Décroissant</MenuItem>
-                <MenuItem value="desc"> Croissant </MenuItem>
+                <MenuItem value="asc">Plus récent</MenuItem>
+                <MenuItem value="desc"> Plus ancien </MenuItem>
               </Select>
 
               <Select
@@ -235,6 +229,9 @@ function Blog() {
                 />
               </div>
             )}
+          </Grid>
+          <Grid item xs={3}>
+            <TopCreatorsChart />
           </Grid>
         </Grid>
       </Box>

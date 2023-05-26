@@ -30,7 +30,7 @@ module.exports = function (connection, pathname,upload) {
   router.post("/participant", getParticipant);
   router.put("/:id/like", addLike);
   router.put("/:id/dislike", addDislike);
-  router.get("/created_by", getTopCreators);
+  router.get("/stats/created_by", getTopCreators);
 
 
   switch (pathname) {
