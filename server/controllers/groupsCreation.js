@@ -26,5 +26,25 @@ const sendGroups = async (req, res) => {
     }
 }
 
+const getRoom = async (io) => { 
+    io.on('connection', (socket) => {
+        console.log('A client connected.');
 
-module.exports = { getStudents,sendGroups }
+        socket.on('cursorPosition', (data) => {
+            const { userId, position } = data;
+
+            log(`User ${userId} is at position ${position.x}, ${position.y}.`);
+            socket.broadcast.emit('cursorPositionUpdate', { userId, position });
+        });
+
+        socket.on('disconnect', () => {
+            console.log('A client disconnected.');
+        });
+    });
+}
+
+const setRoom = async (io) => { 
+   
+}
+
+module.exports = { getStudents,sendGroups,setRoom,getRoom }

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { FormControl, InputLabel, MenuItem, Select, Button } from "@mui/material";
-import "./PopUp.scss";
+import "./Popup.scss";
 
 export const PopUp = ({ onPopupData, dataPopUp,showPopUp }) => {
     const [classChoose, setClassChoose] = useState("");
@@ -24,6 +24,26 @@ export const PopUp = ({ onPopupData, dataPopUp,showPopUp }) => {
             if (nb_release.current) {
                 nb_release.current.value = dataPopUp.nb_release;
             }
+
+            const socket = new WebSocket("ws://localhost:5050/groupes");
+
+            socket.addEventListener('error', (error) => {
+                console.error('WebSocket error:', error);
+            });
+
+            document.addEventListener('mousemove', (event) => {
+                const cursorPosition = {
+                    x: event.clientX,
+                    y: event.clientY
+                };
+
+                socket.send(JSON.stringify(cursorPosition));
+            });
+
+            return () => {
+                document.removeEventListener('mousemove', () => { });
+                socket.close();
+            }
         }
     }, [dataPopUp]);
 
@@ -36,7 +56,12 @@ export const PopUp = ({ onPopupData, dataPopUp,showPopUp }) => {
                 end_date: end_date.current.value,
                 classChoose: classChoose
             });
+            CreateRoom();
         }
+    }
+
+    function CreateRoom() { 
+
     }
 
     function closePopUp() {

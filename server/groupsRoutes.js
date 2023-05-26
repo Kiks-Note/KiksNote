@@ -3,10 +3,27 @@ const router = express.Router();
 
 const {
     getStudents,
-    sendGroups
+    sendGroups,
+    setRoom,
+    getRoom
 } = require("./controllers/groupsCreation")
 
-router.get("/:classStudents", getStudents);
-router.post("/exportGroups", sendGroups); 
+module.exports = function (connection, pathname,io) { 
 
-module.exports = router;
+    router.get("/:classStudents", getStudents);
+    router.post("/exportGroups", sendGroups);
+
+    switch (pathname) {
+        case "/groupes":
+            getRoom(io);
+            break;
+        case "/groupes/setRoom":
+            setRoom(io);
+        default:
+            break;
+    }
+
+    return router;
+}
+
+

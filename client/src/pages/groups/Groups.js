@@ -1,4 +1,4 @@
-import React, { useState,useEffect,useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from 'axios';
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -6,8 +6,9 @@ import LockIcon from "@mui/icons-material/Lock";
 import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SettingsIcon from '@mui/icons-material/Settings';
-import { PopUp } from "../../components/groups/PopUp";
-import moment from "moment";
+import { PopUp } from "../../components/groups/Popup";
+import useFirebase from "../../hooks/useFirebase";
+import { w3cwebsocket } from "websocket";
 
 import "./Groups.scss";
 
@@ -19,17 +20,20 @@ function App() {
     const [settings, setSettings] = useState();
     const [showSettings, setShowSettings] = useState(false);
 
+    const { user } = useFirebase();
     // For PO view
+
 
     const getStudents = useCallback(async () => {
         try {
             const res = await axios.get(`http://localhost:5050/groupes/${classStudents}`);
             return res.data;
-        } catch (error) {
+        }
+        catch (error) {
             console.error(error);
             throw error;
         }
-    },[classStudents]);
+    }, [classStudents]);
 
     const fetchData = useCallback(async () => {
         const studentsData = await getStudents();
@@ -40,15 +44,20 @@ function App() {
             },
         };
         return colContent;
-    },[getStudents]);
+    }, [getStudents]);
 
     const fetchAndSetData = useCallback(async () => {
         const colContent = await fetchData();
         setColumns(colContent);
-    },[fetchData]);
+    }, [fetchData]);
 
     useEffect(() => {
-        fetchAndSetData();
+
+        let ws = new w3cwebsocket("ws://localhost:5050/groupes");
+
+        ws.onopen = () => {
+            fetchAndSetData();
+        };
     }, [fetchAndSetData]);
 
     function moveOnClick(columnId, student, columns) {
@@ -110,7 +119,7 @@ function App() {
             const number = event.target.value;
             const numberOfStudents = columns.students.items.length;
 
-            let copiedColContent = { ...columns};
+            let copiedColContent = { ...columns };
 
             let numberOfCase = Math.floor(numberOfStudents / number);
 
@@ -252,7 +261,7 @@ function App() {
         return <p>Loading...</p>;
     }
 
-    if (!classStudents) {
+    if (!classStudents && user?.status === "po") {
         return <PopUp onPopupData={handlePopupData} dataPopUp={null} showPopUp={null} />;
     }
 
@@ -260,32 +269,34 @@ function App() {
     return (
         <>
             <div>
-                {showSettings ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
+                {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
                 <h1 style={{ textAlign: "center" }}>Création de Groupes</h1>
-                <div className="groups-inputs">
-                    <input
-                        type="text"
-                        list="students-list"
-                        placeholder="Eleves/groupes"
-                        onChange={generateGroupCase} />
-                    <datalist id="students-list">
-                        <option value={3}></option>
-                        <option value={4}></option>
-                        <option value={5}></option>
-                    </datalist>
-                    <button className="input-button" onClick={resetButton}>
-                        <CachedIcon className="icon-svg" />
-                    </button>
-                    <button className="input-button" onClick={randomGeneration}>
-                        <CasinoIcon className="icon-svg" />
-                    </button>
-                    <button className="input-button">
-                        {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
-                    </button>
-                    <button className="input-button" onClick={settingsPopUp}>
-                        <SettingsIcon className="input-svg" />
-                    </button>
-                </div>
+                {user?.status === "po" ?
+                    <div className="groups-inputs">
+                        <input
+                            type="text"
+                            list="students-list"
+                            placeholder="Eleves/groupes"
+                            onChange={generateGroupCase} />
+                        <datalist id="students-list">
+                            <option value={3}></option>
+                            <option value={4}></option>
+                            <option value={5}></option>
+                        </datalist>
+                        <button className="input-button" onClick={resetButton}>
+                            <CachedIcon className="icon-svg" />
+                        </button>
+                        <button className="input-button" onClick={randomGeneration}>
+                            <CasinoIcon className="icon-svg" />
+                        </button>
+                        <button className="input-button">
+                            {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
+                        </button>
+                        <button className="input-button" onClick={settingsPopUp}>
+                            <SettingsIcon className="input-svg" />
+                        </button>
+                    </div>
+                    : null}
                 <div
                     style={{
                         display: "flex",
@@ -296,7 +307,7 @@ function App() {
                 >
                     <DragDropContext onDragEnd={onDragEnd}>
                         {Object.entries(columns).map(([columnId, column], index) => {
-                            if (index === 0 && columns.students.items.length > 0) {
+                            if (index === 0 && (columns.students.items.length > 0)) {
                                 return (
                                     <div
                                         style={{
