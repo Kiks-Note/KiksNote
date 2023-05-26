@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import {AuthProvider} from "./hooks/useAuth";
 import { Provider } from 'react-redux'
@@ -11,7 +11,6 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(
   <Provider store={store}>
-    {/* <App /> */}
     <Theme />
   </Provider>
 );

@@ -16,14 +16,17 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-
-
+import PropTypes from "prop-types";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "./PdfView.scss";
 
-function PdfView(props) {
+PdfView.propTypes = {
+  linkPdf: PropTypes.string.isRequired,
+  dashboardId: PropTypes.string.isRequired,
+};
+function PdfView({ linkPdf, dashboardId }) {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [link, setLink] = useState(null);
@@ -31,7 +34,7 @@ function PdfView(props) {
 
   useEffect(() => {
     (async () => {
-     setLink(props.link);
+      setLink(linkPdf);
     })();
   }, []);
   const onDocumentLoadSuccess = ({ numPages }) => {
@@ -84,18 +87,15 @@ function PdfView(props) {
     );
   };
   async function onSubmit(data) {
-    console.log(data);
     const formData = {
       name: data.title,
       desc: data.description,
     };
-    console.log(formData);
     try {
       const response = await axios.post(
-        "http://localhost:5050/dashboard/creation/"+props.dashboardId+"/stories",
+        "http://localhost:5050/dashboard/creation/" + dashboardId + "/stories",
         formData
       );
-      console.log(response.data);
       reset(); // Efface les champs après la soumission réussie
     } catch (error) {
       console.error(error);

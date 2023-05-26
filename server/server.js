@@ -13,18 +13,16 @@ const multer = require("multer");
 const DIR = "uploads/";
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, DIR);
   },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(" ").join("-");
+    cb(null, uuidv4() + "-" + fileName);
   },
 });
 
-const upload = multer({
+var upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     if (
@@ -38,9 +36,8 @@ const upload = multer({
       cb(null, false);
       return cb(new Error("Only .png, .jpg, .jpeg and .pdf format allowed!"));
     }
-    cb(null, true);
   },
-}).single("file");
+});
 
 app.use(express.json());
 app.use(cors());

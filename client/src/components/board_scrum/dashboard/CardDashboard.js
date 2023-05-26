@@ -1,12 +1,16 @@
 import React from "react";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
+import { useDispatch } from "react-redux";
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Typography,
+} from "@mui/material";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarIcon from "@mui/icons-material/Star";
-import CardActions from "@material-ui/core/CardActions";
-import { Button, Typography } from "@mui/material";
 import { PropTypes } from "prop-types";
-import OverView from "../../../pages/board_scrum/overview/OverView";
+import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
 
 CardDashboard.propTypes = {
   picture: PropTypes.string.isRequired,
@@ -15,35 +19,32 @@ CardDashboard.propTypes = {
   isFavoris: PropTypes.func.isRequired,
   id: PropTypes.string.isRequired,
 };
+
 CardDashboard.defaultProps = {
   isFavoris: () => {},
 };
 
 export default function CardDashboard({
-  addTab,
   picture,
   sprint_group,
   fav,
   isFavoris,
   id,
 }) {
-  const moveToOverView = () => {
-    var x = JSON.parse(localStorage.getItem("tabs")) || [];
-    x.push({
-      id: id,
-      idDb: id,
-      type: "overView",
-      label: `OverView ${sprint_group}`,
-    });
-    localStorage.setItem("tabs", JSON.stringify(x));
+  const dispatch = useDispatch();
 
-    addTab({
+  const moveToOverView = () => {
+    const overViewTab = {
       id: id,
-      tab: "OverView " + sprint_group,
-      component: <OverView id={id} addTab={addTab} />,
+      label: `OverView ${sprint_group}`,
       closeable: true,
-    });
+      component: "OverView",
+      data: { id },
+    };
+    dispatch(addTab(overViewTab));
+    dispatch(setActiveTab(overViewTab.id));
   };
+
   return (
     <Card
       onClick={moveToOverView}
@@ -56,7 +57,7 @@ export default function CardDashboard({
         backgroundRepeat: "no-repeat",
         opacity: 0.8,
         position: "relative",
-        cursor:"pointer"
+        cursor: "pointer",
       }}
     >
       <CardContent>
