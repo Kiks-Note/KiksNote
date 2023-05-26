@@ -14,9 +14,7 @@ function PublicRoutes() {
 
 
   useEffect(() => {
-    console.log(user);
     const token = cookies.get("token");
-
     if ( !token || !user) {
       setAuthenticated(false);
       setLoading(false);

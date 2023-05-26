@@ -1,4 +1,6 @@
 import React, { useContext } from "react";
+import PropTypes from "prop-types";
+import { useDispatch } from "react-redux";
 import {
   DataGrid,
   GridToolbarQuickFilter,
@@ -12,24 +14,26 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Stack from "@mui/material/Stack";
 import Pagination from "@mui/material/Pagination";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
-import StarIcon from "@mui/icons-material/Star";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Button } from "@mui/material";
+import LaunchIcon from "@mui/icons-material/Launch";
+import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
 
-export default function TableBoard({ id, addTab, rows, addFavorite, deleteBoards }) {
-  /* const moveToOverView = () => {
-    x.push({ id: id, idDb: id, type: "overView", label: `OverView ${sprint_group}` });
-    localStorage.setItem("tabs", JSON.stringify(x));
+TableDashboard.propTypes = {
+  rows: PropTypes.array.isRequired,
+};
 
-    addTab({
-      id: id,
-      tab: "OverView " + sprint_group,
-      component: <OverView id={id} addTab={addTab} />,
+export default function TableDashboard({ rows }) {
+  const dispatch = useDispatch();
+  const moveToOverView = (event) => {
+    const overViewTab = {
+      id: event.id,
+      label: `OverView ${event.row.sprint_group}`,
       closeable: true,
-    });
-  };*/
-  // TODO : fix this
+      component: "OverView",
+      data: event.id,
+    };
+    dispatch(addTab(overViewTab));
+    dispatch(setActiveTab(overViewTab.id));
+  };
 
   const columns = [
     {
@@ -55,43 +59,15 @@ export default function TableBoard({ id, addTab, rows, addFavorite, deleteBoards
     {
       field: "actions",
       type: "actions",
-      headerName: "Parametres",
+      headerName: "Accès au board",
       flex: 1,
       disableReorder: true,
       getActions: (params) => [
         <GridActionsCellItem
-          icon={
-            <Button
-              color="inherit"
-              // onClick={() => moveToOverView()}
-            >
-              Accéder au board
-            </Button>
-          }
-          //onClick={() => moveToOverView()}
-          showInMenu
+          label="Accéder au board"
+          icon={<LaunchIcon />}
+          onClick={() => moveToOverView(params)}
         />,
-        <GridActionsCellItem
-          icon={<DeleteIcon sx={{ color: "red" }} />}
-          label="Supprimer le board"
-          onClick={deleteBoards(params.id)}
-          showInMenu
-        />,
-        params.row.favorite === true ? (
-          <GridActionsCellItem
-            icon={<StarIcon sx={{ color: "purple" }} />}
-            onClick={addFavorite(params.id, params.favorite)}
-            label="Supprimer un favoris "
-            showInMenu
-          />
-        ) : (
-          <GridActionsCellItem
-            icon={<StarBorderIcon sx={{ color: "purple" }} />}
-            onClick={addFavorite(params.id)}
-            label="Mettre en favoris"
-            showInMenu
-          />
-        ),
       ],
     },
   ];
@@ -111,8 +87,12 @@ export default function TableBoard({ id, addTab, rows, addFavorite, deleteBoards
           }}
         >
           <GridToolbarQuickFilter
-            quickFilterParser={(searchInput) => searchInput.split(",").map((value) => value.trim())}
-            quickFilterFormatter={(quickFilterValues) => quickFilterValues.join(", ")}
+            quickFilterParser={(searchInput) =>
+              searchInput.split(",").map((value) => value.trim())
+            }
+            quickFilterFormatter={(quickFilterValues) =>
+              quickFilterValues.join(", ")
+            }
             debounceMs={200} // time before applying the new quick filter value
             placeholder="Recherche"
           />

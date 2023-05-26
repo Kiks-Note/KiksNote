@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 8px;
+  max-height: 60vh;
 }
 .board_container_table_header {
   margin: 8px;
@@ -20,15 +20,24 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 15px;
 }
-.board_container_table_add_column{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 16px;
-    border-color: transparent;
-    border-style: solid;
-    border-width: thin;
-    background: #ffffff3d;
-    min-width: 272px;
+.board_container_table_add_column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px;
+  border-color: transparent;
+  border-style: solid;
+  border-width: thin;
+  background: #ffffff3d;
+  min-width: 272px;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 30px;
+  grid-row-gap: 50px;
+  grid-column-gap: inherit;
+  margin: 20px;
 }
