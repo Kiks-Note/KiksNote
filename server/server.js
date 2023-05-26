@@ -65,7 +65,7 @@ wsI.on("request", (request) => {
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
-  app.use("/blog", blogRoutes(connection, pathname));
+  app.use("/blog", blogRoutes(connection, pathname, upload));
 
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
@@ -78,6 +78,6 @@ wsI.on("request", (request) => {
   });
 });
 
-server.listen(PORT, () => { 
+server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });

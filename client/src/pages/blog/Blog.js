@@ -9,10 +9,7 @@ import useFirebase from "../../hooks/useFirebase";
 import axios from "axios";
 import TopCreatorsChart from "../../components/blog/TopCreator.js";
 
-
-
 function Blog() {
-
   const [blog, setBlog] = useState([]);
   const [filteredBlog, setFilteredBlog] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,12 +19,10 @@ function Blog() {
   const [filter, setFilter] = useState({
     title: "",
     type: "",
-    tags: [],
+    tags: "",
     date: "",
     sort: "asc",
   });
-  console.log(filter);
-  console.log(filteredBlog);
   useEffect(() => {
     const ws = new w3cwebsocket("ws://localhost:5050/blog");
 
@@ -40,12 +35,18 @@ function Blog() {
       const dataFromServer = JSON.parse(message.data);
       var blogs = dataFromServer;
       var allBlogs = [];
+      const dateOptions = {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      };
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
             blog.created_at._nanoseconds / 100000
-        ).toLocaleDateString("fr");
-
+        ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
         const userIsParticipant = blog.participant.includes(user.id);
@@ -67,8 +68,7 @@ function Blog() {
           userDisliked: userDisliked,
           userIsParticipant: userIsParticipant,
           type: blog.type,
-          tags: blog.tags,
-          
+          tag: blog.tag,
         };
         allBlogs.push(blogFront);
       });
@@ -91,24 +91,22 @@ function Blog() {
     if (filter.type !== "") {
       filteredBlogs = filteredBlogs.filter((blog) => blog.type === filter.type);
     }
-
-    if (Array.isArray(filter.tags) && filter.tags.length > 0) {
-      filteredBlogs = filteredBlogs.filter((blog) =>
-        filter.tags.some((tag) => blog.tags.includes(tag))
-      );
-    }
+   console.log(filter.tags);
+   if (filter.tags !== "") {
+     filteredBlogs = filteredBlogs.filter(
+       (blog) =>
+         blog.tag.length > 0 && blog.tag.some((tag) => tag.id == filter.tags)
+     );
+   }
+   console.log(filteredBlogs);
 
     if (filter.sort === "asc") {
       filteredBlogs.sort((a, b) => {
-        const dateA = new Date(a.created_at);
-        const dateB = new Date(b.created_at);
-        return dateA - dateB;
+        return a.created_at.localeCompare(b.created_at);
       });
     } else if (filter.sort === "desc") {
       filteredBlogs.sort((a, b) => {
-        const dateA = new Date(a.created_at);
-        const dateB = new Date(b.created_at);
-        return dateB - dateA;
+        return b.created_at.localeCompare(a.created_at);
       });
     }
 
@@ -119,18 +117,23 @@ function Blog() {
     const { name, value } = event.target;
     setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
   };
-    const fetchTags = async () => {
-      try {
-        const response = await axios.get("http://localhost:5050/blog/tag");
-        const tags = response.data;
-        console.log(tags);
+ const fetchTags = async () => {
+   try {
+     const response = await axios.get("http://localhost:5050/blog/tag");
+     let tags = response.data;
+     console.log(tags);
 
-        // Mettre à jour l'état des tags avec les données récupérées
-        setTags(tags);
-      } catch (error) {
-        console.error("Erreur lors de la récupération des tags :", error);
-      }
-    };
+     // Add the "Aucun" tag to the tags array
+     const aucunTag = { id: "", name: "Aucun" };
+     tags = [aucunTag, ...tags];
+
+     // Update the state with the retrieved tags
+     setTags(tags);
+   } catch (error) {
+     console.error("Erreur lors de la récupération des tags :", error);
+   }
+ };
+
 
   const toggleDrawerModify = (event, open) => {
     if (
@@ -165,12 +168,12 @@ function Blog() {
                 onChange={handleFilterChange}
               />
               <Select
-                label="Type"
+                label="Type d'article"
                 name="type"
                 value={filter.type}
                 onChange={handleFilterChange}
               >
-                <MenuItem value="">Type</MenuItem>
+                <MenuItem value="">Tout type</MenuItem>
                 <MenuItem value="blog">Blog</MenuItem>
                 <MenuItem value="tuto">Tuto</MenuItem>
               </Select>
@@ -179,8 +182,8 @@ function Blog() {
                 value={filter.sort}
                 onChange={handleFilterChange}
               >
-                <MenuItem value="asc">Ascendant</MenuItem>
-                <MenuItem value="desc">Descendant</MenuItem>
+                <MenuItem value="asc">Croissant</MenuItem>
+                <MenuItem value="desc">Décroissant </MenuItem>
               </Select>
 
               <Select
@@ -192,7 +195,7 @@ function Blog() {
                 onChange={handleFilterChange}
               >
                 {tags.map((tag) => (
-                  <MenuItem key={tag.id} value={tag}>
+                  <MenuItem key={tag.id} value={tag.id}>
                     {tag.name}
                   </MenuItem>
                 ))}

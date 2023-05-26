@@ -4,38 +4,33 @@ const { db, FieldValue } = require("../firebase");
 const addNewBlog = async (req, res) => {
   const {
     title,
-    thumbnail,
     editorState,
     inputEditorState,
     created_by,
     tag,
     statut,
+    type,
+    visibility,
   } = req.body;
-
-  if (title == null || title == "") {
-    return res.status(400).send("Title is required");
-  }
-  if (editorState == null || editorState == "") {
-    return res.status(400).send("Description is required");
-  }
-  if (thumbnail == null || thumbnail == "") {
-    return res.status(400).send("Photo is required");
-  }
-
   try {
+    const url = req.protocol + "://" + req.get("host") + "/";
+    let imagebackgroundTmp = req.file ? url + req.file.path : "";
+
     await db.collection("blog").doc().set({
       title: title,
-      thumbnail: thumbnail,
+      thumbnail: imagebackgroundTmp,
       editorState: editorState,
       inputEditorState: inputEditorState,
-      created_at: new Date(),
       statut: statut,
       created_by: created_by,
       participant: [],
       like: [],
       dislike: [],
       tag: tag,
+      type: type,
       updated_at: "",
+      visibility: visibility,
+      created_at: new Date(),
     });
     res.send("Document successfully written!");
   } catch (err) {
@@ -266,15 +261,18 @@ const getTopCreators = async (req, res) => {
 
     res.status(200).json(topCreators);
   } catch (error) {
-    console.error("Erreur lors de la récupération des données des créateurs :", error);
-    res.status(500).json({ error: "Une erreur est survenue lors de la récupération des données des créateurs." });
+    console.error(
+      "Erreur lors de la récupération des données des créateurs :",
+      error
+    );
+    res.status(500).json({
+      error:
+        "Une erreur est survenue lors de la récupération des données des créateurs.",
+    });
   }
-
 };
 
-
 const getTags = async (req, res) => {
-
   try {
     const snapshot = await db.collection("blog_tag").get();
     const tags = [];
@@ -291,12 +289,6 @@ const getTags = async (req, res) => {
       .send("Une erreur s'est produite lors de la récupération des tags.");
   }
 };
-
-
-
-
-
-
 
 module.exports = {
   addBlogComment,

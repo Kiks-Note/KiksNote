@@ -4,7 +4,6 @@ const router = express.Router();
 const {
   deleteBlog,
   addBlogComment,
-  addBlogLike,
   updateBlogVisibility,
   addNewBlog,
   blogRequests,
@@ -19,9 +18,9 @@ const {
 
 } = require("./controllers/blog");
 
-module.exports = function (connection, pathname) {
+module.exports = function (connection, pathname,upload) {
   // Route Dashboard
-  router.post("", addNewBlog);
+  router.post("", upload.single("thumbnail"), addNewBlog);
   router.get("/tag", getTags);
   router.put("/:id/visibility", updateBlogVisibility);
   router.post("/:id/comments", addBlogComment);
@@ -37,7 +36,7 @@ module.exports = function (connection, pathname) {
   switch (pathname) {
     case "/blog":
       blogRequests(connection);
-      console.log("blog");
+      console.log(" je suis dans blog");
       break;
     default:
       break;

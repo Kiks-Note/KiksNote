@@ -7,7 +7,7 @@ import axios from "axios";
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { Rings } from "react-loader-spinner";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import useFirebase from "../../../hooks/useFirebase";
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
@@ -17,12 +17,15 @@ import Autocomplete from "@mui/material/Autocomplete";
 
 export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
   const [title, setTitle] = useState("");
-  const [thumbnail, setThumbnail] = useState("");
+  const [thumbnail, setThumbnail] = useState(null);
+  const [previewImage, setPreviewImage] = useState("");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const [inputEditorState, setInputEditorState] = useState("");
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [errors, setErrors] = useState({});
+
   const { user } = useFirebase();
   const handleEditorChange = (e) => {
     setEditorState(e);
@@ -33,58 +36,89 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
     fetchTags();
     setLoading(false);
   }, []);
+
   const fetchTags = async () => {
     try {
       const response = await axios.get("http://localhost:5050/blog/tag");
       const tags = response.data;
-      console.log(tags);
-
-      // Mettre à jour l'état des tags avec les données récupérées
       setTags(tags);
     } catch (error) {
       console.error("Erreur lors de la récupération des tags :", error);
     }
   };
+
   const reset = () => {
     setTitle("");
-    setThumbnail("");
-    setEditorState("");
+    setThumbnail(null);
+    setPreviewImage("");
+    setEditorState(EditorState.createEmpty());
     setInputEditorState("");
-    setSelectedTags("");
+    setSelectedTags([]);
+    setErrors({});
   };
+
+  const validateForm = () => {
+    let formIsValid = true;
+    const errors = {};
+
+    if (!title) {
+      errors.title = "Veuillez entrer un titre";
+      formIsValid = false;
+    }
+
+    if (!thumbnail) {
+      errors.thumbnail = "Veuillez sélectionner une image";
+      formIsValid = false;
+    }
+
+    if (!inputEditorState) {
+      errors.editorState = "Veuillez écrire un contenu";
+      formIsValid = false;
+    }
+
+    setErrors(errors);
+    return formIsValid;
+  };
+
   const newBlog = async (e) => {
     e.preventDefault();
 
-    if (
-      !title ||
-      !thumbnail ||
-      !editorState ||
-      !inputEditorState ||
-      !selectedTags
-    ) {
-      console.log(title, thumbnail, editorState);
-      toast.error("Veuillez remplir tous les champs");
+    if (!validateForm()) {
       return;
     }
-    var statut = "online";
-    if (user.status == "etudiant") {
-      statut = "pending";
-    }
-    const blog = {
-      title,
-      thumbnail,
-      editorState,
-      inputEditorState,
-      created_by: user.id,
-      type: "blog",
-      tag: selectedTags,
-      statut: statut,
-    };
-    try {
-      const response = await axios.post(`http://localhost:5050/blog`, blog);
 
-      toast.success("Tuto ajouté avec succès");
+    var statut = "online";
+    var visibility = true;
+    if (user.status === "etudiant") {
+      statut = "pending";
+      visibility = false;
+    }
+
+    const formData = new FormData();
+    formData.append("thumbnail", thumbnail);
+    formData.append("title", title);
+    formData.append("editorState", editorState);
+    formData.append("inputEditorState", inputEditorState);
+    formData.append("created_by", user.id);
+    formData.append("type", "blog");
+    formData.append("tag", selectedTags);
+    formData.append("statut", statut);
+    formData.append("visibility", visibility);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5050/blog",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      toast.success("Blog ajouté avec succès");
       reset();
+      toggleDrawerModify(e, false);
       console.log(response.data);
     } catch (error) {
       toast.error("Une erreur est survenue");
@@ -132,7 +166,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
           <TextField
             sx={{ marginBottom: 2 }}
             id="outlined-search"
-            type={"text"}
+            type="text"
             name="Titre"
             label="Titre"
             value={title}
@@ -140,6 +174,8 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             fullWidth
             InputLabelProps={{ className: "inputLabel" }}
             InputProps={{ className: "input" }}
+            error={errors.title ? true : false}
+            helperText={errors.title}
           />
           <div>
             <Autocomplete
@@ -147,9 +183,11 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
               id="tags"
               options={tags}
               getOptionLabel={(tag) => tag.name}
-              value={selectedTags}
+              value={selectedTags.map((tagId) =>
+                tags.find((tag) => tag.id === tagId)
+              )}
               onChange={(event, newValue) => {
-                setSelectedTags(newValue);
+                setSelectedTags(newValue.map((tag) => tag.id));
               }}
               renderInput={(params) => (
                 <TextField
@@ -163,7 +201,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
           </div>
           <div>
             <Editor
-              placeholder="Faites chauffer le clavier "
+              placeholder="Faites chauffer le clavier"
               editorState={editorState}
               toolbarClassName="toolbarClassName"
               wrapperClassName="wrapperClassName"
@@ -172,31 +210,40 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
               editorStyle={{
                 border: "1px solid black",
                 minHeight: "180px",
-                height: "300px", // Taille fixe de l'éditeur de texte
+                height: "300px",
                 padding: "10px",
                 borderRadius: "5px",
                 boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
                 marginBottom: "16px",
               }}
+              error={errors.editorState ? true : false}
             />
+            {errors.editorState && (
+              <Typography variant="caption" color="error">
+                {errors.editorState}
+              </Typography>
+            )}
           </div>
           <TextField
             sx={{ marginBottom: 2 }}
             id="outlined-search"
-            label="Image"
-            type={"text"}
-            name="image"
-            value={thumbnail}
-            onChange={(e) => setThumbnail(e.target.value)}
+            label="Miniature"
+            type="file"
+            onChange={(e) => {
+              setThumbnail(e.target.files[0]);
+              setPreviewImage(URL.createObjectURL(e.target.files[0]));
+            }}
             fullWidth
             InputLabelProps={{ className: "inputLabel" }}
             InputProps={{ className: "input" }}
+            error={errors.thumbnail ? true : false}
+            helperText={errors.thumbnail}
           />
-          {thumbnail && (
+          {previewImage && (
             <>
               <Typography
                 variant="subtitle2"
-                color={"text.secondary"}
+                color="text.secondary"
                 sx={{
                   alignSelf: "flex-start",
                   marginBottom: 2,
@@ -213,7 +260,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
                   maxWidth: { xs: 350, md: 250 },
                 }}
                 alt="The house from the offer."
-                src={thumbnail ? thumbnail : ""}
+                src={previewImage}
               />
             </>
           )}
@@ -227,7 +274,6 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             fullWidth
             onClick={(e) => {
               newBlog(e);
-              toggleDrawerModify(e, false);
             }}
           >
             Confirmer
@@ -243,7 +289,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
         <div>
           <React.Fragment>
             <SwipeableDrawer
-              anchor={"right"}
+              anchor="right"
               open={open}
               onClose={(e) => toggleDrawerModify(e, false)}
               onOpen={(e) => toggleDrawerModify(e, true)}
@@ -253,25 +299,16 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
           </React.Fragment>
         </div>
       ) : (
-        <div
-          style={{
+        <Box
+          sx={{
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            height: "100%",
+            height: "100vh",
           }}
         >
-          <Rings
-            height="200"
-            width="200"
-            color="#00BFFF"
-            radius="6"
-            wrapperStyle={{}}
-            wrapperClass="loader"
-            visible={true}
-            ariaLabel="rings-loading"
-          />
-        </div>
+          <Rings color="#3f51b5" />
+        </Box>
       )}
     </>
   );
