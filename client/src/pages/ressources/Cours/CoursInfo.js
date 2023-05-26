@@ -832,7 +832,9 @@ const CoursInfo = () => {
                   alt="course-img"
                 />
                 <div className="display-date">
-                  <h4 className="font-bold">Date début de Sprint : </h4>
+                  <h4 className="h4-data-cours-info">
+                    Date début de Sprint :{" "}
+                  </h4>
                   <p className="pl-2">
                     {coursData?.dateStartSprint &&
                       coursData.dateStartSprint._seconds &&
@@ -842,7 +844,7 @@ const CoursInfo = () => {
                   </p>
                 </div>
                 <div className="display-date">
-                  <h4 className="font-bold">Date fin de Sprint : </h4>
+                  <h4 className="h4-data-cours-info">Date fin de Sprint : </h4>
                   <p className="pl-2">
                     {coursData?.dateEndSprint &&
                       coursData.dateEndSprint._seconds &&
@@ -892,15 +894,15 @@ const CoursInfo = () => {
                   Détails / Actions
                 </h2>
                 <Divider />
-                <div>
+                <div className="details-actions-container">
                   <div className="display-campus-num">
-                    <h4 className="font-bold">Campus Numérique : </h4>
+                    <h4 className="h4-data-cours-info">Campus Numérique : </h4>
                     <p className="is-campus-num">
                       {coursData.campus_numerique === false ? "Non" : "Oui"}
                     </p>
                   </div>
                   <div className="display-cours-status">
-                    <h4 className="font-bold">Statut du cours : </h4>
+                    <h4 className="h4-data-cours-info">Statut du cours : </h4>
                     <p className="is-public">
                       {coursData.private === false ? "Public" : "Privé"}
                     </p>

@@ -16,14 +16,19 @@ const CarouselProjects = ({
   selectedFilterType,
   selectedIdFilterClass,
 }) => {
-  const filteredProjects =
-    selectedIdFilterClass !== "" && selectedFilterType !== ""
-      ? projects.filter(
-          (project) =>
-            project.promoProject === selectedIdFilterClass &&
-            project.typeProject === selectedFilterType
-        )
-      : projects;
+  let filteredProjects = projects;
+
+  if (selectedIdFilterClass !== "") {
+    filteredProjects = filteredProjects.filter(
+      (project) => project.promoProject === selectedIdFilterClass
+    );
+  }
+
+  if (selectedFilterType !== "") {
+    filteredProjects = filteredProjects.filter(
+      (project) => project.typeProject === selectedFilterType
+    );
+  }
 
   if (filteredProjects.length === 0) {
     return <div>No items to display</div>;
