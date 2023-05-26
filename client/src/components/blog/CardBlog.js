@@ -103,7 +103,6 @@ export default function CardBlog({ blog }) {
         />
         <CardMedia
           component="img"
-          height="10"
           image={blog.thumbnail}
           sx={{ maxHeight: 400 }}
         />

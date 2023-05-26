@@ -144,7 +144,7 @@ function Blog() {
   return (
     <>
       <Toaster />
-      <Box>
+      <Box sx={{ margin: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={8}>
             <Box
@@ -176,8 +176,8 @@ function Blog() {
                 value={filter.sort}
                 onChange={handleFilterChange}
               >
-                <MenuItem value="asc">Plus récent</MenuItem>
-                <MenuItem value="desc"> Plus ancien </MenuItem>
+                <MenuItem value="asc">Plus ancien </MenuItem>
+                <MenuItem value="desc"> Plus récent </MenuItem>
               </Select>
 
               <Select
@@ -195,6 +195,7 @@ function Blog() {
                 ))}
               </Select>
             </Box>
+
             <Button
               variant="contained"
               color="primary"

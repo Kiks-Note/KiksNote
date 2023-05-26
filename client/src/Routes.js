@@ -3,7 +3,6 @@ import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
-import Tuto from "./pages/blog/Tuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
 import CourseBacklogPdf from "./pages/ressources/Cours/PdfCoursBacklog";
@@ -53,7 +52,6 @@ function RoutesProvider() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
 
-          <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/jpo" element={<Jpo />} />
           <Route path="/studentprojects" element={<StudentsProjects />} />
