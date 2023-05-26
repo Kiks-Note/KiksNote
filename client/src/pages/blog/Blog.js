@@ -182,8 +182,8 @@ function Blog() {
                 value={filter.sort}
                 onChange={handleFilterChange}
               >
-                <MenuItem value="asc">Croissant</MenuItem>
-                <MenuItem value="desc">Décroissant </MenuItem>
+                <MenuItem value="asc">Décroissant</MenuItem>
+                <MenuItem value="desc"> Croissant </MenuItem>
               </Select>
 
               <Select
