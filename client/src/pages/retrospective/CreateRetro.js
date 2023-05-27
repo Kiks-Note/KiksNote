@@ -1,72 +1,72 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
 import RetroHero from "../../assets/img/retrospective_hero.png";
 import { TextField, InputLabel, MenuItem, FormControl, Select, Box, Card } from "@mui/material";
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import NativeSelect from '@mui/material/NativeSelect';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Checkbox from '@mui/material/Checkbox';
+import Avatar from '@mui/material/Avatar';
 
 function CreateRetro() {
-    const navigate = useNavigate();
+
+    const [formData, setFormData] = useState({
+        title: "",
+        cours: "",
+        type: "",
+        po: "",
+    });
+
     const [cours, setCours] = useState([]);
     const [users, setUsers] = useState([]);
     const [currentDate, setCurrentDate] = useState(new Date());
+    const [checked, setChecked] = React.useState([1]);
+    const [checked2, setChecked2] = React.useState([1]);
 
-    const initialValues = {
-        name: "",
-        cours: "",
-        type: ""
+    const handlePoToggle = (value) => () => {
+        if (checked === value) {
+          setChecked(null);
+        } else {
+            setFormData({...formData, po: value});
+            setChecked(value);
+        }
     };
 
-    const categoriesCreation = () => {
-        var newRetro;
-        if (formValues.type === "GMS") {
-            newRetro = {...formValues,Glad:[],Mad:[],Sad:[]}
+    const handleCoursesToggle = (value) => () => {
+        if (checked2 === value) {
+            setChecked2(null);
+        } else {
+            setFormData({...formData, cours: value});
+            setChecked2(value);
         }
-        else if (formValues.type === "PNA") {
-            newRetro = {...formValues,Positif:[],Negatif:[],Amelioration:[]}
-        }
-        else if (formValues.type === "4L"){
-            newRetro = {...formValues,Like:[],Learned:[],Lacked:[],Longed:[]}
-        }
-        newRetroRequest(newRetro)
+    }
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setFormData({...formData, [name]: value});
     }
 
     const newRetroRequest = async (newRetro) => {
-        await axios.post("http://localhost:5050/retro", {
+        await axios.post("http://localhost:5050/retro/newretro", {
             retro:newRetro
         }).then((res) => {
             console.log(res.data)
-            // useNavigate().navigate("/");
         }).catch((err) => {
             console.log(err)
         })
     }
 
-    const [formValues, setFormValues] = useState(initialValues);
-    const [formErrors, setFormErrors] = useState({});
-    const [isSubmit, setIsSubmit] = useState(false);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormValues({ ...formValues, [name]: value });
-    };
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        setFormErrors(validate(formValues));
-        setIsSubmit(true);
-    };
-
-    useEffect(() => {
-        if (Object.keys(formErrors).length === 0 && isSubmit) {
-            categoriesCreation();
-        }
-    });
+        newRetroRequest(formData);
+        console.log(formData);
+    }
 
     useEffect(() => {
         const getAllCours = async () => {
@@ -105,25 +105,9 @@ function CreateRetro() {
         getUsers();
     }, []);
 
-    const validate = (values) => {
-        const errors = {};
-
-        if (!values.name) {
-            errors.name = "Un titre est requis!";
-        }
-        if(!values.cours || values.cours === "") {
-            errors.cours = "Choisissez le cours lié à cette rétrospective";
-        }
-        if(!values.type || values.type === ""){
-            errors.type = "Choisissez un type";
-        }
-
-        return errors;
-    };
-
     return(
         <div>
-            <form>
+            <form onSubmit={handleSubmit} >
                 <h1 style={{
                         textAlign: "center",
                         marginTop: "5%",
@@ -162,34 +146,10 @@ function CreateRetro() {
                         marginTop: "5%",
                         marginBottom: "5%",
                     }}
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
                 />
-                {/* Cours lié à la rétro */}
-                <h4>Choisissez un cours : </h4>
-                <div className="ListUser">
-                    {cours.map((courses) => {
-                        return (
-                            <Card sx={{ maxWidth: 345 }} key={courses.id}>
-                              <CardMedia
-                                component="img"
-                                alt={courses.data.title}
-                                height="140"
-                                image={courses.data.imageCourseUrl}
-                              />
-                              <CardContent>
-                                <Typography gutterBottom variant="h5" component="div">
-                                  {courses.data.title}
-                                </Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                  {courses.data.description}
-                                </Typography>
-                              </CardContent>
-                              <CardActions>
-                                <Button size="small">Choisir</Button>
-                              </CardActions>
-                            </Card>
-                        );
-                    })}
-                </div>
                 {/* PO */}
                 <div className="ListUser">
                     <h4>Choisissez un PO : </h4>
@@ -204,9 +164,12 @@ function CreateRetro() {
                         <NativeSelect
                             defaultValue="GMS"
                             inputProps={{
-                                name: 'age',
+                                name: 'type',
                                 id: 'uncontrolled-native',
                             }}
+                            name="type"
+                            value={formData.type}
+                            onChange={handleInputChange}
                         >
                             <option value="GMS"> - Glad, Mad, Sad</option>
                             <option value="PNA"> - Positif, Négatif, Amélioration</option>
@@ -214,17 +177,70 @@ function CreateRetro() {
                         </NativeSelect>
                     </FormControl>
                 </div>
+                {/* Listes des PO */}
                 <div className="ListUser">
                     {users.map((user) => {
                         if(user.status === "po"){
                             return (
                                 <div key={user.id}>
-                                    <h4>{user.firstname} - {user.lastname}</h4>
+                                    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                                        <ListItem disablePadding>
+                                            <ListItemButton>
+                                                <ListItemAvatar>
+                                                    <Avatar
+                                                        alt={`Avatar n°${user.id + 1}`}
+                                                    />
+                                                </ListItemAvatar>
+                                                <ListItemText id={user.id} primary={`${user.firstname} ${user.lastname}`} />
+                                                <Checkbox
+                                                    checked={checked.indexOf(user.id) !== -1}
+                                                    onChange={handlePoToggle(user.id)}
+                                                    inputProps={{
+                                                        'aria-labelledby': user.id,
+                                                    }}
+                                                    name="po"
+                                                />
+                                            </ListItemButton>
+                                        </ListItem>
+                                    </List>
                                 </div>
-                            )
+                            );
                         }
+                        return null;
+                    })}
+                {/* Cours lié à la rétro */}
+                    <h4>Choisissez un cours : </h4>
+                    {cours.map((courses) => {
+                        return (
+                            <Card sx={{ maxWidth: 345 }} key={courses.id}>
+                              <CardMedia
+                                component="img"
+                                alt={courses.data.title}
+                                height="140"
+                                image={courses.data.imageCourseUrl}
+                                name="cours"
+                              />
+                              <CardContent>
+                                <Typography gutterBottom variant="h5" component="div">
+                                  {courses.data.title}
+                                </Typography>
+                                <Typography variant="body2" color="text.secondary">
+                                  {courses.data.description}
+                                </Typography>
+                                </CardContent>
+                                <Checkbox
+                                    checked={checked2.indexOf(courses.id) !== -1}
+                                    onChange={handleCoursesToggle(courses.id)}
+                                    inputProps={{
+                                        'aria-labelledby': courses.id,
+                                    }}
+                                    name="cours"
+                                />
+                            </Card>
+                        );
                     })}
                 </div>
+                <button type="submit">Submit</button>
             </form>
         </div>
     )
