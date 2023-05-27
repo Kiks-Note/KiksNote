@@ -276,6 +276,50 @@ const getTopCreators = async (req, res) => {
   }
 };
 
+
+const getBlogParticipants = async (req, res) => {
+  try {
+    const blogIds = req.body.blogIds; // Utilisez directement req.body.blogIds
+
+    const blogsRef = db.collection("blog");
+    const events = [];
+
+    for (const blogId of blogIds) {
+      const blogSnapshot = await blogsRef.doc(blogId).get();
+      if (blogSnapshot.exists) {
+        const blogData = blogSnapshot.data();
+        const { name, participant } = blogData;
+        events.push({ id: blogId, name, participant });
+      }
+    }
+
+    const sortedEvents = events.sort((a, b) => b.participant - a.participant);
+    const topEvents = sortedEvents.slice(0, 10);
+
+    res.send(topEvents);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
+
+  db.collection("blog").onSnapshot(
+    async (snapshot) => {
+      const documents = [];
+      for (const doc of snapshot.docs) {
+        const event = doc.data();
+        const eventId = doc.id;
+        documents.push({ id: eventId, ...event });
+      }
+      // Vous pouvez envoyer les documents via WebSocket ou d'autres moyens
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+};
+
+
+
+
 const getTags = async (req, res) => {
   try {
     const snapshot = await db.collection("blog_tag").get();
@@ -307,4 +351,5 @@ module.exports = {
   addLike,
   addDislike,
   getTopCreators,
+  getBlogParticipants,
 };

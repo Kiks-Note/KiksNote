@@ -8,6 +8,7 @@ import { Rings } from "react-loader-spinner";
 import useFirebase from "../../hooks/useFirebase";
 import axios from "axios";
 import TopCreatorsChart from "../../components/blog/TopCreator.js";
+import MostParticipantsChart from "../../components/blog/TopEvent.js";
 
 function Blog() {
   const [blog, setBlog] = useState([]);
@@ -45,7 +46,7 @@ function Blog() {
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
-            blog.created_at._nanoseconds / 100000
+          blog.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
@@ -146,7 +147,7 @@ function Blog() {
       <Toaster />
       <Box sx={{ margin: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={8}>
+          <Grid item xs={5}>
             <Box
               style={{
                 display: "flex",
@@ -233,6 +234,7 @@ function Blog() {
           </Grid>
           <Grid item xs={3}>
             <TopCreatorsChart />
+            <MostParticipantsChart />
           </Grid>
         </Grid>
       </Box>

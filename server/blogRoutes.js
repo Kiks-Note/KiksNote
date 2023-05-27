@@ -14,11 +14,13 @@ const {
   addDislike,
   getTags,
   getTopCreators,
+  getBlogParticipants,
+
 
 
 } = require("./controllers/blog");
 
-module.exports = function (connection, pathname,upload) {
+module.exports = function (connection, pathname, upload) {
   // Route Dashboard
   router.post("", upload.single("thumbnail"), addNewBlog);
   router.get("/tag", getTags);
@@ -31,6 +33,8 @@ module.exports = function (connection, pathname,upload) {
   router.put("/:id/like", addLike);
   router.put("/:id/dislike", addDislike);
   router.get("/stats/created_by", getTopCreators);
+  router.get("/stats/:id/participant", getBlogParticipants);
+
 
 
   switch (pathname) {
