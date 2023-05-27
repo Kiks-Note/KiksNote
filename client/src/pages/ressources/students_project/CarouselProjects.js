@@ -1,5 +1,16 @@
 import React from "react";
-import { Card, CardContent, CardMedia, Typography } from "@mui/material";
+import axios from "axios";
+import useFirebase from "../../../hooks/useFirebase";
+
+import {
+  Card,
+  CardContent,
+  CardMedia,
+  Typography,
+  Button,
+} from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
@@ -12,6 +23,31 @@ import { EffectCoverflow, Pagination, Navigation } from "swiper";
 import "./CarouselProjects.scss";
 
 const CarouselProjects = (props) => {
+  const { user } = useFirebase();
+  const userStatus = user?.status;
+
+  let votePo = 5;
+  let votePedago = 3;
+  let voteStudent = 1;
+
+  const referStudentProject = async (projectId, countRefAdd) => {
+    try {
+      await axios
+        .post("http://localhost:5050/ressources/refprojects", {
+          projectId: projectId,
+          counterRefToAdd: countRefAdd,
+        })
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      throw error;
+    }
+  };
+
   let filteredProjects = props.projects;
 
   if (props.selectedIdFilterClass !== "") {
@@ -64,10 +100,33 @@ const CarouselProjects = (props) => {
                     image={project.imgProject}
                   />
                   <Typography variant="h5">{project.nameProject}</Typography>
-                  {project.descriptionProject && (
-                    <Typography variant="body2">
-                      {project.descriptionProject}
-                    </Typography>
+                  {userStatus === "po" ? (
+                    <Button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        referStudentProject(project.id, votePo);
+                      }}
+                    >
+                      {project.counterRef} <FavoriteIcon />
+                    </Button>
+                  ) : userStatus === "pedago" ? (
+                    <Button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        referStudentProject(project.id, votePedago);
+                      }}
+                    >
+                      {project.counterRef} <FavoriteIcon />
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        referStudentProject(project.id, voteStudent);
+                      }}
+                    >
+                      {project.counterRef} <FavoriteIcon />
+                    </Button>
                   )}
                 </CardContent>
               </Card>

@@ -345,7 +345,7 @@ const StudentsProjects = () => {
                     <h2 variant="h3" component="div">
                       {project.nameProject}
                     </h2>
-                    {user?.status === "po" ? (
+                    {userStatus === "po" ? (
                       <Button
                         onClick={(event) => {
                           event.stopPropagation();
@@ -354,7 +354,7 @@ const StudentsProjects = () => {
                       >
                         {project.counterRef} <FavoriteIcon />
                       </Button>
-                    ) : user?.status === "pedago" ? (
+                    ) : userStatus === "pedago" ? (
                       <Button
                         onClick={(event) => {
                           event.stopPropagation();
