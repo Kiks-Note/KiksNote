@@ -469,12 +469,19 @@ const Ressources = () => {
                               : "";
                           }}
                         >
+                          <h2
+                            style={{ paddingLeft: "10px", margin: "0" }}
+                            variant="h3"
+                            component="div"
+                          >
+                            {course.data.title}
+                          </h2>
                           <CardMedia
                             sx={{
                               display: "flex",
                               width: "100%",
-                              maxHeight: "200px",
-                              minHeight: "200px",
+                              maxHeight: "210px",
+                              minHeight: "210px",
                               justifyContent: "center",
                               margin: "0",
                             }}
@@ -486,9 +493,6 @@ const Ressources = () => {
                           <CardContent
                             sx={{ padding: "10px", height: "120px" }}
                           >
-                            <h2 variant="h3" component="div">
-                              {course.data.title}
-                            </h2>
                             {/* <Typography>
                               {courseOwnerData &&
                                 courseOwnerData.data &&
@@ -581,12 +585,19 @@ const Ressources = () => {
                             : ""
                         }
                       >
+                        <h2
+                          style={{ paddingLeft: "10px", margin: "0" }}
+                          variant="h3"
+                          component="div"
+                        >
+                          {course.data.title}
+                        </h2>
                         <CardMedia
                           sx={{
                             display: "flex",
                             width: "100%",
-                            maxHeight: "200px",
-                            minHeight: "200px",
+                            maxHeight: "210px",
+                            minHeight: "210px",
                             justifyContent: "center",
                             margin: "0",
                           }}
@@ -596,9 +607,6 @@ const Ressources = () => {
                         />
 
                         <CardContent sx={{ padding: "10px", height: "120px" }}>
-                          <h2 variant="h3" component="div">
-                            {course.data.title}
-                          </h2>
                           <Typography>
                             {"Début : "}
                             {course &&

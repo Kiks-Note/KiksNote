@@ -36,7 +36,7 @@ const CreateCoursModal = (props) => {
           overflowX: "hidden",
           position: "fixed",
           top: "45%",
-          left: "50%",
+          left: "55%",
           transform: "translate(-50%, -50%)",
           "@media (max-width: 600px)": {
             width: "100%",
@@ -206,9 +206,7 @@ const CreateCoursModal = (props) => {
               render={({ field: { onChange, value } }) => (
                 <Autocomplete
                   id="po-select"
-                  sx={{
-                    width: "80%",
-                  }}
+                  sx={{ width: "80%" }}
                   options={props.allpo}
                   getOptionLabel={(option) =>
                     `${option.lastname ? option.lastname.toUpperCase() : ""} ${
