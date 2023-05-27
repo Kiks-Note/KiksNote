@@ -9,9 +9,9 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { PopUp } from "../../components/groups/Popup";
 import useFirebase from "../../hooks/useFirebase";
 import { w3cwebsocket } from "websocket";
+import { useNavigate } from 'react-router-dom';
 
 import "./Groups.scss";
-
 
 function App() {
     const [columns, setColumns] = useState();
@@ -19,10 +19,15 @@ function App() {
     const [classStudents, setClassStudents] = useState();
     const [settings, setSettings] = useState();
     const [showSettings, setShowSettings] = useState(false);
+    const [inRoom, setInRoom] = useState(false);
 
+    const navigate = useNavigate();
     const { user } = useFirebase();
     // For PO view
 
+    const ws = useMemo(() => {
+        return new w3cwebsocket('ws://localhost:5050/groupes');
+    }, []);
 
     const getStudents = useCallback(async () => {
         try {
@@ -51,32 +56,111 @@ function App() {
         setColumns(colContent);
     }, [fetchData]);
 
-    const ws = useMemo(() => {
-        return new w3cwebsocket('ws://localhost:5050/groupes');
-    }, []);
+    const LogToExistingRoomStudent = useCallback(async () => {
+        try {
+            axios.get(`http://localhost:5050/groupes/getRoom/${user?.class}`).then((res) => {
+                if (res.data.length > 0) {
+                    const message = {
+                        type: 'joinRoom',
+                        data: {
+                            userID: user?.id,
+                            name: user?.name,
+                            class: user?.class,
+                        }
+                    };
+                    ws.send(JSON.stringify(message));
+                    setClassStudents(user?.class);
+                    setInRoom(true);
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }, [user?.class, user?.id, user?.name, ws]);
+
+    const logToExistingRoom = useCallback(async () => {
+        try {
+            axios.get(`http://localhost:5050/groupes/getRoomPo/${user?.id}`).then((res) => {
+                if (res.data.length > 0) {
+                    const message = {
+                        type: 'joinRoom',
+                        data: {
+                            userID: user?.id,
+                            name: user?.name,
+                            class: res.data[0].class
+                        }
+                    };
+                    ws.send(JSON.stringify(message));
+                    setClassStudents(res.data[0].class);
+                    setInRoom(true);
+                }
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }, [user?.id, user?.name, ws]);
+
+    const fetchAndDisplayCursors = useCallback(async () => { 
+        try {
+            axios.get(`http://localhost:5050/groupes/getCursorsUsersConnect/${classStudents}`).then((res) => {
+                if (res.data.length > 0) {
+                    res.data.forEach((cursor) => {
+                        const cursorDiv = document.createElement('div');
+                        cursorDiv.setAttribute('class', 'cursor');
+                        cursorDiv.setAttribute('id', cursor.userID);
+                        cursorDiv.style.left = `${cursor.position.x}px`;
+                        cursorDiv.style.top = `${cursor.position.y}px`;
+                        cursorDiv.style.backgroundColor = `${cursor.color}`;
+                        document.body.appendChild(cursorDiv);
+                    });
+                }
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }, [classStudents]);
 
     useEffect(() => {
 
-        const joinRoom = (roomID) => {
-            const message = {
-                type: 'joinRoom',
-                data: {
-                    roomID: roomID,
-                    userID: user?.id,
-                    classStudent:user?.class
-                }
-            };
-            ws.send(JSON.stringify(message));
-        };
-
-        ws.onopen = () => {
-            fetchAndSetData();
+        const handleOpen = async () => {
             if (user?.status === "etudiant") {
-                joinRoom("room1");
+                await LogToExistingRoomStudent();
+            } else if (user?.status === "po") {
+                await logToExistingRoom();
+            }
+
+            if (inRoom) {
+                await fetchAndSetData();
+                await fetchAndDisplayCursors();
+
+                document.addEventListener('mousemove', (event) => {
+                    const cursorPosition = {
+                        x: event.clientX,
+                        y: event.clientY,
+                    };
+
+                    const message = {
+                        type: 'cursorPosition',
+                        data: {position: cursorPosition , userID: user?.id }
+                    }
+                    ws.send(JSON.stringify(message));
+                });
             }
         };
-    }, [fetchAndSetData, user?.class, user?.id, user?.status, ws]);
 
+        if (ws.readyState === WebSocket.OPEN) {
+            handleOpen();
+        } else {
+            ws.onopen = handleOpen;
+        }
+
+
+        return () => {
+            document.removeEventListener('mousemove', () => { });
+            ws.send(JSON.stringify({ type: 'leaveRoom',data:{userID:user?.id,class:classStudents} }));
+        }
+    }, [LogToExistingRoomStudent, classStudents, fetchAndDisplayCursors, fetchAndSetData, inRoom, logToExistingRoom, user?.id, user?.status, ws]);
 
     function moveOnClick(columnId, student, columns) {
         columns[columnId].items.push(student);
@@ -182,6 +266,7 @@ function App() {
         setClassStudents(data.classChoose);
         setSettings(data);
         setShowSettings(false);
+        setInRoom(true);
     };
 
     const handleClosePopUp = (showFalse) => {
@@ -202,10 +287,14 @@ function App() {
         });
 
         try {
-         await axios.delete(`http://localhost:5050/groupes/deleteRoom/${user?.id}`);
+            await axios.delete(`http://localhost:5050/groupes/deleteRoom/${user?.id}`);
         } catch (error) {
             console.error(error);
         }
+
+        setInRoom(false);
+        ws.send(JSON.stringify({ type: 'closeRoom', data: { class: classStudents } }));
+        navigate("/");
     }
 
     function randomGeneration() {
@@ -281,18 +370,18 @@ function App() {
         setShowSettings(true);
     }
 
-    if (!columns) {
+    if (!columns && inRoom) {
         return <p>Loading...</p>;
     }
 
-    if (!classStudents && user?.status === "po") {
+    if (user?.status === "po" && !inRoom) {
         return <PopUp onPopupData={handlePopupData} dataPopUp={null} showPopUp={null} />;
     }
 
 
     return (
         <>
-            <div>
+            {inRoom ? <div>
                 {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
                 <h1 style={{ textAlign: "center" }}>Création de Groupes</h1>
                 {user?.status === "po" ?
@@ -492,7 +581,9 @@ function App() {
                     </DragDropContext>
                 </div>
                 <button onClick={saveGroups} >Valider</button>
-            </div></>
+            </div> : <h1>Pas de Room pour le moment</h1>}
+
+        </>
     );
 }
 export default App;

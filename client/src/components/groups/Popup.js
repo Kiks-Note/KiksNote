@@ -38,24 +38,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         ws.onopen = () => {
             console.log("WebSocket Client Connected");
         };
-
-        document.addEventListener('mousemove', (event) => {
-            const cursorPosition = {
-                x: event.clientX,
-                y: event.clientY
-            };
-
-            const message = {
-                type: 'cursorPosition',
-                data: cursorPosition
-            }
-             ws.send(JSON.stringify(message));
-        });
-
-        return () => {
-            document.removeEventListener('mousemove', () => { });
-        }
-    }, [dataPopUp, ws]);
+    }, [dataPopUp, user?.id, ws]);
 
     const createRoom = (roomData) => {
         const message = {
@@ -74,7 +57,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
                 end_date: end_date.current.value,
                 classChoose: classChoose
             });
-            createRoom({ po_id: user.id, class: classChoose, roomID: "room1" });
+            createRoom({ po_id: user.id, class: classChoose});
         }
     }
 
