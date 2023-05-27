@@ -11,6 +11,16 @@ import {
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
+import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
+import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
+import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
+import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
+import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
+import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
+
+import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
+
+import "./StudentsProjectsInfo.scss";
 
 const StudentProjectInfo = (props) => {
   const [creatorData, setCreatorData] = useState([]);
@@ -52,26 +62,26 @@ const StudentProjectInfo = (props) => {
     // getCreatorProject(props.projectData.StudentId);
   }, []);
 
-  console.log(props.projectData.createdProjectAt);
-
   return (
     <Dialog
       open={props.openProject}
       onClose={props.handleCloseProject}
       sx={{
         "& .MuiDialog-paper": {
-          maxWidth: "40%",
+          maxWidth: "60%",
           width: "100%",
-          height: "90%",
-          maxHeight: "90%",
+          height: "95%",
+          maxHeight: "95%",
           overflowY: "visible",
           overflowX: "hidden",
           position: "fixed",
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           justifyContent: "space-between",
           top: "47%",
           left: "50%",
+          backgroundColor: "#424242",
+          backgroundImage: "none",
           transform: "translate(-50%, -50%)",
           "@media (max-width: 600px)": {
             width: "100%",
@@ -81,33 +91,96 @@ const StudentProjectInfo = (props) => {
         },
       }}
     >
-      <DialogActions
-        sx={{
-          backgroundImage: `url(${props.projectData.imgProject})`,
-          height: "400px",
-          backgroundSize: "cover",
-        }}
-      >
-        <IconButton
-          sx={{ position: "fixed", top: "2%", backgroundColor: "grey" }}
-          onClick={props.handleCloseProject}
+      <div className="left-side-project">
+        <DialogTitle>{props.projectData.nameProject}</DialogTitle>
+        <DialogContent
+          sx={{
+            backgroundImage: `url(${props.projectData.imgProject})`,
+            backgroundSize: "contain",
+            backgroundRepeat: "no-repeat",
+            width: "90%",
+          }}
+        ></DialogContent>
+        <DialogContent sx={{ width: "90%" }}>
+          <Typography sx={{ textAlign: "justify" }}>
+            {props.projectData.descriptionProject}
+          </Typography>
+          <Typography>{props.projectData.creatorData}</Typography>
+        </DialogContent>
+      </div>
+      <div className="right-side-project">
+        <DialogActions>
+          <IconButton
+            sx={{ position: "fixed", top: "2%", backgroundColor: "grey" }}
+            onClick={props.handleCloseProject}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogActions>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-around",
+            height: "300px",
+          }}
         >
-          <CloseIcon />
-        </IconButton>
-      </DialogActions>
-      <DialogTitle>{props.projectData.nameProject}</DialogTitle>
-      <DialogContent dividers>
-        <Typography>{props.projectData.typeProject}</Typography>
-        <Typography>{props.projectData.descriptionProject}</Typography>
-        <a href={props.projectData.RepoProjectLink}>Lien pour le github</a>
-        <Typography sx={{ textAlign: "right" }}>
-          {/* {props.projectData.memberProject} */}
-          {promoData && promoData.data && promoData.data.name}
-        </Typography>
-        <Typography>{props.projectData.counterRef}</Typography>
-        <Typography></Typography>
-        <Typography>{creatorData}</Typography>
-      </DialogContent>
+          {props.projectData.typeProject === "Web" ? (
+            <div className="type-project-info-container">
+              <Typography>Type du projet : </Typography>
+              <DesktopWindowsRoundedIcon />
+              <Typography>{props.projectData.typeProject}</Typography>
+            </div>
+          ) : props.projectData.typeProject === "Mobile" ? (
+            <div className="type-project-info-container">
+              <Typography>Type du projet : </Typography>
+              <SmartphoneRoundedIcon />
+              <Typography>{props.projectData.typeProject}</Typography>
+            </div>
+          ) : props.projectData.typeProject === "Gaming" ? (
+            <div className="type-project-info-container">
+              <Typography>Type du projet : </Typography>
+              <SportsEsportsRoundedIcon />
+              <Typography>{props.projectData.typeProject}</Typography>
+            </div>
+          ) : props.projectData.typeProject === "IA" ? (
+            <div className="type-project-info-container">
+              <Typography>Type du projet : </Typography>
+              <SmartToyRoundedIcon />
+              <Typography>{props.projectData.typeProject}</Typography>
+            </div>
+          ) : props.projectData.typeProject === "DevOps" ? (
+            <div className="type-project-info-container">
+              <Typography>Type du projet : </Typography>
+              <MediationRoundedIcon />
+              <Typography>{props.projectData.typeProject}</Typography>
+            </div>
+          ) : (
+            <div></div>
+          )}
+          <Typography sx={{ display: "flex", alignItems: "center" }}>
+            Github :{" "}
+            <a
+              href={props.projectData.RepoProjectLink}
+              style={{ color: "#7a52e1", textDecoration: "underline" }}
+            >
+              <img
+                className="github-logo"
+                src={GitHubLogo}
+                alt="repo-github-link-logo"
+              />
+            </a>
+          </Typography>
+          <Typography>
+            {/* {props.projectData.memberProject} */}
+            Classe : {promoData && promoData.data && promoData.data.name}
+          </Typography>
+          <Typography sx={{ color: "#7a52e1" }}>
+            {props.projectData.counterRef}
+            <BackHandRoundedIcon sx={{ height: "16px" }} />
+          </Typography>
+        </div>
+      </div>
     </Dialog>
   );
 };

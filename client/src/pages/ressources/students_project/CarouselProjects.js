@@ -9,7 +9,7 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -86,6 +86,7 @@ const CarouselProjects = (props) => {
           className="swiper_container"
         >
           {filteredProjects.map((project) => (
+            // The line after this one breaks the width of the page
             <SwiperSlide key={project.id}>
               <Card
                 onClick={() => {
@@ -106,8 +107,10 @@ const CarouselProjects = (props) => {
                         event.stopPropagation();
                         referStudentProject(project.id, votePo);
                       }}
+                      sx={{ color: "#7a52e1" }}
                     >
-                      {project.counterRef} <FavoriteIcon />
+                      {project.counterRef}{" "}
+                      <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                     </Button>
                   ) : userStatus === "pedago" ? (
                     <Button
@@ -115,8 +118,10 @@ const CarouselProjects = (props) => {
                         event.stopPropagation();
                         referStudentProject(project.id, votePedago);
                       }}
+                      sx={{ color: "#7a52e1" }}
                     >
-                      {project.counterRef} <FavoriteIcon />
+                      {project.counterRef}{" "}
+                      <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                     </Button>
                   ) : (
                     <Button
@@ -124,8 +129,10 @@ const CarouselProjects = (props) => {
                         event.stopPropagation();
                         referStudentProject(project.id, voteStudent);
                       }}
+                      sx={{ color: "#7a52e1" }}
                     >
-                      {project.counterRef} <FavoriteIcon />
+                      {project.counterRef}{" "}
+                      <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                     </Button>
                   )}
                 </CardContent>

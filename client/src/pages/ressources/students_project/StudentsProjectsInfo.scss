@@ -1,0 +1,24 @@
+.left-side-project {
+    display: flex;
+    flex-direction: column;
+    width: 70%;
+    align-items: center;
+}
+
+.right-side-project {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+    padding-left: 5%;
+    padding-top: 10%;
+}
+
+.github-logo {
+    width: 60px;
+}
+
+.type-project-info-container {
+    display: flex;
+    align-items: center;
+}

@@ -19,7 +19,7 @@ import {
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/SearchRounded";
-import FavoriteIcon from "@mui/icons-material/Favorite";
+import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
 
 import CreateProjectDialog from "./CreateProjectDialog";
 import CarouselProjects from "./CarouselProjects";
@@ -351,8 +351,10 @@ const StudentsProjects = () => {
                           event.stopPropagation();
                           referStudentProject(project.id, votePo);
                         }}
+                        sx={{ color: "#7a52e1" }}
                       >
-                        {project.counterRef} <FavoriteIcon />
+                        {project.counterRef}{" "}
+                        <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                       </Button>
                     ) : userStatus === "pedago" ? (
                       <Button
@@ -360,8 +362,10 @@ const StudentsProjects = () => {
                           event.stopPropagation();
                           referStudentProject(project.id, votePedago);
                         }}
+                        sx={{ color: "#7a52e1" }}
                       >
-                        {project.counterRef} <FavoriteIcon />
+                        {project.counterRef}{" "}
+                        <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                       </Button>
                     ) : (
                       <Button
@@ -369,8 +373,10 @@ const StudentsProjects = () => {
                           event.stopPropagation();
                           referStudentProject(project.id, voteStudent);
                         }}
+                        sx={{ color: "#7a52e1" }}
                       >
-                        {project.counterRef} <FavoriteIcon />
+                        {project.counterRef}{" "}
+                        <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                       </Button>
                     )}
                   </CardContent>
