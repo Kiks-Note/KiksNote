@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
@@ -78,7 +78,6 @@ function RoutesProvider() {
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
           <Route path="*" element={<NotFound />} />
-
         </Route>
       </Routes>
     </BrowserRouter>

@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import CardBlog from "../../components/blog/CardBlog";
 import { Box, Grid, TextField, Select, Button, MenuItem } from "@mui/material";
 import { w3cwebsocket } from "websocket";
-import SideBarModify from "../../components/blog/form/NewBlog.js";
+import NewBlog from "../../components/blog/form/NewBlog.js";
+import NewTuto from "../../components/blog/form/NewTuto.js";
 import { Toaster } from "react-hot-toast";
 import { Rings } from "react-loader-spinner";
 import useFirebase from "../../hooks/useFirebase";
@@ -14,7 +15,8 @@ function Blog() {
   const [blog, setBlog] = useState([]);
   const [filteredBlog, setFilteredBlog] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openModify, setOpenModify] = useState(false);
+  const [openBlog, setOpenBlog] = useState(false);
+  const [openTuto, setOpenTuto] = useState(false);
   const [tags, setTags] = useState([]);
   const { user } = useFirebase();
   const [filter, setFilter] = useState({
@@ -46,7 +48,7 @@ function Blog() {
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
-          blog.created_at._nanoseconds / 100000
+            blog.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
@@ -131,7 +133,7 @@ function Blog() {
     }
   };
 
-  const toggleDrawerModify = (event, open) => {
+  const toggleDrawerBlog = (event, open) => {
     if (
       event &&
       event.type === "keydown" &&
@@ -139,7 +141,17 @@ function Blog() {
     ) {
       return;
     }
-    setOpenModify(open);
+    setOpenBlog(open);
+  };
+  const toggleDrawerTuto = (event, open) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setOpenTuto(open);
   };
 
   return (
@@ -196,18 +208,22 @@ function Blog() {
                 ))}
               </Select>
             </Box>
-
             <Button
               variant="contained"
               color="primary"
-              onClick={(e) => toggleDrawerModify(e, true)}
+              onClick={(e) => toggleDrawerBlog(e, true)}
             >
-              Nouveau Blog
+              Créer un article de blog
             </Button>
-            <SideBarModify
-              open={openModify}
-              toggleDrawerModify={toggleDrawerModify}
-            />
+            <NewBlog open={openBlog} toggleDrawerModify={toggleDrawerBlog} />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={(e) => toggleDrawerTuto(e, true)}
+            >
+              Créer un tutoriel
+            </Button>
+            <NewTuto open={openTuto} toggleDrawerModify={toggleDrawerTuto} />
             {!loading ? (
               filteredBlog.map((blog) => <CardBlog blog={blog} key={blog.id} />)
             ) : (

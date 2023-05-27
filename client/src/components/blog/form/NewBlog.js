@@ -15,7 +15,7 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
 import Autocomplete from "@mui/material/Autocomplete";
 
-export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
+export default function NewBlog({ open, toggleDrawerModify }) {
   const [title, setTitle] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [previewImage, setPreviewImage] = useState("");
@@ -97,8 +97,8 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
     const formData = new FormData();
     formData.append("thumbnail", thumbnail);
     formData.append("title", title);
-    formData.append("editorState", editorState);
-    formData.append("inputEditorState", inputEditorState);
+    formData.append("editorState", JSON.stringify(editorState));
+    formData.append("inputEditorState", JSON.stringify(inputEditorState));
     formData.append("created_by", user.id);
     formData.append("type", "blog");
     formData.append("tag", selectedTags);

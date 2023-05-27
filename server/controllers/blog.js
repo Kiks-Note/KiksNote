@@ -37,6 +37,52 @@ const addNewBlog = async (req, res) => {
     res.status(500).send(err);
   }
 };
+const addNewTuto = async (req, res) => {
+  const {
+    title,
+    editorState,
+    inputEditorState,
+    created_by,
+    tag,
+    statut,
+    type,
+    visibility,
+    inputEditorStateTitle,
+  } = req.body;
+
+  try {
+    const url = req.protocol + "://" + req.get("host") + "/";
+    let imagebackgroundTmp = req.file ? url + req.file.path : "";
+
+    await db
+      .collection("blog")
+      .doc()
+      .set({
+        title: title,
+        thumbnail: imagebackgroundTmp,
+        editorState: JSON.parse(editorState),
+        inputEditorState: JSON.parse(inputEditorState),
+        inputEditorStateTitle: inputEditorStateTitle
+          ? JSON.parse(inputEditorStateTitle)
+          : "",
+        statut: statut,
+        created_by: created_by,
+        participant: [],
+        like: [],
+        dislike: [],
+        tag: tag,
+        type: type,
+        updated_at: "",
+        visibility: visibility,
+        created_at: new Date(),
+      });
+
+    res.send("Document successfully written!");
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
+
 
 //update tutorial visibility
 const updateBlogVisibility = async (req, res) => {
@@ -342,6 +388,7 @@ module.exports = {
   addBlogComment,
   updateBlogVisibility,
   addNewBlog,
+  addNewTuto,
   blogRequests,
   deleteBlog,
   getDescriptions,

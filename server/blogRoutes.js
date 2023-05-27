@@ -6,6 +6,7 @@ const {
   addBlogComment,
   updateBlogVisibility,
   addNewBlog,
+  addNewTuto,
   blogRequests,
   getDescriptions,
   addParticipant,
@@ -15,14 +16,12 @@ const {
   getTags,
   getTopCreators,
   getBlogParticipants,
-
-
-
 } = require("./controllers/blog");
 
 module.exports = function (connection, pathname, upload) {
   // Route Dashboard
   router.post("", upload.single("thumbnail"), addNewBlog);
+  router.post("/tuto", upload.single("thumbnail"), addNewTuto);
   router.get("/tag", getTags);
   router.put("/:id/visibility", updateBlogVisibility);
   router.post("/:id/comments", addBlogComment);
@@ -34,8 +33,6 @@ module.exports = function (connection, pathname, upload) {
   router.put("/:id/dislike", addDislike);
   router.get("/stats/created_by", getTopCreators);
   router.get("/stats/:id/participant", getBlogParticipants);
-
-
 
   switch (pathname) {
     case "/blog":
