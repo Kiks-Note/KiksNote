@@ -173,36 +173,6 @@ const Ressources = () => {
     }
   };
 
-  const getCourseClassId = async (classId) => {
-    try {
-      await axios
-        .get(`http://localhost:5050/ressources/class/${classId}`)
-        .then((res) => {
-          setCourseClassData(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getInstructorById = async (instructorId) => {
-    try {
-      await axios
-        .get(`http://localhost:5050/ressources/instructor/${instructorId}`)
-        .then((res) => {
-          setCourseOwnerData(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const loadCourseData = async (classId, instructorId) => {
     try {
       const courseClassPromise = axios.get(
@@ -474,6 +444,11 @@ const Ressources = () => {
                       ? userClass.id === course.data.courseClass
                       : true
                   )
+                  .filter((course) =>
+                    selectedIdFilterClass !== ""
+                      ? course.data.courseClass === selectedIdFilterClass
+                      : true
+                  )
                   .map((course) => {
                     return (
                       <Grid item xs={12} sm={6} md={3}>
@@ -514,19 +489,14 @@ const Ressources = () => {
                             <h2 variant="h3" component="div">
                               {course.data.title}
                             </h2>
-                            <Typography variant="body2" color="text.secondary">
-                              {course.data.description}
-                            </Typography>
-
-                            <Typography>
+                            {/* <Typography>
                               {courseOwnerData &&
                                 courseOwnerData.data &&
                                 courseOwnerData.data.lastname.toUpperCase()}{" "}
                               {courseOwnerData &&
                                 courseOwnerData.data &&
                                 courseOwnerData.data.firstname}
-                            </Typography>
-                            {/* <Typography>{courseClass}</Typography> */}
+                            </Typography> */}
                             <Typography>
                               {"Début : "}
                               {course &&
@@ -588,6 +558,11 @@ const Ressources = () => {
                       ? userClass.id === course.data.courseClass
                       : true
                   )
+                  .filter((course) =>
+                    selectedIdFilterClass !== ""
+                      ? course.data.courseClass === selectedIdFilterClass
+                      : true
+                  )
                   .map((course) => (
                     <Grid item xs={12} sm={6} md={3}>
                       <Card
@@ -624,8 +599,21 @@ const Ressources = () => {
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
-                          <Typography variant="body2" color="text.secondary">
-                            {course.data.description}
+                          <Typography>
+                            {"Début : "}
+                            {course &&
+                              course.data &&
+                              course.data.dateStartSprint &&
+                              moment
+                                .unix(course.data.dateStartSprint._seconds)
+                                .format("DD.MM.YYYY")}{" "}
+                            - {"Fin : "}
+                            {course &&
+                              course.data &&
+                              course.data.dateEndSprint &&
+                              moment
+                                .unix(course.data.dateEndSprint._seconds)
+                                .format("DD.MM.YYYY")}
                           </Typography>
                           {userStatus === "etudiant" &&
                           course.data.private === true ? (
@@ -673,6 +661,11 @@ const Ressources = () => {
                     ? userClass.id === course.data.courseClass
                     : true
                 )
+                .filter((course) =>
+                  selectedIdFilterClass !== ""
+                    ? course.data.courseClass === selectedIdFilterClass
+                    : true
+                )
                 .map((course) => (
                   <Card
                     className="list-card"
@@ -694,6 +687,22 @@ const Ressources = () => {
                           </h2>
                           <Typography variant="body2" color="text.secondary">
                             {course.data.description}
+                          </Typography>
+                          <Typography>
+                            {"Début : "}
+                            {course &&
+                              course.data &&
+                              course.data.dateStartSprint &&
+                              moment
+                                .unix(course.data.dateStartSprint._seconds)
+                                .format("DD.MM.YYYY")}{" "}
+                            - {"Fin : "}
+                            {course &&
+                              course.data &&
+                              course.data.dateEndSprint &&
+                              moment
+                                .unix(course.data.dateEndSprint._seconds)
+                                .format("DD.MM.YYYY")}
                           </Typography>
                           <Tooltip title="Open">
                             <IconButton
@@ -727,6 +736,11 @@ const Ressources = () => {
                     ? userClass.id === course.data.courseClass
                     : true
                 )
+                .filter((course) =>
+                  selectedIdFilterClass !== ""
+                    ? course.data.courseClass === selectedIdFilterClass
+                    : true
+                )
                 .map((course) => (
                   <Card
                     className="list-card"
@@ -748,6 +762,22 @@ const Ressources = () => {
                           </h2>
                           <Typography variant="body2" color="text.secondary">
                             {course.data.description}
+                          </Typography>
+                          <Typography>
+                            {"Début : "}
+                            {course &&
+                              course.data &&
+                              course.data.dateStartSprint &&
+                              moment
+                                .unix(course.data.dateStartSprint._seconds)
+                                .format("DD.MM.YYYY")}{" "}
+                            - {"Fin : "}
+                            {course &&
+                              course.data &&
+                              course.data.dateEndSprint &&
+                              moment
+                                .unix(course.data.dateEndSprint._seconds)
+                                .format("DD.MM.YYYY")}
                           </Typography>
                           <Tooltip title="Open">
                             <IconButton

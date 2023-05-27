@@ -85,8 +85,7 @@ p.po-p {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-left: 20px;
-    padding-right: 20px;
+    padding: 15px;
     height: 5%;
 }
 
@@ -108,34 +107,27 @@ p.po-p {
     justify-content: space-between;
     align-items: center;
     margin: 5px 0px;
-    padding-left: 20px;
-    padding-top: 10px;
-    padding-right: 20px;
+    padding: 15px;
 }
 
 .is-campus-num {
-    padding-top: 10px;
     margin: 0;
 }
 
 .display-cours-status {
     margin: 5px 0px;
-    padding-left: 20px;
-    padding-right: 20px;
-    padding-bottom: 10px;
+    padding: 15px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
 }
 
 .is-public {
-    padding-top: 10px;
     margin: 0;
 }
 
 h4.h4-data-cours-info {
     margin: 0;
-    padding-top: 10px;
 }
 
 .no-class-img {
