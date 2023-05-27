@@ -26,25 +26,36 @@ const sendGroups = async (req, res) => {
     }
 }
 
-const getRoom = async (io) => { 
-    io.on('connection', (socket) => {
-        console.log('A client connected.');
+const deleteRoom = async (req, res) => {
+    const { po_id } = req.params;
+    await db.collection("rooms").where('po_id', '==', po_id).detete();
+    res.status(200).send("Room successfully deleted!");
+ }
 
-        socket.on('cursorPosition', (data) => {
-            const { userId, position } = data;
+const getRoom = async (connection) => {
 
-            log(`User ${userId} is at position ${position.x}, ${position.y}.`);
-            socket.broadcast.emit('cursorPositionUpdate', { userId, position });
-        });
-
-        socket.on('disconnect', () => {
-            console.log('A client disconnected.');
-        });
-    });
+    connection.on("message", (message) => {
+        const response = JSON.parse(message.utf8Data);
+        
+                switch (response.type) { 
+            case "cursorPosition":
+                //work
+                break;
+            case "createRoom":
+                        console.log(response.data);
+                        const newRoomRef = db.collection("rooms").doc();
+                        newRoomRef.set({
+                            po_id: response.data.po_id,
+                            room_id: response.data.room_id,
+                            class: response.data.class,
+                        });
+                break;
+            case "joinRoom":
+                console.log(response.data);
+                break;
+        }   
+    }); 
 }
 
-const setRoom = async (io) => { 
-   
-}
 
-module.exports = { getStudents,sendGroups,setRoom,getRoom }
+module.exports = { getStudents,sendGroups,getRoom,deleteRoom }

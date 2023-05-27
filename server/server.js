@@ -44,8 +44,6 @@ app.use("/uploads", express.static("uploads"));
 
 const PORT = process.env.PORT || 5050;
 const server = http.createServer(app);
-const io = require("socket.io")(server);
-
 
 const wsI = new webSocketServer({
   httpServer: server,
@@ -65,13 +63,13 @@ wsI.on("request", (request) => {
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
-  
+
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
-  app.use("/groupes", groupsRoute(connection, pathname,io));
-  
+  app.use("/groupes", groupsRoute(connection, pathname));
+
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import axios from 'axios';
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -51,14 +51,32 @@ function App() {
         setColumns(colContent);
     }, [fetchData]);
 
+    const ws = useMemo(() => {
+        return new w3cwebsocket('ws://localhost:5050/groupes');
+    }, []);
+
     useEffect(() => {
 
-        let ws = new w3cwebsocket("ws://localhost:5050/groupes");
+        const joinRoom = (roomID) => {
+            const message = {
+                type: 'joinRoom',
+                data: {
+                    roomID: roomID,
+                    userID: user?.id,
+                    classStudent:user?.class
+                }
+            };
+            ws.send(JSON.stringify(message));
+        };
 
         ws.onopen = () => {
             fetchAndSetData();
+            if (user?.status === "etudiant") {
+                joinRoom("room1");
+            }
         };
-    }, [fetchAndSetData]);
+    }, [fetchAndSetData, user?.class, user?.id, user?.status, ws]);
+
 
     function moveOnClick(columnId, student, columns) {
         columns[columnId].items.push(student);
@@ -170,7 +188,7 @@ function App() {
         setShowSettings(showFalse);
     }
 
-    function saveGroups() {
+    async function saveGroups() {
         setLock(true);
         var groupsKey = Object.keys(columns).filter((key) => key.startsWith("g"));
 
@@ -182,6 +200,12 @@ function App() {
                 po_id: "todo",
             });
         });
+
+        try {
+         await axios.delete(`http://localhost:5050/groupes/deleteRoom/${user?.id}`);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     function randomGeneration() {

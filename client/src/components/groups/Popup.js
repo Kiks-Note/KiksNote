@@ -1,14 +1,23 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { FormControl, InputLabel, MenuItem, Select, Button } from "@mui/material";
+import { w3cwebsocket } from "websocket";
+import useFirebase from "../../hooks/useFirebase";
+
 import "./Popup.scss";
 
-export const PopUp = ({ onPopupData, dataPopUp,showPopUp }) => {
+
+export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
     const [classChoose, setClassChoose] = useState("");
     const start_date = useRef();
     const end_date = useRef();
     const nb_release = useRef();
     const popUpRef = useRef();
 
+    const { user } = useFirebase();
+
+    const ws = useMemo(() => {
+        return new w3cwebsocket('ws://localhost:5050/groupes');
+    }, []);
 
     useEffect(() => {
         if (dataPopUp) {
@@ -24,28 +33,37 @@ export const PopUp = ({ onPopupData, dataPopUp,showPopUp }) => {
             if (nb_release.current) {
                 nb_release.current.value = dataPopUp.nb_release;
             }
-
-            const socket = new WebSocket("ws://localhost:5050/groupes");
-
-            socket.addEventListener('error', (error) => {
-                console.error('WebSocket error:', error);
-            });
-
-            document.addEventListener('mousemove', (event) => {
-                const cursorPosition = {
-                    x: event.clientX,
-                    y: event.clientY
-                };
-
-                socket.send(JSON.stringify(cursorPosition));
-            });
-
-            return () => {
-                document.removeEventListener('mousemove', () => { });
-                socket.close();
-            }
         }
-    }, [dataPopUp]);
+
+        ws.onopen = () => {
+            console.log("WebSocket Client Connected");
+        };
+
+        document.addEventListener('mousemove', (event) => {
+            const cursorPosition = {
+                x: event.clientX,
+                y: event.clientY
+            };
+
+            const message = {
+                type: 'cursorPosition',
+                data: cursorPosition
+            }
+             ws.send(JSON.stringify(message));
+        });
+
+        return () => {
+            document.removeEventListener('mousemove', () => { });
+        }
+    }, [dataPopUp, ws]);
+
+    const createRoom = (roomData) => {
+        const message = {
+            type: 'createRoom',
+            data: roomData
+        };
+        ws.send(JSON.stringify(message));
+    };
 
     function validate() {
         if (!classChoose || !start_date.current.value || !end_date.current.value) {
@@ -56,12 +74,8 @@ export const PopUp = ({ onPopupData, dataPopUp,showPopUp }) => {
                 end_date: end_date.current.value,
                 classChoose: classChoose
             });
-            CreateRoom();
+            createRoom({ po_id: user.id, class: classChoose, roomID: "room1" });
         }
-    }
-
-    function CreateRoom() { 
-
     }
 
     function closePopUp() {
