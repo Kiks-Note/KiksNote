@@ -53,6 +53,10 @@ const StudentsProjects = () => {
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
   const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
 
+  let votePo = 5;
+  let votePedago = 3;
+  let voteStudent = 1;
+
   const getAllProjects = async () => {
     try {
       await axios
@@ -122,6 +126,24 @@ const StudentsProjects = () => {
           descriptionProject: descriptionProject,
           imgProject: imgProjectLink,
           counterRef: 0,
+        })
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const referStudentProject = async (projectId, countRefAdd) => {
+    try {
+      await axios
+        .post("http://localhost:5050/ressources/refprojects", {
+          projectId: projectId,
+          counterRefToAdd: countRefAdd,
         })
         .then((res) => {
           console.log(res.data);
@@ -323,9 +345,34 @@ const StudentsProjects = () => {
                     <h2 variant="h3" component="div">
                       {project.nameProject}
                     </h2>
-                    <Button>
-                      {project.counterRef} <FavoriteIcon />
-                    </Button>
+                    {user?.status === "po" ? (
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          referStudentProject(project.id, votePo);
+                        }}
+                      >
+                        {project.counterRef} <FavoriteIcon />
+                      </Button>
+                    ) : user?.status === "pedago" ? (
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          referStudentProject(project.id, votePedago);
+                        }}
+                      >
+                        {project.counterRef} <FavoriteIcon />
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          referStudentProject(project.id, voteStudent);
+                        }}
+                      >
+                        {project.counterRef} <FavoriteIcon />
+                      </Button>
+                    )}
                   </CardContent>
                 </Card>
               </Grid>

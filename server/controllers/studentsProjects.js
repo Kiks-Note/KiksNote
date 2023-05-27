@@ -121,10 +121,39 @@ const createStudentProject = async (req, res) => {
   }
 };
 
+const refStudentProject = async (req, res) => {
+  try {
+    const { projectId, counterRefToAdd } = req.body;
+
+    const projectRef = db.collection("students_projects").doc(projectId);
+
+    const projectSnapshot = await projectRef.get();
+
+    if (!projectSnapshot.exists) {
+      res.status(404).json({ message: "Projet étudiant non trouvé." });
+      return;
+    }
+
+    const currentCounterRef = projectSnapshot.data().counterRef;
+    const updatedCounterRef = currentCounterRef + counterRefToAdd;
+
+    await projectRef.update({ counterRef: updatedCounterRef });
+
+    res.status(200).json({
+      message: "Projet étudiant mis à jour avec succès.",
+      projectId: projectId,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la mise à jour du projet étudiant.");
+  }
+};
+
 module.exports = {
   getAllStudents,
   getStudentById,
   getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,
+  refStudentProject,
 };

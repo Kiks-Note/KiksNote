@@ -7,6 +7,7 @@ const {
   getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,
+  refStudentProject,
 } = require("./controllers/studentsProjects");
 
 module.exports = function () {
@@ -15,5 +16,6 @@ module.exports = function () {
   router.get("/studentsprojects/:id", getStudentProjectById);
   router.get("/students-projects", getAllStudentsProjects);
   router.post("/students-projects", createStudentProject);
+  router.post("/refprojects", refStudentProject);
   return router;
 };
