@@ -3,23 +3,28 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const { v4: uuidv4 } = require("uuid");
 const app = express();
+const dotenv = require("dotenv").config();
 const { parse } = require("url");
 const webSocketServer = require("websocket").server;
 const http = require("http");
 /// MULTER CONFIG FOR UPLOAD ON SERVER
 const multer = require("multer");
+
 const DIR = "uploads/";
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: function (req, file, cb) {
     cb(null, DIR);
   },
-  filename: (req, file, cb) => {
-    const fileName = file.originalname.toLowerCase().split(" ").join("-");
-    cb(null, uuidv4() + "-" + fileName);
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
   },
 });
 
-var upload = multer({
+const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     if (
@@ -33,8 +38,9 @@ var upload = multer({
       cb(null, false);
       return cb(new Error("Only .png, .jpg, .jpeg and .pdf format allowed!"));
     }
+    cb(null, true);
   },
-});
+}).single("file");
 
 app.use(express.json());
 app.use(cors());
@@ -54,15 +60,17 @@ const inventoryRoutes = require("./inventoryRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
+const coursRoutes = require("./coursRoutes");
 const callRoutes = require("./callRoutes");
 
+const groupsRoute = require("./groupsRoutes");
+app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
-
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
@@ -71,14 +79,16 @@ wsI.on("request", (request) => {
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
-
   connection.on("close", (reasonCode, description) => {
     console.log(
       `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
     );
   });
 });
+
 app.use("/call", callRoutes)
+
+app.use("/ressources", coursRoutes()); // --> Resssources Cours
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

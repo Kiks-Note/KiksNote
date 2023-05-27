@@ -89,7 +89,7 @@ export default function MiniDrawerNotConnected({ element }) {
     {
       id: 1,
       name: "Blog",
-      route: "#",
+      route: "/blog",
       icon: (
         <AlternateEmailIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
@@ -97,13 +97,13 @@ export default function MiniDrawerNotConnected({ element }) {
     {
       id: 2,
       name: "Projet Mis en avant",
-      route: "#",
+      route: "/studentprojects",
       icon: <SchoolIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {
       id: 3,
       name: "Connexion",
-      route: "/login",
+      route: "/connexion",
       icon: (
         <ConnectWithoutContactIcon
           sx={{ color: theme.palette.custom.iconDrawer }}
@@ -113,7 +113,7 @@ export default function MiniDrawerNotConnected({ element }) {
     {
       id: 4,
       name: "Inscription",
-      route: "/signup",
+      route: "/inscription",
       icon: (
         <AccountCircleIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
@@ -288,7 +288,7 @@ export default function MiniDrawerNotConnected({ element }) {
           )}
         </List>
       </Drawer>
-      <Box component="main">
+      <Box component="main" sx={{width: '100%'}}>
         <>{element}</>
       </Box>
     </Box>

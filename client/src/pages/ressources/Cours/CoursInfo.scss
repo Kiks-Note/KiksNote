@@ -1,0 +1,72 @@
+.main-cours-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 0px 20px 50px;
+    border-radius: 10px;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+    width: 100%;
+    min-height: 700px;
+}
+
+.grid-view-cours {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+}
+
+.list-view-cours {
+    display: "flex";
+    flex-direction: "column";
+    flex-wrap: wrap;
+    width: 100%;
+    margin: 0;
+    padding: 20px;
+}
+
+.list-course-pdf {
+    display: flex;
+    width: 100%;
+    padding-top: 20px;
+    flex-direction: column;
+}
+
+.cours-left-side-container {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    height: 100%;
+}
+
+p.p-description-coursinfo {
+    display: flex;
+    width: 100%;
+    padding-top: 20px;
+}
+
+.cours-right-side-container {
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    height: 100%;
+}
+
+.list-po-pedago-container {
+    padding: 20px;
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+}
+
+p.po-p {
+    display: flex;
+    height: 50px;
+    width: 100%;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid lightgrey;
+    border-radius: 10px;
+}

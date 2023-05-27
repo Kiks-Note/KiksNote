@@ -39,6 +39,7 @@ export default function ToggleColorMode() {
           background: {
             default: mode === "light" ? "#f5f5f5" : "#212121",
             paper: mode === "light" ? "#eaeaea" : "#424242",
+            container: mode === "light" ? "#eaeaea" : "#0f0f0f",
           },
           primary: {
             main: mode === "light" ? "#2196f3" : "#90caf9",

@@ -1,12 +1,12 @@
 import axios from "axios";
-import {initializeApp} from "firebase/app";
-import {getAuth, onAuthStateChanged, signOut} from "firebase/auth";
-import {collection, doc, getFirestore, onSnapshot} from "firebase/firestore";
-import {getStorage} from "firebase/storage";
-import {useContext} from "react";
-import {createContext} from "react";
-import {useEffect} from "react";
-import {useState} from "react";
+import { initializeApp } from "firebase/app";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
+import { collection, doc, getFirestore, onSnapshot } from "firebase/firestore";
+import { getStorage } from "firebase/storage";
+import { useContext } from "react";
+import { createContext } from "react";
+import { useEffect } from "react";
+import { useState } from "react";
 import Cookies from "universal-cookie";
 
 const firebaseConfig = {
@@ -32,9 +32,9 @@ const db = getFirestore(firebaseApp);
 export const FirebaseContext = createContext();
 
 export const useFirebase = () => useContext(FirebaseContext);
-export const FirebaseContextProvider = ({children}) => {
+export const FirebaseContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const cookies = new Cookies(); 
+  const cookies = new Cookies();
 
   const [unsubscribe, setUnsubscribe] = useState(null);
 
@@ -42,14 +42,15 @@ export const FirebaseContextProvider = ({children}) => {
     const authUnsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         axios
-          .post("http://localhost:5050/auth/login", {
+          .post("http://localhost:5050/auth/connexion", {
             token: user?.accessToken,
           })
           .then((res) => {
             console.log("Auth state changed to " + user.email);
             const userRef = doc(collection(db, "users"), user.email);
             const _unsub = onSnapshot(userRef, (snap) => {
-              setUser({id: snap.id, ...snap.data()});            
+              console.log(snap);
+              setUser({ id: snap.id, ...snap.data() });
             });
             setUnsubscribe(() => _unsub);
           });
@@ -61,14 +62,14 @@ export const FirebaseContextProvider = ({children}) => {
 
   const logout = async () => {
     cookies.remove("token");
-    cookies.remove("lastConnectionAt")
+    cookies.remove("lastConnectionAt");
     unsubscribe();
     await signOut(auth);
     setUser(null);
   };
 
   return (
-    <FirebaseContext.Provider value={{auth, db, user, logout}}>
+    <FirebaseContext.Provider value={{ auth, db, user, logout }}>
       {children}
     </FirebaseContext.Provider>
   );
