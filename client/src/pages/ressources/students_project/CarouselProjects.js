@@ -30,12 +30,13 @@ const CarouselProjects = (props) => {
   let votePedago = 3;
   let voteStudent = 1;
 
-  const referStudentProject = async (projectId, countRefAdd) => {
+  const referStudentProject = async (projectId, countRefAdd, userId) => {
     try {
       await axios
         .post("http://localhost:5050/ressources/refprojects", {
           projectId: projectId,
           counterRefToAdd: countRefAdd,
+          userId: userId,
         })
         .then((res) => {
           console.log(res.data);
@@ -86,13 +87,8 @@ const CarouselProjects = (props) => {
           className="swiper_container"
         >
           {filteredProjects.map((project) => (
-            // The line after this one breaks the width of the page
             <SwiperSlide key={project.id}>
-              <Card
-                onClick={() => {
-                  // props.handleOpenProject();
-                }}
-              >
+              <Card onClick={() => props.handleOpenProject(project.id)}>
                 <CardContent>
                   <CardMedia
                     component="img"
@@ -105,7 +101,7 @@ const CarouselProjects = (props) => {
                     <Button
                       onClick={(event) => {
                         event.stopPropagation();
-                        referStudentProject(project.id, votePo);
+                        referStudentProject(project.id, votePo, user?.id);
                       }}
                       sx={{ color: "#7a52e1" }}
                     >
@@ -116,7 +112,7 @@ const CarouselProjects = (props) => {
                     <Button
                       onClick={(event) => {
                         event.stopPropagation();
-                        referStudentProject(project.id, votePedago);
+                        referStudentProject(project.id, votePedago, user?.id);
                       }}
                       sx={{ color: "#7a52e1" }}
                     >
@@ -127,7 +123,7 @@ const CarouselProjects = (props) => {
                     <Button
                       onClick={(event) => {
                         event.stopPropagation();
-                        referStudentProject(project.id, voteStudent);
+                        referStudentProject(project.id, voteStudent, user?.id);
                       }}
                       sx={{ color: "#7a52e1" }}
                     >

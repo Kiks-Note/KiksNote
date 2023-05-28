@@ -8,6 +8,12 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
+  List,
+  ListItem,
+  Divider,
+  ListItemText,
+  ListItemAvatar,
+  Avatar,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -23,44 +29,7 @@ import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
 import "./StudentsProjectsInfo.scss";
 
 const StudentProjectInfo = (props) => {
-  const [creatorData, setCreatorData] = useState([]);
-  const [promoData, setPromoData] = useState([]);
-
-  const getClassId = async (id) => {
-    try {
-      await axios
-        .get(`http://localhost:5050/ressources/class/${id}`)
-        .then((res) => {
-          setPromoData(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getCreatorProject = async (id) => {
-    try {
-      await axios
-        .get(`http://localhost:5050/ressources/student/${id}`)
-        .then((res) => {
-          setCreatorData(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  useEffect(() => {
-    getClassId(props.projectData.promoProject);
-    // Fix backend iddoc user
-    // getCreatorProject(props.projectData.StudentId);
-  }, []);
+  console.log(props.projectData);
 
   return (
     <Dialog
@@ -172,9 +141,44 @@ const StudentProjectInfo = (props) => {
             </a>
           </Typography>
           <Typography>
-            {/* {props.projectData.memberProject} */}
-            Classe : {promoData && promoData.data && promoData.data.name}
+            Classe :{" "}
+            {props.projectData &&
+              props.projectData.promoProject &&
+              props.projectData.promoProject.name}
           </Typography>
+          <List
+            sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+          >
+            {props.projectData &&
+              props.projectData.membersProject.map((member, index) => (
+                <React.Fragment key={index}>
+                  <ListItem alignItems="flex-start">
+                    <ListItemAvatar>
+                      <Avatar alt={member.firstname} src={member.image} />
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={
+                        member.lastname.toUpperCase() + " " + member.firstname
+                      }
+                      secondary={
+                        <Typography
+                          sx={{ display: "inline" }}
+                          component="span"
+                          variant="body2"
+                          color="text.primary"
+                        >
+                          {member.firstname} — Some additional information about
+                          the member
+                        </Typography>
+                      }
+                    />
+                  </ListItem>
+                  {index !== props.projectData.membersProject.length - 1 && (
+                    <Divider variant="inset" component="li" />
+                  )}
+                </React.Fragment>
+              ))}
+          </List>{" "}
           <Typography sx={{ color: "#7a52e1" }}>
             {props.projectData.counterRef}
             <BackHandRoundedIcon sx={{ height: "16px" }} />

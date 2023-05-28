@@ -138,12 +138,13 @@ const StudentsProjects = () => {
     }
   };
 
-  const referStudentProject = async (projectId, countRefAdd) => {
+  const referStudentProject = async (projectId, countRefAdd, voterId) => {
     try {
       await axios
         .post("http://localhost:5050/ressources/refprojects", {
           projectId: projectId,
           counterRefToAdd: countRefAdd,
+          userId: voterId,
         })
         .then((res) => {
           console.log(res.data);
@@ -298,7 +299,7 @@ const StudentsProjects = () => {
         projects={topProjects}
         selectedFilterType={selectedFilterTypeProject}
         selectedIdFilterClass={selectedIdFilterClass}
-        // handleOpenProject={() => handleOpenProject()}
+        handleOpenProject={handleOpenProject}
       />
       <h1>Tous les projets</h1>
       <Grid container spacing={2}>
@@ -349,7 +350,7 @@ const StudentsProjects = () => {
                       <Button
                         onClick={(event) => {
                           event.stopPropagation();
-                          referStudentProject(project.id, votePo);
+                          referStudentProject(project.id, votePo, user?.id);
                         }}
                         sx={{ color: "#7a52e1" }}
                       >
@@ -360,7 +361,7 @@ const StudentsProjects = () => {
                       <Button
                         onClick={(event) => {
                           event.stopPropagation();
-                          referStudentProject(project.id, votePedago);
+                          referStudentProject(project.id, votePedago, user?.id);
                         }}
                         sx={{ color: "#7a52e1" }}
                       >
@@ -371,7 +372,11 @@ const StudentsProjects = () => {
                       <Button
                         onClick={(event) => {
                           event.stopPropagation();
-                          referStudentProject(project.id, voteStudent);
+                          referStudentProject(
+                            project.id,
+                            voteStudent,
+                            user?.id
+                          );
                         }}
                         sx={{ color: "#7a52e1" }}
                       >
