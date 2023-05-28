@@ -25,6 +25,8 @@ import {
   Grid,
   TextField,
   InputAdornment,
+  Chip,
+  Avatar,
 } from "@mui/material";
 
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -173,27 +175,6 @@ const Ressources = () => {
     }
   };
 
-  const loadCourseData = async (classId, instructorId) => {
-    try {
-      const courseClassPromise = axios.get(
-        `http://localhost:5050/ressources/class/${classId}`
-      );
-      const instructorPromise = axios.get(
-        `http://localhost:5050/ressources/instructor/${instructorId}`
-      );
-
-      const [courseClassResponse, instructorResponse] = await Promise.all([
-        courseClassPromise,
-        instructorPromise,
-      ]);
-
-      setCourseClassData(courseClassResponse.data);
-      setCourseOwnerData(instructorResponse.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const getAllClass = async () => {
     try {
       await axios
@@ -249,12 +230,6 @@ const Ressources = () => {
       }
     }
   }, [isAllCoursesDataLoaded]);
-
-  useEffect(() => {
-    filteredCoursesCurrentYear.forEach((course) => {
-      loadCourseData(course.data.courseClass, course.data.owner);
-    });
-  }, []);
 
   const createCourse = () => {
     setOpen(true);
@@ -493,14 +468,32 @@ const Ressources = () => {
                           <CardContent
                             sx={{ padding: "10px", height: "120px" }}
                           >
-                            {/* <Typography>
-                              {courseOwnerData &&
-                                courseOwnerData.data &&
-                                courseOwnerData.data.lastname.toUpperCase()}{" "}
-                              {courseOwnerData &&
-                                courseOwnerData.data &&
-                                courseOwnerData.data.firstname}
-                            </Typography> */}
+                            <Chip
+                              label={
+                                <>
+                                  <Typography>
+                                    {course.data.courseClass.name}
+                                  </Typography>
+                                </>
+                              }
+                            ></Chip>
+                            <Chip
+                              avatar={
+                                <Avatar
+                                  alt="Natacha"
+                                  src="/static/images/avatar/1.jpg"
+                                />
+                              }
+                              variant="outlined"
+                              label={
+                                <>
+                                  <Typography>
+                                    {course.data.owner.lastname.toUpperCase()}{" "}
+                                    {course.data.owner.firstname}
+                                  </Typography>
+                                </>
+                              }
+                            ></Chip>
                             <Typography>
                               {"Début : "}
                               {course &&
@@ -607,6 +600,32 @@ const Ressources = () => {
                         />
 
                         <CardContent sx={{ padding: "10px", height: "120px" }}>
+                          <Chip
+                            label={
+                              <>
+                                <Typography>
+                                  {course.data.courseClass.name}
+                                </Typography>
+                              </>
+                            }
+                          ></Chip>
+                          <Chip
+                            avatar={
+                              <Avatar
+                                alt="Natacha"
+                                src="/static/images/avatar/1.jpg"
+                              />
+                            }
+                            variant="outlined"
+                            label={
+                              <>
+                                <Typography>
+                                  {course.data.owner.lastname.toUpperCase()}{" "}
+                                  {course.data.owner.firstname}
+                                </Typography>
+                              </>
+                            }
+                          ></Chip>
                           <Typography>
                             {"Début : "}
                             {course &&
@@ -696,6 +715,32 @@ const Ressources = () => {
                           <Typography variant="body2" color="text.secondary">
                             {course.data.description}
                           </Typography>
+                          <Chip
+                            label={
+                              <>
+                                <Typography>
+                                  {course.data.courseClass.name}
+                                </Typography>
+                              </>
+                            }
+                          ></Chip>
+                          <Chip
+                            avatar={
+                              <Avatar
+                                alt="Natacha"
+                                src="/static/images/avatar/1.jpg"
+                              />
+                            }
+                            variant="outlined"
+                            label={
+                              <>
+                                <Typography>
+                                  {course.data.owner.lastname.toUpperCase()}{" "}
+                                  {course.data.owner.firstname}
+                                </Typography>
+                              </>
+                            }
+                          ></Chip>
                           <Typography>
                             {"Début : "}
                             {course &&
@@ -771,6 +816,32 @@ const Ressources = () => {
                           <Typography variant="body2" color="text.secondary">
                             {course.data.description}
                           </Typography>
+                          <Chip
+                            label={
+                              <>
+                                <Typography>
+                                  {course.data.courseClass.name}
+                                </Typography>
+                              </>
+                            }
+                          ></Chip>
+                          <Chip
+                            avatar={
+                              <Avatar
+                                alt="Natacha"
+                                src="/static/images/avatar/1.jpg"
+                              />
+                            }
+                            variant="outlined"
+                            label={
+                              <>
+                                <Typography>
+                                  {course.data.owner.lastname.toUpperCase()}{" "}
+                                  {course.data.owner.firstname}
+                                </Typography>
+                              </>
+                            }
+                          ></Chip>
                           <Typography>
                             {"Début : "}
                             {course &&

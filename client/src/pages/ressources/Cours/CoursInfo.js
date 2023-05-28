@@ -90,11 +90,8 @@ const CoursInfo = () => {
   const [coursPrivate, setCoursPrivate] = useState(false);
   const [allpo, setAllPo] = useState([]);
   const [allclass, setAllclass] = useState([]);
-  const [courseClass, setCourseClass] = useState([]);
+  const [courseClassName, setCourseClassName] = useState([]);
   const [coursOwnerId, setCoursOwnerId] = useState("");
-  const [courseOwnerData, setCourseOwnerData] = useState([]);
-
-  const [isCoursDataLoaded, setIsCoursDataLoaded] = useState(false);
 
   const [openCours, setOpenCours] = useState(false);
   const [openBacklog, setOpenBacklog] = useState(false);
@@ -131,21 +128,6 @@ const CoursInfo = () => {
     }
   };
 
-  const getInstructorById = async (instructorId) => {
-    try {
-      await axios
-        .get(`http://localhost:5050/ressources/instructor/${instructorId}`)
-        .then((res) => {
-          setCourseOwnerData(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const getAllClass = async () => {
     try {
       await axios
@@ -169,22 +151,6 @@ const CoursInfo = () => {
           setCoursData(res.data.data);
           setPdfLinksCours(res.data.data.pdfLinkCours);
           setPdfLinksBacklog(res.data.data.pdfLinkBackLog);
-          setIsCoursDataLoaded(true);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getClassId = async (classId) => {
-    try {
-      await axios
-        .get(`http://localhost:5050/ressources/class/${classId}`)
-        .then((res) => {
-          setCourseClass(res.data);
         })
         .catch((err) => {
           console.log(err);
@@ -474,13 +440,6 @@ const CoursInfo = () => {
     getCoursId();
   }, []);
 
-  useEffect(() => {
-    if (isCoursDataLoaded) {
-      getClassId(coursData.courseClass);
-      getInstructorById(coursData.owner);
-    }
-  }, [isCoursDataLoaded]);
-
   return (
     <>
       <div className="cours-info-container">
@@ -521,7 +480,7 @@ const CoursInfo = () => {
                           Aucun cours uploader pour le moment par le PO
                         </p>
                         <img
-                          class="no-class-img"
+                          className="no-class-img"
                           src={uploadFile}
                           alt="no-cours-uploaded"
                         />
@@ -605,7 +564,7 @@ const CoursInfo = () => {
                         Aucun backlog uploader pour le moment par le PO
                       </p>
                       <img
-                        class="no-class-img"
+                        className="no-class-img"
                         src={uploadFile}
                         alt="no-backlog-uploaded"
                       />
@@ -676,7 +635,7 @@ const CoursInfo = () => {
                           Aucun backlog uploader pour le moment par le PO
                         </p>
                         <img
-                          class="no-class-img"
+                          className="no-class-img"
                           src={uploadFile}
                           alt="no-backlog-uploaded"
                         />
@@ -760,7 +719,7 @@ const CoursInfo = () => {
                         Aucun backlog uploader pour le moment par le PO
                       </p>
                       <img
-                        class="no-class-img"
+                        className="no-class-img"
                         src={uploadFile}
                         alt="no-backlog-uploaded"
                       />
@@ -862,9 +821,13 @@ const CoursInfo = () => {
                   Classe concernée
                 </h2>
                 <Divider />
-                {courseClass && courseClass.data && courseClass.data.name && (
-                  <p class="display-class">{courseClass.data.name}</p>
-                )}
+                {coursData &&
+                  coursData.courseClass &&
+                  coursData.courseClass.name && (
+                    <p className="display-class">
+                      {coursData.courseClass.name}
+                    </p>
+                  )}
                 <h2
                   style={{
                     marginTop: "10px",
@@ -875,13 +838,13 @@ const CoursInfo = () => {
                 </h2>
                 <Divider />
                 <div className="list-po-pedago-container">
-                  {courseOwnerData &&
-                    courseOwnerData.data &&
-                    courseOwnerData.data.lastname &&
-                    courseOwnerData.data.firstname && (
+                  {coursData &&
+                    coursData.owner &&
+                    coursData.owner.lastname &&
+                    coursData.owner.firstname && (
                       <p className="po-p">
-                        {courseOwnerData.data.lastname.toUpperCase()}{" "}
-                        {courseOwnerData.data.firstname}
+                        {coursData.owner.lastname.toUpperCase()}{" "}
+                        {coursData.owner.firstname}
                       </p>
                     )}
                 </div>
@@ -951,7 +914,7 @@ const CoursInfo = () => {
                         width: "100%",
                       }}
                     >
-                      <Button
+                      {/* <Button
                         startIcon={<EditIcon />}
                         onClick={() => handleClickOpenUpdateDialog()}
                         sx={{
@@ -964,13 +927,13 @@ const CoursInfo = () => {
                       >
                         Modifier
                       </Button>
-                      {courseClass &&
-                        courseClass.data &&
-                        courseClass.data.name &&
-                        courseOwnerData &&
-                        courseOwnerData.data &&
-                        courseOwnerData.data.lastname &&
-                        courseOwnerData.data.firstname && (
+                      {coursData &&
+                        coursData.courseClass &&
+                        coursData.courseClass.name &&
+                        coursData &&
+                        coursData.owner &&
+                        coursData.owner.lastname &&
+                        coursData.owner.firstname && (
                           <UpdateCoursDialog
                             openUpdate={openUpdate}
                             handleClose={handleCloseUpdateDialog}
@@ -995,22 +958,24 @@ const CoursInfo = () => {
                             coursCampusNumerique={coursData.campus_numerique}
                             coursPrivate={coursData.private}
                             setCoursPrivate={setCoursPrivate}
+                            currentClass={coursData.courseClass.name}
+                            courseClassName={courseClassName}
+                            setCourseClassName={setCourseClassName}
                             courseIdClass={courseIdClass}
                             setCourseIdClass={setCourseIdClass}
                             rejectedFiles={rejectedFiles}
-                            currentClass={courseClass.data.name}
                             onSubmit={onSubmit}
                             allpo={allpo}
                             allclass={allclass}
                             currentPO={
-                              courseOwnerData.data.lastname.toUpperCase() +
+                              coursData.owner.lastname.toUpperCase() +
                               " " +
-                              courseOwnerData.data.firstname
+                              coursData.owner.firstname
                             }
                             setCoursOwnerId={setCoursOwnerId}
                             control={control}
                           />
-                        )}
+                        )} */}
                       <Button
                         startIcon={<DeleteIcon />}
                         onClick={() => handleClickOpenDeleteDialog()}
