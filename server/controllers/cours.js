@@ -196,6 +196,7 @@ const createCours = async (req, res) => {
       id: ownerRef.id,
       firstname: ownerRef.data().firstname,
       lastname: ownerRef.data().lastname,
+      image: ownerRef.data().image,
     };
 
     const mimeType = "image/png";

@@ -480,8 +480,13 @@ const Ressources = () => {
                             <Chip
                               avatar={
                                 <Avatar
-                                  alt="Natacha"
-                                  src="/static/images/avatar/1.jpg"
+                                  alt={
+                                    course.data.owner.lastname.toUpperCase() +
+                                    "" +
+                                    course.data.owner.firstname +
+                                    "photo-profile"
+                                  }
+                                  src={course.data.owner.image}
                                 />
                               }
                               variant="outlined"
@@ -612,8 +617,13 @@ const Ressources = () => {
                           <Chip
                             avatar={
                               <Avatar
-                                alt="Natacha"
-                                src="/static/images/avatar/1.jpg"
+                                alt={
+                                  course.data.owner.lastname.toUpperCase() +
+                                  "" +
+                                  course.data.owner.firstname +
+                                  "photo-profile"
+                                }
+                                src={course.data.owner.image}
                               />
                             }
                             variant="outlined"
@@ -727,8 +737,13 @@ const Ressources = () => {
                           <Chip
                             avatar={
                               <Avatar
-                                alt="Natacha"
-                                src="/static/images/avatar/1.jpg"
+                                alt={
+                                  course.data.owner.lastname.toUpperCase() +
+                                  "" +
+                                  course.data.owner.firstname +
+                                  "photo-profile"
+                                }
+                                src={course.data.owner.image}
                               />
                             }
                             variant="outlined"
@@ -828,8 +843,13 @@ const Ressources = () => {
                           <Chip
                             avatar={
                               <Avatar
-                                alt="Natacha"
-                                src="/static/images/avatar/1.jpg"
+                                alt={
+                                  course.data.owner.lastname.toUpperCase() +
+                                  "" +
+                                  course.data.owner.firstname +
+                                  "photo-profile"
+                                }
+                                src={course.data.owner.image}
                               />
                             }
                             variant="outlined"
