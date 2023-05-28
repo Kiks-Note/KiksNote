@@ -37,6 +37,7 @@ const addNewBlog = async (req, res) => {
     res.status(500).send(err);
   }
 };
+//add new Tuto
 const addNewTuto = async (req, res) => {
   const {
     title,
@@ -83,7 +84,6 @@ const addNewTuto = async (req, res) => {
   }
 };
 
-
 //update tutorial visibility
 const updateBlogVisibility = async (req, res) => {
   await db.collection("blog_tutos").doc(req.params.id).update({
@@ -104,7 +104,7 @@ const addBlogComment = async (req, res) => {
       user_status: "etudiant",
     });
 };
-
+//delete  Blog
 const deleteBlog = async (req, res) => {
   await db.collection("blog").doc(req.params.id).delete();
   res.send("Document successfully deleted!");
@@ -114,7 +114,7 @@ const getDescriptions = async (req, res) => {
   const snapshot = await db.collection("blog").doc(req.params.id).get();
   res.send(snapshot.data());
 };
-
+// add Participant
 const addParticipant = async (req, res) => {
   const blogId = req.params.id;
   const userId = req.body.userId;
@@ -171,23 +171,6 @@ const getParticipant = async (req, res) => {
   } catch (error) {
     res.status(500).send(error.message);
   }
-};
-
-const blogRequests = async (connection) => {
-  db.collection("blog").onSnapshot(
-    async (snapshot) => {
-      const documents = [];
-      for (const doc of snapshot.docs) {
-        const event = doc.data();
-        const eventId = doc.id;
-        documents.push({ id: eventId, ...event });
-      }
-      connection.sendUTF(JSON.stringify(documents));
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
 };
 
 const addLike = async (req, res) => {
@@ -322,49 +305,41 @@ const getTopCreators = async (req, res) => {
   }
 };
 
-
 const getBlogParticipants = async (req, res) => {
+  console.log("Je récupère les top particiapnts");
   try {
-    const blogIds = req.body.blogIds; // Utilisez directement req.body.blogIds
+    const snapshot = await db.collection("blog").get();
+    const participantsCount = new Map();
 
-    const blogsRef = db.collection("blog");
-    const events = [];
+    snapshot.forEach((doc) => {
+      const blogData = doc.data();
+      const participants = blogData.participant;
 
-    for (const blogId of blogIds) {
-      const blogSnapshot = await blogsRef.doc(blogId).get();
-      if (blogSnapshot.exists) {
-        const blogData = blogSnapshot.data();
-        const { name, participant } = blogData;
-        events.push({ id: blogId, name, participant });
-      }
-    }
+      participants.forEach((participant) => {
+        if (participantsCount.has(participant)) {
+          participantsCount.set(
+            participant,
+            participantsCount.get(participant) + 1
+          );
+        } else {
+          participantsCount.set(participant, 1);
+        }
+      });
+    });
 
-    const sortedEvents = events.sort((a, b) => b.participant - a.participant);
-    const topEvents = sortedEvents.slice(0, 10);
+    const sortedParticipants = Array.from(participantsCount.entries()).sort(
+      (a, b) => b[1] - a[1]
+    );
 
-    res.send(topEvents);
+    const topParticipants = sortedParticipants.slice(0, 10).map((entry) => {
+      return { participant: entry[0], count: entry[1] };
+    });
+
+    res.send(topParticipants);
   } catch (error) {
     res.status(500).send(error.message);
   }
-
-  db.collection("blog").onSnapshot(
-    async (snapshot) => {
-      const documents = [];
-      for (const doc of snapshot.docs) {
-        const event = doc.data();
-        const eventId = doc.id;
-        documents.push({ id: eventId, ...event });
-      }
-      // Vous pouvez envoyer les documents via WebSocket ou d'autres moyens
-    },
-    (err) => {
-      console.log(err);
-    }
-  );
 };
-
-
-
 
 const getTags = async (req, res) => {
   try {
@@ -384,6 +359,23 @@ const getTags = async (req, res) => {
   }
 };
 
+const blogRequests = async (connection) => {
+  const blogRef = db.collection("blog");
+  blogRef.orderBy("created_at", "desc").onSnapshot(
+    (snapshot) => {
+      const documents = [];
+      snapshot.forEach((doc) => {
+        const blogData = doc.data();
+        const blogId = doc.id;
+        documents.push({ id: blogId, ...blogData });
+      });
+      connection.sendUTF(JSON.stringify(documents));
+    },
+    (err) => {
+      console.log(err);
+    }
+  );
+};
 module.exports = {
   addBlogComment,
   updateBlogVisibility,

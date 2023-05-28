@@ -23,8 +23,7 @@ function Blog() {
     title: "",
     type: "",
     tags: "",
-    date: "",
-    sort: "asc",
+    sort: "desc",
   });
   useEffect(() => {
     const ws = new w3cwebsocket("ws://localhost:5050/blog");
@@ -189,6 +188,7 @@ function Blog() {
                 value={filter.sort}
                 onChange={handleFilterChange}
               >
+                <MenuItem value="">Par défault </MenuItem>
                 <MenuItem value="asc">Plus ancien </MenuItem>
                 <MenuItem value="desc"> Plus récent </MenuItem>
               </Select>

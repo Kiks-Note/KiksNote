@@ -32,7 +32,7 @@ module.exports = function (connection, pathname, upload) {
   router.put("/:id/like", addLike);
   router.put("/:id/dislike", addDislike);
   router.get("/stats/created_by", getTopCreators);
-  router.get("/stats/:id/participant", getBlogParticipants);
+  router.get("/stats/participant", getBlogParticipants);
 
   switch (pathname) {
     case "/blog":
