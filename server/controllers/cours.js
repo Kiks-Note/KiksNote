@@ -7,7 +7,12 @@ const mime = require("mime-types");
 const bucket = storageFirebase.bucket();
 const path = require("path");
 
-const DIR = "uploads/";
+const DIR = "./uploads";
+
+// Vérifier et créer le dossier "uploads" s'il n'existe pas
+if (!fs.existsSync(DIR)) {
+  fs.mkdirSync(DIR);
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
