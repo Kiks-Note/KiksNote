@@ -44,6 +44,7 @@ function RoutesProvider() {
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/agile" element={<Agile/>}/>
+          {/* <Route path="/:dashboard-id/agile" element={<Agile/>}/> */}
           <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           <Route path="/agile/persona" element={<Personas />} />
           {/* INVENTORY */}

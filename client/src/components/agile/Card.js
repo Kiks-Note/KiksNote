@@ -13,7 +13,6 @@ import Alert from '@mui/material/Alert';
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-
 import {
   addImpactMappingActors,
   addImpactMappingDeliverables,
@@ -28,6 +27,8 @@ import {
   editImpactMappingImpact,
   editImpactMappingDeliverable,
 } from "../../redux/slices/impactMappingSlice";
+
+import { addImpactMapping } from './agile';
 
 const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor, }) => {
   const navigate = useNavigate();
@@ -44,10 +45,10 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
   useEffect(() => {
     setColor(defineColor);
     setText(texte);
-  }, [goals, actors, impacts, deliverables]);
+  }, [defineColor, texte, goals, actors, impacts, deliverables]);
 
 
-  const onHandleClick = () => {
+  const onHandleClick = async () => {
     if (text !== '' && text !== undefined && text !== null) {
       switch (column) {
         case 0:
@@ -68,7 +69,20 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
           break;
       }
       console.log(text, color);
-      onCloseForm();
+      if (goals && actors && deliverables && impacts ) {
+        const res = await addImpactMapping({
+          goals: goals,
+          actors: actors,
+          impacts: impacts,
+          deliverables: deliverables,
+        });
+        if(res.status === 200){
+          console.log("impact mapping added successfully");
+        onCloseForm();
+        }else{
+          console.log("error while adding impact mapping");
+        }
+      }
     } else {
       setOpenSnackbar(true);
     }
@@ -155,7 +169,7 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
         &nbsp;
       </div>
 
-      {type == "form" && (
+      {type === "form" && (
         <CardContent sx={{ padding: "1" }}>
           <FormControl
             sx={{
@@ -202,7 +216,7 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
           </CardActions>
         </CardContent>
       )}
-      {type == "card" && (
+      {type === "card" && (
         <CardContent>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             {title} #{index + 1}
