@@ -190,9 +190,14 @@ const refStudentProject = async (req, res) => {
         id: userRef.id,
         firstname: userRef.data().firstname,
         lastname: userRef.data().lastname,
-        image: userRef.data().image,
       };
+
+      if (userRef.data().image) {
+        userData.image = userRef.data().image;
+      }
+
       voters.push(userData);
+
       await projectRef.update({ voters: voters });
     }
 
