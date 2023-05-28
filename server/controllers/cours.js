@@ -175,8 +175,6 @@ const createCours = async (req, res) => {
       imageBase64,
     } = req.body;
 
-    console.log(courseClass);
-
     const courseClassRef = await db.collection("class").doc(courseClass).get();
 
     if (!courseClassRef.exists) {

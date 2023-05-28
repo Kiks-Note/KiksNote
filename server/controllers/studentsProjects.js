@@ -87,11 +87,36 @@ const createStudentProject = async (req, res) => {
       counterRef,
     } = req.body;
 
+    const promoProjectRef = await db
+      .collection("class")
+      .doc(promoProject)
+      .get();
+
+    if (!promoProjectRef.exists) {
+      return res.status(404).send("Classe non trouvée");
+    }
+
+    const projectPromoData = promoProjectRef.data();
+    projectPromoData.id = promoProjectRef.id;
+
+    const creatorProjectRef = await db.collection("users").doc(StudentId).get();
+
+    if (!creatorProjectRef.exists) {
+      return res.status(404).send("Utilisateur non trouvé");
+    }
+
+    const creatorProjectData = {
+      id: creatorProjectRef.id,
+      firstname: creatorProjectRef.data().firstname,
+      lastname: creatorProjectRef.data().lastname,
+      image: creatorProjectRef.data().image,
+    };
+
     const projectData = {
-      StudentId: StudentId,
+      StudentId: creatorProjectData,
       nameProject: nameProject,
       RepoProjectLink: RepoProjectLink,
-      promoProject: promoProject,
+      promoProject: projectPromoData,
       typeProject: typeProject,
       descriptionProject: descriptionProject,
       imgProject: imgProject,
