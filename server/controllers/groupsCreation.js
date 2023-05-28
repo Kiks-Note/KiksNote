@@ -88,8 +88,7 @@ const room = async (connection) => {
                         users: roomUsersUpdated,
                     },
                 }
-
-                connection.send(JSON.stringify(message));
+                    connection.send(JSON.stringify(message));
 
                 break;
             case "createRoom":
@@ -138,6 +137,10 @@ const room = async (connection) => {
                     users.delete(response.data.userID);
                     currentRooms.set(room, users);
                 }
+                break;
+            case "nbSPGrp":
+                console.log(response.data);
+                connection.send(JSON.stringify({type : "nbSPGrp", data : response.data}));
                 break;
         }
     });

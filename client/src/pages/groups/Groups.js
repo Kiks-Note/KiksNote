@@ -20,6 +20,7 @@ function App() {
     const [settings, setSettings] = useState();
     const [showSettings, setShowSettings] = useState(false);
     const [inRoom, setInRoom] = useState(false);
+    const [nbSPGrp, setNbSPGrp] = useState();
 
     const navigate = useNavigate();
     const { user } = useFirebase();
@@ -121,7 +122,7 @@ function App() {
 
                     const message = {
                         type: 'cursorPosition',
-                        data: {position: cursorPosition , userID: user?.id, class: classStudents }
+                        data: { position: cursorPosition, userID: user?.id, class: classStudents }
                     }
                     ws.send(JSON.stringify(message));
                 });
@@ -130,7 +131,11 @@ function App() {
                     const messageReceive = JSON.parse(message.data);
                     switch (messageReceive.type) {
                         case "currentUsers":
-                           console.log(messageReceive.data);
+                            console.log(messageReceive.data);
+                            break;
+                        case "nbSPGrp":
+                            console.log(messageReceive.data);
+                            setNbSPGrp(messageReceive.data);
                             break;
                         default:
                             break;
@@ -148,7 +153,7 @@ function App() {
 
         return () => {
             document.removeEventListener('mousemove', () => { });
-            ws.send(JSON.stringify({ type: 'leaveRoom',data:{userID:user?.id,class:classStudents} }));
+            ws.send(JSON.stringify({ type: 'leaveRoom', data: { userID: user?.id, class: classStudents } }));
         }
     }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, logToExistingRoom, user?.id, user?.status, ws]);
 
@@ -209,6 +214,8 @@ function App() {
     function generateGroupCase(event) {
         if (!isNaN(event.target.value) && event.target.value) {
             const number = event.target.value;
+            setNbSPGrp(number);
+            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { number: number, class: classStudents } }));
             const numberOfStudents = columns.students.items.length;
 
             let copiedColContent = { ...columns };
@@ -288,20 +295,21 @@ function App() {
     }
 
     function randomGeneration() {
-        let nsgp = parseInt(document.querySelector('input[type="text"]').value); // Number of students per groups
-        if (!nsgp) {
+        setNbSPGrp(parseInt(document.querySelector('input[type="text"]').value)); // Number of students per groups
+        if (!nbSPGrp) {
             alert(
                 "Merci de renseigner d'abord le nombre de groupe d'élèves par groupe souhaité"
             );
         } else {
 
             const numberOfStudents = columns.students.items.length;
+            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { number: nbSPGrp, class: classStudents } }));
 
             let copiedColContent = { ...fetchData() };
 
-            let numberOfCase = Math.floor(numberOfStudents / nsgp);
+            let numberOfCase = Math.floor(numberOfStudents / nbSPGrp);
 
-            if (numberOfStudents % nsgp !== 0) {
+            if (numberOfStudents % nbSPGrp !== 0) {
                 numberOfCase++;
             }
 
@@ -321,17 +329,17 @@ function App() {
 
             var numberGroup = groups.length;
 
-            var nbNotFull = numberGroup * nsgp - studentsArrayRandom.length;
+            var nbNotFull = numberGroup * nbSPGrp - studentsArrayRandom.length;
 
-            for (var i = 0; i < studentsArrayRandom.length; i += nsgp) {
+            for (var i = 0; i < studentsArrayRandom.length; i += nbSPGrp) {
                 const groupKey = groups[groupIndex];
                 var groupItems = [];
                 if (nbNotFull > 0) {
-                    groupItems = studentsArrayRandom.slice(i, i + nsgp - 1);
+                    groupItems = studentsArrayRandom.slice(i, i + nbSPGrp - 1);
                     i = i - 1;
                     nbNotFull -= 1;
                 } else {
-                    groupItems = studentsArrayRandom.slice(i, i + nsgp);
+                    groupItems = studentsArrayRandom.slice(i, i + nbSPGrp);
                 }
                 const updatedGroup = {
                     ...columns[groupKey],
@@ -373,7 +381,6 @@ function App() {
         <>
             {inRoom ? <div>
                 {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
-                <h1 style={{ textAlign: "center" }}>Création de Groupes</h1>
                 {user?.status === "po" ?
                     <div className="groups-inputs">
                         <input
@@ -405,6 +412,7 @@ function App() {
                         display: "flex",
                         justifyContent: "center",
                         height: "100%",
+                        width: "100%",
                         flexWrap: "wrap",
                     }}
                 >
@@ -418,6 +426,7 @@ function App() {
                                             flexDirection: "column",
                                             alignItems: "center",
                                             width: "100%",
+                                            height: "100%",
                                         }}
                                         key={columnId}
                                     >
@@ -478,6 +487,7 @@ function App() {
                                                 }}
                                             </Droppable>
                                         </div>
+                                        {!nbSPGrp ? <p style={{ color: "grey", fontSize: "100px", textAlign: "center", fontWeight: "bold" }}>Veuillez choisir le nombre d'élèves par groupe</p> : null}
                                     </div>
                                 );
                             } else if (index !== 0) {
@@ -568,7 +578,7 @@ function App() {
                         })}
                     </DragDropContext>
                 </div>
-                <button onClick={saveGroups} >Valider</button>
+                {user?.status === "po" ? <button onClick={saveGroups} >Valider</button> : null}
             </div> : <h1>Pas de Room pour le moment</h1>}
 
         </>
