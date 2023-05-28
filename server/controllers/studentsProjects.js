@@ -124,11 +124,20 @@ const createStudentProject = async (req, res) => {
       createdProjectAt: new Date(),
     };
 
-    const groupMembers = membersProject.map((member, index) => ({
-      [`member${index + 1}`]: member,
-    }));
-
-    projectData.membersProject = Object.assign({}, ...groupMembers);
+    const membersData = [];
+    for (const memberId of membersProject) {
+      const memberRef = await db.collection("users").doc(memberId).get();
+      if (memberRef.exists) {
+        const memberData = {
+          id: memberRef.id,
+          firstname: memberRef.data().firstname,
+          lastname: memberRef.data().lastname,
+          image: memberRef.data().image,
+        };
+        membersData.push(memberData);
+      }
+    }
+    projectData.membersProject = membersData;
 
     const projectsRef = db.collection("students_projects");
     const newProject = await projectsRef.add(projectData);
