@@ -148,7 +148,7 @@ const createStudentProject = async (req, res) => {
 
 const refStudentProject = async (req, res) => {
   try {
-    const { projectId, counterRefToAdd } = req.body;
+    const { projectId, counterRefToAdd, userId } = req.body;
 
     const projectRef = db.collection("students_projects").doc(projectId);
 
@@ -162,7 +162,30 @@ const refStudentProject = async (req, res) => {
     const currentCounterRef = projectSnapshot.data().counterRef;
     const updatedCounterRef = currentCounterRef + counterRefToAdd;
 
+    const projectData = projectSnapshot.data();
+    const voters = projectData.voters || [];
+    const hasVoted = voters.some((voter) => voter.id === userId);
+
+    if (hasVoted) {
+      res
+        .status(403)
+        .json({ message: "Vous avez déjà mise en avant ce projet." });
+      return;
+    }
+
     await projectRef.update({ counterRef: updatedCounterRef });
+
+    const userRef = await db.collection("users").doc(userId).get();
+    if (userRef.exists) {
+      const userData = {
+        id: userRef.id,
+        firstname: userRef.data().firstname,
+        lastname: userRef.data().lastname,
+        image: userRef.data().image,
+      };
+      voters.push(userData);
+      await projectRef.update({ voters: voters });
+    }
 
     res.status(200).json({
       message: "Projet étudiant mis à jour avec succès.",
