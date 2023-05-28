@@ -23,7 +23,6 @@ function App() {
 
     const navigate = useNavigate();
     const { user } = useFirebase();
-    // For PO view
 
     const ws = useMemo(() => {
         return new w3cwebsocket('ws://localhost:5050/groupes');
@@ -101,29 +100,10 @@ function App() {
         }
     }, [user?.id, user?.name, ws]);
 
-    const fetchAndDisplayCursors = useCallback(async () => { 
-        try {
-            axios.get(`http://localhost:5050/groupes/getCursorsUsersConnect/${classStudents}`).then((res) => {
-                if (res.data.length > 0) {
-                    res.data.forEach((cursor) => {
-                        const cursorDiv = document.createElement('div');
-                        cursorDiv.setAttribute('class', 'cursor');
-                        cursorDiv.setAttribute('id', cursor.userID);
-                        cursorDiv.style.left = `${cursor.position.x}px`;
-                        cursorDiv.style.top = `${cursor.position.y}px`;
-                        cursorDiv.style.backgroundColor = `${cursor.color}`;
-                        document.body.appendChild(cursorDiv);
-                    });
-                }
-            });
-        } catch (error) {
-            console.error(error);
-        }
-    }, [classStudents]);
-
     useEffect(() => {
 
         const handleOpen = async () => {
+
             if (user?.status === "etudiant") {
                 await LogToExistingRoomStudent();
             } else if (user?.status === "po") {
@@ -132,7 +112,6 @@ function App() {
 
             if (inRoom) {
                 await fetchAndSetData();
-                await fetchAndDisplayCursors();
 
                 document.addEventListener('mousemove', (event) => {
                     const cursorPosition = {
@@ -142,10 +121,21 @@ function App() {
 
                     const message = {
                         type: 'cursorPosition',
-                        data: {position: cursorPosition , userID: user?.id }
+                        data: {position: cursorPosition , userID: user?.id, class: classStudents }
                     }
                     ws.send(JSON.stringify(message));
                 });
+
+                ws.onmessage = (message) => {
+                    const messageReceive = JSON.parse(message.data);
+                    switch (messageReceive.type) {
+                        case "currentUsers":
+                           console.log(messageReceive.data);
+                            break;
+                        default:
+                            break;
+                    }
+                };
             }
         };
 
@@ -160,7 +150,7 @@ function App() {
             document.removeEventListener('mousemove', () => { });
             ws.send(JSON.stringify({ type: 'leaveRoom',data:{userID:user?.id,class:classStudents} }));
         }
-    }, [LogToExistingRoomStudent, classStudents, fetchAndDisplayCursors, fetchAndSetData, inRoom, logToExistingRoom, user?.id, user?.status, ws]);
+    }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, logToExistingRoom, user?.id, user?.status, ws]);
 
     function moveOnClick(columnId, student, columns) {
         columns[columnId].items.push(student);
@@ -406,7 +396,7 @@ function App() {
                             {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
                         </button>
                         <button className="input-button" onClick={settingsPopUp}>
-                            <SettingsIcon className="input-svg" />
+                            <SettingsIcon className="icon-svg" />
                         </button>
                     </div>
                     : null}
@@ -440,7 +430,7 @@ function App() {
                                                             ref={provided.innerRef}
                                                             style={{
                                                                 backgroundColor: snapshot.isDraggingOver ? "#e697b3" : "#252525",
-                                                                padding: 4,
+                                                                padding: "0px 50px",
                                                                 width: "100%",
                                                                 minHeight: 140,
                                                                 maxHeight: 500,
@@ -465,10 +455,8 @@ function App() {
                                                                                     {...provided.dragHandleProps}
                                                                                     style={{
                                                                                         userSelect: "none",
-                                                                                        padding: 16,
-                                                                                        marginBottom: 8,
-                                                                                        minHeight: "60px",
                                                                                         borderRadius: 3,
+                                                                                        boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
                                                                                         backgroundColor: snapshot.isDragging
                                                                                             ? "#7d0229"
                                                                                             : "#f50057",

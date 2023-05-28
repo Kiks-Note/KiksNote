@@ -1,5 +1,4 @@
 const express = require("express");
-const { get } = require("http");
 const router = express.Router();
 
 const {
@@ -9,7 +8,6 @@ const {
     deleteRoom,
     getRoom,
     getRoomPo,
-    getCursorsUsersConnect
 } = require("./controllers/groupsCreation")
 
 module.exports = function (connection, pathname) { 
@@ -19,7 +17,6 @@ module.exports = function (connection, pathname) {
     router.delete("/deleteRoom/:po_id", deleteRoom);
     router.get("/getRoom/:classStudent", getRoom);
     router.get("/getRoomPo/:po_id", getRoomPo);
-    router.get("/getCursorsUsersConnect/:room", getCursorsUsersConnect);
 
     switch (pathname) {
         case "/groupes":

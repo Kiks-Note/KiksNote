@@ -2,6 +2,7 @@ const { db } = require("../firebase");
 const moment = require("moment");
 
 const cursorsPositions = new Map();
+const pastelColors = ["#FFA07A", "#FF7F50", "#FFEE93", "#FCF5C7", "#A0CED9", "#ADF7B6", "#ffb3c6", "#a9def9", "#eccaff"];
 
 
 const getStudents = async (req, res) => {
@@ -58,21 +59,38 @@ const getRoomPo = async (req, res) => {
     res.status(200).send(documents);
 }
 
-const getCursorsUsersConnect = async (req, res) => { 
-    const { room } = req.params;
-    const cursorsToDisplay = cursorsPositions.get(room);
-    res.status(200).send(cursorsToDisplay);
-};
+const currentRooms = new Map();
 
 const room = async (connection) => {
-    const currentRooms = new Map();
+
 
     connection.on("message", (message) => {
         const response = JSON.parse(message.utf8Data);
+
         switch (response.type) {
             case "cursorPosition":
                 const { userID, position } = response.data;
+
                 cursorsPositions.set(userID, position);
+
+                const roomUsersToUpdate = currentRooms.get(response.data.class) || new Map();
+
+                roomUsersToUpdate.set(userID, { position: position, color: roomUsersToUpdate.get(userID)?.color });
+
+                currentRooms.set(response.data.class, roomUsersToUpdate);
+
+
+                const roomUsersUpdated = currentRooms.get(response.data.class);
+                
+                const message = {
+                    type: "currentUsers",
+                    data: {
+                        users: roomUsersUpdated,
+                    },
+                }
+
+                connection.send(JSON.stringify(message));
+
                 break;
             case "createRoom":
                 const newRoomRef = db.collection("rooms").doc();
@@ -81,11 +99,33 @@ const room = async (connection) => {
                     class: response.data.class,
                 });
                 currentRooms.set(response.data.class, new Map());
+
                 break;
             case "joinRoom":
                 const roomUsers = currentRooms.get(response.data.class) || new Map();
-                roomUsers.set(response.data.userID, { position: null });
+
+                if (roomUsers.size >= pastelColors.length) {
+                    roomUsers.forEach((userData, userID) => {
+                        const colorIndex = userID % pastelColors.length;
+                        const color = pastelColors[colorIndex];
+                        userData.color = color;
+                    });
+                } else {
+                    const colorIndex = roomUsers.size % pastelColors.length;
+                    const color = pastelColors[colorIndex];
+                    roomUsers.set(response.data.userID, { position: null, color: color });
+                }
+
                 currentRooms.set(response.data.class, roomUsers);
+
+                const messageJoin = {
+                    type: "currentUsers",
+                    data: {
+                        users: currentRooms.get(response.data.class),
+                    }
+                }
+                
+                connection.send(JSON.stringify(messageJoin));
                 break;
             case "closeRoom":
                 break;
@@ -104,4 +144,4 @@ const room = async (connection) => {
 };
 
 
-module.exports = { getStudents, sendGroups, room, deleteRoom, getRoom, getRoomPo,getCursorsUsersConnect };
+module.exports = { getStudents, sendGroups, room, deleteRoom, getRoom, getRoomPo };
