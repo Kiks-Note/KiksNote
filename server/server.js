@@ -1,7 +1,11 @@
 const express = require("express");
+const PDFDocument = require('pdfkit');
+const path = require('path');
+const fs = require('fs');
 const cors = require("cors");
 const app = express();
-const {db} = require("./firebase");
+app.use(express.static("server"));
+const { db } = require("./firebase");
 const bodyParser = require("body-parser");
 const webSocketServer = require("websocket").server;
 const http = require("http");

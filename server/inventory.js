@@ -1,8 +1,14 @@
+const path = require('path');
+const fs = require('fs');
+const generatePDF = require('./pdfGenerator');
+
+
 module.exports = (app, db, user, ws) => {
+
   app.get("/inventory", async (req, res) => {
     const docRef = db.collection("inventory");
     const snapshot = await docRef.orderBy("createdAt").get();
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     try {
       res.status(200).send(documents);
@@ -11,8 +17,39 @@ module.exports = (app, db, user, ws) => {
     }
   });
 
+  app.get('/inventory/pdfGenerator', async (req, res) => {
+    const docRef = db.collection("inventory");
+    const snapshot = await docRef.orderBy('createdAt').get();
+    console.log('Snapshot:', snapshot);
+
+    const inventoryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log('Inventory Data:', inventoryData);
+
+    try {
+      const outputDir = path.join(__dirname, 'output');
+      const outputPath = path.join(outputDir, 'inventory.pdf');
+
+      if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir);
+      }
+
+      fs.access(outputDir, fs.constants.W_OK, (err) => {
+        if (err) {
+          console.error('Erreur : Le serveur n\'a pas les permissions d\'écriture dans le répertoire de sortie.');
+          res.status(500).send('Erreur lors de la génération du PDF');
+          return;
+        }
+
+        generatePDF(inventoryData, outputPath, res);
+      });
+    } catch (err) {
+      console.error('Erreur lors de la génération du PDF :', err);
+      res.status(500).send('Erreur lors de la génération du PDF');
+    }
+  });
+
   app.get("/inventory/:deviceId", async (req, res) => {
-    const {deviceId} = req.params;
+    const { deviceId } = req.params;
 
     const docRef = db.collection("inventory").doc(deviceId);
     const doc = await docRef.get();
@@ -22,7 +59,7 @@ module.exports = (app, db, user, ws) => {
 
   app.get("/categories", async (req, res) => {
     const snapshot = await db.collection("inventoryCategories").get();
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     try {
       res.status(200).send(documents);
@@ -32,7 +69,7 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.post("/addDevice", async (req, res) => {
-    const {label, price, acquisitiondate, campus, storage, image, condition, description} = req.body;
+    const { label, price, acquisitiondate, campus, storage, image, condition, description } = req.body;
 
     try {
       await db.collection("inventory").doc().set({
@@ -55,8 +92,8 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.put("/inventory/modify/:deviceId", async (req, res) => {
-    const {deviceId} = req.params;
-    const {label, price, acquisitiondate, campus, storage, image, condition, description, lastModifiedBy} =
+    const { deviceId } = req.params;
+    const { label, price, acquisitiondate, campus, storage, image, condition, description, lastModifiedBy } =
       req.body;
 
     console.log(req.body);
@@ -89,7 +126,7 @@ module.exports = (app, db, user, ws) => {
   // });
 
   app.delete("/inventory/delete/:deviceId", async (req, res) => {
-    const {deviceId} = req.params;
+    const { deviceId } = req.params;
 
     try {
       await db.collection("inventory").doc(deviceId).delete();
@@ -100,8 +137,8 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.put("/inventory/edit/:deviceId", async (req, res) => {
-    const {deviceId} = req.params;
-    const {label, price, acquisitiondate, campus, storage, condition, description, lastModifiedBy} = req.body;
+    const { deviceId } = req.params;
+    const { label, price, acquisitiondate, campus, storage, condition, description, lastModifiedBy } = req.body;
 
     let updatedStatus = status;
     if (status === "Disponible") {
@@ -138,8 +175,8 @@ module.exports = (app, db, user, ws) => {
   // requests
 
   app.put("/inventory/makerequest/:category/:deviceId", async (req, res) => {
-    const {deviceId} = req.params;
-    const {startDate, endDate} = req.body;
+    const { deviceId } = req.params;
+    const { startDate, endDate } = req.body;
 
     try {
       const deviceRef = await db.collection("inventory").doc(deviceId);
@@ -167,20 +204,20 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.get("/inventory/requests/:deviceId", async (req, res) => {
-    const {deviceId} = req.params;
+    const { deviceId } = req.params;
 
     const snapshot = await db
       .collection("inventory_requests")
       .where("deviceId", "==", deviceId)
       .get();
 
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     res.status(200).send(documents);
   });
 
   app.put("/inventory/acceptrequest/:deviceId/:requestId", async (req, res) => {
-    const {deviceId, requestId} = req.params;
+    const { deviceId, requestId } = req.params;
 
     try {
       const deviceRef = await db.collection("inventory").doc(deviceId);
@@ -205,7 +242,7 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.put("/inventory/refuserequest/:deviceId/:requestId", async (req, res) => {
-    const {deviceId, requestId} = req.params;
+    const { deviceId, requestId } = req.params;
 
     try {
       const deviceRef = await db.collection("inventory").doc(deviceId);
@@ -230,7 +267,7 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.get("/inventory/request/:deviceId/:requestId", async (req, res) => {
-    const {deviceId, requestId} = req.params;
+    const { deviceId, requestId } = req.params;
 
     const doc = await db
       .collection("inventory")
@@ -243,16 +280,16 @@ module.exports = (app, db, user, ws) => {
   });
 
   app.get("/inventory/request/:requestId", async (req, res) => {
-    const {requestId} = req.params;
+    const { requestId } = req.params;
 
     const doc = await db.collection("inventory_requests").doc(requestId).get();
     // console.log(doc.data());
-    res.status(200).send({...doc.data(), id: doc.id});
+    res.status(200).send({ ...doc.data(), id: doc.id });
   });
 
   app.put("/inventory/request/:requestId", async (req, res) => {
-    const {requestId} = req.params;
-    const {returned, returnDate, admin} = req.body;
+    const { requestId } = req.params;
+    const { returned, returnDate, admin } = req.body;
 
     try {
       const requestRef = await db

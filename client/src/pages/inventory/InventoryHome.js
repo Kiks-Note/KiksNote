@@ -1,10 +1,10 @@
-import {Button, Fab, Grid, Tooltip} from "@mui/material";
+import { Button, Fab, Grid, Tooltip } from "@mui/material";
 import Box from "@mui/material/Box";
 import axios from "axios";
-import React, {useEffect, useState} from "react";
-import {toast, Toaster} from "react-hot-toast";
-import {Rings} from "react-loader-spinner";
-import {CustomDropdown} from "../../components/inventory/CustomDropdown";
+import React, { useEffect, useState } from "react";
+import { toast, Toaster } from "react-hot-toast";
+import { Rings } from "react-loader-spinner";
+import { CustomDropdown } from "../../components/inventory/CustomDropdown";
 import InvBox from "../../components/inventory/InvBox";
 import ModalForm from "../../components/inventory/ModalForm";
 import LoanRequestForm from "../../components/inventory/LoanRequestForm";
@@ -14,11 +14,12 @@ import AddIcon from "@mui/icons-material/Add";
 import AccessibilityNewRoundedIcon from "@mui/icons-material/AccessibilityNewRounded";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import "../../styles/inventoryGlobal.css";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SideBarModify from "../../components/inventory/SideBarModify";
 import Snackbar from "../../components/inventory/CustomSnackBar";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddCardIcon from '@mui/icons-material/AddCard';
 
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
@@ -176,7 +177,7 @@ function InventoryHome() {
             <Tooltip
               title="Demander un emprunt"
               aria-label="add"
-              sx={{marginBottom: "20px"}}
+              sx={{ marginBottom: "20px" }}
               placement="left"
             >
               <Fab
@@ -190,7 +191,7 @@ function InventoryHome() {
             <Tooltip
               title="Ajouter un appareil"
               aria-label="add"
-              sx={{marginBottom: "20px"}}
+              sx={{ marginBottom: "20px" }}
               placement="left"
             >
               <Fab
@@ -204,7 +205,7 @@ function InventoryHome() {
             <Tooltip
               title="Voir les demandes"
               aria-label="add"
-              sx={{marginBottom: "20px"}}
+              sx={{ marginBottom: "20px" }}
               placement="left"
             >
               <Fab
@@ -218,7 +219,7 @@ function InventoryHome() {
             <Tooltip
               title="Voir la liste de matériel"
               aria-label="add"
-              sx={{marginBottom: "20px"}}
+              sx={{ marginBottom: "20px" }}
               placement="left"
             >
               <Fab
@@ -227,6 +228,20 @@ function InventoryHome() {
                 onClick={() => navigate("/inventory/devices")}
               >
                 <FormatListNumberedIcon />
+              </Fab>
+            </Tooltip>
+            <Tooltip
+              title="Générer un pdf"
+              aria-label="add"
+              sx={{ marginBottom: "20px" }}
+              placement="left"
+            >
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={(e) => navigate("/inventory/pdfGenerator")}
+              >
+                <AddCardIcon />
               </Fab>
             </Tooltip>
           </>
@@ -244,11 +259,11 @@ function InventoryHome() {
         <CustomDropdown
           placeholder="Filtrer"
           data={[
-            {label: "Tous", value: "all"},
-            {label: "Disponible", value: "available"},
-            {label: "Emprunté", value: "borrowed"},
-            {label: "Demandés", value: "requested"},
-            {label: "Indisponibles", value: "unavailable"},
+            { label: "Tous", value: "all" },
+            { label: "Disponible", value: "available" },
+            { label: "Emprunté", value: "borrowed" },
+            { label: "Demandés", value: "requested" },
+            { label: "Indisponibles", value: "unavailable" },
           ]}
           onChange={(e) => {
             setStatusFilter(e[0].value);
@@ -257,9 +272,9 @@ function InventoryHome() {
         <CustomDropdown
           placeholder="Campus"
           data={[
-            {label: "Cergy", value: "Cergy"},
-            {label: "Paris", value: "Paris"},
-            {label: "Reset", value: "reset"},
+            { label: "Cergy", value: "Cergy" },
+            { label: "Paris", value: "Paris" },
+            { label: "Reset", value: "reset" },
           ]}
           onChange={(e) => {
             setCampusFilter(e[0].value);
@@ -287,7 +302,7 @@ function InventoryHome() {
           />
         </div>
       ) : (
-        <Box sx={{flexGrow: 1}}>
+        <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={4}>
             {!loading &&
               inventory
@@ -315,7 +330,7 @@ function InventoryHome() {
                   } else {
                     return (
                       item.campus.charAt(0).toUpperCase() +
-                        item.campus.slice(1) ===
+                      item.campus.slice(1) ===
                       campusFilter
                     );
                   }

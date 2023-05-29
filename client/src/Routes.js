@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Test from "./pages/Test";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Navbar from "./components/navbar/Navbar";
@@ -6,6 +6,7 @@ import InventoryHome from "./pages/inventory/InventoryHome";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import InventoryDevices from "./pages/inventory/InventoryDevices";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
+import InventoryPdfGenerator from "./pages/inventory/InventoryPdfGenerator";
 
 function RoutesProvider() {
   return (
@@ -15,6 +16,7 @@ function RoutesProvider() {
 
         <Route element={<PrivateRoutes />}>
           <Route path="/inventory" element={<InventoryHome />} />
+          <Route path="/inventory/pdfGenerator" element={<InventoryPdfGenerator />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
           <Route path="/inventory/devices" element={<InventoryDevices />} />
           <Route
