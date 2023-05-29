@@ -109,8 +109,11 @@ const createStudentProject = async (req, res) => {
       id: creatorProjectRef.id,
       firstname: creatorProjectRef.data().firstname,
       lastname: creatorProjectRef.data().lastname,
-      image: creatorProjectRef.data().image,
     };
+
+    if (creatorProjectRef.data().image) {
+      creatorProjectData.image = creatorProjectRef.data().image;
+    }
 
     const projectData = {
       StudentId: creatorProjectData,
