@@ -80,24 +80,6 @@ const CarouselProjects = (props) => {
   var votePedago = 3;
   var voteStudent = 1;
 
-  let filteredProjects = props.projects;
-
-  if (props.selectedIdFilterClass !== "") {
-    filteredProjects = filteredProjects.filter(
-      (project) => project.promoProject === props.selectedIdFilterClass
-    );
-  }
-
-  if (props.selectedFilterType !== "") {
-    filteredProjects = filteredProjects.filter(
-      (project) => project.typeProject === props.selectedFilterType
-    );
-  }
-
-  if (filteredProjects.length === 0) {
-    return <div>No items to display</div>;
-  }
-
   return (
     <div className="carousel-container">
       <div className="carousel">
@@ -116,8 +98,9 @@ const CarouselProjects = (props) => {
           navigation
           modules={[EffectCoverflow, Pagination, Navigation]}
           className="swiper_container"
+          style={{ maxWidth: "80%" }}
         >
-          {filteredProjects.map((project) => (
+          {props.topProjects.map((project) => (
             <SwiperSlide key={project.id}>
               <Card onClick={() => props.handleOpenProject(project.id)}>
                 <CardContent>
@@ -127,7 +110,12 @@ const CarouselProjects = (props) => {
                     height="500"
                     image={project.imgProject}
                   />
+
                   <Typography variant="h5">{project.nameProject}</Typography>
+                  <Typography variant="h5">{project.typeProject}</Typography>
+                  <Typography variant="h5">
+                    {project.promoProject.name}
+                  </Typography>
                   {userStatus === "po" ? (
                     <Button
                       onClick={(event) => {

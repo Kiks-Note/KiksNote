@@ -72,6 +72,7 @@ const StudentsProjects = () => {
     useState("");
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
   const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
+  const [filteredProjects, setFilteredProjects] = useState([]);
 
   const [files, setFiles] = useState([]);
   const rejectedFiles = files.filter((file) => file.errors);
@@ -202,6 +203,28 @@ const StudentsProjects = () => {
     }
   };
 
+  const filterProjects = () => {
+    const filtered = projects.filter((project) => {
+      if (selectedIdFilterClass !== "") {
+        return (
+          project.promoProject &&
+          project.promoProject.id === selectedIdFilterClass
+        );
+      }
+      if (selectedFilterTypeProject !== "") {
+        return project.typeProject === selectedFilterTypeProject;
+      }
+      return true;
+    });
+    filtered.sort((a, b) => b.counterRef - a.counterRef);
+
+    setFilteredProjects(filtered);
+  };
+
+  useEffect(() => {
+    filterProjects();
+  }, [selectedFilterTypeProject, selectedIdFilterClass, projects]);
+
   useEffect(() => {
     getAllProjects();
     getAllClass();
@@ -235,42 +258,20 @@ const StudentsProjects = () => {
     setOpen(false);
   };
 
-  const sortedProjects = projects.sort((a, b) => b.counterRef - a.counterRef);
-  const topProjects = sortedProjects.slice(0, 10);
-  const filteredProjects = sortedProjects.slice(10);
-
   const allTypesProject = [
     ...new Set(Object.values(projects).map((project) => project.typeProject)),
   ];
 
-  console.log(projectImageBase64);
+  console.log(filteredProjects);
+
+  console.log(selectedIdFilterClass);
 
   return (
     <div className="students-project-container">
       <div className="header-students-projects">
-        <div className="search-bar-container">
-          <form noValidate autoComplete="off" style={{ width: "80%" }}>
-            <TextField
-              id="outlined-basic"
-              label="Rechercher les projets"
-              variant="outlined"
-              // value={searchTerm}
-              // onChange={(e) => setSearchTerm(e.target.value)}
-              sx={{ width: "80%" }}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </form>
-        </div>
-        <FormControl sx={{ width: "30%" }}>
+        <FormControl sx={{ width: "20%" }}>
           <Select
             value={selectedFilterTypeProject}
-            sx={{ width: "50%" }}
             onChange={(event) => {
               setSelectedFilterTypeProject(event.target.value);
             }}
@@ -283,10 +284,9 @@ const StudentsProjects = () => {
             ))}
           </Select>
         </FormControl>
-        <FormControl sx={{ width: "30%" }}>
+        <FormControl sx={{ width: "20%" }}>
           <Select
             value={selectedFilterClass}
-            sx={{ width: "50%" }}
             onChange={(event) => {
               setSelectedFilterClass(event.target.value);
               const selectedClass = allclass.find(
@@ -345,7 +345,7 @@ const StudentsProjects = () => {
       </Card>
       <h1>Les projets mis en avant</h1>
       <CarouselProjects
-        projects={topProjects}
+        topProjects={filteredProjects.slice(0, 10)}
         selectedFilterType={selectedFilterTypeProject}
         selectedIdFilterClass={selectedIdFilterClass}
         handleOpenProject={handleOpenProject}
@@ -353,9 +353,11 @@ const StudentsProjects = () => {
       <h1>Tous les projets</h1>
       <Grid container spacing={2}>
         {filteredProjects
+          .slice(10)
           .filter((project) =>
             selectedIdFilterClass !== ""
-              ? project.promoProject === selectedIdFilterClass
+              ? project.promoProject &&
+                project.promoProject.id === selectedIdFilterClass
               : true
           )
           .map((project) => (
@@ -393,7 +395,8 @@ const StudentsProjects = () => {
 
                   <CardContent sx={{ padding: "10px", height: "120px" }}>
                     <h2 variant="h3" component="div">
-                      {project.nameProject}
+                      {project.nameProject} - {project.typeProject} -{" "}
+                      {project.promoProject.name}
                     </h2>
                     {userStatus === "po" ? (
                       <Button
