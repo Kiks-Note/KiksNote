@@ -175,7 +175,7 @@ export default function MiniDrawer({ element }) {
               {
                 id: 13,
                 name: "Coding Retro",
-                route: "#",
+                route: "/retro",
                 icon: (
                   <WbIridescentIcon
                     sx={{ color: theme.palette.custom.iconDrawer }}
