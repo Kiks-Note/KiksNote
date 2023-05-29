@@ -1,17 +1,25 @@
+.project-content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
 .left-side-project {
     display: flex;
     flex-direction: column;
-    width: 70%;
-    align-items: center;
+    width: 35%;
+    padding-left: 3%;
+    padding-right: 3%;
+    justify-content: space-evenly;
 }
 
 .right-side-project {
     display: flex;
     flex-direction: column;
-    width: 30%;
+    width: 65%;
     border-left: 1px solid rgba(255, 255, 255, 0.12);
-    padding-left: 5%;
-    padding-top: 10%;
+    padding-left: 3%;
+    padding-right: 3%;
 }
 
 .github-logo {
@@ -21,4 +29,18 @@
 .type-project-info-container {
     display: flex;
     align-items: center;
+}
+
+.list-counter-ref {
+    border: 1px solid grey;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+@media (max-width: 700px) {
+
+    .left-side-project,
+    .right-side-project {
+        width: 100%;
+    }
 }

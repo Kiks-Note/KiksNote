@@ -23,6 +23,7 @@ import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded
 import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
+import ConstructionIcon from "@mui/icons-material/Construction";
 
 import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
 
@@ -45,11 +46,10 @@ const StudentProjectInfo = (props) => {
           overflowX: "hidden",
           position: "fixed",
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
+          flexDirection: "column",
+          justifyContent: "top",
           top: "47%",
           left: "50%",
-          backgroundColor: "#424242",
           backgroundImage: "none",
           transform: "translate(-50%, -50%)",
           "@media (max-width: 600px)": {
@@ -60,69 +60,56 @@ const StudentProjectInfo = (props) => {
         },
       }}
     >
-      <div className="left-side-project">
-        <DialogTitle>{props.projectData.nameProject}</DialogTitle>
-        <DialogContent
-          sx={{
-            backgroundImage: `url(${props.projectData.imgProject})`,
-            backgroundSize: "contain",
-            backgroundRepeat: "no-repeat",
-            width: "90%",
-          }}
-        ></DialogContent>
-        <DialogContent sx={{ width: "90%" }}>
-          <Typography sx={{ textAlign: "justify" }}>
-            {props.projectData.descriptionProject}
-          </Typography>
-          <Typography>{props.projectData.creatorData}</Typography>
-        </DialogContent>
-      </div>
-      <div className="right-side-project">
-        <DialogActions>
-          <IconButton
-            sx={{ position: "fixed", top: "2%", backgroundColor: "grey" }}
-            onClick={props.handleCloseProject}
-          >
-            <CloseIcon />
-          </IconButton>
-        </DialogActions>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-around",
-            height: "300px",
-          }}
+      <DialogTitle>{props.projectData.nameProject}</DialogTitle>
+      <DialogActions>
+        <IconButton
+          sx={{ position: "fixed", top: "2%" }}
+          onClick={props.handleCloseProject}
         >
+          <CloseIcon />
+        </IconButton>
+      </DialogActions>
+      <div className="project-content">
+        <div className="left-side-project">
           {props.projectData.typeProject === "Web" ? (
             <div className="type-project-info-container">
-              <Typography>Type du projet : </Typography>
-              <DesktopWindowsRoundedIcon />
-              <Typography>{props.projectData.typeProject}</Typography>
+              <Typography sx={{ marginRight: "5px" }}>
+                Type du projet :{" "}
+              </Typography>
+              <Typography> {props.projectData.typeProject}</Typography>
+              <DesktopWindowsRoundedIcon sx={{ marginLeft: "5px" }} />
             </div>
           ) : props.projectData.typeProject === "Mobile" ? (
             <div className="type-project-info-container">
-              <Typography>Type du projet : </Typography>
-              <SmartphoneRoundedIcon />
-              <Typography>{props.projectData.typeProject}</Typography>
+              <Typography sx={{ marginRight: "5px" }}>
+                Type du projet :{" "}
+              </Typography>
+              <Typography> {props.projectData.typeProject}</Typography>
+              <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
             </div>
           ) : props.projectData.typeProject === "Gaming" ? (
             <div className="type-project-info-container">
-              <Typography>Type du projet : </Typography>
-              <SportsEsportsRoundedIcon />
-              <Typography>{props.projectData.typeProject}</Typography>
+              <Typography sx={{ marginRight: "5px" }}>
+                Type du projet :{" "}
+              </Typography>
+              <Typography> {props.projectData.typeProject}</Typography>
+              <SportsEsportsRoundedIcon sx={{ marginLeft: "5px" }} />
             </div>
           ) : props.projectData.typeProject === "IA" ? (
             <div className="type-project-info-container">
-              <Typography>Type du projet : </Typography>
-              <SmartToyRoundedIcon />
-              <Typography>{props.projectData.typeProject}</Typography>
+              <Typography sx={{ marginRight: "5px" }}>
+                Type du projet :{" "}
+              </Typography>
+              <Typography> {props.projectData.typeProject}</Typography>
+              <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
             </div>
           ) : props.projectData.typeProject === "DevOps" ? (
             <div className="type-project-info-container">
-              <Typography>Type du projet : </Typography>
+              <Typography sx={{ marginRight: "5px" }}>
+                Type du projet :{" "}
+              </Typography>
+              <Typography> {props.projectData.typeProject}</Typography>
               <MediationRoundedIcon />
-              <Typography>{props.projectData.typeProject}</Typography>
             </div>
           ) : (
             <div></div>
@@ -147,9 +134,20 @@ const StudentProjectInfo = (props) => {
               props.projectData.promoProject.name}
           </Typography>
           <List
-            sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+            sx={{
+              width: "100%",
+              maxWidth: 360,
+              bgcolor: "background.paper",
+              border: "1px solid grey",
+              borderRadius: "20px",
+              padding: "10px",
+            }}
           >
+            <Typography>
+              <ConstructionIcon /> Membres du projet :{" "}
+            </Typography>
             {props.projectData &&
+              props.projectData.membersProject &&
               props.projectData.membersProject.map((member, index) => (
                 <React.Fragment key={index}>
                   <ListItem alignItems="flex-start">
@@ -179,10 +177,29 @@ const StudentProjectInfo = (props) => {
                 </React.Fragment>
               ))}
           </List>{" "}
-          <Typography sx={{ color: "#7a52e1" }}>
-            {props.projectData.counterRef}
-            <BackHandRoundedIcon sx={{ height: "16px" }} />
-          </Typography>
+          <div className="list-counter-ref">
+            <Typography>
+              <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
+              {props.projectData.counterRef} Mis en avant par :
+            </Typography>
+          </div>
+        </div>
+        <div className="right-side-project">
+          <img src={props.projectData.imgProject} alt="" />
+          <DialogContent>
+            <Typography sx={{ textAlign: "justify" }}>
+              {props.projectData.descriptionProject}
+            </Typography>
+            <Typography sx={{ paddingTop: "20px", textAlign: "right" }}>
+              Publié par :{" "}
+              {props.projectData &&
+                props.projectData.StudentId &&
+                props.projectData.StudentId.lastname.toUpperCase()}{" "}
+              {props.projectData &&
+                props.projectData.StudentId &&
+                props.projectData.StudentId.firstname}
+            </Typography>
+          </DialogContent>
         </div>
       </div>
     </Dialog>
