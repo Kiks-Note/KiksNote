@@ -5,10 +5,18 @@
 }
 
 .carousel {
-    width: 100%;
+    width: 80%;
 }
 
 .swiper-button-prev,
 .swiper-button-next {
     color: #7a52e1;
+}
+
+.no-projects-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-weight: bold;
 }

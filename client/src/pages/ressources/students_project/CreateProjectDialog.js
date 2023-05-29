@@ -1,7 +1,5 @@
 import React from "react";
 
-import { Controller } from "react-hook-form";
-
 import {
   Button,
   TextField,
@@ -128,6 +126,9 @@ const CreateProjectDialog = (props) => {
           <Autocomplete
             multiple
             id="tags-outlined"
+            sx={{
+              width: "100%",
+            }}
             options={props.allstudents}
             getOptionLabel={(option) =>
               `${option.lastname ? option.lastname.toUpperCase() : ""} ${

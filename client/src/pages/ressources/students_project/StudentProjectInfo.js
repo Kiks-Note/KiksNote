@@ -30,8 +30,6 @@ import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
 import "./StudentsProjectsInfo.scss";
 
 const StudentProjectInfo = (props) => {
-  console.log(props.projectData);
-
   return (
     <Dialog
       open={props.openProject}
@@ -138,9 +136,10 @@ const StudentProjectInfo = (props) => {
               width: "100%",
               maxWidth: 360,
               bgcolor: "background.paper",
-              border: "1px solid grey",
+              border: "10px grey",
               borderRadius: "20px",
               padding: "10px",
+              marginBottom: "10px",
             }}
           >
             <Typography>

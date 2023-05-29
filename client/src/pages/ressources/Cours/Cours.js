@@ -321,7 +321,7 @@ const Ressources = () => {
                 />
               </form>
             </div>
-            <FormControl>
+            <FormControl sx={{ width: "15%" }}>
               <Select
                 value={selectedFilterClass}
                 onChange={(event) => {
@@ -466,9 +466,13 @@ const Ressources = () => {
                           />
 
                           <CardContent
-                            sx={{ padding: "10px", height: "120px" }}
+                            sx={{
+                              padding: "10px",
+                              height: "120px",
+                            }}
                           >
                             <Chip
+                              sx={{ marginRight: "10px" }}
                               label={
                                 <>
                                   <Typography>
@@ -606,6 +610,7 @@ const Ressources = () => {
 
                         <CardContent sx={{ padding: "10px", height: "120px" }}>
                           <Chip
+                            sx={{ marginRight: "10px" }}
                             label={
                               <>
                                 <Typography>
@@ -726,6 +731,7 @@ const Ressources = () => {
                             {course.data.description}
                           </Typography>
                           <Chip
+                            sx={{ marginRight: "10px" }}
                             label={
                               <>
                                 <Typography>
@@ -832,6 +838,7 @@ const Ressources = () => {
                             {course.data.description}
                           </Typography>
                           <Chip
+                            sx={{ marginRight: "10px" }}
                             label={
                               <>
                                 <Typography>
