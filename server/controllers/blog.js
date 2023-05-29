@@ -39,18 +39,20 @@ const addNewBlog = async (req, res) => {
 };
 //add new Tuto
 const addNewTuto = async (req, res) => {
-  const {
-    title,
-    editorState,
-    inputEditorState,
-    created_by,
-    tag,
-    statut,
-    type,
-    visibility,
-    inputEditorStateTitle,
-  } = req.body;
+const {
+  title,
+  editorState,
+  inputEditorState,
+  created_by,
+  tag,
+  statut,
+  type,
+  visibility,
+  inputEditorStateTitle,
+} = JSON.parse(req.body.tutoData);
 
+  console.log(req.body.tutoData);
+  console.log(title);
   try {
     const url = req.protocol + "://" + req.get("host") + "/";
     let imagebackgroundTmp = req.file ? url + req.file.path : "";
@@ -61,11 +63,11 @@ const addNewTuto = async (req, res) => {
       .set({
         title: title,
         thumbnail: imagebackgroundTmp,
-        editorState: JSON.parse(editorState),
-        inputEditorState: JSON.parse(inputEditorState),
+        editorState: editorState,
+        inputEditorState: inputEditorState,
         inputEditorStateTitle: inputEditorStateTitle
-          ? JSON.parse(inputEditorStateTitle)
-          : "",
+          ? inputEditorStateTitle
+          : [],
         statut: statut,
         created_by: created_by,
         participant: [],

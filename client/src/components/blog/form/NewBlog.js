@@ -229,6 +229,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
             id="outlined-search"
             label="Miniature"
             type="file"
+            accept="image/png,image/jpeg"
             onChange={(e) => {
               setThumbnail(e.target.files[0]);
               setPreviewImage(URL.createObjectURL(e.target.files[0]));

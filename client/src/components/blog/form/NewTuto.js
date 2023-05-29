@@ -64,18 +64,20 @@ export default function NewTuto({ open, toggleDrawerModify }) {
       visibility = false;
     }
 
+    const tutoData = {
+      title: title,
+      editorState: editorStates,
+      inputEditorState: inputEditorState,
+      inputEditorStateTitle: titleStep,
+      created_by: user.id,
+      type: "tuto",
+      tag: selectedTags,
+      statut: statut,
+      visibility: visibility,
+    };
     const formData = new FormData();
     formData.append("thumbnail", thumbnail);
-    formData.append("title", title);
-    formData.append("editorState", editorStates);
-    formData.append("inputEditorState", inputEditorState);
-    formData.append("inputEditorStateTitle", titleStep);
-    formData.append("created_by", user.id);
-    formData.append("type", "tuto");
-    formData.append("tag", selectedTags);
-    formData.append("statut", statut);
-    formData.append("visibility", visibility);
-
+    formData.append("tutoData", JSON.stringify(tutoData));
     try {
       const response = await axios.post(
         "http://localhost:5050/blog/tuto",
@@ -246,6 +248,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                   sx={{ marginBottom: 2 }}
                   id="outlined-search"
                   type="file"
+                  accept="image/png, image/jpeg"
                   onChange={(e) => {
                     setThumbnail(e.target.files[0]);
                     setPreviewImage(URL.createObjectURL(e.target.files[0]));
@@ -417,6 +420,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                       color="primary"
                       onClick={newTuto}
                       disabled={
+                        !editorStates[activeStep] ||
                         !editorStates[activeStep].getCurrentContent().hasText()
                       }
                     >

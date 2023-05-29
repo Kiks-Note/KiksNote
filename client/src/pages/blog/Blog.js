@@ -158,7 +158,8 @@ function Blog() {
       <Toaster />
       <Box sx={{ margin: 2 }}>
         <Grid container spacing={2}>
-          <Grid item xs={5}>
+          <Grid item xs={12}>
+            {" "}
             <Box
               style={{
                 display: "flex",
@@ -208,6 +209,8 @@ function Blog() {
                 ))}
               </Select>
             </Box>
+          </Grid>
+          <Grid item xs={5}>
             <Button
               variant="contained"
               color="primary"

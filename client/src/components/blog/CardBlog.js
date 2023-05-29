@@ -150,7 +150,6 @@ export default function CardBlog({ blog }) {
         <MenuItem onClick={handleMenuClose}>
           <Button onClick={deleteBlog}>Supprimer</Button>
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>Modifier</MenuItem>
       </Menu>
     </>
   );
