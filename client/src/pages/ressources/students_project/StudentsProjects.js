@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -63,7 +63,6 @@ const StudentsProjects = () => {
   const [membersProject, setMembersProject] = useState([]);
   const [typeProject, setTypeProject] = useState("");
   const [descriptionProject, setDescriptionProject] = useState("");
-  const [imgProjectLink, setImgProjectLink] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [idSelectedClass, setIdSelectedClass] = useState("");
 
@@ -74,9 +73,25 @@ const StudentsProjects = () => {
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
   const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
 
+  const [files, setFiles] = useState([]);
+  const rejectedFiles = files.filter((file) => file.errors);
+  const [projectImageBase64, setProjectImageBase64] = useState("");
+
   var votePo = 5;
   var votePedago = 3;
   var voteStudent = 1;
+
+  const handleDrop = useCallback((acceptedFiles) => {
+    setFiles((files) => [...files, ...acceptedFiles]);
+  }, []);
+
+  const handleRemove = (file) => () => {
+    setFiles((files) => files.filter((f) => f !== file));
+  };
+
+  const handleFileChange = (fileData) => {
+    setProjectImageBase64(fileData);
+  };
 
   const getAllProjects = async () => {
     try {
@@ -145,7 +160,7 @@ const StudentsProjects = () => {
           membersProject: membersProject,
           typeProject: typeProject,
           descriptionProject: descriptionProject,
-          imgProject: imgProjectLink,
+          imgProject: projectImageBase64,
           counterRef: 0,
         })
         .then((res) => {
@@ -228,6 +243,8 @@ const StudentsProjects = () => {
     ...new Set(Object.values(projects).map((project) => project.typeProject)),
   ];
 
+  console.log(projectImageBase64);
+
   return (
     <div className="students-project-container">
       <div className="header-students-projects">
@@ -303,6 +320,10 @@ const StudentsProjects = () => {
         <CreateProjectDialog
           open={open}
           handleClose={handleClose}
+          handleDrop={handleDrop}
+          handleFileChange={handleFileChange}
+          handleRemove={handleRemove}
+          rejectedFiles={rejectedFiles}
           handleSubmit={handleSubmit}
           nameProject={nameProject}
           setNameProject={setNameProject}
@@ -316,8 +337,6 @@ const StudentsProjects = () => {
           setTypeProject={setTypeProject}
           descriptionProject={descriptionProject}
           setDescriptionProject={setDescriptionProject}
-          imgProjectLink={imgProjectLink}
-          setImgProjectLink={setImgProjectLink}
           setIdSelectedClass={setIdSelectedClass}
           control={control}
           allstudents={allstudents}

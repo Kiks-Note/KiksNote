@@ -48,7 +48,11 @@ const CreateProjectDialog = (props) => {
               props.setDescriptionProject(event.target.value)
             }
           />
-          <div className="student-project-dropzone">
+          <div className="dropzone-coursimg-container">
+            <p className="info-dropdown-img">
+              Drag and drop an image file here, or click to select an image
+              file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
+            </p>
             <Dropzone
               onDrop={props.handleDrop}
               onFileChange={props.handleFileChange}
@@ -64,6 +68,19 @@ const CreateProjectDialog = (props) => {
                 </section>
               )}
             </Dropzone>
+            {props.rejectedFiles.length > 0 && (
+              <div>
+                <h4>Rejected files:</h4>
+                <ul>
+                  {props.rejectedFiles.map((file) => (
+                    <li key={file.name}>
+                      {file.name} - {file.size} bytes - {file.type}
+                      <button onClick={props.handleRemove(file)}>Remove</button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
           <Select
             sx={{ marginBottom: "10px" }}
@@ -108,49 +125,30 @@ const CreateProjectDialog = (props) => {
               </MenuItem>
             ))}
           </Select>
-          <Controller
-            name="members"
-            control={props.control}
-            rules={{ required: true }}
-            render={({ field: { onChange, value } }) => (
-              <Autocomplete
-                id="member-select"
-                sx={{
-                  width: "80%",
-                  marginBottom: "10px",
+          <Autocomplete
+            multiple
+            id="tags-outlined"
+            options={props.allstudents}
+            getOptionLabel={(option) =>
+              `${option.lastname ? option.lastname.toUpperCase() : ""} ${
+                option.firstname
+              }`
+            }
+            defaultValue={props.membersProject}
+            filterSelectedOptions
+            onChange={(event, newValue) => {
+              const selectedMembers = newValue.map((member) => member.id);
+              props.setMembersProject(selectedMembers);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select a student"
+                variant="outlined"
+                inputProps={{
+                  ...params.inputProps,
+                  name: "student",
                 }}
-                defaultValue={props.membersProject}
-                options={props.allstudents}
-                getOptionLabel={(option) =>
-                  `${option.lastname ? option.lastname.toUpperCase() : ""} ${
-                    option.firstname
-                  }`
-                }
-                value={
-                  props.allstudents.find((member) => member.name === value) ||
-                  ""
-                }
-                onChange={(event, newValue) => {
-                  onChange(newValue ? newValue.id : "");
-                  props.setMembersProject(
-                    newValue
-                      ? `${newValue.lastname.toUpperCase()} ${
-                          newValue.firstname
-                        }`
-                      : null
-                  );
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Select a student"
-                    variant="outlined"
-                    inputProps={{
-                      ...params.inputProps,
-                      name: "student",
-                    }}
-                  />
-                )}
               />
             )}
           />

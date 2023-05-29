@@ -1,4 +1,6 @@
-const { db } = require("../firebase");
+const { db, storageFirebase } = require("../firebase");
+const bucket = storageFirebase.bucket();
+const mime = require("mime-types");
 
 const getAllStudents = async (req, res) => {
   try {
@@ -115,6 +117,32 @@ const createStudentProject = async (req, res) => {
       creatorProjectData.image = creatorProjectRef.data().image;
     }
 
+    const mimeType = "image/png";
+    const fileExtension = mime.extension(mimeType);
+    const fileName = `${nameProject}.${fileExtension}`;
+
+    const buffer = Buffer.from(
+      imgProject.replace(/^data:image\/\w+;base64,/, ""),
+      "base64"
+    );
+    const file = bucket.file(
+      `students_projects/${projectPromoData.name}/${nameProject}/${fileName}`
+    );
+
+    const options = {
+      metadata: {
+        contentType: mimeType || "image/jpeg",
+        cacheControl: "public, max-age=31536000",
+      },
+    };
+
+    await file.save(buffer, options);
+
+    const [urlImageProject] = await file.getSignedUrl({
+      action: "read",
+      expires: "03-17-2025",
+    });
+
     const projectData = {
       StudentId: creatorProjectData,
       nameProject: nameProject,
@@ -122,7 +150,7 @@ const createStudentProject = async (req, res) => {
       promoProject: projectPromoData,
       typeProject: typeProject,
       descriptionProject: descriptionProject,
-      imgProject: imgProject,
+      imgProject: urlImageProject,
       counterRef: counterRef,
       createdProjectAt: new Date(),
     };
@@ -135,8 +163,12 @@ const createStudentProject = async (req, res) => {
           id: memberRef.id,
           firstname: memberRef.data().firstname,
           lastname: memberRef.data().lastname,
-          image: memberRef.data().image,
         };
+
+        if (memberRef.data().image) {
+          memberData.image = memberRef.data().image;
+        }
+
         membersData.push(memberData);
       }
     }
