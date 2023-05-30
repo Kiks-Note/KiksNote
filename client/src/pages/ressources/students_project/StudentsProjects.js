@@ -62,6 +62,7 @@ const StudentsProjects = () => {
   const [projects, setProjects] = useState([]);
   const [allclass, setAllclass] = useState([]);
   const [allstudents, setAllStudents] = useState([]);
+  const [allblogtutos, setAllBlogTutos] = useState([]);
 
   const [nameProject, setNameProject] = useState("");
   const [repoProjectLink, setRepoProjectLink] = useState("");
@@ -120,6 +121,21 @@ const StudentsProjects = () => {
         `http://localhost:5050/ressources/studentsprojects/${projectId}`
       );
       setSelectedProjectData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getBlogTutorials = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/blogstutos")
+        .then((res) => {
+          setAllBlogTutos(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } catch (error) {
       console.error(error);
     }
@@ -234,6 +250,7 @@ const StudentsProjects = () => {
     getAllProjects();
     getAllClass();
     getAllStudents();
+    getBlogTutorials();
   }, []);
 
   const { control } = useForm({
@@ -523,6 +540,7 @@ const StudentsProjects = () => {
           openProject={openProject}
           projectData={selectedProjectData}
           creator={user?.email}
+          allblogtutos={allblogtutos}
         />
       </Grid>
       <ToastContainer></ToastContainer>

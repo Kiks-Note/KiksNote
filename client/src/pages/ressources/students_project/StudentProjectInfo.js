@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
+
+import useFirebase from "../../../hooks/useFirebase";
 
 import {
   IconButton,
@@ -8,12 +9,14 @@ import {
   DialogContent,
   DialogTitle,
   Typography,
-  List,
-  ListItem,
   Divider,
   ListItemText,
   ListItemAvatar,
   Avatar,
+  Button,
+  List,
+  ListItem,
+  Collapse,
 } from "@mui/material";
 
 import CloseIcon from "@mui/icons-material/Close";
@@ -24,12 +27,24 @@ import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
 import ConstructionIcon from "@mui/icons-material/Construction";
+import AddLinkIcon from "@mui/icons-material/AddLink";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 
 import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
+import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
 
 import "./StudentsProjectsInfo.scss";
 
 const StudentProjectInfo = (props) => {
+  const { user } = useFirebase();
+
+  const [openVoters, setOpenVoters] = useState(false);
+
+  const handleClickVoters = () => {
+    setOpenVoters(!openVoters);
+  };
+
   return (
     <Dialog
       open={props.openProject}
@@ -164,8 +179,7 @@ const StudentProjectInfo = (props) => {
                           variant="body2"
                           color="text.primary"
                         >
-                          {member.firstname} — Some additional information about
-                          the member
+                          {member.status}
                         </Typography>
                       }
                     />
@@ -175,7 +189,26 @@ const StudentProjectInfo = (props) => {
                   )}
                 </React.Fragment>
               ))}
-          </List>{" "}
+          </List>
+          <div className="btn-link-blog-container">
+            {props.projectData &&
+            props.projectData.creatorProject &&
+            props.projectData.creatorProject.id === user?.id ? (
+              <Button
+                onClick={props.handleClickOpen}
+                sx={{
+                  backgroundColor: "#de7700",
+                  color: "white",
+                  fontWeight: "bold",
+                }}
+              >
+                <AddLinkIcon />
+                Lier à un article blog tuto
+              </Button>
+            ) : (
+              <div></div>
+            )}
+          </div>
           <div className="list-counter-ref">
             <div className="counter-container">
               <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
@@ -185,49 +218,75 @@ const StudentProjectInfo = (props) => {
             </div>
             <Divider />
             <div className="voters-container">
-              <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
-                Liste des personnes qui ont mis en avant le projet :
+              <Typography
+                sx={{
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  padding: "10px",
+                }}
+              >
+                Liste des personnes qui ont mis en avant le projet
               </Typography>
-              <List>
-                {props.projectData &&
-                  props.projectData.voters &&
-                  props.projectData.voters.map((voter, index) => (
-                    <React.Fragment key={index}>
-                      <ListItem>
-                        {voter.status === "etudiant" && (
-                          <>
-                            <Typography variant="body2" component="span">
-                              1
-                            </Typography>
-                          </>
-                        )}
-                        {voter.status === "po" && (
-                          <>
-                            <Typography variant="body2" component="span">
-                              5
-                            </Typography>
-                          </>
-                        )}
-                        {voter.status === "pedago" && (
-                          <>
-                            <Typography variant="body2" component="span">
-                              3
-                            </Typography>
-                          </>
-                        )}
-                        <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
-                        <ListItemText
-                          primary={
-                            voter.lastname.toUpperCase() + " " + voter.firstname
-                          }
-                        />
-                      </ListItem>
-                      {index !== props.projectData.voters.length - 1 && (
-                        <Divider variant="inset" component="li" />
-                      )}
-                    </React.Fragment>
-                  ))}
-              </List>{" "}
+              {props.projectData &&
+              props.projectData.voters &&
+              props.projectData.voters.length > 0 ? (
+                <List>
+                  <ListItem button onClick={handleClickVoters}>
+                    <ListItemText
+                      primary={"Afficher"}
+                      style={{ textAlign: "center" }}
+                    />
+                    {openVoters ? <ExpandLess /> : <ExpandMore />}
+                  </ListItem>
+                  <Collapse in={openVoters} timeout="auto" unmountOnExit>
+                    <List disablePadding>
+                      {props.projectData.voters.map((voter, index) => (
+                        <React.Fragment key={index}>
+                          <ListItem>
+                            {voter.status === "etudiant" && (
+                              <Typography variant="body2" component="span">
+                                1
+                              </Typography>
+                            )}
+                            {voter.status === "po" && (
+                              <Typography variant="body2" component="span">
+                                5
+                              </Typography>
+                            )}
+                            {voter.status === "pedago" && (
+                              <Typography variant="body2" component="span">
+                                3
+                              </Typography>
+                            )}
+                            <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
+                            <ListItemText
+                              primary={
+                                voter.lastname.toUpperCase() +
+                                " " +
+                                voter.firstname
+                              }
+                            />
+                          </ListItem>
+                          {index !== props.projectData.voters.length - 1 && (
+                            <Divider variant="inset" component="li" />
+                          )}
+                        </React.Fragment>
+                      ))}
+                    </List>
+                  </Collapse>
+                </List>
+              ) : (
+                <div className="no-votes-student-projects-container">
+                  <p className="no-votes-student-projects-p">
+                    Personne n'a encore mis en avant votre projet
+                  </p>
+                  <img
+                    className="no-votes-student-projects-img"
+                    src={NoVotesImg}
+                    alt="no-votes-projects-students"
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>

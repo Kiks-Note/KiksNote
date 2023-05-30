@@ -166,7 +166,7 @@ const createStudentProject = async (req, res) => {
     });
 
     const projectData = {
-      StudentId: creatorProjectData,
+      creatorProject: creatorProjectData,
       nameProject: nameProject,
       RepoProjectLink: RepoProjectLink,
       promoProject: projectPromoData,
