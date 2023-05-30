@@ -9,7 +9,8 @@ import { Toaster, toast } from "react-hot-toast";
 import { Switch } from "@mui/material";
 import { w3cwebsocket } from "websocket";
 import { PropTypes } from "prop-types";
-
+import SettingsIcon from "@mui/icons-material/Settings";
+import Button from "@mui/material/Button";
 
 Board.propTypes = {
   dashboardId: PropTypes.string.isRequired,
@@ -140,17 +141,24 @@ export default function Board({ boardId, dashboardId }) {
 
   return (
     <>
+      <section class="board-info-bar">
+        <div class="board-controls">
+          <h2> {boardName}</h2>
+
+          <Switch
+            checked={label}
+            onChange={labelChange}
+            inputProps={{ "aria-label": "controlled" }}
+          />
+        </div>
+
+        <Button variant="outlined" startIcon={<SettingsIcon />}>
+          Paramètres
+        </Button>
+      </section>
       <div>
-        <Typography style={{ textAlign: "center" }} variant="h5">
-          {boardName}
-        </Typography>
-        <Switch
-          checked={label}
-          onChange={labelChange}
-          inputProps={{ "aria-label": "controlled" }}
-        />
         <Toaster />
-        <div className="board_container_all grid-container">
+        <div className="board_container_all grid-container-board ">
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
           >
@@ -180,11 +188,10 @@ export default function Board({ boardId, dashboardId }) {
                             style={{
                               background: snapshot.isDraggingOver
                                 ? "#ed6c0247"
-                                : "#ebecf0",
-                              padding: 4,
-                              width: 260,
-                              minHeight: 30,
-                              maxHeight: "40vh",
+                                : "#c4c9cc",
+                              paddingInline: 14,
+                              minHeight: 20,
+                              maxHeight: "30vh",
                               overflow: "auto",
                               height: "auto",
                             }}

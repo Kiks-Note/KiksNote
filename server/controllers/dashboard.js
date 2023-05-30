@@ -673,12 +673,8 @@ async function createSprints(
       .toDate();
     let sprintEnd = moment(sprintStart).add(sprintDuration, "days").toDate();
 
-    console.log("sprintStart " + sprintStart);
-    console.log("sprintEnd " + sprintEnd);
-
     // Vérification pour s'assurer que sprintEnd n'est pas plus grand que releaseEnd
     if (sprintEnd > releaseEnd) {
-      console.log("c'est moi le patron" + releaseEnd);
       sprintEnd = releaseEnd;
     }
 
