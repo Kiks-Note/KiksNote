@@ -21,6 +21,7 @@ import {
   Divider,
   Card,
   CardContent,
+  Chip,
 } from "@mui/material";
 
 import UpdateCoursDialog from "./UpdateCoursDialog";
@@ -31,6 +32,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import CallRoundedIcon from "@mui/icons-material/CallRounded";
+import SchoolIcon from "@mui/icons-material/School";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
@@ -821,16 +823,41 @@ const CoursInfo = () => {
                   Classe concernée
                 </h2>
                 <Divider />
-                {coursData &&
-                  coursData.courseClass &&
-                  coursData.courseClass.name && (
-                    <p className="display-class">
-                      {coursData.courseClass.name}
-                    </p>
-                  )}
+                <div
+                  style={{
+                    display: "flex",
+                    height: "7%",
+                    alignItems: "center",
+                  }}
+                >
+                  <Chip
+                    sx={{
+                      display: "flex",
+                      padding: "10px",
+                      width: "40%",
+                      alignItems: "center",
+                    }}
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          {coursData &&
+                            coursData.courseClass &&
+                            coursData.courseClass.name && (
+                              <>
+                                <Typography>
+                                  {coursData.courseClass.name}
+                                </Typography>
+                                <SchoolIcon />
+                              </>
+                            )}
+                        </div>
+                      </>
+                    }
+                  ></Chip>
+                </div>
                 <h2
                   style={{
-                    marginTop: "10px",
+                    marginTop: "0px",
                   }}
                   variant="h6"
                 >

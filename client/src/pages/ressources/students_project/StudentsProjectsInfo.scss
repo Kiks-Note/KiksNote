@@ -11,15 +11,18 @@
     padding-left: 3%;
     padding-right: 3%;
     justify-content: space-evenly;
+    height: fit-content;
 }
 
 .right-side-project {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     width: 65%;
     border-left: 1px solid rgba(255, 255, 255, 0.12);
     padding-left: 3%;
     padding-right: 3%;
+    height: fit-content;
 }
 
 .github-logo {
@@ -29,12 +32,15 @@
 .type-project-info-container {
     display: flex;
     align-items: center;
+    margin: 15px 0px;
+
 }
 
 .list-counter-ref {
     border: 1px solid grey;
     border-radius: 20px;
     padding: 10px;
+    margin: 15px 0px;
 }
 
 .btn-link-blog-container {
@@ -65,6 +71,28 @@ p.no-votes-student-projects-p {
 
 img.no-votes-student-projects-img {
     max-width: 100%;
+}
+
+.img-project {
+    width: 90%;
+}
+
+.img-project-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 30px;
+}
+
+.right-side-project:last-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.text-project-box {
+    width: 90%;
+    padding-top: 30px;
 }
 
 @media (max-width: 700px) {
