@@ -177,10 +177,58 @@ const StudentProjectInfo = (props) => {
               ))}
           </List>{" "}
           <div className="list-counter-ref">
-            <Typography>
+            <div className="counter-container">
               <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
-              {props.projectData.counterRef} Mis en avant par :
-            </Typography>
+              <Typography>
+                {props.projectData.counterRef} Mis en avant
+              </Typography>
+            </div>
+            <Divider />
+            <div className="voters-container">
+              <Typography sx={{ fontWeight: "bold", textAlign: "center" }}>
+                Liste des personnes qui ont mis en avant le projet :
+              </Typography>
+              <List>
+                {props.projectData &&
+                  props.projectData.voters &&
+                  props.projectData.voters.map((voter, index) => (
+                    <React.Fragment key={index}>
+                      <ListItem>
+                        {voter.status === "etudiant" && (
+                          <>
+                            <Typography variant="body2" component="span">
+                              1
+                            </Typography>
+                          </>
+                        )}
+                        {voter.status === "po" && (
+                          <>
+                            <Typography variant="body2" component="span">
+                              5
+                            </Typography>
+                          </>
+                        )}
+                        {voter.status === "pedago" && (
+                          <>
+                            <Typography variant="body2" component="span">
+                              3
+                            </Typography>
+                          </>
+                        )}
+                        <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
+                        <ListItemText
+                          primary={
+                            voter.lastname.toUpperCase() + " " + voter.firstname
+                          }
+                        />
+                      </ListItem>
+                      {index !== props.projectData.voters.length - 1 && (
+                        <Divider variant="inset" component="li" />
+                      )}
+                    </React.Fragment>
+                  ))}
+              </List>{" "}
+            </div>
           </div>
         </div>
         <div className="right-side-project">

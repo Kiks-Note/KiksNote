@@ -37,6 +37,12 @@
     padding: 10px;
 }
 
+.counter-container {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
 @media (max-width: 700px) {
 
     .left-side-project,

@@ -247,6 +247,7 @@ const refStudentProject = async (req, res) => {
         id: userRef.id,
         firstname: userRef.data().firstname,
         lastname: userRef.data().lastname,
+        status: userRef.data().status,
       };
 
       if (userRef.data().image) {
