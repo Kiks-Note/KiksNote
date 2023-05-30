@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   getAllStudents,
   getStudentById,
+  getBlogTutorials,
   getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,
@@ -13,6 +14,7 @@ const {
 module.exports = function () {
   router.get("/students", getAllStudents);
   router.get("/student/:id", getStudentById);
+  router.get("/blogstutos", getBlogTutorials);
   router.get("/studentsprojects/:id", getStudentProjectById);
   router.get("/students-projects", getAllStudentsProjects);
   router.post("/students-projects", createStudentProject);

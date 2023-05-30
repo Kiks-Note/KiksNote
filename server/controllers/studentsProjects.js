@@ -35,6 +35,28 @@ const getStudentById = async (req, res) => {
   }
 };
 
+const getBlogTutorials = async (req, res) => {
+  try {
+    const tutorialsRef = await db
+      .collection("blog")
+      .where("type", "==", "tuto")
+      .get();
+
+    const tutorials = [];
+    tutorialsRef.forEach((doc) => {
+      tutorials.push({
+        id: doc.id,
+        data: doc.data(),
+      });
+    });
+
+    return res.status(200).send(tutorials);
+  } catch (err) {
+    console.error(err);
+    throw new Error("Erreur lors de la récupération des tutoriels.");
+  }
+};
+
 const getStudentProjectById = async (req, res) => {
   const projectId = req.params.id;
 
@@ -249,6 +271,7 @@ const refStudentProject = async (req, res) => {
 module.exports = {
   getAllStudents,
   getStudentById,
+  getBlogTutorials,
   getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,
