@@ -11,6 +11,8 @@ import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
 import Jpo from "./pages/ressources/jpo/jpo";
 import StudentsProjects from "./pages/ressources//students_project/StudentsProjects";
+import StudentsProjectsInfo from "./pages/ressources//students_project/StudentProjectInfo";
+
 import Agile from "./pages/agile/Agile";
 import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
@@ -52,6 +54,10 @@ function RoutesProvider() {
           <Route path="/profil" element={<Profil />} />
           <Route path="/jpo" element={<Jpo />} />
           <Route path="/studentprojects" element={<StudentsProjects />} />
+          <Route
+            path="/studentprojects/:projectid"
+            element={<StudentsProjectsInfo />}
+          />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
           <Route path="/agile" element={<Agile />} />

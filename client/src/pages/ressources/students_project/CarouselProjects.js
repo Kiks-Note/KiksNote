@@ -28,6 +28,7 @@ import studentTopProjectsImg from "../../../assets/img/students-top-projects.jpg
 
 import "./CarouselProjects.scss";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 const options = {
   autoClose: 2000,
@@ -51,6 +52,8 @@ export const toastFail = (message) => {
 const CarouselProjects = (props) => {
   const { user } = useFirebase();
   const userStatus = user?.status;
+
+  let navigate = useNavigate();
 
   const referStudentProject = async (
     projectId,
@@ -118,7 +121,7 @@ const CarouselProjects = (props) => {
         >
           {props.topProjects.map((project) => (
             <SplideSlide key={project.id}>
-              <Card onClick={() => props.handleOpenProject(project.id)}>
+              <Card onClick={() => navigate(project.id)}>
                 <CardContent>
                   <CardMedia
                     component="img"

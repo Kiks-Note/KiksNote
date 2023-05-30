@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -27,7 +29,6 @@ import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
 
 import CreateProjectDialog from "./CreateProjectDialog";
 import CarouselProjects from "./CarouselProjects";
-import StudentProjectInfo from "./StudentProjectInfo";
 import studentProjectsImg from "../../../assets/img/students-projects.jpg";
 
 import "./StudentsProjects.scss";
@@ -53,16 +54,16 @@ export const toastFail = (message) => {
 };
 
 const StudentsProjects = () => {
+  let navigate = useNavigate();
+
   const { user } = useFirebase();
   const userStatus = user?.status;
 
   const [open, setOpen] = useState(false);
-  const [openProject, setOpenProject] = useState(false);
 
   const [projects, setProjects] = useState([]);
   const [allclass, setAllclass] = useState([]);
   const [allstudents, setAllStudents] = useState([]);
-  const [allblogtutos, setAllBlogTutos] = useState([]);
 
   const [nameProject, setNameProject] = useState("");
   const [repoProjectLink, setRepoProjectLink] = useState("");
@@ -106,32 +107,6 @@ const StudentsProjects = () => {
         .get("http://localhost:5050/ressources/students-projects")
         .then((res) => {
           setProjects(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getStudentProjectById = async (projectId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5050/ressources/studentsprojects/${projectId}`
-      );
-      setSelectedProjectData(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getBlogTutorials = async () => {
-    try {
-      await axios
-        .get("http://localhost:5050/ressources/blogstutos")
-        .then((res) => {
-          setAllBlogTutos(res.data);
         })
         .catch((err) => {
           console.log(err);
@@ -250,21 +225,11 @@ const StudentsProjects = () => {
     getAllProjects();
     getAllClass();
     getAllStudents();
-    getBlogTutorials();
   }, []);
 
   const { control } = useForm({
     mode: "onTouched",
   });
-
-  const handleOpenProject = (projectId) => {
-    setOpenProject(true);
-    getStudentProjectById(projectId);
-  };
-
-  const handleCloseProject = () => {
-    setOpenProject(false);
-  };
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -366,7 +331,6 @@ const StudentsProjects = () => {
         topProjects={filteredProjects.slice(0, 10)}
         selectedFilterType={selectedFilterTypeProject}
         selectedIdFilterClass={selectedIdFilterClass}
-        handleOpenProject={handleOpenProject}
       />
       <h1 className="h1-project">Projets Étudiants</h1>
       <Grid container spacing={2}>
@@ -401,7 +365,7 @@ const StudentsProjects = () => {
                       height: "300px",
                     }}
                     onClick={() => {
-                      handleOpenProject(project.id);
+                      navigate(`/${project.id}`);
                     }}
                   >
                     <CardMedia
@@ -531,13 +495,10 @@ const StudentsProjects = () => {
             ))
         )}
 
-        <StudentProjectInfo
-          handleCloseProject={handleCloseProject}
-          openProject={openProject}
+        {/* <StudentProjectInfo
           projectData={selectedProjectData}
-          creator={user?.email}
           allblogtutos={allblogtutos}
-        />
+        /> */}
       </Grid>
       <ToastContainer></ToastContainer>
     </div>

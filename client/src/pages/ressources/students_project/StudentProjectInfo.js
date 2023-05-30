@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+
+import axios from "axios";
 
 import useFirebase from "../../../hooks/useFirebase";
 
 import {
-  IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   Typography,
   Divider,
   ListItemText,
@@ -17,9 +15,9 @@ import {
   List,
   ListItem,
   Collapse,
+  Chip,
 } from "@mui/material";
 
-import CloseIcon from "@mui/icons-material/Close";
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
 import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
 import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
@@ -30,122 +28,214 @@ import ConstructionIcon from "@mui/icons-material/Construction";
 import AddLinkIcon from "@mui/icons-material/AddLink";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import SchoolIcon from "@mui/icons-material/School";
 
 import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
 import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
 
+import BlogTutosLinkDialog from "./BlogTutosLinkDialog";
 import "./StudentsProjectsInfo.scss";
 
-const StudentProjectInfo = (props) => {
+const StudentProjectInfo = () => {
   const { user } = useFirebase();
 
+  const { projectid } = useParams();
+
+  const [allblogtutos, setAllBlogTutos] = useState([]);
+  const [blogTutoData, setBlogTutoData] = useState([]);
+
+  const [selectedProjectData, setSelectedProjectData] = useState("");
   const [openVoters, setOpenVoters] = useState(false);
+  const [openBlogTutos, setOpenBlogTutos] = useState(false);
 
   const handleClickVoters = () => {
     setOpenVoters(!openVoters);
   };
 
+  const getBlogTutorials = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/blogstutos")
+        .then((res) => {
+          setAllBlogTutos(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const getBlogTutoById = async (blogTutoId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5050/ressources/blogstutos/${blogTutoId}`
+      );
+      setBlogTutoData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getStudentProjectById = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5050/ressources/studentsprojects/${projectid}`
+      );
+      setSelectedProjectData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getStudentProjectById();
+  }, []);
+
+  useEffect(() => {
+    getBlogTutoById("jr3qUld60Ds0O5iHhW7N");
+  }, []);
+
+  const handleOpenBlogTutos = () => {
+    setOpenBlogTutos(true);
+    getBlogTutorials();
+  };
+
+  const handleCloseProject = () => {
+    setOpenBlogTutos(false);
+  };
+
   return (
-    <Dialog
-      open={props.openProject}
-      onClose={props.handleCloseProject}
-      sx={{
-        "& .MuiDialog-paper": {
-          maxWidth: "60%",
-          width: "100%",
-          height: "95%",
-          maxHeight: "95%",
-          overflowY: "visible",
-          overflowX: "hidden",
-          position: "fixed",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "top",
-          top: "47%",
-          left: "50%",
-          backgroundImage: "none",
-          transform: "translate(-50%, -50%)",
-          "@media (max-width: 600px)": {
-            width: "100%",
-            maxHeight: "100%",
-            margin: 0,
-          },
-        },
-      }}
-    >
-      <DialogTitle>{props.projectData.nameProject}</DialogTitle>
-      <DialogActions>
-        <IconButton
-          sx={{ position: "fixed", top: "2%" }}
-          onClick={props.handleCloseProject}
+    <div className="project-content">
+      <div className="left-side-project">
+        {selectedProjectData.typeProject === "Web" ? (
+          <div className="type-project-info-container">
+            <Typography sx={{ marginRight: "5px" }}>
+              Type du projet :{" "}
+            </Typography>
+            <Typography> {selectedProjectData.typeProject}</Typography>
+            <DesktopWindowsRoundedIcon sx={{ marginLeft: "5px" }} />
+          </div>
+        ) : selectedProjectData.typeProject === "Mobile" ? (
+          <div className="type-project-info-container">
+            <Typography sx={{ marginRight: "5px" }}>
+              Type du projet :{" "}
+            </Typography>
+            <Typography> {selectedProjectData.typeProject}</Typography>
+            <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
+          </div>
+        ) : selectedProjectData.typeProject === "Gaming" ? (
+          <div className="type-project-info-container">
+            <Typography sx={{ marginRight: "5px" }}>
+              Type du projet :{" "}
+            </Typography>
+            <Typography> {selectedProjectData.typeProject}</Typography>
+            <SportsEsportsRoundedIcon sx={{ marginLeft: "5px" }} />
+          </div>
+        ) : selectedProjectData.typeProject === "IA" ? (
+          <div className="type-project-info-container">
+            <Typography sx={{ marginRight: "5px" }}>
+              Type du projet :{" "}
+            </Typography>
+            <Typography> {selectedProjectData.typeProject}</Typography>
+            <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
+          </div>
+        ) : selectedProjectData.typeProject === "DevOps" ? (
+          <div className="type-project-info-container">
+            <Typography sx={{ marginRight: "5px" }}>
+              Type du projet :{" "}
+            </Typography>
+            <Typography> {selectedProjectData.typeProject}</Typography>
+            <MediationRoundedIcon />
+          </div>
+        ) : (
+          <div></div>
+        )}
+        <Typography
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            margin: "15px 0px",
+          }}
         >
-          <CloseIcon />
-        </IconButton>
-      </DialogActions>
-      <div className="project-content">
-        <div className="left-side-project">
-          {props.projectData.typeProject === "Web" ? (
-            <div className="type-project-info-container">
-              <Typography sx={{ marginRight: "5px" }}>
-                Type du projet :{" "}
-              </Typography>
-              <Typography> {props.projectData.typeProject}</Typography>
-              <DesktopWindowsRoundedIcon sx={{ marginLeft: "5px" }} />
-            </div>
-          ) : props.projectData.typeProject === "Mobile" ? (
-            <div className="type-project-info-container">
-              <Typography sx={{ marginRight: "5px" }}>
-                Type du projet :{" "}
-              </Typography>
-              <Typography> {props.projectData.typeProject}</Typography>
-              <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
-            </div>
-          ) : props.projectData.typeProject === "Gaming" ? (
-            <div className="type-project-info-container">
-              <Typography sx={{ marginRight: "5px" }}>
-                Type du projet :{" "}
-              </Typography>
-              <Typography> {props.projectData.typeProject}</Typography>
-              <SportsEsportsRoundedIcon sx={{ marginLeft: "5px" }} />
-            </div>
-          ) : props.projectData.typeProject === "IA" ? (
-            <div className="type-project-info-container">
-              <Typography sx={{ marginRight: "5px" }}>
-                Type du projet :{" "}
-              </Typography>
-              <Typography> {props.projectData.typeProject}</Typography>
-              <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
-            </div>
-          ) : props.projectData.typeProject === "DevOps" ? (
-            <div className="type-project-info-container">
-              <Typography sx={{ marginRight: "5px" }}>
-                Type du projet :{" "}
-              </Typography>
-              <Typography> {props.projectData.typeProject}</Typography>
-              <MediationRoundedIcon />
-            </div>
-          ) : (
-            <div></div>
-          )}
-          <Typography sx={{ display: "flex", alignItems: "center" }}>
-            Github :{" "}
-            <a
-              href={props.projectData.RepoProjectLink}
-              style={{ color: "#7a52e1", textDecoration: "underline" }}
-            >
-              <img
-                className="github-logo"
-                src={GitHubLogo}
-                alt="repo-github-link-logo"
-              />
-            </a>
-          </Typography>
+          Github :{" "}
+          <a
+            href={selectedProjectData.RepoProjectLink}
+            style={{ color: "#7a52e1", textDecoration: "underline" }}
+          >
+            <img
+              className="github-logo"
+              src={GitHubLogo}
+              alt="repo-github-link-logo"
+            />
+          </a>
+        </Typography>
+        <Chip
+          sx={{
+            display: "flex",
+            width: "fit-content",
+            padding: "10px",
+            margin: "15px 0px",
+            alignItems: "center",
+          }}
+          label={
+            <>
+              <div style={{ display: "flex" }}>
+                <Typography>
+                  {selectedProjectData &&
+                    selectedProjectData.promoProject &&
+                    selectedProjectData.promoProject.name}
+                </Typography>
+                <SchoolIcon />
+              </div>
+            </>
+          }
+        ></Chip>
+        <List
+          sx={{
+            width: "100%",
+            maxWidth: 360,
+            bgcolor: "background.paper",
+            border: "10px grey",
+            borderRadius: "20px",
+            padding: "10px",
+            margin: "15px 0px",
+          }}
+        >
           <Typography>
-            Classe :{" "}
-            {props.projectData &&
-              props.projectData.promoProject &&
-              props.projectData.promoProject.name}
+            <ConstructionIcon /> Membres du projet :{" "}
           </Typography>
+          {selectedProjectData &&
+            selectedProjectData.membersProject &&
+            selectedProjectData.membersProject.map((member, index) => (
+              <React.Fragment key={index}>
+                <ListItem alignItems="flex-start">
+                  <ListItemAvatar>
+                    <Avatar alt={member.firstname} src={member.image} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={
+                      member.lastname.toUpperCase() + " " + member.firstname
+                    }
+                    secondary={
+                      <Typography
+                        sx={{ display: "inline" }}
+                        component="span"
+                        variant="body2"
+                        color="text.primary"
+                      >
+                        {member.status}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+                {index !== selectedProjectData.membersProject.length - 1 && (
+                  <Divider variant="inset" component="li" />
+                )}
+              </React.Fragment>
+            ))}
+        </List>
+        {blogTutoData && (
           <List
             sx={{
               width: "100%",
@@ -154,161 +244,147 @@ const StudentProjectInfo = (props) => {
               border: "10px grey",
               borderRadius: "20px",
               padding: "10px",
-              marginBottom: "10px",
+              margin: "15px 0px",
             }}
           >
-            <Typography>
-              <ConstructionIcon /> Membres du projet :{" "}
-            </Typography>
-            {props.projectData &&
-              props.projectData.membersProject &&
-              props.projectData.membersProject.map((member, index) => (
-                <React.Fragment key={index}>
-                  <ListItem alignItems="flex-start">
-                    <ListItemAvatar>
-                      <Avatar alt={member.firstname} src={member.image} />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        member.lastname.toUpperCase() + " " + member.firstname
-                      }
-                      secondary={
-                        <Typography
-                          sx={{ display: "inline" }}
-                          component="span"
-                          variant="body2"
-                          color="text.primary"
-                        >
-                          {member.status}
-                        </Typography>
-                      }
-                    />
-                  </ListItem>
-                  {index !== props.projectData.membersProject.length - 1 && (
-                    <Divider variant="inset" component="li" />
-                  )}
-                </React.Fragment>
-              ))}
+            <Typography>Blogs tutoriels :</Typography>
+            <ListItem key={blogTutoData.id} button>
+              <ListItemText
+                primary={blogTutoData.data && blogTutoData.data.title}
+              />
+            </ListItem>
           </List>
-          <div className="btn-link-blog-container">
-            {props.projectData &&
-            props.projectData.creatorProject &&
-            props.projectData.creatorProject.id === user?.id ? (
-              <Button
-                onClick={props.handleClickOpen}
-                sx={{
-                  backgroundColor: "#de7700",
-                  color: "white",
-                  fontWeight: "bold",
-                }}
-              >
-                <AddLinkIcon />
-                Lier à un article blog tuto
-              </Button>
+        )}
+
+        <div className="btn-link-blog-container">
+          {selectedProjectData &&
+          selectedProjectData.creatorProject &&
+          selectedProjectData.creatorProject.id === user?.id ? (
+            <Button
+              sx={{
+                backgroundColor: "#de7700",
+                color: "white",
+                fontWeight: "bold",
+              }}
+              onClick={handleOpenBlogTutos}
+            >
+              <AddLinkIcon />
+              Lier à un article blog tuto
+            </Button>
+          ) : (
+            <div></div>
+          )}
+        </div>
+        <div className="list-counter-ref">
+          <div className="counter-container">
+            <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
+            <Typography>
+              {selectedProjectData.counterRef} Mis en avant
+            </Typography>
+          </div>
+          <Divider />
+          <div className="voters-container">
+            <Typography
+              sx={{
+                fontWeight: "bold",
+                textAlign: "center",
+                padding: "10px",
+              }}
+            >
+              Liste des personnes qui ont mis en avant le projet
+            </Typography>
+            {selectedProjectData &&
+            selectedProjectData.voters &&
+            selectedProjectData.voters.length > 0 ? (
+              <List>
+                <ListItem button onClick={handleClickVoters}>
+                  <ListItemText
+                    primary={"Afficher"}
+                    style={{ textAlign: "center" }}
+                  />
+                  {openVoters ? <ExpandLess /> : <ExpandMore />}
+                </ListItem>
+                <Collapse in={openVoters} timeout="auto" unmountOnExit>
+                  <List disablePadding>
+                    {selectedProjectData.voters.map((voter, index) => (
+                      <React.Fragment key={index}>
+                        <ListItem>
+                          {voter.status === "etudiant" && (
+                            <Typography variant="body2" component="span">
+                              1
+                            </Typography>
+                          )}
+                          {voter.status === "po" && (
+                            <Typography variant="body2" component="span">
+                              5
+                            </Typography>
+                          )}
+                          {voter.status === "pedago" && (
+                            <Typography variant="body2" component="span">
+                              3
+                            </Typography>
+                          )}
+                          <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
+                          <ListItemText
+                            primary={
+                              voter.lastname.toUpperCase() +
+                              " " +
+                              voter.firstname
+                            }
+                          />
+                        </ListItem>
+                        {index !== selectedProjectData.voters.length - 1 && (
+                          <Divider variant="inset" component="li" />
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </List>
+                </Collapse>
+              </List>
             ) : (
-              <div></div>
+              <div className="no-votes-student-projects-container">
+                <p className="no-votes-student-projects-p">
+                  Personne n'a encore mis en avant votre projet
+                </p>
+                <img
+                  className="no-votes-student-projects-img"
+                  src={NoVotesImg}
+                  alt="no-votes-projects-students"
+                />
+              </div>
             )}
           </div>
-          <div className="list-counter-ref">
-            <div className="counter-container">
-              <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
-              <Typography>
-                {props.projectData.counterRef} Mis en avant
-              </Typography>
-            </div>
-            <Divider />
-            <div className="voters-container">
-              <Typography
-                sx={{
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  padding: "10px",
-                }}
-              >
-                Liste des personnes qui ont mis en avant le projet
-              </Typography>
-              {props.projectData &&
-              props.projectData.voters &&
-              props.projectData.voters.length > 0 ? (
-                <List>
-                  <ListItem button onClick={handleClickVoters}>
-                    <ListItemText
-                      primary={"Afficher"}
-                      style={{ textAlign: "center" }}
-                    />
-                    {openVoters ? <ExpandLess /> : <ExpandMore />}
-                  </ListItem>
-                  <Collapse in={openVoters} timeout="auto" unmountOnExit>
-                    <List disablePadding>
-                      {props.projectData.voters.map((voter, index) => (
-                        <React.Fragment key={index}>
-                          <ListItem>
-                            {voter.status === "etudiant" && (
-                              <Typography variant="body2" component="span">
-                                1
-                              </Typography>
-                            )}
-                            {voter.status === "po" && (
-                              <Typography variant="body2" component="span">
-                                5
-                              </Typography>
-                            )}
-                            {voter.status === "pedago" && (
-                              <Typography variant="body2" component="span">
-                                3
-                              </Typography>
-                            )}
-                            <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
-                            <ListItemText
-                              primary={
-                                voter.lastname.toUpperCase() +
-                                " " +
-                                voter.firstname
-                              }
-                            />
-                          </ListItem>
-                          {index !== props.projectData.voters.length - 1 && (
-                            <Divider variant="inset" component="li" />
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </List>
-                  </Collapse>
-                </List>
-              ) : (
-                <div className="no-votes-student-projects-container">
-                  <p className="no-votes-student-projects-p">
-                    Personne n'a encore mis en avant votre projet
-                  </p>
-                  <img
-                    className="no-votes-student-projects-img"
-                    src={NoVotesImg}
-                    alt="no-votes-projects-students"
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <div className="right-side-project">
-          <img src={props.projectData.imgProject} alt="" />
-          <DialogContent>
-            <Typography sx={{ textAlign: "justify" }}>
-              {props.projectData.descriptionProject}
-            </Typography>
-            <Typography sx={{ paddingTop: "20px", textAlign: "right" }}>
-              Publié par :{" "}
-              {props.projectData &&
-                props.projectData.StudentId &&
-                props.projectData.StudentId.lastname.toUpperCase()}{" "}
-              {props.projectData &&
-                props.projectData.StudentId &&
-                props.projectData.StudentId.firstname}
-            </Typography>
-          </DialogContent>
         </div>
       </div>
-    </Dialog>
+      <div className="right-side-project">
+        <div className="img-project-box">
+          <img
+            src={selectedProjectData.imgProject}
+            alt=""
+            className="img-project"
+          />
+        </div>
+        <div className="text-project-box">
+          <Typography sx={{ textAlign: "justify" }}>
+            {selectedProjectData.descriptionProject}
+          </Typography>
+          <Typography sx={{ paddingTop: "20px", textAlign: "right" }}>
+            Publié par :{" "}
+            {selectedProjectData &&
+              selectedProjectData.creatorProject &&
+              selectedProjectData.creatorProject.lastname.toUpperCase()}{" "}
+            {selectedProjectData &&
+              selectedProjectData.creatorProject &&
+              selectedProjectData.creatorProject.firstname}
+          </Typography>
+        </div>
+      </div>
+      <BlogTutosLinkDialog
+        open={openBlogTutos}
+        onClose={handleCloseProject}
+        allblogtutos={allblogtutos}
+      />
+    </div>
   );
 };
 export default StudentProjectInfo;
