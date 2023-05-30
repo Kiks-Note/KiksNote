@@ -10,6 +10,7 @@ const {
   getAllStudentsProjects,
   createStudentProject,
   refStudentProject,
+  createLinkedBlogTuto,
 } = require("./controllers/studentsProjects");
 
 module.exports = function () {
@@ -21,5 +22,6 @@ module.exports = function () {
   router.get("/students-projects", getAllStudentsProjects);
   router.post("/students-projects", createStudentProject);
   router.post("/refprojects", refStudentProject);
+  router.post("/linkblogtuto/:projectId", createLinkedBlogTuto);
   return router;
 };

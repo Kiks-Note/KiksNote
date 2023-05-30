@@ -291,6 +291,33 @@ const refStudentProject = async (req, res) => {
   }
 };
 
+const createLinkedBlogTuto = async (req, res) => {
+  const projectId = req.params.projectId;
+  const blogTutoId = req.body.blogTutoId;
+
+  try {
+    const projectRef = db.collection("students_projects").doc(projectId);
+
+    const projectDoc = await projectRef.get();
+    if (!projectDoc.exists) {
+      return res.status(404).send("Le projet spécifié n'a pas été trouvé.");
+    }
+
+    await projectRef.update({
+      linkedBlogTuto: blogTutoId,
+    });
+
+    return res
+      .status(200)
+      .send("Le blog tutoriel a été lié au projet avec succès.");
+  } catch (err) {
+    console.error(err);
+    throw new Error(
+      "Erreur lors de la création du lien entre le blog tutoriel et le projet."
+    );
+  }
+};
+
 module.exports = {
   getAllStudents,
   getStudentById,
@@ -300,4 +327,5 @@ module.exports = {
   getAllStudentsProjects,
   createStudentProject,
   refStudentProject,
+  createLinkedBlogTuto,
 };

@@ -284,10 +284,6 @@ const StudentsProjects = () => {
     ...new Set(Object.values(projects).map((project) => project.typeProject)),
   ];
 
-  console.log(filteredProjects);
-
-  console.log(selectedIdFilterClass);
-
   return (
     <div className="students-project-container">
       <div className="header-students-projects">
