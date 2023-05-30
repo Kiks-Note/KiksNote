@@ -40,7 +40,7 @@ const CardPersona = ({ info }) => {
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6" color="text.primary">
-                Fristrations:
+                Frustrations:
               </Typography>
               <Typography variant="body2" color="text.primary">
                 {info.frustrations}
