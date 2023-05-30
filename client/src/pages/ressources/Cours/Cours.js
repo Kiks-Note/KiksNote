@@ -35,6 +35,7 @@ import AddIcon from "@mui/icons-material/Add";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
+import SchoolIcon from "@mui/icons-material/School";
 
 import CreateCoursModal from "./CreateCoursModal";
 
@@ -472,12 +473,19 @@ const Ressources = () => {
                             }}
                           >
                             <Chip
-                              sx={{ marginRight: "10px" }}
+                              sx={{
+                                display: "flex",
+                                padding: "10px",
+                                alignItems: "center",
+                              }}
                               label={
                                 <>
-                                  <Typography>
-                                    {course.data.courseClass.name}
-                                  </Typography>
+                                  <div style={{ display: "flex" }}>
+                                    <Typography>
+                                      {course.data.courseClass.name}
+                                    </Typography>
+                                    <SchoolIcon />
+                                  </div>
                                 </>
                               }
                             ></Chip>
@@ -610,12 +618,19 @@ const Ressources = () => {
 
                         <CardContent sx={{ padding: "10px", height: "120px" }}>
                           <Chip
-                            sx={{ marginRight: "10px" }}
+                            sx={{
+                              display: "flex",
+                              padding: "10px",
+                              alignItems: "center",
+                            }}
                             label={
                               <>
-                                <Typography>
-                                  {course.data.courseClass.name}
-                                </Typography>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>
+                                    {course.data.courseClass.name}
+                                  </Typography>
+                                  <SchoolIcon />
+                                </div>
                               </>
                             }
                           ></Chip>
@@ -731,12 +746,19 @@ const Ressources = () => {
                             {course.data.description}
                           </Typography>
                           <Chip
-                            sx={{ marginRight: "10px" }}
+                            sx={{
+                              display: "flex",
+                              padding: "10px",
+                              alignItems: "center",
+                            }}
                             label={
                               <>
-                                <Typography>
-                                  {course.data.courseClass.name}
-                                </Typography>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>
+                                    {course.data.courseClass.name}
+                                  </Typography>
+                                  <SchoolIcon />
+                                </div>
                               </>
                             }
                           ></Chip>
@@ -838,12 +860,19 @@ const Ressources = () => {
                             {course.data.description}
                           </Typography>
                           <Chip
-                            sx={{ marginRight: "10px" }}
+                            sx={{
+                              display: "flex",
+                              padding: "10px",
+                              alignItems: "center",
+                            }}
                             label={
                               <>
-                                <Typography>
-                                  {course.data.courseClass.name}
-                                </Typography>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>
+                                    {course.data.courseClass.name}
+                                  </Typography>
+                                  <SchoolIcon />
+                                </div>
                               </>
                             }
                           ></Chip>
