@@ -48,6 +48,8 @@ const StudentProjectInfo = () => {
   const [openVoters, setOpenVoters] = useState(false);
   const [openBlogTutos, setOpenBlogTutos] = useState(false);
 
+  const [hasAddedBlog, setHasAddedBlog] = useState(false);
+
   const handleClickVoters = () => {
     setOpenVoters(!openVoters);
   };
@@ -72,6 +74,7 @@ const StudentProjectInfo = () => {
         `http://localhost:5050/ressources/blogstutos/${blogTutoId}`
       );
       setBlogTutoData(response.data);
+      setHasAddedBlog(true);
     } catch (error) {
       console.error(error);
     }
@@ -101,7 +104,7 @@ const StudentProjectInfo = () => {
     getBlogTutorials();
   };
 
-  const handleCloseProject = () => {
+  const handleCloseBlogTutos = () => {
     setOpenBlogTutos(false);
   };
 
@@ -248,7 +251,15 @@ const StudentProjectInfo = () => {
             }}
           >
             <Typography>Blogs tutoriels :</Typography>
-            <ListItem key={blogTutoData.id} button>
+            <ListItem
+              key={blogTutoData.id}
+              button
+              sx={{ display: "flex", flexDirection: "column" }}
+            >
+              <img
+                src={blogTutoData?.data?.thumbnail}
+                alt="blog-tuto-img-linked"
+              />
               <ListItemText
                 primary={blogTutoData.data && blogTutoData.data.title}
               />
@@ -260,17 +271,19 @@ const StudentProjectInfo = () => {
           {selectedProjectData &&
           selectedProjectData.creatorProject &&
           selectedProjectData.creatorProject.id === user?.id ? (
-            <Button
-              sx={{
-                backgroundColor: "#de7700",
-                color: "white",
-                fontWeight: "bold",
-              }}
-              onClick={handleOpenBlogTutos}
-            >
-              <AddLinkIcon />
-              Lier à un article blog tuto
-            </Button>
+            !hasAddedBlog && (
+              <Button
+                sx={{
+                  backgroundColor: "#de7700",
+                  color: "white",
+                  fontWeight: "bold",
+                }}
+                onClick={handleOpenBlogTutos}
+              >
+                <AddLinkIcon />
+                Lier à un article blog tuto
+              </Button>
+            )
           ) : (
             <div></div>
           )}
@@ -381,7 +394,7 @@ const StudentProjectInfo = () => {
       </div>
       <BlogTutosLinkDialog
         open={openBlogTutos}
-        onClose={handleCloseProject}
+        close={handleCloseBlogTutos}
         allblogtutos={allblogtutos}
       />
     </div>
