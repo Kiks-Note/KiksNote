@@ -276,13 +276,13 @@ const createDashboards = async (req, res) => {
       batch.set(labelsRef.doc(), label);
     });
 
-     const agileRef = dashboardRef.collection("agile");
-     await agileRef.doc("impact-mapping").set({
-       goals: [],
-       actors: [],
-       impacts: [],
-       deliverables: [],
-     });
+    const agileRef = dashboardRef.collection("agile");
+    await agileRef.doc("impact-mapping").set({
+      goals: [],
+      actors: [],
+      impacts: [],
+      deliverables: [],
+    });
     await batch.commit();
 
     res.status(200).send({
@@ -626,9 +626,9 @@ async function createReleases(startingDate, endingDate, dashboardRef) {
     const releaseStart = moment(startingDate)
       .add(i * releaseDuration, "days")
       .toDate();
-    const releaseEnd = moment(releaseStart)
-      .add(releaseDuration, "days")
-      .toDate();
+    const releaseEnd = moment(endingDate).toDate();
+    console.log("releaseStart " + releaseStart);
+    console.log("releaseEnd " + releaseEnd);
     const sprints = await createSprints(
       releaseStart,
       releaseEnd,
@@ -650,6 +650,10 @@ async function createSprints(
   const sprintCount = Math.ceil(
     moment(releaseEnd).diff(moment(releaseStart), "days") / sprintDuration
   );
+  console.log("sprintCount" + sprintCount);
+  console.log("releaseStart Sprint" + releaseStart);
+  console.log("releaseEnd sprint" + releaseEnd);
+
   const sprints = [];
 
   for (let i = 0; i < sprintCount; i++) {
@@ -669,8 +673,12 @@ async function createSprints(
       .toDate();
     let sprintEnd = moment(sprintStart).add(sprintDuration, "days").toDate();
 
+    console.log("sprintStart " + sprintStart);
+    console.log("sprintEnd " + sprintEnd);
+
     // Vérification pour s'assurer que sprintEnd n'est pas plus grand que releaseEnd
     if (sprintEnd > releaseEnd) {
+      console.log("c'est moi le patron" + releaseEnd);
       sprintEnd = releaseEnd;
     }
 
