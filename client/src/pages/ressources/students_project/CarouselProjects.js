@@ -9,18 +9,22 @@ import {
   CardContent,
   CardMedia,
   Typography,
+  Chip,
   Button,
 } from "@mui/material";
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
+import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
+import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
+import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
+import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
+import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
+import SchoolIcon from "@mui/icons-material/School";
 
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Splide, SplideSlide } from "@splidejs/react-splide";
 
-import "swiper/css";
-import "swiper/css/effect-coverflow";
-import "swiper/css/pagination";
-import "swiper/css/navigation";
+import "@splidejs/react-splide/css/sea-green";
 
-import { EffectCoverflow, Pagination, Navigation } from "swiper";
+import studentTopProjectsImg from "../../../assets/img/students-top-projects.jpg";
 
 import "./CarouselProjects.scss";
 import "react-toastify/dist/ReactToastify.css";
@@ -80,42 +84,106 @@ const CarouselProjects = (props) => {
   var votePedago = 3;
   var voteStudent = 1;
 
+  if (props.topProjects.length === 0) {
+    return (
+      <>
+        <div className="no-projects-container">
+          <p>Aucun projet étudiant en top 10 publié pour le moment</p>
+          <img
+            className="no-class-img"
+            src={studentTopProjectsImg}
+            alt="no-students-top-projects-uploaded"
+          />
+        </div>
+      </>
+    );
+  }
+
   return (
     <div className="carousel-container">
       <div className="carousel">
-        <Swiper
-          effect={"coverflow"}
-          grabCursor={true}
-          centeredSlides={true}
-          loop={true}
-          coverflowEffect={{
-            rotate: 0,
-            stretch: 0,
-            depth: 100,
-            modifier: 2.5,
+        <Splide
+          options={{
+            rewind: true,
+            type: "slide",
+            perPage: 1,
+            perMove: 1,
+            autoplay: true,
+            pauseOnHover: false,
+            gap: "1rem",
+            pagination: true,
+            arrows: true,
           }}
-          pagination={{ el: ".swiper-pagination", clickable: true }}
-          navigation
-          modules={[EffectCoverflow, Pagination, Navigation]}
-          className="swiper_container"
-          style={{ maxWidth: "80%" }}
+          className="splide_container"
         >
           {props.topProjects.map((project) => (
-            <SwiperSlide key={project.id}>
+            <SplideSlide key={project.id}>
               <Card onClick={() => props.handleOpenProject(project.id)}>
                 <CardContent>
                   <CardMedia
                     component="img"
                     alt={project.nameProject}
-                    height="500"
                     image={project.imgProject}
+                    height="700"
                   />
-
-                  <Typography variant="h5">{project.nameProject}</Typography>
-                  <Typography variant="h5">{project.typeProject}</Typography>
-                  <Typography variant="h5">
-                    {project.promoProject.name}
+                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                    {project.nameProject}
                   </Typography>
+                  <div className="type-promo-project-container">
+                    {project.typeProject === "Web" ? (
+                      <div className="project-type-typo">
+                        <Typography variant="h5">
+                          {project.typeProject}
+                        </Typography>
+                        <DesktopWindowsRoundedIcon sx={{ marginLeft: "5px" }} />
+                      </div>
+                    ) : project.typeProject === "Mobile" ? (
+                      <div className="project-type-typo">
+                        <Typography variant="h5">
+                          {project.typeProject}
+                        </Typography>
+                        <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
+                      </div>
+                    ) : project.typeProject === "Gaming" ? (
+                      <div className="project-type-typo">
+                        <Typography variant="h5">
+                          {project.typeProject}
+                        </Typography>
+                        <SportsEsportsRoundedIcon sx={{ marginLeft: "5px" }} />
+                      </div>
+                    ) : project.typeProject === "IA" ? (
+                      <div className="project-type-typo">
+                        <Typography variant="h5">
+                          {project.typeProject}
+                        </Typography>
+                        <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
+                      </div>
+                    ) : project.typeProject === "DevOps" ? (
+                      <div className="project-type-typo">
+                        <Typography variant="h5">
+                          {project.typeProject}
+                        </Typography>
+                        <MediationRoundedIcon sx={{ marginLeft: "5px" }} />
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                    <Chip
+                      sx={{
+                        display: "flex",
+                        padding: "10px",
+                      }}
+                      label={
+                        <>
+                          <div style={{ display: "flex" }}>
+                            <Typography>{project.promoProject.name}</Typography>
+                            <SchoolIcon />
+                          </div>
+                        </>
+                      }
+                    ></Chip>
+                  </div>
+
                   {userStatus === "po" ? (
                     <Button
                       onClick={(event) => {
@@ -167,9 +235,9 @@ const CarouselProjects = (props) => {
                   )}
                 </CardContent>
               </Card>
-            </SwiperSlide>
+            </SplideSlide>
           ))}
-        </Swiper>
+        </Splide>
         <ToastContainer></ToastContainer>
       </div>
     </div>

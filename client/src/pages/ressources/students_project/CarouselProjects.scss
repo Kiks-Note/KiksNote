@@ -5,7 +5,7 @@
 }
 
 .carousel {
-    width: 80%;
+    width: 100%;
 }
 
 .swiper-button-prev,
@@ -19,4 +19,20 @@
     align-items: center;
     flex-direction: column;
     font-weight: bold;
+}
+
+.splide_container {
+    padding: 0;
+}
+
+.project-type-typo {
+    display: flex;
+    align-items: center;
+    padding: 10px
+}
+
+.type-promo-project-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
 }

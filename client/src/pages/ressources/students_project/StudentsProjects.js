@@ -7,24 +7,29 @@ import useFirebase from "../../../hooks/useFirebase";
 
 import {
   Button,
-  TextField,
   Card,
   CardContent,
   CardMedia,
   Typography,
   Grid,
-  InputAdornment,
   FormControl,
   Select,
+  Chip,
   MenuItem,
 } from "@mui/material";
 
-import SearchIcon from "@mui/icons-material/SearchRounded";
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
+import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
+import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
+import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
+import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
+import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
 
 import CreateProjectDialog from "./CreateProjectDialog";
 import CarouselProjects from "./CarouselProjects";
 import StudentProjectInfo from "./StudentProjectInfo";
+import studentProjectsImg from "../../../assets/img/students-projects.jpg";
+
 import "./StudentsProjects.scss";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -306,7 +311,7 @@ const StudentsProjects = () => {
         {userStatus === "etudiant" ? (
           <Button
             onClick={handleClickOpen}
-            sx={{ backgroundColor: "#7a52e1", color: "white", width: "20%" }}
+            sx={{ backgroundColor: "#7a52e1", color: "white", width: "15%" }}
           >
             Publier mon projet
           </Button>
@@ -343,115 +348,176 @@ const StudentsProjects = () => {
           allclass={allclass}
         />
       </Card>
-      <h1>Les projets mis en avant</h1>
+      <h1 className="h1-project">Top10 Projets Étudiants</h1>
       <CarouselProjects
         topProjects={filteredProjects.slice(0, 10)}
         selectedFilterType={selectedFilterTypeProject}
         selectedIdFilterClass={selectedIdFilterClass}
         handleOpenProject={handleOpenProject}
       />
-      <h1>Tous les projets</h1>
+      <h1 className="h1-project">Projets Étudiants</h1>
       <Grid container spacing={2}>
-        {filteredProjects
-          .slice(10)
-          .filter((project) =>
-            selectedIdFilterClass !== ""
-              ? project.promoProject &&
-                project.promoProject.id === selectedIdFilterClass
-              : true
-          )
-          .map((project) => (
-            <>
-              <Grid item xs={12} sm={6} md={3}>
-                <Card
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "space-between",
-                    height: "300px",
-                  }}
-                  onClick={() => {
-                    handleOpenProject(project.id);
-                  }}
-                >
-                  <CardMedia
+        {filteredProjects.slice(10).length === 0 ? (
+          <>
+            <div className="no-projects-container">
+              <p>Aucun projet étudiant publié pour le moment</p>
+              <img
+                className="no-class-img"
+                src={studentProjectsImg}
+                alt="no-projects-students-uploaded"
+              />
+            </div>
+          </>
+        ) : (
+          filteredProjects
+            .slice(10)
+            .filter((project) =>
+              selectedIdFilterClass !== ""
+                ? project.promoProject &&
+                  project.promoProject.id === selectedIdFilterClass
+                : true
+            )
+            .map((project) => (
+              <>
+                <Grid item xs={12} sm={6} md={3}>
+                  <Card
                     sx={{
-                      width: "100%",
-                      minHeight: "150px",
                       display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      height: "300px",
                     }}
-                    component="img"
-                    src={project.imgProject}
-                    alt="course image"
-                    style={{
-                      objectFit: "contain",
-                      objectPosition: "center",
-                      width: "100%",
-                      minHeight: "150px",
+                    onClick={() => {
+                      handleOpenProject(project.id);
                     }}
-                  />
+                  >
+                    <CardMedia
+                      sx={{
+                        width: "100%",
+                        minHeight: "150px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      component="img"
+                      src={project.imgProject}
+                      alt="course image"
+                      style={{
+                        objectFit: "contain",
+                        objectPosition: "center",
+                        width: "100%",
+                        minHeight: "150px",
+                      }}
+                    />
 
-                  <CardContent sx={{ padding: "10px", height: "120px" }}>
-                    <h2 variant="h3" component="div">
-                      {project.nameProject} - {project.typeProject} -{" "}
-                      {project.promoProject.name}
-                    </h2>
-                    {userStatus === "po" ? (
-                      <Button
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          referStudentProject(
-                            project.id,
-                            project.nameProject,
-                            votePo,
-                            user?.id
-                          );
-                        }}
-                        sx={{ color: "#7a52e1" }}
-                      >
-                        {project.counterRef}{" "}
-                        <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
-                      </Button>
-                    ) : userStatus === "pedago" ? (
-                      <Button
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          referStudentProject(
-                            project.id,
-                            project.nameProject,
-                            votePedago,
-                            user?.id
-                          );
-                        }}
-                        sx={{ color: "#7a52e1" }}
-                      >
-                        {project.counterRef}{" "}
-                        <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          referStudentProject(
-                            project.id,
-                            project.nameProject,
-                            voteStudent,
-                            user?.id
-                          );
-                        }}
-                        sx={{ color: "#7a52e1" }}
-                      >
-                        {project.counterRef}{" "}
-                        <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
-                      </Button>
-                    )}
-                  </CardContent>
-                </Card>
-              </Grid>
-            </>
-          ))}
+                    <CardContent sx={{ padding: "10px", height: "120px" }}>
+                      {project.typeProject === "Web" ? (
+                        <div>
+                          <h2 variant="h3" component="div">
+                            {project.nameProject} - {project.typeProject}
+                            <DesktopWindowsRoundedIcon
+                              sx={{ marginLeft: "5px" }}
+                            />
+                          </h2>
+                        </div>
+                      ) : project.typeProject === "Mobile" ? (
+                        <div>
+                          <h2 variant="h3" component="div">
+                            {project.nameProject} - {project.typeProject}
+                            <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
+                          </h2>
+                        </div>
+                      ) : project.typeProject === "Gaming" ? (
+                        <div>
+                          <h2 variant="h3" component="div">
+                            {project.nameProject} - {project.typeProject}
+                            <SportsEsportsRoundedIcon
+                              sx={{ marginLeft: "5px" }}
+                            />
+                          </h2>
+                        </div>
+                      ) : project.typeProject === "IA" ? (
+                        <div>
+                          <h2 variant="h3" component="div">
+                            {project.nameProject} - {project.typeProject}
+                            <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
+                          </h2>
+                        </div>
+                      ) : project.typeProject === "DevOps" ? (
+                        <div>
+                          <h2 variant="h3" component="div">
+                            {project.nameProject} - {project.typeProject}
+                            <MediationRoundedIcon />
+                          </h2>
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
+
+                      <Chip
+                        sx={{ marginRight: "10px" }}
+                        label={
+                          <>
+                            <Typography>{project.promoProject.name}</Typography>
+                          </>
+                        }
+                      ></Chip>
+                      {userStatus === "po" ? (
+                        <Button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            referStudentProject(
+                              project.id,
+                              project.nameProject,
+                              votePo,
+                              user?.id
+                            );
+                          }}
+                          sx={{ color: "#7a52e1" }}
+                        >
+                          {project.counterRef}{" "}
+                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                        </Button>
+                      ) : userStatus === "pedago" ? (
+                        <Button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            referStudentProject(
+                              project.id,
+                              project.nameProject,
+                              votePedago,
+                              user?.id
+                            );
+                          }}
+                          sx={{ color: "#7a52e1" }}
+                        >
+                          {project.counterRef}{" "}
+                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                        </Button>
+                      ) : (
+                        <Button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            referStudentProject(
+                              project.id,
+                              project.nameProject,
+                              voteStudent,
+                              user?.id
+                            );
+                          }}
+                          sx={{ color: "#7a52e1" }}
+                        >
+                          {project.counterRef}{" "}
+                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                        </Button>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+              </>
+            ))
+        )}
+
         <StudentProjectInfo
           handleCloseProject={handleCloseProject}
           openProject={openProject}
