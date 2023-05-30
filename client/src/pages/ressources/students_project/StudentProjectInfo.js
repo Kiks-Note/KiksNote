@@ -96,8 +96,10 @@ const StudentProjectInfo = () => {
   }, []);
 
   useEffect(() => {
-    getBlogTutoById("jr3qUld60Ds0O5iHhW7N");
-  }, []);
+    if (selectedProjectData?.linkedBlogTuto) {
+      getBlogTutoById(selectedProjectData.linkedBlogTuto);
+    }
+  }, [selectedProjectData?.linkedBlogTuto]);
 
   const handleOpenBlogTutos = () => {
     setOpenBlogTutos(true);
@@ -238,7 +240,7 @@ const StudentProjectInfo = () => {
               </React.Fragment>
             ))}
         </List>
-        {blogTutoData && (
+        {blogTutoData && blogTutoData.data && blogTutoData.data.thumbnail && (
           <List
             sx={{
               width: "100%",
@@ -250,19 +252,20 @@ const StudentProjectInfo = () => {
               margin: "15px 0px",
             }}
           >
-            <Typography>Blogs tutoriels :</Typography>
+            <Typography>Blog Tuto relié</Typography>
             <ListItem
               key={blogTutoData.id}
               button
               sx={{ display: "flex", flexDirection: "column" }}
             >
-              <img
-                src={blogTutoData?.data?.thumbnail}
-                alt="blog-tuto-img-linked"
-              />
-              <ListItemText
-                primary={blogTutoData.data && blogTutoData.data.title}
-              />
+              {blogTutoData.data.thumbnail && (
+                <img
+                  className="blog-tuto-linked-img"
+                  src={blogTutoData.data.thumbnail}
+                  alt="blog-tuto-img-linked"
+                />
+              )}
+              <ListItemText primary={blogTutoData.data.title} />
             </ListItem>
           </List>
         )}
@@ -396,6 +399,7 @@ const StudentProjectInfo = () => {
         open={openBlogTutos}
         close={handleCloseBlogTutos}
         allblogtutos={allblogtutos}
+        getStudentProjectById={getStudentProjectById}
       />
     </div>
   );
