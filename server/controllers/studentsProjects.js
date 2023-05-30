@@ -57,6 +57,28 @@ const getBlogTutorials = async (req, res) => {
   }
 };
 
+const getBlogById = async (req, res) => {
+  const blogId = req.params.id;
+
+  try {
+    const blogDoc = await db.collection("blog").doc(blogId).get();
+
+    if (!blogDoc.exists) {
+      return res.status(404).send("Le blog demandé n'a pas été trouvé.");
+    }
+
+    const blog = {
+      id: blogDoc.id,
+      data: blogDoc.data(),
+    };
+
+    return res.status(200).send(blog);
+  } catch (err) {
+    console.error(err);
+    throw new Error("Erreur lors de la récupération du blog.");
+  }
+};
+
 const getStudentProjectById = async (req, res) => {
   const projectId = req.params.id;
 
@@ -273,6 +295,7 @@ module.exports = {
   getAllStudents,
   getStudentById,
   getBlogTutorials,
+  getBlogById,
   getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,

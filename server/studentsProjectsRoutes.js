@@ -5,6 +5,7 @@ const {
   getAllStudents,
   getStudentById,
   getBlogTutorials,
+  getBlogById,
   getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,
@@ -15,6 +16,7 @@ module.exports = function () {
   router.get("/students", getAllStudents);
   router.get("/student/:id", getStudentById);
   router.get("/blogstutos", getBlogTutorials);
+  router.get("/blogstutos/:id", getBlogById);
   router.get("/studentsprojects/:id", getStudentProjectById);
   router.get("/students-projects", getAllStudentsProjects);
   router.post("/students-projects", createStudentProject);
