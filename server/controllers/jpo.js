@@ -77,50 +77,114 @@ const getJpoById = async (req, res) => {
 
 const createJpo = async (req, res) => {
   try {
-    const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd } =
-      req.body;
+    await upload(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Error uploading file." });
+        return;
+      } else if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
 
-    const mimeType = "image/png";
-    const fileExtension = mime.extension(mimeType);
-    const fileName = `${jpoTitle}.${fileExtension}`;
+      const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd } =
+        req.body;
 
-    const buffer = Buffer.from(
-      jpoThumbnail.replace(/^data:image\/\w+;base64,/, ""),
-      "base64"
-    );
-    const file = bucket.file(`jpo/${jpoTitle}/${fileName}`);
+      const mimeType = "image/png";
+      const fileExtension = mime.extension(mimeType);
+      const fileName = `${jpoTitle}.${fileExtension}`;
 
-    const options = {
-      metadata: {
-        contentType: mimeType || "image/png",
-        cacheControl: "public, max-age=31536000",
-      },
-    };
+      const buffer = Buffer.from(
+        (jpoThumbnail || "").replace(/^data:image\/\w+;base64,/, ""),
+        "base64"
+      );
+      const file = bucket.file(`jpo/${jpoTitle}/${fileName}`);
 
-    await file.save(buffer, options);
+      const options = {
+        metadata: {
+          contentType: mimeType || "image/png",
+          cacheControl: "public, max-age=31536000",
+        },
+      };
 
-    const [urlImageJpo] = await file.getSignedUrl({
-      action: "read",
-      expires: "03-17-2025",
-    });
+      await file.save(buffer, options);
 
-    const jpoData = {
-      jpoTitle: jpoTitle,
-      jpoDescription: jpoDescription,
-      jpoThumbnail: urlImageJpo,
-      jpoDayStart: jpoDayStart,
-      jpoDayEnd: jpoDayEnd,
-    };
+      const [urlImageJpo] = await file.getSignedUrl({
+        action: "read",
+        expires: "03-17-2025",
+      });
 
-    const jpoRef = await db.collection("jpo").add(jpoData);
-    const newJPO = await jpoRef.get();
+      const jpoData = {
+        jpoTitle: jpoTitle,
+        jpoDescription: jpoDescription,
+        jpoThumbnail: urlImageJpo,
+        jpoDayStart: jpoDayStart,
+        jpoDayEnd: jpoDayEnd,
+        linkCommercialBrochure: null,
+      };
 
-    res.status(200).json({
-      message: "JPO créée avec succès.",
-      jpoData: {
-        id: newJPO.id,
-        ...newJPO.data(),
-      },
+      if (req.file) {
+        const pdfFilePath = req.file.path;
+        const pdfFileType = mime.lookup(pdfFilePath);
+        const pdfFileSize = req.file.size;
+
+        const pdfFolderPath = `jpo/${jpoTitle}`;
+        const pdfFileName = req.file.originalname;
+
+        const pdfFileRef = bucket.file(`jpo/${jpoTitle}/${pdfFileName}`);
+
+        pdfFileRef
+          .createWriteStream({
+            metadata: {
+              contentType: pdfFileType || "application/pdf",
+              cacheControl: "public, max-age=31536000",
+            },
+          })
+          .on("error", (error) => {
+            console.error(error);
+            res.status(400).json({ error: error.message });
+          })
+          .on("finish", async () => {
+            try {
+              const pdfUrl = await pdfFileRef.getSignedUrl({
+                action: "read",
+                expires: "03-17-2025",
+              });
+
+              jpoData.linkCommercialBrochure = FieldValue.arrayUnion({
+                url: pdfUrl.toString(),
+                name: pdfFileName,
+                type: pdfFileType,
+                size: pdfFileSize,
+              });
+
+              const jpoRef = await db.collection("jpo").add(jpoData);
+              const newJPO = await jpoRef.get();
+
+              res.status(200).json({
+                message: "JPO créée avec succès.",
+                jpoData: {
+                  id: newJPO.id,
+                  ...newJPO.data(),
+                },
+              });
+            } catch (error) {
+              console.error(error);
+              res.status(500).send("Erreur lors de la création de la JPO.");
+            }
+          })
+          .end(fs.readFileSync(pdfFilePath));
+      } else {
+        const jpoRef = await db.collection("jpo").add(jpoData);
+        const newJPO = await jpoRef.get();
+
+        res.status(200).json({
+          message: "JPO créée avec succès.",
+          jpoData: {
+            id: newJPO.id,
+            ...newJPO.data(),
+          },
+        });
+      }
     });
   } catch (err) {
     console.error(err);
