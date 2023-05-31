@@ -36,6 +36,8 @@ import SearchIcon from "@mui/icons-material/SearchRounded";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import SchoolIcon from "@mui/icons-material/School";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 
 import CreateCoursModal from "./CreateCoursModal";
 
@@ -472,61 +474,74 @@ const Ressources = () => {
                               height: "120px",
                             }}
                           >
-                            <Chip
-                              sx={{
+                            <div
+                              style={{
                                 display: "flex",
-                                padding: "10px",
-                                alignItems: "center",
+                                justifyContent: "space-between",
                               }}
-                              label={
-                                <>
-                                  <div style={{ display: "flex" }}>
+                            >
+                              <Chip
+                                label={
+                                  <>
+                                    <div style={{ display: "flex" }}>
+                                      <Typography>
+                                        {course.data.courseClass.name}
+                                      </Typography>
+                                      <SchoolIcon />
+                                    </div>
+                                  </>
+                                }
+                              ></Chip>
+                              <Chip
+                                avatar={
+                                  <Avatar
+                                    alt={
+                                      course.data.owner.lastname.toUpperCase() +
+                                      "" +
+                                      course.data.owner.firstname +
+                                      "photo-profile"
+                                    }
+                                    src={course.data.owner.image}
+                                  />
+                                }
+                                variant="outlined"
+                                label={
+                                  <>
                                     <Typography>
-                                      {course.data.courseClass.name}
+                                      {course.data.owner.lastname.toUpperCase()}{" "}
+                                      {course.data.owner.firstname}
                                     </Typography>
-                                    <SchoolIcon />
-                                  </div>
-                                </>
-                              }
-                            ></Chip>
-                            <Chip
-                              avatar={
-                                <Avatar
-                                  alt={
-                                    course.data.owner.lastname.toUpperCase() +
-                                    "" +
-                                    course.data.owner.firstname +
-                                    "photo-profile"
-                                  }
-                                  src={course.data.owner.image}
-                                />
-                              }
-                              variant="outlined"
-                              label={
-                                <>
-                                  <Typography>
-                                    {course.data.owner.lastname.toUpperCase()}{" "}
-                                    {course.data.owner.firstname}
-                                  </Typography>
-                                </>
-                              }
-                            ></Chip>
-                            <Typography>
-                              {"Début : "}
-                              {course &&
-                                course.data &&
-                                course.data.dateStartSprint &&
-                                moment
-                                  .unix(course.data.dateStartSprint._seconds)
-                                  .format("DD.MM.YYYY")}{" "}
-                              - {"Fin : "}
-                              {course &&
-                                course.data &&
-                                course.data.dateEndSprint &&
-                                moment
-                                  .unix(course.data.dateEndSprint._seconds)
-                                  .format("DD.MM.YYYY")}
-                            </Typography>
+                                  </>
+                                }
+                              ></Chip>
+                            </div>
+                            <div style={{ padding: "10px" }}>
+                              <Typography
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <CalendarTodayIcon />
+                                {"Début "}
+                                {course &&
+                                  course.data &&
+                                  course.data.dateStartSprint &&
+                                  moment
+                                    .unix(course.data.dateStartSprint._seconds)
+                                    .format("DD.MM.YYYY")}{" "}
+                                - {"Fin "}
+                                {course &&
+                                  course.data &&
+                                  course.data.dateEndSprint &&
+                                  moment
+                                    .unix(course.data.dateEndSprint._seconds)
+                                    .format("DD.MM.YYYY")}
+                                <EventBusyIcon />
+                              </Typography>
+                            </div>
+
                             {userStatus === "etudiant" &&
                             course.data.private === true ? (
                               <>
@@ -617,61 +632,73 @@ const Ressources = () => {
                         />
 
                         <CardContent sx={{ padding: "10px", height: "120px" }}>
-                          <Chip
-                            sx={{
+                          <div
+                            style={{
                               display: "flex",
-                              padding: "10px",
-                              alignItems: "center",
+                              justifyContent: "space-between",
                             }}
-                            label={
-                              <>
-                                <div style={{ display: "flex" }}>
+                          >
+                            <Chip
+                              label={
+                                <>
+                                  <div style={{ display: "flex" }}>
+                                    <Typography>
+                                      {course.data.courseClass.name}
+                                    </Typography>
+                                    <SchoolIcon />
+                                  </div>
+                                </>
+                              }
+                            ></Chip>
+                            <Chip
+                              avatar={
+                                <Avatar
+                                  alt={
+                                    course.data.owner.lastname.toUpperCase() +
+                                    "" +
+                                    course.data.owner.firstname +
+                                    "photo-profile"
+                                  }
+                                  src={course.data.owner.image}
+                                />
+                              }
+                              variant="outlined"
+                              label={
+                                <>
                                   <Typography>
-                                    {course.data.courseClass.name}
+                                    {course.data.owner.lastname.toUpperCase()}{" "}
+                                    {course.data.owner.firstname}
                                   </Typography>
-                                  <SchoolIcon />
-                                </div>
-                              </>
-                            }
-                          ></Chip>
-                          <Chip
-                            avatar={
-                              <Avatar
-                                alt={
-                                  course.data.owner.lastname.toUpperCase() +
-                                  "" +
-                                  course.data.owner.firstname +
-                                  "photo-profile"
-                                }
-                                src={course.data.owner.image}
-                              />
-                            }
-                            variant="outlined"
-                            label={
-                              <>
-                                <Typography>
-                                  {course.data.owner.lastname.toUpperCase()}{" "}
-                                  {course.data.owner.firstname}
-                                </Typography>
-                              </>
-                            }
-                          ></Chip>
-                          <Typography>
-                            {"Début : "}
-                            {course &&
-                              course.data &&
-                              course.data.dateStartSprint &&
-                              moment
-                                .unix(course.data.dateStartSprint._seconds)
-                                .format("DD.MM.YYYY")}{" "}
-                            - {"Fin : "}
-                            {course &&
-                              course.data &&
-                              course.data.dateEndSprint &&
-                              moment
-                                .unix(course.data.dateEndSprint._seconds)
-                                .format("DD.MM.YYYY")}
-                          </Typography>
+                                </>
+                              }
+                            ></Chip>
+                          </div>
+                          <div style={{ padding: "10px" }}>
+                            <Typography
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <CalendarTodayIcon />
+                              {"Début "}
+                              {course &&
+                                course.data &&
+                                course.data.dateStartSprint &&
+                                moment
+                                  .unix(course.data.dateStartSprint._seconds)
+                                  .format("DD.MM.YYYY")}{" "}
+                              - {"Fin "}
+                              {course &&
+                                course.data &&
+                                course.data.dateEndSprint &&
+                                moment
+                                  .unix(course.data.dateEndSprint._seconds)
+                                  .format("DD.MM.YYYY")}
+                              <EventBusyIcon />
+                            </Typography>
+                          </div>
                           {userStatus === "etudiant" &&
                           course.data.private === true ? (
                             <>
@@ -732,25 +759,12 @@ const Ressources = () => {
                     }}
                   >
                     <div className="list-card-content">
-                      <CardMedia
-                        className="list-card-image"
-                        src={course.data.imageCourseUrl}
-                        title={course.data.title}
-                      />
                       <div className="list-card-details">
                         <CardContent sx={{ padding: "10px" }}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
-                          <Typography variant="body2" color="text.secondary">
-                            {course.data.description}
-                          </Typography>
                           <Chip
-                            sx={{
-                              display: "flex",
-                              padding: "10px",
-                              alignItems: "center",
-                            }}
                             label={
                               <>
                                 <div style={{ display: "flex" }}>
@@ -784,21 +798,35 @@ const Ressources = () => {
                               </>
                             }
                           ></Chip>
-                          <Typography>
-                            {"Début : "}
-                            {course &&
-                              course.data &&
-                              course.data.dateStartSprint &&
-                              moment
-                                .unix(course.data.dateStartSprint._seconds)
-                                .format("DD.MM.YYYY")}{" "}
-                            - {"Fin : "}
-                            {course &&
-                              course.data &&
-                              course.data.dateEndSprint &&
-                              moment
-                                .unix(course.data.dateEndSprint._seconds)
-                                .format("DD.MM.YYYY")}
+                          <div style={{ padding: "10px" }}>
+                            <Typography
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <CalendarTodayIcon />
+                              {"Début "}
+                              {course &&
+                                course.data &&
+                                course.data.dateStartSprint &&
+                                moment
+                                  .unix(course.data.dateStartSprint._seconds)
+                                  .format("DD.MM.YYYY")}{" "}
+                              - {"Fin "}
+                              {course &&
+                                course.data &&
+                                course.data.dateEndSprint &&
+                                moment
+                                  .unix(course.data.dateEndSprint._seconds)
+                                  .format("DD.MM.YYYY")}
+                              <EventBusyIcon />
+                            </Typography>
+                          </div>
+
+                          <Typography variant="body2" color="text.secondary">
+                            {course.data.description}
                           </Typography>
                           <Tooltip title="Open">
                             <IconButton
@@ -846,19 +874,11 @@ const Ressources = () => {
                     }}
                   >
                     <div className="list-card-content">
-                      <CardMedia
-                        className="list-card-image"
-                        src={course.data.imageCourseUrl}
-                        title={course.data.title}
-                      />
                       <div className="list-card-details">
                         <CardContent sx={{ padding: "10px" }}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
-                          <Typography variant="body2" color="text.secondary">
-                            {course.data.description}
-                          </Typography>
                           <Chip
                             sx={{
                               display: "flex",
@@ -898,21 +918,34 @@ const Ressources = () => {
                               </>
                             }
                           ></Chip>
-                          <Typography>
-                            {"Début : "}
-                            {course &&
-                              course.data &&
-                              course.data.dateStartSprint &&
-                              moment
-                                .unix(course.data.dateStartSprint._seconds)
-                                .format("DD.MM.YYYY")}{" "}
-                            - {"Fin : "}
-                            {course &&
-                              course.data &&
-                              course.data.dateEndSprint &&
-                              moment
-                                .unix(course.data.dateEndSprint._seconds)
-                                .format("DD.MM.YYYY")}
+                          <div style={{ padding: "10px" }}>
+                            <Typography
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <CalendarTodayIcon />
+                              {"Début "}
+                              {course &&
+                                course.data &&
+                                course.data.dateStartSprint &&
+                                moment
+                                  .unix(course.data.dateStartSprint._seconds)
+                                  .format("DD.MM.YYYY")}{" "}
+                              - {"Fin "}
+                              {course &&
+                                course.data &&
+                                course.data.dateEndSprint &&
+                                moment
+                                  .unix(course.data.dateEndSprint._seconds)
+                                  .format("DD.MM.YYYY")}
+                              <EventBusyIcon />
+                            </Typography>
+                          </div>
+                          <Typography variant="body2" color="text.secondary">
+                            {course.data.description}
                           </Typography>
                           <Tooltip title="Open">
                             <IconButton

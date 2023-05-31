@@ -22,6 +22,7 @@ import {
   Card,
   CardContent,
   Chip,
+  Avatar,
 } from "@mui/material";
 
 import UpdateCoursDialog from "./UpdateCoursDialog";
@@ -33,6 +34,8 @@ import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import CallRoundedIcon from "@mui/icons-material/CallRounded";
 import SchoolIcon from "@mui/icons-material/School";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
@@ -794,6 +797,7 @@ const CoursInfo = () => {
                 />
                 <div className="display-date">
                   <h4 className="h4-data-cours-info">
+                    <CalendarTodayIcon />
                     Date début de Sprint :{" "}
                   </h4>
                   <p className="pl-2">
@@ -805,7 +809,10 @@ const CoursInfo = () => {
                   </p>
                 </div>
                 <div className="display-date">
-                  <h4 className="h4-data-cours-info">Date fin de Sprint : </h4>
+                  <h4 className="h4-data-cours-info">
+                    <EventBusyIcon />
+                    Date fin de Sprint :{" "}
+                  </h4>
                   <p className="pl-2">
                     {coursData?.dateEndSprint &&
                       coursData.dateEndSprint._seconds &&
@@ -864,17 +871,28 @@ const CoursInfo = () => {
                   Products Owner / Pedago
                 </h2>
                 <Divider />
-                <div className="list-po-pedago-container">
-                  {coursData &&
-                    coursData.owner &&
-                    coursData.owner.lastname &&
-                    coursData.owner.firstname && (
-                      <p className="po-p">
-                        {coursData.owner.lastname.toUpperCase()}{" "}
-                        {coursData.owner.firstname}
-                      </p>
-                    )}
-                </div>
+                <Chip
+                  avatar={
+                    <Avatar
+                      alt={
+                        coursData?.owner?.lastname.toUpperCase() +
+                        "" +
+                        coursData?.owner?.firstname +
+                        "photo-profile"
+                      }
+                      src={coursData?.data?.owner?.image}
+                    />
+                  }
+                  variant="outlined"
+                  label={
+                    <>
+                      <Typography>
+                        {coursData?.owner?.lastname.toUpperCase()}{" "}
+                        {coursData?.owner?.firstname}
+                      </Typography>
+                    </>
+                  }
+                ></Chip>
                 <h2
                   style={{
                     marginTop: "10px",
