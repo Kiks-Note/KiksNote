@@ -63,4 +63,23 @@ const register = async (req, res) => {
     });
 };
 
-module.exports = { login, register };
+const sendemail = async (req, res) => {
+  const { userEmail } = req.body;
+  try {
+        const { email } = req.body;
+          console.log(email)
+          sendPasswordResetEmail(authClient, email)
+              .then(
+                  res.status(200).send("Email sent successfully")
+              )
+              .catch(function (error) {
+                  res.status(401).send(error)
+                  console.log(error)
+              });
+      } catch (error) {
+          res.status(404).send(error)
+          console.log(error)
+      }
+};
+
+module.exports = { login, register, sendemail};
