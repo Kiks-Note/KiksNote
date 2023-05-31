@@ -36,6 +36,9 @@ import CallRoundedIcon from "@mui/icons-material/CallRounded";
 import SchoolIcon from "@mui/icons-material/School";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
+import LaptopChromebookIcon from "@mui/icons-material/LaptopChromebook";
+import PublicIcon from "@mui/icons-material/Public";
+import LockIcon from "@mui/icons-material/Lock";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
@@ -871,28 +874,36 @@ const CoursInfo = () => {
                   Products Owner / Pedago
                 </h2>
                 <Divider />
-                <Chip
-                  avatar={
-                    <Avatar
-                      alt={
-                        coursData?.owner?.lastname.toUpperCase() +
-                        "" +
-                        coursData?.owner?.firstname +
-                        "photo-profile"
-                      }
-                      src={coursData?.data?.owner?.image}
-                    />
-                  }
-                  variant="outlined"
-                  label={
-                    <>
-                      <Typography>
-                        {coursData?.owner?.lastname.toUpperCase()}{" "}
-                        {coursData?.owner?.firstname}
-                      </Typography>
-                    </>
-                  }
-                ></Chip>
+                <div
+                  style={{
+                    display: "flex",
+                    height: "7%",
+                    alignItems: "center",
+                  }}
+                >
+                  <Chip
+                    avatar={
+                      <Avatar
+                        alt={
+                          coursData?.owner?.lastname.toUpperCase() +
+                          "" +
+                          coursData?.owner?.firstname +
+                          "photo-profile"
+                        }
+                        src={coursData?.data?.owner?.image}
+                      />
+                    }
+                    variant="outlined"
+                    label={
+                      <>
+                        <Typography>
+                          {coursData?.owner?.lastname.toUpperCase()}{" "}
+                          {coursData?.owner?.firstname}
+                        </Typography>
+                      </>
+                    }
+                  ></Chip>
+                </div>
                 <h2
                   style={{
                     marginTop: "10px",
@@ -904,16 +915,35 @@ const CoursInfo = () => {
                 <Divider />
                 <div className="details-actions-container">
                   <div className="display-campus-num">
-                    <h4 className="h4-data-cours-info">Campus Numérique : </h4>
+                    <h4 className="h4-data-cours-info">
+                      <LaptopChromebookIcon />
+                      Campus Numérique :{" "}
+                    </h4>
                     <p className="is-campus-num">
                       {coursData.campus_numerique === false ? "Non" : "Oui"}
                     </p>
                   </div>
                   <div className="display-cours-status">
                     <h4 className="h4-data-cours-info">Statut du cours : </h4>
-                    <p className="is-public">
-                      {coursData.private === false ? "Public" : "Privé"}
-                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        flexDirection: "row",
+                      }}
+                    >
+                      {coursData.private === false ? (
+                        <>
+                          <PublicIcon />
+                          <Typography>Public</Typography>
+                        </>
+                      ) : (
+                        <>
+                          <LockIcon />
+                          <Typography>Privée</Typography>
+                        </>
+                      )}
+                    </div>
                   </div>
                   {userStatus === "po" ? (
                     <>

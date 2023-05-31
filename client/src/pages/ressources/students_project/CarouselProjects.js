@@ -11,6 +11,7 @@ import {
   Typography,
   Chip,
   Button,
+  Skeleton,
 } from "@mui/material";
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
 import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
@@ -86,6 +87,14 @@ const CarouselProjects = (props) => {
   var votePo = 5;
   var votePedago = 3;
   var voteStudent = 1;
+
+  if (props.loading) {
+    return (
+      <>
+        <Skeleton variant="rectangular" width="100%" height={800} />
+      </>
+    );
+  }
 
   if (props.topProjects.length === 0) {
     return (

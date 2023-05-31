@@ -18,6 +18,8 @@ import {
   Select,
   Chip,
   MenuItem,
+  Skeleton,
+  Box,
 } from "@mui/material";
 
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
@@ -72,6 +74,8 @@ const StudentsProjects = () => {
   const [descriptionProject, setDescriptionProject] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [idSelectedClass, setIdSelectedClass] = useState("");
+
+  const [loading, setLoading] = useState(true);
 
   const [selectedFilterTypeProject, setSelectedFilterTypeProject] =
     useState("");
@@ -226,7 +230,14 @@ const StudentsProjects = () => {
   }, [selectedFilterTypeProject, selectedIdFilterClass, projects]);
 
   useEffect(() => {
-    getAllProjects();
+    getAllProjects()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+      });
     getAllClass();
     getAllStudents();
   }, []);
@@ -333,12 +344,21 @@ const StudentsProjects = () => {
       <h1 className="h1-project">Top10 Projets Étudiants</h1>
       <CarouselProjects
         topProjects={filteredProjects.slice(0, 10)}
+        loading={loading}
         selectedFilterType={selectedFilterTypeProject}
         selectedIdFilterClass={selectedIdFilterClass}
       />
       <h1 className="h1-project">Projets Étudiants</h1>
       <Grid container spacing={2}>
-        {filteredProjects.slice(10).length === 0 ? (
+        {loading ? (
+          <>
+            <Grid container justifyContent="space-evenly">
+              {(loading ? Array.from(new Array(3)) : 3).map((item, index) => (
+                <Skeleton variant="rectangular" width={300} height={300} />
+              ))}
+            </Grid>
+          </>
+        ) : filteredProjects.slice(10).length === 0 ? (
           <>
             <div className="no-projects-container">
               <p>Aucun projet étudiant publié pour le moment</p>
