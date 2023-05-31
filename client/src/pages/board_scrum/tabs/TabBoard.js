@@ -12,11 +12,21 @@ export default function TabBoard() {
   const tabs = useSelector((state) => state.tabBoard.tabs);
   const activeTab = useSelector((state) => state.tabBoard.activeTab);
 
+  const checkIfActiveTabExists = (tabs, activeTab) => {
+    return tabs.includes(activeTab);
+  }
+  
   const handleChange = useCallback(
     (event, activeTab) => {
-      dispatch(setActiveTab(activeTab));
+      if (checkIfActiveTabExists(tabs, activeTab)) {
+        console.log('activeTab existe dans tabs');
+        dispatch(setActiveTab(activeTab));
+      } else {
+        console.log('activeTab n\'existe pas dans tabs');
+        dispatch(setActiveTab(tabs[0].id));
+      }
     },
-    [dispatch]
+    [tabs, dispatch]
   );
 
   const handleClose = useCallback(
@@ -42,7 +52,7 @@ export default function TabBoard() {
       dispatch(addTab(initialTab));
       dispatch(setActiveTab(initialTab.id));
     }
-  }, [tabs, dispatch]);
+  }, [tabs, dispatch, activeTab]);
 
   return (
     <Tab

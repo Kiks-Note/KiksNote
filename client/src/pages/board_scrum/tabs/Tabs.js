@@ -9,6 +9,7 @@ import PdfView from "../overview/PdfView";
 import Board from "../Board";
 import Tooltip from "@material-ui/core/Tooltip";
 
+
 TabDemo.propTypes = {
   tabs: PropTypes.arrayOf(
     PropTypes.shape({
