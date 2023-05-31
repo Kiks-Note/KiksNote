@@ -21,6 +21,8 @@ import {
   Divider,
   Card,
   CardContent,
+  Chip,
+  Avatar,
 } from "@mui/material";
 
 import UpdateCoursDialog from "./UpdateCoursDialog";
@@ -31,9 +33,11 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import CallRoundedIcon from "@mui/icons-material/CallRounded";
+import SchoolIcon from "@mui/icons-material/School";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 
-import PDFCourseView from "./PdfCourseView";
-import CourseBacklogPdf from "./PdfCoursBacklog";
+import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -91,11 +95,8 @@ const CoursInfo = () => {
   const [coursPrivate, setCoursPrivate] = useState(false);
   const [allpo, setAllPo] = useState([]);
   const [allclass, setAllclass] = useState([]);
-  const [courseClass, setCourseClass] = useState([]);
+  const [courseClassName, setCourseClassName] = useState([]);
   const [coursOwnerId, setCoursOwnerId] = useState("");
-  const [courseOwerData, setCourseOwerData] = useState([]);
-
-  const [isCoursDataLoaded, setIsCoursDataLoaded] = useState(false);
 
   const [openCours, setOpenCours] = useState(false);
   const [openBacklog, setOpenBacklog] = useState(false);
@@ -132,21 +133,6 @@ const CoursInfo = () => {
     }
   };
 
-  const getInstructorById = async (instructorId) => {
-    try {
-      await axios
-        .get(`http://localhost:5050/ressources/instructor/${instructorId}`)
-        .then((res) => {
-          setCourseOwerData(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const getAllClass = async () => {
     try {
       await axios
@@ -170,22 +156,6 @@ const CoursInfo = () => {
           setCoursData(res.data.data);
           setPdfLinksCours(res.data.data.pdfLinkCours);
           setPdfLinksBacklog(res.data.data.pdfLinkBackLog);
-          setIsCoursDataLoaded(true);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getClassId = async (classId) => {
-    try {
-      await axios
-        .get(`http://localhost:5050/ressources/class/${classId}`)
-        .then((res) => {
-          setCourseClass(res.data);
         })
         .catch((err) => {
           console.log(err);
@@ -445,12 +415,6 @@ const CoursInfo = () => {
     ? true
     : false;
 
-  const pdfCoursNavigate = (urlFilePdf) =>
-    navigate("/pdfsupport", { state: { urlFilePdf } });
-
-  const pdfBacklogNavigate = (urlBacklogPdf) =>
-    navigate("/pdfbacklog", { state: { urlBacklogPdf } });
-
   const deleteCompleteCours = () => {
     deleteCours(id, coursData.courseClass, coursData.title);
     navigate("/cours");
@@ -481,13 +445,6 @@ const CoursInfo = () => {
     getCoursId();
   }, []);
 
-  useEffect(() => {
-    if (isCoursDataLoaded) {
-      getClassId(coursData.courseClass);
-      getInstructorById(coursData.owner);
-    }
-  }, [isCoursDataLoaded]);
-
   return (
     <>
       <div className="cours-info-container">
@@ -505,7 +462,7 @@ const CoursInfo = () => {
               display: "flex",
               flexDirection: "row",
               flexWrap: "wrap",
-              width: "100%",
+              width: "95%",
               padding: "50px",
             }}
           >
@@ -513,19 +470,26 @@ const CoursInfo = () => {
             <Divider variant="middle" />
             <div className="main-cours-container">
               <div className="cours-left-side-container">
-                <div className="list-po-pedago-container">
-                  <p className="p-description-coursinfo">
-                    {coursData.description}
-                  </p>
-                </div>
+                <h2>Description</h2>
+                <Divider />
+                <p className="p-description-coursinfo">
+                  {coursData.description}
+                </p>
                 <h2>Contenu du Cours</h2>
                 <Divider />
                 <div className="list-course-pdf">
                   {coursePdfUploaded === true ? (
                     pdfLinksCours.length === 0 ? (
-                      <p className="text-center p-5 font-bold">
-                        Aucun cours uploader pour le moment par le PO
-                      </p>
+                      <>
+                        <p className="text-center p-5 font-bold">
+                          Aucun cours uploader pour le moment par le PO
+                        </p>
+                        <img
+                          className="no-class-img"
+                          src={uploadFile}
+                          alt="no-cours-uploaded"
+                        />
+                      </>
                     ) : (
                       pdfLinksCours.map((pdfLink, index) => (
                         <Card
@@ -534,7 +498,6 @@ const CoursInfo = () => {
                             width: "100%",
                             marginBottom: "20px",
                           }}
-                          // onClick={() => pdfCoursNavigate(pdfLink.url)}
                         >
                           <CardContent
                             sx={{
@@ -601,9 +564,16 @@ const CoursInfo = () => {
                       ))
                     )
                   ) : (
-                    <p className="text-center p-5 font-bold">
-                      Aucun backlog uploader pour le moment par le PO
-                    </p>
+                    <>
+                      <p className="text-center p-5 font-bold">
+                        Aucun backlog uploader pour le moment par le PO
+                      </p>
+                      <img
+                        className="no-class-img"
+                        src={uploadFile}
+                        alt="no-backlog-uploaded"
+                      />
+                    </>
                   )}
                   {userStatus === "etudiant" ? (
                     ""
@@ -660,14 +630,21 @@ const CoursInfo = () => {
                     </>
                   )}
                 </div>
+                <h2>Contenu du BackLog</h2>
+                <Divider />
                 <div className="list-course-pdf">
-                  <h2>Contenu du BackLog</h2>
-                  <Divider />
                   {backlogCoursePdfUploaded === true ? (
                     pdfLinksBacklog.length === 0 ? (
-                      <p className="text-center p-5 font-bold">
-                        Aucun backlog uploader pour le moment par le PO
-                      </p>
+                      <>
+                        <p className="text-center p-5 font-bold">
+                          Aucun backlog uploader pour le moment par le PO
+                        </p>
+                        <img
+                          className="no-class-img"
+                          src={uploadFile}
+                          alt="no-backlog-uploaded"
+                        />
+                      </>
                     ) : (
                       pdfLinksBacklog.map((pdfLink, index) => (
                         <Card
@@ -676,7 +653,6 @@ const CoursInfo = () => {
                             width: "100%",
                             marginBottom: "20px",
                           }}
-                          // onClick={() => pdfBacklogNavigate(pdfLink.url)}
                         >
                           <CardContent
                             sx={{
@@ -743,9 +719,16 @@ const CoursInfo = () => {
                       ))
                     )
                   ) : (
-                    <p className="text-center p-5 font-bold">
-                      Aucun backlog uploader pour le moment par le PO
-                    </p>
+                    <>
+                      <p className="text-center p-5 font-bold">
+                        Aucun backlog uploader pour le moment par le PO
+                      </p>
+                      <img
+                        className="no-class-img"
+                        src={uploadFile}
+                        alt="no-backlog-uploaded"
+                      />
+                    </>
                   )}
                   {userStatus === "etudiant" ? (
                     ""
@@ -812,8 +795,11 @@ const CoursInfo = () => {
                   src={coursData.imageCourseUrl}
                   alt="course-img"
                 />
-                <div className="flex">
-                  <h4 className="font-bold">Date début de Sprint : </h4>
+                <div className="display-date">
+                  <h4 className="h4-data-cours-info">
+                    <CalendarTodayIcon />
+                    Date début de Sprint :{" "}
+                  </h4>
                   <p className="pl-2">
                     {coursData?.dateStartSprint &&
                       coursData.dateStartSprint._seconds &&
@@ -822,8 +808,11 @@ const CoursInfo = () => {
                         .format("DD.MM.YYYY")}
                   </p>
                 </div>
-                <div className="flex">
-                  <h4 className="font-bold">Date fin de Sprint : </h4>
+                <div className="display-date">
+                  <h4 className="h4-data-cours-info">
+                    <EventBusyIcon />
+                    Date fin de Sprint :{" "}
+                  </h4>
                   <p className="pl-2">
                     {coursData?.dateEndSprint &&
                       coursData.dateEndSprint._seconds &&
@@ -841,29 +830,69 @@ const CoursInfo = () => {
                   Classe concernée
                 </h2>
                 <Divider />
-                {courseClass && courseClass.data && courseClass.data.name && (
-                  <p className="pl-2">{courseClass.data.name}</p>
-                )}
+                <div
+                  style={{
+                    display: "flex",
+                    height: "7%",
+                    alignItems: "center",
+                  }}
+                >
+                  <Chip
+                    sx={{
+                      display: "flex",
+                      padding: "10px",
+                      width: "40%",
+                      alignItems: "center",
+                    }}
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          {coursData &&
+                            coursData.courseClass &&
+                            coursData.courseClass.name && (
+                              <>
+                                <Typography>
+                                  {coursData.courseClass.name}
+                                </Typography>
+                                <SchoolIcon />
+                              </>
+                            )}
+                        </div>
+                      </>
+                    }
+                  ></Chip>
+                </div>
                 <h2
                   style={{
-                    marginTop: "10px",
+                    marginTop: "0px",
                   }}
                   variant="h6"
                 >
                   Products Owner / Pedago
                 </h2>
                 <Divider />
-                <div className="list-po-pedago-container">
-                  {courseOwerData &&
-                    courseOwerData.data &&
-                    courseOwerData.data.lastname &&
-                    courseOwerData.data.firstname && (
-                      <p className="po-p">
-                        {courseOwerData.data.lastname.toUpperCase()}{" "}
-                        {courseOwerData.data.firstname}
-                      </p>
-                    )}
-                </div>
+                <Chip
+                  avatar={
+                    <Avatar
+                      alt={
+                        coursData?.owner?.lastname.toUpperCase() +
+                        "" +
+                        coursData?.owner?.firstname +
+                        "photo-profile"
+                      }
+                      src={coursData?.data?.owner?.image}
+                    />
+                  }
+                  variant="outlined"
+                  label={
+                    <>
+                      <Typography>
+                        {coursData?.owner?.lastname.toUpperCase()}{" "}
+                        {coursData?.owner?.firstname}
+                      </Typography>
+                    </>
+                  }
+                ></Chip>
                 <h2
                   style={{
                     marginTop: "10px",
@@ -873,26 +902,16 @@ const CoursInfo = () => {
                   Détails / Actions
                 </h2>
                 <Divider />
-                <div>
-                  <div
-                    className="flex"
-                    style={{
-                      margin: "5px 0px",
-                    }}
-                  >
-                    <h4 className="font-bold">Campus Numérique : </h4>
-                    <p className="pl-2">
+                <div className="details-actions-container">
+                  <div className="display-campus-num">
+                    <h4 className="h4-data-cours-info">Campus Numérique : </h4>
+                    <p className="is-campus-num">
                       {coursData.campus_numerique === false ? "Non" : "Oui"}
                     </p>
                   </div>
-                  <div
-                    className="flex"
-                    style={{
-                      margin: "5px 0px",
-                    }}
-                  >
-                    <h4 className="font-bold">Statut du cours : </h4>
-                    <p className="pl-2">
+                  <div className="display-cours-status">
+                    <h4 className="h4-data-cours-info">Statut du cours : </h4>
+                    <p className="is-public">
                       {coursData.private === false ? "Public" : "Privé"}
                     </p>
                   </div>
@@ -940,7 +959,7 @@ const CoursInfo = () => {
                         width: "100%",
                       }}
                     >
-                      <Button
+                      {/* <Button
                         startIcon={<EditIcon />}
                         onClick={() => handleClickOpenUpdateDialog()}
                         sx={{
@@ -953,13 +972,13 @@ const CoursInfo = () => {
                       >
                         Modifier
                       </Button>
-                      {courseClass &&
-                        courseClass.data &&
-                        courseClass.data.name &&
-                        courseOwerData &&
-                        courseOwerData.data &&
-                        courseOwerData.data.lastname &&
-                        courseOwerData.data.firstname && (
+                      {coursData &&
+                        coursData.courseClass &&
+                        coursData.courseClass.name &&
+                        coursData &&
+                        coursData.owner &&
+                        coursData.owner.lastname &&
+                        coursData.owner.firstname && (
                           <UpdateCoursDialog
                             openUpdate={openUpdate}
                             handleClose={handleCloseUpdateDialog}
@@ -984,22 +1003,24 @@ const CoursInfo = () => {
                             coursCampusNumerique={coursData.campus_numerique}
                             coursPrivate={coursData.private}
                             setCoursPrivate={setCoursPrivate}
+                            currentClass={coursData.courseClass.name}
+                            courseClassName={courseClassName}
+                            setCourseClassName={setCourseClassName}
                             courseIdClass={courseIdClass}
                             setCourseIdClass={setCourseIdClass}
                             rejectedFiles={rejectedFiles}
-                            currentClass={courseClass.data.name}
                             onSubmit={onSubmit}
                             allpo={allpo}
                             allclass={allclass}
                             currentPO={
-                              courseOwerData.data.lastname.toUpperCase() +
+                              coursData.owner.lastname.toUpperCase() +
                               " " +
-                              courseOwerData.data.firstname
+                              coursData.owner.firstname
                             }
                             setCoursOwnerId={setCoursOwnerId}
                             control={control}
                           />
-                        )}
+                        )} */}
                       <Button
                         startIcon={<DeleteIcon />}
                         onClick={() => handleClickOpenDeleteDialog()}

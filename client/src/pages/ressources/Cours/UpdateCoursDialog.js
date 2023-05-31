@@ -137,16 +137,18 @@ const UpdateCoursDialog = (props) => {
               />
             </FormControl>
           </div>
-
           <div className="select-class-allpo-container">
             <Select
               value={props.courseIdClass}
-              onChange={(event) => props.setCourseIdClass(event.target.value)}
+              onChange={(event) => {
+                props.setCourseIdClass(event.target.value);
+                props.setCourseClassName(event.target.name);
+              }}
               displayEmpty
               renderValue={(value) => value || props.currentClass}
             >
               {props.allclass.map((cours) => (
-                <MenuItem key={cours.id} value={cours.name}>
+                <MenuItem id={cours.id} value={cours.name}>
                   {cours.name}
                 </MenuItem>
               ))}

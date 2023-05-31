@@ -3,6 +3,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import moment from "moment";
 
 import useFirebase from "../../../hooks/useFirebase";
 import timeConverter from "../../../functions/TimeConverter";
@@ -17,22 +18,26 @@ import {
   Typography,
   Button,
   CardMedia,
+  FormControl,
+  Select,
+  MenuItem,
   Tooltip,
   Grid,
   TextField,
   InputAdornment,
+  Chip,
+  Avatar,
 } from "@mui/material";
 
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModule from "@mui/icons-material/ViewModule";
 import AddIcon from "@mui/icons-material/Add";
-import BackpackIcon from "@mui/icons-material/Backpack";
-import PictureAsPdfIcon from "@mui/icons-material/PictureAsPdf";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
-import NoBackpackRoundedIcon from "@mui/icons-material/NoBackpackRounded";
-import NoSimRoundedIcon from "@mui/icons-material/NoSimRounded";
+import SchoolIcon from "@mui/icons-material/School";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 
 import CreateCoursModal from "./CreateCoursModal";
 
@@ -81,6 +86,9 @@ const Ressources = () => {
   const [idSelectedClass, setIdSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
+
+  const [selectedFilterClass, setSelectedFilterClass] = useState("");
+  const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
 
   const [userClass, setUserClass] = useState([]);
 
@@ -231,7 +239,7 @@ const Ressources = () => {
       await createNewCours();
       handleClose();
       toastSuccess(`Votre cours ${courseTitle} a bien été ajouté`);
-      getAllCours();
+      await getAllCours();
     } catch (error) {
       console.error(error);
       toastFail("Erreur lors de la création de votre cours.");
@@ -312,6 +320,27 @@ const Ressources = () => {
                 />
               </form>
             </div>
+            <FormControl sx={{ width: "15%" }}>
+              <Select
+                value={selectedFilterClass}
+                onChange={(event) => {
+                  setSelectedFilterClass(event.target.value);
+                  const selectedClass = allclass.find(
+                    (coursClass) => coursClass.name === event.target.value
+                  );
+                  setSelectedIdFilterClass(
+                    selectedClass ? selectedClass.id : ""
+                  );
+                }}
+                displayEmpty
+                renderValue={(value) => value || "Promo"}
+              >
+                <MenuItem value="">Filtrer sur la promo</MenuItem>
+                {allclass.map((promo) => (
+                  <MenuItem value={promo.name}>{promo.name}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             {userStatus === "po" ? (
               <>
                 <div className="btn-add-cours">
@@ -389,127 +418,151 @@ const Ressources = () => {
                       ? userClass.id === course.data.courseClass
                       : true
                   )
-                  .map((course) => (
-                    <Grid item xs={12} sm={6} md={3}>
-                      <Card
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                          height: "300px",
-                        }}
-                        /* eslint-disable no-unused-expressions */
-                        onClick={() => {
-                          userStatus !== "etudiant" &&
-                          course.data.private === true
-                            ? navigate(`/coursinfo/${course.id}`)
-                            : course.data.private === false
-                            ? navigate(`/coursinfo/${course.id}`)
-                            : "";
-                        }}
-                      >
-                        <CardMedia
+                  .filter((course) =>
+                    selectedIdFilterClass !== ""
+                      ? course.data.courseClass === selectedIdFilterClass
+                      : true
+                  )
+                  .map((course) => {
+                    return (
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Card
                           sx={{
-                            width: "100%",
-                            minHeight: "150px",
                             display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
+                            flexDirection: "column",
+                            justifyContent: "space-evenly",
+                            height: "450px",
                           }}
-                          component="img"
-                          src={course.data.imageCourseUrl}
-                          alt="course image"
-                          style={{
-                            objectFit: "contain",
-                            objectPosition: "center",
-                            width: "100%",
-                            minHeight: "150px",
+                          /* eslint-disable no-unused-expressions */
+                          onClick={() => {
+                            userStatus !== "etudiant" &&
+                            course.data.private === true
+                              ? navigate(`/coursinfo/${course.id}`)
+                              : course.data.private === false
+                              ? navigate(`/coursinfo/${course.id}`)
+                              : "";
                           }}
-                        />
-
-                        <CardContent sx={{ padding: "10px", height: "120px" }}>
-                          <h2 variant="h3" component="div">
+                        >
+                          <h2
+                            style={{ paddingLeft: "10px", margin: "0" }}
+                            variant="h3"
+                            component="div"
+                          >
                             {course.data.title}
                           </h2>
-                          <Typography variant="body2" color="text.secondary">
-                            {course.data.description}
-                          </Typography>
-                          {userStatus === "etudiant" &&
-                          course.data.private === true ? (
-                            <>
-                              <Tooltip title="Private">
-                                <LockRoundedIcon />
-                              </Tooltip>
-                            </>
-                          ) : (
-                            <>
-                              <Tooltip title="Open">
-                                <IconButton
-                                  onClick={() =>
-                                    navigate(`/coursinfo/${course.id}`)
-                                  }
-                                >
-                                  <OpenInNewIcon />
-                                </IconButton>
-                              </Tooltip>
-                              {course.data.pdfLinkBackLog ? (
-                                <>
-                                  <Tooltip title="BackLog">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        // pdfBacklogRoute();
-                                      }}
-                                    >
-                                      <BackpackIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              ) : (
-                                <>
-                                  <Tooltip title="BackLog">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                      }}
-                                    >
-                                      <NoBackpackRoundedIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              )}
-                              {course.data.pdfLinkCours ? (
-                                <>
-                                  <Tooltip title="Support">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        // pdfSupportRoute();
-                                      }}
-                                    >
-                                      <PictureAsPdfIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              ) : (
-                                <>
-                                  <Tooltip title="Support">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                      }}
-                                    >
-                                      <NoSimRoundedIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              )}
-                            </>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
+                          <CardMedia
+                            sx={{
+                              display: "flex",
+                              width: "100%",
+                              maxHeight: "210px",
+                              minHeight: "210px",
+                              justifyContent: "center",
+                              margin: "0",
+                            }}
+                            component="img"
+                            src={course.data.imageCourseUrl}
+                            alt="course image"
+                          />
+
+                          <CardContent
+                            sx={{
+                              padding: "10px",
+                              height: "120px",
+                            }}
+                          >
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Chip
+                                label={
+                                  <>
+                                    <div style={{ display: "flex" }}>
+                                      <Typography>
+                                        {course.data.courseClass.name}
+                                      </Typography>
+                                      <SchoolIcon />
+                                    </div>
+                                  </>
+                                }
+                              ></Chip>
+                              <Chip
+                                avatar={
+                                  <Avatar
+                                    alt={
+                                      course.data.owner.lastname.toUpperCase() +
+                                      "" +
+                                      course.data.owner.firstname +
+                                      "photo-profile"
+                                    }
+                                    src={course.data.owner.image}
+                                  />
+                                }
+                                variant="outlined"
+                                label={
+                                  <>
+                                    <Typography>
+                                      {course.data.owner.lastname.toUpperCase()}{" "}
+                                      {course.data.owner.firstname}
+                                    </Typography>
+                                  </>
+                                }
+                              ></Chip>
+                            </div>
+                            <div style={{ padding: "10px" }}>
+                              <Typography
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <CalendarTodayIcon />
+                                {"Début "}
+                                {course &&
+                                  course.data &&
+                                  course.data.dateStartSprint &&
+                                  moment
+                                    .unix(course.data.dateStartSprint._seconds)
+                                    .format("DD.MM.YYYY")}{" "}
+                                - {"Fin "}
+                                {course &&
+                                  course.data &&
+                                  course.data.dateEndSprint &&
+                                  moment
+                                    .unix(course.data.dateEndSprint._seconds)
+                                    .format("DD.MM.YYYY")}
+                                <EventBusyIcon />
+                              </Typography>
+                            </div>
+
+                            {userStatus === "etudiant" &&
+                            course.data.private === true ? (
+                              <>
+                                <Tooltip title="Private">
+                                  <LockRoundedIcon />
+                                </Tooltip>
+                              </>
+                            ) : (
+                              <>
+                                <Tooltip title="Open">
+                                  <IconButton
+                                    onClick={() =>
+                                      navigate(`/coursinfo/${course.id}`)
+                                    }
+                                  >
+                                    <OpenInNewIcon />
+                                  </IconButton>
+                                </Tooltip>
+                              </>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    );
+                  })}
               </Grid>
             </div>
             <div className="grid-view-cours ">
@@ -530,14 +583,19 @@ const Ressources = () => {
                       ? userClass.id === course.data.courseClass
                       : true
                   )
+                  .filter((course) =>
+                    selectedIdFilterClass !== ""
+                      ? course.data.courseClass === selectedIdFilterClass
+                      : true
+                  )
                   .map((course) => (
                     <Grid item xs={12} sm={6} md={3}>
                       <Card
                         sx={{
                           display: "flex",
                           flexDirection: "column",
-                          justifyContent: "space-between",
-                          height: "300px",
+                          justifyContent: "space-evenly",
+                          height: "450px",
                         }}
                         onClick={() =>
                           userStatus !== "etudiant" &&
@@ -548,32 +606,95 @@ const Ressources = () => {
                             : ""
                         }
                       >
+                        <h2
+                          style={{ paddingLeft: "10px", margin: "0" }}
+                          variant="h3"
+                          component="div"
+                        >
+                          {course.data.title}
+                        </h2>
                         <CardMedia
                           sx={{
-                            width: "100%",
-                            minHeight: "150px",
                             display: "flex",
+                            width: "100%",
+                            maxHeight: "210px",
+                            minHeight: "210px",
                             justifyContent: "center",
-                            alignItems: "center",
+                            margin: "0",
                           }}
                           component="img"
                           src={course.data.imageCourseUrl}
                           alt="course image"
-                          style={{
-                            objectFit: "cover",
-                            objectPosition: "center",
-                            width: "100%",
-                            minHeight: "150px",
-                          }}
                         />
 
                         <CardContent sx={{ padding: "10px", height: "120px" }}>
-                          <h2 variant="h3" component="div">
-                            {course.data.title}
-                          </h2>
-                          <Typography variant="body2" color="text.secondary">
-                            {course.data.description}
-                          </Typography>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <Chip
+                              label={
+                                <>
+                                  <div style={{ display: "flex" }}>
+                                    <Typography>
+                                      {course.data.courseClass.name}
+                                    </Typography>
+                                    <SchoolIcon />
+                                  </div>
+                                </>
+                              }
+                            ></Chip>
+                            <Chip
+                              avatar={
+                                <Avatar
+                                  alt={
+                                    course.data.owner.lastname.toUpperCase() +
+                                    "" +
+                                    course.data.owner.firstname +
+                                    "photo-profile"
+                                  }
+                                  src={course.data.owner.image}
+                                />
+                              }
+                              variant="outlined"
+                              label={
+                                <>
+                                  <Typography>
+                                    {course.data.owner.lastname.toUpperCase()}{" "}
+                                    {course.data.owner.firstname}
+                                  </Typography>
+                                </>
+                              }
+                            ></Chip>
+                          </div>
+                          <div style={{ padding: "10px" }}>
+                            <Typography
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <CalendarTodayIcon />
+                              {"Début "}
+                              {course &&
+                                course.data &&
+                                course.data.dateStartSprint &&
+                                moment
+                                  .unix(course.data.dateStartSprint._seconds)
+                                  .format("DD.MM.YYYY")}{" "}
+                              - {"Fin "}
+                              {course &&
+                                course.data &&
+                                course.data.dateEndSprint &&
+                                moment
+                                  .unix(course.data.dateEndSprint._seconds)
+                                  .format("DD.MM.YYYY")}
+                              <EventBusyIcon />
+                            </Typography>
+                          </div>
                           {userStatus === "etudiant" &&
                           course.data.private === true ? (
                             <>
@@ -592,58 +713,6 @@ const Ressources = () => {
                                   <OpenInNewIcon />
                                 </IconButton>
                               </Tooltip>
-                              {course.data.pdfLinkBackLog ? (
-                                <>
-                                  <Tooltip title="BackLog">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        // pdfBacklogRoute();
-                                      }}
-                                    >
-                                      <BackpackIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              ) : (
-                                <>
-                                  <Tooltip title="BackLog">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                      }}
-                                    >
-                                      <NoBackpackRoundedIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              )}
-                              {course.data.pdfLinkCours ? (
-                                <>
-                                  <Tooltip title="Support">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                        // pdfSupportRoute();
-                                      }}
-                                    >
-                                      <PictureAsPdfIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              ) : (
-                                <>
-                                  <Tooltip title="Support">
-                                    <IconButton
-                                      onClick={(event) => {
-                                        event.stopPropagation();
-                                      }}
-                                    >
-                                      <NoSimRoundedIcon />
-                                    </IconButton>
-                                  </Tooltip>
-                                </>
-                              )}
                             </>
                           )}
                         </CardContent>
@@ -672,6 +741,11 @@ const Ressources = () => {
                     ? userClass.id === course.data.courseClass
                     : true
                 )
+                .filter((course) =>
+                  selectedIdFilterClass !== ""
+                    ? course.data.courseClass === selectedIdFilterClass
+                    : true
+                )
                 .map((course) => (
                   <Card
                     className="list-card"
@@ -681,16 +755,72 @@ const Ressources = () => {
                     }}
                   >
                     <div className="list-card-content">
-                      <CardMedia
-                        className="list-card-image"
-                        src={course.data.imageCourseUrl}
-                        title={course.data.title}
-                      />
                       <div className="list-card-details">
                         <CardContent sx={{ padding: "10px" }}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
+                          <Chip
+                            label={
+                              <>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>
+                                    {course.data.courseClass.name}
+                                  </Typography>
+                                  <SchoolIcon />
+                                </div>
+                              </>
+                            }
+                          ></Chip>
+                          <Chip
+                            avatar={
+                              <Avatar
+                                alt={
+                                  course.data.owner.lastname.toUpperCase() +
+                                  "" +
+                                  course.data.owner.firstname +
+                                  "photo-profile"
+                                }
+                                src={course.data.owner.image}
+                              />
+                            }
+                            variant="outlined"
+                            label={
+                              <>
+                                <Typography>
+                                  {course.data.owner.lastname.toUpperCase()}{" "}
+                                  {course.data.owner.firstname}
+                                </Typography>
+                              </>
+                            }
+                          ></Chip>
+                          <div style={{ padding: "10px" }}>
+                            <Typography
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <CalendarTodayIcon />
+                              {"Début "}
+                              {course &&
+                                course.data &&
+                                course.data.dateStartSprint &&
+                                moment
+                                  .unix(course.data.dateStartSprint._seconds)
+                                  .format("DD.MM.YYYY")}{" "}
+                              - {"Fin "}
+                              {course &&
+                                course.data &&
+                                course.data.dateEndSprint &&
+                                moment
+                                  .unix(course.data.dateEndSprint._seconds)
+                                  .format("DD.MM.YYYY")}
+                              <EventBusyIcon />
+                            </Typography>
+                          </div>
+
                           <Typography variant="body2" color="text.secondary">
                             {course.data.description}
                           </Typography>
@@ -701,20 +831,6 @@ const Ressources = () => {
                               }
                             >
                               <OpenInNewIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="BackLog">
-                            <IconButton
-                            // onClick={pdfBacklogRoute}
-                            >
-                              <BackpackIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Support">
-                            <IconButton
-                            // onClick={pdfSupportRoute}
-                            >
-                              <PictureAsPdfIcon />
                             </IconButton>
                           </Tooltip>
                         </CardContent>
@@ -740,6 +856,11 @@ const Ressources = () => {
                     ? userClass.id === course.data.courseClass
                     : true
                 )
+                .filter((course) =>
+                  selectedIdFilterClass !== ""
+                    ? course.data.courseClass === selectedIdFilterClass
+                    : true
+                )
                 .map((course) => (
                   <Card
                     className="list-card"
@@ -749,16 +870,76 @@ const Ressources = () => {
                     }}
                   >
                     <div className="list-card-content">
-                      <CardMedia
-                        className="list-card-image"
-                        src={course.data.imageCourseUrl}
-                        title={course.data.title}
-                      />
                       <div className="list-card-details">
                         <CardContent sx={{ padding: "10px" }}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
+                          <Chip
+                            sx={{
+                              display: "flex",
+                              padding: "10px",
+                              alignItems: "center",
+                            }}
+                            label={
+                              <>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>
+                                    {course.data.courseClass.name}
+                                  </Typography>
+                                  <SchoolIcon />
+                                </div>
+                              </>
+                            }
+                          ></Chip>
+                          <Chip
+                            avatar={
+                              <Avatar
+                                alt={
+                                  course.data.owner.lastname.toUpperCase() +
+                                  "" +
+                                  course.data.owner.firstname +
+                                  "photo-profile"
+                                }
+                                src={course.data.owner.image}
+                              />
+                            }
+                            variant="outlined"
+                            label={
+                              <>
+                                <Typography>
+                                  {course.data.owner.lastname.toUpperCase()}{" "}
+                                  {course.data.owner.firstname}
+                                </Typography>
+                              </>
+                            }
+                          ></Chip>
+                          <div style={{ padding: "10px" }}>
+                            <Typography
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                            >
+                              <CalendarTodayIcon />
+                              {"Début "}
+                              {course &&
+                                course.data &&
+                                course.data.dateStartSprint &&
+                                moment
+                                  .unix(course.data.dateStartSprint._seconds)
+                                  .format("DD.MM.YYYY")}{" "}
+                              - {"Fin "}
+                              {course &&
+                                course.data &&
+                                course.data.dateEndSprint &&
+                                moment
+                                  .unix(course.data.dateEndSprint._seconds)
+                                  .format("DD.MM.YYYY")}
+                              <EventBusyIcon />
+                            </Typography>
+                          </div>
                           <Typography variant="body2" color="text.secondary">
                             {course.data.description}
                           </Typography>
@@ -769,20 +950,6 @@ const Ressources = () => {
                               }
                             >
                               <OpenInNewIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="BackLog">
-                            <IconButton
-                            // onClick={pdfBacklogRoute}
-                            >
-                              <BackpackIcon />
-                            </IconButton>
-                          </Tooltip>
-                          <Tooltip title="Support">
-                            <IconButton
-                            // onClick={pdfSupportRoute}
-                            >
-                              <PictureAsPdfIcon />
                             </IconButton>
                           </Tooltip>
                         </CardContent>

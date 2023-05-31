@@ -58,6 +58,7 @@ const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
+const studentsProjectsRoutes = require("./studentsProjectsRoutes");
 
 const groupsRoute = require("./groupsRoutes");
 app.use("/groupes", groupsRoute);
@@ -83,6 +84,7 @@ wsI.on("request", (request) => {
 });
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
+app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

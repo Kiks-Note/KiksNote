@@ -1,3 +1,7 @@
+.cours-info-container {
+    height: 100vh;
+}
+
 .main-cours-container {
     display: flex;
     justify-content: space-between;
@@ -28,9 +32,10 @@
 
 .list-course-pdf {
     display: flex;
-    width: 100%;
+    max-width: 750px;
     padding-top: 20px;
     flex-direction: column;
+    align-items: center;
 }
 
 .cours-left-side-container {
@@ -43,7 +48,6 @@
 p.p-description-coursinfo {
     display: flex;
     width: 100%;
-    padding-top: 20px;
 }
 
 .cours-right-side-container {
@@ -54,11 +58,16 @@ p.p-description-coursinfo {
 }
 
 .list-po-pedago-container {
-    padding: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
     display: flex;
     width: 100%;
     flex-direction: column;
     align-items: center;
+}
+
+h4.h4-data-cours-info {
+    display: flex;
 }
 
 p.po-p {
@@ -69,4 +78,60 @@ p.po-p {
     padding: 10px;
     border: 1px solid lightgrey;
     border-radius: 10px;
+}
+
+.display-date {
+    flex-direction: row;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px;
+    height: 5%;
+}
+
+.display-class {
+    padding-left: 20px;
+}
+
+.details-actions-container {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.display-campus-num {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 5px 0px;
+    padding: 15px;
+}
+
+.is-campus-num {
+    margin: 0;
+}
+
+.display-cours-status {
+    margin: 5px 0px;
+    padding: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.is-public {
+    margin: 0;
+}
+
+h4.h4-data-cours-info {
+    margin: 0;
+}
+
+.no-class-img {
+    width: 50%;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
