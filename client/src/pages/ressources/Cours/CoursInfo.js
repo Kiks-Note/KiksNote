@@ -31,7 +31,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import UploadIcon from "@mui/icons-material/Upload";
 import DownloadIcon from "@mui/icons-material/Download";
 import CallRoundedIcon from "@mui/icons-material/CallRounded";
-
+import CallModal from "./CallModal";
 import PDFCourseView from "./PdfCourseView";
 import CourseBacklogPdf from "./PdfCoursBacklog";
 import "./CoursInfo.scss";
@@ -110,6 +110,8 @@ const CoursInfo = () => {
 
   const [pdfLinksCours, setPdfLinksCours] = useState([]);
   const [pdfLinksBacklog, setPdfLinksBacklog] = useState([]);
+
+  const [openCall, setOpenCall] = useState(false);
 
   const { control } = useForm({
     mode: "onTouched",
@@ -419,6 +421,13 @@ const CoursInfo = () => {
     setFileBacklog(event.target.files[0]);
   };
 
+  const handleOpenCallModal = () => {
+    console.log("test");
+    setOpenCall(true);
+  };
+  const handleCloseCallModal = () => {
+    setOpenCall(true);
+  };
   const handleDownload = (url) => {
     const link = document.createElement("a");
     link.href = url;
@@ -905,6 +914,7 @@ const CoursInfo = () => {
                           color: "#ffffff",
                         }}
                         className={classes.callButton}
+                        onClick={handleOpenCallModal}
                       >
                         Lancer l'appel
                       </Button>
@@ -918,6 +928,7 @@ const CoursInfo = () => {
                           color: "#ffffff",
                         }}
                         className={classes.joinCallButton}
+                        onClick={handleOpenCallModal}
                       >
                         Rejoindre l'appel
                       </Button>
@@ -1032,6 +1043,7 @@ const CoursInfo = () => {
           </div>
         </div>
         <ToastContainer></ToastContainer>
+        <CallModal open={openCall}></CallModal>
       </div>
     </>
   );

@@ -73,12 +73,12 @@ wsI.on("request", (request) => {
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
+  app.use("/call", callRoutes(connection, pathname));
 
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
-  app.use("/call", callRoutes(connection, pathname));
 
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);

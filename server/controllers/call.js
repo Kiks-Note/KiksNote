@@ -5,11 +5,8 @@ const addCall = async (req, res) => {
     .collection("calls")
     .add({
       id_lesson: req.body.id_lesson,
-      qrcode: req.body.qrcode,
-      student_scan: req.body.student_scan,
-      chats: req.body.chats,
       date: req.body.date,
-      status: req.body.date,
+      status: req.body.status,
     })
     .then((doc) => {
       res.send(doc.id);
@@ -85,7 +82,7 @@ const callRequests = async (connection) => {
 const getCallsByLessonId = async (req, res) => {
   await db
     .collection("calls")
-    .where("id_lesson", "==", req.body.id) // Ajoutez la condition de filtrage ici
+    .where("id_lesson", "==", req.body.id)
     .orderBy("date", "asc")
     .get()
     .then((snapshot) => {

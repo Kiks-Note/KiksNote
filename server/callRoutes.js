@@ -15,8 +15,8 @@ module.exports = function (connection, pathname) {
   router.post("/callAdd", addCall);
   router.put("/updatecall", updateCall);
   router.get("/calls", getCalls);
-  router.post("/getcall", getCall);
-  router.get("/getCallByLessonId", getCallsByLessonId);
+  router.get("/getcall", getCall);
+  router.get("/getCallsByLessonId", getCallsByLessonId);
 
   switch (pathname) {
     case "/call":
