@@ -9,12 +9,12 @@ import CoursInfo from "./pages/ressources/Cours/CoursInfo";
 import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
+import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Jpo from "./pages/ressources/jpo/jpo";
 import StudentsProjects from "./pages/ressources//students_project/StudentsProjects";
 import StudentsProjectsInfo from "./pages/ressources//students_project/StudentProjectInfo";
 
 import Agile from "./pages/agile/Agile";
-import TabList from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
@@ -47,8 +47,8 @@ function RoutesProvider() {
           <Route path="/appel" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groups" element={<Groups />} />
+          <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/" element={<Home />} />
-          <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />

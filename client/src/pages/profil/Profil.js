@@ -66,14 +66,12 @@ export default function Profil() {
           },
         }
       );
-      console.log(response.data);
     } catch (error) {
       console.error(error);
     }
   };
   const handleOnChange = async (event) => {
     const newImage = event.target?.files?.[0];
-    console.log("newImage" + newImage);
 
     if (newImage) {
       sendData(newImage);
@@ -89,9 +87,6 @@ export default function Profil() {
       const wsComments = new w3cwebsocket(`ws://localhost:5050/profil`);
 
       wsComments.onopen = function (e) {
-        console.log("[open] Connection established");
-        console.log("Sending to server");
-        console.log("uid", user?.id);
         wsComments.send(JSON.stringify(user?.id));
       };
 
@@ -120,7 +115,9 @@ export default function Profil() {
           git: data.git,
           company: data.company,
           class: data.class,
-          programmationLanguage: data.programmationLanguage,
+          programmationLanguage: data.programmationLanguage
+            ? data.programmationLanguage
+            : [],
           discord: data.discord,
           phoneNumber: data.phone,
           status: data.status,
@@ -129,7 +126,7 @@ export default function Profil() {
         setIsLoading(true);
       };
     })();
-  }, []);
+  }, [user?.id]);
   return (
     <>
       {isLoading ? (
