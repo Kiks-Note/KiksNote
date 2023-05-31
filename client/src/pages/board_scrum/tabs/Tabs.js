@@ -8,6 +8,8 @@ import Overview from "../overview/OverView";
 import PdfView from "../overview/PdfView";
 import Board from "../Board";
 import Tooltip from "@material-ui/core/Tooltip";
+import ImpactMapping from "../../../components/agile/ImpactMapping";
+import Personas from "../../agile/Personas";
 
 
 TabDemo.propTypes = {
@@ -84,6 +86,8 @@ export default function TabDemo({
                 dashboardId={tab.data.dashboardId}
               />
             )}
+            {tab.component === "Impact" && <ImpactMapping data={tab.data} />}
+            {tab.component === "Personas" && <Personas/>}
             {/* Ajoutez des conditions pour d'autres composants ici */}
           </TabContainer>
         ) : null

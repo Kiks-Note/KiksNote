@@ -9,10 +9,15 @@ import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
 
 import Card from "./Card";
 
-const ImpactMapping = () => {
+ImpactMapping.propTypes = {
+  data: PropTypes.array.isRequired,
+};
+
+export default function ImpactMapping({ data }) {
   const { goals, actors, impacts, deliverables } = useSelector(
     (state) => state.impactMapping
   );
@@ -26,6 +31,8 @@ const ImpactMapping = () => {
 
   useEffect(() => {
     console.log("impactMapping:", { goals, actors, impacts, deliverables });
+    console.log(data);
+    console.log(data.dashboardId);
     setCardObjectif(goals);
     setCardActors(actors);
     setCardImpacts(impacts);
@@ -85,6 +92,7 @@ const ImpactMapping = () => {
                     key={index}
                     index={index}
                     defineColor={goal.color}
+                    dashboardId={data.dashboardId}
                   />
                 );
               })}
@@ -110,6 +118,7 @@ const ImpactMapping = () => {
                     key={index}
                     index={index}
                     defineColor={actor.color}
+                    dashboardId={data.dashboardId}
                   />
                 );
               })}
@@ -135,6 +144,7 @@ const ImpactMapping = () => {
                     key={index}
                     index={index}
                     defineColor={impact.color}
+                    dashboardId={data.dashboardId}
                   />
                 );
               })}
@@ -160,6 +170,7 @@ const ImpactMapping = () => {
                     key={index}
                     index={index}
                     defineColor={deliverable.color}
+                    dashboardId={data.dashboardId}
                   />
                 );
               })}
@@ -176,6 +187,4 @@ const ImpactMapping = () => {
       </Table>
     </TableContainer>
   );
-};
-
-export default ImpactMapping;
+}

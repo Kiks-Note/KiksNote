@@ -62,7 +62,6 @@ const coursRoutes = require("./coursRoutes");
 const groupsRoute = require("./groupsRoutes");
 const agileRoute = require("./agileRoutes");
 
-
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
@@ -87,7 +86,6 @@ wsI.on("request", (request) => {
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
 app.use("/agile", agileRoute());
-
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });

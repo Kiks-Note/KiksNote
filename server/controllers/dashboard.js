@@ -277,11 +277,18 @@ const createDashboards = async (req, res) => {
     });
 
     const agileRef = dashboardRef.collection("agile");
-    await agileRef.doc("impact-mapping").set({
+    await agileRef.doc("impact_mapping").set({
       goals: [],
       actors: [],
       impacts: [],
       deliverables: [],
+    });
+    await agileRef.doc("agile_folder").set({
+      impact_mapping: "",
+      empathy_map: "",
+      personas: [],
+      three: "",
+      elevator_pitch: "",
     });
     await batch.commit();
 
@@ -614,21 +621,17 @@ function setColumnItems(
 async function createReleases(startingDate, endingDate, dashboardRef) {
   const releaseDuration = 28; // 4 weeks
   const sprintDuration = 7; // 1 week
-  console.log("startingDate " + startingDate);
-  console.log("endingDate " + endingDate);
 
   const releaseCount = Math.ceil(
     moment(endingDate).diff(moment(startingDate), "days") / releaseDuration
   );
-  console.log("releaseCount " + releaseCount);
   const releases = {};
   for (let i = 0; i < releaseCount; i++) {
     const releaseStart = moment(startingDate)
       .add(i * releaseDuration, "days")
       .toDate();
     const releaseEnd = moment(endingDate).toDate();
-    console.log("releaseStart " + releaseStart);
-    console.log("releaseEnd " + releaseEnd);
+
     const sprints = await createSprints(
       releaseStart,
       releaseEnd,
@@ -650,9 +653,6 @@ async function createSprints(
   const sprintCount = Math.ceil(
     moment(releaseEnd).diff(moment(releaseStart), "days") / sprintDuration
   );
-  console.log("sprintCount" + sprintCount);
-  console.log("releaseStart Sprint" + releaseStart);
-  console.log("releaseEnd sprint" + releaseEnd);
 
   const sprints = [];
 
@@ -855,14 +855,18 @@ const overviewRequests = async (connection) => {
     const dashboardRef = db.collection("dashboard").doc(dashboardId);
     const boardRef = dashboardRef.collection("board");
     const storieRef = dashboardRef.collection("stories");
+    const agileRef = dashboardRef.collection("agile");
     const snapshotDashboard = await dashboardRef.get();
     const snapshotBoard = await boardRef.get();
     const snapshotStorie = await storieRef.get();
+    const snapshotAgile = await agileRef.get();
+
     const data = snapshotDashboard.data();
     dataReturn.push(data.release);
 
     var stories = [];
     var boards = [];
+    var agile = [];
     snapshotBoard.forEach((doc) => {
       dataReturn.map((release) => {
         for (var r in release) {
@@ -909,12 +913,16 @@ const overviewRequests = async (connection) => {
     snapshotStorie.forEach((doc) => {
       stories.push(doc.data());
     });
+    snapshotAgile.forEach((doc) => {
+      agile.push({ id: doc.id, ...doc.data() });
+    });
     connection.sendUTF(
       JSON.stringify({
         stories: stories,
         release: dataReturn[0],
         boards: boards,
         pdf_link: data.pdf_link,
+        agile: agile,
       })
     );
   });
@@ -983,11 +991,18 @@ async function addDashboard(groups, db) {
       }
 
       const agileRef = dashboardRef.collection("agile");
-      await agileRef.doc("impact-mapping").set({
+      await agileRef.doc("impact_mapping").set({
         goals: [],
         actors: [],
         impacts: [],
         deliverables: [],
+      });
+      await agileRef.doc("agile_folder").set({
+        impact_mapping: "",
+        empathy_map: "",
+        personas: [],
+        three: "",
+        elevator_pitch: "",
       });
     }
   }

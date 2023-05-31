@@ -8,8 +8,8 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
-import Snackbar from '@mui/material/Snackbar';
-import Alert from '@mui/material/Alert';
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -28,9 +28,18 @@ import {
   editImpactMappingDeliverable,
 } from "../../redux/slices/impactMappingSlice";
 
-import { addImpactMapping } from './agile';
+import { addImpactMapping } from "./agile";
 
-const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor, }) => {
+const BasicCard = ({
+  title,
+  type,
+  column,
+  texte,
+  onCloseForm,
+  index,
+  defineColor,
+  dashboardId,
+}) => {
   const navigate = useNavigate();
   const { goals, actors, impacts, deliverables } = useSelector(
     (state) => state.impactMapping
@@ -38,18 +47,19 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
   const [text, setText] = useState("");
   const dispatch = useDispatch();
   const [color, setColor] = useState("");
+  const [id, setId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
-
 
   useEffect(() => {
     setColor(defineColor);
     setText(texte);
-  }, [defineColor, texte, goals, actors, impacts, deliverables]);
-
-
+    console.log(dashboardId);
+    setId(dashboardId);
+  }, [defineColor, texte, goals, actors, impacts, deliverables, dashboardId]);
+  console.log(id);
   const onHandleClick = async () => {
-    if (text !== '' && text !== undefined && text !== null) {
+    if (text !== "" && text !== undefined && text !== null) {
       switch (column) {
         case 0:
           dispatch(addImpactMappingGoals({ text: text, color: color }));
@@ -61,25 +71,23 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
           dispatch(addImpactMappingImpacts({ text: text, color: color }));
           break;
         case 3:
-          dispatch(
-            addImpactMappingDeliverables({ text: text, color: color })
-          );
+          dispatch(addImpactMappingDeliverables({ text: text, color: color }));
           break;
         default:
           break;
       }
       console.log(text, color);
-      if (goals && actors && deliverables && impacts ) {
-        const res = await addImpactMapping({
+      if (goals && actors && deliverables && impacts) {
+        const res = await addImpactMapping(id, {
           goals: goals,
           actors: actors,
           impacts: impacts,
           deliverables: deliverables,
         });
-        if(res.status === 200){
+        if (res.status === 200) {
           console.log("impact mapping added successfully");
-        onCloseForm();
-        }else{
+          onCloseForm();
+        } else {
           console.log("error while adding impact mapping");
         }
       }
@@ -113,8 +121,8 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
 
   const toggleEditForm = () => {
     if (isEditing) {
-      setColor('');
-      setText('');
+      setColor("");
+      setText("");
     } else {
       setColor(defineColor);
       setText(texte);
@@ -122,21 +130,32 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
     setIsEditing((prev) => !prev);
   };
 
-
   const onHandleEdit = () => {
-    console.log(index, text, color)
+    console.log(index, text, color);
     switch (column) {
       case 0:
-        dispatch(editImpactMappingGoal({ index: index, text: text, color: color }));
+        dispatch(
+          editImpactMappingGoal({ index: index, text: text, color: color })
+        );
         break;
       case 1:
-        dispatch(editImpactMappingActor({ index: index, text: text, color: color }));
+        dispatch(
+          editImpactMappingActor({ index: index, text: text, color: color })
+        );
         break;
       case 2:
-        dispatch(editImpactMappingImpact({ index: index, text: text, color: color }));
+        dispatch(
+          editImpactMappingImpact({ index: index, text: text, color: color })
+        );
         break;
       case 3:
-        dispatch(editImpactMappingDeliverable({ index: index, text: text, color: color }));
+        dispatch(
+          editImpactMappingDeliverable({
+            index: index,
+            text: text,
+            color: color,
+          })
+        );
         break;
       default:
         break;
@@ -146,7 +165,7 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
   };
 
   const handleCloseSnackbar = (event, reason) => {
-    if (reason === 'clickaway') {
+    if (reason === "clickaway") {
       return;
     }
     setOpenSnackbar(false);
@@ -198,7 +217,9 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
               displayEmpty
               sx={{ width: "100%", mt: 1 }}
             >
-              <MenuItem value="" disabled>Choississez une couleur</MenuItem>
+              <MenuItem value="" disabled>
+                Choississez une couleur
+              </MenuItem>
               <MenuItem value="#FFC0CB">Rose</MenuItem>
               <MenuItem value="#ADD8E6">Bleu clair</MenuItem>
               <MenuItem value="#90EE90">Vert clair</MenuItem>
@@ -267,15 +288,32 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
               <Typography variant="body2">{texte}</Typography>
               <CardActions sx={{ justifyContent: "flex-end" }}>
                 {column === 1 && (
-                  <CardActions >
-                    <Button size="small" color="success" onClick={() => navigate('/agile/empathy-map')}> Allez vers Empathy Map </Button>
-                    <Button size="small" color="success" onClick={() => navigate('/agile/persona')}>Allez vers Persona</Button>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      color="success"
+                      onClick={() => navigate("/agile/empathy-map")}
+                    >
+                      {" "}
+                      Allez vers Empathy Map{" "}
+                    </Button>
+                    <Button
+                      size="small"
+                      color="success"
+                      onClick={() => navigate("/agile/persona")}
+                    >
+                      Allez vers Persona
+                    </Button>
                   </CardActions>
                 )}
                 <Button size="small" onClick={() => toggleEditForm()}>
                   Modifier
                 </Button>
-                <Button size="small" color="error" onClick={() => deleteButton()}>
+                <Button
+                  size="small"
+                  color="error"
+                  onClick={() => deleteButton()}
+                >
                   Supprimer
                 </Button>
               </CardActions>
@@ -287,9 +325,13 @@ const BasicCard = ({ title, type, column, texte, onCloseForm, index, defineColor
         open={openSnackbar}
         autoHideDuration={3000}
         onClose={handleCloseSnackbar}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert onClose={handleCloseSnackbar} severity="warning" sx={{ width: '100%' }}>
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="warning"
+          sx={{ width: "100%" }}
+        >
           Veuillez remplir le texte avant de confirmer.
         </Alert>
       </Snackbar>

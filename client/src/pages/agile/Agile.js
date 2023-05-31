@@ -1,6 +1,4 @@
 import React from "react";
-import ImpactMapping from "../../components/agile/ImpactMapping";
-import EmpathyMap from "../../pages/agile/EmpathyMap";
 import { Grid } from "@material-ui/core";
 
 const AnalyseAgile = () => {
@@ -17,7 +15,7 @@ const AnalyseAgile = () => {
         padding: 2,
         backgroundColor: "white",
       }}>
-        <ImpactMapping />
+       
         {/* <EmpathyMap /> */}
       </Grid>
     </Grid>
