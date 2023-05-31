@@ -1,11 +1,17 @@
-import React from "react";
+import axios from "axios";
+import React, {useEffect} from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App";
+import {AuthProvider} from "./hooks/useAuth";
+import { Provider } from 'react-redux'
+import { store } from './redux/store';
+import Theme from "./utils/Theme";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
+
+
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <Provider store={store}>
+    {/* <App /> */}
+    <Theme />
+  </Provider>
 );
