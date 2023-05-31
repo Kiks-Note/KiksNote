@@ -11,7 +11,7 @@ import {
   PointElement,
   Filler,
 } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
+import { Doughnut, Line } from "react-chartjs-2";
 import axios from "axios";
 
 function TopCreatorsChart() {
@@ -40,6 +40,7 @@ function TopCreatorsChart() {
         "http://localhost:5050/blog/stats/created_by"
       );
       const blogs = response.data;
+      console.log(blogs);
       const creatorsMap = new Map();
       blogs.forEach((blog) => {
         const creator = blog.name;
@@ -76,13 +77,15 @@ function TopCreatorsChart() {
               "rgba(75, 192, 192, 0.6)",
               "rgba(54, 162, 235, 0.6)",
               "rgba(255, 206, 86, 0.6)",
+
             ],
           },
         ],
       });
 
-      const userIds = topCreators.map((creator) => creator[0]);
-      fetchUserDetails(userIds);
+      const userIds = topCreators.map((creator) => creator[0]); // Use blog.name as userIds
+      console.log(userIds);
+      fetchUserDetails(userIds); // Call fetchUserDetails with userIds
     } catch (error) {
       console.error(
         "Erreur lors de la récupération des données des créateurs :",
@@ -102,9 +105,7 @@ function TopCreatorsChart() {
       setParticipantDetail(response.data);
 
       const userDetails = response.data;
-      const labels = userDetails.map(
-        (user) => user.firstname + " " + user.lastname
-      );
+      const labels = userDetails.map((user) => user.firstname + " " + user.lastname);
 
       setTopCreatorsData((prevData) => ({
         ...prevData,

@@ -66,7 +66,7 @@ export default function ImgMediaCard({
     axios
       .post(`http://localhost:5050/blog/${id}/like`)
       .then((res) => {
-        setLikeCount(res.data.likeCount); // Mettre à jour likeCount avec la nouvelle valeur de likes renvoyée par le backend
+        setLikeCount(res.data.likeCount);
       })
       .catch((err) => {
         console.log(err);
@@ -184,7 +184,7 @@ export default function ImgMediaCard({
               <Button size="small" onClick={handleClick}>
                 En savoir plus
               </Button>
-              {user.id }
+              {user.id}
               <Button onClick={deleteBlog}>Supprimer</Button>
             </CardActions>
 

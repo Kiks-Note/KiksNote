@@ -39,17 +39,17 @@ const addNewBlog = async (req, res) => {
 };
 //add new Tuto
 const addNewTuto = async (req, res) => {
-const {
-  title,
-  editorState,
-  inputEditorState,
-  created_by,
-  tag,
-  statut,
-  type,
-  visibility,
-  inputEditorStateTitle,
-} = JSON.parse(req.body.tutoData);
+  const {
+    title,
+    editorState,
+    inputEditorState,
+    created_by,
+    tag,
+    statut,
+    type,
+    visibility,
+    inputEditorStateTitle,
+  } = JSON.parse(req.body.tutoData);
 
   console.log(req.body.tutoData);
   console.log(title);
@@ -342,6 +342,17 @@ const getBlogParticipants = async (req, res) => {
     res.status(500).send(error.message);
   }
 };
+
+
+
+
+
+
+
+
+
+
+
 
 const getTags = async (req, res) => {
   try {

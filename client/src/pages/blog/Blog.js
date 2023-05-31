@@ -47,7 +47,7 @@ function Blog() {
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
-            blog.created_at._nanoseconds / 100000
+          blog.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
@@ -251,7 +251,7 @@ function Blog() {
               </div>
             )}
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4}>
             <TopCreatorsChart />
             <MostParticipantsChart />
           </Grid>

@@ -1,98 +1,115 @@
 import React, { useEffect, useState } from "react";
 import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Title,
-  LineElement,
-  Legend,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Filler,
-} from "chart.js";
-import { Line } from "react-chartjs-2";
+    Chart as ChartJS,
+    RadialLinearScale,
+    PointElement,
+    LineElement,
+    Filler,
+    Tooltip,
+    Legend,
+} from 'chart.js';
+import { Radar } from "react-chartjs-2";
 import axios from "axios";
 
 function MostParticipantsChart() {
-  const [mostParticipantsData, setMostParticipantsData] = useState({});
-  const [participantDetails, setParticipantDetails] = useState([]);
+    const [mostParticipantsData, setMostParticipantsData] = useState({});
+    const [participantDetails, setParticipantDetails] = useState([]);
 
-  ChartJS.register(
-    ArcElement,
-    Tooltip,
-    Legend,
-    Title,
-    LineElement,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    Filler
-  );
-  useEffect(() => {
-    fetchData();
-  }, []);
+    ChartJS.register(
+        RadialLinearScale,
+        PointElement,
+        LineElement,
+        Filler,
+        Tooltip,
+        Legend
+    );
 
-  const fetchData = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5050/blog/stats/participant"
-      ); // Remplacez l'URL par la route appropriée pour récupérer les blogs
-      const blogs = response.data;
+    useEffect(() => {
+        fetchData();
+    }, []);
 
-      const sortedBlogs = blogs.sort((a, b) => b.participant - a.participant);
-      const topBlogs = sortedBlogs.slice(0, 10);
+    const fetchData = async () => {
+        try {
+            const response = await axios.get("http://localhost:5050/blog/stats/participant");
+            const blogs = response.data;
 
-      const labels = topBlogs.map((blog) => blog.count);
-      const data = topBlogs.map((blog) => blog.participant);
+            const sortedBlogs = blogs.sort((a, b) => b.count - a.count);
+            const topBlogs = sortedBlogs.slice(0, 10);
 
-      setMostParticipantsData({
-        labels,
-        datasets: [
-          {
-            label: "Nombre de participants",
-            data,
-            backgroundColor: "rgba(75, 192, 192, 0.6)",
-          },
-        ],
-      });
+            const labels = topBlogs.map((blog) => blog.participant);
+            const data = topBlogs.map((blog) => blog.count);
 
-      const blogIds = topBlogs.map((blog) => blog.id); // Utilisez l'identifiant approprié pour les blogs
-      fetchParticipantDetails(blogIds); // Appel de la fonction fetchParticipantDetails avec blogIds
-    } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des données des événements avec le plus de participants :",
-        error
-      );
-    }
-  };
+            setMostParticipantsData({
+                labels,
+                datasets: [
+                    {
+                        label: "Nombre de participations",
+                        data,
+                        backgroundColor: "rgba(75, 192, 192, 0.6)",
+                        borderColor: "rgba(75, 192, 192, 1)",
+                        pointBackgroundColor: "rgba(75, 192, 192, 1)",
+                        pointBorderColor: "#fff",
+                        pointHoverBackgroundColor: "#fff",
+                        pointHoverBorderColor: "rgba(75, 192, 192, 1)",
+                        borderWidth: 1,
 
-  const fetchParticipantDetails = async (blogIds) => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5050/blog/participant", // Remplacez l'URL par la route appropriée pour récupérer les participants
-        {
-          blogIds: blogIds,
+                    },
+                ],
+            });
+
+            const blogIds = topBlogs.map((blog) => blog.id);
+            fetchParticipantDetails(blogIds);
+        } catch (error) {
+            console.error("Erreur lors de la récupération des données des événements avec le plus de participants :", error);
         }
-      );
-      setParticipantDetails(response.data);
+    };
 
-      // Effectuez d'autres opérations avec les détails des participants
-    } catch (error) {
-      console.error(error);
-    }
-  };
+    const fetchParticipantDetails = async (blogIds) => {
+        try {
+            const response = await axios.post("http://localhost:5050/blog/participant", {
+                blogIds: blogIds,
+            });
+            setParticipantDetails(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-  return (
-    <div>
-      <h2>Top 10 des événements avec le plus de participants</h2>
-      {mostParticipantsData.labels && mostParticipantsData.labels.length > 0 ? (
-        <Line data={mostParticipantsData} />
-      ) : (
-        <p>Aucune donnée disponible</p>
-      )}
-    </div>
-  );
+    return (
+        <div>
+            <h2>Top des élèves avec le plus de participation</h2>
+            {mostParticipantsData.labels && mostParticipantsData.labels.length > 0 ? (
+                <Radar
+                    data={mostParticipantsData}
+                    options={{
+
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: "Top des élèves avec le plus de participations",
+                            },
+                            legend: {
+                                display: true,
+                                position: "bottom",
+                            },
+                        },
+
+                        scales: {
+                            r: {
+                                suggestedMin: 0,
+                                suggestedMax: 8,
+                            },
+
+                        },
+                    }}
+
+
+                />
+            ) : (
+                <p>Aucune donnée disponible</p>
+            )}
+        </div>
+    );
 }
 
 export default MostParticipantsChart;
