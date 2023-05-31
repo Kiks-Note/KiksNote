@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
-import { w3cwebsocket } from "websocket";
+import React, {useEffect, useState, useRef} from "react";
+import {w3cwebsocket} from "websocket";
 import axios from "axios";
 import "./Profil.scss";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -7,7 +7,7 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import SettingsIcon from "@mui/icons-material/Settings";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
-import { format } from "date-fns";
+import {format} from "date-fns";
 import {
   Avatar,
   Box,
@@ -26,7 +26,7 @@ export default function Profil() {
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const radioGroupRef = React.useRef(null);
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const [userProfil, setUserProfil] = useState({});
   const fileInputRef = useRef(null);
   const handleClick = (event) => {
@@ -130,7 +130,7 @@ export default function Profil() {
   return (
     <>
       {isLoading ? (
-        <div style={{ margin: "2%" }}>
+        <div style={{margin: "2%"}}>
           <Box
             className="profilBox"
             style={{
@@ -144,7 +144,7 @@ export default function Profil() {
             <IconButton
               aria-label="settings"
               onClick={handleClick}
-              sx={{ position: "absolute", top: 25, right: 25 }}
+              sx={{position: "absolute", top: 25, right: 25}}
             >
               <SettingsIcon />
             </IconButton>
@@ -155,16 +155,16 @@ export default function Profil() {
               onClose={handleClose}
             >
               <MenuItem className="menuItem" onClick={handleOpenDialog}>
-                <EditIcon style={{ color: "orange" }} />
+                <EditIcon style={{color: "orange"}} />
                 Modifier mon profil
               </MenuItem>
               <MenuItem className="menuItem" onClick={handleEditBanner}>
-                <EditIcon style={{ color: "orange" }} />
+                <EditIcon style={{color: "orange"}} />
                 Modifier ma bannière
                 <input
                   type="file"
                   ref={fileInputRef}
-                  style={{ display: "none" }}
+                  style={{display: "none"}}
                   onChange={handleOnChange}
                 />
               </MenuItem>
@@ -174,9 +174,9 @@ export default function Profil() {
               maxWidth="xl"
               open={openDialog}
               sx={{
-                "& .MuiDialog-paper": { width: "100%", maxHeight: "none" },
+                "& .MuiDialog-paper": {width: "100%", maxHeight: "none"},
               }}
-              TransitionProps={{ onEntering: handleEntering }}
+              TransitionProps={{onEntering: handleEntering}}
             >
               <DialogContent>
                 <ProfilFormUpdate
@@ -188,7 +188,7 @@ export default function Profil() {
 
             <Avatar
               src={userProfil.image}
-              sx={{ width: "150px", height: "150px", border: "3px solid #fff" }}
+              sx={{width: "150px", height: "150px", border: "3px solid #fff"}}
             />
             <Typography variant="h4">
               {userProfil.firstname} {userProfil.lastname}

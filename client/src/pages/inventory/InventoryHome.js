@@ -1,23 +1,138 @@
-import {Button, Fab, Grid, Tooltip} from "@mui/material";
+import {Fab, Grid, Modal, TextField} from "@mui/material";
 import Box from "@mui/material/Box";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
-import {toast, Toaster} from "react-hot-toast";
+import {Toaster, toast} from "react-hot-toast";
 import {Rings} from "react-loader-spinner";
-import {CustomDropdown} from "../../components/inventory/CustomDropdown";
-import InvBox from "../../components/inventory/InvBox";
-import ModalForm from "../../components/inventory/ModalForm";
-import LoanRequestForm from "../../components/inventory/LoanRequestForm";
-import SideBarRequest from "../../components/inventory/SideBarRequest";
-import AddIcon from "@mui/icons-material/Add";
-import AccessibilityNewRoundedIcon from "@mui/icons-material/AccessibilityNewRounded";
-import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
-import "../../styles/inventoryGlobal.css";
 import {useNavigate} from "react-router-dom";
-import SideBarModify from "../../components/inventory/SideBarModify";
-import Snackbar from "../../components/inventory/CustomSnackBar";
+import {CustomDropdown} from "../../components/inventory/CustomDropdown";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import InvBox from "../../components/inventory/InvBox";
+import LoanRequestForm from "../../components/inventory/LoanRequestForm";
+import ModalForm from "../../components/inventory/ModalForm";
+import SideBarModify from "../../components/inventory/SideBarModify";
+import SideBarRequest from "../../components/inventory/SideBarRequest";
+import "../../styles/inventoryGlobal.css";
+import AddIcon from "@mui/icons-material/Add";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Button from "@mui/material/Button";
+import useFirebase from "../../hooks/useFirebase";
+
+const Sujection = ({openSujection, setOpenSujection}) => {
+  const [url, setUrl] = useState("");
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [reason, setReason] = useState("");
+  const [loading, setLoading] = useState(false);
+  const {user} = useFirebase();
+
+  const handleSendSujection = async () => {
+    setLoading(true);
+    await axios
+      .post("http://localhost:5050/inventory/createIdea", {
+        name,
+        url,
+        price,
+        description,
+        reason,
+        createdBy: user.id,
+      })
+      .then((res) => {
+        toast.success(res.data);
+        setOpenSujection(false);
+        setLoading(false);
+      })
+      .catch((err) => {
+        toast.error(err.response.data);
+        setLoading(false);
+      });
+  };
+
+  return (
+    <div>
+      <Dialog open={openSujection} onClose={() => setOpenSujection(false)}>
+        <DialogTitle>Idée d'achat</DialogTitle>
+        <DialogContent sx={{minWidth: "500px"}}>
+          {/* <DialogContentText> */}
+          {/* </DialogContentText> */}
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="url"
+            label="URL du produit"
+            type="url"
+            fullWidth
+            variant="outlined"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Nom du produit"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="price"
+            label="Prix du produit"
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
+          <TextField
+            // required
+            autoFocus
+            margin="dense"
+            id="description"
+            label="Description du produit"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="motivation"
+            label="Motif de l'achat"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          {!loading && (
+            <>
+              <Button onClick={() => setOpenSujection(false)}>Annuler</Button>
+              <Button onClick={() => handleSendSujection()}>Envoyer</Button>
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
 
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
@@ -33,6 +148,7 @@ function InventoryHome() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
+  const [openSujection, setOpenSujection] = useState(false);
   const navigate = useNavigate();
 
   const toggleDrawerAdd = (event, open) => {
@@ -86,19 +202,20 @@ function InventoryHome() {
 
   useEffect(() => {
     reloadData();
-  }, []);
+  }, [loading]);
 
   const reloadData = async () => {
-    await axios
-      .get("http://localhost:5050/inventory")
-      .then((res) => {
-        setInventory(res.data);
-        setLoading(false);
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    loading &&
+      (await axios
+        .get("http://localhost:5050/inventory")
+        .then((res) => {
+          setInventory(res.data);
+          setLoading(false);
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        }));
   };
 
   const fetchRequests = async (deviceId, requestId) => {
@@ -166,7 +283,20 @@ function InventoryHome() {
           setSnackBarOpen(false);
         }}
       />
+      {openSujection && (
+        <Sujection
+          openSujection={openSujection}
+          setOpenSujection={setOpenSujection}
+        />
+      )}
       <Toaster position="bottom-left" />
+      <Fab
+        onClick={() => setOpenSujection(true)}
+        color="primary"
+        aria-label="add"
+      >
+        <AddIcon />
+      </Fab>
 
       {/* <div className="buttons-wrapper">
         {user.admin && (

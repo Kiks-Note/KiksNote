@@ -14,6 +14,16 @@ const inventory = async (req, res) => {
   }
 };
 
+const inventoryLength = async (req, res) => {
+  try {
+    const docRef = db.collection("inventory");
+    const snapshot = await docRef.get();
+    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    res.status(200).send({length: documents.length});
+  } catch (err) {}
+};
+
 const inventoryDeviceId = async (req, res) => {
   try {
     const {deviceId} = req.params;
@@ -351,6 +361,121 @@ const getDeviceRequests = async (req, res) => {
   }
 };
 
+const createIdea = async (req, res) => {
+  const {name, url, price, description, reason, createdBy} = req.body;
+
+  if (!name || !url || !price || !reason || !createdBy) {
+    return res.status(400).send("Veuillez remplir tous les champs");
+  }
+
+  // verify url
+  const regex = new RegExp(
+    "^(https?://)?(www.)?([a-z0-9]+(-[a-z0-9]+)*.)+[a-z]{2,}$"
+  );
+
+  if (!regex.test(url)) {
+    return res.status(400).send("Veuillez entrer une url valide");
+  }
+
+  // verify price
+  if (isNaN(price)) {
+    return res.status(400).send("Veuillez entrer un prix valide");
+  } else if (parseFloat(price) <= 0) {
+    return res.status(400).send("Veuillez entrer un prix valide");
+  }
+
+  try {
+    const docRef = db.collection("inventory-ideas").doc();
+
+    await docRef.set({
+      url: url,
+      name: name,
+      price: parseFloat(price.replace(",", ".")),
+      description: description,
+      reason: reason,
+      createdBy: createdBy,
+      createdAt: new Date(),
+      status: "pending",
+    });
+
+    res.status(200).send("Idée d'achat envoyée. Merci ! 😁");
+  } catch (err) {
+    res.status(500).send("Une erreur est survenue");
+    console.log(err);
+  }
+};
+
+const getIdeas = async (req, res) => {
+  try {
+    const snapshot = await db.collection("inventory-ideas").get();
+
+    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    res.status(200).send(documents);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
+const acceptIdea = async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    const docRef = db.collection("inventory-ideas").doc(id);
+
+    await docRef.update({status: "accepted"});
+
+    res.status(200).send("Idée acceptée avec succès");
+  } catch (err) {
+    res.status(500).send("Une erreur est survenue");
+    console.log(err);
+  }
+};
+
+const refuseIdea = async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    const docRef = db.collection("inventory-ideas").doc(id);
+
+    await docRef.update({status: "refused"});
+
+    res.status(200).send("Idée refusée avec succès");
+  } catch (err) {
+    res.status(500).send("Une erreur est survenue");
+    console.log(err);
+  }
+};
+
+const deleteIdea = async (req, res) => {
+  const {id} = req.params;
+
+  try {
+    await db.collection("inventory-ideas").doc(id).delete();
+
+    res.status(200).send("Idée supprimée avec succès");
+  } catch (err) {
+    res.status(500).send("Une erreur est survenue");
+    console.log(err);
+  }
+};
+
+const getIdeaByUser = async (req, res) => {
+  try {
+    const {userId} = req.params;
+
+    const snapshot = await db
+      .collection("inventory-ideas")
+      .where("createdBy", "==", userId)
+      .get();
+
+    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    res.status(200).send(documents);
+  } catch (error) {
+    res.status(500).send("Une erreur est survenue");
+  }
+};
 
 const liveCategories = async (connection) => {
   db.collection("inventoryCategories")
@@ -396,7 +521,6 @@ const todayRequests = async (connection) => {
 };
 
 const liveInventory = async (connection) => {
-
   db.collection("inventory").onSnapshot((snapshot) => {
     const inventory = snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -406,7 +530,6 @@ const liveInventory = async (connection) => {
     connection.sendUTF(JSON.stringify(inventory));
   });
 };
-
 
 const borrowedList = async (connection) => {
   db.collection("inventory")
@@ -449,6 +572,7 @@ const borrowedList = async (connection) => {
 
 module.exports = {
   inventory,
+  inventoryLength,
   inventoryDeviceId,
   addDevice,
   updateDevice,
@@ -464,6 +588,12 @@ module.exports = {
   deleteCategory,
   updateCategory,
   getDeviceRequests,
+  createIdea,
+  getIdeas,
+  acceptIdea,
+  refuseIdea,
+  deleteIdea,
+  getIdeaByUser,
   todayRequests,
   liveCategories,
   liveInventory,

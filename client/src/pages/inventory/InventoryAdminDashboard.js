@@ -1,6 +1,5 @@
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import VisibilityIcon from "@mui/icons-material/Visibility";
 import {
   Box,
   Button,
@@ -10,22 +9,16 @@ import {
   DialogContent,
   DialogTitle,
   Divider,
-  Grid,
   IconButton,
   List,
+  Skeleton,
   styled,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
   TextField,
   Tooltip,
   Typography,
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
-import moment from "moment";
 import React, {useEffect, useState} from "react";
 import {toast, Toaster} from "react-hot-toast";
 import {useNavigate} from "react-router";
@@ -34,13 +27,11 @@ import CustomSnackbar from "../../components/inventory/CustomSnackBar";
 import ModalForm from "../../components/inventory/ModalForm";
 import SideBarModify from "../../components/inventory/SideBarModify";
 import {UserListDialog} from "../../components/inventory/UserListDialog";
-import timeConverter from "../../functions/TimeConverter";
 import theme from "../../theme";
 import "./inventory.css";
-// import useAuth from "../../hooks/useAuth";
-import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import FaInfoCircle from "@mui/icons-material/Info";
+import {IoIosEye} from "react-icons/io";
 import useFirebase from "../../hooks/useFirebase";
 
 const Item = styled(Paper)(({theme}) => ({
@@ -307,6 +298,13 @@ const InventoryAdminDashboard = () => {
   const [todayRequests, setTodayRequests] = useState([]);
   const [emailsDialogOpen, setEmailsDialogOpen] = useState(false);
   const [emails, setEmails] = useState([]);
+  const [ideas, setIdeas] = useState([]);
+  const [ideasNotViewed, setIdeasNotViewed] = useState([]);
+  const [inventoryLength, setInventoryLength] = useState(0);
+
+  const [inventory, setInventory] = useState([]);
+
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const {user} = useFirebase();
 
@@ -335,12 +333,46 @@ const InventoryAdminDashboard = () => {
   useEffect(() => {
     (async () => {
       const ws = new w3cwebsocket("ws://localhost:5050/todayRequests");
+      const ws2 = new w3cwebsocket("ws://localhost:5050/liveInventory");
 
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
         console.log(data);
         setTodayRequests(data);
       };
+
+      ws2.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        setInventory(data);
+      };
+    })();
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      const _ideas = await axios
+        .get("http://localhost:5050/inventory/ideas")
+        .then((res) => {
+          setIdeas(res.data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      const invLength = await axios
+        .get("http://localhost:5050/inventory/length")
+        .then((res) => {
+          setInventoryLength(res.data);
+          setLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      Promise.all([_ideas, invLength]).then(() => {
+        setLoading(false);
+      });
     })();
   }, []);
 
@@ -482,7 +514,7 @@ const InventoryAdminDashboard = () => {
           >
             Liste des categories
           </Button>
-          <Button
+          {/* <Button
             variant="contained"
             onClick={() => navigate("/inventory/admin/list")}
             sx={{
@@ -493,8 +525,8 @@ const InventoryAdminDashboard = () => {
             }}
           >
             Liste des peripheriques
-          </Button>
-          <Button
+          </Button> */}
+          {/* <Button
             variant="contained"
             onClick={() => navigate("/inventory/admin/borrowed")}
             sx={{
@@ -505,9 +537,9 @@ const InventoryAdminDashboard = () => {
             }}
           >
             Liste des peripheriques empruntés
-          </Button>
+          </Button> */}
         </div>
-        <Grid
+        {/* <Grid
           container
           rowSpacing={{xs: 1, sm: 2, md: 3}}
           columnSpacing={{xs: 1, sm: 2, md: 3}}
@@ -678,7 +710,244 @@ const InventoryAdminDashboard = () => {
               </Table>
             </Item>
           </Grid>
-        </Grid>
+        </Grid> */}
+
+        {loading ? (
+          Array.from(new Array(3)).map((_, index) => (
+            <Skeleton variant="rectangular" width="100%" height={118} />
+          ))
+        ) : (
+          <div style={{display: "flex", gap: "30px", flexWrap: "wrap"}}>
+            <Box
+              sx={{
+                backgroundColor: "#1A2027",
+                borderRadius: 5,
+                px: 2,
+                py: 3,
+                mt: 2.5,
+                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                width: "20%",
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "poppins-bold",
+                  color: "#fff",
+                  fontSize: 18,
+                  textAlign: "center",
+                }}
+              >
+                Nombre d'idées non traitées
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "poppins-semiBold",
+                  color: "#fff",
+                  fontSize: 30,
+                }}
+              >
+                {ideas.filter((i) => i.status === "pending").length}
+              </Typography>
+              <IconButton
+                onClick={() => navigate("/inventory/admin/borrowed")}
+                sx={{
+                  position: "relative",
+                  top: 20,
+                  right: -70,
+                  opacity: 0.6,
+                }}
+              >
+                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
+              </IconButton>
+            </Box>
+            <Box
+              sx={{
+                backgroundColor: "#1A2027",
+                borderRadius: 5,
+                px: 2,
+                py: 3,
+                mt: 2.5,
+                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                width: "20%",
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Typography
+                sx={{fontFamily: "poppins-bold", color: "#fff", fontSize: 18}}
+              >
+                Nombre d'idées total
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "poppins-semiBold",
+                  color: "#fff",
+                  fontSize: 30,
+                }}
+              >
+                {ideas.length}
+              </Typography>
+              <IconButton
+                onClick={() => navigate("/inventory/admin/borrowed")}
+                sx={{
+                  position: "relative",
+                  top: 20,
+                  right: -70,
+                  opacity: 0.6,
+                }}
+              >
+                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
+              </IconButton>
+            </Box>
+            <Box
+              sx={{
+                backgroundColor: "#1A2027",
+                borderRadius: 5,
+                px: 2,
+                py: 3,
+                mt: 2.5,
+                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                width: "20%",
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "poppins-bold",
+                  color: "#fff",
+                  fontSize: 18,
+                  textAlign: "center",
+                }}
+              >
+                Nombre d'idées traitées
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "poppins-semiBold",
+                  color: "#fff",
+                  fontSize: 30,
+                }}
+              >
+                {
+                  ideas.filter((i) => ["accepted", "refuse"].includes(i.status))
+                    .length
+                }
+              </Typography>
+              <IconButton
+                onClick={() => navigate("/inventory/admin/borrowed")}
+                sx={{
+                  position: "relative",
+                  top: 20,
+                  right: -70,
+                  opacity: 0.6,
+                }}
+              >
+                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
+              </IconButton>
+            </Box>
+            <Box
+              sx={{
+                backgroundColor: "#1A2027",
+                borderRadius: 5,
+                px: 2,
+                py: 3,
+                mt: 2.5,
+                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                width: "20%",
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "poppins-bold",
+                  color: "#fff",
+                  fontSize: 18,
+                  textAlign: "center",
+                }}
+              >
+                Nombre de peripheriques
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "poppins-semiBold",
+                  color: "#fff",
+                  fontSize: 30,
+                }}
+              >
+                {inventory.length}
+              </Typography>
+              <IconButton
+                onClick={() => navigate("/inventory/admin/list")}
+                sx={{
+                  position: "relative",
+                  top: 20,
+                  right: -70,
+                  opacity: 0.6,
+                }}
+              >
+                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
+              </IconButton>
+            </Box>
+            <Box
+              sx={{
+                backgroundColor: "#1A2027",
+                borderRadius: 5,
+                px: 2,
+                py: 3,
+                mt: 2.5,
+                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                width: "20%",
+                alignItems: "center",
+                justifyContent: "center",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "poppins-bold",
+                  color: "#fff",
+                  fontSize: 18,
+                  textAlign: "center",
+                }}
+              >
+                Nombre de peripheriques empruntés
+              </Typography>
+              <Typography
+                sx={{
+                  fontFamily: "poppins-semiBold",
+                  color: "#fff",
+                  fontSize: 30,
+                }}
+              >
+                {inventory.filter((i) => i.status === "borrowed").length}
+              </Typography>
+              <IconButton
+                onClick={() => navigate("/inventory/admin/borrowed")}
+                sx={{
+                  position: "relative",
+                  top: 20,
+                  right: -70,
+                  opacity: 0.6,
+                }}
+              >
+                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
+              </IconButton>
+            </Box>
+          </div>
+        )}
       </Container>
     </>
   );

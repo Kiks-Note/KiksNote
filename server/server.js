@@ -1,10 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { v4: uuidv4 } = require("uuid");
+const {v4: uuidv4} = require("uuid");
 const app = express();
 const dotenv = require("dotenv").config();
-const { parse } = require("url");
+const {parse} = require("url");
 const webSocketServer = require("websocket").server;
 const http = require("http");
 /// MULTER CONFIG FOR UPLOAD ON SERVER
@@ -41,7 +41,7 @@ var upload = multer({
 
 app.use(express.json());
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 app.use("/uploads", express.static("uploads"));
 
@@ -52,6 +52,7 @@ const wsI = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
+
 const authRoutes = require("./authRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
@@ -63,25 +64,29 @@ const studentsProjectsRoutes = require("./studentsProjectsRoutes");
 const groupsRoute = require("./groupsRoutes");
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
-wsI.on("request", (request) => {
-  const connection = request.accept(null, request.origin);
-  const { pathname } = parse(request.httpRequest.url);
-  console.log("pathname => ", pathname);
-  connection ? console.log("connection ok") : console.log("connection failed");
-  app.use("/inventory", inventoryRoutes(connection, pathname));
-  app.use("/dashboard", dashboardRoutes(connection, pathname));
-  app.use("/profil", profilRoutes(connection, pathname, upload));
-  app.use("/blog", blogRoutes(connection, pathname));
+app.use("/inventory", inventoryRoutes);
 
-  connection.on("error", (error) => {
-    console.log(`WebSocket Error: ${error}`);
-  });
-  connection.on("close", (reasonCode, description) => {
-    console.log(
-      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
-    );
-  });
-});
+require("./web/inventoryWebSocket")(wsI);
+
+// wsI.on("request", (request) => {
+//   const connection = request.accept(null, request.origin);
+//   const {pathname} = parse(request.httpRequest.url);
+//   console.log("pathname => ", pathname);
+//   connection ? console.log("connection ok") : console.log("connection failed");
+//   // app.use("/inventory", inventoryRoutes(connection, pathname));
+//   app.use("/dashboard", dashboardRoutes(connection, pathname));
+//   app.use("/profil", profilRoutes(connection, pathname, upload));
+//   app.use("/blog", blogRoutes(connection, pathname));
+
+//   connection.on("error", (error) => {
+//     console.log(`WebSocket Error: ${error}`);
+//   });
+//   connection.on("close", (reasonCode, description) => {
+//     console.log(
+//       `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
+//     );
+//   });
+// });
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
 app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
