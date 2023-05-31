@@ -12,23 +12,6 @@ export default function TabBoard() {
   const tabs = useSelector((state) => state.tabBoard.tabs);
   const activeTab = useSelector((state) => state.tabBoard.activeTab);
 
-  const checkIfActiveTabExists = (tabs, activeTab) => {
-    return tabs.includes(activeTab);
-  }
-  
-  const handleChange = useCallback(
-    (event, activeTab) => {
-      if (checkIfActiveTabExists(tabs, activeTab)) {
-        console.log('activeTab existe dans tabs');
-        dispatch(setActiveTab(activeTab));
-      } else {
-        console.log('activeTab n\'existe pas dans tabs');
-        dispatch(setActiveTab(tabs[0].id));
-      }
-    },
-    [tabs, dispatch]
-  );
-
   const handleClose = useCallback(
     (tabToDelete) => {
       const updatedTabs = tabs.filter((tab) => tab.id !== tabToDelete.id);
@@ -41,6 +24,7 @@ export default function TabBoard() {
   );
 
   useEffect(() => {
+    console.log('active', activeTab);
     if (tabs.length === 0) {
       const initialTab = {
         id: "Dashboard",
@@ -57,8 +41,8 @@ export default function TabBoard() {
   return (
     <Tab
       handleClose={handleClose}
-      handleChange={handleChange}
-      tabs={tabs}
+      // handleChange={handleChange}
+      actualTabs={tabs}
       selectedTab={activeTab}
     />
   );
