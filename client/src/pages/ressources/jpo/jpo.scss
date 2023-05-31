@@ -1,0 +1,29 @@
+.jpo-list-container {
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+}
+
+.jpo-image {
+    width: 30%;
+    height: auto;
+
+}
+
+.jpo-text {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 20px;
+}
+
+.jpo-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
