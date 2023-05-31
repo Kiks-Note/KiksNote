@@ -90,10 +90,6 @@ const Ressources = () => {
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
   const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
 
-  // Variable useState Cards
-  const [courseOwnerData, setCourseOwnerData] = useState([]);
-  const [courseClassData, setCourseClassData] = useState([]);
-
   const [userClass, setUserClass] = useState([]);
 
   const [isAllCoursesDataLoaded, setIsAllCoursesDataLoaded] = useState(false);

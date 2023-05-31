@@ -73,8 +73,6 @@ const StudentsProjects = () => {
   const [selectedClass, setSelectedClass] = useState("");
   const [idSelectedClass, setIdSelectedClass] = useState("");
 
-  const [selectedProjectData, setSelectedProjectData] = useState("");
-
   const [selectedFilterTypeProject, setSelectedFilterTypeProject] =
     useState("");
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
@@ -161,7 +159,13 @@ const StudentsProjects = () => {
           counterRef: 0,
         })
         .then((res) => {
-          console.log(res.data);
+          console.log(res);
+          if (
+            res.status === 200 &&
+            res.data?.message === "Projet étudiant créé avec succès."
+          ) {
+            toastSuccess(`Votre project ${nameProject} a bien été uploadé !`);
+          }
         })
         .catch((error) => {
           console.log(error);
