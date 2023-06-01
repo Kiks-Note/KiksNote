@@ -135,7 +135,7 @@ export default function CardBlog({ blog }) {
           <Button size="small" onClick={handleClick}>
             Consulter
           </Button>
-          {blog.type == "tuto" || blog.type == "blog" ? (
+          { blog.type != "blog" ? (
             <></>
           ) : (
             <Button
