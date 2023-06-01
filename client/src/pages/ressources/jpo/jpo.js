@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import axios from "axios";
@@ -13,26 +13,80 @@ import {
   ListItem,
   ListItemText,
   Collapse,
+  Dialog,
+  DialogContent,
+  DialogActions,
+  TextField,
   CardMedia,
   Grid,
 } from "@mui/material";
 
+import { makeStyles } from "@mui/styles";
+
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import CreateIcon from "@mui/icons-material/Create";
+import HistoryIcon from "@mui/icons-material/History";
+
+import Dropzone from "../Cours/Dropzone";
 
 import "./jpo.scss";
 
+const useStyles = makeStyles({
+  button: {
+    "&:hover": {
+      backgroundColor: "#e70062",
+    },
+  },
+});
+
 const Jpo = () => {
+  const classes = useStyles();
   let navigate = useNavigate();
 
   const { user } = useFirebase();
   const userStatus = user?.status;
 
   const [allJpo, setAllJpo] = useState([]);
+  const [nameJPO, setNameJPO] = useState("");
+  const [JPODateStart, setJPODateStart] = useState("");
+  const [JPODateEnd, setJPODateEnd] = useState("");
+  const [descriptionJPO, setDescriptionJPO] = useState("");
+  const [files, setFiles] = useState([]);
+  const [jpoThumbnail, setJpoThumbnail] = useState("");
   const [openProjects, setOpenProjects] = useState(false);
+  const [open, setOpen] = useState(false);
+  const rejectedFiles = files.filter((file) => file.errors);
+
+  const [pdfUrl, setPdfUrl] = useState(null);
+
+  const handlePdfFileChange = (event) => {
+    const file = event.target.files[0];
+    setPdfUrl(file);
+  };
+
+  const handleDrop = useCallback((acceptedFiles) => {
+    setFiles((files) => [...files, ...acceptedFiles]);
+  }, []);
+
+  const handleRemove = (file) => () => {
+    setFiles((files) => files.filter((f) => f !== file));
+  };
+
+  const handleFileChange = (fileData) => {
+    setJpoThumbnail(fileData);
+  };
 
   const handleClickProjects = () => {
     setOpenProjects(!openProjects);
+  };
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   const getAllJpo = async () => {
@@ -50,6 +104,34 @@ const Jpo = () => {
     }
   };
 
+  const publishJpo = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("jpoTitle", nameJPO);
+      formData.append("jpoDescription", descriptionJPO);
+      formData.append("jpoThumbnail", jpoThumbnail);
+      formData.append("jpoDayStart", JPODateStart);
+      formData.append("jpoDayEnd", JPODateEnd);
+      formData.append("file", pdfUrl);
+      await axios
+        .post("http://localhost:5050/ressources/jpo", formData)
+        .then((res) => {
+          console.log(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    await publishJpo();
+    event.preventDefault();
+    setOpen(false);
+  };
+
   useEffect(() => {
     getAllJpo();
   }, []);
@@ -61,9 +143,125 @@ const Jpo = () => {
           Fil d'actualités - Jpo
         </Typography>
         {userStatus === "pedago" ? (
-          <Button variant="contained" disableElevation>
-            Créer une JPO
-          </Button>
+          <div>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: "#7a52e1",
+                color: "white",
+                fontWeight: "bold",
+              }}
+              onClick={handleClickOpen}
+              disableElevation
+            >
+              Créer une JPO <CreateIcon />
+            </Button>
+            <Dialog open={open} onClose={handleClose}>
+              <DialogContent>
+                <form onSubmit={handleSubmit} className="jpo-form">
+                  <TextField
+                    sx={{ marginBottom: "10px", marginTop: "5px" }}
+                    label="Nom de la JPO"
+                    fullWidth
+                    defaultValue={nameJPO}
+                    onChange={(event) => setNameJPO(event.target.value)}
+                  />
+                  <div className="jpo-date-container">
+                    <p className="p-1">Date de début</p>
+                    <TextField
+                      className="textfield"
+                      id="date"
+                      name="date"
+                      variant="standard"
+                      type="date"
+                      defaultValue={JPODateStart}
+                      onChange={(e) => setJPODateStart(e.target.value)}
+                      sx={{ width: "90%" }}
+                    />
+                  </div>
+                  <div className="jpo-date-container">
+                    <p className="p-1">Date de fin</p>
+                    <TextField
+                      className="textfield"
+                      id="date"
+                      name="date"
+                      variant="standard"
+                      type="date"
+                      defaultValue={JPODateEnd}
+                      onChange={(e) => setJPODateEnd(e.target.value)}
+                      sx={{ width: "90%" }}
+                    />
+                  </div>
+                  <TextField
+                    sx={{ marginBottom: "10px" }}
+                    label="Description de la JPO"
+                    fullWidth
+                    multiline
+                    rows={4}
+                    defaultValue={descriptionJPO}
+                    onChange={(event) => setDescriptionJPO(event.target.value)}
+                  />
+                  <div className="dropzone-coursimg-container">
+                    <p className="info-dropdown-img">
+                      Drag and drop an image file here, or click to select an
+                      image file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP,
+                      SVG or BMP.
+                    </p>
+                    <Dropzone
+                      onDrop={handleDrop}
+                      onFileChange={handleFileChange}
+                    >
+                      {({ getRootProps, getInputProps }) => (
+                        <section>
+                          <div {...getRootProps()}>
+                            <input {...getInputProps()} />
+                            <p>
+                              Drag and drop some files here, or click to select
+                              files
+                            </p>
+                          </div>
+                        </section>
+                      )}
+                    </Dropzone>
+                    {rejectedFiles.length > 0 && (
+                      <div>
+                        <h4>Rejected files:</h4>
+                        <ul>
+                          {rejectedFiles.map((file) => (
+                            <li key={file.name}>
+                              {file.name} - {file.size} bytes - {file.type}
+                              <button onClick={handleRemove(file)}>
+                                Remove
+                              </button>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </form>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePdfFileChange}
+                />
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={handleClose}
+                  sx={{ backgroundColor: "#7a52e1", color: "white" }}
+                >
+                  Annuler
+                </Button>
+                <Button
+                  onClick={handleSubmit}
+                  sx={{ backgroundColor: "#7a52e1", color: "white" }}
+                >
+                  Soumettre
+                </Button>
+              </DialogActions>
+            </Dialog>
+          </div>
         ) : (
           <div></div>
         )}
@@ -74,11 +272,17 @@ const Jpo = () => {
           <Button
             variant="contained"
             disableElevation
+            sx={{
+              backgroundColor: "#e70062",
+              color: "white",
+              fontWeight: "bold",
+            }}
+            className={classes.button}
             onClick={() => {
               navigate(`/jpo/history`);
             }}
           >
-            Historique
+            Historique <HistoryIcon />
           </Button>
         </div>
         {allJpo.map((jpoData, index) => (
@@ -161,7 +365,7 @@ const Jpo = () => {
                   ) : (
                     <div className="no-votes-student-projects-container">
                       <p className="no-votes-student-projects-p">
-                        Personne n'a encore mis en avant votre projet
+                        Il n'y a pas encore de projet mis en avant
                       </p>
                       {/* <img
                         className="no-votes-student-projects-img"

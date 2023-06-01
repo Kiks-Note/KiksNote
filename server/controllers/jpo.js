@@ -145,8 +145,8 @@ const createJpo = async (req, res) => {
         jpoTitle: jpoTitle,
         jpoDescription: jpoDescription,
         jpoThumbnail: urlImageJpo,
-        jpoDayStart: jpoDayStart,
-        jpoDayEnd: jpoDayEnd,
+        jpoDayStart: new Date(jpoDayStart),
+        jpoDayEnd: new Date(jpoDayEnd),
         linkCommercialBrochure: null,
       };
 
