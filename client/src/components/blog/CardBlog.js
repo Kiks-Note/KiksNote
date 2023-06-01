@@ -21,7 +21,7 @@ import Comment from "./Comment";
 import { useNavigate } from "react-router-dom";
 import PopUpBlog from "./PopUpBlog";
 import useFirebase from "../../hooks/useFirebase";
-
+import "./cardBlog.css";
 export default function CardBlog({ blog }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useFirebase();
@@ -81,66 +81,74 @@ export default function CardBlog({ blog }) {
 
   return (
     <>
-      {" "}
-      <Card sx={{ m: 2 }}>
-        <CardHeader
-          title={<Typography variant="h4">{blog.title}</Typography>}
-          subheader={blog.created_at}
-          action={
-            user.id == blog.created_by ? (
-              <IconButton
-                aria-label="more options"
-                aria-controls="card-menu"
-                aria-haspopup="true"
-                onClick={handleMenuOpen}
-              >
-                <MoreVertIcon />
-              </IconButton>
-            ) : (
-              <></>
-            )
-          }
-        />
-        <CardMedia
-          component="img"
-          image={blog.thumbnail}
-          sx={{ maxHeight: 400 }}
-        />
-        <CardActions>
-          <IconButton onClick={handleLike}>
-            {blog.userLiked ? (
-              <ThumbUpIcon color={"primary"} />
-            ) : (
-              <ThumbUpOffAltIcon />
-            )}
-          </IconButton>{" "}
-          {blog.like.length}
-          <IconButton onClick={handleDislike}>
-            {blog.userDisliked ? (
-              <ThumbDownAltIcon color={"error"} />
-            ) : (
-              <ThumbDownOffAltIcon />
-            )}
-          </IconButton>
-          {blog.dislike.length}
-        </CardActions>
+      <div class="card_blog">
+        <h3 class="blog-title">{blog.title}</h3>
 
-        <CardActions>
-          {/* Bouton pour participer */}
-          <Button
-            size="small"
-            onClick={handleParticipate}
-            style={{ background: blog.userIsParticipant ? "green" : "gray" }}
+        {blog.tag &&
+          Array.isArray(blog.tag) &&
+          blog.tag.map((tag) => <p>{tag}</p>)}
+
+        {user.id == blog.created_by ? (
+          <IconButton
+            aria-label="more options"
+            aria-controls="card-menu"
+            aria-haspopup="true"
+            onClick={handleMenuOpen}
+            className="menu_three_blog"
           >
-            {blog.userIsParticipant ? "Participant" : " Ne participe pas"}
-          </Button>
+            <MoreVertIcon />
+          </IconButton>
+        ) : (
+          <></>
+        )}
+        <div class="card-img-holder">
+          <img src={blog.thumbnail} alt={blog.thumbnail} />
+        </div>
+
+        <span class="blog-time">{blog.created_at} </span>
+        {/* <p class="description">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam
+          sagittis viverra turpis, non cursus ex accumsan at.
+        </p> */}
+        <div class="options">
+          <button class="like__btn" onClick={handleLike}>
+            <span id="icon">
+              {blog.userLiked ? (
+                <ThumbUpIcon color={"primary"} />
+              ) : (
+                <ThumbUpOffAltIcon />
+              )}
+            </span>
+            <span id="count">{blog.like.length}</span> J'aime
+          </button>
+          <button class="like__btn" onClick={handleDislike}>
+            <span id="icon">
+              {blog.userDisliked ? (
+                <ThumbDownAltIcon color={"error"} />
+              ) : (
+                <ThumbDownOffAltIcon />
+              )}
+            </span>
+            <span id="count">{blog.dislike.length}</span> J'aime pas
+          </button>
+
           <Button size="small" onClick={handleClick}>
-            En savoir plus
+            Consulter
           </Button>
-          {/* Afficher d'autres boutons, composants, etc. */}
-          <PopUpBlog participants={blog.participant} />
-        </CardActions>
-      </Card>
+          {blog.type == "tuto" || blog.type == "blog" ? (
+            <></>
+          ) : (
+            <Button
+              size="small"
+              onClick={handleParticipate}
+              style={{ background: blog.userIsParticipant ? "green" : "gray" }}
+            >
+              {blog.userIsParticipant ? "Participant" : " Ne participe pas"}
+            </Button>
+          )}
+        </div>
+      </div>
+
       <Menu
         id="card-menu"
         anchorEl={anchorEl}

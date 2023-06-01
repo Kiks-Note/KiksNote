@@ -89,10 +89,6 @@ export default function NewBlog({ open, toggleDrawerModify }) {
 
     var statut = "online";
     var visibility = true;
-    if (user.status === "etudiant") {
-      statut = "pending";
-      visibility = false;
-    }
 
     const formData = new FormData();
     formData.append("thumbnail", thumbnail);

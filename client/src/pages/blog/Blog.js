@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import CardBlog from "../../components/blog/CardBlog";
-import { Box, Grid, TextField, Select, Button, MenuItem } from "@mui/material";
+import { Box, Grid, Button } from "@mui/material";
 import { w3cwebsocket } from "websocket";
-import NewBlog from "../../components/blog/form/NewBlog.js";
-import NewTuto from "../../components/blog/form/NewTuto.js";
 import { Toaster } from "react-hot-toast";
 import { Rings } from "react-loader-spinner";
 import useFirebase from "../../hooks/useFirebase";
@@ -18,6 +16,8 @@ import { autoPlay } from "react-swipeable-views-utils";
 import { useTheme } from "@mui/material/styles";
 import TopCreatorsChart from "../../components/blog/TopCreator.js";
 import MostParticipantsChart from "../../components/blog/TopEvent.js";
+import SplitButtonChoice from "../../components/blog/SplitButtonChoice";
+import "./Blog.css";
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 function Blog() {
@@ -25,15 +25,11 @@ function Blog() {
   const [blog, setBlog] = useState([]);
   const [filteredBlog, setFilteredBlog] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [openBlog, setOpenBlog] = useState(false);
-  const [openTuto, setOpenTuto] = useState(false);
   const [tags, setTags] = useState([]);
   const { user } = useFirebase();
   const [filter, setFilter] = useState({
     title: "",
-    type: "",
     tags: "",
-    sort: "desc",
   });
 
   const stats = [
@@ -125,25 +121,11 @@ function Blog() {
       );
     }
 
-    if (filter.type !== "") {
-      filteredBlogs = filteredBlogs.filter((blog) => blog.type === filter.type);
-    }
-
     if (filter.tags !== "") {
       filteredBlogs = filteredBlogs.filter(
         (blog) =>
           blog.tag.length > 0 && blog.tag.some((tag) => tag.id == filter.tags)
       );
-    }
-
-    if (filter.sort === "asc") {
-      filteredBlogs.sort((a, b) => {
-        return a.created_at.localeCompare(b.created_at);
-      });
-    } else if (filter.sort === "desc") {
-      filteredBlogs.sort((a, b) => {
-        return b.created_at.localeCompare(a.created_at);
-      });
     }
 
     setFilteredBlog(filteredBlogs);
@@ -167,34 +149,12 @@ function Blog() {
     }
   };
 
-  const toggleDrawerBlog = (event, open) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setOpenBlog(open);
-  };
-  const toggleDrawerTuto = (event, open) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setOpenTuto(open);
-  };
-
   return (
     <>
       <Toaster />
       <Box sx={{ margin: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            {" "}
             <Box
               style={{
                 display: "flex",
@@ -203,88 +163,60 @@ function Blog() {
                 marginBottom: "1rem",
               }}
             >
-              <TextField
-                name="title"
-                label="Titre"
-                value={filter.title}
-                onChange={handleFilterChange}
-              />
-              <Select
-                label="Type d'article"
-                name="type"
-                value={filter.type}
-                onChange={handleFilterChange}
-              >
-                <MenuItem value="">Tout type</MenuItem>
-                <MenuItem value="blog">Blog</MenuItem>
-                <MenuItem value="tuto">Tuto</MenuItem>
-              </Select>
-              <Select
-                name="sort"
-                value={filter.sort}
-                onChange={handleFilterChange}
-              >
-                <MenuItem value="">Par défault </MenuItem>
-                <MenuItem value="asc">Plus ancien </MenuItem>
-                <MenuItem value="desc"> Plus récent </MenuItem>
-              </Select>
-
-              <Select
-                label="Tags"
-                variant="outlined"
-                size="small"
-                name="tags"
-                value={filter.tags}
-                onChange={handleFilterChange}
-              >
-                {tags.map((tag) => (
-                  <MenuItem key={tag.id} value={tag.id}>
-                    {tag.name}
-                  </MenuItem>
-                ))}
-              </Select>
+              <div class="wrapper">
+                <div class="search_bar">
+                  <div class="search_icon">
+                    <svg
+                      fill="#8395B3"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="24px"
+                      height="24px"
+                    >
+                      <path d="M 9 2 C 5.1458514 2 2 5.1458514 2 9 C 2 12.854149 5.1458514 16 9 16 C 10.747998 16 12.345009 15.348024 13.574219 14.28125 L 14 14.707031 L 14 16 L 19.585938 21.585938 C 20.137937 22.137937 21.033938 22.137938 21.585938 21.585938 C 22.137938 21.033938 22.137938 20.137938 21.585938 19.585938 L 16 14 L 14.707031 14 L 14.28125 13.574219 C 15.348024 12.345009 16 10.747998 16 9 C 16 5.1458514 12.854149 2 9 2 z M 9 4 C 11.773268 4 14 6.2267316 14 9 C 14 11.773268 11.773268 14 9 14 C 6.2267316 14 4 11.773268 4 9 C 4 6.2267316 6.2267316 4 9 4 z" />
+                    </svg>
+                  </div>
+                  <input
+                    id="search"
+                    type="text"
+                    name="title"
+                    label="Titre"
+                    value={filter.title}
+                    onChange={handleFilterChange}
+                  />
+                </div>
+              </div>
             </Box>
           </Grid>
           <Grid item xs={5}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={(e) => toggleDrawerBlog(e, true)}
-            >
-              Créer un article de blog
-            </Button>
-            <NewBlog open={openBlog} toggleDrawerModify={toggleDrawerBlog} />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={(e) => toggleDrawerTuto(e, true)}
-            >
-              Créer un tutoriel
-            </Button>
-            <NewTuto open={openTuto} toggleDrawerModify={toggleDrawerTuto} />
-            {!loading ? (
-              filteredBlog.map((blog) => <CardBlog blog={blog} key={blog.id} />)
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  height: "100%",
-                }}
-              >
-                <Rings
-                  height="200"
-                  width="200"
-                  color="#00BFFF"
-                  radius="6"
-                  wrapperStyle={{}}
-                  wrapperClass="loader"
-                  visible={true}
-                  ariaLabel="rings-loading"
-                />
-              </div>
-            )}
+            <div className="container_blog">
+              <SplitButtonChoice />
+              {!loading ? (
+                filteredBlog.map((blog) => (
+                  <CardBlog blog={blog} key={blog.id} />
+                ))
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Rings
+                    height="200"
+                    width="200"
+                    color="#00BFFF"
+                    radius="6"
+                    wrapperStyle={{}}
+                    wrapperClass="loader"
+                    visible={true}
+                    ariaLabel="rings-loading"
+                  />
+                </div>
+              )}
+            </div>
           </Grid>
           <Grid item xs={4}>
             <Paper
@@ -304,7 +236,7 @@ function Blog() {
               index={activeStep}
               onChangeIndex={handleStepChange}
               enableMouseEvents
-              interval={2000}
+              interval={20000}
             >
               {stats.map((step, index) => (
                 <div key={step.label}>{step.component}</div>

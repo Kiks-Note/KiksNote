@@ -1,0 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap");
+
+.card_blog {
+  height: auto;
+  background: #ffffdd63;
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  overflow: hidden;
+  position: relative;
+  margin-top: 10px;
+}
+.menu_three_blog {
+  right: 0;
+  top: 0;
+  position: absolute !important;
+  background: #00000036;
+}
+
+.card-img-holder {
+  width: 100%;
+  height: auto;
+  position: relative;
+}
+
+.card-img-holder img {
+  width: 100%;
+  height: auto;
+  max-height: 15rem;
+  object-fit: cover;
+  border-radius: 1.5rem;
+}
+
+.blog-title {
+  color: #22215b;
+  font-size: 1.5rem;
+}
+
+.description {
+  padding: 1rem 0;
+  color: #22215b80;
+  font-size: 1rem;
+}
+
+.blog-time {
+  font-size: 0.8rem;
+  color: #22215b;
+}
+
+.options {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 1rem;
+}
+
+.like__btn {
+  background: #0080ff;
+  font-size: 18px;
+  font-family: "Open Sans", sans-serif;
+  border-radius: 5px;
+  color: #e8efff;
+  outline: none;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -449,7 +449,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
         <div>
           <>
             <SwipeableDrawer
-              anchor="left"
+              anchor="right"
               open={open}
               onClose={(e) => toggleDrawerModify(e, false)}
               onOpen={(e) => toggleDrawerModify(e, true)}
