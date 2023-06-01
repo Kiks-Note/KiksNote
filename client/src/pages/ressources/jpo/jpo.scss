@@ -1,5 +1,23 @@
-.jpo-list-container {
+.jpo-page {
     width: 100%;
+    height: 100%;
+}
+
+.header-jpo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.btn-history-container {
+    display: flex;
+    width: 100%;
+    justify-content: flex-end;
+}
+
+.jpo-list-container {
     display: flex;
     justify-content: center;
     padding-top: 50px;

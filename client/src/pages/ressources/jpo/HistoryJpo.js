@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Button from "@mui/material/Button";
-import axios from "axios";
-import useFirebase from "../../../hooks/useFirebase";
 
+import axios from "axios";
 import moment from "moment";
 
 import {
@@ -15,35 +13,33 @@ import {
   Collapse,
   CardMedia,
   Grid,
+  Button,
 } from "@mui/material";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 
-import "./jpo.scss";
+import "./HistoryJpo.scss";
 
-const Jpo = () => {
+const HistoryJpo = () => {
   let navigate = useNavigate();
+  const [allPastJpo, setAllPastJpo] = useState([]);
 
-  const { user } = useFirebase();
-  const userStatus = user?.status;
-
-  const [allJpo, setAllJpo] = useState([]);
   const [openProjects, setOpenProjects] = useState(false);
 
   const handleClickProjects = () => {
     setOpenProjects(!openProjects);
   };
 
-  const getAllJpo = async () => {
+  const getAllOldJpo = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/jpo")
+        .get("http://localhost:5050/ressources/pastjpo")
         .then((res) => {
-          setAllJpo(res.data);
+          setAllPastJpo(res.data);
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          console.log(error);
         });
     } catch (error) {
       console.error(error);
@@ -51,37 +47,18 @@ const Jpo = () => {
   };
 
   useEffect(() => {
-    getAllJpo();
+    getAllOldJpo();
   }, []);
 
   return (
-    <div className="jpo-page">
+    <div className="history-jpo-page">
       <div className="header-jpo">
         <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-          Fil d'actualités - Jpo
+          Historique des JPO
         </Typography>
-        {userStatus === "pedago" ? (
-          <Button variant="contained" disableElevation>
-            Créer une JPO
-          </Button>
-        ) : (
-          <div></div>
-        )}
       </div>
-
       <div className="jpo-list-container">
-        <div className="btn-history-container">
-          <Button
-            variant="contained"
-            disableElevation
-            onClick={() => {
-              navigate(`/jpo/history`);
-            }}
-          >
-            Historique
-          </Button>
-        </div>
-        {allJpo.map((jpoData, index) => (
+        {allPastJpo.map((jpoData, index) => (
           <Card
             key={index}
             className="jpo-card"
@@ -115,7 +92,7 @@ const Jpo = () => {
                     {moment
                       .unix(jpoData.jpoDayStart._seconds)
                       .format("DD.MM.YYYY HH:mm")}
-                    {" - "} 
+                    {" - "}
                     {moment
                       .unix(jpoData.jpoDayEnd._seconds)
                       .format("DD.MM.YYYY HH:mm")}
@@ -159,15 +136,8 @@ const Jpo = () => {
                       </Collapse>
                     </List>
                   ) : (
-                    <div className="no-votes-student-projects-container">
-                      <p className="no-votes-student-projects-p">
-                        Personne n'a encore mis en avant votre projet
-                      </p>
-                      {/* <img
-                        className="no-votes-student-projects-img"
-                        src={NoVotesImg}
-                        alt="no-votes-projects-students"
-                      /> */}
+                    <div>
+                      <p>Personne n'a encore mis en avant votre projet</p>
                     </div>
                   )}
                 </div>
@@ -180,4 +150,4 @@ const Jpo = () => {
   );
 };
 
-export default Jpo;
+export default HistoryJpo;
