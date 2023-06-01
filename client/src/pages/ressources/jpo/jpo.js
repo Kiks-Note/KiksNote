@@ -11,7 +11,8 @@ import {
   ListItem,
   ListItemText,
   Collapse,
-  Divider,
+  CardMedia,
+  Grid,
 } from "@mui/material";
 
 import ExpandLess from "@mui/icons-material/ExpandLess";
@@ -25,43 +26,41 @@ export default function Jpo() {
   const { user } = useFirebase();
   const userStatus = user?.status;
 
-  const [events, setEvent] = useState([]);
+  const [allJpo, setAllJpo] = useState([]);
   const [openProjects, setOpenProjects] = useState(false);
 
   const handleClickProjects = () => {
     setOpenProjects(!openProjects);
   };
 
-  useEffect(() => {
-    const fetchEvent = async () => {
-      const response = await axios
+  const getAllJpo = async () => {
+    try {
+      await axios
         .get("http://localhost:5050/ressources/jpo")
-        .then((response) => {
-          setEvent(response.data);
+        .then((res) => {
+          setAllJpo(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
         });
-    };
-    fetchEvent();
-  }, []);
-
-  const jpoData = {
-    jpoTitle: "JPO Name",
-    jpoDescription: "Je suis une JPO",
-    jpoThumbnail: "thumbnail.img",
-    jpoDayStart: "TimeStamp",
-    jpoDayEnd: "TimeStamp",
-    linkedStudentProject: [
-      {
-        nameProject: "Projet",
-        idStudentProject: "fbvofijdzeoiebvf",
-        typeProject: "Web",
-      },
-    ],
-    linkPlaquette: "imageplaquette.img",
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  useEffect(() => {
+    getAllJpo();
+  }, []);
 
   return (
     <div>
-      <h1>JPO</h1>
+      <Typography
+        variant="h3"
+        gutterBottom
+        sx={{ fontWeight: "bold", padding: "20px" }}
+      >
+        Fil d'actualités - Jpo
+      </Typography>
       {userStatus === "pedago" ? (
         <Button
           variant="contained"
@@ -77,85 +76,94 @@ export default function Jpo() {
       )}
 
       <div className="jpo-list-container">
-        <Card
-          className="jpo-card"
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            width: "60%",
-          }}
-        >
-          <img
-            src={jpoData.jpoThumbnail}
-            alt="Je suis un JPO, c'est la description vous avez compris?"
-            className="jpo-image"
-          />
-          <div className="jpo-text">
-            <Typography sx={{ paddingBottom: "10px", fontSize: "24px" }}>
-              {jpoData.jpoTitle}
-            </Typography>
-            <Typography sx={{ paddingBottom: "10px" }}>
-              {jpoData.jpoDescription}
-            </Typography>
-            <Typography sx={{ textAlign: "center" }}>
-              {jpoData.jpoDayStart} {jpoData.jpoDayEnd}
-            </Typography>
-            {jpoData?.linkedStudentProject?.length > 0 ? (
-              <List>
-                <ListItem button onClick={handleClickProjects}>
-                  <ListItemText
-                    primary={"Afficher les projets"}
-                    style={{ textAlign: "center" }}
-                  />
-                  {openProjects ? <ExpandLess /> : <ExpandMore />}
-                </ListItem>
-                <Collapse in={openProjects} timeout="auto" unmountOnExit>
-                  <List disablePadding>
-                    {jpoData.linkedStudentProject.map((project, index) => (
-                      <React.Fragment key={index}>
-                        <ListItem
-                          sx={{
-                            padding: "10px 0px",
-                            display: "flex",
-                            flexDirection: "row",
-                            justifyContent: "space-evenly",
-                            borderTop: "1px solid grey",
-                          }}
-                        >
-                          <Typography>
-                            {project.nameProject}
-                            {" - "}
-                            {project.typeProject}
-                          </Typography>
-                          <Button
-                            onClick={() => {
-                              navigate(`/${project.idStudentProject}`);
+        {allJpo.map((jpoData, index) => (
+          <Card
+            key={index}
+            className="jpo-card"
+            sx={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              width: "70%",
+              margin: "30px",
+            }}
+          >
+            <Grid container>
+              <Grid item xs={12} sm={6}>
+                <CardMedia
+                  component="img"
+                  src={jpoData.jpoThumbnail}
+                  alt="img-jpo"
+                  className="jpo-image"
+                />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <div className="jpo-text">
+                  <Typography sx={{ paddingBottom: "10px", fontSize: "24px" }}>
+                    {jpoData.jpoTitle}
+                  </Typography>
+                  <Typography sx={{ paddingBottom: "10px" }}>
+                    {jpoData.jpoDescription}
+                  </Typography>
+                  <Typography sx={{ textAlign: "center" }}>
+                    {jpoData.jpoDayStart} {jpoData.jpoDayEnd}
+                  </Typography>
+                  {jpoData.linkedStudentProject ? (
+                    <List>
+                      <ListItem button onClick={handleClickProjects}>
+                        <ListItemText
+                          primary={"Afficher les projets"}
+                          style={{ textAlign: "center" }}
+                        />
+                        {openProjects ? <ExpandLess /> : <ExpandMore />}
+                      </ListItem>
+                      <Collapse in={openProjects} timeout="auto" unmountOnExit>
+                        <List disablePadding>
+                          <ListItem
+                            sx={{
+                              padding: "10px 0px",
+                              display: "flex",
+                              flexDirection: "row",
+                              justifyContent: "space-evenly",
+                              borderTop: "1px solid grey",
                             }}
                           >
-                            Voir le projet
-                          </Button>
-                        </ListItem>
-                      </React.Fragment>
-                    ))}
-                  </List>
-                </Collapse>
-              </List>
-            ) : (
-              <div className="no-votes-student-projects-container">
-                <p className="no-votes-student-projects-p">
-                  Personne n'a encore mis en avant votre projet
-                </p>
-                {/* <img
-                  className="no-votes-student-projects-img"
-                  src={NoVotesImg}
-                  alt="no-votes-projects-students"
-                /> */}
-              </div>
-            )}
-          </div>
-        </Card>
+                            <Typography>
+                              {jpoData.linkedStudentProject.nameProject}
+                              {" - "}
+                              {jpoData.linkedStudentProject.typeProject}
+                            </Typography>
+                            <Button
+                              onClick={() => {
+                                navigate(
+                                  `/studentprojects/${jpoData?.linkedStudentProject?.id}`
+                                );
+                              }}
+                            >
+                              Voir le projet
+                            </Button>
+                          </ListItem>
+                        </List>
+                      </Collapse>
+                    </List>
+                  ) : (
+                    <div className="no-votes-student-projects-container">
+                      <p className="no-votes-student-projects-p">
+                        Personne n'a encore mis en avant votre projet
+                      </p>
+                      {/* <img
+                        className="no-votes-student-projects-img"
+                        src={NoVotesImg}
+                        alt="no-votes-projects-students"
+                      /> */}
+                    </div>
+                  )}
+                </div>
+              </Grid>
+            </Grid>
+          </Card>
+        ))}
       </div>
     </div>
   );
