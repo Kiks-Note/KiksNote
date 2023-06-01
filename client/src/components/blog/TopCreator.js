@@ -77,7 +77,6 @@ function TopCreatorsChart() {
               "rgba(75, 192, 192, 0.6)",
               "rgba(54, 162, 235, 0.6)",
               "rgba(255, 206, 86, 0.6)",
-
             ],
           },
         ],
@@ -105,7 +104,9 @@ function TopCreatorsChart() {
       setParticipantDetail(response.data);
 
       const userDetails = response.data;
-      const labels = userDetails.map((user) => user.firstname + " " + user.lastname);
+      const labels = userDetails.map(
+        (user) => user.firstname + " " + user.lastname
+      );
 
       setTopCreatorsData((prevData) => ({
         ...prevData,
@@ -125,10 +126,6 @@ function TopCreatorsChart() {
           data={topCreatorsData}
           options={{
             plugins: {
-              title: {
-                display: true,
-                text: "Top 10 des créateurs d'articles",
-              },
               legend: {
                 display: true,
                 position: "bottom",

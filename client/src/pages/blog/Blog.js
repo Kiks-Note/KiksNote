@@ -8,10 +8,20 @@ import { Toaster } from "react-hot-toast";
 import { Rings } from "react-loader-spinner";
 import useFirebase from "../../hooks/useFirebase";
 import axios from "axios";
+import MobileStepper from "@mui/material/MobileStepper";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
+import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
+import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import SwipeableViews from "react-swipeable-views";
+import { autoPlay } from "react-swipeable-views-utils";
+import { useTheme } from "@mui/material/styles";
 import TopCreatorsChart from "../../components/blog/TopCreator.js";
 import MostParticipantsChart from "../../components/blog/TopEvent.js";
+const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 function Blog() {
+  const theme = useTheme();
   const [blog, setBlog] = useState([]);
   const [filteredBlog, setFilteredBlog] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,6 +35,31 @@ function Blog() {
     tags: "",
     sort: "desc",
   });
+
+  const stats = [
+    {
+      label: "Top 10 des créateurs d'articles",
+      component: <TopCreatorsChart />,
+    },
+    {
+      label: "Top des élèves avec le plus de participation",
+      component: <MostParticipantsChart />,
+    },
+  ];
+  const [activeStep, setActiveStep] = useState(0);
+  const maxSteps = 2;
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleStepChange = (step) => {
+    setActiveStep(step);
+  };
   useEffect(() => {
     const ws = new w3cwebsocket("ws://localhost:5050/blog");
 
@@ -47,7 +82,7 @@ function Blog() {
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
-          blog.created_at._nanoseconds / 100000
+            blog.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
@@ -252,8 +287,62 @@ function Blog() {
             )}
           </Grid>
           <Grid item xs={4}>
-            <TopCreatorsChart />
-            <MostParticipantsChart />
+            <Paper
+              square
+              elevation={0}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                pl: 2,
+                bgcolor: "background.default",
+              }}
+            >
+              <Typography variant="h6">{stats[activeStep].label}</Typography>
+            </Paper>
+            <AutoPlaySwipeableViews
+              axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+              index={activeStep}
+              onChangeIndex={handleStepChange}
+              enableMouseEvents
+              interval={2000}
+            >
+              {stats.map((step, index) => (
+                <div key={step.label}>{step.component}</div>
+              ))}
+            </AutoPlaySwipeableViews>
+            <MobileStepper
+              steps={maxSteps}
+              position="static"
+              activeStep={activeStep}
+              nextButton={
+                <Button
+                  size="small"
+                  onClick={handleNext}
+                  disabled={activeStep === stats.length - 1}
+                >
+                  Suivant
+                  {theme.direction === "rtl" ? (
+                    <KeyboardArrowLeft />
+                  ) : (
+                    <KeyboardArrowRight />
+                  )}
+                </Button>
+              }
+              backButton={
+                <Button
+                  size="small"
+                  onClick={handleBack}
+                  disabled={activeStep === 0}
+                >
+                  {theme.direction === "rtl" ? (
+                    <KeyboardArrowRight />
+                  ) : (
+                    <KeyboardArrowLeft />
+                  )}
+                  Précédent
+                </Button>
+              }
+            />
           </Grid>
         </Grid>
       </Box>
