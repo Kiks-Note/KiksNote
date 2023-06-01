@@ -192,8 +192,52 @@ const createJpo = async (req, res) => {
   }
 };
 
+const linkProjectStudents = async (req, res) => {
+  const jpoId = req.params.jpoId;
+  const studentProjectId = req.body.studentProjectId;
+
+  try {
+    const jpoRef = db.collection("jpo").doc(jpoId);
+    const studentProjectRef = db
+      .collection("students_projects")
+      .doc(studentProjectId);
+
+    const jpoDoc = await jpoRef.get();
+    const studentProjectDoc = await studentProjectRef.get();
+
+    if (!jpoDoc.exists || !studentProjectDoc.exists) {
+      return res
+        .status(404)
+        .send("La jpo ou le projet étudiant n'a pas été trouvé.");
+    }
+
+    const linkedStudentProject = {
+      id: studentProjectId,
+      nameProject: studentProjectDoc.data().nameProject,
+      imgProject: studentProjectDoc.data().imgProject,
+    };
+
+    await jpoRef.update({
+      linkedStudentProject: linkedStudentProject,
+    });
+
+    return res.status(200).json({
+      message: `Le project étudiant ${
+        studentProjectDoc.data().nameProject
+      } a bien été liée à la jpo`,
+      linkedStudentProject: linkedStudentProject,
+    });
+  } catch (err) {
+    console.error(err);
+    throw new Error(
+      "Erreur lors de la création du lien entre le blog tutoriel et le projet."
+    );
+  }
+};
+
 module.exports = {
   getAllJpo,
   getJpoById,
   createJpo,
+  linkProjectStudents,
 };
