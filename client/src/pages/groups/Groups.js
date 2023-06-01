@@ -14,13 +14,16 @@ import { useNavigate } from 'react-router-dom';
 import "./Groups.scss";
 
 function App() {
-    const [columns, setColumns] = useState();
-    const [lock, setLock] = useState(true);
     const [classStudents, setClassStudents] = useState();
-    const [settings, setSettings] = useState();
     const [showSettings, setShowSettings] = useState(false);
     const [inRoom, setInRoom] = useState(false);
+
+    const [settings, setSettings] = useState();
+    const [lock, setLock] = useState(true);
+    const [columns, setColumns] = useState();
     const [nbSPGrp, setNbSPGrp] = useState();
+
+    const [nbUserConnected, setNbUserConnected] = useState(0);
 
     const navigate = useNavigate();
     const { user } = useFirebase();
@@ -53,8 +56,9 @@ function App() {
 
     const fetchAndSetData = useCallback(async () => {
         const colContent = await fetchData();
+        ws.send(JSON.stringify({ type: "updateCol", data: { columns: colContent, class: classStudents } }))
         setColumns(colContent);
-    }, [fetchData]);
+    }, [classStudents, fetchData, ws]);
 
     const LogToExistingRoomStudent = useCallback(async () => {
         try {
@@ -112,7 +116,10 @@ function App() {
             }
 
             if (inRoom) {
-                await fetchAndSetData();
+
+                if (user?.status === "po") {
+                    await fetchAndSetData();
+                }
 
                 document.addEventListener('mousemove', (event) => {
                     const cursorPosition = {
@@ -129,13 +136,20 @@ function App() {
 
                 ws.onmessage = (message) => {
                     const messageReceive = JSON.parse(message.data);
+
                     switch (messageReceive.type) {
-                        case "currentUsers":
-                            console.log(messageReceive.data);
-                            break;
-                        case "nbSPGrp":
-                            console.log(messageReceive.data);
-                            setNbSPGrp(messageReceive.data);
+                        case 'updateRoom':
+                            if (user.status === "etudiant") {
+                                setNbSPGrp(messageReceive.data.currentRoom.SpGrp);
+                                setLock(messageReceive.data.currentRoom.lock);
+                            }
+                            if (messageReceive.data.currentRoom.columns) {
+                                setColumns(messageReceive.data.currentRoom.columns);
+                            }
+                            else {
+                                fetchAndSetData();
+                            }
+                            setNbUserConnected(messageReceive.data.currentRoom.nbUsers);
                             break;
                         default:
                             break;
@@ -155,7 +169,7 @@ function App() {
             document.removeEventListener('mousemove', () => { });
             ws.send(JSON.stringify({ type: 'leaveRoom', data: { userID: user?.id, class: classStudents } }));
         }
-    }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, logToExistingRoom, user?.id, user?.status, ws]);
+    }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, lock, logToExistingRoom, user?.id, user.status, ws]);
 
     function moveOnClick(columnId, student, columns) {
         columns[columnId].items.push(student);
@@ -185,6 +199,9 @@ function App() {
                     items: destItems,
                 },
             });
+
+            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: { ...columns, [source.droppableId]: { ...sourceColumn, items: sourceItems }, [destination.droppableId]: { ...destColumn, items: destItems } }, class: classStudents } }));
+
         } else if (source.index !== destination.index) {
             const column = columns[source.droppableId];
             const copiedItems = [...column.items];
@@ -199,6 +216,18 @@ function App() {
                 },
             });
 
+            ws.send(JSON.stringify({
+                type: 'updateCol', data: {
+                    columns: {
+                        ...columns,
+                        [source.droppableId]: {
+                            ...column,
+                            items: copiedItems,
+                        },
+                    }, class: classStudents
+                }
+            }));
+
             // move the item directly to the clicked column
             const columnId = destination.droppableId;
             const student = columns[columnId].items[destination.index];
@@ -212,10 +241,10 @@ function App() {
     }
 
     function generateGroupCase(event) {
-        if (!isNaN(event.target.value) && event.target.value) {
+        if ((!isNaN(event.target.value) && event.target.value)) {
             const number = event.target.value;
             setNbSPGrp(number);
-            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { number: number, class: classStudents } }));
+            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { nbSPGrp: number, class: classStudents, status: user.status } }));
             const numberOfStudents = columns.students.items.length;
 
             let copiedColContent = { ...columns };
@@ -234,11 +263,13 @@ function App() {
             }
 
             setColumns(copiedColContent);
+            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents } }));
         } else {
             //TODO make a toast here
             fetchAndSetData();
         }
     }
+
     function shuffle(array) {
         let currentIndex = array.length,
             randomIndex;
@@ -272,6 +303,7 @@ function App() {
 
     async function saveGroups() {
         setLock(true);
+        ws.send(JSON.stringify({ type: 'lock', data: { class: classStudents, lock: true, status: user.status } }))
         var groupsKey = Object.keys(columns).filter((key) => key.startsWith("g"));
 
         groupsKey.forEach(group => {
@@ -295,17 +327,17 @@ function App() {
     }
 
     function randomGeneration() {
-        setNbSPGrp(parseInt(document.querySelector('input[type="text"]').value)); // Number of students per groups
+
         if (!nbSPGrp) {
             alert(
                 "Merci de renseigner d'abord le nombre de groupe d'élèves par groupe souhaité"
             );
-        } else {
+        }
+        else {
 
             const numberOfStudents = columns.students.items.length;
-            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { number: nbSPGrp, class: classStudents } }));
 
-            let copiedColContent = { ...fetchData() };
+            let copiedColContent = { ...columns };
 
             let numberOfCase = Math.floor(numberOfStudents / nbSPGrp);
 
@@ -351,15 +383,20 @@ function App() {
             }
             columns[students[0]].items = [];
             setColumns({ ...columns });
+            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: columns, class: classStudents } }));
         }
     }
 
     function lockGroups() {
         if (lock) {
             setLock(false);
+            console.log("LOCK");
+            ws.send(JSON.stringify({ type: 'lock', data: { class: classStudents, lock: false, status: user.status } }))
         }
         else {
             setLock(true);
+            console.log("UNLOCK");
+            ws.send(JSON.stringify({ type: 'lock', data: { class: classStudents, lock: true, status: user.status } }))
         }
     }
 
@@ -381,6 +418,7 @@ function App() {
         <>
             {inRoom ? <div>
                 {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
+                <p>Utilisateur connectés: {nbUserConnected}</p>
                 {user?.status === "po" ?
                     <div className="groups-inputs">
                         <input
@@ -406,7 +444,9 @@ function App() {
                             <SettingsIcon className="icon-svg" />
                         </button>
                     </div>
-                    : null}
+                    : <div>
+                        <p>Nombre d'élèves par groupe : {nbSPGrp ? nbSPGrp : "En attente.."}</p>
+                    </div>}
                 <div
                     style={{
                         display: "flex",
@@ -526,6 +566,7 @@ function App() {
                                                                     const student = columns.students.items.pop();
                                                                     moveOnClick(columnId, student, columns);
                                                                     setColumns({ ...columns });
+                                                                    ws.send(JSON.stringify({ type: "updateCol", data: { columns: { ...columns }, class: classStudents } }))
                                                                 }
                                                             }}
                                                         >

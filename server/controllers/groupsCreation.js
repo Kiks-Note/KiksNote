@@ -1,5 +1,6 @@
 const { db } = require("../firebase");
 const moment = require("moment");
+const { client } = require("websocket");
 
 const cursorsPositions = new Map();
 const pastelColors = ["#FFA07A", "#FF7F50", "#FFEE93", "#FCF5C7", "#A0CED9", "#ADF7B6", "#ffb3c6", "#a9def9", "#eccaff"];
@@ -60,9 +61,19 @@ const getRoomPo = async (req, res) => {
 }
 
 const currentRooms = new Map();
+const clients = new Map();
 
 const room = async (connection) => {
 
+    const defaultRoom = { users: new Map(), lock: true, SpGrp: undefined, nbUsers: 0, columns: undefined };
+
+    const sendToAllClients = (message, classStudent) => {
+        const roomClients = clients.get(classStudent) || new Map();
+
+        for (const [UserID, client] of roomClients.entries()) {
+            client.sendUTF(JSON.stringify(message));
+        }
+    };
 
     connection.on("message", (message) => {
         const response = JSON.parse(message.utf8Data);
@@ -73,22 +84,21 @@ const room = async (connection) => {
 
                 cursorsPositions.set(userID, position);
 
-                const roomUsersToUpdate = currentRooms.get(response.data.class) || new Map();
+                const roomUsersToUpdate = currentRooms.get(response.data.class) || defaultRoom;
 
-                roomUsersToUpdate.set(userID, { position: position, color: roomUsersToUpdate.get(userID)?.color });
+                roomUsersToUpdate.users.set(userID, { position: position, color: roomUsersToUpdate.users.get(userID)?.color });
 
                 currentRooms.set(response.data.class, roomUsersToUpdate);
 
-
-                const roomUsersUpdated = currentRooms.get(response.data.class);
-                
                 const message = {
-                    type: "currentUsers",
+                    type: "updateRoom",
                     data: {
-                        users: roomUsersUpdated,
+                        currentRoom: currentRooms.get(response.data.class),
+                        class: response.data.class,
                     },
                 }
-                    connection.send(JSON.stringify(message));
+
+                sendToAllClients(message, response.data.class);
 
                 break;
             case "createRoom":
@@ -97,51 +107,128 @@ const room = async (connection) => {
                     po_id: response.data.po_id,
                     class: response.data.class,
                 });
-                currentRooms.set(response.data.class, new Map());
+                currentRooms.set(response.data.class, defaultRoom);
 
                 break;
             case "joinRoom":
-                const roomUsers = currentRooms.get(response.data.class) || new Map();
+                console.log("joinRoom");
+                const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
 
-                if (roomUsers.size >= pastelColors.length) {
-                    roomUsers.forEach((userData, userID) => {
+                if (roomUsers.users.size >= pastelColors.length) {
+                    roomUsers.users.forEach((userData, userID) => {
                         const colorIndex = userID % pastelColors.length;
                         const color = pastelColors[colorIndex];
                         userData.color = color;
                     });
                 } else {
-                    const colorIndex = roomUsers.size % pastelColors.length;
+                    const colorIndex = roomUsers.users.size % pastelColors.length;
                     const color = pastelColors[colorIndex];
-                    roomUsers.set(response.data.userID, { position: null, color: color });
+                    roomUsers.users.set(response.data.userID, { position: null, color: color });
                 }
 
                 currentRooms.set(response.data.class, roomUsers);
 
+                const roomClients = clients.get(response.data.class) || new Map();
+
+                roomClients.set(response.data.userID, connection);
+
+                clients.set(response.data.class, roomClients);
+
+                currentRooms.get(response.data.class).nbUsers = roomClients.size;
+
                 const messageJoin = {
-                    type: "currentUsers",
+                    type: "updateRoom",
                     data: {
-                        users: currentRooms.get(response.data.class),
+                        currentRoom: currentRooms.get(response.data.class),
+                        class: response.data.class,
                     }
-                }
-                
-                connection.send(JSON.stringify(messageJoin));
+                };
+
+                sendToAllClients(messageJoin, response.data.class);
+
                 break;
             case "closeRoom":
+                currentRooms.delete(response.data.class);
+
+                let allClientsInRoomClose = clients.get(response.data.class) || new Map();
+                allClientsInRoomClose.delete(connection);
+                clients.set(response.data.class, allClientsInRoomClose);
+
                 break;
             case "leaveRoom":
-                const userRoom = Array.from(currentRooms.entries()).find(([room, users]) =>
-                    users.has(response.data.userID)
-                );
-                if (userRoom) {
-                    const [room, users] = userRoom;
-                    users.delete(response.data.userID);
-                    currentRooms.set(room, users);
+                const userRoom = currentRooms.get(response.data.class) || defaultRoom;
+                userRoom.users.delete(response.data.userID);
+
+                console.log("User left room");
+
+                currentRooms.set(response.data.class, userRoom);
+
+
+                let allClientsInRoomLeave = clients.get(response.data.class) || new Map();
+                allClientsInRoomLeave.delete(connection);
+                clients.set(response.data.class, allClientsInRoomLeave);
+
+                currentRooms.get(response.data.class).nbUsers = clients.get(response.data.class).size;
+
+                const messageLeave = {
+                    type: "updateRoom",
+                    data: {
+                        currentRoom: currentRooms.get(response.data.class),
+                        class: response.data.class,
+                    },
+                };
+
+
+                sendToAllClients(messageLeave, response.data.class);
+
+                break;
+            case "lock":
+
+                if (response.data.status === "po") {
+                    currentRooms.get(response.data.class).lock = response.data.lock;
+
+                    const messageLock = {
+                        type: "updateRoom",
+                        data: {
+                            currentRoom: currentRooms.get(response.data.class),
+                            class: response.data.class,
+                        },
+                    }
+                    console.log("lock: ", messageLock);
+
+                    sendToAllClients(messageLock, response.data.class);
                 }
                 break;
-            case "nbSPGrp":
-                console.log(response.data);
-                connection.send(JSON.stringify({type : "nbSPGrp", data : response.data}));
+            case "columns":
+                console.log("columns: ", response.data);
                 break;
+            case "nbSPGrp":
+                if (response.data.status === "po") {
+                    currentRooms.get(response.data.class).SpGrp = response.data.nbSPGrp;
+
+                    const messageNbSPGrp = {
+                        type: "updateRoom",
+                        data: {
+                            currentRoom: currentRooms.get(response.data.class),
+                            class: response.data.class,
+                        },
+                    }
+
+                    sendToAllClients(messageNbSPGrp, response.data.class);
+                }
+                break;
+            case "updateCol":
+                currentRooms.get(response.data.class).columns = response.data.columns;
+
+                const messageUpdateCol = {
+                    type: "updateRoom",
+                    data: {
+                        currentRoom: currentRooms.get(response.data.class),
+                        class: response.data.class,
+                    }
+                }
+                sendToAllClients(messageUpdateCol, response.data.class);
+
         }
     });
 };
