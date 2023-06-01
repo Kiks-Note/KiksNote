@@ -39,7 +39,12 @@ const upload = multer({
 
 const getAllJpo = async (req, res) => {
   try {
-    const snapshot = await db.collection("jpo").get();
+    const currentDate = new Date();
+    const snapshot = await db
+      .collection("jpo")
+      .where("jpoDayEnd", ">=", currentDate)
+      .get();
+
     const jpoList = [];
     snapshot.forEach((doc) => {
       jpoList.push({
@@ -51,6 +56,29 @@ const getAllJpo = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Erreur lors de la récupération des JPO.");
+  }
+};
+
+const getPastJpo = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const snapshot = await db
+      .collection("jpo")
+      .where("jpoDayEnd", "<", currentDate)
+      .get();
+
+    const jpoList = [];
+    snapshot.forEach((doc) => {
+      jpoList.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+
+    res.status(200).json(jpoList);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération des anciennes JPO.");
   }
 };
 
@@ -237,6 +265,7 @@ const linkProjectStudents = async (req, res) => {
 
 module.exports = {
   getAllJpo,
+  getPastJpo,
   getJpoById,
   createJpo,
   linkProjectStudents,

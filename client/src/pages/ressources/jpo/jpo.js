@@ -4,6 +4,8 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
 
+import moment from "moment";
+
 import {
   Card,
   Typography,
@@ -107,7 +109,13 @@ export default function Jpo() {
                     {jpoData.jpoDescription}
                   </Typography>
                   <Typography sx={{ textAlign: "center" }}>
-                    {jpoData.jpoDayStart} {jpoData.jpoDayEnd}
+                    {moment
+                      .unix(jpoData.jpoDayStart._seconds)
+                      .format("DD.MM.YYYY HH:mm")}
+                    {" - "} 
+                    {moment
+                      .unix(jpoData.jpoDayEnd._seconds)
+                      .format("DD.MM.YYYY HH:mm")}
                   </Typography>
                   {jpoData.linkedStudentProject ? (
                     <List>
