@@ -17,6 +17,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 
 export default function NewBlog({ open, toggleDrawerModify }) {
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [previewImage, setPreviewImage] = useState("");
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -49,6 +50,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
 
   const reset = () => {
     setTitle("");
+    setDescription("");
     setThumbnail(null);
     setPreviewImage("");
     setEditorState(EditorState.createEmpty());
@@ -68,6 +70,10 @@ export default function NewBlog({ open, toggleDrawerModify }) {
 
     if (!thumbnail) {
       errors.thumbnail = "Veuillez sélectionner une image";
+      formIsValid = false;
+    }
+    if (!description) {
+      errors.description = "Veuillez entrer une description";
       formIsValid = false;
     }
 
@@ -100,6 +106,8 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     formData.append("tag", selectedTags);
     formData.append("statut", statut);
     formData.append("visibility", visibility);
+    formData.append("description", description);
+
 
     try {
       const response = await axios.post(
@@ -173,6 +181,20 @@ export default function NewBlog({ open, toggleDrawerModify }) {
             error={errors.title ? true : false}
             helperText={errors.title}
           />
+          <TextField
+            sx={{ marginBottom: 2 }}
+            id="outlined-search"
+            type="text"
+            name="Description"
+            label="Description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            fullWidth
+            InputLabelProps={{ className: "inputLabel" }}
+            InputProps={{ className: "input" }}
+            error={errors.description ? true : false}
+            helperText={errors.description}
+          />
           <div>
             <Autocomplete
               multiple
@@ -203,6 +225,9 @@ export default function NewBlog({ open, toggleDrawerModify }) {
               wrapperClassName="wrapperClassName"
               editorClassName="editorClassName"
               onEditorStateChange={handleEditorChange}
+              localization={{
+                locale: "fr",
+              }}
               editorStyle={{
                 border: "1px solid black",
                 minHeight: "180px",

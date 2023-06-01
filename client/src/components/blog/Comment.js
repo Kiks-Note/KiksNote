@@ -41,14 +41,6 @@ export default function Comment({ tutoId }) {
       })();
   }, [open === true]);
 
-  // const getComments = async () => {
-  //   const response = await axios.get(
-  //     `http://localhost:5050/tuto/${tutoId}/comments`
-  //   );
-  //   setAllComments(response.data);
-  //   // console.log(response.data);
-  // };
-
   const handleClickOpen = (scrollType) => () => {
     setOpen(true);
     setScroll(scrollType);

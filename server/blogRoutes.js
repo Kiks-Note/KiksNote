@@ -24,7 +24,7 @@ module.exports = function (connection, pathname, upload) {
   router.post("/tuto", upload.single("thumbnail"), addNewTuto);
   router.get("/tag", getTags);
   router.put("/:id/visibility", updateBlogVisibility);
-  router.post("/:id/comments", addBlogComment);
+  router.post("/comments", addBlogComment);
   router.delete("/:id", deleteBlog);
   router.get("/:id", getDescriptions);
   router.put("/:id/participant", addParticipant);

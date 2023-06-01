@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { EditorState, convertToRaw } from "draft-js";
 import { Editor } from "react-draft-wysiwyg";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import axios from "axios";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -27,6 +26,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
   const [numSteps, setNumSteps] = useState(1);
   const [showForm, setShowForm] = useState(true);
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [titleStep, setTitleStep] = useState([]);
   const [thumbnail, setThumbnail] = useState(null);
   const [previewImage, setPreviewImage] = useState("");
@@ -56,7 +56,6 @@ export default function NewTuto({ open, toggleDrawerModify }) {
       return { id: index, content: content };
     });
 
-    console.log(inputEditorState);
     var statut = "online";
     var visibility = true;
     if (user.status === "etudiant") {
@@ -66,6 +65,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
 
     const tutoData = {
       title: title,
+      description: description,
       editorState: editorStates,
       inputEditorState: inputEditorState,
       inputEditorStateTitle: titleStep,
@@ -138,6 +138,10 @@ export default function NewTuto({ open, toggleDrawerModify }) {
       toast.error("Veuillez sélectionner une miniature globale.");
       return;
     }
+    if (description === null) {
+      toast.error("Veuillez entrer une courte description.");
+      return;
+    }
     let isFormValid = true;
     const titles = [];
     for (let i = 0; i < numSteps; i++) {
@@ -162,6 +166,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
     setNumSteps(1);
     setEditorStates([]);
     setTitle("");
+    setDescription("");
     setTitleStep([]);
     setSelectedTags([]);
     setThumbnail(null);
@@ -220,6 +225,18 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                 InputProps={{ className: "input" }}
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
+              />
+              <TextField
+                sx={{ marginBottom: 2 }}
+                id="outlined-search"
+                type="text"
+                name="Description"
+                label="Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                fullWidth
+                InputLabelProps={{ className: "inputLabel" }}
+                InputProps={{ className: "input" }}
               />
               <div>
                 <Autocomplete
@@ -339,6 +356,18 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                       ...prevStates.slice(activeStep + 1),
                     ])
                   }
+                  localization={{
+                    locale: "fr",
+                  }}
+                  editorStyle={{
+                    border: "1px solid black",
+                    minHeight: "180px",
+                    height: "300px",
+                    padding: "10px",
+                    borderRadius: "5px",
+                    boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+                    marginBottom: "16px",
+                  }}
                   toolbar={{
                     options: [
                       "inline",

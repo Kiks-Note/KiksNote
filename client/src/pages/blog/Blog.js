@@ -91,9 +91,11 @@ function Blog() {
           editorState: blog.editorState,
           inputEditorState: blog.inputEditorState,
           participant: blog.participant,
+          comment: blog.comment,
           statut: blog.statut,
           thumbnail: blog.thumbnail,
           title: blog.title,
+          description: blog.description,
           updated_at: blog.updated_at,
           like: blog.like,
           dislike: blog.dislike,
@@ -102,6 +104,7 @@ function Blog() {
           userIsParticipant: userIsParticipant,
           type: blog.type,
           tag: blog.tag,
+          info_creator: blog.info_creator,
         };
         allBlogs.push(blogFront);
       });
@@ -177,6 +180,7 @@ function Blog() {
                     </svg>
                   </div>
                   <input
+                    className="search_bar_blog "
                     id="search"
                     type="text"
                     name="title"

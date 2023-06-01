@@ -1,15 +1,9 @@
 import {
-  CardHeader,
-  Card,
-  CardActions,
-  CardMedia,
   IconButton,
   Menu,
   MenuItem,
 } from "@mui/material";
 import Button from "@mui/material/Button";
-import Typography from "@mui/material/Typography";
-import { Grid } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
@@ -17,9 +11,7 @@ import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Comment from "./Comment";
 import { useNavigate } from "react-router-dom";
-import PopUpBlog from "./PopUpBlog";
 import useFirebase from "../../hooks/useFirebase";
 import "./cardBlog.css";
 export default function CardBlog({ blog }) {
@@ -102,14 +94,12 @@ export default function CardBlog({ blog }) {
           <></>
         )}
         <div class="card-img-holder">
+        <span class="blog-time">{blog.created_at} </span>
           <img src={blog.thumbnail} alt={blog.thumbnail} />
         </div>
 
-        <span class="blog-time">{blog.created_at} </span>
-        {/* <p class="description">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam
-          sagittis viverra turpis, non cursus ex accumsan at.
-        </p> */}
+        
+        <p class="description">{blog.description}</p>
         <div class="options">
           <button class="like__btn" onClick={handleLike}>
             <span id="icon">
@@ -135,7 +125,7 @@ export default function CardBlog({ blog }) {
           <Button size="small" onClick={handleClick}>
             Consulter
           </Button>
-          { blog.type != "blog" ? (
+          {blog.type != "blog" ? (
             <></>
           ) : (
             <Button

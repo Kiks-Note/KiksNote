@@ -50,7 +50,7 @@
   align-items: center;
 }
 
-input {
+.search_bar_blog {
   height: 42px;
   padding: 0;
   padding-left: 8px;
@@ -76,4 +76,26 @@ input:focus {
 .search_btn {
   margin-top: 40px;
   text-align: center;
+}
+
+
+/* WYNSIG*/
+
+.rdw-dropdown-selectedtext {
+    color: black;
+}
+.rdw-dropdownoption-default {
+    color: black;
+}
+.rdw-colorpicker-modal-style-label {
+    color: black;
+}
+.rdw-link-modal-label {
+    color: black;
+}
+.rdw-link-modal-target-option {
+    color: black;
+}
+.rdw-embedded-modal {
+    color: black;
 }

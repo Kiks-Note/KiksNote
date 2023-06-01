@@ -9,8 +9,9 @@ import {
   CardMedia,
   CardContent,
 } from "@mui/material";
-import { EditorState, ContentState } from "draft-js";
-import htmlToDraft from "html-to-draftjs";
+import DisplayComment from "../../components/blog/DisplayComment";
+import CreateComment from "../../components/blog/CreateComment";
+
 
 function DetailBlog() {
   const [data, setData] = useState(null);
@@ -49,6 +50,11 @@ function DetailBlog() {
         </Card>
       )}
       <br />
+      <CreateComment tutoId={id} />
+      {data &&
+        data.comment &&
+        Array.isArray(data.comment) &&
+        data.comment.map((comment) => <DisplayComment comment={comment} />)}
 
       <Button
         variant="contained"

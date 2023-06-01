@@ -4,6 +4,7 @@ const { db, FieldValue } = require("../firebase");
 const addNewBlog = async (req, res) => {
   const {
     title,
+    description,
     editorState,
     inputEditorState,
     created_by,
@@ -18,12 +19,14 @@ const addNewBlog = async (req, res) => {
 
     await db.collection("blog").doc().set({
       title: title,
+      description: description,
       thumbnail: imagebackgroundTmp,
       editorState: editorState,
       inputEditorState: inputEditorState,
       statut: statut,
       created_by: created_by,
       participant: [],
+      comment: [],
       like: [],
       dislike: [],
       tag: tag,
@@ -41,6 +44,7 @@ const addNewBlog = async (req, res) => {
 const addNewTuto = async (req, res) => {
   const {
     title,
+    description,
     editorState,
     inputEditorState,
     created_by,
@@ -50,9 +54,6 @@ const addNewTuto = async (req, res) => {
     visibility,
     inputEditorStateTitle,
   } = JSON.parse(req.body.tutoData);
-
-  console.log(req.body.tutoData);
-  console.log(title);
   try {
     const url = req.protocol + "://" + req.get("host") + "/";
     let imagebackgroundTmp = req.file ? url + req.file.path : "";
@@ -62,6 +63,7 @@ const addNewTuto = async (req, res) => {
       .doc()
       .set({
         title: title,
+        description: description,
         thumbnail: imagebackgroundTmp,
         editorState: editorState,
         inputEditorState: inputEditorState,
@@ -71,6 +73,7 @@ const addNewTuto = async (req, res) => {
         statut: statut,
         created_by: created_by,
         participant: [],
+        comment: [],
         like: [],
         dislike: [],
         tag: tag,
@@ -95,17 +98,46 @@ const updateBlogVisibility = async (req, res) => {
 
 // Add Blog Comment
 const addBlogComment = async (req, res) => {
-  await db
-    .collection("blog_tutos")
-    .doc(req.params.id)
-    .collection("comment")
-    .add({
-      content: req.body.message,
+  const blogId = req.body.id;
+  const message = req.body.message;
+  const userId = req.body.userId;
+
+  try {
+    const commentData = {
+      content: message,
       date: new Date(),
-      user_id: 12,
-      user_status: "etudiant",
-    });
+      user_id: userId,
+    };
+
+    const blogRef = db.collection("blog_tutos").doc(blogId);
+
+    // Récupérer le document du blog
+    const blogSnapshot = await blogRef.get();
+
+    if (blogSnapshot.exists) {
+      const blogData = blogSnapshot.data();
+
+      // Vérifier si le champ comment existe déjà dans le document du blog
+      if (blogData.comment && Array.isArray(blogData.comment)) {
+        // Ajouter le nouveau commentaire au tableau existant
+        blogData.comment.push(commentData);
+      } else {
+        // Créer un nouveau tableau avec le commentaire initial
+        blogData.comment = [commentData];
+      }
+
+      // Mettre à jour le document du blog avec le nouveau tableau de commentaires
+      await blogRef.update(blogData);
+      res.status(200).send("Commentaire ajouté avec succès.");
+    } else {
+      res.status(404).send("Blog non trouvé.");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Erreur interne du serveur.");
+  }
 };
+
 //delete  Blog
 const deleteBlog = async (req, res) => {
   await db.collection("blog").doc(req.params.id).delete();
@@ -151,6 +183,7 @@ const addParticipant = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 
 const getParticipant = async (req, res) => {
   try {
@@ -273,7 +306,6 @@ const addDislike = async (req, res) => {
 
 const getTopCreators = async (req, res) => {
   try {
-    console.log("Je récupère les top créateurs");
     const creatorsSnapshot = await db
       .collection("blog")
       .orderBy("created_by")
@@ -308,7 +340,6 @@ const getTopCreators = async (req, res) => {
 };
 
 const getBlogParticipants = async (req, res) => {
-  console.log("Je récupère les top particiapnts");
   try {
     const snapshot = await db.collection("blog").get();
     const participantsCount = new Map();
@@ -343,17 +374,6 @@ const getBlogParticipants = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
 const getTags = async (req, res) => {
   try {
     const snapshot = await db.collection("blog_tag").get();
@@ -377,18 +397,38 @@ const blogRequests = async (connection) => {
   blogRef.orderBy("created_at", "desc").onSnapshot(
     (snapshot) => {
       const documents = [];
-      snapshot.forEach((doc) => {
+      snapshot.forEach(async (doc) => {
         const blogData = doc.data();
         const blogId = doc.id;
-        documents.push({ id: blogId, ...blogData });
+
+        // Récupérer l'utilisateur associé au champ "created_by"
+        const userRef = db.collection("users").doc(blogData.created_by);
+        const userDoc = await userRef.get();
+
+        if (userDoc.exists) {
+          const userData = userDoc.data();
+
+          // Ajouter les informations d'image, de nom et de prénom à l'objet blogData
+          blogData.info_creator = [
+            userData.image,
+            userData.lastname,
+            userData.firstname,
+          ];
+
+          documents.push({ id: blogId, ...blogData });
+        } else {
+          console.log("Utilisateur introuvable");
+        }
+
+        connection.sendUTF(JSON.stringify(documents));
       });
-      connection.sendUTF(JSON.stringify(documents));
     },
     (err) => {
       console.log(err);
     }
   );
 };
+
 module.exports = {
   addBlogComment,
   updateBlogVisibility,
