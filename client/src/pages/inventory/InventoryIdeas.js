@@ -25,6 +25,8 @@ const InventoryIdeas = () => {
             `http://localhost:5050/inventory/ideas`
           );
 
+          console.log(response.data);
+
           if (params.status === "treated") {
             setIdeas(
               response.data.filter((idea) =>
@@ -34,7 +36,20 @@ const InventoryIdeas = () => {
           } else if (params.status === "pending") {
             setIdeas(response.data.filter((idea) => idea.status === "pending"));
           } else {
-            setIdeas(response.data);
+            setIdeas(
+              response.data.sort((a, b) => {
+                if (a.status === "pending" && b.status !== "pending") {
+                  return -1; // a comes before b
+                } else if (a.status !== "pending" && b.status === "pending") {
+                  return 1; // a comes after b
+                } else if (a.status === "accepted" && b.status === "refused") {
+                  return -1; // a comes before b
+                } else if (a.status === "refused" && b.status === "accepted") {
+                  return 1; // a comes after b
+                }
+                return 0; // a and b are equal in terms of sorting
+              })
+            );
           }
 
           console.log(response.data);
