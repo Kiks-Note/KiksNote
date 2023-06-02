@@ -21,19 +21,19 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 function Retrospective() {
 
   const GMDBoard = {
-    think: {
+    Glad: {
       name: "Glad",
       color: "#ff0000",
       params: "1 / 1 / 3 / 3",
       items: [],
     },
-    see: {
+    Mad: {
       name: "Mad",
       color: "#0000ff",
       params: "1 / 3 / 3 / 5",
       items: [],
     },
-    do: {
+    Sad: {
       name: "Sad",
       color: "#9ACD32",
       params: "3 / 1 / 5 / 3",
@@ -42,19 +42,19 @@ function Retrospective() {
   };
 
   const PNABoard = {
-    think: {
+    Positif: {
       name: "Positif",
       color: "#ff0000",
       params: "1 / 1 / 3 / 3",
       items: [],
     },
-    see: {
+    Negatif: {
       name: "Négatif",
       color: "#0000ff",
       params: "1 / 3 / 3 / 5",
       items: [],
     },
-    do: {
+    Axe: {
       name: "Axe d'amélioration",
       color: "#9ACD32",
       params: "3 / 1 / 5 / 3",
@@ -63,25 +63,25 @@ function Retrospective() {
   };
 
   const FourLBoard = {
-    think: {
+    Liked: {
       name: "Liked",
       color: "#ff0000",
       params: "1 / 1 / 3 / 3",
       items: [],
     },
-    see: {
+    Learned: {
       name: "Learned",
       color: "#0000ff",
       params: "1 / 3 / 3 / 5",
       items: [],
     },
-    do: {
+    Lacked: {
       name: "Lacked",
       color: "#9ACD32",
       params: "3 / 1 / 5 / 3",
       items: [],
     },
-    hear: {
+    Longed: {
       name: "Longed",
       color: "#FFFF00",
       params: "3 / 3 / 5 / 5",
@@ -91,14 +91,18 @@ function Retrospective() {
 
 
 
-    const [open, setOpen] = useState(false);
-    const [retroModel, setRetroModel] = useState('Model de retro')
-    const [message, setMessage] = useState("");
-    const [seconds, setSeconds] = useState(0);
-    const [columns, setColumns] = useState(null);
-    const [showTextField, setShowTextField] = useState(false);
-    const [newPostItContent, setNewPostItContent] = useState("");
-    const [selectedColumnId, setSelectedColumnId] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [openPostItEdit, setOpenPostItEdit] = useState(false);
+  const [postItText, setPostItText] = useState("");
+  const [categorie, setCategorie] = useState("")
+  const [selectedPostItIndex, setSelectedPostItIndex] = useState();
+  const [retroModel, setRetroModel] = useState('Model de retro')
+  const [message, setMessage] = useState("");
+  const [seconds, setSeconds] = useState(0);
+  const [columns, setColumns] = useState(null);
+  const [showTextField, setShowTextField] = useState(false);
+  const [newPostItContent, setNewPostItContent] = useState("");
+  const [selectedColumnId, setSelectedColumnId] = useState(null);
 
 
   const handleClickAddButton = (columnId) => {
@@ -108,6 +112,46 @@ function Retrospective() {
   const cancelClick = () => {
     setShowTextField(false);
   };
+
+  const g = () => {
+    let o = { ...columns }
+
+
+    console.log(o);
+
+    o[categorie]["items"][selectedPostItIndex]["content"] = postItText
+    setColumns(o)
+
+    handleCloseEditPostIt();
+
+  }
+  const f = (obj, i) => {
+    console.log("33333");
+    console.log(obj);
+    if (obj["name"] == "Glad") {
+      setCategorie("Glad")
+    } else if (obj["name"] == "Mad") {
+      setCategorie("Mad")
+    } else if (obj["name"] == "Sad") {
+      setCategorie("Sad")
+    } else if (obj["name"] == "Positif") {
+      setCategorie("Positif")
+    } else if (obj["name"] == "Négatif") {
+      setCategorie("Negatif")
+    } else if (obj["name"] == "Axe d'amélioration") {
+      setCategorie("Axe")
+    } else if (obj["name"] == "Liked") {
+      setCategorie("Liked")
+    } else if (obj["name"] == "Learned") {
+      setCategorie("Learned")
+    } else if (obj["name"] == "Longed") {
+      setCategorie("Longed")
+    } else if (obj["name"] == "Lacked") {
+      setCategorie("Lacked")
+    } 
+    handleClickOpenEditPostIt();
+    setSelectedPostItIndex(i)
+  }
 
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
@@ -175,20 +219,29 @@ function Retrospective() {
 
 
   const handleClickOpen = () => {
-      setOpen(true);
-    };
+    setOpen(true);
+  };
+
+  const handleClickOpenEditPostIt = () => {
+    setOpenPostItEdit(true)
+  };
 
   const handleClose = () => {
-      setOpen(false);
-    };
+    setOpen(false);
+  };
+
+  const handleCloseEditPostIt = () => {
+    setOpenPostItEdit(false);
+  };
+
 
   const handleValidate = (e) => {
     let value = e.target.value;
     if (value == "GMDBoard") {
-      setColumns(GMDBoard) 
-    } else if( value == "fourLBoard" ) {
+      setColumns(GMDBoard)
+    } else if (value == "fourLBoard") {
       setColumns(FourLBoard)
-    } else if ( value == "PNABoard" ) {
+    } else if (value == "PNABoard") {
       setColumns(PNABoard)
     }
     setRetroModel(e.target.value)
@@ -205,192 +258,214 @@ function Retrospective() {
 
   return (
     <div>
-        <h2> Retrospective </h2>
+      <h2> Retrospective </h2>
 
-        <div>
-      <Button
-        variant="outlined"
-        onClick={handleClickOpen}
-        sx={{ marginRight: 1 }}
-      >
-        Créer une rétrospective
-      </Button>
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        fullWidth={true}
-        maxWidth={"sm"}
-      >
-        <DialogTitle>Créer une nouvelle retrospective</DialogTitle>
-        <DialogContent>
-        <InputLabel id="demo-simple-select-label">Type de representation</InputLabel>
-        <Select
-            labelId="model-retro-select-label"
-            id="model-retro-select"
-            value={retroModel} 
-            label="model de retro"
-            onChange={handleValidate}
+      <div>
+        <Button
+          variant="outlined"
+          onClick={handleClickOpen}
+          sx={{ marginRight: 1 }}
         >
-            <MenuItem value="GMDBoard">Glad, Mad, Sad</MenuItem>
-            <MenuItem value="fourLBoard">4L</MenuItem>
-            <MenuItem value="PNABoard">Positif, Negatif, Axe d'amélioration</MenuItem>
-        </Select>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Annuler</Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-    <div>
-        { board }
-    </div>
+          Créer une rétrospective
+        </Button>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          fullWidth={true}
+          maxWidth={"sm"}
+        >
+          <DialogTitle>Créer une nouvelle retrospective</DialogTitle>
+          <DialogContent>
+            <InputLabel id="demo-simple-select-label">Type de representation</InputLabel>
+            <Select
+              labelId="model-retro-select-label"
+              id="model-retro-select"
+              value={retroModel}
+              label="model de retro"
+              onChange={handleValidate}
+            >
+              <MenuItem value="GMDBoard">Glad, Mad, Sad</MenuItem>
+              <MenuItem value="fourLBoard">4L</MenuItem>
+              <MenuItem value="PNABoard">Positif, Negatif, Axe d'amélioration</MenuItem>
+            </Select>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Annuler</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+      <div>
+        <Dialog
+          open={openPostItEdit}
+          onClose={handleCloseEditPostIt}
+          fullWidth={true}
+          maxWidth={"sm"}
+        >
+          <DialogTitle>Post it</DialogTitle>
+          <DialogContent>
+            <TextField placeholder="Veuillez écrire votre texte ici"
+              fullWidth
+              onChange={(e) => setPostItText(e.target.value)}
+            ></TextField>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={g} >Modifier</Button>
+            <Button onClick={handleCloseEditPostIt}>Annuler</Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+      <div>
+        {board}
+      </div>
 
-     { columns !== null ? (<div
-          className="parent"
-          id="pdf-content"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gridTemplateRows: "repeat(4, 1fr)",
-            gridColumnGap: "10px",
-            gridRowGap: "10px",
-            height: "90vh",
-          }}
+      {columns !== null ? (<div
+        className="parent"
+        id="pdf-content"
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 1fr)",
+          gridTemplateRows: "repeat(4, 1fr)",
+          gridColumnGap: "10px",
+          gridRowGap: "10px",
+          height: "90vh",
+        }}
+      >
+
+        <DragDropContext
+          onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
         >
-          
-          <DragDropContext
-            onDragEnd={(result) => onDragEnd(result, columns, setColumns)} 
-          >
-            {Object.entries(columns).map(([columnId, column]) => {
-              return (
+          {Object.entries(columns).map(([columnId, column]) => {
+            return (
+              <div
+                style={{
+                  backgroundColor: column.color,
+                  height: "100%",
+                  gridArea: column.params,
+                  padding: "10px",
+                  borderRadius: "4%",
+                  height: "100%",
+                }}
+                key={columnId}
+              >
                 <div
                   style={{
-                    backgroundColor: column.color,
-                    height: "100%",
-                    gridArea: column.params,
                     padding: "10px",
+                    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
                     borderRadius: "4%",
-                    height: "100%",
+                    display: "flex",
+                    alignItems: "center",
                   }}
-                  key={columnId}
                 >
-                  <div
+                  <Typography
+                    variant="h6"
                     style={{
-                      padding: "10px",
-                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                      borderRadius: "4%",
-                      display: "flex",
-                      alignItems: "center",
+                      fontWeight: "bold",
+                      color: "black",
+                      marginLeft: "5%",
                     }}
                   >
-                    <Typography
-                      variant="h6"
-                      style={{
-                        fontWeight: "bold",
-                        color: "black",
-                        marginLeft: "5%",
-                      }}
-                    >
-                      {column.name}
-                    </Typography>
-                    <IconButton
-                      aria-label="Add"
-                      color="primary"
-                      size="small"
-                      style={{ marginLeft: "auto" }}
-                      onClick={() => handleClickAddButton(columnId)}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  </div>
-
-                  <Droppable droppableId={columnId} key={columnId}>
-                    {(provided, snapshot) => {
-                      return (
-                        <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                          style={{
-                            display: "flex",
-                            background: "#00000030",
-                            minHeight: 30,
-                            maxHeight: "90%",
-                            overflow: "auto",
-                            height: "auto",
-                            borderRadius: "4%",
-                            flexWrap: "wrap",
-                          }}
-                        >
-                          {selectedColumnId === columnId && showTextField ? (
-                            <div className="empathy-post-it empathy-post-it--custom">
-                              <TextField
-                                variant="outlined"
-                                autoFocus
-                                value={newPostItContent}
-                                onChange={handleChange}
-                                style={{ marginRight: "10px" }}
-                                InputProps={{
-                                  style: {
-                                    color: "#130d6b",
-                                    fontFamily: "Permanent Marker, cursive",
-                                  },
-                                }}
-                                placeholder="Saisissez un titre pour cette carte…"
-                              />
-                              <IconButton
-                                aria-label="Add"
-                                color="success"
-                                size="small"
-                                disabled={!newPostItContent}
-                                onClick={() => addPostIt(columnId)}
-                              >
-                                <CheckCircleIcon />
-                              </IconButton>
-                              <IconButton
-                                aria-label="Cancel"
-                                color="error"
-                                size="small"
-                                onClick={cancelClick}
-                              >
-                                <CancelIcon />
-                              </IconButton>
-                            </div>
-                          ) : (
-                            <></>
-                          )}
-                          {column.items.map((item, index) => {
-                            return (
-                              <Draggable
-                                key={item.id}
-                                draggableId={item.id}
-                                index={index}
-                              >
-                                {(provided, snapshot) => {
-                                  return (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                    >
-                                      <PostIt text={item.content} />
-                                    </div>
-                                  );
-                                }}
-                              </Draggable>
-                            );
-                          })}
-                          {provided.placeholder}
-                        </div>
-                      );
-                    }}
-                  </Droppable>
+                    {column.name}
+                  </Typography>
+                  <IconButton
+                    aria-label="Add"
+                    color="primary"
+                    size="small"
+                    style={{ marginLeft: "auto" }}
+                    onClick={() => handleClickAddButton(columnId)}
+                  >
+                    <AddIcon />
+                  </IconButton>
                 </div>
-              );
-            })}
-          </DragDropContext>
-    </div>) : (<></>) }
-                        
-                        
+
+                <Droppable droppableId={columnId} key={columnId}>
+                  {(provided, snapshot) => {
+                    return (
+                      <div
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        style={{
+                          display: "flex",
+                          background: "#00000030",
+                          minHeight: 30,
+                          maxHeight: "90%",
+                          overflow: "auto",
+                          height: "auto",
+                          borderRadius: "4%",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        {selectedColumnId === columnId && showTextField ? (
+                          <div className="empathy-post-it empathy-post-it--custom">
+                            <TextField
+                              variant="outlined"
+                              autoFocus
+                              value={newPostItContent}
+                              onChange={handleChange}
+                              style={{ marginRight: "10px" }}
+                              InputProps={{
+                                style: {
+                                  color: "#130d6b",
+                                  fontFamily: "Permanent Marker, cursive",
+                                },
+                              }}
+                              placeholder="Saisissez un titre pour cette carte…"
+                            />
+                            <IconButton
+                              aria-label="Add"
+                              color="success"
+                              size="small"
+                              disabled={!newPostItContent}
+                              onClick={() => addPostIt(columnId)}
+                            >
+                              <CheckCircleIcon />
+                            </IconButton>
+                            <IconButton
+                              aria-label="Cancel"
+                              color="error"
+                              size="small"
+                              onClick={cancelClick}
+                            >
+                              <CancelIcon />
+                            </IconButton>
+                          </div>
+                        ) : (
+                          <></>
+                        )}
+                        {column.items.map((item, index) => {
+                          return (
+                            <Draggable
+                              key={item.id}
+                              draggableId={item.id}
+                              index={index}
+                            >
+                              {(provided, snapshot) => {
+                                // const [textPostIt , settextPostIt] = item.content;
+                                return (
+                                  <div
+                                    ref={provided.innerRef}
+                                    {...provided.draggableProps}
+                                    {...provided.dragHandleProps}
+                                    onClick={() => f(column, index)}
+                                  >
+                                    <PostIt text={item.content} />
+                                  </div>
+                                );
+                              }}
+                            </Draggable>
+                          );
+                        })}
+                        {provided.placeholder}
+                      </div>
+                    );
+                  }}
+                </Droppable>
+              </div>
+            );
+          })}
+        </DragDropContext>
+      </div>) : (<></>)}
+
+
     </div>
   );
 }
