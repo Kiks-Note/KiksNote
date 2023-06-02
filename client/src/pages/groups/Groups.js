@@ -23,6 +23,8 @@ function App() {
     const [columns, setColumns] = useState();
     const [nbSPGrp, setNbSPGrp] = useState();
 
+    const [userCursors, setUserCursors] = useState();
+
     const [nbUserConnected, setNbUserConnected] = useState(0);
 
     const navigate = useNavigate();
@@ -105,6 +107,11 @@ function App() {
         }
     }, [user?.id, user?.name, ws]);
 
+    function displayUserCursorPositions(users) {
+        const map = new Map(Object.entries(users));
+        setUserCursors(map);
+    }
+
     useEffect(() => {
 
         const handleOpen = async () => {
@@ -139,6 +146,7 @@ function App() {
 
                     switch (messageReceive.type) {
                         case 'updateRoom':
+                            displayUserCursorPositions(messageReceive.data.currentRoom.users);
                             if (user.status === "etudiant") {
                                 setNbSPGrp(messageReceive.data.currentRoom.SpGrp);
                                 setLock(messageReceive.data.currentRoom.lock);
@@ -417,36 +425,38 @@ function App() {
     return (
         <>
             {inRoom ? <div>
-                {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
-                <p>Utilisateur connectés: {nbUserConnected}</p>
-                {user?.status === "po" ?
-                    <div className="groups-inputs">
-                        <input
-                            type="text"
-                            list="students-list"
-                            placeholder="Eleves/groupes"
-                            onChange={generateGroupCase} />
-                        <datalist id="students-list">
-                            <option value={3}></option>
-                            <option value={4}></option>
-                            <option value={5}></option>
-                        </datalist>
-                        <button className="input-button" onClick={resetButton}>
-                            <CachedIcon className="icon-svg" />
-                        </button>
-                        <button className="input-button" onClick={randomGeneration}>
-                            <CasinoIcon className="icon-svg" />
-                        </button>
-                        <button className="input-button">
-                            {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
-                        </button>
-                        <button className="input-button" onClick={settingsPopUp}>
-                            <SettingsIcon className="icon-svg" />
-                        </button>
-                    </div>
-                    : <div>
-                        <p>Nombre d'élèves par groupe : {nbSPGrp ? nbSPGrp : "En attente.."}</p>
-                    </div>}
+                <nav>
+                    {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
+                    <p>Utilisateur connectés: {nbUserConnected}</p>
+                    {user?.status === "po" ?
+                        <div className="groups-inputs">
+                            <input
+                                type="text"
+                                list="students-list"
+                                placeholder="Eleves/groupes"
+                                onChange={generateGroupCase} />
+                            <datalist id="students-list">
+                                <option value={3}></option>
+                                <option value={4}></option>
+                                <option value={5}></option>
+                            </datalist>
+                            <button className="input-button" onClick={resetButton}>
+                                <CachedIcon className="icon-svg" />
+                            </button>
+                            <button className="input-button" onClick={randomGeneration}>
+                                <CasinoIcon className="icon-svg" />
+                            </button>
+                            <button className="input-button">
+                                {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
+                            </button>
+                            <button className="input-button" onClick={settingsPopUp}>
+                                <SettingsIcon className="icon-svg" />
+                            </button>
+                        </div>
+                        : <div>
+                            <p>Nombre d'élèves par groupe : {nbSPGrp ? nbSPGrp : "En attente.."}</p>
+                        </div>}
+                </nav>
                 <div
                     style={{
                         display: "flex",
@@ -456,6 +466,30 @@ function App() {
                         flexWrap: "wrap",
                     }}
                 >
+                    <div>
+                        {userCursors ? (
+                            Array.from(userCursors.entries()).map(([userID, userData]) => {
+                                if (userID !== user?.id) {
+                                    return (
+                                        <div
+                                            key={userID}
+                                            style={{
+                                                position: "absolute",
+                                                left: userData.position?.x,
+                                                top: userData.position?.y,
+                                                width: "10px",
+                                                height: "10px",
+                                                backgroundColor: userData.color,
+                                                borderRadius: "50%",
+                                            }}
+                                        />
+                                    );
+                                } else {
+                                    return null;
+                                }
+                            })
+                        ) : null}
+                    </div>
                     <DragDropContext onDragEnd={onDragEnd}>
                         {Object.entries(columns).map(([columnId, column], index) => {
                             if (index === 0 && (columns.students.items.length > 0)) {
@@ -497,6 +531,7 @@ function App() {
                                                                         index={index}
                                                                     >
                                                                         {(provided, snapshot) => {
+                                                                            console.log(userCursors);
                                                                             return (
                                                                                 <div
                                                                                     ref={provided.innerRef}
@@ -508,7 +543,7 @@ function App() {
                                                                                         boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
                                                                                         backgroundColor: snapshot.isDragging
                                                                                             ? "#7d0229"
-                                                                                            : "#f50057",
+                                                                                            : (userCursors ? userCursors.get(item.id)?.color : "#f50057"),
                                                                                         color: "white",
                                                                                         ...provided.draggableProps.style,
                                                                                     }}

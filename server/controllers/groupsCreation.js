@@ -2,7 +2,6 @@ const { db } = require("../firebase");
 const moment = require("moment");
 const { client } = require("websocket");
 
-const cursorsPositions = new Map();
 const pastelColors = ["#FFA07A", "#FF7F50", "#FFEE93", "#FCF5C7", "#A0CED9", "#ADF7B6", "#ffb3c6", "#a9def9", "#eccaff"];
 
 
@@ -82,8 +81,6 @@ const room = async (connection) => {
             case "cursorPosition":
                 const { userID, position } = response.data;
 
-                cursorsPositions.set(userID, position);
-
                 const roomUsersToUpdate = currentRooms.get(response.data.class) || defaultRoom;
 
                 roomUsersToUpdate.users.set(userID, { position: position, color: roomUsersToUpdate.users.get(userID)?.color });
@@ -93,7 +90,10 @@ const room = async (connection) => {
                 const message = {
                     type: "updateRoom",
                     data: {
-                        currentRoom: currentRooms.get(response.data.class),
+                        currentRoom: {
+                            ...currentRooms.get(response.data.class),
+                            users: Object.fromEntries(currentRooms.get(response.data.class).users)
+                        },
                         class: response.data.class,
                     },
                 }
@@ -139,7 +139,10 @@ const room = async (connection) => {
                 const messageJoin = {
                     type: "updateRoom",
                     data: {
-                        currentRoom: currentRooms.get(response.data.class),
+                        currentRoom: {
+                            ...currentRooms.get(response.data.class),
+                            users: Object.fromEntries(currentRooms.get(response.data.class).users)
+                        },
                         class: response.data.class,
                     }
                 };
@@ -173,7 +176,10 @@ const room = async (connection) => {
                 const messageLeave = {
                     type: "updateRoom",
                     data: {
-                        currentRoom: currentRooms.get(response.data.class),
+                        currentRoom: {
+                            ...currentRooms.get(response.data.class),
+                            users: Object.fromEntries(currentRooms.get(response.data.class).users)
+                        },
                         class: response.data.class,
                     },
                 };
@@ -190,7 +196,10 @@ const room = async (connection) => {
                     const messageLock = {
                         type: "updateRoom",
                         data: {
-                            currentRoom: currentRooms.get(response.data.class),
+                            currentRoom: {
+                                ...currentRooms.get(response.data.class),
+                                users: Object.fromEntries(currentRooms.get(response.data.class).users)
+                            },
                             class: response.data.class,
                         },
                     }
@@ -199,9 +208,6 @@ const room = async (connection) => {
                     sendToAllClients(messageLock, response.data.class);
                 }
                 break;
-            case "columns":
-                console.log("columns: ", response.data);
-                break;
             case "nbSPGrp":
                 if (response.data.status === "po") {
                     currentRooms.get(response.data.class).SpGrp = response.data.nbSPGrp;
@@ -209,7 +215,10 @@ const room = async (connection) => {
                     const messageNbSPGrp = {
                         type: "updateRoom",
                         data: {
-                            currentRoom: currentRooms.get(response.data.class),
+                            currentRoom: {
+                                ...currentRooms.get(response.data.class),
+                                users: Object.fromEntries(currentRooms.get(response.data.class).users)
+                            },
                             class: response.data.class,
                         },
                     }
@@ -223,7 +232,10 @@ const room = async (connection) => {
                 const messageUpdateCol = {
                     type: "updateRoom",
                     data: {
-                        currentRoom: currentRooms.get(response.data.class),
+                        currentRoom: {
+                            ...currentRooms.get(response.data.class),
+                            users: Object.fromEntries(currentRooms.get(response.data.class).users)
+                        },
                         class: response.data.class,
                     }
                 }
