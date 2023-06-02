@@ -29,9 +29,28 @@ import HistoryIcon from "@mui/icons-material/History";
 import "./Jpo.scss";
 
 const useStyles = makeStyles({
-  button: {
+  btnCreateJpo: {
+    backgroundColor: "#7a52e1",
+    color: "white",
+    "&:hover": {
+      backgroundColor: "#7a52e1",
+      fontWeight: "bold",
+    },
+  },
+  btnHistory: {
+    backgroundColor: "#e70062",
+    color: "white",
     "&:hover": {
       backgroundColor: "#e70062",
+      fontWeight: "bold",
+    },
+  },
+  btnDetailJpo: {
+    backgroundColor: "#D1229D",
+    color: "white",
+    "&:hover": {
+      backgroundColor: "#D1229D",
+      fontWeight: "bold",
     },
   },
 });
@@ -137,11 +156,7 @@ const Jpo = () => {
           <div>
             <Button
               variant="contained"
-              sx={{
-                backgroundColor: "#7a52e1",
-                color: "white",
-                fontWeight: "bold",
-              }}
+              className={classes.btnCreateJpo}
               onClick={handleClickOpen}
               disableElevation
             >
@@ -165,6 +180,7 @@ const Jpo = () => {
               handleRemove={handleRemove}
               pdfUrl={pdfUrl}
               setPdfUrl={setPdfUrl}
+              btnCreateJpo={classes.btnCreateJpo}
             />
           </div>
         ) : (
@@ -177,12 +193,7 @@ const Jpo = () => {
           <Button
             variant="contained"
             disableElevation
-            sx={{
-              backgroundColor: "#e70062",
-              color: "white",
-              fontWeight: "bold",
-            }}
-            className={classes.button}
+            className={classes.btnHistory}
             onClick={() => {
               navigate(`/jpo/history`);
             }}
@@ -272,13 +283,18 @@ const Jpo = () => {
                       <p className="no-votes-student-projects-p">
                         Il n'y a pas encore de projet mis en avant
                       </p>
-                      {/* <img
-                        className="no-votes-student-projects-img"
-                        src={NoVotesImg}
-                        alt="no-votes-projects-students"
-                      /> */}
                     </div>
                   )}
+                  <div className="btn-details-jpo-container">
+                    <Button
+                      className={classes.btnDetailJpo}
+                      onClick={() => {
+                        navigate(`/jpo/${jpoData.id}`);
+                      }}
+                    >
+                      Détails
+                    </Button>
+                  </div>
                 </div>
               </Grid>
             </Grid>
