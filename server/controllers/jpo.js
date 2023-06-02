@@ -178,12 +178,16 @@ const createJpo = async (req, res) => {
                 expires: "03-17-2025",
               });
 
-              jpoData.linkCommercialBrochure = FieldValue.arrayUnion({
+              const pdfBuffer = fs.readFileSync(pdfFilePath);
+              const pdfBase64 = pdfBuffer.toString("base64");
+
+              jpoData.linkCommercialBrochure = {
                 url: pdfUrl.toString(),
                 name: pdfFileName,
                 type: pdfFileType,
                 size: pdfFileSize,
-              });
+                pdfBase64: pdfBase64,
+              };
 
               const jpoRef = await db.collection("jpo").add(jpoData);
               const newJPO = await jpoRef.get();
