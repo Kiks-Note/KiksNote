@@ -1,35 +1,34 @@
 import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Blog from "./pages/blog/Blog";
-import Presence from "./pages/presence/Presence";
-import Groups from "./pages/groups/Groups";
-import PrivateRoutes from "./utils/PrivateRoutes";
 import Tuto from "./pages/blog/Tuto";
+import TabBoard from "./pages/board_scrum/tabs/TabBoard";
+import Groups from "./pages/groups/Groups";
+import NotFound from "./pages/not_found/NotFound";
+import Presence from "./pages/presence/Presence";
+import Profil from "./pages/profil/Profil";
+import StudentsProjectsInfo from "./pages/ressources//students_project/StudentProjectInfo";
+import StudentsProjects from "./pages/ressources//students_project/StudentsProjects";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
-import PublicRoutes from "./utils/PublicRoutes";
-import Profil from "./pages/profil/Profil";
-import NotFound from "./pages/not_found/NotFound";
-import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Jpo from "./pages/ressources/jpo/jpo";
-import StudentsProjects from "./pages/ressources//students_project/StudentsProjects";
-import StudentsProjectsInfo from "./pages/ressources//students_project/StudentProjectInfo";
+import PrivateRoutes from "./utils/PrivateRoutes";
+import PublicRoutes from "./utils/PublicRoutes";
 
 import Agile from "./pages/agile/Agile";
+import EmpathyMap from "./pages/agile/EmpathyMap";
+import Personas from "./pages/agile/Personas";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
+import DeviceHistory from "./pages/inventory/DeviceHistory";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
 import InventoryDevices from "./pages/inventory/InventoryDevices";
 import InventoryHome from "./pages/inventory/InventoryHome";
+import InventoryIdeas from "./pages/inventory/InventoryIdeas";
 import InventoryList from "./pages/inventory/InventoryList";
 import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
-import DeviceHistory from "./pages/inventory/DeviceHistory";
-import EmpathyMap from "./pages/agile/EmpathyMap";
-import Personas from "./pages/agile/Personas";
-import InventoryIdeasNotTreated from "./pages/inventory/InventoryIdeasNotTreated";
-import InventoryIdeas from "./pages/inventory/InventoryIdeas";
 
 function RoutesProvider() {
   return (
@@ -67,11 +66,9 @@ function RoutesProvider() {
           <Route path="/agile/persona" element={<Personas />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
-          <Route
-            path="/inventory/ideasnotTreated"
-            element={<InventoryIdeasNotTreated />}
-          />
           <Route path="/inventory/ideas" element={<InventoryIdeas />} />
+          <Route path="/inventory/ideas/:status" element={<InventoryIdeas />} />
+          <Route path="/inventory/ideas/:status" element={<InventoryIdeas />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
           <Route path="/inventory/devices" element={<InventoryDevices />} />
           <Route

@@ -13,7 +13,7 @@ const GridData = ({columns, rows}) => {
         fontSize: 14,
         textOverflow: "ellipsis",
         overflow: "hidden",
-        minHeight: 600,
+        minHeight: 650,
       }}
       rows={rows}
       columns={columns}

@@ -419,6 +419,7 @@ const getNotTreatedIdeas = async (req, res) => {
     res.status(500).send(error);
   }
 };
+
 const getIdeas = async (req, res) => {
   try {
     const snapshot = await db.collection("inventory-ideas").get();
@@ -448,6 +449,7 @@ const acceptIdea = async (req, res) => {
 
 const refuseIdea = async (req, res) => {
   const {id} = req.params;
+  console.log(id);
 
   try {
     const docRef = db.collection("inventory-ideas").doc(id);

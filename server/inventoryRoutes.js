@@ -48,8 +48,8 @@ router.get("/deviceRequests/:deviceId", getDeviceRequests);
 router.post("/createIdea", createIdea);
 router.get("/ideas/pending", getNotTreatedIdeas);
 router.get("/ideas", getIdeas);
-router.put("/acceptIdea/:ideaId", acceptIdea);
-router.put("/refuseIdea/:ideaId", refuseIdea);
+router.put("/ideas/:id/accept", acceptIdea);
+router.put("/ideas/:id/refuse", refuseIdea);
 router.delete("/idea/:ideaId", deleteIdea);
 router.get("/ideaByUser/:userId", getIdeaByUser);
 
