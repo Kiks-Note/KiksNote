@@ -113,21 +113,20 @@ function Retrospective() {
     setShowTextField(false);
   };
 
-  const g = () => {
-    let o = { ...columns }
+  const changePostiTText = () => {
+    let selectedColumn = { ...columns }
 
 
-    console.log(o);
+    console.log(selectedColumn);
 
-    o[categorie]["items"][selectedPostItIndex]["content"] = postItText
-    setColumns(o)
+    selectedColumn[categorie]["items"][selectedPostItIndex]["content"] = postItText
+    setColumns(selectedColumn)
 
     handleCloseEditPostIt();
 
   }
-  const f = (obj, i) => {
-    console.log("33333");
-    console.log(obj);
+  const setRightPostItCategorie = (obj, i) => {
+
     if (obj["name"] == "Glad") {
       setCategorie("Glad")
     } else if (obj["name"] == "Mad") {
@@ -309,7 +308,7 @@ function Retrospective() {
             ></TextField>
           </DialogContent>
           <DialogActions>
-            <Button onClick={g} >Modifier</Button>
+            <Button onClick={changePostiTText} >Modifier</Button>
             <Button onClick={handleCloseEditPostIt}>Annuler</Button>
           </DialogActions>
         </Dialog>
@@ -445,7 +444,7 @@ function Retrospective() {
                                     ref={provided.innerRef}
                                     {...provided.draggableProps}
                                     {...provided.dragHandleProps}
-                                    onClick={() => f(column, index)}
+                                    onClick={() => setRightPostItCategorie(column, index)}
                                   >
                                     <PostIt text={item.content} />
                                   </div>
