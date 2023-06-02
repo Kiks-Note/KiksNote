@@ -1,0 +1,77 @@
+.jpo-left-side-section {
+    display: flex;
+    flex-direction: column;
+    width: 60%;
+    padding: 30px;
+}
+
+.list-students-project-linked {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.img-name-project-link-jpo-page {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    width: 65%;
+}
+
+.jpo-right-side-section {
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    justify-content: center;
+    align-items: center;
+}
+
+.jpo-details-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 30px;
+}
+
+.head-jpo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 40px;
+}
+
+.jpo-info-image {
+    width: 50%;
+}
+
+.jpoinfo-sections {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.project-img {
+    width: 15%;
+}
+
+.jpo-pdf {
+    width: 90%;
+}
+
+.no-project-linked {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-project {
+    width: 35%;
+    display: flex;
+    padding: 10px;
+    justify-content: center;
+}
