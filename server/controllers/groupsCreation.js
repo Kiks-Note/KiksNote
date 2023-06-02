@@ -1,9 +1,8 @@
 const { db } = require("../firebase");
 const moment = require("moment");
-const { client } = require("websocket");
 
 const pastelColors = ["#FFA07A", "#FF7F50", "#FFEE93", "#FCF5C7", "#A0CED9", "#ADF7B6", "#ffb3c6", "#a9def9", "#eccaff"];
-
+let indexColor = 0;
 
 const getStudents = async (req, res) => {
     const { classStudents } = req.params;
@@ -114,17 +113,13 @@ const room = async (connection) => {
                 console.log("joinRoom");
                 const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
 
-                if (roomUsers.users.size >= pastelColors.length) {
-                    roomUsers.users.forEach((userData, userID) => {
-                        const colorIndex = userID % pastelColors.length;
-                        const color = pastelColors[colorIndex];
-                        userData.color = color;
-                    });
-                } else {
-                    const colorIndex = roomUsers.users.size % pastelColors.length;
-                    const color = pastelColors[colorIndex];
-                    roomUsers.users.set(response.data.userID, { position: null, color: color });
+                if (indexColor >= pastelColors.length) {
+                    indexColor = 0;
                 }
+                let color = pastelColors[indexColor];
+                indexColor++;
+
+                roomUsers.users.set(response.data.userID, { position: null, color: color });
 
                 currentRooms.set(response.data.class, roomUsers);
 

@@ -398,12 +398,10 @@ function App() {
     function lockGroups() {
         if (lock) {
             setLock(false);
-            console.log("LOCK");
             ws.send(JSON.stringify({ type: 'lock', data: { class: classStudents, lock: false, status: user.status } }))
         }
         else {
             setLock(true);
-            console.log("UNLOCK");
             ws.send(JSON.stringify({ type: 'lock', data: { class: classStudents, lock: true, status: user.status } }))
         }
     }
@@ -482,7 +480,9 @@ function App() {
                                                 backgroundColor: userData.color,
                                                 borderRadius: "50%",
                                             }}
-                                        />
+                                        >
+                                            {user?.firstname}
+                                        </div>
                                     );
                                 } else {
                                     return null;
