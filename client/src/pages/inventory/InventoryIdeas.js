@@ -52,7 +52,6 @@ const InventoryIdeas = () => {
             );
           }
 
-          console.log(response.data);
           setLoading(false);
         } catch (error) {
           toast.error("Erreur lors du chargement");
