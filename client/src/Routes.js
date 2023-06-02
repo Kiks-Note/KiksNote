@@ -10,7 +10,8 @@ import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";
-import Jpo from "./pages/ressources/jpo/jpo";
+import Jpo from "./pages/ressources/jpo/Jpo";
+import JpoInfo from "./pages/ressources/jpo/JpoInfo";
 import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
 import StudentsProjects from "./pages/ressources//students_project/StudentsProjects";
 import StudentsProjectsInfo from "./pages/ressources//students_project/StudentProjectInfo";
@@ -54,6 +55,7 @@ function RoutesProvider() {
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/jpo" element={<Jpo />} />
+          <Route path="/jpo/:id" element={<JpoInfo />} />
           <Route path="/jpo/history" element={<HistoryJpo />} />
           <Route path="/studentprojects" element={<StudentsProjects />} />
           <Route

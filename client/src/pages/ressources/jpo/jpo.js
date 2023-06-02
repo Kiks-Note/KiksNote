@@ -4,6 +4,8 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
 
+import PdfViewer from "./PdfViewer";
+
 import moment from "moment";
 
 import {
@@ -30,7 +32,7 @@ import HistoryIcon from "@mui/icons-material/History";
 
 import Dropzone from "../Cours/Dropzone";
 
-import "./jpo.scss";
+import "./Jpo.scss";
 
 const useStyles = makeStyles({
   button: {
@@ -59,11 +61,6 @@ const Jpo = () => {
   const rejectedFiles = files.filter((file) => file.errors);
 
   const [pdfUrl, setPdfUrl] = useState(null);
-
-  const handlePdfFileChange = (event) => {
-    const file = event.target.files[0];
-    setPdfUrl(file);
-  };
 
   const handleDrop = useCallback((acceptedFiles) => {
     setFiles((files) => [...files, ...acceptedFiles]);
@@ -240,11 +237,7 @@ const Jpo = () => {
                     )}
                   </div>
                 </form>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handlePdfFileChange}
-                />
+                <PdfViewer pdfUrl={pdfUrl} setPdfUrl={setPdfUrl} />
               </DialogContent>
               <DialogActions>
                 <Button

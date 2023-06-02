@@ -2800,12 +2800,7 @@
   dependencies:
     "@react-pdf-viewer/core" "3.12.0"
 
-"@react-pdf-viewer/core@3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@react-pdf-viewer/core/-/core-3.1.0.tgz#bf3e19d16ce2f9314064d3903a95864f56923bf6"
-  integrity sha512-SyS8uTSYmfy6gDVwCHYycRCpdmALvMY96Hsbvzj+5IS0oWP2P1ImQBPzsONobDjrJVyROYv/+3LPAcYdjhneig==
-
-"@react-pdf-viewer/core@3.12.0":
+"@react-pdf-viewer/core@3.12.0", "@react-pdf-viewer/core@^3.12.0":
   version "3.12.0"
   resolved "https://registry.yarnpkg.com/@react-pdf-viewer/core/-/core-3.12.0.tgz#40dc9bee5bce5281cd9ea62d958e4169b500fa14"
   integrity sha512-8MsdlQJ4jaw3GT+zpCHS33nwnvzpY0ED6DEahZg9WngG++A5RMhk8LSlxdHelwaFFHFiXBjmOaj2Kpxh50VQRg==
