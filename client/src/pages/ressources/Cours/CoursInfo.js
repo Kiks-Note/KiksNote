@@ -510,7 +510,15 @@ const CoursInfo = () => {
                               alignItems: "center",
                             }}
                           >
-                            <h4 style={{ flexGrow: 1 }}>{pdfLink.name}</h4>
+                            <h4
+                              style={{
+                                width: "70%",
+                                wordBreak: "break-all",
+                                whiteSpace: "normal",
+                              }}
+                            >
+                              {pdfLink.name}
+                            </h4>
                             <Button
                               variant="contained"
                               color="primary"
@@ -665,7 +673,15 @@ const CoursInfo = () => {
                               alignItems: "center",
                             }}
                           >
-                            <h4 style={{ flexGrow: 1 }}>{pdfLink.name}</h4>
+                            <h4
+                              style={{
+                                width: "70%",
+                                wordBreak: "break-all",
+                                whiteSpace: "normal",
+                              }}
+                            >
+                              {pdfLink.name}
+                            </h4>
                             <Button
                               variant="contained"
                               color="primary"
