@@ -11,7 +11,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 
-import Card from "./Card";
+import Card from "../../components/agile/Card";
 
 ImpactMapping.propTypes = {
   data: PropTypes.array.isRequired,

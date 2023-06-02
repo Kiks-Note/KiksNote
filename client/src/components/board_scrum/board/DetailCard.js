@@ -404,33 +404,19 @@ export default function DetailCard(props) {
             </div>
           </div>
           <List>
-            <ListItem disablePadding sx={style_item_button}>
-              <ListItemButton onClick={assigneMe}>
-                <ListItemIcon>
-                  <PersonIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary={isAssigned ? "Déjà Rejoint" : "Rejoindre"}
-                  primaryTypographyProps={{ color: "text.default" }}
-                />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={style_item_button}>
-              <ListItemButton
-                onClick={() => {
-                  setShowModal(!showModal);
-                  setType("membres");
-                }}
-              >
-                <ListItemIcon>
-                  <PersonAddIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Membres"
-                  primaryTypographyProps={{ color: "text.default" }}
-                />
-              </ListItemButton>
-            </ListItem>
+            {!allowedColumnIds.includes(props.columnId) && (
+              <ListItem disablePadding sx={style_item_button}>
+                <ListItemButton onClick={assigneMe}>
+                  <ListItemIcon>
+                    <PersonIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={isAssigned ? "Déjà Rejoint" : "Rejoindre"}
+                    primaryTypographyProps={{ color: "text.default" }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            )}
             {!allowedColumnIds.includes(props.columnId) && (
               <ListItem disablePadding sx={style_item_button}>
                 <ListItemButton
@@ -449,7 +435,7 @@ export default function DetailCard(props) {
                 </ListItemButton>
               </ListItem>
             )}
-            {!allowedColumnIds.includes(props.columnId) && (
+            {!["0", "5", "6"].includes(props.columnId) && (
               <ListItem disablePadding sx={style_item_button}>
                 <ListItemButton
                   onClick={() => {

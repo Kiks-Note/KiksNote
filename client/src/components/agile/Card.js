@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -11,7 +12,6 @@ import TextField from "@mui/material/TextField";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
 import {
   addImpactMappingActors,
@@ -27,6 +27,7 @@ import {
   editImpactMappingImpact,
   editImpactMappingDeliverable,
 } from "../../redux/slices/impactMappingSlice";
+import { setActiveTab, addTab } from "../../redux/slices/tabBoardSlice";
 
 import { addImpactMapping } from "./agile";
 
@@ -40,7 +41,6 @@ const BasicCard = ({
   defineColor,
   dashboardId,
 }) => {
-  const navigate = useNavigate();
   const { goals, actors, impacts, deliverables } = useSelector(
     (state) => state.impactMapping
   );
@@ -50,6 +50,7 @@ const BasicCard = ({
   const [id, setId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const uniqueId = uuidv4();
 
   useEffect(() => {
     setColor(defineColor);
@@ -58,20 +59,54 @@ const BasicCard = ({
     setId(dashboardId);
   }, [defineColor, texte, goals, actors, impacts, deliverables, dashboardId]);
   console.log(id);
+  const moveToPersona = () => {
+    const personaTab = {
+      id: "Persona" + id,
+      label: "Persona ",
+      closeable: true,
+      component: "Personas",
+      data: { dashboardId: id },
+    };
+    dispatch(addTab(personaTab));
+    dispatch(setActiveTab(personaTab.id));
+  };
+  const moveToEmpathy = () => {
+    const empathyTab = {
+      id: "Empathy" + id,
+      label: "Empathy ",
+      closeable: true,
+      component: "Empathy",
+      data: { dashboardId: id },
+    };
+    dispatch(addTab(empathyTab));
+    dispatch(setActiveTab(empathyTab.id));
+  };
   const onHandleClick = async () => {
     if (text !== "" && text !== undefined && text !== null) {
       switch (column) {
         case 0:
-          dispatch(addImpactMappingGoals({ text: text, color: color }));
+          dispatch(
+            addImpactMappingGoals({ text: text, color: color, id: uniqueId })
+          );
           break;
         case 1:
-          dispatch(addImpactMappingActors({ text: text, color: color }));
+          dispatch(
+            addImpactMappingActors({ text: text, color: color, id: uniqueId })
+          );
           break;
         case 2:
-          dispatch(addImpactMappingImpacts({ text: text, color: color }));
+          dispatch(
+            addImpactMappingImpacts({ text: text, color: color, id: uniqueId })
+          );
           break;
         case 3:
-          dispatch(addImpactMappingDeliverables({ text: text, color: color }));
+          dispatch(
+            addImpactMappingDeliverables({
+              text: text,
+              color: color,
+              id: uniqueId,
+            })
+          );
           break;
         default:
           break;
@@ -292,7 +327,7 @@ const BasicCard = ({
                     <Button
                       size="small"
                       color="success"
-                      onClick={() => navigate("/agile/empathy-map")}
+                      onClick={() => moveToEmpathy()}
                     >
                       {" "}
                       Allez vers Empathy Map{" "}
@@ -300,7 +335,7 @@ const BasicCard = ({
                     <Button
                       size="small"
                       color="success"
-                      onClick={() => navigate("/agile/persona")}
+                      onClick={() => moveToPersona()}
                     >
                       Allez vers Persona
                     </Button>

@@ -128,10 +128,26 @@ const getZipFolderAgile = async (req, res) => {
     res.status(500).send(err);
   }
 };
+const changeIndex = async (req, res) => {
+  var data = req.body;
+  console.log(data);
+  await db
+    .collection("dashboard")
+    .doc(req.params.dashboardId)
+    .collection("board")
+    .doc(req.params.boardId)
+    .update({
+      think: data[0],
+      see: data[1],
+      do: data[2],
+      hear: data[3],
+    });
+};
 
 module.exports = {
   addImpactMapping,
   getImpactMapping,
   getFoldersAgile,
   getZipFolderAgile,
+  changeIndex,
 };

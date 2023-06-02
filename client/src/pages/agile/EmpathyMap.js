@@ -14,25 +14,21 @@ const taskStatus = {
   think: {
     name: "Penser et ressentir",
     color: "#ff0000",
-    params: "1 / 1 / 3 / 3",
     items: [],
   },
   see: {
     name: "Voir",
     color: "#0000ff",
-    params: "1 / 3 / 3 / 5",
     items: [],
   },
   do: {
     name: "Dire et faire",
     color: "#9ACD32",
-    params: "3 / 1 / 5 / 3",
     items: [],
   },
   hear: {
     name: "Entendre",
     color: "#FFFF00",
-    params: "3 / 3 / 5 / 5",
     items: [],
   },
 };
@@ -172,7 +168,7 @@ export default function EmpathyMap() {
             gridTemplateRows: "repeat(4, 1fr)",
             gridColumnGap: "10px",
             gridRowGap: "10px",
-            height: "90vh",
+            margin: "40px",
           }}
         >
           <DragDropContext
@@ -184,7 +180,6 @@ export default function EmpathyMap() {
                   style={{
                     backgroundColor: column.color,
                     height: "100%",
-                    gridArea: column.params,
                     padding: "10px",
                     borderRadius: "4%",
                     height: "100%",

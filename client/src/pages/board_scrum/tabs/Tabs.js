@@ -8,9 +8,9 @@ import Overview from "../overview/OverView";
 import PdfView from "../overview/PdfView";
 import Board from "../Board";
 import Tooltip from "@material-ui/core/Tooltip";
-import ImpactMapping from "../../../components/agile/ImpactMapping";
+import ImpactMapping from "../../agile/ImpactMapping";
 import Personas from "../../agile/Personas";
-
+import EmpathyMap from "../../agile/EmpathyMap";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveTab } from "../../../redux/slices/tabBoardSlice";
@@ -30,16 +30,11 @@ TabDemo.propTypes = {
   handleClose: PropTypes.func.isRequired,
 };
 
-export default function TabDemo({
-  actualTabs,
-  selectedTab,
-  handleClose,
-}) {
+export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
   const [activeTab, setActiveTabLocal] = useState("Dashboard");
   const [activeTabs, setActiveTabs] = useState([]);
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.tabBoard.tabs);
-
 
   useEffect(() => {
     setActiveTabs(actualTabs);
@@ -47,18 +42,18 @@ export default function TabDemo({
   }, [actualTabs, selectedTab]);
 
   const checkIfActiveTabExists = (tabs, activeTab) => {
-    return tabs.some(tab => tab.id === activeTab);
-  }
+    return tabs.some((tab) => tab.id === activeTab);
+  };
 
   const handleChange = useCallback(
     (event, value) => {
-      console.log('2', value)
+      console.log("2", value);
       if (checkIfActiveTabExists(tabs, value)) {
-        console.log('activeTab existe dans tabs');
+        console.log("activeTab existe dans tabs");
         setActiveTabLocal(value);
         dispatch(setActiveTab(value));
       } else {
-        console.log('activeTab n\'existe pas dans tabs');
+        console.log("activeTab n'existe pas dans tabs");
         setActiveTabLocal(tabs[0].id);
         dispatch(setActiveTab(tabs[0].id));
       }
@@ -116,6 +111,7 @@ export default function TabDemo({
             )}
             {tab.component === "Impact" && <ImpactMapping data={tab.data} />}
             {tab.component === "Personas" && <Personas />}
+            {tab.component === "Empathy" && <EmpathyMap />}
             {/* Ajoutez des conditions pour d'autres composants ici */}
           </TabContainer>
         ) : null

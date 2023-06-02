@@ -14,7 +14,7 @@ import NotFound from "./pages/not_found/NotFound";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Jpo from "./pages/ressources/jpo/jpo";
 import StudentsProjects from "./pages/students_project/StudentsProjects";
-import Agile from "./pages/agile/Agile";
+import FolderAgile from "./pages/agile/FolderAgile";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
@@ -26,8 +26,7 @@ import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
-import EmpathyMap from "./pages/agile/EmpathyMap";
-import Personas from "./pages/agile/Personas";
+
 
 function RoutesProvider() {
   return (
@@ -58,10 +57,7 @@ function RoutesProvider() {
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
           <Route path="/pdfsupport" element={<PDFCourseView />} />
           <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
-          <Route path="/agile" element={<Agile/>}/>
-          {/* <Route path="/:dashboard-id/agile" element={<Agile/>}/> */}
-          <Route path="/agile/empathy-map" element={<EmpathyMap />} />
-          <Route path="/agile/persona" element={<Personas />} />
+          <Route path="/agile" element={<FolderAgile />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
