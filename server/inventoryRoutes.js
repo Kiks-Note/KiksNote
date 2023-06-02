@@ -20,6 +20,7 @@ const {
   updateCategory,
   getDeviceRequests,
   createIdea,
+  getNotTreatedIdeas,
   getIdeas,
   acceptIdea,
   refuseIdea,
@@ -45,6 +46,7 @@ router.delete("/category/:category", deleteCategory);
 router.put("/category/:oldCategory", updateCategory);
 router.get("/deviceRequests/:deviceId", getDeviceRequests);
 router.post("/createIdea", createIdea);
+router.get("/ideas/pending", getNotTreatedIdeas);
 router.get("/ideas", getIdeas);
 router.put("/acceptIdea/:ideaId", acceptIdea);
 router.put("/refuseIdea/:ideaId", refuseIdea);

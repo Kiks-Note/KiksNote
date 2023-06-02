@@ -33,6 +33,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import FaInfoCircle from "@mui/icons-material/Info";
 import {IoIosEye} from "react-icons/io";
 import useFirebase from "../../hooks/useFirebase";
+import BoxStats from "../../components/inventory/BoxStats";
 
 const Item = styled(Paper)(({theme}) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -713,240 +714,45 @@ const InventoryAdminDashboard = () => {
         </Grid> */}
 
         {loading ? (
-          Array.from(new Array(3)).map((_, index) => (
+          Array.from(new Array(6)).map((_, index) => (
             <Skeleton variant="rectangular" width="100%" height={118} />
           ))
         ) : (
-          <div style={{display: "flex", gap: "30px", flexWrap: "wrap"}}>
-            <Box
-              sx={{
-                backgroundColor: "#1A2027",
-                borderRadius: 5,
-                px: 2,
-                py: 3,
-                mt: 2.5,
-                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                width: "20%",
-                alignItems: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Typography
-                sx={{
-                  fontFamily: "poppins-bold",
-                  color: "#fff",
-                  fontSize: 18,
-                  textAlign: "center",
-                }}
-              >
-                Nombre d'idées non traitées
-              </Typography>
-              <Typography
-                sx={{
-                  fontFamily: "poppins-semiBold",
-                  color: "#fff",
-                  fontSize: 30,
-                }}
-              >
-                {ideas.filter((i) => i.status === "pending").length}
-              </Typography>
-              <IconButton
-                onClick={() => navigate("/inventory/admin/borrowed")}
-                sx={{
-                  position: "relative",
-                  top: 20,
-                  right: -70,
-                  opacity: 0.6,
-                }}
-              >
-                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                backgroundColor: "#1A2027",
-                borderRadius: 5,
-                px: 2,
-                py: 3,
-                mt: 2.5,
-                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                width: "20%",
-                alignItems: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Typography
-                sx={{fontFamily: "poppins-bold", color: "#fff", fontSize: 18}}
-              >
-                Nombre d'idées total
-              </Typography>
-              <Typography
-                sx={{
-                  fontFamily: "poppins-semiBold",
-                  color: "#fff",
-                  fontSize: 30,
-                }}
-              >
-                {ideas.length}
-              </Typography>
-              <IconButton
-                onClick={() => navigate("/inventory/admin/borrowed")}
-                sx={{
-                  position: "relative",
-                  top: 20,
-                  right: -70,
-                  opacity: 0.6,
-                }}
-              >
-                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                backgroundColor: "#1A2027",
-                borderRadius: 5,
-                px: 2,
-                py: 3,
-                mt: 2.5,
-                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                width: "20%",
-                alignItems: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Typography
-                sx={{
-                  fontFamily: "poppins-bold",
-                  color: "#fff",
-                  fontSize: 18,
-                  textAlign: "center",
-                }}
-              >
-                Nombre d'idées traitées
-              </Typography>
-              <Typography
-                sx={{
-                  fontFamily: "poppins-semiBold",
-                  color: "#fff",
-                  fontSize: 30,
-                }}
-              >
-                {
-                  ideas.filter((i) => ["accepted", "refuse"].includes(i.status))
-                    .length
+          <>
+            <div style={{display: "flex", gap: "30px", flexWrap: "wrap"}}>
+              <BoxStats
+                label={"Nombre d'idées non traitées"}
+                value={ideas.filter((i) => i.status === "pending").length}
+                onClick={() => navigate("/inventory/ideasnotTreated")}
+              />
+              <BoxStats
+                label={"Nombre d'idées traitées"}
+                value={
+                  ideas.filter((i) =>
+                    ["accepted", "refused"].includes(i.status)
+                  ).length
                 }
-              </Typography>
-              <IconButton
-                onClick={() => navigate("/inventory/admin/borrowed")}
-                sx={{
-                  position: "relative",
-                  top: 20,
-                  right: -70,
-                  opacity: 0.6,
-                }}
-              >
-                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                backgroundColor: "#1A2027",
-                borderRadius: 5,
-                px: 2,
-                py: 3,
-                mt: 2.5,
-                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                width: "20%",
-                alignItems: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Typography
-                sx={{
-                  fontFamily: "poppins-bold",
-                  color: "#fff",
-                  fontSize: 18,
-                  textAlign: "center",
-                }}
-              >
-                Nombre de peripheriques
-              </Typography>
-              <Typography
-                sx={{
-                  fontFamily: "poppins-semiBold",
-                  color: "#fff",
-                  fontSize: 30,
-                }}
-              >
-                {inventory.length}
-              </Typography>
-              <IconButton
+                onClick={() => {}}
+              />
+              <BoxStats
+                label={"Nombre d'idées total"}
+                value={ideas.length}
+                onClick={() => {}}
+              />
+            </div>
+            <div style={{display: "flex", gap: "30px", flexWrap: "wrap"}}>
+              <BoxStats
+                label={"Nombre de peripheriques"}
+                value={inventory.length}
                 onClick={() => navigate("/inventory/admin/list")}
-                sx={{
-                  position: "relative",
-                  top: 20,
-                  right: -70,
-                  opacity: 0.6,
-                }}
-              >
-                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
-              </IconButton>
-            </Box>
-            <Box
-              sx={{
-                backgroundColor: "#1A2027",
-                borderRadius: 5,
-                px: 2,
-                py: 3,
-                mt: 2.5,
-                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
-                width: "20%",
-                alignItems: "center",
-                justifyContent: "center",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <Typography
-                sx={{
-                  fontFamily: "poppins-bold",
-                  color: "#fff",
-                  fontSize: 18,
-                  textAlign: "center",
-                }}
-              >
-                Nombre de peripheriques empruntés
-              </Typography>
-              <Typography
-                sx={{
-                  fontFamily: "poppins-semiBold",
-                  color: "#fff",
-                  fontSize: 30,
-                }}
-              >
-                {inventory.filter((i) => i.status === "borrowed").length}
-              </Typography>
-              <IconButton
+              />
+              <BoxStats
+                label={"Nombre de peripheriques empruntés"}
+                value={inventory.filter((i) => i.status === "borrowed").length}
                 onClick={() => navigate("/inventory/admin/borrowed")}
-                sx={{
-                  position: "relative",
-                  top: 20,
-                  right: -70,
-                  opacity: 0.6,
-                }}
-              >
-                <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.8}} />
-              </IconButton>
-            </Box>
-          </div>
+              />
+            </div>
+          </>
         )}
       </Container>
     </>

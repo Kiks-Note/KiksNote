@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
@@ -28,6 +28,8 @@ import Register from "./pages/register/Register";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import EmpathyMap from "./pages/agile/EmpathyMap";
 import Personas from "./pages/agile/Personas";
+import InventoryIdeasNotTreated from "./pages/inventory/InventoryIdeasNotTreated";
+import InventoryIdeas from "./pages/inventory/InventoryIdeas";
 
 function RoutesProvider() {
   return (
@@ -65,6 +67,11 @@ function RoutesProvider() {
           <Route path="/agile/persona" element={<Personas />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
+          <Route
+            path="/inventory/ideasnotTreated"
+            element={<InventoryIdeasNotTreated />}
+          />
+          <Route path="/inventory/ideas" element={<InventoryIdeas />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
           <Route path="/inventory/devices" element={<InventoryDevices />} />
           <Route

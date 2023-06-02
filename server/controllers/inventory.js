@@ -405,6 +405,20 @@ const createIdea = async (req, res) => {
   }
 };
 
+const getNotTreatedIdeas = async (req, res) => {
+  try {
+    const snapshot = await db
+      .collection("inventory-ideas")
+      .where("status", "==", "pending")
+      .get();
+
+    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+    res.status(200).send(documents);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
 const getIdeas = async (req, res) => {
   try {
     const snapshot = await db.collection("inventory-ideas").get();
@@ -589,6 +603,7 @@ module.exports = {
   updateCategory,
   getDeviceRequests,
   createIdea,
+  getNotTreatedIdeas,
   getIdeas,
   acceptIdea,
   refuseIdea,
