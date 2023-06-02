@@ -76,9 +76,9 @@ export default function CardBlog({ blog }) {
       <div class="card_blog">
         <h3 class="blog-title">{blog.title}</h3>
 
-        {blog.tag &&
+        {/* {blog.tag &&
           Array.isArray(blog.tag) &&
-          blog.tag.map((tag) => <p>{tag}</p>)}
+          blog.tag.map((tag) => <p>{tag}</p>)} */}
 
         {user.id == blog.created_by ? (
           <IconButton

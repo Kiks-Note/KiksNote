@@ -18,6 +18,7 @@ import TopCreatorsChart from "../../components/blog/TopCreator.js";
 import MostParticipantsChart from "../../components/blog/TopEvent.js";
 import SplitButtonChoice from "../../components/blog/SplitButtonChoice";
 import "./Blog.css";
+import { id } from "date-fns/locale";
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 function Blog() {
