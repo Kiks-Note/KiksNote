@@ -119,7 +119,7 @@ function Blog() {
     // Apply filters whenever they change
     let filteredBlogs = blog;
 
-    if (filter.title !== "") {
+    if (filter.title !== ""){
       filteredBlogs = filteredBlogs.filter((blog) =>
         blog.title.toLowerCase().includes(filter.title.toLowerCase())
       );
