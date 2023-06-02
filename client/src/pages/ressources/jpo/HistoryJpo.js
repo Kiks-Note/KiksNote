@@ -119,8 +119,6 @@ const HistoryJpo = () => {
                           >
                             <Typography>
                               {jpoData.linkedStudentProject.nameProject}
-                              {" - "}
-                              {jpoData.linkedStudentProject.typeProject}
                             </Typography>
                             <Button
                               onClick={() => {
