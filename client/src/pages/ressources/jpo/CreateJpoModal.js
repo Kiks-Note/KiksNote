@@ -101,17 +101,11 @@ const CreateJpoModal = (props) => {
           <PdfViewer pdfUrl={props.pdfUrl} setPdfUrl={props.setPdfUrl} />
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={props.handleClose}
-            sx={{ backgroundColor: "#7a52e1", color: "white" }}
-          >
+          <Button onClick={props.handleClose} className={props.btnCreateJpo}>
             Annuler
           </Button>
-          <Button
-            onClick={props.handleSubmit}
-            sx={{ backgroundColor: "#7a52e1", color: "white" }}
-          >
-            Soumettre
+          <Button onClick={props.handleSubmit} className={props.btnCreateJpo}>
+            Publier
           </Button>
         </DialogActions>
       </Dialog>

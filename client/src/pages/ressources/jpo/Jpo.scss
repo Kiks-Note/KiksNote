@@ -33,7 +33,7 @@
 }
 
 .jpo-text {
-    width: 70%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -60,4 +60,9 @@
     flex-direction: column;
     justify-content: center;
     padding-bottom: 10px;
+}
+
+.btn-details-jpo-container {
+    display: flex;
+    justify-content: flex-end;
 }
