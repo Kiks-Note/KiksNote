@@ -240,7 +240,8 @@ const Jpo = () => {
                       .unix(jpoData.jpoDayEnd._seconds)
                       .format("DD.MM.YYYY HH:mm")}
                   </Typography>
-                  {jpoData.linkedStudentProject ? (
+                  {Array.isArray(jpoData.linkedStudentProjects) &&
+                  jpoData.linkedStudentProjects.length > 0 ? (
                     <List>
                       <ListItem button onClick={handleClickProjects}>
                         <ListItemText
@@ -251,39 +252,34 @@ const Jpo = () => {
                       </ListItem>
                       <Collapse in={openProjects} timeout="auto" unmountOnExit>
                         <List disablePadding>
-                          <ListItem
-                            sx={{
-                              padding: "10px 0px",
-                              display: "flex",
-                              flexDirection: "row",
-                              justifyContent: "space-evenly",
-                              borderTop: "1px solid grey",
-                            }}
-                          >
-                            <Typography>
-                              {jpoData.linkedStudentProject.nameProject}
-                              {" - "}
-                              {jpoData.linkedStudentProject.typeProject}
-                            </Typography>
-                            <Button
-                              onClick={() => {
-                                navigate(
-                                  `/studentprojects/${jpoData?.linkedStudentProject?.id}`
-                                );
+                          {jpoData.linkedStudentProjects.map((project) => (
+                            <ListItem
+                              key={project.id}
+                              sx={{
+                                padding: "10px 0px",
+                                display: "flex",
+                                flexDirection: "row",
+                                justifyContent: "space-evenly",
+                                borderTop: "1px solid grey",
                               }}
                             >
-                              Voir le projet
-                            </Button>
-                          </ListItem>
+                              <Typography>{project.nameProject}</Typography>
+                              <Button
+                                onClick={() => {
+                                  navigate(`/studentprojects/${project.id}`);
+                                }}
+                              >
+                                Voir le projet
+                              </Button>
+                            </ListItem>
+                          ))}
                         </List>
                       </Collapse>
                     </List>
                   ) : (
-                    <div className="no-votes-student-projects-container">
-                      <p className="no-votes-student-projects-p">
-                        Il n'y a pas encore de projet mis en avant
-                      </p>
-                    </div>
+                    <p className="no-votes-student-projects-p">
+                      Aucun projet étudiant lié à cette JPO.
+                    </p>
                   )}
                   <div className="btn-details-jpo-container">
                     <Button

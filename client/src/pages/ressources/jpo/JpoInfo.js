@@ -4,7 +4,7 @@ import axios from "axios";
 
 import moment from "moment";
 
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, ListItem } from "@mui/material";
 
 import StudentProjectLinkDialog from "./StudentProjectLinkDialog";
 
@@ -79,6 +79,30 @@ const JpoInfo = () => {
         <Button onClick={handleOpenStudentsProject}>
           Lier à un projet étudiant
         </Button>
+        <div className="list-students-project-linked">
+          <Typography
+            sx={{
+              fontWeight: "bold",
+              padding: "10px",
+            }}
+          >
+            Liste des projets étudiants présentés lors de cette jpo :
+          </Typography>
+          {jpoData?.linkedStudentProjects.map((project) => (
+            <ListItem
+              key={project.id}
+              sx={{
+                padding: "10px 0px",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-evenly",
+                borderTop: "1px solid grey",
+              }}
+            >
+              <Typography>{project.nameProject}</Typography>
+            </ListItem>
+          ))}
+        </div>
       </div>
       <StudentProjectLinkDialog
         open={openStudentsProject}
