@@ -245,15 +245,20 @@ const linkProjectStudents = async (req, res) => {
       imgProject: studentProjectDoc.data().imgProject,
     };
 
+    const existingLinkedStudentProjects =
+      jpoDoc.data().linkedStudentProjects || [];
+
+    existingLinkedStudentProjects.push(linkedStudentProject);
+
     await jpoRef.update({
-      linkedStudentProject: linkedStudentProject,
+      linkedStudentProjects: existingLinkedStudentProjects,
     });
 
     return res.status(200).json({
-      message: `Le project étudiant ${
+      message: `Le projet étudiant ${
         studentProjectDoc.data().nameProject
-      } a bien été liée à la jpo`,
-      linkedStudentProject: linkedStudentProject,
+      } a bien été lié à la jpo`,
+      linkedStudentProjects: existingLinkedStudentProjects,
     });
   } catch (err) {
     console.error(err);
