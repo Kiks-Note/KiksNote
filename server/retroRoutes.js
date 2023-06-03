@@ -1,27 +1,27 @@
 const express = require("express");
-const router = express.Router();
+
 
 const {
-    addRetro,
-    retroRequests,
-    getRetro
+  addRetro,
+  retroRequests,
+  getRetro
 } = require("./controllers/retro");
 
+const retroRoutesWsNotNeeded = () => {
+  const router = express.Router(); // Create a new router instance
 
-
-
-function retroRoutesWsNotNeeded() {
   console.log("in route");
   router.post("/newRetro", addRetro);
   router.get("/getRetro", getRetro);
   return router;
 }
 
-function retroRoutesWsNeeded(connection, pathname) { 
-  //  router.post("/newRetro", addRetro);
+const retroRoutesWsNeeded = (connection, pathname) => {
+  const router = express.Router(); // Create a new router instance
+
   switch (pathname) {
     case "/retro":
-        retroRequests(connection);
+      retroRequests(connection);
       break;
     default:
       break;
@@ -29,6 +29,5 @@ function retroRoutesWsNeeded(connection, pathname) {
 
   return router;
 }
-
 
 module.exports = { retroRoutesWsNotNeeded, retroRoutesWsNeeded };

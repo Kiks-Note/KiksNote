@@ -10,9 +10,6 @@ const http = require("http");
 /// MULTER CONFIG FOR UPLOAD ON SERVER
 const multer = require("multer");
 
-
-const { retroRoutesWsNeeded,retroRoutesWsNotNeeded} = require("./retroRoutes");
-
 const DIR = "uploads/";
 
 const storage = multer.diskStorage({
@@ -42,6 +39,8 @@ var upload = multer({
   },
 });
 
+const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes");
+
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -61,11 +60,14 @@ const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
-//const retroRoutes = require("./retroRoutes");
-
 const groupsRoute = require("./groupsRoutes");
+
+
+const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
+
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
+app.use("/retro", retroRoutesNotNeeded);
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
@@ -76,7 +78,7 @@ wsI.on("request", (request) => {
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
 
-  //app.use("/retro", retroRoutes(connection, pathname));
+  app.use("/retro", retroRoutesWsNeeded(connection, pathname));
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
@@ -87,7 +89,6 @@ wsI.on("request", (request) => {
   });
 });
 
-app.use("/retro", retroRoutesWsNotNeeded)
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
 
