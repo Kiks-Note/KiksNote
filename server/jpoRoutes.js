@@ -7,6 +7,7 @@ const {
   getJpoById,
   createJpo,
   linkProjectStudents,
+  updateJpoById,
   deleteJpoById,
 } = require("./controllers/jpo");
 
@@ -17,6 +18,7 @@ module.exports = function () {
   router.get("/jpo/:id", getJpoById);
   router.post("/jpo", createJpo);
   router.post("/jpo/:jpoId", linkProjectStudents);
+  router.put("/jpo/:jpoId", updateJpoById);
   router.delete("/jpo/:jpoId", deleteJpoById);
   return router;
 };

@@ -272,6 +272,109 @@ const linkProjectStudents = async (req, res) => {
   }
 };
 
+const updateJpoById = async (req, res) => {
+  try {
+    const jpoId = req.params.jpoId;
+    const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd } =
+      req.body;
+
+    const jpoRef = db.collection("jpo").doc(jpoId);
+
+    const jpoDoc = await jpoRef.get();
+
+    if (!jpoDoc.exists) {
+      return res.status(404).send("JPO non trouvée");
+    }
+
+    const jpoData = {};
+
+    if (jpoTitle) {
+      jpoData.jpoTitle = jpoTitle;
+    }
+    if (jpoDescription) {
+      jpoData.jpoDescription = jpoDescription;
+    }
+    if (jpoThumbnail) {
+      jpoData.jpoThumbnail = jpoThumbnail;
+    }
+    if (jpoDayStart) {
+      jpoData.jpoDayStart = new Date(jpoDayStart);
+    }
+    if (jpoDayEnd) {
+      jpoData.jpoDayEnd = new Date(jpoDayEnd);
+    }
+
+    await jpoRef.update(jpoData);
+
+    if (req.file) {
+      const pdfFilePath = req.file.path;
+      const pdfFileType = mime.lookup(pdfFilePath);
+      const pdfFileSize = req.file.size;
+
+      const pdfFileName = req.file.originalname;
+      const pdfFileRef = bucket.file(`jpo/${jpoTitle}/${pdfFileName}`);
+
+      await pdfFileRef
+        .createWriteStream({
+          metadata: {
+            contentType: pdfFileType || "application/pdf",
+            cacheControl: "public, max-age=31536000",
+          },
+        })
+        .on("error", (error) => {
+          console.error(error);
+          res.status(400).json({ error: error.message });
+        })
+        .on("finish", async () => {
+          try {
+            const pdfUrl = await pdfFileRef.getSignedUrl({
+              action: "read",
+              expires: "03-17-2025",
+            });
+
+            const pdfBuffer = fs.readFileSync(pdfFilePath);
+            const pdfBase64 = pdfBuffer.toString("base64");
+
+            await jpoRef.update({
+              "linkCommercialBrochure.url": pdfUrl.toString(),
+              "linkCommercialBrochure.name": pdfFileName,
+              "linkCommercialBrochure.type": pdfFileType,
+              "linkCommercialBrochure.size": pdfFileSize,
+              "linkCommercialBrochure.pdfBase64": pdfBase64,
+            });
+
+            const updatedJpo = await jpoRef.get();
+
+            return res.status(200).json({
+              message: "JPO modifiée avec succès.",
+              jpoData: {
+                id: updatedJpo.id,
+                ...updatedJpo.data(),
+              },
+            });
+          } catch (error) {
+            console.error(error);
+            res.status(500).send("Erreur lors de la modification de la JPO.");
+          }
+        })
+        .end(fs.readFileSync(pdfFilePath));
+    } else {
+      const updatedJpo = await jpoRef.get();
+
+      return res.status(200).json({
+        message: "JPO modifiée avec succès.",
+        jpoData: {
+          id: updatedJpo.id,
+          ...updatedJpo.data(),
+        },
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la modification de la JPO.");
+  }
+};
+
 const deleteJpoById = async (req, res) => {
   try {
     const jpoId = req.params.jpoId;
@@ -310,5 +413,6 @@ module.exports = {
   getJpoById,
   createJpo,
   linkProjectStudents,
+  updateJpoById,
   deleteJpoById,
 };
