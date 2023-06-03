@@ -27,6 +27,7 @@ import {
   InputAdornment,
   Chip,
   Avatar,
+  Skeleton,
 } from "@mui/material";
 
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -101,6 +102,8 @@ const Ressources = () => {
 
   const [allpo, setAllPo] = useState([]);
   const [allclass, setAllclass] = useState([]);
+
+  const [loading, setLoading] = useState(true);
 
   const { control } = useForm({
     mode: "onTouched",
@@ -217,7 +220,14 @@ const Ressources = () => {
   };
 
   useEffect(() => {
-    getAllCours();
+    getAllCours()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+      });
     getAllPo();
     getAllClass();
   }, []);
@@ -403,29 +413,10 @@ const Ressources = () => {
             <div className="grid-view-cours ">
               <h1>Année {`${currentYear}  - ${currentYear + 1} `}</h1>
               <Grid container spacing={2}>
-                {(searchTerm.length > 0
-                  ? [...filteredCoursesCurrentYear].filter(
-                      (course) =>
-                        course.data.title &&
-                        course.data.title
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
-                    )
-                  : [...filteredCoursesCurrentYear]
-                )
-                  .filter((course) =>
-                    userStatus === "etudiant"
-                      ? userClass.id === course.data.courseClass
-                      : true
-                  )
-                  .filter((course) =>
-                    selectedIdFilterClass !== ""
-                      ? course.data.courseClass === selectedIdFilterClass
-                      : true
-                  )
-                  .map((course) => {
-                    return (
-                      <Grid item xs={12} sm={6} md={3}>
+                {loading ? (
+                  <>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <Grid item xs={12} sm={6} md={3} key={index}>
                         <Card
                           sx={{
                             display: "flex",
@@ -433,42 +424,22 @@ const Ressources = () => {
                             justifyContent: "space-evenly",
                             height: "450px",
                           }}
-                          /* eslint-disable no-unused-expressions */
-                          onClick={() => {
-                            userStatus !== "etudiant" &&
-                            course.data.private === true
-                              ? navigate(`/coursinfo/${course.id}`)
-                              : course.data.private === false
-                              ? navigate(`/coursinfo/${course.id}`)
-                              : "";
-                          }}
                         >
                           <h2
                             style={{ paddingLeft: "10px", margin: "0" }}
                             variant="h3"
                             component="div"
                           >
-                            {course.data.title}
+                            <Skeleton width={150} />
                           </h2>
-                          <CardMedia
-                            sx={{
-                              display: "flex",
-                              width: "100%",
-                              maxHeight: "210px",
-                              minHeight: "210px",
-                              justifyContent: "center",
-                              margin: "0",
-                            }}
-                            component="img"
-                            src={course.data.imageCourseUrl}
-                            alt="course image"
+                          <Skeleton
+                            width={500}
+                            height={200}
+                            variant="rectangular"
                           />
 
                           <CardContent
-                            sx={{
-                              padding: "10px",
-                              height: "120px",
-                            }}
+                            sx={{ padding: "10px", height: "120px" }}
                           >
                             <div
                               style={{
@@ -476,40 +447,12 @@ const Ressources = () => {
                                 justifyContent: "space-between",
                               }}
                             >
+                              <Chip label={<Skeleton width={100} />} />
                               <Chip
-                                label={
-                                  <>
-                                    <div style={{ display: "flex" }}>
-                                      <Typography>
-                                        {course.data.courseClass.name}
-                                      </Typography>
-                                      <SchoolIcon />
-                                    </div>
-                                  </>
-                                }
-                              ></Chip>
-                              <Chip
-                                avatar={
-                                  <Avatar
-                                    alt={
-                                      course.data.owner.lastname.toUpperCase() +
-                                      "" +
-                                      course.data.owner.firstname +
-                                      "photo-profile"
-                                    }
-                                    src={course.data.owner.image}
-                                  />
-                                }
+                                avatar={<Avatar />}
                                 variant="outlined"
-                                label={
-                                  <>
-                                    <Typography>
-                                      {course.data.owner.lastname.toUpperCase()}{" "}
-                                      {course.data.owner.firstname}
-                                    </Typography>
-                                  </>
-                                }
-                              ></Chip>
+                                label={<Skeleton width={150} />}
+                              />
                             </div>
                             <div style={{ padding: "10px" }}>
                               <Typography
@@ -519,206 +462,411 @@ const Ressources = () => {
                                   alignItems: "center",
                                 }}
                               >
-                                <CalendarTodayIcon />
-                                {"Début "}
-                                {course &&
-                                  course.data &&
-                                  course.data.dateStartSprint &&
-                                  moment
-                                    .unix(course.data.dateStartSprint._seconds)
-                                    .format("DD.MM.YYYY")}{" "}
-                                - {"Fin "}
-                                {course &&
-                                  course.data &&
-                                  course.data.dateEndSprint &&
-                                  moment
-                                    .unix(course.data.dateEndSprint._seconds)
-                                    .format("DD.MM.YYYY")}
-                                <EventBusyIcon />
+                                <Skeleton width={100} />
                               </Typography>
                             </div>
 
-                            {userStatus === "etudiant" &&
-                            course.data.private === true ? (
-                              <>
-                                <Tooltip title="Private">
-                                  <LockRoundedIcon />
-                                </Tooltip>
-                              </>
-                            ) : (
-                              <>
-                                <Tooltip title="Open">
-                                  <IconButton
-                                    onClick={() =>
-                                      navigate(`/coursinfo/${course.id}`)
-                                    }
-                                  >
-                                    <OpenInNewIcon />
-                                  </IconButton>
-                                </Tooltip>
-                              </>
-                            )}
+                            <Tooltip title="Private">
+                              <LockRoundedIcon />
+                            </Tooltip>
                           </CardContent>
                         </Card>
                       </Grid>
-                    );
-                  })}
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {(searchTerm.length > 0
+                      ? [...filteredCoursesCurrentYear].filter(
+                          (course) =>
+                            course.data.title &&
+                            course.data.title
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        )
+                      : [...filteredCoursesCurrentYear]
+                    )
+                      .filter((course) =>
+                        userStatus === "etudiant"
+                          ? userClass.id === course.data.courseClass
+                          : true
+                      )
+                      .filter((course) =>
+                        selectedIdFilterClass !== ""
+                          ? course.data.courseClass === selectedIdFilterClass
+                          : true
+                      )
+                      .map((course) => {
+                        return (
+                          <Grid item xs={12} sm={6} md={3}>
+                            <Card
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "space-evenly",
+                                height: "450px",
+                              }}
+                              /* eslint-disable no-unused-expressions */
+                              onClick={() => {
+                                userStatus !== "etudiant" &&
+                                course.data.private === true
+                                  ? navigate(`/coursinfo/${course.id}`)
+                                  : course.data.private === false
+                                  ? navigate(`/coursinfo/${course.id}`)
+                                  : "";
+                              }}
+                            >
+                              <h2
+                                style={{ paddingLeft: "10px", margin: "0" }}
+                                variant="h3"
+                                component="div"
+                              >
+                                {course.data.title}
+                              </h2>
+                              <CardMedia
+                                sx={{
+                                  display: "flex",
+                                  width: "100%",
+                                  maxHeight: "210px",
+                                  minHeight: "210px",
+                                  justifyContent: "center",
+                                  margin: "0",
+                                }}
+                                component="img"
+                                src={course.data.imageCourseUrl}
+                                alt="course image"
+                              />
+
+                              <CardContent
+                                sx={{
+                                  padding: "10px",
+                                  height: "120px",
+                                }}
+                              >
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    justifyContent: "space-between",
+                                  }}
+                                >
+                                  <Chip
+                                    label={
+                                      <>
+                                        <div style={{ display: "flex" }}>
+                                          <Typography>
+                                            {course.data.courseClass.name}
+                                          </Typography>
+                                          <SchoolIcon />
+                                        </div>
+                                      </>
+                                    }
+                                  ></Chip>
+                                  <Chip
+                                    avatar={
+                                      <Avatar
+                                        alt={
+                                          course.data.owner.lastname.toUpperCase() +
+                                          "" +
+                                          course.data.owner.firstname +
+                                          "photo-profile"
+                                        }
+                                        src={course.data.owner.image}
+                                      />
+                                    }
+                                    variant="outlined"
+                                    label={
+                                      <>
+                                        <Typography>
+                                          {course.data.owner.lastname.toUpperCase()}{" "}
+                                          {course.data.owner.firstname}
+                                        </Typography>
+                                      </>
+                                    }
+                                  ></Chip>
+                                </div>
+                                <div style={{ padding: "10px" }}>
+                                  <Typography
+                                    sx={{
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    <CalendarTodayIcon />
+                                    {"Début "}
+                                    {course &&
+                                      course.data &&
+                                      course.data.dateStartSprint &&
+                                      moment
+                                        .unix(
+                                          course.data.dateStartSprint._seconds
+                                        )
+                                        .format("DD.MM.YYYY")}{" "}
+                                    - {"Fin "}
+                                    {course &&
+                                      course.data &&
+                                      course.data.dateEndSprint &&
+                                      moment
+                                        .unix(
+                                          course.data.dateEndSprint._seconds
+                                        )
+                                        .format("DD.MM.YYYY")}
+                                    <EventBusyIcon />
+                                  </Typography>
+                                </div>
+
+                                {userStatus === "etudiant" &&
+                                course.data.private === true ? (
+                                  <>
+                                    <Tooltip title="Private">
+                                      <LockRoundedIcon />
+                                    </Tooltip>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Tooltip title="Open">
+                                      <IconButton
+                                        onClick={() =>
+                                          navigate(`/coursinfo/${course.id}`)
+                                        }
+                                      >
+                                        <OpenInNewIcon />
+                                      </IconButton>
+                                    </Tooltip>
+                                  </>
+                                )}
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                        );
+                      })}
+                  </>
+                )}
               </Grid>
             </div>
             <div className="grid-view-cours ">
               <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
               <Grid container spacing={2}>
-                {(searchTerm.length > 0
-                  ? [...filteredCoursesLastYear].filter(
-                      (course) =>
-                        course.data.title &&
-                        course.data.title
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase())
-                    )
-                  : [...filteredCoursesLastYear]
-                )
-                  .filter((course) =>
-                    userStatus === "etudiant"
-                      ? userClass.id === course.data.courseClass
-                      : true
-                  )
-                  .filter((course) =>
-                    selectedIdFilterClass !== ""
-                      ? course.data.courseClass === selectedIdFilterClass
-                      : true
-                  )
-                  .map((course) => (
-                    <Grid item xs={12} sm={6} md={3}>
-                      <Card
-                        sx={{
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-evenly",
-                          height: "450px",
-                        }}
-                        onClick={() =>
-                          userStatus !== "etudiant" &&
-                          course.data.private === true
-                            ? navigate(`/coursinfo/${course.id}`)
-                            : course.data.private === false
-                            ? navigate(`/coursinfo/${course.id}`)
-                            : ""
-                        }
-                      >
-                        <h2
-                          style={{ paddingLeft: "10px", margin: "0" }}
-                          variant="h3"
-                          component="div"
-                        >
-                          {course.data.title}
-                        </h2>
-                        <CardMedia
+                {loading ? (
+                  <>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <Grid item xs={12} sm={6} md={3} key={index}>
+                        <Card
                           sx={{
                             display: "flex",
-                            width: "100%",
-                            maxHeight: "210px",
-                            minHeight: "210px",
-                            justifyContent: "center",
-                            margin: "0",
+                            flexDirection: "column",
+                            justifyContent: "space-evenly",
+                            height: "450px",
                           }}
-                          component="img"
-                          src={course.data.imageCourseUrl}
-                          alt="course image"
-                        />
-
-                        <CardContent sx={{ padding: "10px", height: "120px" }}>
-                          <div
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                            }}
+                        >
+                          <h2
+                            style={{ paddingLeft: "10px", margin: "0" }}
+                            variant="h3"
+                            component="div"
                           >
-                            <Chip
-                              label={
-                                <>
-                                  <div style={{ display: "flex" }}>
-                                    <Typography>
-                                      {course.data.courseClass.name}
-                                    </Typography>
-                                    <SchoolIcon />
-                                  </div>
-                                </>
-                              }
-                            ></Chip>
-                            <Chip
-                              avatar={
-                                <Avatar
-                                  alt={
-                                    course.data.owner.lastname.toUpperCase() +
-                                    "" +
-                                    course.data.owner.firstname +
-                                    "photo-profile"
-                                  }
-                                  src={course.data.owner.image}
-                                />
-                              }
-                              variant="outlined"
-                              label={
-                                <>
-                                  <Typography>
-                                    {course.data.owner.lastname.toUpperCase()}{" "}
-                                    {course.data.owner.firstname}
-                                  </Typography>
-                                </>
-                              }
-                            ></Chip>
-                          </div>
-                          <div style={{ padding: "10px" }}>
-                            <Typography
-                              sx={{
+                            <Skeleton width={150} />
+                          </h2>
+                          <Skeleton
+                            width={500}
+                            height={200}
+                            variant="rectangular"
+                          />
+
+                          <CardContent
+                            sx={{ padding: "10px", height: "120px" }}
+                          >
+                            <div
+                              style={{
                                 display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
+                                justifyContent: "space-between",
                               }}
                             >
-                              <CalendarTodayIcon />
-                              {"Début "}
-                              {course &&
-                                course.data &&
-                                course.data.dateStartSprint &&
-                                moment
-                                  .unix(course.data.dateStartSprint._seconds)
-                                  .format("DD.MM.YYYY")}{" "}
-                              - {"Fin "}
-                              {course &&
-                                course.data &&
-                                course.data.dateEndSprint &&
-                                moment
-                                  .unix(course.data.dateEndSprint._seconds)
-                                  .format("DD.MM.YYYY")}
-                              <EventBusyIcon />
-                            </Typography>
-                          </div>
-                          {userStatus === "etudiant" &&
-                          course.data.private === true ? (
-                            <>
-                              <Tooltip title="Private">
-                                <LockRoundedIcon />
-                              </Tooltip>
-                            </>
-                          ) : (
-                            <>
-                              <Tooltip title="Open">
-                                <IconButton
-                                  onClick={() =>
-                                    navigate(`/coursinfo/${course.id}`)
+                              <Chip label={<Skeleton width={100} />} />
+                              <Chip
+                                avatar={<Avatar />}
+                                variant="outlined"
+                                label={<Skeleton width={150} />}
+                              />
+                            </div>
+                            <div style={{ padding: "10px" }}>
+                              <Typography
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <Skeleton width={100} />
+                              </Typography>
+                            </div>
+
+                            <Tooltip title="Private">
+                              <LockRoundedIcon />
+                            </Tooltip>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {(searchTerm.length > 0
+                      ? [...filteredCoursesLastYear].filter(
+                          (course) =>
+                            course.data.title &&
+                            course.data.title
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
+                        )
+                      : [...filteredCoursesLastYear]
+                    )
+                      .filter((course) =>
+                        userStatus === "etudiant"
+                          ? userClass.id === course.data.courseClass
+                          : true
+                      )
+                      .filter((course) =>
+                        selectedIdFilterClass !== ""
+                          ? course.data.courseClass === selectedIdFilterClass
+                          : true
+                      )
+                      .map((course) => (
+                        <Grid item xs={12} sm={6} md={3}>
+                          <Card
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-evenly",
+                              height: "450px",
+                            }}
+                            onClick={() =>
+                              userStatus !== "etudiant" &&
+                              course.data.private === true
+                                ? navigate(`/coursinfo/${course.id}`)
+                                : course.data.private === false
+                                ? navigate(`/coursinfo/${course.id}`)
+                                : ""
+                            }
+                          >
+                            <h2
+                              style={{ paddingLeft: "10px", margin: "0" }}
+                              variant="h3"
+                              component="div"
+                            >
+                              {course.data.title}
+                            </h2>
+                            <CardMedia
+                              sx={{
+                                display: "flex",
+                                width: "100%",
+                                maxHeight: "210px",
+                                minHeight: "210px",
+                                justifyContent: "center",
+                                margin: "0",
+                              }}
+                              component="img"
+                              src={course.data.imageCourseUrl}
+                              alt="course image"
+                            />
+
+                            <CardContent
+                              sx={{ padding: "10px", height: "120px" }}
+                            >
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <Chip
+                                  label={
+                                    <>
+                                      <div style={{ display: "flex" }}>
+                                        <Typography>
+                                          {course.data.courseClass.name}
+                                        </Typography>
+                                        <SchoolIcon />
+                                      </div>
+                                    </>
                                   }
+                                ></Chip>
+                                <Chip
+                                  avatar={
+                                    <Avatar
+                                      alt={
+                                        course.data.owner.lastname.toUpperCase() +
+                                        "" +
+                                        course.data.owner.firstname +
+                                        "photo-profile"
+                                      }
+                                      src={course.data.owner.image}
+                                    />
+                                  }
+                                  variant="outlined"
+                                  label={
+                                    <>
+                                      <Typography>
+                                        {course.data.owner.lastname.toUpperCase()}{" "}
+                                        {course.data.owner.firstname}
+                                      </Typography>
+                                    </>
+                                  }
+                                ></Chip>
+                              </div>
+                              <div style={{ padding: "10px" }}>
+                                <Typography
+                                  sx={{
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                  }}
                                 >
-                                  <OpenInNewIcon />
-                                </IconButton>
-                              </Tooltip>
-                            </>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
+                                  <CalendarTodayIcon />
+                                  {"Début "}
+                                  {course &&
+                                    course.data &&
+                                    course.data.dateStartSprint &&
+                                    moment
+                                      .unix(
+                                        course.data.dateStartSprint._seconds
+                                      )
+                                      .format("DD.MM.YYYY")}{" "}
+                                  - {"Fin "}
+                                  {course &&
+                                    course.data &&
+                                    course.data.dateEndSprint &&
+                                    moment
+                                      .unix(course.data.dateEndSprint._seconds)
+                                      .format("DD.MM.YYYY")}
+                                  <EventBusyIcon />
+                                </Typography>
+                              </div>
+                              {userStatus === "etudiant" &&
+                              course.data.private === true ? (
+                                <>
+                                  <Tooltip title="Private">
+                                    <LockRoundedIcon />
+                                  </Tooltip>
+                                </>
+                              ) : (
+                                <>
+                                  <Tooltip title="Open">
+                                    <IconButton
+                                      onClick={() =>
+                                        navigate(`/coursinfo/${course.id}`)
+                                      }
+                                    >
+                                      <OpenInNewIcon />
+                                    </IconButton>
+                                  </Tooltip>
+                                </>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      ))}
+                  </>
+                )}
               </Grid>
             </div>
           </>
