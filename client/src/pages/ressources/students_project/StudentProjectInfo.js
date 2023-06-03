@@ -592,7 +592,7 @@ const StudentProjectInfo = () => {
               allblogtutos={allblogtutos}
               getStudentProjectById={getStudentProjectById}
             />
-          </div>{" "}
+          </div>
         </>
       )}
     </>
