@@ -272,10 +272,43 @@ const linkProjectStudents = async (req, res) => {
   }
 };
 
+const deleteJpoById = async (req, res) => {
+  try {
+    const jpoId = req.params.jpoId;
+    const { jpoTitle } = req.body;
+
+    const jpoRef = db.collection("jpo").doc(jpoId);
+
+    const jpoDoc = await jpoRef.get();
+
+    if (!jpoDoc.exists) {
+      return res.status(404).send("JPO non trouvée");
+    }
+
+    await jpoRef.delete();
+
+    const folderPath = `jpo/${jpoTitle}`;
+
+    const [files] = await bucket.getFiles({
+      prefix: `${folderPath}/`,
+    });
+
+    for (const file of files) {
+      await file.delete();
+    }
+
+    return res.status(200).send("JPO supprimée avec succès");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la suppression de la JPO.");
+  }
+};
+
 module.exports = {
   getAllJpo,
   getPastJpo,
   getJpoById,
   createJpo,
   linkProjectStudents,
+  deleteJpoById,
 };
