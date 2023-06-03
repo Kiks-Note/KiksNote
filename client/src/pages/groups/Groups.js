@@ -66,9 +66,9 @@ function App() {
 
     const fetchAndSetData = useCallback(async () => {
         const colContent = await fetchData();
-        ws.send(JSON.stringify({ type: "updateCol", data: { columns: colContent, class: classStudents } }))
+        ws.send(JSON.stringify({ type: "updateCol", data: { columns: colContent, class: classStudents, nbStudents: numberOfStudentsInClass } }))
         setColumns(colContent);
-    }, [classStudents, fetchData, ws]);
+    }, [classStudents, fetchData, numberOfStudentsInClass, ws]);
 
     const LogToExistingRoomStudent = useCallback(async () => {
         try {
@@ -78,7 +78,7 @@ function App() {
                         type: 'joinRoom',
                         data: {
                             userID: user?.id,
-                            name: user?.name,
+                            name: user?.firstname,
                             class: user?.class,
                         }
                     };
@@ -92,7 +92,7 @@ function App() {
             console.error(error);
             throw error;
         }
-    }, [user?.class, user?.id, user?.name, ws]);
+    }, [user?.class, user?.id, user?.firstname, ws]);
 
     const logToExistingRoom = useCallback(async () => {
         try {
@@ -102,7 +102,7 @@ function App() {
                         type: 'joinRoom',
                         data: {
                             userID: user?.id,
-                            name: user?.name,
+                            name: user?.firstname,
                             class: res.data[0].class
                         }
                     };
@@ -115,7 +115,7 @@ function App() {
         } catch (error) {
             console.error(error);
         }
-    }, [user?.id, user?.name, ws]);
+    }, [user?.id, user?.firstname, ws]);
 
     function displayUserCursorPositions(users) {
         const map = new Map(Object.entries(users));
@@ -162,6 +162,7 @@ function App() {
                             if (user.status === "etudiant") {
                                 setNbSPGrp(messageReceive.data.currentRoom.SpGrp);
                                 setLock(messageReceive.data.currentRoom.lock);
+                                setNumberOfStudentInclass(messageReceive.data.currentRoom.nbStudents);
                             }
                             if (messageReceive.data.currentRoom.columns) {
                                 setColumns(messageReceive.data.currentRoom.columns);
@@ -429,6 +430,7 @@ function App() {
                 style={{
                     width: "100%",
                     height: "100vh",
+                    overflow: "hidden",
                 }}>
                 {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
                 <nav
@@ -486,9 +488,14 @@ function App() {
                         flexWrap: "wrap",
                     }}
                 >
-                    <div>
+                    <div style={{
+                        width: "100%",
+                        height: "100%",
+                        position: "relative",
+                    }}>
                         {userCursors ? (
                             Array.from(userCursors.entries()).map(([userID, userData]) => {
+                                console.log(userID, userData);
                                 if (userID !== user?.id) {
                                     return (
                                         <div
@@ -497,6 +504,7 @@ function App() {
                                                 position: "absolute",
                                                 left: userData.position?.x,
                                                 top: userData.position?.y,
+                                                zIndex: 100,
                                             }}
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="30px" height="30px"><path fill={userData.color} d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z" /></svg>
@@ -516,7 +524,7 @@ function App() {
                                                     fontWeight: "bold",
                                                     textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
                                                 }}>
-                                                    {user?.firstname}
+                                                    {userData.name}
                                                 </p>
                                             </div>
                                         </div>
@@ -612,7 +620,7 @@ function App() {
                                                 }}
                                             </Droppable>
                                         </div>
-                                        {!nbSPGrp ? <p style={{ color: "grey", fontSize: "100px", textAlign: "center", fontWeight: "bold" }}>Veuillez choisir le nombre d'élèves par groupe</p> : null}
+                                        {!nbSPGrp ? <p style={{ color: "grey", fontSize: "70px", textAlign: "center", fontWeight: "bold" }}>Veuillez choisir le nombre d'élèves par groupe</p> : null}
                                     </div>
                                 );
                             } else if (index !== 0) {

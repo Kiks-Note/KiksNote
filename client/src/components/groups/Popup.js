@@ -58,7 +58,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
                 end_date: end_date.current.value,
                 classChoose: classChoose
             });
-            createRoom({ po_id: user.id, class: classChoose, settings: { start_date: start_date.current.value, end_date: end_date.current.value, classChoose: classChoose } });
+            createRoom({ po_id: user.id, class: classChoose, name: user?.firstname, settings: { start_date: start_date.current.value, end_date: end_date.current.value, classChoose: classChoose } });
         }
     }
 

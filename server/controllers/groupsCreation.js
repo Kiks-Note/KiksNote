@@ -62,7 +62,7 @@ const clients = new Map();
 
 const room = async (connection) => {
 
-    const defaultRoom = { users: new Map(), lock: true, SpGrp: undefined, nbUsers: 0, columns: undefined };
+    const defaultRoom = { users: new Map(), lock: true, SpGrp: undefined, nbUsers: 0, columns: undefined, nbStudents: 0 };
 
     const sendToAllClients = (message, classStudent) => {
         const roomClients = clients.get(classStudent) || new Map();
@@ -81,7 +81,7 @@ const room = async (connection) => {
 
                 const roomUsersToUpdate = currentRooms.get(response.data.class) || defaultRoom;
 
-                roomUsersToUpdate.users.set(userID, { position: position, color: roomUsersToUpdate.users.get(userID)?.color });
+                roomUsersToUpdate.users.set(userID, { position: position, color: roomUsersToUpdate.users.get(userID)?.color, name: roomUsersToUpdate.users.get(userID)?.name });
 
                 currentRooms.set(response.data.class, roomUsersToUpdate);
 
@@ -116,7 +116,7 @@ const room = async (connection) => {
                 let colorC = pastelColors[indexColor];
                 indexColor++;
 
-                roomUsersC.users.set(response.data.userID, { position: null, color: colorC });
+                roomUsersC.users.set(response.data.userID, { position: null, color: colorC, name: response.data.name });
 
                 currentRooms.set(response.data.class, roomUsersC);
 
@@ -152,7 +152,7 @@ const room = async (connection) => {
                 let color = pastelColors[indexColor];
                 indexColor++;
 
-                roomUsers.users.set(response.data.userID, { position: null, color: color });
+                roomUsers.users.set(response.data.userID, { position: null, color: color, name: response.data.name });
 
                 currentRooms.set(response.data.class, roomUsers);
 
@@ -219,7 +219,9 @@ const room = async (connection) => {
             case "lock":
 
                 if (response.data.status === "po") {
-                    currentRooms.get(response.data.class).lock = response.data.lock;
+                    let roomLock = currentRooms.get(response.data.class) || defaultRoom;
+                    roomLock.lock = response.data.lock;
+                    currentRooms.set(response.data.class, roomLock);
 
                     const messageLock = {
                         type: "updateRoom",
@@ -238,7 +240,9 @@ const room = async (connection) => {
                 break;
             case "nbSPGrp":
                 if (response.data.status === "po") {
-                    currentRooms.get(response.data.class).SpGrp = response.data.nbSPGrp;
+                    let roomNbSPGrp = currentRooms.get(response.data.class) || defaultRoom;
+                    roomNbSPGrp.nbSPGrp = response.data.nbSPGrp;
+                    currentRooms.set(response.data.class, roomNbSPGrp);
 
                     const messageNbSPGrp = {
                         type: "updateRoom",
@@ -255,7 +259,10 @@ const room = async (connection) => {
                 }
                 break;
             case "updateCol":
-                currentRooms.get(response.data.class).columns = response.data.columns;
+                let roomCol = currentRooms.get(response.data.class) || defaultRoom;
+                roomCol.columns = response.data.columns;
+                roomCol.nbStudents = response.data.nbStudents;
+                currentRooms.set(response.data.class, roomCol);
 
                 const messageUpdateCol = {
                     type: "updateRoom",
