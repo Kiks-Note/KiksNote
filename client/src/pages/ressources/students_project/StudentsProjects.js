@@ -487,7 +487,7 @@ const StudentsProjects = () => {
                               height: "300px",
                             }}
                             onClick={() => {
-                              navigate(`/${project.id}`);
+                              navigate(`${project.id}`);
                             }}
                           >
                             <CardMedia
