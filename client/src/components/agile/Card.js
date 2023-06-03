@@ -113,7 +113,8 @@ const BasicCard = ({
       }
       console.log(text, color);
       if (goals && actors && deliverables && impacts) {
-        const res = await addImpactMapping(id, {
+        const res = await addImpactMapping({
+          dashboardId:id,
           goals: goals,
           actors: actors,
           impacts: impacts,
