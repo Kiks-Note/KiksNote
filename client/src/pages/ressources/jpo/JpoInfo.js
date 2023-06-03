@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
 
+import { toast, ToastContainer } from "react-toastify";
+
 import moment from "moment";
 
 import { Typography, Button, Card, Skeleton } from "@mui/material";
@@ -19,6 +21,25 @@ import "./JpoInfo.scss";
 import { makeStyles } from "@mui/styles";
 
 import PdfCommercialBrochureViewer from "./PdfCommercialBrochureViewer";
+
+const options = {
+  autoClose: 2000,
+  className: "",
+  position: toast.POSITION.TOP_RIGHT,
+  theme: "colored",
+};
+
+export const toastSuccess = (message) => {
+  toast.success(message, options);
+};
+
+export const toastWarning = (message) => {
+  toast.warning(message, options);
+};
+
+export const toastFail = (message) => {
+  toast.error(message, options);
+};
 
 const useStyles = makeStyles({
   btnProject: {
@@ -121,6 +142,10 @@ const JpoInfo = () => {
 
   const deleteJpo = async () => {
     DeleteJpoById(jpoData?.jpoTitle);
+    toastSuccess(`Votre jpo ${jpoData?.jpoTitle} a bien été supprimé !`);
+    setTimeout(() => {
+      navigate("/jpo");
+    }, 4000);
   };
 
   useEffect(() => {
@@ -371,9 +396,11 @@ const JpoInfo = () => {
             open={openStudentsProject}
             close={handleCloseStudentsProject}
             allprojects={projects}
+            jpoData={jpoData}
           />
         </>
       )}
+      <ToastContainer></ToastContainer>
     </>
   );
 };
