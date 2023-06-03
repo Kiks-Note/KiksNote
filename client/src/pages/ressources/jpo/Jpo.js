@@ -302,7 +302,7 @@ const Jpo = () => {
             </div>
             {allJpo.map((jpoData, index) => (
               <JpoCard key={index} jpoData={jpoData} />
-            ))}{" "}
+            ))}
           </div>
         </div>
       )}
