@@ -4,6 +4,8 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
 
+import { toast, ToastContainer } from "react-toastify";
+
 import {
   Card,
   Typography,
@@ -25,6 +27,25 @@ import HistoryIcon from "@mui/icons-material/History";
 
 import JpoCard from "./JpoCard";
 import "./Jpo.scss";
+
+const options = {
+  autoClose: 2000,
+  className: "",
+  position: toast.POSITION.TOP_RIGHT,
+  theme: "colored",
+};
+
+export const toastSuccess = (message) => {
+  toast.success(message, options);
+};
+
+export const toastWarning = (message) => {
+  toast.warning(message, options);
+};
+
+export const toastFail = (message) => {
+  toast.error(message, options);
+};
 
 const useStyles = makeStyles({
   btnCreateJpo: {
@@ -113,9 +134,17 @@ const Jpo = () => {
       await axios
         .post("http://localhost:5050/ressources/jpo", formData)
         .then((res) => {
-          console.log(res.data);
+          if (
+            res.status === 200 &&
+            res.data.message === "JPO créée avec succès."
+          ) {
+            toastSuccess(
+              `La JPO ${nameJPO} que vous avez créer a été publié avec succès !`
+            );
+          }
         })
         .catch((err) => {
+          toastFail("Erreur lors de la création de la JPO");
           console.log(err);
         });
     } catch (error) {
@@ -127,6 +156,7 @@ const Jpo = () => {
     await publishJpo();
     event.preventDefault();
     setOpen(false);
+    getAllJpo();
   };
 
   useEffect(() => {
@@ -306,6 +336,7 @@ const Jpo = () => {
           </div>
         </div>
       )}
+      <ToastContainer></ToastContainer>
     </>
   );
 };

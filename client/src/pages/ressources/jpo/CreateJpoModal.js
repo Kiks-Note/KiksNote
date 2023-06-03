@@ -27,7 +27,7 @@ const CreateJpoModal = (props) => {
               onChange={(event) => props.setNameJPO(event.target.value)}
             />
             <div className="jpo-date-container">
-              <p className="p-1">Date de début</p>
+              <p className="p-start-end-date-jpo-label">Début</p>
               <TextField
                 className="textfield"
                 id="date"
@@ -40,7 +40,7 @@ const CreateJpoModal = (props) => {
               />
             </div>
             <div className="jpo-date-container">
-              <p className="p-1">Date de fin</p>
+              <p className="p-start-end-date-jpo-label ">Fin</p>
               <TextField
                 className="textfield"
                 id="date"
