@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import useFirebase from "../../../hooks/useFirebase";
 
 import moment from "moment";
 
@@ -9,6 +10,8 @@ import { Typography, Button, Card, Skeleton } from "@mui/material";
 import StudentProjectLinkDialog from "./StudentProjectLinkDialog";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddLinkIcon from "@mui/icons-material/AddLink";
 
 import notify from "../../../assets/img/notify.svg";
 import "./JpoInfo.scss";
@@ -34,11 +37,22 @@ const useStyles = makeStyles({
       fontWeight: "bold",
     },
   },
+  btnDeleteJop: {
+    backgroundColor: "red",
+    color: "white",
+    "&:hover": {
+      backgroundColor: "darkred",
+      fontWeight: "bold",
+    },
+  },
 });
 
 const JpoInfo = () => {
   const classes = useStyles();
   let navigate = useNavigate();
+
+  const { user } = useFirebase();
+  const userStatus = user?.status;
 
   const { id } = useParams();
 
@@ -55,6 +69,23 @@ const JpoInfo = () => {
         .get(`http://localhost:5050/ressources/jpo/${id}`)
         .then((res) => {
           setJpoData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const DeleteJpoById = async () => {
+    try {
+      await axios
+        .delete(`http://localhost:5050/ressources/jpo/${id}`, {
+          jpoTitle: jpoData?.jpoTitle,
+        })
+        .then((res) => {
+          console.log(res.data);
         })
         .catch((err) => {
           console.log(err);
@@ -86,6 +117,10 @@ const JpoInfo = () => {
 
   const handleCloseStudentsProject = () => {
     setOpenStudentsProject(false);
+  };
+
+  const deleteJpo = async () => {
+    DeleteJpoById();
   };
 
   useEffect(() => {
@@ -301,13 +336,34 @@ const JpoInfo = () => {
                 <PdfCommercialBrochureViewer
                   base64={jpoData?.linkCommercialBrochure?.pdfBase64}
                 />
-                <Button
-                  sx={{ marginTop: "30px", marginBottom: "30px" }}
-                  onClick={handleOpenStudentsProject}
-                  className={classes.btnLinkProject}
-                >
-                  Lier à un projet étudiant
-                </Button>
+                {userStatus === "pedago" ? (
+                  <>
+                    <div
+                      style={{
+                        display: "flex",
+                        width: "100%",
+                        justifyContent: "space-around",
+                      }}
+                    >
+                      <Button
+                        sx={{ marginTop: "30px", marginBottom: "30px" }}
+                        onClick={handleOpenStudentsProject}
+                        className={classes.btnLinkProject}
+                      >
+                        Lier à un projet étudiant <AddLinkIcon />
+                      </Button>
+                      <Button
+                        sx={{ marginTop: "30px", marginBottom: "30px" }}
+                        onClick={deleteJpo}
+                        className={classes.btnDeleteJop}
+                      >
+                        Supprimer la Jpo <DeleteIcon />
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div></div>
+                )}
               </section>
             </div>
           </div>
