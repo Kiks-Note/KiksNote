@@ -141,7 +141,7 @@ const JpoInfo = () => {
               </Typography>
 
               {jpoData?.linkedStudentProjects ||
-              jpoData?.linkedStudentProjects.length > 0 ? (
+              jpoData?.linkedStudentProjects?.length > 0 ? (
                 <>
                   {jpoData?.linkedStudentProjects?.map((project) => (
                     <Card

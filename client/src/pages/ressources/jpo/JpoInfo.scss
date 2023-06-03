@@ -1,7 +1,7 @@
 .jpo-left-side-section {
     display: flex;
     flex-direction: column;
-    width: 60%;
+    width: 55%;
     padding: 30px;
 }
 
@@ -23,7 +23,7 @@
 .jpo-right-side-section {
     display: flex;
     flex-direction: column;
-    width: 40%;
+    width: 45%;
     justify-content: center;
     align-items: center;
 }
@@ -74,4 +74,9 @@
     display: flex;
     padding: 10px;
     justify-content: center;
+}
+
+//disable button open file in react pdf viewer
+.rpv-open__input-wrapper {
+    display: none;
 }
