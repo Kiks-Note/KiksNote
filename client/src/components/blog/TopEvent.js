@@ -34,7 +34,6 @@ function MostParticipantsChart() {
         "http://localhost:5050/blog/stats/participant"
       );
       const blogs = response.data;
-
       const sortedBlogs = blogs.sort((a, b) => b.count - a.count);
       const topBlogs = sortedBlogs.slice(0, 10);
 
@@ -58,8 +57,10 @@ function MostParticipantsChart() {
         ],
       });
 
-      const blogIds = topBlogs.map((blog) => blog.id);
-      fetchParticipantDetails(blogIds);
+      const blogIds = topBlogs.map((blog) => blog.participant);
+      if (blogIds.length != 0) {
+        fetchParticipantDetails(blogIds);
+      }
     } catch (error) {
       console.error(
         "Erreur lors de la récupération des données des événements avec le plus de participants :",
@@ -73,7 +74,7 @@ function MostParticipantsChart() {
       const response = await axios.post(
         "http://localhost:5050/blog/participant",
         {
-          blogIds: blogIds,
+          userIds: blogIds,
         }
       );
       setParticipantDetails(response.data);
@@ -95,13 +96,12 @@ function MostParticipantsChart() {
               },
             },
 
-                        scales: {
-                            r: {
-                                suggestedMin: 0,
-                                suggestedMax: 8,
-                            },
-
-                        },
+            scales: {
+              r: {
+                suggestedMin: 0,
+                suggestedMax: 8,
+              },
+            },
           }}
         />
       ) : (
