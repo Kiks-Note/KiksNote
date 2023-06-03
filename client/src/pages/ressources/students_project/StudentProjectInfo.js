@@ -139,7 +139,7 @@ const StudentProjectInfo = () => {
                   margin: "15px 0px",
                 }}
               >
-                Github : <Skeleton width={50} />
+                Code source du projet : <Skeleton width={50} />
               </Typography>
               <Chip
                 sx={{
@@ -348,7 +348,7 @@ const StudentProjectInfo = () => {
                   margin: "15px 0px",
                 }}
               >
-                Github :{" "}
+                Code source du projet :{" "}
                 <a
                   href={selectedProjectData.RepoProjectLink}
                   style={{ color: "#7a52e1", textDecoration: "underline" }}
