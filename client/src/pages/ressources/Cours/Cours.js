@@ -194,9 +194,8 @@ const Cours = () => {
 
   const createNewCours = async () => {
     try {
-      const response = await axios.post(
-        "http://localhost:5050/ressources/cours",
-        {
+      await axios
+        .post("http://localhost:5050/ressources/cours", {
           title: courseTitle,
           description: courseDescription,
           dateStartSprint: courseDateStart,
@@ -206,15 +205,23 @@ const Cours = () => {
           owner: idSelectedOwner,
           private: coursePrivate,
           imageBase64: courseImageBase64,
-        }
-      );
-      if (response.status === 200) {
-        return response.data;
-      }
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            toastSuccess(`Votre cours ${courseTitle} a bien été ajouté`);
+            handleClose();
+            getAllCours();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     } catch (error) {
       if (error.response.status === 400) {
         toastWarning("Veuillez remplir tous les champs.");
       }
+      console.error(error);
+      toastFail("Erreur lors de la création de votre cours.");
       throw error;
     }
   };
@@ -245,15 +252,7 @@ const Cours = () => {
   };
 
   const onSubmit = async () => {
-    try {
-      await createNewCours();
-      handleClose();
-      toastSuccess(`Votre cours ${courseTitle} a bien été ajouté`);
-      await getAllCours();
-    } catch (error) {
-      console.error(error);
-      toastFail("Erreur lors de la création de votre cours.");
-    }
+    await createNewCours();
   };
 
   const today = new Date();

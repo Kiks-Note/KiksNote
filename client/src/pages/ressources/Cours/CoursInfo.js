@@ -171,6 +171,21 @@ const CoursInfo = () => {
     }
   };
 
+  const getAllCours = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/cours")
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const uploadCoursPdf = async () => {
     try {
       const formData = new FormData();
@@ -184,7 +199,7 @@ const CoursInfo = () => {
           if (res.status === 200) {
             toastSuccess(`Votre pdf cours a bien été uploadé`);
             handleCloseCoursDialog();
-            window.location.reload();
+            getCoursId(id);
           }
         })
         .catch((err) => {
@@ -216,7 +231,7 @@ const CoursInfo = () => {
           if (res.status === 200) {
             toastSuccess(`Votre pdf backlog a bien été uploadé`);
             handleCloseBacklogDialog();
-            window.location.reload();
+            getCoursId(id);
           }
         })
         .catch((err) => {
@@ -245,7 +260,7 @@ const CoursInfo = () => {
       .then((res) => {
         if (res.status === 200) {
           toastSuccess(`Votre fichier cours ${fileName} a bien été supprimé`);
-          window.location.reload();
+          getCoursId(id);
         }
       })
       .catch((err) => {
@@ -270,7 +285,7 @@ const CoursInfo = () => {
       .then((res) => {
         if (res.status === 200) {
           toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
-          window.location.reload();
+          getCoursId(id);
         }
       })
       .catch((err) => {
@@ -308,7 +323,7 @@ const CoursInfo = () => {
         .then((res) => {
           if (res.status === 200) {
             toastSuccess(`Votre cours ${coursTitle} a bien été modifié`);
-            window.location.reload();
+            getCoursId(id);
           }
         })
         .catch((error) => {
@@ -424,7 +439,7 @@ const CoursInfo = () => {
   const deleteCompleteCours = () => {
     deleteCours(id, coursData.courseClass, coursData.title);
     navigate("/cours");
-    window.location.reload();
+    getAllCours();
   };
 
   const onSubmit = async () => {
