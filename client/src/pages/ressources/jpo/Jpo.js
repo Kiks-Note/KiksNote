@@ -4,8 +4,6 @@ import Button from "@mui/material/Button";
 import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
 
-import moment from "moment";
-
 import {
   Card,
   Typography,
@@ -13,7 +11,6 @@ import {
   ListItem,
   ListItemText,
   Collapse,
-  CardMedia,
   Grid,
   Skeleton,
 } from "@mui/material";
@@ -22,11 +19,11 @@ import CreateJpoModal from "./CreateJpoModal";
 
 import { makeStyles } from "@mui/styles";
 
-import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import CreateIcon from "@mui/icons-material/Create";
 import HistoryIcon from "@mui/icons-material/History";
 
+import JpoCard from "./JpoCard";
 import "./Jpo.scss";
 
 const useStyles = makeStyles({
@@ -46,14 +43,6 @@ const useStyles = makeStyles({
       fontWeight: "bold",
     },
   },
-  btnDetailJpo: {
-    backgroundColor: "#D1229D",
-    color: "white",
-    "&:hover": {
-      backgroundColor: "#D1229D",
-      fontWeight: "bold",
-    },
-  },
 });
 
 const Jpo = () => {
@@ -70,7 +59,6 @@ const Jpo = () => {
   const [descriptionJPO, setDescriptionJPO] = useState("");
   const [files, setFiles] = useState([]);
   const [jpoThumbnail, setJpoThumbnail] = useState("");
-  const [openProjects, setOpenProjects] = useState(false);
   const [open, setOpen] = useState(false);
   const rejectedFiles = files.filter((file) => file.errors);
 
@@ -88,10 +76,6 @@ const Jpo = () => {
 
   const handleFileChange = (fileData) => {
     setJpoThumbnail(fileData);
-  };
-
-  const handleClickProjects = () => {
-    setOpenProjects(!openProjects);
   };
 
   const handleClickOpen = () => {
@@ -160,7 +144,6 @@ const Jpo = () => {
     <>
       {loading ? (
         <>
-          {" "}
           <div className="jpo-page">
             <div className="header-jpo">
               <Typography variant="h3" sx={{ fontWeight: "bold" }}>
@@ -318,105 +301,8 @@ const Jpo = () => {
               </Button>
             </div>
             {allJpo.map((jpoData, index) => (
-              <Card
-                key={index}
-                className="jpo-card"
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  flexWrap: "wrap",
-                  width: "70%",
-                  margin: "30px",
-                }}
-              >
-                <Grid container>
-                  <Grid item xs={12} sm={6}>
-                    <CardMedia
-                      component="img"
-                      src={jpoData.jpoThumbnail}
-                      alt="img-jpo"
-                      className="jpo-image"
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <div className="jpo-text">
-                      <Typography
-                        sx={{ paddingBottom: "10px", fontSize: "24px" }}
-                      >
-                        {jpoData.jpoTitle}
-                      </Typography>
-                      <Typography sx={{ textAlign: "center" }}>
-                        {moment
-                          .unix(jpoData.jpoDayStart._seconds)
-                          .format("DD.MM.YYYY HH:mm")}
-                        {" - "} 
-                        {moment
-                          .unix(jpoData.jpoDayEnd._seconds)
-                          .format("DD.MM.YYYY HH:mm")}
-                      </Typography>
-                      {Array.isArray(jpoData.linkedStudentProjects) &&
-                      jpoData.linkedStudentProjects.length > 0 ? (
-                        <List>
-                          <ListItem button onClick={handleClickProjects}>
-                            <ListItemText
-                              primary={"Afficher les projets"}
-                              style={{ textAlign: "center" }}
-                            />
-                            {openProjects ? <ExpandLess /> : <ExpandMore />}
-                          </ListItem>
-                          <Collapse
-                            in={openProjects}
-                            timeout="auto"
-                            unmountOnExit
-                          >
-                            <List disablePadding>
-                              {jpoData.linkedStudentProjects.map((project) => (
-                                <ListItem
-                                  key={project.id}
-                                  sx={{
-                                    padding: "10px 0px",
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-evenly",
-                                    borderTop: "1px solid grey",
-                                  }}
-                                >
-                                  <Typography>{project.nameProject}</Typography>
-                                  <Button
-                                    onClick={() => {
-                                      navigate(
-                                        `/studentprojects/${project.id}`
-                                      );
-                                    }}
-                                  >
-                                    Voir le projet
-                                  </Button>
-                                </ListItem>
-                              ))}
-                            </List>
-                          </Collapse>
-                        </List>
-                      ) : (
-                        <p className="no-votes-student-projects-p">
-                          Aucun projet étudiant lié à cette JPO.
-                        </p>
-                      )}
-                      <div className="btn-details-jpo-container">
-                        <Button
-                          className={classes.btnDetailJpo}
-                          onClick={() => {
-                            navigate(`/jpo/${jpoData.id}`);
-                          }}
-                        >
-                          Détails
-                        </Button>
-                      </div>
-                    </div>
-                  </Grid>
-                </Grid>
-              </Card>
-            ))}
+              <JpoCard key={index} jpoData={jpoData} />
+            ))}{" "}
           </div>
         </div>
       )}
