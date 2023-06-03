@@ -62,6 +62,7 @@ const StudentProjectLinkDialog = (props) => {
               `Le projet étudiant ${selectedProjectName} a bien été lié à votre jpo ${props.jpoData?.jpoTitle}`
             );
             props.close();
+            props.getJpoById();
           }
         })
         .catch((error) => {

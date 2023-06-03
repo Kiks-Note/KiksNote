@@ -397,6 +397,7 @@ const JpoInfo = () => {
             close={handleCloseStudentsProject}
             allprojects={projects}
             jpoData={jpoData}
+            getJpoById={getJpoById}
           />
         </>
       )}
