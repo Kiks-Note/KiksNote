@@ -192,8 +192,16 @@ function App() {
     }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, lock, logToExistingRoom, user?.id, user.status, ws]);
 
     function deleteStudent(userID) {
-        console.log(userID);
-        console.log(columns);
+        const copiedColContent = { ...columns };
+
+        Object.keys(copiedColContent).forEach((key) => {
+            const group = copiedColContent[key];
+            const updatedItems = group.items.filter((student) => student.id !== userID);
+            group.items = updatedItems;
+        });
+
+        setColumns(copiedColContent);
+        ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents } }));
     }
 
     function moveOnClick(columnId, student, columns) {
@@ -575,7 +583,7 @@ function App() {
                                                                                         <p className="no-connect-label"><WifiOffIcon /></p>
                                                                                     ) : null}
                                                                                     {!userCursors?.get(item.id) && user.status === "po" ? (
-                                                                                        <p className="student-cross" onClick={deleteStudent(item.id)}> <DeleteIcon /> </p>
+                                                                                        <p className="student-cross" onClick={() => deleteStudent(item.id)}> <DeleteIcon /> </p>
                                                                                     ) : null}
                                                                                 </div>
                                                                             );
@@ -664,7 +672,7 @@ function App() {
                                                                                     ) : null}
 
                                                                                     {!userCursors?.get(item.id) && user.status === "po" ? (
-                                                                                        <p className="student-cross" onClick={deleteStudent}> <DeleteIcon /> </p>
+                                                                                        <p className="student-cross" onClick={() => deleteStudent(item.id)}> <DeleteIcon /> </p>
                                                                                     ) : null}
                                                                                 </div>
                                                                             );
