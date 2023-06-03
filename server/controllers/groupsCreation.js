@@ -9,7 +9,6 @@ const getStudents = async (req, res) => {
     const snapshot = await db.collection("users").where('class', '==', classStudents).get();
     const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     res.status(200).send(documents);
-
 }
 
 const sendGroups = async (req, res) => {
@@ -105,6 +104,7 @@ const room = async (connection) => {
                 newRoomRef.set({
                     po_id: response.data.po_id,
                     class: response.data.class,
+                    settings: response.data.settings,
                 });
                 currentRooms.set(response.data.class, defaultRoom);
 

@@ -10,29 +10,48 @@ h2 {
   font-size: 20px;
 }
 .post-it {
-  width: 150px;
-  height: 80px;
-  margin: 30px 5px;
-  padding: 20px;
-  box-shadow: inset 0 -40px 40px rgba(0, 0, 0, 0.2),
-    inset 0 25px 10px rgba(0, 0, 0, 0.2), 0 5px 6px 5px rgba(0, 0, 0, 0.2);
-  font-family: "Permanent Marker", cursive;
-  line-height: 1.7em;
-  font-size: 19px;
+  position: relative;
+  min-width: 110px;
+  min-height: 110px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 20px;
-  color: white;
-  overflow: hidden;
-  text-shadow: rgb(41, 41, 41) 1px 0 5px;
-  p {
-    white-space: break-spaces;
-    word-wrap: break-word;
-    width: 100%;
-    text-align: center;
-    margin: 10px;
+  white-space: nowrap;
+  .no-connect-label {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    font-size: 9px;
+    margin-left: 5px;
   }
+  .student-cross {
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 9px;
+    margin-right: 5px;
+    opacity: 0;
+    transition: all 500ms ease-in-out;
+  }
+}
+
+.post-it:hover {
+  cursor: pointer;
+  transition: all 500ms ease-in-out;
+  .student-cross {
+    opacity: 1;
+  }
+  .student-cross:hover {
+    color: #9b9b9b;
+  }
+}
+
+nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 5px;
 }
 
 .group {
@@ -44,13 +63,10 @@ h2 {
 
 .groups-inputs {
   width: fit-content;
+  margin-left: auto;
   display: flex;
   flex-flow: row wrap;
-  position: absolute;
   justify-content: space-around;
-  top: 10px;
-  right: 10px;
-
   input[type="text"] {
     text-align: center;
     margin-right: 10px;
@@ -78,10 +94,14 @@ h2 {
   .input-button {
     width: 40px;
     height: 40px;
-    background-color: #f50057;
     border-radius: 5px;
     transition: all 500ms ease-in-out;
     margin: 0px 5px;
+  }
+
+  .input-button:hover {
+    cursor: pointer;
+    background-color: #46464641;
   }
 
   .resetButton:active,
