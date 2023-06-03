@@ -19,7 +19,6 @@ import {
   Chip,
   MenuItem,
   Skeleton,
-  Box,
 } from "@mui/material";
 
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
@@ -518,11 +517,6 @@ const StudentsProjects = () => {
               </>
             ))
         )}
-
-        {/* <StudentProjectInfo
-          projectData={selectedProjectData}
-          allblogtutos={allblogtutos}
-        /> */}
       </Grid>
       <ToastContainer></ToastContainer>
     </div>
