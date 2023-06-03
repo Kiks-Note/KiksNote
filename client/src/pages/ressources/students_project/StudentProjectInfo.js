@@ -5,6 +5,8 @@ import axios from "axios";
 
 import useFirebase from "../../../hooks/useFirebase";
 
+import { toast, ToastContainer } from "react-toastify";
+
 import {
   Typography,
   Divider,
@@ -36,6 +38,25 @@ import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
 
 import BlogTutosLinkDialog from "./BlogTutosLinkDialog";
 import "./StudentsProjectsInfo.scss";
+
+const options = {
+  autoClose: 2000,
+  className: "",
+  position: toast.POSITION.TOP_RIGHT,
+  theme: "colored",
+};
+
+export const toastSuccess = (message) => {
+  toast.success(message, options);
+};
+
+export const toastWarning = (message) => {
+  toast.warning(message, options);
+};
+
+export const toastFail = (message) => {
+  toast.error(message, options);
+};
 
 const StudentProjectInfo = () => {
   const { user } = useFirebase();
@@ -595,6 +616,7 @@ const StudentProjectInfo = () => {
           </div>
         </>
       )}
+      <ToastContainer></ToastContainer>
     </>
   );
 };

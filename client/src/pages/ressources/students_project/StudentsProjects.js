@@ -171,6 +171,7 @@ const StudentsProjects = () => {
           }
         })
         .catch((error) => {
+          toastFail("Erreur lors de la création d'un projet étudiant");
           console.log(error);
         });
     } catch (error) {
@@ -185,20 +186,30 @@ const StudentsProjects = () => {
     userId
   ) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5050/ressources/refprojects",
-        {
+      await axios
+        .post("http://localhost:5050/ressources/refprojects", {
           projectId: projectId,
           counterRefToAdd: countRefAdd,
           userId: userId,
-        }
-      );
-
-      if (response.data.message === "Projet étudiant mis à jour avec succès.") {
-        toastSuccess(`Vous avez bien mis en avant le projet ${projectName}`);
-      } else {
-        toastWarning(`Vous avez déjà mis en avant le projet ${projectName}!`);
-      }
+        })
+        .then((res) => {
+          if (
+            res.data.message === "Projet étudiant mis à jour avec succès." &&
+            res.status === 200
+          ) {
+            toastSuccess(
+              `Vous avez bien mis en avant le projet ${projectName}`
+            );
+          } else {
+            toastWarning(
+              `Vous avez déjà mis en avant le projet ${projectName}!`
+            );
+          }
+        })
+        .catch((err) => {
+          toastFail("Vous ne pouvais mettre ce projet en avant");
+          console.log(err);
+        });
     } catch (error) {
       console.log(error.response.status);
       console.log(error.response.data.message);
@@ -271,6 +282,7 @@ const StudentsProjects = () => {
     await publishStudentProject();
     event.preventDefault();
     setOpen(false);
+    getAllProjects();
   };
 
   const allTypesProject = [

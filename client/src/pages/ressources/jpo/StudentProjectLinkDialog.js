@@ -53,7 +53,6 @@ const StudentProjectLinkDialog = (props) => {
           studentProjectId: selectedStudentProjectId,
         })
         .then((res) => {
-          console.log(res.data.message);
           if (
             res.data.message ===
             `Le projet étudiant ${selectedProjectName} a bien été lié à la jpo`
@@ -66,6 +65,7 @@ const StudentProjectLinkDialog = (props) => {
           }
         })
         .catch((error) => {
+          console.log(error);
           toastFail(
             "Il semble avoir un problème avec le projet étudiant selectionner pour la liaison"
           );
