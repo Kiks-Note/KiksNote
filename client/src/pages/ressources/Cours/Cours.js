@@ -64,7 +64,7 @@ export const toastFail = (message) => {
   toast.error(message, options);
 };
 
-const Ressources = () => {
+const Cours = () => {
   let navigate = useNavigate();
 
   const { user } = useFirebase();
@@ -1114,4 +1114,4 @@ const Ressources = () => {
   );
 };
 
-export default Ressources;
+export default Cours;
