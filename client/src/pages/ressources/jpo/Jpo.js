@@ -251,7 +251,7 @@ const Jpo = () => {
                         </List>
                         <div className="btn-details-jpo-container">
                           <Button className={classes.btnDetailJpo}>
-                            Détails
+                            <Skeleton width={100} />
                           </Button>
                         </div>
                       </div>
