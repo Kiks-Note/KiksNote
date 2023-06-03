@@ -271,7 +271,7 @@ const JpoInfo = () => {
                               }}
                               className={classes.btnProject}
                             >
-                              Voir le projet &nbsp;
+                              <Typography>Voir le projet</Typography>
                               <VisibilityIcon />
                             </Button>
                           </div>
