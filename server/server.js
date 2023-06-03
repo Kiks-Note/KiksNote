@@ -10,6 +10,9 @@ const http = require("http");
 /// MULTER CONFIG FOR UPLOAD ON SERVER
 const multer = require("multer");
 
+
+const { retroRoutesWsNeeded,retroRoutesWsNotNeeded} = require("./retroRoutes");
+
 const DIR = "uploads/";
 
 const storage = multer.diskStorage({
@@ -58,6 +61,7 @@ const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
+//const retroRoutes = require("./retroRoutes");
 
 const groupsRoute = require("./groupsRoutes");
 app.use("/groupes", groupsRoute);
@@ -72,6 +76,7 @@ wsI.on("request", (request) => {
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
 
+  //app.use("/retro", retroRoutes(connection, pathname));
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
@@ -81,6 +86,8 @@ wsI.on("request", (request) => {
     );
   });
 });
+
+app.use("/retro", retroRoutesWsNotNeeded)
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
 

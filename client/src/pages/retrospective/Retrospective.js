@@ -15,6 +15,8 @@ import IconButton from "@mui/material/IconButton";
 import PostIt from "../../components/agile/PostIt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { w3cwebsocket } from "websocket";
+
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
@@ -189,6 +191,50 @@ function Retrospective() {
       });
     }
   };
+  const ws = new w3cwebsocket("ws://localhost:5050/retro");
+
+
+  useEffect(() => {
+    // Initialize WebSocket connection
+    ws.current = new w3cwebsocket("ws://localhost:5050/retro");
+
+    // Receive messages from the WebSocket server
+    ws.current.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      // Handle received message here
+    };
+
+    return () => {
+      // Close WebSocket connection on component unmount
+      ws.current.close();
+    };
+  }, []);
+
+  const saveToDb = async () => {
+    await axios.post(
+      `http://localhost:5050/retro/newRetro`,
+      columns
+    );
+  }
+
+  const getRetro = async () => {
+
+    console.log("front get retro");
+    await axios.get(
+      `http://localhost:5050/retro/getRetro`
+    ).then((response) => {
+      console.log("front response");
+      console.log(response);
+    }).catch(console.error());
+
+
+  }
+
+  // const ws = new w3cwebsocket("ws://localhost:5050/retro");
+  //     ws.onmessage = (message) => {
+  // };
+ 
+
   const addPostIt = (columnId) => {
     const newPostIt = {
       id: `postIt-${Date.now()}`,
@@ -209,6 +255,8 @@ function Retrospective() {
 
     setShowTextField(false); // Hide the TextField and button after adding the post-it
     setNewPostItContent(""); // Reset the new post-it content
+
+    console.log(columns);
   };
 
 
@@ -258,6 +306,9 @@ function Retrospective() {
   return (
     <div>
       <h2> Retrospective </h2>
+
+      <Button onClick={saveToDb}> save </Button>
+      <Button onClick={getRetro}> get </Button>
 
       <div>
         <Button
