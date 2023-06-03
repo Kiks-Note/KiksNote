@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Blog from "./pages/blog/Blog";
 import Tuto from "./pages/blog/Tuto";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";

@@ -1,11 +1,43 @@
-const {db, FieldValue} = require("../firebase");
-const {parse} = require("url");
+const { db, FieldValue } = require("../firebase");
+const { parse } = require("url");
 const moment = require("moment");
+const generatePDF = require('./pdfGenerator');
+
+const getInventoryPdf = async (req, res) => {
+  const docRef = db.collection("inventory");
+  const snapshot = await docRef.orderBy('createdAt').get();
+  console.log('Snapshot:', snapshot);
+
+  const inventoryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  console.log('Inventory Data:', inventoryData);
+
+  try {
+    const outputDir = path.join(__dirname, 'output');
+    const outputPath = path.join(outputDir, 'inventory.pdf');
+
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir);
+    }
+
+    fs.access(outputDir, fs.constants.W_OK, (err) => {
+      if (err) {
+        console.error('Erreur : Le serveur n\'a pas les permissions d\'écriture dans le répertoire de sortie.');
+        res.status(500).send('Erreur lors de la génération du PDF');
+        return;
+      }
+
+      generatePDF(inventoryData, outputPath, res);
+    });
+  } catch (err) {
+    console.error('Erreur lors de la génération du PDF :', err);
+    res.status(500).send('Erreur lors de la génération du PDF');
+  }
+};
 
 const inventory = async (req, res) => {
   const docRef = db.collection("inventory");
   const snapshot = await docRef.orderBy("createdAt").get();
-  const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
   try {
     res.status(200).send(documents);
@@ -18,20 +50,20 @@ const inventoryLength = async (req, res) => {
   try {
     const docRef = db.collection("inventory");
     const snapshot = await docRef.get();
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-    res.status(200).send({length: documents.length});
-  } catch (err) {}
+    res.status(200).send({ length: documents.length });
+  } catch (err) { }
 };
 
 const inventoryDeviceId = async (req, res) => {
   try {
-    const {deviceId} = req.params;
+    const { deviceId } = req.params;
 
     const docRef = db.collection("inventory").doc(deviceId);
     const doc = await docRef.get();
 
-    res.status(200).send({...doc.data(), id: doc.id});
+    res.status(200).send({ ...doc.data(), id: doc.id });
   } catch (err) {
     res.status(500).send(err);
   }
@@ -79,7 +111,7 @@ const addDevice = async (req, res) => {
 };
 
 const updateDevice = async (req, res) => {
-  const {deviceId} = req.params;
+  const { deviceId } = req.params;
   const {
     label,
     price,
@@ -121,7 +153,7 @@ const updateDevice = async (req, res) => {
 };
 
 const deleteDevice = async (req, res) => {
-  const {deviceId} = req.params;
+  const { deviceId } = req.params;
 
   try {
     await db.collection("inventory").doc(deviceId).delete();
@@ -132,8 +164,8 @@ const deleteDevice = async (req, res) => {
 };
 
 const makeRequest = async (req, res) => {
-  const {deviceId} = req.params;
-  const {startDate, endDate, requestReason, persons, requesterId} = req.body;
+  const { deviceId } = req.params;
+  const { startDate, endDate, requestReason, persons, requesterId } = req.body;
   console.log(requesterId);
 
   if (requesterId === undefined) {
@@ -169,7 +201,7 @@ const makeRequest = async (req, res) => {
 };
 
 const makePreRequest = async (req, res) => {
-  const {deviceId} = req.params;
+  const { deviceId } = req.params;
 
   try {
     const deviceRef = db.collection("inventory").doc(deviceId);
@@ -197,21 +229,21 @@ const makePreRequest = async (req, res) => {
 };
 
 const deviceRequests = async (req, res) => {
-  const {deviceId} = req.params;
+  const { deviceId } = req.params;
 
   const snapshot = await db
     .collection("inventory_requests")
     .where("deviceId", "==", deviceId)
     .get();
 
-  const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
   res.status(200).send(documents);
 };
 
 const acceptRequest = async (req, res) => {
-  const {deviceId, requestId} = req.params;
-  const {admin} = req.body;
+  const { deviceId, requestId } = req.params;
+  const { admin } = req.body;
 
   try {
     const deviceRef = await db.collection("inventory").doc(deviceId);
@@ -235,8 +267,8 @@ const acceptRequest = async (req, res) => {
 };
 
 const rejectRequest = async (req, res) => {
-  const {deviceId, requestId} = req.params;
-  const {admin} = req.body;
+  const { deviceId, requestId } = req.params;
+  const { admin } = req.body;
 
   try {
     const deviceRef = await db.collection("inventory").doc(deviceId);
@@ -260,14 +292,14 @@ const rejectRequest = async (req, res) => {
 };
 
 const getRequests = async (req, res) => {
-  const {requestId} = req.params;
+  const { requestId } = req.params;
   const doc = await db.collection("inventory_requests").doc(requestId).get();
-  res.status(200).send({...doc.data(), id: doc.id});
+  res.status(200).send({ ...doc.data(), id: doc.id });
 };
 
 const updateRequest = async (req, res) => {
-  const {requestId} = req.params;
-  const {returned, returnDate, admin} = req.body;
+  const { requestId } = req.params;
+  const { returned, returnDate, admin } = req.body;
 
   try {
     const requestRef = db.collection("inventory_requests").doc(requestId);
@@ -292,7 +324,7 @@ const getCategories = async (req, res) => {
 };
 
 const addCategory = async (req, res) => {
-  const {category} = req.body;
+  const { category } = req.body;
 
   const doc = await db
     .collection("inventoryCategories")
@@ -320,7 +352,7 @@ const addCategory = async (req, res) => {
 };
 
 const deleteCategory = async (req, res) => {
-  const {category} = req.params;
+  const { category } = req.params;
 
   if (!category) return res.status(400).send("Veuillez entrer une catégorie");
 
@@ -341,8 +373,8 @@ const deleteCategory = async (req, res) => {
 };
 
 const updateCategory = async (req, res) => {
-  const {oldCategory} = req.params;
-  const {newCategory} = req.body;
+  const { oldCategory } = req.params;
+  const { newCategory } = req.body;
 
   console.log(oldCategory, newCategory);
 
@@ -374,14 +406,14 @@ const updateCategory = async (req, res) => {
 
 const getDeviceRequests = async (req, res) => {
   try {
-    const {deviceId} = req.params;
+    const { deviceId } = req.params;
 
     const snapshot = await db
       .collection("inventory_requests")
       .where("deviceId", "==", deviceId)
       .get();
 
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     res.status(200).send(documents);
   } catch (err) {
@@ -390,7 +422,7 @@ const getDeviceRequests = async (req, res) => {
 };
 
 const createIdea = async (req, res) => {
-  const {name, url, price, description, reason, createdBy} = req.body;
+  const { name, url, price, description, reason, createdBy } = req.body;
 
   if (!name || !url || !price || !reason || !createdBy) {
     return res.status(400).send("Veuillez remplir tous les champs");
@@ -440,7 +472,7 @@ const getNotTreatedIdeas = async (req, res) => {
       .where("status", "==", "pending")
       .get();
 
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     res.status(200).send(documents);
   } catch (error) {
@@ -452,7 +484,7 @@ const getIdeas = async (req, res) => {
   try {
     const snapshot = await db.collection("inventory-ideas").get();
 
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     res.status(200).send(documents);
   } catch (error) {
@@ -461,12 +493,12 @@ const getIdeas = async (req, res) => {
 };
 
 const acceptIdea = async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
 
   try {
     const docRef = db.collection("inventory-ideas").doc(id);
 
-    await docRef.update({status: "accepted"});
+    await docRef.update({ status: "accepted" });
 
     res.status(200).send("Idée acceptée avec succès");
   } catch (err) {
@@ -476,13 +508,13 @@ const acceptIdea = async (req, res) => {
 };
 
 const refuseIdea = async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   console.log(id);
 
   try {
     const docRef = db.collection("inventory-ideas").doc(id);
 
-    await docRef.update({status: "refused"});
+    await docRef.update({ status: "refused" });
 
     res.status(200).send("Idée refusée avec succès");
   } catch (err) {
@@ -492,7 +524,7 @@ const refuseIdea = async (req, res) => {
 };
 
 const deleteIdea = async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
 
   try {
     await db.collection("inventory-ideas").doc(id).delete();
@@ -506,14 +538,14 @@ const deleteIdea = async (req, res) => {
 
 const getIdeaByUser = async (req, res) => {
   try {
-    const {userId} = req.params;
+    const { userId } = req.params;
 
     const snapshot = await db
       .collection("inventory-ideas")
       .where("createdBy", "==", userId)
       .get();
 
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
     res.status(200).send(documents);
   } catch (error) {
@@ -523,8 +555,8 @@ const getIdeaByUser = async (req, res) => {
 
 const makeIdeaComment = async (req, res) => {
   try {
-    const {ideaId} = req.params;
-    const {comment, user} = req.body;
+    const { ideaId } = req.params;
+    const { comment, user } = req.body;
 
     const docRef = db.collection("inventory-ideas").doc(ideaId);
 
@@ -537,7 +569,7 @@ const makeIdeaComment = async (req, res) => {
     });
 
     res.status(200).send("Commentaire ajouté avec succès");
-  } catch (err) {}
+  } catch (err) { }
 };
 
 const liveCategories = async (connection) => {
@@ -571,7 +603,7 @@ const todayRequests = async (connection) => {
             const device = borrowed.find(
               (device) => device.id === req.deviceId
             );
-            return {request: req, device: device};
+            return { request: req, device: device };
           });
 
           connection.sendUTF(JSON.stringify(todayRequests));
@@ -617,7 +649,7 @@ const borrowedList = async (connection) => {
                 const request = requests.find(
                   (request) => request.deviceId === doc.id
                 );
-                return {device: doc, request: request};
+                return { device: doc, request: request };
               });
 
               connection.sendUTF(JSON.stringify(borrowedWithRequests));
@@ -664,4 +696,5 @@ module.exports = {
   liveCategories,
   liveInventory,
   borrowedList,
+  getInventoryPdf,
 };

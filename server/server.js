@@ -1,10 +1,13 @@
 const express = require("express");
+const PDFDocument = require('pdfkit');
+const path = require('path');
+const fs = require('fs');
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const {v4: uuidv4} = require("uuid");
+const { v4: uuidv4 } = require("uuid");
 const app = express();
 const dotenv = require("dotenv").config();
-const {parse} = require("url");
+const { parse } = require("url");
 const webSocketServer = require("websocket").server;
 const http = require("http");
 /// MULTER CONFIG FOR UPLOAD ON SERVER
@@ -41,7 +44,7 @@ var upload = multer({
 
 app.use(express.json());
 app.use(cors());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use("/uploads", express.static("uploads"));
 

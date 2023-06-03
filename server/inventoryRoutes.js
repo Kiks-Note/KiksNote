@@ -28,6 +28,7 @@ const {
   refuseIdea,
   deleteIdea,
   getIdeaByUser,
+  getInventoryPdf,
 } = require("./controllers/inventory");
 
 router.get("/", inventory);
@@ -56,5 +57,6 @@ router.put("/ideas/:id/refuse", refuseIdea);
 router.delete("/idea/:ideaId", deleteIdea);
 router.get("/ideaByUser/:userId", getIdeaByUser);
 router.post("/ideas/comment/:ideaId", makeIdeaComment);
+router.get('/inventory/pdfGenerator', getInventoryPdf);
 
 module.exports = router;

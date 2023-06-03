@@ -14,11 +14,11 @@ import {
 } from "@mui/material";
 import Box from "@mui/material/Box";
 import axios from "axios";
-import React, {useEffect, useState} from "react";
-import {Toaster, toast} from "react-hot-toast";
-import {Rings} from "react-loader-spinner";
-import {useNavigate} from "react-router-dom";
-import {CustomDropdown} from "../../components/inventory/CustomDropdown";
+import React, { useEffect, useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
+import { Rings } from "react-loader-spinner";
+import { useNavigate } from "react-router-dom";
+import { CustomDropdown } from "../../components/inventory/CustomDropdown";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
 import InvBox from "../../components/inventory/InvBox";
 import LoanRequestForm from "../../components/inventory/LoanRequestForm";
@@ -34,16 +34,16 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import useFirebase from "../../hooks/useFirebase";
-import {makeStyles} from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 
-const Sujection = ({openSujection, setOpenSujection}) => {
+const Sujection = ({ openSujection, setOpenSujection }) => {
   const [url, setUrl] = useState("");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
-  const {user} = useFirebase();
+  const { user } = useFirebase();
 
   const handleSendSujection = async () => {
     setLoading(true);
@@ -71,7 +71,7 @@ const Sujection = ({openSujection, setOpenSujection}) => {
     <div>
       <Dialog open={openSujection} onClose={() => setOpenSujection(false)}>
         <DialogTitle>Idée d'achat</DialogTitle>
-        <DialogContent sx={{minWidth: "500px"}}>
+        <DialogContent sx={{ minWidth: "500px" }}>
           {/* <DialogContentText> */}
           {/* </DialogContentText> */}
           <TextField
@@ -174,7 +174,7 @@ function InventoryHome() {
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [openSujection, setOpenSujection] = useState(false);
   const navigate = useNavigate();
-  const {user} = useFirebase();
+  const { user } = useFirebase();
   const classes = useStyles();
 
   const toggleDrawerAdd = (event, open) => {
@@ -294,10 +294,10 @@ function InventoryHome() {
               <Skeleton
                 variant="rectangular"
                 height={0}
-                style={{paddingTop: "56.25%"}}
+                style={{ paddingTop: "56.25%" }}
               />
 
-              <CardContent style={{textAlign: "left", flexDirection: "column"}}>
+              <CardContent style={{ textAlign: "left", flexDirection: "column" }}>
                 <Typography variant="h6" gutterBottom paragraph>
                   <Skeleton variant="text" />
                 </Typography>
@@ -322,7 +322,7 @@ function InventoryHome() {
                     variant="circular"
                     width={40}
                     height={40}
-                    style={{marginRight: 10}}
+                    style={{ marginRight: 10 }}
                   />
                 </div>
               </CardContent>
@@ -379,7 +379,7 @@ function InventoryHome() {
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setOpenSujection(true)}
-          style={{marginTop: "20px"}}
+          style={{ marginTop: "20px" }}
           sx={{
             backgroundColor: "#3f51b5",
             color: "#fff",
@@ -406,9 +406,9 @@ function InventoryHome() {
         <CustomDropdown
           placeholder="Campus"
           data={[
-            {label: "Cergy", value: "Cergy"},
-            {label: "Paris", value: "Paris"},
-            {label: "Reset", value: "reset"},
+            { label: "Cergy", value: "Cergy" },
+            { label: "Paris", value: "Paris" },
+            { label: "Reset", value: "reset" },
           ]}
           onChange={(e) => {
             setCampusFilter(e[0].value);
@@ -418,7 +418,7 @@ function InventoryHome() {
       {loading ? (
         loadingSkeleton()
       ) : (
-        <Box sx={{flexGrow: 1}}>
+        <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={4}>
             {!loading &&
               inventory
@@ -434,7 +434,7 @@ function InventoryHome() {
                   } else {
                     return (
                       item.campus.charAt(0).toUpperCase() +
-                        item.campus.slice(1) ===
+                      item.campus.slice(1) ===
                       campusFilter
                     );
                   }
