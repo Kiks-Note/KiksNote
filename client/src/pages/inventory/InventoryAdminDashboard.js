@@ -723,7 +723,7 @@ const InventoryAdminDashboard = () => {
               <BoxStats
                 label={"Nombre d'idées non traitées"}
                 value={ideas.filter((i) => i.status === "pending").length}
-                onClick={() => navigate("/inventory/ideasnotTreated")}
+                onClick={() => navigate("/inventory/ideas/pending")}
               />
               <BoxStats
                 label={"Nombre d'idées traitées"}
@@ -732,12 +732,12 @@ const InventoryAdminDashboard = () => {
                     ["accepted", "refused"].includes(i.status)
                   ).length
                 }
-                onClick={() => {}}
+                onClick={() => navigate("/inventory/ideas/treated")}
               />
               <BoxStats
                 label={"Nombre d'idées total"}
                 value={ideas.length}
-                onClick={() => {}}
+                onClick={() => navigate("/inventory/ideas")}
               />
             </div>
             <div style={{display: "flex", gap: "30px", flexWrap: "wrap"}}>

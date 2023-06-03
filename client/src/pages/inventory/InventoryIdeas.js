@@ -1,4 +1,15 @@
-import {Button, Popover, Skeleton, Typography} from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Popover,
+  Skeleton,
+  TextField,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
 import moment from "moment";
 import React, {useEffect, useState} from "react";
@@ -7,6 +18,110 @@ import GridData from "../../components/inventory/GridData";
 import timeConverter from "../../functions/TimeConverter";
 import BasicModal from "../../components/inventory/BasicModal";
 import {useParams} from "react-router-dom";
+import useFirebase from "../../hooks/useFirebase";
+
+const CommentModal = ({open, setOpen, ideaId}) => {
+  const [comment, setComment] = useState("");
+  const {user} = useFirebase();
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleSend = async () => {
+    try {
+      await axios.post(
+        `http://localhost:5050/inventory/ideas/comment${ideaId}`,
+        {
+          comment,
+          userId: user.id,
+        }
+      );
+      toast.success("Commentaire envoyé");
+      setOpen(false);
+    } catch (error) {
+      toast.error("Erreur lors de l'envoi");
+      console.error(error);
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose}>
+      <DialogTitle
+        sx={{
+          backgroundColor: "#1E4675",
+          textAlign: "center",
+          minWidth: 600,
+        }}
+      >
+        <Typography
+          sx={{
+            fontFamily: "poppins-bold",
+            fontSize: 20,
+            color: "#fff",
+            alignSelf: "center",
+          }}
+        >
+          Ecrire un commentaire
+        </Typography>
+      </DialogTitle>
+      <DialogContent>
+        <TextField
+          autoFocus
+          margin="dense"
+          id="comment"
+          label="Commentaire"
+          type="text"
+          fullWidth
+          variant="outlined"
+          multiline
+          onChange={(e) => setComment(e.target.value)}
+          value={comment}
+          inputProps={{
+            maxLength: 500,
+            style: {
+              fontFamily: "poppins-regular",
+              minHeight: 150,
+              fontSize: 16,
+            },
+          }}
+          sx={{
+            minHeight: 150,
+            fontFamily: "poppins-regular",
+            marginTop: 4,
+            fontSize: 16,
+          }}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose}>
+          <Typography
+            sx={{
+              fontFamily: "poppins-regular",
+              fontSize: 16,
+              color: "#fff",
+              textTransform: "none",
+            }}
+          >
+            Annuler
+          </Typography>
+        </Button>
+        <Button onClick={handleClose}>
+          <Typography
+            sx={{
+              fontFamily: "poppins-regular",
+              fontSize: 16,
+              color: "#fff",
+              textTransform: "none",
+            }}
+          >
+            Envoyer
+          </Typography>
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
 const InventoryIdeas = () => {
   const [ideas, setIdeas] = useState([]);
@@ -14,8 +129,10 @@ const InventoryIdeas = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalText, setModalText] = useState("");
   const [modalType, setModalType] = useState("");
+  const [modalCommentOpen, setModalCommentOpen] = useState(false);
+  const [clickedIdeaId, setClickedIdeaId] = useState("");
+
   const params = useParams();
-  console.log(params);
 
   useEffect(() => {
     loading &&
@@ -331,6 +448,78 @@ const InventoryIdeas = () => {
     );
   };
 
+  const renderCellComment = (value, skeletonWidth) => {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
+        {loading ? (
+          <Skeleton
+            animation="wave"
+            variant="rounded"
+            sx={{width: skeletonWidth}}
+          />
+        ) : (
+          <>
+            <Button
+              aria-describedby={value}
+              onClick={() => {
+                setModalCommentOpen(true);
+                setClickedIdeaId(value);
+              }}
+              sx={{
+                backgroundColor: "#1E4675",
+                "&:hover": {
+                  backgroundColor: "#2868B6",
+                },
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "poppins-regular",
+                  fontSize: 14,
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  color: "#fff",
+                }}
+              >
+                Ecrire
+              </Typography>
+            </Button>
+            <Button
+              aria-describedby={value}
+              onClick={() => setModalCommentOpen(true)}
+              sx={{
+                backgroundColor: "#1E4675",
+                "&:hover": {
+                  backgroundColor: "#2868B6",
+                },
+              }}
+            >
+              <Typography
+                sx={{
+                  fontFamily: "poppins-regular",
+                  fontSize: 14,
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  cursor: "pointer",
+                  color: "#fff",
+                }}
+              >
+                Voir
+              </Typography>
+            </Button>
+          </>
+        )}
+      </div>
+    );
+  };
+
   const columns = [
     {
       field: "id",
@@ -404,7 +593,16 @@ const InventoryIdeas = () => {
       hide: params.status !== "pending",
       renderCell: (params) => renderCellAction(params.row.id, 80),
     },
+    {
+      field: "comment",
+      headerName: "Commentaires",
+      width: 200,
+      editable: false,
+      // hide: params.status === "treated",
+      renderCell: (params) => renderCellComment(params.row.id, 200),
+    },
   ];
+
   const rows = ideas.map((idea) => {
     return {
       id: idea.id,
@@ -427,6 +625,12 @@ const InventoryIdeas = () => {
         setOpen={setModalOpen}
         text={modalText}
         type={modalType}
+      />
+
+      <CommentModal
+        open={modalCommentOpen}
+        setOpen={setModalCommentOpen}
+        ideaId={clickedIdeaId}
       />
 
       {params.status === undefined && (

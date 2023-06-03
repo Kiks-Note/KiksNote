@@ -168,6 +168,34 @@ const makeRequest = async (req, res) => {
   }
 };
 
+const makePreRequest = async (req, res) => {
+  const {deviceId} = req.params;
+
+  try {
+    const deviceRef = db.collection("inventory").doc(deviceId);
+    const requestRef = db.collection("inventory_requests").doc();
+
+    const d = deviceRef.update({
+      status: "requested",
+      lastRequestId: requestRef.id,
+    });
+
+    const r = requestRef.set({
+      deviceId: deviceId,
+      createdAt: new Date(),
+      requesterId: null,
+      status: "pending",
+    });
+
+    await Promise.all([d, r]);
+
+    res.status(200).send("Request successfully made!");
+  } catch (err) {
+    res.status(500).send(err);
+    console.log(err);
+  }
+};
+
 const deviceRequests = async (req, res) => {
   const {deviceId} = req.params;
 
@@ -493,6 +521,25 @@ const getIdeaByUser = async (req, res) => {
   }
 };
 
+const makeIdeaComment = async (req, res) => {
+  try {
+    const {ideaId} = req.params;
+    const {comment, user} = req.body;
+
+    const docRef = db.collection("inventory-ideas").doc(ideaId);
+
+    await docRef.update({
+      comments: FieldValue.arrayUnion({
+        comment: comment,
+        user: user,
+        createdAt: new Date(),
+      }),
+    });
+
+    res.status(200).send("Commentaire ajouté avec succès");
+  } catch (err) {}
+};
+
 const liveCategories = async (connection) => {
   db.collection("inventoryCategories")
     .doc("7UKjabIg2uFyz1504U2K")
@@ -594,6 +641,8 @@ module.exports = {
   updateDevice,
   deleteDevice,
   makeRequest,
+  makePreRequest,
+  makeIdeaComment,
   deviceRequests,
   acceptRequest,
   rejectRequest,

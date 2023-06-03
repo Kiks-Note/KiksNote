@@ -9,6 +9,8 @@ const {
   updateDevice,
   deleteDevice,
   makeRequest,
+  makePreRequest,
+  makeIdeaComment,
   deviceRequests,
   acceptRequest,
   rejectRequest,
@@ -35,6 +37,7 @@ router.post("/", addDevice);
 router.put("/device/:deviceId", updateDevice);
 router.delete("/device/:deviceId", deleteDevice);
 router.post("/request/:deviceId", makeRequest);
+router.post("/preRequest/:deviceId", makePreRequest);
 router.get("/requests/:deviceId", deviceRequests);
 router.put("/acceptRequest/:deviceId/:requestId", acceptRequest);
 router.put("/refuseRequest/:deviceId/:requestId", rejectRequest);
@@ -52,5 +55,6 @@ router.put("/ideas/:id/accept", acceptIdea);
 router.put("/ideas/:id/refuse", refuseIdea);
 router.delete("/idea/:ideaId", deleteIdea);
 router.get("/ideaByUser/:userId", getIdeaByUser);
+router.post("/ideas/comment/:ideaId", makeIdeaComment);
 
 module.exports = router;

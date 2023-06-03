@@ -29,6 +29,7 @@ import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import PhoneRequestDevice from "./pages/inventory/PhoneRequestDevice";
 
 function RoutesProvider() {
   return (
@@ -39,6 +40,10 @@ function RoutesProvider() {
         <Route element={<PublicRoutes />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
+          <Route
+            path="/preRequest/:deviceId"
+            element={<PhoneRequestDevice />}
+          />
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
@@ -75,6 +80,10 @@ function RoutesProvider() {
             path="/inventory/admin/dashboard"
             element={<InventoryAdminDashboard />}
           />
+          {/* <Route
+            path="/inventory/device/:deviceId"
+            element={<PhoneRequestDevice />}
+          /> */}
 
           <Route path="/inventory/admin/list" element={<InventoryList />} />
           <Route
