@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import { TextField, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -12,7 +12,7 @@ import html2pdf from "html2pdf.js";
 import "../../components/agile/Postit.scss";
 const taskStatus = {
   think: {
-    name: "Penser et ressentir",
+    name: "Penser ",
     color: "#ff0000",
     items: [],
   },
@@ -22,7 +22,7 @@ const taskStatus = {
     items: [],
   },
   do: {
-    name: "Dire et faire",
+    name: "Dire",
     color: "#9ACD32",
     items: [],
   },
@@ -32,7 +32,7 @@ const taskStatus = {
     items: [],
   },
 };
-export default function EmpathyMap() {
+export default function EmpathyMap({ dashboardId }) {
   const [columns, setColumns] = useState(taskStatus);
   const [showTextField, setShowTextField] = useState(false);
   const [newPostItContent, setNewPostItContent] = useState("");
@@ -45,12 +45,44 @@ export default function EmpathyMap() {
     const destination = result.destination;
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
+    const sourceId = result.source.droppableId;
+    const destinationId = result.destination.droppableId;
 
-    if (source.droppableId !== destination.droppableId) {
+    if (sourceId === destinationId) {
+      const copiedItems = [...sourceColumn.items];
+      const [removed] = copiedItems.splice(source.index, 1);
+      const destItems = [...destColumn.items];
+      copiedItems.splice(destination.index, 0, removed);
+      // changeCardIndex({
+      //   ...columns,
+      //   [source.droppableId]: {
+      //     ...sourceColumn,
+      //     items: copiedItems,
+      //   },
+      // });
+      setColumns({
+        ...columns,
+        [source.droppableId]: {
+          ...sourceColumn,
+          items: copiedItems,
+        },
+      });
+    } else {
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
       const [removed] = sourceItems.splice(source.index, 1);
       destItems.splice(destination.index, 0, removed);
+      // changeCardIndex({
+      //   ...columns,
+      //   [source.droppableId]: {
+      //     ...sourceColumn,
+      //     items: sourceItems,
+      //   },
+      //   [destination.droppableId]: {
+      //     ...destColumn,
+      //     items: destItems,
+      //   },
+      // });
       setColumns({
         ...columns,
         [source.droppableId]: {
@@ -62,21 +94,14 @@ export default function EmpathyMap() {
           items: destItems,
         },
       });
-    } else {
-      const copiedItems = [...sourceColumn.items];
-      const [removed] = copiedItems.splice(source.index, 1);
-      copiedItems.splice(destination.index, 0, removed);
-      setColumns({
-        ...columns,
-        [source.droppableId]: {
-          ...sourceColumn,
-          items: copiedItems,
-        },
-      });
     }
   };
 
+  //!TODO
   const addPostIt = (columnId) => {
+    // axios.put("http://localhost:5050/agile/" + dashboardId + "/empathy_map", {
+    //   content: newPostItContent,
+    // });
     const newPostIt = {
       id: `postIt-${Date.now()}`,
       content: newPostItContent,
@@ -97,7 +122,29 @@ export default function EmpathyMap() {
     setShowTextField(false); // Hide the TextField and button after adding the post-it
     setNewPostItContent(""); // Reset the new post-it content
   };
-
+  //!TODO
+  const deletePostIt = async () => {
+    try {
+      await axios.delete(
+        "http://localhost:5050/agile/" +
+          dashboardId +
+          "/empathy/:id" +
+          "/postit/"
+      );
+    } catch (error) {
+      // Gérer les erreurs
+    }
+  };
+  //!TODO
+  async function changeCardIndex(newColumns) {
+    await axios.put(
+      "http://localhost:5050/agile/" +
+        dashboardId +
+        "/empathy/:id" +
+        "/setPostit",
+      newColumns
+    );
+  }
   const handleChange = (event) => {
     setNewPostItContent(event.target.value);
   };
@@ -113,49 +160,44 @@ export default function EmpathyMap() {
   const exportToPDF = () => {
     const element = document.getElementById("pdf-content");
     const opt = {
-      margin: [0, 0, 0, 0], // Marge du document PDF
-      filename: "empathy-map.pdf", // Nom du fichier PDF résultant
-      image: { type: "jpeg", quality: 0.98 }, // Type d'image et qualité
-      html2canvas: { scale: 2 }, // Échelle pour améliorer la qualité de l'image
-      jsPDF: { unit: "in", format: "letter", orientation: "portrait" }, // Format et orientation du document PDF
+      margin: [0, 0, 0, 0],
+      filename: "empathy-map.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
     };
 
-    html2pdf().set(opt).from(element).save();
+    //html2pdf().set(opt).from(element).save();
 
-    // html2pdf()
-    //   .set(opt)
-    //   .from(element)
-    //   .toPdf()
-    //   .get("pdf")
-    //   .then((pdf) => {
-    //     // Convertir le PDF en ArrayBuffer
-    //     return pdf.output("arraybuffer");
-    //   })
-    //   .then((buffer) => {
-    //     // Envoyer le fichier PDF vers votre endpoint
-    //     const formData = new FormData();
-    //     formData.append(
-    //       "pdfFile",
-    //       new Blob([buffer], { type: "application/pdf" }),
-    //       "empathy-map.pdf"
-    //     );
+    html2pdf()
+      .set(opt)
+      .from(element)
+      .toPdf()
+      .get("pdf")
+      .then((pdf) => {
+        return pdf.output("arraybuffer");
+      })
+      .then((buffer) => {
+        const formData = new FormData();
+        formData.append(
+          "pdfFile",
+          new Blob([buffer], { type: "application/pdf" }),
+          "empathy-map.pdf"
+        );
 
-    //     return axios.post("URL_DE_VOTRE_ENDPOINT", formData);
-    //   })
-    //   .then((response) => {
-    //     // Gérer la réponse de l'endpoint, par exemple afficher un message de réussite
-    //     console.log("PDF envoyé avec succès !");
-    //   })
-    //   .catch((error) => {
-    //     // Gérer les erreurs, par exemple afficher un message d'erreur
-    //     console.error("Erreur lors de l'envoi du PDF :", error);
-    //   });
+        return axios.post("http://localhost:5050/agile/empathy_map", formData);
+      })
+      .then((response) => {
+        console.log("PDF envoyé avec succès !");
+      })
+      .catch((error) => {
+        console.error("Erreur lors de l'envoi du PDF :", error);
+      });
   };
 
   return (
     <>
       <div style={{ margin: 2 }}>
-        <Typography variant="h6">Empathy Map de Adrien</Typography>
         <Button variant="contained" onClick={exportToPDF}>
           Exporter mon EmpathyMap
         </Button>

@@ -417,24 +417,6 @@ export default function DetailCard(props) {
                 </ListItemButton>
               </ListItem>
             )}
-            {!allowedColumnIds.includes(props.columnId) && (
-              <ListItem disablePadding sx={style_item_button}>
-                <ListItemButton
-                  onClick={() => {
-                    setShowModal(!showModal);
-                    setType("avancement");
-                  }}
-                >
-                  <ListItemIcon>
-                    <AutoGraphIcon color="primary" />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Avancement"
-                    primaryTypographyProps={{ color: "text.default" }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            )}
             {!["0", "5", "6"].includes(props.columnId) && (
               <ListItem disablePadding sx={style_item_button}>
                 <ListItemButton

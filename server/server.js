@@ -73,6 +73,7 @@ wsI.on("request", (request) => {
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
+  app.use("/agile", agileRoute(connection, pathname,upload));
   // app.use("/agile", agileRoute());
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
@@ -85,7 +86,7 @@ wsI.on("request", (request) => {
 });
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
-app.use("/agile", agileRoute());
+
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });

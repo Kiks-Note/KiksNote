@@ -113,7 +113,48 @@ export default function Board({ boardId, dashboardId }) {
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
       const [removed] = sourceItems.splice(source.index, 1);
+      var currentDate = new Date();
+      // Options pour le format de la date
+      var options = { day: "2-digit", month: "2-digit", year: "numeric" };
+      // Formater la date au format "DD/MM/YYYY"
+      var formattedDate = currentDate.toLocaleDateString("fr-FR", options);
+      // Modifier la propriété 'advancement' en fonction de 'destinationId'
+      if (destinationId == "2") {
+        // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
+        for (const item of removed.advancement) {
+          if (
+            new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") ==
+            formattedDate
+          ) {
+            item.advance = 0;
+            break; // Sortir de la boucle une fois l'élément trouvé
+          }
+        }
+      } else if (destinationId == "3") {
+        // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
+        for (const item of removed.advancement) {
+          if (
+            new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") ==
+            formattedDate
+          ) {
+            item.advance = removed.estimation / 2;
+            break; // Sortir de la boucle une fois l'élément trouvé
+          }
+        }
+      } else if (destinationId == "4") {
+        // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
+        for (const item of removed.advancement) {
+          if (
+            new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") ==
+            formattedDate
+          ) {
+            item.advance = removed.estimation;
+            break; // Sortir de la boucle une fois l'élément trouvé
+          }
+        }
+      }
       destItems.splice(destination.index, 0, removed);
+
       changeCardIndex({
         ...columns,
         [source.droppableId]: {
@@ -152,9 +193,9 @@ export default function Board({ boardId, dashboardId }) {
           />
         </div>
 
-        <Button variant="outlined" startIcon={<SettingsIcon />}>
+        {/* <Button variant="outlined" startIcon={<SettingsIcon />}>
           Paramètres
-        </Button>
+        </Button> */}
       </section>
       <div>
         <Toaster />

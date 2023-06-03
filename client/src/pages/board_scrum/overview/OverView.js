@@ -66,7 +66,7 @@ function OverView({ id }) {
         var data = JSON.parse(message.data);
         setPdfLink(data.pdf_link);
         setRelease((releases = data.release));
-        setBoards((boards = data.boards));
+        setBoards(( data.boards));
         setStories(data.stories);
         setAgile(data.agile);
         setDisplay(true);

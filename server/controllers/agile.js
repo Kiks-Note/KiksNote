@@ -128,26 +128,63 @@ const getZipFolderAgile = async (req, res) => {
     res.status(500).send(err);
   }
 };
-const changeIndex = async (req, res) => {
-  var data = req.body;
-  console.log(data);
-  await db
-    .collection("dashboard")
-    .doc(req.params.dashboardId)
-    .collection("board")
-    .doc(req.params.boardId)
-    .update({
-      think: data[0],
-      see: data[1],
-      do: data[2],
-      hear: data[3],
-    });
+// const changeIndex = async (req, res) => {
+//   var data = req.body;
+//   console.log(data);
+//   await db
+//     .collection("dashboard")
+//     .doc(req.params.dashboardId)
+//     .collection("board")
+//     .doc(req.params.boardId)
+//     .update({
+//       think: data[0],
+//       see: data[1],
+//       do: data[2],
+//       hear: data[3],
+//     });
+// };
+const getPdfEmpathyMapToFolderAgile = async (req, res) => {
+  try {
+    const pdfFile = req.file;
+    if (!pdfFile) {
+      return res
+        .status(400)
+        .json({ error: "Aucun fichier PDF n'a été envoyé." });
+    }
+    // Traiter le fichier PDF, par exemple le renommer, le déplacer, etc.
+    // Ici, nous imprimons simplement les informations du fichier
+    console.log("Nom du fichier :", pdfFile.originalname);
+    console.log("Chemin du fichier temporaire :", pdfFile.path);
+    res.status(200).send("Fichier PDF traité avec succès.");
+  } catch (err) {
+    console.error(err);
+    res.status(500).send(err);
+  }
 };
 
+// !TODO
+const empathyRequest = async (connection) => {
+  connection.on("message", async (message) => {
+    const dashboardId = JSON.parse(message.utf8Data);
+    db.collection("dashboard")
+      .doc(dashboardId)
+      .collection("agile").doc("empathy_map")
+      .onSnapshot(
+        (snapshot) => {
+          connection.sendUTF(JSON.stringify(data));
+        },
+        (err) => {
+          console.log(`Encountered error: ${err}`);
+        }
+      );
+  });
+};
 module.exports = {
   addImpactMapping,
   getImpactMapping,
   getFoldersAgile,
   getZipFolderAgile,
-  changeIndex,
+  getPdfEmpathyMapToFolderAgile,
+  empathyRequest,
+  //changeIndex,
 };
