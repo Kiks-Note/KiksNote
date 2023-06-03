@@ -1,7 +1,7 @@
 const { db } = require("../firebase");
 const moment = require("moment");
 
-const pastelColors = ["#FFA07A", "#FF7F50", "#FFEE93", "#FCF5C7", "#A0CED9", "#ADF7B6", "#ffb3c6", "#a9def9", "#eccaff"];
+const pastelColors = ["#FFA07A", "#FF7F50", "#FFEE93", "#A0CED9", "#ADF7B6", "#ffb3c6", "#a9def9", "#eccaff"];
 let indexColor = 0;
 
 const getStudents = async (req, res) => {
@@ -108,6 +108,39 @@ const room = async (connection) => {
                 });
                 currentRooms.set(response.data.class, defaultRoom);
 
+                const roomUsersC = currentRooms.get(response.data.class) || defaultRoom;
+
+                if (indexColor >= pastelColors.length) {
+                    indexColor = 0;
+                }
+                let colorC = pastelColors[indexColor];
+                indexColor++;
+
+                roomUsersC.users.set(response.data.userID, { position: null, color: colorC });
+
+                currentRooms.set(response.data.class, roomUsersC);
+
+                const roomClientsC = clients.get(response.data.class) || new Map();
+
+                roomClientsC.set(response.data.userID, connection);
+
+                clients.set(response.data.class, roomClientsC);
+
+                currentRooms.get(response.data.class).nbUsers = roomClientsC.size;
+
+                const messageCreate = {
+                    type: "updateRoom",
+                    data: {
+                        currentRoom: {
+                            ...currentRooms.get(response.data.class),
+                            users: Object.fromEntries(currentRooms.get(response.data.class).users)
+                        },
+                        class: response.data.class,
+                    }
+                };
+
+                sendToAllClients(messageCreate, response.data.class);
+
                 break;
             case "joinRoom":
                 console.log("joinRoom");
@@ -149,7 +182,7 @@ const room = async (connection) => {
                 currentRooms.delete(response.data.class);
 
                 let allClientsInRoomClose = clients.get(response.data.class) || new Map();
-                allClientsInRoomClose.delete(connection);
+                allClientsInRoomClose.delete(response.data.userID);
                 clients.set(response.data.class, allClientsInRoomClose);
 
                 break;
@@ -163,7 +196,7 @@ const room = async (connection) => {
 
 
                 let allClientsInRoomLeave = clients.get(response.data.class) || new Map();
-                allClientsInRoomLeave.delete(connection);
+                allClientsInRoomLeave.delete(response.data.userID);
                 clients.set(response.data.class, allClientsInRoomLeave);
 
                 currentRooms.get(response.data.class).nbUsers = clients.get(response.data.class).size;
