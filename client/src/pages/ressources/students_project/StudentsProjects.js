@@ -237,8 +237,22 @@ const StudentsProjects = () => {
         console.error(error);
         setLoading(false);
       });
-    getAllClass();
-    getAllStudents();
+    getAllClass()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+      });
+    getAllStudents()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+      });
   }, []);
 
   const { control } = useForm({
@@ -264,122 +278,48 @@ const StudentsProjects = () => {
   ];
 
   return (
-    <div className="students-project-container">
-      <div className="header-students-projects">
-        <FormControl sx={{ width: "20%" }}>
-          <Select
-            value={selectedFilterTypeProject}
-            onChange={(event) => {
-              setSelectedFilterTypeProject(event.target.value);
-            }}
-            displayEmpty
-            renderValue={(value) => value || "Type"}
-          >
-            <MenuItem value="">Filtrer sur le type de projet</MenuItem>
-            {allTypesProject.map((type) => (
-              <MenuItem value={type}>{type}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ width: "20%" }}>
-          <Select
-            value={selectedFilterClass}
-            onChange={(event) => {
-              setSelectedFilterClass(event.target.value);
-              const selectedClass = allclass.find(
-                (coursClass) => coursClass.name === event.target.value
-              );
-              setSelectedIdFilterClass(selectedClass ? selectedClass.id : "");
-            }}
-            displayEmpty
-            renderValue={(value) => value || "Promo"}
-          >
-            <MenuItem value="">Filtrer sur la promo</MenuItem>
-            {allclass.map((promo) => (
-              <MenuItem value={promo.name}>{promo.name}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {userStatus === "etudiant" ? (
-          <Button
-            onClick={handleClickOpen}
-            sx={{ backgroundColor: "#7a52e1", color: "white", width: "15%" }}
-          >
-            Publier mon projet
-          </Button>
-        ) : (
-          <div></div>
-        )}
-      </div>
-      <Card
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-      >
-        <CreateProjectDialog
-          open={open}
-          handleClose={handleClose}
-          handleDrop={handleDrop}
-          handleFileChange={handleFileChange}
-          handleRemove={handleRemove}
-          rejectedFiles={rejectedFiles}
-          handleSubmit={handleSubmit}
-          nameProject={nameProject}
-          setNameProject={setNameProject}
-          repoProjectLink={repoProjectLink}
-          setRepoProjectLink={setRepoProjectLink}
-          selectedClass={selectedClass}
-          setSelectedClass={setSelectedClass}
-          membersProject={membersProject}
-          setMembersProject={setMembersProject}
-          typeProject={typeProject}
-          setTypeProject={setTypeProject}
-          descriptionProject={descriptionProject}
-          setDescriptionProject={setDescriptionProject}
-          setIdSelectedClass={setIdSelectedClass}
-          control={control}
-          allstudents={allstudents}
-          allclass={allclass}
-        />
-      </Card>
-      <h1 className="h1-project">Top10 Projets Étudiants</h1>
-      <CarouselProjects
-        topProjects={filteredProjects.slice(0, 10)}
-        loading={loading}
-        selectedFilterType={selectedFilterTypeProject}
-        selectedIdFilterClass={selectedIdFilterClass}
-      />
-      <h1 className="h1-project">Projets Étudiants</h1>
-      <Grid container spacing={2}>
-        {loading ? (
-          <>
-            <Grid container justifyContent="space-evenly">
-              {(loading ? Array.from(new Array(3)) : 3).map((item, index) => (
-                <Skeleton variant="rectangular" width={300} height={300} />
-              ))}
-            </Grid>
-          </>
-        ) : filteredProjects.slice(10).length === 0 ? (
-          <>
-            <div className="no-projects-container">
-              <p>Aucun projet étudiant publié pour le moment</p>
-              <img
-                className="no-class-img"
-                src={studentProjectsImg}
-                alt="no-projects-students-uploaded"
-              />
+    <>
+      {loading ? (
+        <>
+          <div className="students-project-container">
+            <div className="header-students-projects">
+              <FormControl sx={{ width: "20%" }}>
+                <Select
+                  value=""
+                  displayEmpty
+                  renderValue={() => "Type"}
+                  disabled
+                >
+                  <MenuItem value="">Filtrer sur le type de projet</MenuItem>
+                  <MenuItem value={1}>Type 1</MenuItem>
+                  <MenuItem value={2}>Type 2</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ width: "20%" }}>
+                <Select
+                  value=""
+                  displayEmpty
+                  renderValue={() => "Promo"}
+                  disabled
+                >
+                  <MenuItem value="">Filtrer sur la promo</MenuItem>
+                  <MenuItem value={1}>Promo 1</MenuItem>
+                  <MenuItem value={2}>Promo 2</MenuItem>
+                </Select>
+              </FormControl>
+              <div></div>
             </div>
-          </>
-        ) : (
-          filteredProjects
-            .slice(10)
-            .filter((project) =>
-              selectedIdFilterClass !== ""
-                ? project.promoProject &&
-                  project.promoProject.id === selectedIdFilterClass
-                : true
-            )
-            .map((project) => (
-              <>
-                <Grid item xs={12} sm={6} md={3}>
+            <h1 className="h1-project">Top10 Projets Étudiants</h1>
+            <CarouselProjects
+              topProjects={filteredProjects.slice(0, 10)}
+              loading={loading}
+              selectedFilterType={selectedFilterTypeProject}
+              selectedIdFilterClass={selectedIdFilterClass}
+            />
+            <h1 className="h1-project">Projets Étudiants</h1>
+            <Grid container spacing={2}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <Grid item xs={12} sm={6} md={3} key={index}>
                   <Card
                     sx={{
                       display: "flex",
@@ -387,139 +327,357 @@ const StudentsProjects = () => {
                       justifyContent: "space-between",
                       height: "300px",
                     }}
-                    onClick={() => {
-                      navigate(`/${project.id}`);
-                    }}
                   >
-                    <CardMedia
-                      sx={{
-                        width: "100%",
-                        minHeight: "150px",
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      component="img"
-                      src={project.imgProject}
-                      alt="course image"
-                      style={{
-                        objectFit: "contain",
-                        objectPosition: "center",
-                        width: "100%",
-                        minHeight: "150px",
-                      }}
-                    />
-
+                    <Skeleton width={300} height={300} variant="rectangular" />
                     <CardContent sx={{ padding: "10px", height: "120px" }}>
-                      {project.typeProject === "Web" ? (
-                        <div>
-                          <h2 variant="h3" component="div">
-                            {project.nameProject} - {project.typeProject}
-                            <DesktopWindowsRoundedIcon
-                              sx={{ marginLeft: "5px" }}
-                            />
-                          </h2>
-                        </div>
-                      ) : project.typeProject === "Mobile" ? (
-                        <div>
-                          <h2 variant="h3" component="div">
-                            {project.nameProject} - {project.typeProject}
-                            <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
-                          </h2>
-                        </div>
-                      ) : project.typeProject === "Gaming" ? (
-                        <div>
-                          <h2 variant="h3" component="div">
-                            {project.nameProject} - {project.typeProject}
-                            <SportsEsportsRoundedIcon
-                              sx={{ marginLeft: "5px" }}
-                            />
-                          </h2>
-                        </div>
-                      ) : project.typeProject === "IA" ? (
-                        <div>
-                          <h2 variant="h3" component="div">
-                            {project.nameProject} - {project.typeProject}
-                            <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
-                          </h2>
-                        </div>
-                      ) : project.typeProject === "DevOps" ? (
-                        <div>
-                          <h2 variant="h3" component="div">
-                            {project.nameProject} - {project.typeProject}
-                            <MediationRoundedIcon />
-                          </h2>
-                        </div>
-                      ) : (
-                        <div></div>
-                      )}
-
+                      <div>
+                        <h2 variant="h3" component="div">
+                          <Skeleton width={200} />
+                        </h2>
+                      </div>
                       <Chip
                         sx={{ marginRight: "10px" }}
                         label={
-                          <>
-                            <Typography>{project.promoProject.name}</Typography>
-                          </>
+                          <Typography>
+                            <Skeleton width={100} />
+                          </Typography>
                         }
-                      ></Chip>
-                      {userStatus === "po" ? (
-                        <Button
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            referStudentProject(
-                              project.id,
-                              project.nameProject,
-                              votePo,
-                              user?.id
-                            );
-                          }}
-                          sx={{ color: "#7a52e1" }}
-                        >
-                          {project.counterRef}{" "}
-                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
-                        </Button>
-                      ) : userStatus === "pedago" ? (
-                        <Button
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            referStudentProject(
-                              project.id,
-                              project.nameProject,
-                              votePedago,
-                              user?.id
-                            );
-                          }}
-                          sx={{ color: "#7a52e1" }}
-                        >
-                          {project.counterRef}{" "}
-                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
-                        </Button>
-                      ) : (
-                        <Button
-                          onClick={(event) => {
-                            event.stopPropagation();
-                            referStudentProject(
-                              project.id,
-                              project.nameProject,
-                              voteStudent,
-                              user?.id
-                            );
-                          }}
-                          sx={{ color: "#7a52e1" }}
-                        >
-                          {project.counterRef}{" "}
-                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
-                        </Button>
-                      )}
+                      />
+                      <Button sx={{ color: "#7a52e1" }}>
+                        <Skeleton width={30} height={20} />
+                      </Button>
                     </CardContent>
                   </Card>
                 </Grid>
-              </>
-            ))
-        )}
-      </Grid>
-      <ToastContainer></ToastContainer>
-    </div>
+              ))}
+            </Grid>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="students-project-container">
+            <div className="header-students-projects">
+              <FormControl sx={{ width: "20%" }}>
+                <Select
+                  value={selectedFilterTypeProject}
+                  onChange={(event) => {
+                    setSelectedFilterTypeProject(event.target.value);
+                  }}
+                  displayEmpty
+                  renderValue={(value) => value || "Type"}
+                >
+                  <MenuItem value="">Filtrer sur le type de projet</MenuItem>
+                  {allTypesProject.map((type) => (
+                    <MenuItem value={type}>{type}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl sx={{ width: "20%" }}>
+                <Select
+                  value={selectedFilterClass}
+                  onChange={(event) => {
+                    setSelectedFilterClass(event.target.value);
+                    const selectedClass = allclass.find(
+                      (coursClass) => coursClass.name === event.target.value
+                    );
+                    setSelectedIdFilterClass(
+                      selectedClass ? selectedClass.id : ""
+                    );
+                  }}
+                  displayEmpty
+                  renderValue={(value) => value || "Promo"}
+                >
+                  <MenuItem value="">Filtrer sur la promo</MenuItem>
+                  {allclass.map((promo) => (
+                    <MenuItem value={promo.name}>{promo.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              {userStatus === "etudiant" ? (
+                <Button
+                  onClick={handleClickOpen}
+                  sx={{
+                    backgroundColor: "#7a52e1",
+                    color: "white",
+                    width: "15%",
+                  }}
+                >
+                  Publier mon projet
+                </Button>
+              ) : (
+                <div></div>
+              )}
+            </div>
+            <Card
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+              }}
+            >
+              <CreateProjectDialog
+                open={open}
+                handleClose={handleClose}
+                handleDrop={handleDrop}
+                handleFileChange={handleFileChange}
+                handleRemove={handleRemove}
+                rejectedFiles={rejectedFiles}
+                handleSubmit={handleSubmit}
+                nameProject={nameProject}
+                setNameProject={setNameProject}
+                repoProjectLink={repoProjectLink}
+                setRepoProjectLink={setRepoProjectLink}
+                selectedClass={selectedClass}
+                setSelectedClass={setSelectedClass}
+                membersProject={membersProject}
+                setMembersProject={setMembersProject}
+                typeProject={typeProject}
+                setTypeProject={setTypeProject}
+                descriptionProject={descriptionProject}
+                setDescriptionProject={setDescriptionProject}
+                setIdSelectedClass={setIdSelectedClass}
+                control={control}
+                allstudents={allstudents}
+                allclass={allclass}
+              />
+            </Card>
+            <h1 className="h1-project">Top10 Projets Étudiants</h1>
+            <CarouselProjects
+              topProjects={filteredProjects.slice(0, 10)}
+              loading={loading}
+              selectedFilterType={selectedFilterTypeProject}
+              selectedIdFilterClass={selectedIdFilterClass}
+            />
+            <h1 className="h1-project">Projets Étudiants</h1>
+            <div
+              style={{
+                width: "90%",
+                margin: "auto",
+              }}
+            >
+              <Grid container spacing={2}>
+                {filteredProjects.slice(10).length === 0 ? (
+                  <>
+                    <div className="no-projects-container">
+                      <p>Aucun projet étudiant publié pour le moment</p>
+                      <img
+                        className="no-class-img"
+                        src={studentProjectsImg}
+                        alt="no-projects-students-uploaded"
+                      />
+                    </div>
+                  </>
+                ) : (
+                  filteredProjects
+                    .slice(10)
+                    .filter((project) =>
+                      selectedIdFilterClass !== ""
+                        ? project.promoProject &&
+                          project.promoProject.id === selectedIdFilterClass
+                        : true
+                    )
+                    .map((project) => (
+                      <>
+                        <Grid item xs={12} sm={6} md={3}>
+                          <Card
+                            sx={{
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-between",
+                              height: "300px",
+                            }}
+                            onClick={() => {
+                              navigate(`/${project.id}`);
+                            }}
+                          >
+                            <CardMedia
+                              sx={{
+                                width: "100%",
+                                minHeight: "150px",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                              }}
+                              component="img"
+                              src={project.imgProject}
+                              alt="course image"
+                              style={{
+                                objectFit: "contain",
+                                objectPosition: "center",
+                                width: "100%",
+                                minHeight: "150px",
+                              }}
+                            />
+
+                            <CardContent
+                              sx={{ padding: "10px", height: "120px" }}
+                            >
+                              {project.typeProject === "Web" ? (
+                                <div>
+                                  <h2
+                                    variant="h3"
+                                    component="div"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {project.nameProject} -{" "}
+                                    {project.typeProject}
+                                    <DesktopWindowsRoundedIcon
+                                      sx={{ marginLeft: "5px" }}
+                                    />
+                                  </h2>
+                                </div>
+                              ) : project.typeProject === "Mobile" ? (
+                                <div>
+                                  <h2
+                                    variant="h3"
+                                    component="div"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {project.nameProject} -{" "}
+                                    {project.typeProject}
+                                    <SmartphoneRoundedIcon
+                                      sx={{ marginLeft: "5px" }}
+                                    />
+                                  </h2>
+                                </div>
+                              ) : project.typeProject === "Gaming" ? (
+                                <div>
+                                  <h2
+                                    variant="h3"
+                                    component="div"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {project.nameProject} -{" "}
+                                    {project.typeProject}
+                                    <SportsEsportsRoundedIcon
+                                      sx={{ marginLeft: "5px" }}
+                                    />
+                                  </h2>
+                                </div>
+                              ) : project.typeProject === "IA" ? (
+                                <div>
+                                  <h2
+                                    variant="h3"
+                                    component="div"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {project.nameProject} -{" "}
+                                    {project.typeProject}
+                                    <SmartToyRoundedIcon
+                                      sx={{ marginLeft: "5px" }}
+                                    />
+                                  </h2>
+                                </div>
+                              ) : project.typeProject === "DevOps" ? (
+                                <div>
+                                  <h2
+                                    variant="h3"
+                                    component="div"
+                                    style={{
+                                      display: "flex",
+                                      alignItems: "center",
+                                    }}
+                                  >
+                                    {project.nameProject} -{" "}
+                                    {project.typeProject}
+                                    <MediationRoundedIcon />
+                                  </h2>
+                                </div>
+                              ) : (
+                                <div></div>
+                              )}
+
+                              <Chip
+                                sx={{ marginRight: "10px" }}
+                                label={
+                                  <>
+                                    <Typography>
+                                      {project.promoProject.name}
+                                    </Typography>
+                                  </>
+                                }
+                              ></Chip>
+                              {userStatus === "po" ? (
+                                <Button
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    referStudentProject(
+                                      project.id,
+                                      project.nameProject,
+                                      votePo,
+                                      user?.id
+                                    );
+                                  }}
+                                  sx={{ color: "#7a52e1" }}
+                                >
+                                  {project.counterRef}{" "}
+                                  <BackHandRoundedIcon
+                                    sx={{ marginLeft: "3px" }}
+                                  />
+                                </Button>
+                              ) : userStatus === "pedago" ? (
+                                <Button
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    referStudentProject(
+                                      project.id,
+                                      project.nameProject,
+                                      votePedago,
+                                      user?.id
+                                    );
+                                  }}
+                                  sx={{ color: "#7a52e1" }}
+                                >
+                                  {project.counterRef}{" "}
+                                  <BackHandRoundedIcon
+                                    sx={{ marginLeft: "3px" }}
+                                  />
+                                </Button>
+                              ) : (
+                                <Button
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    referStudentProject(
+                                      project.id,
+                                      project.nameProject,
+                                      voteStudent,
+                                      user?.id
+                                    );
+                                  }}
+                                  sx={{ color: "#7a52e1" }}
+                                >
+                                  {project.counterRef}{" "}
+                                  <BackHandRoundedIcon
+                                    sx={{ marginLeft: "3px" }}
+                                  />
+                                </Button>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      </>
+                    ))
+                )}
+              </Grid>
+            </div>
+
+            <ToastContainer></ToastContainer>
+          </div>
+        </>
+      )}
+    </>
   );
 };
 
