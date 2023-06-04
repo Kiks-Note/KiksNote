@@ -5,6 +5,11 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import PropTypes from "prop-types";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import Dialog from "@mui/material/Dialog";
+import useFirebase from "../../../hooks/useFirebase";
 import {
   Button,
   Grid,
@@ -19,15 +24,8 @@ import {
   Box,
   Chip,
 } from "@mui/material";
-import List from "@mui/material/List";
-import DialogTitle from "@mui/material/DialogTitle";
-import DialogContent from "@mui/material/DialogContent";
-import DialogActions from "@mui/material/DialogActions";
-import Dialog from "@mui/material/Dialog";
-import AddIcon from "@mui/icons-material/Add";
-import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/Close";
-
+import IconButton from "@mui/material/IconButton";
 const schema = yup.object().shape({
   sprint_name: yup.string().required("Donnez un nom à votre sprint."),
   group_name: yup.string().required("Donnez un nom à votre groupe."),
@@ -44,10 +42,13 @@ const schema = yup.object().shape({
         )
     ),
   starting_date: yup.date(),
-  students: yup.array().min(1, "Ajoutez au moins un membre."),
+  students: yup
+    .array()
+    .min(1, "Ajoutez au moins un membre.")
+    .max(4, "Maximum 4 membres autorisés."),
 });
 
-function DialogDashbord(props) {
+export default function SimpleDashboardForm(props) {
   const { onClose, value: valueProp, open, ...other } = props;
   const [value, setValue] = React.useState(valueProp);
   const [members, setMembers] = useState(props.members);
@@ -60,7 +61,7 @@ function DialogDashbord(props) {
   } = useForm({
     resolver: yupResolver(schema),
   });
-
+  const { user } = useFirebase();
   const today = new Date();
   const defaultStartDate = format(today, "yyyy-MM-dd");
   //Function for the select to change member
@@ -99,6 +100,7 @@ function DialogDashbord(props) {
   const onSubmit = async (data) => {
     console.log(data);
     const students = data.students.map((user) => user.uid);
+    students.push(user.id);
     const dataForm = {
       students: students,
       starting_date: data.starting_date,
@@ -108,10 +110,12 @@ function DialogDashbord(props) {
       sprint_name: data.sprint_name,
       image: "https://picsum.photos/600",
       pdf_link: "",
+      groupId: "",
+      created_by: user.id,
     };
     try {
       axios
-        .post(`http://localhost:5050/dashboard/creation`,  dataForm )
+        .post(`http://localhost:5050/dashboard/creation`, dataForm)
         .then((res) => {
           handleClose();
         });
@@ -149,7 +153,7 @@ function DialogDashbord(props) {
           <CloseIcon />
         </IconButton>
       </DialogActions>
-      <DialogTitle>Création d'un dashbaord</DialogTitle>
+      <DialogTitle>Création d'un dashboard</DialogTitle>
       <DialogContent dividers>
         <Box
           component="form"
@@ -269,48 +273,9 @@ function DialogDashbord(props) {
   );
 }
 
-DialogDashbord.propTypes = {
+SimpleDashboardForm.propTypes = {
   onClose: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired,
   value: PropTypes.string.isRequired,
   members: PropTypes.array.isRequired,
 };
-
-export default function ModalCreateSprint(props) {
-  const [open, setOpen] = React.useState(false);
-  const [value, setValue] = React.useState("Dione");
-
-  const handleClickListItem = () => {
-    setOpen(true);
-  };
-
-  const handleClose = (newValue) => {
-    setOpen(false);
-
-    if (newValue) {
-      setValue(newValue);
-    }
-  };
-  return (
-    <Box>
-      <List component="div" role="group">
-        <IconButton
-          aria-label="delete"
-          onClick={handleClickListItem}
-          size="large"
-          color="primary"
-        >
-          <AddIcon />
-        </IconButton>
-        <DialogDashbord
-          id="ringtone-menu"
-          keepMounted
-          open={open}
-          onClose={handleClose}
-          value={value}
-          members={props.members}
-        />
-      </List>
-    </Box>
-  );
-}

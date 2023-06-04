@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect, useMemo } from "react";
 import { FormControl, InputLabel, MenuItem, Select, Button, useTheme } from "@mui/material";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
-
 import "./Popup.scss";
 
 
