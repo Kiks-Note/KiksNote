@@ -16,11 +16,13 @@ import PostIt from "../../components/agile/PostIt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { w3cwebsocket } from "websocket";
+import useFirebase from "../../hooks/useFirebase";
 
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 function Retrospective() {
+  const { user } = useFirebase();
 
   const GMDBoard = {
     Glad: {
@@ -102,10 +104,43 @@ function Retrospective() {
   const [message, setMessage] = useState("");
   const [seconds, setSeconds] = useState(0);
   const [columns, setColumns] = useState(null);
+  const [allRetro, setAllRetro] = useState([]);
   const [showTextField, setShowTextField] = useState(false);
   const [newPostItContent, setNewPostItContent] = useState("");
   const [selectedColumnId, setSelectedColumnId] = useState(null);
+  const [selectedRetro, setSelectedRetro] = useState('');
 
+
+
+  useEffect(() => {
+
+    let allRetros = [];
+    axios.get("http://localhost:5050/retro/getAll").then((res) => {
+      let responseRetros = res.data;
+      responseRetros.forEach(retro => {
+        allRetros.push(retro["dataRetro"])
+      });
+      setAllRetro(allRetros);
+      console.log("ééééééééé");
+
+      console.log();
+    });
+
+
+  }, []);
+  // set all Retros
+
+  const e = () => {
+    let allRetros = [];
+    axios.get("http://localhost:5050/retro/getAll").then((res) => {
+      let responseRetros = res.data;
+      responseRetros.forEach(retro => {
+        allRetros.push(retro["dataRetro"])
+      });
+      setAllRetro(allRetro);
+      console.log(res.data);
+    });
+  }
 
   const handleClickAddButton = (columnId) => {
     setSelectedColumnId(columnId);
@@ -149,7 +184,7 @@ function Retrospective() {
       setCategorie("Longed")
     } else if (obj["name"] == "Lacked") {
       setCategorie("Lacked")
-    } 
+    }
     handleClickOpenEditPostIt();
     setSelectedPostItIndex(i)
   }
@@ -211,14 +246,19 @@ function Retrospective() {
   }, []);
 
   const saveToDb = async () => {
+    console.log("^^^^^^^^^^");
+    console.log(columns);
+    console.log();
     await axios.post(
       `http://localhost:5050/retro/newRetro`,
-      columns
+      {
+        dataRetro: columns,
+        idUser: user?.id
+      }
     );
   }
 
   const getRetro = async () => {
-
     console.log("front get retro");
     await axios.get(
       `http://localhost:5050/retro/getRetro`
@@ -233,7 +273,7 @@ function Retrospective() {
   // const ws = new w3cwebsocket("ws://localhost:5050/retro");
   //     ws.onmessage = (message) => {
   // };
- 
+
 
   const addPostIt = (columnId) => {
     const newPostIt = {
@@ -309,7 +349,25 @@ function Retrospective() {
 
       <Button onClick={saveToDb}> save </Button>
       <Button onClick={getRetro}> get </Button>
+      {/* <Button onClick={e}> getAll </Button> */}
 
+
+      {/* <Select
+                >
+                  {allRetro.map((retroElem, index) => (
+                    <MenuItem
+                      key={index}
+                      value={"nom"}
+                      sx={{
+                        width: "100%",
+                      }}
+                     // onChange={console.log("retroElem")} //setColumns(retroElem["dataRetro"])
+                    >
+                    Test {index}
+                    </MenuItem>
+                  ))}
+                </Select> */}
+   
       <div>
         <Button
           variant="outlined"

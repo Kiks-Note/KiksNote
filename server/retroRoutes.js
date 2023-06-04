@@ -4,7 +4,8 @@ const express = require("express");
 const {
   addRetro,
   retroRequests,
-  getRetro
+  getRetro,
+  getAll
 } = require("./controllers/retro");
 
 const retroRoutesWsNotNeeded = () => {
@@ -13,6 +14,7 @@ const retroRoutesWsNotNeeded = () => {
   console.log("in route");
   router.post("/newRetro", addRetro);
   router.get("/getRetro", getRetro);
+  router.get("/getAll", getAll)
   return router;
 }
 
