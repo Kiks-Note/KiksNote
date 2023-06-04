@@ -61,6 +61,7 @@ const coursRoutes = require("./coursRoutes");
 const studentsProjectsRoutes = require("./studentsProjectsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
+const groupsRoute = require("./groupsRoutes");
 
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
@@ -68,7 +69,7 @@ wsI.on("request", (request) => {
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
-  
+
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
