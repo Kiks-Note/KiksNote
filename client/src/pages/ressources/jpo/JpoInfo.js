@@ -138,13 +138,6 @@ const JpoInfo = () => {
     jpoDayStart,
     jpoDayEnd
   ) => {
-    const formData = new FormData();
-    formData.append("jpoTitle", jpoTitle);
-    formData.append("jpoDescription", jpoDescription);
-    formData.append("jpoThumbnail", jpoThumbnail);
-    formData.append("jpoDayStart", jpoDayStart);
-    formData.append("jpoDayEnd", jpoDayEnd);
-    formData.append("file", pdfUrl);
     try {
       await axios
         .put(`http://localhost:5050/ressources/jpo/${id}`, {
