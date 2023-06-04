@@ -20,6 +20,7 @@ import useFirebase from "../../hooks/useFirebase";
 
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { setDoc } from "firebase/firestore";
 
 function Retrospective() {
   const { user } = useFirebase();
@@ -109,8 +110,28 @@ function Retrospective() {
   const [newPostItContent, setNewPostItContent] = useState("");
   const [selectedColumnId, setSelectedColumnId] = useState(null);
   const [selectedRetro, setSelectedRetro] = useState('');
+  const [connectedUsers, setConnectedUsers] = useState([]);
 
 
+
+
+  useEffect(() => {
+
+    const ws = new w3cwebsocket("ws://localhost:5050/retro");
+    ws.onmessage = (message) => {
+      const receivedData = JSON.parse(message.data);
+      //  setDocuments(receivedData);
+      console.log("$$$$$$$$$$$");
+      console.log(receivedData[0]["dataRetro"]);
+      setColumns(receivedData[0]["dataRetro"])
+    };
+
+ 
+
+    return () => {
+      ws.close();
+    };
+  }, []);
 
   useEffect(() => {
 
@@ -136,6 +157,14 @@ function Retrospective() {
     setShowTextField(false);
   };
 
+  const sendEditPostit = async (categorie,selectedPostItIndex,postItText) => {
+    await axios.put("http://localhost:5050/retro/editPostit", {
+      categorie : categorie,
+      selectedPostItIndex: selectedPostItIndex,
+      postItText: postItText
+    })
+  }
+
   const changePostiTText = () => {
     let selectedColumn = { ...columns }
 
@@ -144,6 +173,8 @@ function Retrospective() {
 
     selectedColumn[categorie]["items"][selectedPostItIndex]["content"] = postItText
     setColumns(selectedColumn)
+
+    sendEditPostit(categorie,selectedPostItIndex,postItText);
 
     handleCloseEditPostIt();
 
@@ -173,6 +204,8 @@ function Retrospective() {
     }
     handleClickOpenEditPostIt();
     setSelectedPostItIndex(i)
+
+
   }
 
   const onDragEnd = (result, columns, setColumns) => {
@@ -244,6 +277,7 @@ function Retrospective() {
     );
   }
 
+  
   const getRetro = async () => {
     console.log("front get retro");
     await axios.get(
@@ -261,6 +295,13 @@ function Retrospective() {
   // };
 
 
+  const sendAddedPostIt = async (newObjPostIt, columnId) => {
+    axios.post("http://localhost:5050/retro/addPostIt", {
+
+      newObjPostIt : newObjPostIt,
+      columnId : columnId
+    })
+  }
   const addPostIt = (columnId) => {
     const newPostIt = {
       id: `postIt-${Date.now()}`,
@@ -278,6 +319,9 @@ function Retrospective() {
       ...columns,
       [columnId]: updatedColumn,
     });
+
+    console.log(columnId);
+    sendAddedPostIt(newPostIt, columnId);
 
     setShowTextField(false); // Hide the TextField and button after adding the post-it
     setNewPostItContent(""); // Reset the new post-it content
@@ -330,6 +374,7 @@ function Retrospective() {
   }
 
   return (
+
     <div>
       <h2> Retrospective </h2>
 
@@ -355,6 +400,14 @@ function Retrospective() {
         ))}
       </Select>
 
+      {/* <div>
+      <h1>Connected Users:</h1>
+      <ul>
+        {connectedUsers.map((user) => (
+          <li key={user.id}>{user.id}</li>
+        ))}
+      </ul>
+    </div> */}
       <div>
         <Button
           variant="outlined"

@@ -49,16 +49,63 @@ const retroRequests = async (connection) => {
   );
 };
 
-
 const getRetro = async (req, res) => {
   console.log("in getRetro");
   console.log("in get Retro");
   res.json({ message: "getRetro works!" });
 };
 
+const editPostit = async (req, res) => {
+  let objetRetro = (await db.collection("retro").doc("YfUR5oFc5rtcGJ1ZQvwS").get()).data()
+  objetRetro["dataRetro"][req.body.categorie]["items"][req.body.selectedPostItIndex]["content"] = req.body.postItText
+  let dba  = await db.collection("retro").doc("YfUR5oFc5rtcGJ1ZQvwS") 
+
+
+  dba.update({ dataRetro: objetRetro["dataRetro"] })
+  .then(() => {
+    console.log("Document updated successfully!");
+  })
+  .catch((error) => {
+    console.error("Error updating document:", error);
+  });
+  
+}
+
+const addPostIt = async (req, res) => {
+  let objetRetro = (await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx").get()).data()
+
+  const updatedItems = [...objetRetro["dataRetro"][req.body.columnId].items, req.body.newObjPostIt];
+  const updatedColumn = {
+    ...objetRetro["dataRetro"][req.body.columnId],
+    items: updatedItems,
+  };
+
+  let dba  = await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx") 
+
+  objetRetro["dataRetro"] = {
+    ...objetRetro["dataRetro"],
+    [req.body.columnId]: updatedColumn,
+  }
+
+  console.log(objetRetro["dataRetro"]);
+  console.log(dba);
+
+  dba.update({ dataRetro: objetRetro["dataRetro"] })
+  .then(() => {
+    console.log("Document updated successfully!!!!!!!!");
+  })
+  .catch((error) => {
+    console.error("Error updating document:", error);
+  });
+
+
+}
+
 module.exports = {
   addRetro,
   retroRequests,
   getRetro,
-  getAll
+  getAll,
+  editPostit,
+  addPostIt
 };

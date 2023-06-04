@@ -5,7 +5,9 @@ const {
   addRetro,
   retroRequests,
   getRetro,
-  getAll
+  getAll,
+  editPostit,
+  addPostIt
 } = require("./controllers/retro");
 
 const retroRoutesWsNotNeeded = () => {
@@ -15,6 +17,8 @@ const retroRoutesWsNotNeeded = () => {
   router.post("/newRetro", addRetro);
   router.get("/getRetro", getRetro);
   router.get("/getAll", getAll)
+  router.put("/editPostit", editPostit)
+  router.post("/addPostIt", addPostIt)
   return router;
 }
 
