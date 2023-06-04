@@ -99,6 +99,9 @@ export default function Profil() {
             userInfo.dateofbirth._nanoseconds / 1000000
         );
         const formattedDate = format(date, "yyyy-MM-dd");
+
+        console.log("dddd");
+
         setUserProfil({
           id: user?.id,
           firstname: data.firstname,
@@ -124,6 +127,7 @@ export default function Profil() {
         });
 
         setIsLoading(true);
+        console.log("Loading");
       };
     })();
   }, [user?.id]);

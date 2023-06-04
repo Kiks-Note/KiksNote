@@ -30,6 +30,7 @@ import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import PhoneRequestDevice from "./pages/inventory/PhoneRequestDevice";
+import InventoryPendingRequests from "./pages/inventory/InventoryPendingRequests";
 
 function RoutesProvider() {
   return (
@@ -89,6 +90,10 @@ function RoutesProvider() {
           <Route
             path="/inventory/admin/borrowed"
             element={<InventoryListBorrowed />}
+          />
+          <Route
+            path="/inventory/requests/:status"
+            element={<InventoryPendingRequests />}
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
           <Route path="*" element={<NotFound />} />

@@ -548,12 +548,10 @@ const liveCategories = async (connection) => {
     });
 };
 
-const todayRequests = async (connection) => {
+const pendingRequests = async (connection) => {
   db.collection("inventory_requests")
-    .where("createdAt", "<=", new Date())
     .where("status", "==", "pending")
     .orderBy("createdAt", "desc")
-    .limit(5)
     .onSnapshot(
       (snapshot) => {
         const request = snapshot.docs.map((doc) => ({
@@ -660,7 +658,7 @@ module.exports = {
   refuseIdea,
   deleteIdea,
   getIdeaByUser,
-  todayRequests,
+  pendingRequests,
   liveCategories,
   liveInventory,
   borrowedList,

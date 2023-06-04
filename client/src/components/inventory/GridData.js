@@ -7,7 +7,15 @@ const GridData = ({columns, rows}) => {
   return (
     <DataGrid
       autoHeight
-      sx={{width: "97%", mt: 4, mb: 4}}
+      sx={{
+        width: "97%",
+        mt: 4,
+        mb: 4,
+        "& .MuiDataGrid-row:hover": {
+          backgroundColor: "transparent",
+          // color: "red"
+        },
+      }}
       style={{
         fontFamily: "poppins-regular",
         fontSize: 14,
@@ -21,6 +29,7 @@ const GridData = ({columns, rows}) => {
       onPageSizeChange={(newPageSize) => setPageSize(newPageSize)}
       rowsPerPageOptions={[15, 30, 50]}
       disableSelectionOnClick
+      isRowSelectable={false}
       localeText={{
         noRowsLabel: "Pas de résultats",
         noResultsOverlayLabel: "Aucun résultat.",

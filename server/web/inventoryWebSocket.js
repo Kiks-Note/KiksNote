@@ -1,6 +1,7 @@
 const {parse} = require("url");
+
 const {
-  todayRequests,
+  pendingRequests,
   liveCategories,
   liveInventory,
   borrowedList,
@@ -16,9 +17,9 @@ module.exports = function (wsI) {
     });
 
     switch (pathname) {
-      case "/todayRequests":
-        todayRequests(connection);
-        console.log("todayRequests");
+      case "/pendingRequests":
+        pendingRequests(connection);
+        console.log("pendingRequests");
         break;
       case "/liveCategories":
         liveCategories(connection);

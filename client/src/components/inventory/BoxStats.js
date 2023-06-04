@@ -2,7 +2,7 @@ import {Box, Divider, IconButton, Typography} from "@mui/material";
 import React from "react";
 import {IoIosEye} from "react-icons/io";
 
-const BoxStats = ({label, value, onClick}) => {
+const BoxStats = ({label, value, onClick, loading}) => {
   return (
     <Box
       sx={{
@@ -18,6 +18,7 @@ const BoxStats = ({label, value, onClick}) => {
         display: "flex",
         flexDirection: "column",
         position: "relative",
+        minHeight: 200,
       }}
     >
       <Typography
@@ -46,7 +47,7 @@ const BoxStats = ({label, value, onClick}) => {
           fontSize: 30,
         }}
       >
-        {value}
+        {loading ? "..." : value}
       </Typography>
       <IconButton
         onClick={onClick}

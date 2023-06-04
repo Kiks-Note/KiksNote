@@ -50,7 +50,11 @@ export const FirebaseContextProvider = ({children}) => {
             const userRef = doc(collection(db, "users"), user.email);
             const _unsub = onSnapshot(userRef, (snap) => {
               // console.log(snap.data());
-              setUser({id: snap.id, ...snap.data()});
+              setUser({
+                id: snap.id,
+                ...snap.data(),
+                verified: user.emailVerified,
+              });
             });
             setUnsubscribe(() => _unsub);
           });

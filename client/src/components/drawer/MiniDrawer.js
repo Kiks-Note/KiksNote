@@ -367,6 +367,32 @@ export default function MiniDrawer({element}) {
           ))}
         </List>
         <Divider />
+        <ListItem disablePadding sx={{display: "block"}}>
+          <ListItemButton
+            sx={{
+              minHeight: 48,
+              justifyContent: open ? "initial" : "center",
+              px: 2.5,
+              py: 1.5,
+            }}
+            onClick={() => navigate("/inventory/admin/dashboard")}
+          >
+            <ListItemIcon
+              sx={{
+                minWidth: 0,
+                mr: open ? 3 : "auto",
+                justifyContent: "center",
+              }}
+            >
+              <InventoryIcon sx={{color: theme.palette.custom.iconDrawer}} />
+            </ListItemIcon>
+            <ListItemText
+              primary={"Admin Inventaire"}
+              sx={{opacity: open ? 1 : 0}}
+            />
+          </ListItemButton>
+        </ListItem>
+        <Divider />
         {/* Information for List to Logout */}
         <List>
           {[
