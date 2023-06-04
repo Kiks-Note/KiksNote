@@ -344,8 +344,6 @@ const updateJpoPDF = async (req, res) => {
         return;
       }
 
-      console.log(req.file);
-
       if (req.file) {
         const pdfFilePath = req.file.path;
         const pdfFileType = mime.lookup(pdfFilePath);

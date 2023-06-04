@@ -502,9 +502,16 @@ const JpoInfo = () => {
                 <Typography sx={{ fontWeight: "bold", padding: "10px" }}>
                   Plaquette Commerciale JPO
                 </Typography>
-                <PdfCommercialBrochureViewer
-                  base64={jpoData?.linkCommercialBrochure?.pdfBase64}
-                />
+                {jpoData?.linkCommercialBrochure?.pdfBase64 === undefined ? (
+                  <div>
+                    Aucune plaquette Commerciale d'ajouter pour le moment
+                  </div>
+                ) : (
+                  <PdfCommercialBrochureViewer
+                    base64={jpoData?.linkCommercialBrochure?.pdfBase64}
+                  />
+                )}
+
                 {userStatus === "pedago" ? (
                   <>
                     <Button
