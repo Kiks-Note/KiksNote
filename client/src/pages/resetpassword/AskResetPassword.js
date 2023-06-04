@@ -27,18 +27,23 @@ function AskResetPassword() {
 
     const [mail, setMail] = useState('');
 
-    async function sendEmailFromFront() {
-        await axios.post("http://localhost:5050/sendemail", {
-            email: mail
-        }).then((response) => {
-            if (response.status === 200) {
-                toastSuccess("Mail envoyé");
-            } else {
-                toastFail("Mail non valide");
-            }
-        }).catch((err) => {
-            console.warn("error : ", err);
-        });
+    const sendEmailFromFront = async() => {
+        try {
+            await axios.post("http://localhost:5050/auth/sendemail", {
+                email: mail
+            }).then((response) => {
+                console.log(response.data)
+                if (response.status === 200) {
+                    toastSuccess("Mail envoyé");
+                } else {
+                    toastFail("Mail non valide");
+                }
+            }).catch((err) => {
+                console.log(err);
+            });
+        } catch (error){
+            console.log(error)
+        }
     };
 
     const form = useRef();
