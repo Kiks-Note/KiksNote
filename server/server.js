@@ -58,7 +58,9 @@ const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
-
+const studentsProjectsRoutes = require("./studentsProjectsRoutes");
+const jpoRoutes = require("./jpoRoutes");
+const technosRoutes = require("./technosRoutes");
 const groupsRoute = require("./groupsRoutes");
 const agileRoute = require("./agileRoutes");
 
@@ -69,12 +71,14 @@ wsI.on("request", (request) => {
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
+
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
   app.use("/agile", agileRoute(connection, pathname,upload));
-  // app.use("/agile", agileRoute());
+  app.use("/groupes", groupsRoute(connection, pathname));
+
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
@@ -86,6 +90,9 @@ wsI.on("request", (request) => {
 });
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
+app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
+app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
+app.use("/ressources", technosRoutes()); // --> Resssources Technos
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

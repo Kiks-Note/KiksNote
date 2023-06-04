@@ -13,12 +13,12 @@ import "../../components/agile/Postit.scss";
 const taskStatus = {
   think: {
     name: "Penser ",
-    color: "#ff0000",
+    color: "#BF2020",
     items: [],
   },
   see: {
     name: "Voir",
-    color: "#0000ff",
+    color: "#3295AC",
     items: [],
   },
   do: {

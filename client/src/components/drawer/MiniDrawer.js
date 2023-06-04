@@ -110,7 +110,7 @@ export default function MiniDrawer({ element }) {
         {
           id: 9,
           name: "Fil d'actu",
-          route: "/fil-d-actu",
+          route: "/jpo",
           icon: <ListAltIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
         },
         {
