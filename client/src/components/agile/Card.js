@@ -29,8 +29,6 @@ import {
 } from "../../redux/slices/impactMappingSlice";
 import { setActiveTab, addTab } from "../../redux/slices/tabBoardSlice";
 
-import { addImpactMapping } from "./agile";
-
 const BasicCard = ({
   title,
   type,
