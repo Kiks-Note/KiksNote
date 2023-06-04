@@ -75,6 +75,7 @@ const StudentsProjects = () => {
   const [idSelectedClass, setIdSelectedClass] = useState("");
 
   const [loading, setLoading] = useState(true);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const [selectedFilterTypeProject, setSelectedFilterTypeProject] =
     useState("");
@@ -186,6 +187,7 @@ const StudentsProjects = () => {
     userId
   ) => {
     try {
+      setIsButtonDisabled(true);
       await axios
         .post("http://localhost:5050/ressources/refprojects", {
           projectId: projectId,
@@ -207,13 +209,17 @@ const StudentsProjects = () => {
           }
         })
         .catch((err) => {
-          toastFail("Vous ne pouvais mettre ce projet en avant");
+          toastFail(`Vous avez déjà mis en avant le projet ${projectName}`);
           console.log(err);
+        })
+        .finally(() => {
+          setIsButtonDisabled(false);
         });
     } catch (error) {
       console.log(error.response.status);
       console.log(error.response.data.message);
       toastWarning(`Erreur lors de la mise en avant du projet ${projectName}`);
+      setIsButtonDisabled(false);
     }
   };
 
@@ -623,6 +629,7 @@ const StudentsProjects = () => {
                               ></Chip>
                               {userStatus === "po" ? (
                                 <Button
+                                  disabled={isButtonDisabled}
                                   onClick={(event) => {
                                     event.stopPropagation();
                                     referStudentProject(
@@ -641,6 +648,7 @@ const StudentsProjects = () => {
                                 </Button>
                               ) : userStatus === "pedago" ? (
                                 <Button
+                                  disabled={isButtonDisabled}
                                   onClick={(event) => {
                                     event.stopPropagation();
                                     referStudentProject(
@@ -659,6 +667,7 @@ const StudentsProjects = () => {
                                 </Button>
                               ) : (
                                 <Button
+                                  disabled={isButtonDisabled}
                                   onClick={(event) => {
                                     event.stopPropagation();
                                     referStudentProject(
