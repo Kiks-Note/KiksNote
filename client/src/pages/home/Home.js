@@ -1,6 +1,14 @@
 import { useTheme, useEffect } from "@mui/material";
 import useFirebase from "../../hooks/useFirebase";
 import Illu from "../../assets/img/login_img.svg";
+import Call from "../../assets/img/call.svg";
+import Groups from "../../assets/img/groups.svg";
+import Class from "../../assets/img/class.svg";
+import Blog from "../../assets/img/blog.svg";
+import Boards from "../../assets/img/boards.svg";
+import Retro from "../../assets/img/retro.svg";
+import Calendar from "../../assets/img/calendar.svg";
+import Agile from "../../assets/img/agile.svg";
 
 import "./Home.scss";
 
@@ -21,12 +29,26 @@ function Home() {
         Bonjour, {user.firstname}
       </p>
       <div className="home-dashboard">
-        <div className="news-feed">
-
+        <div className="news-feed" style={{
+          backgroundColor: theme.palette.background.container
+        }}>
+          <div className="news-feed-header" style={{
+            backgroundColor: theme.palette.background.element,
+            padding: "10px",
+          }}>
+            <p style={{
+              fontWeight: "bold",
+              fontSize: "20px",
+              fontFamily: "poppins-bold",
+              color: "white"
+            }}>
+              Votre Feed
+            </p>
+          </div>
         </div>
         <div className="home-dashboard-items">
           <div className="home-dashboard-item">
-            <img src={Illu} alt="illustration" style={{
+            <img src={Class} alt="illustration" style={{
               backgroundColor: theme.palette.custom.button
             }} />
             <div className="home-dashboard-item-content" style={{
@@ -38,7 +60,7 @@ function Home() {
             </div>
           </div>
           <div className="home-dashboard-item">
-            <img src={Illu} alt="illustration" style={{
+            <img src={Calendar} alt="illustration" style={{
               backgroundColor: theme.palette.custom.button
             }} />
             <div className="home-dashboard-item-content" style={{
@@ -50,7 +72,7 @@ function Home() {
             </div>
           </div>
           <div className="home-dashboard-item">
-            <img src={Illu} alt="illustration" style={{
+            <img src={Boards} alt="illustration" style={{
               backgroundColor: theme.palette.custom.button
             }} />
             <div className="home-dashboard-item-content" style={{
@@ -62,7 +84,7 @@ function Home() {
             </div>
           </div>
           <div className="home-dashboard-item">
-            <img src={Illu} alt="illustration" style={{
+            <img src={Call} alt="illustration" style={{
               backgroundColor: theme.palette.custom.button
             }} />
             <div className="home-dashboard-item-content" style={{
@@ -74,7 +96,7 @@ function Home() {
             </div>
           </div>
           <div className="home-dashboard-item">
-            <img src={Illu} alt="illustration" style={{
+            <img src={Retro} alt="illustration" style={{
               backgroundColor: theme.palette.custom.button
             }} />
             <div className="home-dashboard-item-content" style={{
@@ -86,7 +108,7 @@ function Home() {
             </div>
           </div>
           <div className="home-dashboard-item">
-            <img src={Illu} alt="illustration" style={{
+            <img src={Agile} alt="illustration" style={{
               backgroundColor: theme.palette.custom.button
             }} />
             <div className="home-dashboard-item-content" style={{
@@ -98,7 +120,7 @@ function Home() {
             </div>
           </div>
           <div className="home-dashboard-item">
-            <img src={Illu} alt="illustration" style={{
+            <img src={Groups} alt="illustration" style={{
               backgroundColor: theme.palette.custom.button
             }} />
             <div className="home-dashboard-item-content" style={{
@@ -107,6 +129,18 @@ function Home() {
               <p style={{
                 color: theme.palette.text.primary
               }}>Groupes</p>
+            </div>
+          </div>
+          <div className="home-dashboard-item">
+            <img src={Blog} alt="illustration" style={{
+              backgroundColor: theme.palette.custom.button
+            }} />
+            <div className="home-dashboard-item-content" style={{
+              backgroundColor: theme.palette.background.container
+            }}>
+              <p style={{
+                color: theme.palette.text.primary
+              }}>Blog</p>
             </div>
           </div>
         </div>

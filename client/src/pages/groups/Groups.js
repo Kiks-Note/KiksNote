@@ -448,6 +448,7 @@ function App() {
                         borderRadius: "10px",
                         padding: "0 10px",
                         marginRight: "10px",
+                        color: "white"
 
                     }}><GroupIcon style={{
                         marginRight: "10px",

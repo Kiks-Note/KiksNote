@@ -1,3 +1,17 @@
+.home-dashboard {
+  display: flex;
+  flex-direction: row-reverse;
+  padding: 50px;
+
+  .news-feed {
+    min-width: 400px;
+    max-width: 600px;
+    width: 40%;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+}
+
 .home-dashboard-items {
   display: flex;
   flex-direction: row;
@@ -6,7 +20,6 @@
   height: 100%;
   width: 100%;
   flex-wrap: wrap;
-  padding: 50px;
 
   .home-dashboard-item {
     display: flex;
