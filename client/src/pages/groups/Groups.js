@@ -1,4 +1,4 @@
-import React, { useState,useEffect,useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import axios from 'axios';
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -6,30 +6,53 @@ import LockIcon from "@mui/icons-material/Lock";
 import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SettingsIcon from '@mui/icons-material/Settings';
+import WifiOffIcon from '@mui/icons-material/WifiOff';
+import DeleteIcon from '@mui/icons-material/Delete';
+import GroupIcon from '@mui/icons-material/Group';
+import { Button, useTheme } from "@mui/material";
 import { PopUp } from "../../components/groups/Popup";
-import moment from "moment";
+import useFirebase from "../../hooks/useFirebase";
+import { w3cwebsocket } from "websocket";
+import { useNavigate } from 'react-router-dom';
+
 
 import "./Groups.scss";
 
-
 function App() {
-    const [columns, setColumns] = useState();
-    const [lock, setLock] = useState(true);
     const [classStudents, setClassStudents] = useState();
-    const [settings, setSettings] = useState();
     const [showSettings, setShowSettings] = useState(false);
+    const [inRoom, setInRoom] = useState(false);
 
-    // For PO view
+    const [settings, setSettings] = useState();
+    const [lock, setLock] = useState(true);
+    const [columns, setColumns] = useState();
+    const [nbSPGrp, setNbSPGrp] = useState();
+
+    const [userCursors, setUserCursors] = useState();
+
+    const [nbUserConnected, setNbUserConnected] = useState(0);
+    const [numberOfStudentsInClass, setNumberOfStudentInclass] = useState(0);
+
+    const navigate = useNavigate();
+    const { user } = useFirebase();
+
+    const theme = useTheme();
+
+    const ws = useMemo(() => {
+        return new w3cwebsocket('ws://localhost:5050/groupes');
+    }, []);
 
     const getStudents = useCallback(async () => {
         try {
             const res = await axios.get(`http://localhost:5050/groupes/${classStudents}`);
+            setNumberOfStudentInclass(res.data.length);
             return res.data;
-        } catch (error) {
+        }
+        catch (error) {
             console.error(error);
             throw error;
         }
-    },[classStudents]);
+    }, [classStudents]);
 
     const fetchData = useCallback(async () => {
         const studentsData = await getStudents();
@@ -40,16 +63,148 @@ function App() {
             },
         };
         return colContent;
-    },[getStudents]);
+    }, [getStudents]);
 
     const fetchAndSetData = useCallback(async () => {
         const colContent = await fetchData();
+        ws.send(JSON.stringify({ type: "updateCol", data: { columns: colContent, class: classStudents, nbStudents: numberOfStudentsInClass } }))
         setColumns(colContent);
-    },[fetchData]);
+    }, [classStudents, fetchData, numberOfStudentsInClass, ws]);
+
+    const LogToExistingRoomStudent = useCallback(async () => {
+        try {
+            axios.get(`http://localhost:5050/groupes/getRoom/${user?.class}`).then((res) => {
+                if (res.data.length > 0) {
+                    const message = {
+                        type: 'joinRoom',
+                        data: {
+                            userID: user?.id,
+                            name: user?.firstname,
+                            class: user?.class,
+                        }
+                    };
+                    ws.send(JSON.stringify(message));
+                    setClassStudents(user?.class);
+                    setInRoom(true);
+                    setSettings(res.data[0].settings);
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }, [user?.class, user?.id, user?.firstname, ws]);
+
+    const logToExistingRoom = useCallback(async () => {
+        try {
+            axios.get(`http://localhost:5050/groupes/getRoomPo/${user?.id}`).then((res) => {
+                if (res.data.length > 0) {
+                    const message = {
+                        type: 'joinRoom',
+                        data: {
+                            userID: user?.id,
+                            name: user?.firstname,
+                            class: res.data[0].class
+                        }
+                    };
+                    ws.send(JSON.stringify(message));
+                    setClassStudents(res.data[0].class);
+                    setInRoom(true);
+                    setSettings(res.data[0].settings);
+                }
+            });
+        } catch (error) {
+            console.error(error);
+        }
+    }, [user?.id, user?.firstname, ws]);
+
+    function displayUserCursorPositions(users) {
+        const map = new Map(Object.entries(users));
+        setUserCursors(map);
+    }
 
     useEffect(() => {
-        fetchAndSetData();
-    }, [fetchAndSetData]);
+
+        const handleOpen = async () => {
+
+            if (user?.status === "etudiant") {
+                await LogToExistingRoomStudent();
+            } else if (user?.status === "po") {
+                await logToExistingRoom();
+            }
+
+            if (inRoom) {
+
+                if (user?.status === "po") {
+                    await fetchAndSetData();
+                }
+
+
+
+                document.addEventListener('mousemove', (event) => {
+                    const cursorPosition = {
+                        x: event.clientX,
+                        y: event.clientY,
+                    };
+
+                    const message = {
+                        type: 'cursorPosition',
+                        data: { position: cursorPosition, userID: user?.id, class: classStudents }
+                    }
+                    ws.send(JSON.stringify(message));
+                });
+
+                ws.onmessage = (message) => {
+                    const messageReceive = JSON.parse(message.data);
+
+                    switch (messageReceive.type) {
+                        case 'updateRoom':
+                            displayUserCursorPositions(messageReceive.data.currentRoom.users);
+                            if (user.status === "etudiant") {
+                                setNbSPGrp(messageReceive.data.currentRoom.SpGrp);
+                                setLock(messageReceive.data.currentRoom.lock);
+                                setNumberOfStudentInclass(messageReceive.data.currentRoom.nbStudents);
+                            }
+                            if (messageReceive.data.currentRoom.columns) {
+                                setColumns(messageReceive.data.currentRoom.columns);
+                            }
+                            else {
+                                fetchAndSetData();
+                            }
+                            setNbUserConnected(messageReceive.data.currentRoom.nbUsers);
+                            break;
+                        default:
+                            break;
+                    }
+                };
+            }
+        };
+
+        if (ws.readyState === WebSocket.OPEN) {
+            handleOpen();
+        } else {
+            ws.onopen = handleOpen;
+        }
+
+
+        return () => {
+            document.removeEventListener('mousemove', () => { });
+            ws.send(JSON.stringify({ type: 'leaveRoom', data: { userID: user?.id, class: classStudents } }));
+        }
+    }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, lock, logToExistingRoom, user?.id, user.status, ws]);
+
+    function deleteStudent(userID) {
+        const copiedColContent = { ...columns };
+
+        Object.keys(copiedColContent).forEach((key) => {
+            const group = copiedColContent[key];
+            const updatedItems = group.items.filter((student) => student.id !== userID);
+            group.items = updatedItems;
+        });
+
+        setColumns(copiedColContent);
+        ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents } }));
+    }
 
     function moveOnClick(columnId, student, columns) {
         columns[columnId].items.push(student);
@@ -79,6 +234,9 @@ function App() {
                     items: destItems,
                 },
             });
+
+            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: { ...columns, [source.droppableId]: { ...sourceColumn, items: sourceItems }, [destination.droppableId]: { ...destColumn, items: destItems } }, class: classStudents } }));
+
         } else if (source.index !== destination.index) {
             const column = columns[source.droppableId];
             const copiedItems = [...column.items];
@@ -93,6 +251,18 @@ function App() {
                 },
             });
 
+            ws.send(JSON.stringify({
+                type: 'updateCol', data: {
+                    columns: {
+                        ...columns,
+                        [source.droppableId]: {
+                            ...column,
+                            items: copiedItems,
+                        },
+                    }, class: classStudents
+                }
+            }));
+
             // move the item directly to the clicked column
             const columnId = destination.droppableId;
             const student = columns[columnId].items[destination.index];
@@ -106,11 +276,13 @@ function App() {
     }
 
     function generateGroupCase(event) {
-        if (!isNaN(event.target.value) && event.target.value) {
+        if ((!isNaN(event.target.value) && event.target.value)) {
             const number = event.target.value;
+            setNbSPGrp(number);
+            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { nbSPGrp: number, class: classStudents, status: user.status } }));
             const numberOfStudents = columns.students.items.length;
 
-            let copiedColContent = { ...columns};
+            let copiedColContent = { ...columns };
 
             let numberOfCase = Math.floor(numberOfStudents / number);
 
@@ -126,11 +298,13 @@ function App() {
             }
 
             setColumns(copiedColContent);
+            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents } }));
         } else {
             //TODO make a toast here
             fetchAndSetData();
         }
     }
+
     function shuffle(array) {
         let currentIndex = array.length,
             randomIndex;
@@ -155,14 +329,16 @@ function App() {
         setClassStudents(data.classChoose);
         setSettings(data);
         setShowSettings(false);
+        setInRoom(true);
     };
 
     const handleClosePopUp = (showFalse) => {
         setShowSettings(showFalse);
     }
 
-    function saveGroups() {
+    async function saveGroups() {
         setLock(true);
+        ws.send(JSON.stringify({ type: 'lock', data: { class: classStudents, lock: true, status: user.status } }))
         var groupsKey = Object.keys(columns).filter((key) => key.startsWith("g"));
 
         groupsKey.forEach(group => {
@@ -173,27 +349,27 @@ function App() {
                 po_id: "todo",
             });
         });
+
+        try {
+            await axios.delete(`http://localhost:5050/groupes/deleteRoom/${user?.id}`);
+        } catch (error) {
+            console.error(error);
+        }
+
+        setInRoom(false);
+        ws.send(JSON.stringify({ type: 'closeRoom', data: { class: classStudents } }));
+        navigate("/");
     }
 
     function randomGeneration() {
-        let nsgp = parseInt(document.querySelector('input[type="text"]').value); // Number of students per groups
-        if (!nsgp) {
-            alert(
-                "Merci de renseigner d'abord le nombre de groupe d'élèves par groupe souhaité"
-            );
+        if (!nbSPGrp) {
+            alert("Merci de renseigner d'abord le nombre de groupe d'élèves par groupe souhaité");
         } else {
-
             const numberOfStudents = columns.students.items.length;
+            let copiedColContent = { ...columns };
+            let numberOfGroups = Math.ceil(numberOfStudents / nbSPGrp);
 
-            let copiedColContent = { ...fetchData() };
-
-            let numberOfCase = Math.floor(numberOfStudents / nsgp);
-
-            if (numberOfStudents % nsgp !== 0) {
-                numberOfCase++;
-            }
-
-            for (let index = 1; index < numberOfCase + 1; index++) {
+            for (let index = 1; index <= numberOfGroups; index++) {
                 copiedColContent[`g${index}`] = {
                     name: `Groupe ${index}`,
                     items: [],
@@ -203,43 +379,35 @@ function App() {
             setColumns(copiedColContent);
 
             var studentsArrayRandom = shuffle(columns.students.items);
-            var groups = Object.keys(columns).filter((key) => key.startsWith("g"));
+            var groups = Object.keys(copiedColContent).filter((key) => key.startsWith("g"));
             var students = Object.keys(columns).filter((key) => key.startsWith("s"));
             var groupIndex = 0;
 
-            var numberGroup = groups.length;
-
-            var nbNotFull = numberGroup * nsgp - studentsArrayRandom.length;
-
-            for (var i = 0; i < studentsArrayRandom.length; i += nsgp) {
+            for (var i = 0; i < studentsArrayRandom.length; i++) {
                 const groupKey = groups[groupIndex];
-                var groupItems = [];
-                if (nbNotFull > 0) {
-                    groupItems = studentsArrayRandom.slice(i, i + nsgp - 1);
-                    i = i - 1;
-                    nbNotFull -= 1;
-                } else {
-                    groupItems = studentsArrayRandom.slice(i, i + nsgp);
-                }
-                const updatedGroup = {
-                    ...columns[groupKey],
-                    items: groupItems,
-                };
-                columns[groupKey] = updatedGroup;
+                const student = studentsArrayRandom[i];
 
-                groupIndex++;
+                copiedColContent[groupKey].items.push(student);
+
+                groupIndex = (groupIndex + 1) % numberOfGroups;
             }
-            columns[students[0]].items = [];
-            setColumns({ ...columns });
+
+            copiedColContent[students[0]].items = [];
+            setColumns({ ...copiedColContent });
+            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents } }));
         }
     }
+
+
 
     function lockGroups() {
         if (lock) {
             setLock(false);
+            ws.send(JSON.stringify({ type: 'lock', data: { class: classStudents, lock: false, status: user.status } }))
         }
         else {
             setLock(true);
+            ws.send(JSON.stringify({ type: 'lock', data: { class: classStudents, lock: true, status: user.status } }))
         }
     }
 
@@ -248,55 +416,129 @@ function App() {
         setShowSettings(true);
     }
 
-    if (!columns) {
+    if (!columns && inRoom) {
         return <p>Loading...</p>;
     }
 
-    if (!classStudents) {
+    if (user?.status === "po" && !inRoom) {
         return <PopUp onPopupData={handlePopupData} dataPopUp={null} showPopUp={null} />;
     }
 
 
     return (
         <>
-            <div>
-                {showSettings ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
-                <h1 style={{ textAlign: "center" }}>Création de Groupes</h1>
-                <div className="groups-inputs">
-                    <input
-                        type="text"
-                        list="students-list"
-                        placeholder="Eleves/groupes"
-                        onChange={generateGroupCase} />
-                    <datalist id="students-list">
-                        <option value={3}></option>
-                        <option value={4}></option>
-                        <option value={5}></option>
-                    </datalist>
-                    <button className="input-button" onClick={resetButton}>
-                        <CachedIcon className="icon-svg" />
-                    </button>
-                    <button className="input-button" onClick={randomGeneration}>
-                        <CasinoIcon className="icon-svg" />
-                    </button>
-                    <button className="input-button">
-                        {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
-                    </button>
-                    <button className="input-button" onClick={settingsPopUp}>
-                        <SettingsIcon className="input-svg" />
-                    </button>
-                </div>
+            {inRoom ? <div
+                style={{
+                    width: "100%",
+                    height: "100vh",
+                    overflow: "hidden",
+                }}>
+                {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
+                <nav
+                    style={{
+                        backgroundColor: theme.palette.background.container,
+                    }}
+                >
+                    <p style={{
+                        backgroundColor: theme.palette.custom.button,
+                        height: "40px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: "10px",
+                        padding: "0 10px",
+                        marginRight: "10px",
+
+                    }}><GroupIcon style={{
+                        marginRight: "10px",
+                    }} /> {nbUserConnected}/{numberOfStudentsInClass + 1}</p>
+                    {user?.status === "po" ?
+                        <div className="groups-inputs">
+                            <input
+                                type="text"
+                                list="students-list"
+                                placeholder="Eleves/groupes"
+                                onChange={generateGroupCase} />
+                            <datalist id="students-list">
+                                <option value={3}></option>
+                                <option value={4}></option>
+                                <option value={5}></option>
+                            </datalist>
+                            <button className="input-button" onClick={resetButton}>
+                                <CachedIcon className="icon-svg" />
+                            </button>
+                            <button className="input-button" onClick={randomGeneration}>
+                                <CasinoIcon className="icon-svg" />
+                            </button>
+                            <button className="input-button">
+                                {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
+                            </button>
+                            <button className="input-button" onClick={settingsPopUp}>
+                                <SettingsIcon className="icon-svg" />
+                            </button>
+                        </div>
+                        : <div>
+                            <p>Nombre d'élèves par groupe : {nbSPGrp ? nbSPGrp : "En attente.."}</p>
+                        </div>}
+                </nav>
                 <div
                     style={{
                         display: "flex",
                         justifyContent: "center",
-                        height: "100%",
+                        width: "100%",
                         flexWrap: "wrap",
                     }}
                 >
+                    <div style={{
+                        width: "100%",
+                        height: "100%",
+                        position: "relative",
+                    }}>
+                        {userCursors ? (
+                            Array.from(userCursors.entries()).map(([userID, userData]) => {
+                                console.log(userID, userData);
+                                if (userID !== user?.id) {
+                                    return (
+                                        <div
+                                            key={userID}
+                                            style={{
+                                                position: "absolute",
+                                                left: userData.position?.x,
+                                                top: userData.position?.y,
+                                                zIndex: 100,
+                                            }}
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" width="30px" height="30px"><path fill={userData.color} d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z" /></svg>
+
+                                            <div
+                                                style={{
+                                                    display: "inline-block",
+                                                    backgroundColor: userData.color,
+                                                    padding: "2px 6px",
+                                                    color: "#fff",
+                                                    fontSize: "12px",
+                                                    borderRadius: "4px",
+                                                }}
+                                            >
+                                                <p style={{
+                                                    selection: "none",
+                                                    fontWeight: "bold",
+                                                    textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                                                }}>
+                                                    {userData.name}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    );
+                                } else {
+                                    return null;
+                                }
+                            })
+                        ) : null}
+                    </div>
                     <DragDropContext onDragEnd={onDragEnd}>
                         {Object.entries(columns).map(([columnId, column], index) => {
-                            if (index === 0 && columns.students.items.length > 0) {
+                            if (index === 0 && (columns.students.items.length > 0)) {
                                 return (
                                     <div
                                         style={{
@@ -307,7 +549,12 @@ function App() {
                                         }}
                                         key={columnId}
                                     >
-                                        <div style={{ margin: 8 }} className="group-div">
+                                        <div style={{
+                                            margin: 8,
+                                            width: "70%",
+                                            minHeight: 140,
+                                            maxHeight: 500,
+                                        }} className="group-div">
                                             <Droppable droppableId={columnId} key={columnId}>
                                                 {(provided, snapshot) => {
                                                     return (
@@ -315,13 +562,16 @@ function App() {
                                                             {...provided.droppableProps}
                                                             ref={provided.innerRef}
                                                             style={{
-                                                                backgroundColor: snapshot.isDraggingOver ? "#e697b3" : "#252525",
-                                                                padding: 4,
+                                                                backgroundColor: snapshot.isDraggingOver ? theme.palette.custom.selectBackground : "#6b6b6b",
+                                                                padding: "0px 50px",
                                                                 width: "100%",
                                                                 minHeight: 140,
                                                                 maxHeight: 500,
                                                                 overflow: "auto",
                                                                 height: "auto",
+                                                                display: "flex",
+                                                                justifyContent: "space-around",
+                                                                alignItems: "center",
                                                                 ...(!lock && { backgroundColor: "#999999", opacity: 0.5, pointerEvents: "none" })
                                                             }}
                                                             className="group"
@@ -341,19 +591,24 @@ function App() {
                                                                                     {...provided.dragHandleProps}
                                                                                     style={{
                                                                                         userSelect: "none",
-                                                                                        padding: 16,
-                                                                                        marginBottom: 8,
-                                                                                        minHeight: "60px",
                                                                                         borderRadius: 3,
+                                                                                        boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
                                                                                         backgroundColor: snapshot.isDragging
-                                                                                            ? "#7d0229"
-                                                                                            : "#f50057",
+                                                                                            ? `red brightness(0.8)`
+                                                                                            : (userCursors ? (userCursors.get(item.id)?.color || theme.palette.custom.button) : theme.palette.custom.button),
                                                                                         color: "white",
                                                                                         ...provided.draggableProps.style,
+                                                                                        margin: "10px",
                                                                                     }}
                                                                                     className="post-it"
                                                                                 >
                                                                                     <p>{item.firstname}</p>
+                                                                                    {!userCursors?.get(item.id) ? (
+                                                                                        <p className="no-connect-label"><WifiOffIcon /></p>
+                                                                                    ) : null}
+                                                                                    {!userCursors?.get(item.id) && user.status === "po" ? (
+                                                                                        <p className="student-cross" onClick={() => deleteStudent(item.id)}> <DeleteIcon /> </p>
+                                                                                    ) : null}
                                                                                 </div>
                                                                             );
                                                                         }}
@@ -366,6 +621,7 @@ function App() {
                                                 }}
                                             </Droppable>
                                         </div>
+                                        {!nbSPGrp ? <p style={{ color: "grey", fontSize: "70px", textAlign: "center", fontWeight: "bold" }}>Veuillez choisir le nombre d'élèves par groupe</p> : null}
                                     </div>
                                 );
                             } else if (index !== 0) {
@@ -389,7 +645,7 @@ function App() {
                                                             {...provided.droppableProps}
                                                             ref={provided.innerRef}
                                                             style={{
-                                                                backgroundColor: snapshot.isDraggingOver ? "#e697b3" : "#252525",
+                                                                backgroundColor: snapshot.isDraggingOver ? theme.palette.custom.selectBackground : "#6b6b6b",
                                                                 padding: 4,
                                                                 width: 250,
                                                                 minHeight: 140,
@@ -404,6 +660,7 @@ function App() {
                                                                     const student = columns.students.items.pop();
                                                                     moveOnClick(columnId, student, columns);
                                                                     setColumns({ ...columns });
+                                                                    ws.send(JSON.stringify({ type: "updateCol", data: { columns: { ...columns }, class: classStudents } }))
                                                                 }
                                                             }}
                                                         >
@@ -422,19 +679,25 @@ function App() {
                                                                                     {...provided.dragHandleProps}
                                                                                     style={{
                                                                                         userSelect: "none",
-                                                                                        padding: 16,
-                                                                                        marginBottom: 8,
-                                                                                        minHeight: "60px",
                                                                                         borderRadius: 3,
+                                                                                        boxShadow: "0 0 10px rgba(0, 0, 0, 0.2)",
                                                                                         backgroundColor: snapshot.isDragging
-                                                                                            ? "#7d0229"
-                                                                                            : "#f50057",
+                                                                                            ? "red brightness(0.8)"
+                                                                                            : (userCursors ? (userCursors.get(item.id)?.color || theme.palette.custom.button) : theme.palette.custom.button),
                                                                                         color: "white",
+                                                                                        margin: "10px",
                                                                                         ...provided.draggableProps.style,
                                                                                     }}
                                                                                     className="post-it"
                                                                                 >
                                                                                     <p>{item.firstname}</p>
+                                                                                    {!userCursors?.get(item.id) ? (
+                                                                                        <p className="no-connect-label"><WifiOffIcon /></p>
+                                                                                    ) : null}
+
+                                                                                    {!userCursors?.get(item.id) && user.status === "po" ? (
+                                                                                        <p className="student-cross" onClick={() => deleteStudent(item.id)}> <DeleteIcon /> </p>
+                                                                                    ) : null}
                                                                                 </div>
                                                                             );
                                                                         }}
@@ -455,9 +718,29 @@ function App() {
                             }
                         })}
                     </DragDropContext>
+
                 </div>
-                <button onClick={saveGroups} >Valider</button>
-            </div></>
+                {user?.status === "po" ?
+                    <div style={{
+                        width: "100%",
+                        textAlign: "center",
+                        margin: "20px 0px"
+                    }}>
+                        <Button onClick={saveGroups} style={{
+                            backgroundColor: theme.palette.custom.button,
+                            borderRadius: "10px",
+                            padding: "5px 10px",
+                            color: "white",
+                            height: "50px",
+                            width: "100px",
+                            fontWeight: "bold",
+                            letterSpacing: "2px",
+                        }}>Valider</Button>
+                    </div>
+                    : null}
+            </div> : <h1>Pas de Room pour le moment</h1>}
+
+        </>
     );
 }
 export default App;
