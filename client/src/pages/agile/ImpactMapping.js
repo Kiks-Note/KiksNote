@@ -12,15 +12,16 @@ import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 
 import Card from "../../components/agile/Card";
-import { getImpactMapping } from "../../components/agile/agile";
+import { getImpactMapping, addImpactMapping } from "../../components/agile/agile";
 import { setImpactMapping } from "../../redux/slices/impactMappingSlice";
 
 ImpactMapping.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.object.isRequired,
 };
 
 export default function ImpactMapping({ data }) {
   const dispatch = useDispatch();
+  const state = useSelector((state) => state);
   const { goals, actors, impacts, deliverables } = useSelector(
     (state) => state.impactMapping
   );
@@ -34,12 +35,32 @@ export default function ImpactMapping({ data }) {
 
   useEffect(() => {
     getImpactMappingInfo();
+  }, []);
+
+  useEffect(()=>{
+    addDataToImpactMappingDB();
     setCardObjectif(goals);
     setCardActors(actors);
     setCardImpacts(impacts);
     setCardDeliverables(deliverables);
-  }, [goals, actors, impacts, deliverables]);
+  },[goals, actors, impacts, deliverables]);
 
+  const addDataToImpactMappingDB = async () =>{
+    if (goals && actors && deliverables && impacts) {
+      const res = await addImpactMapping({
+        dashboardId:data.dashboardId,
+        goals: goals,
+        actors: actors,
+        impacts: impacts,
+        deliverables: deliverables,
+      });
+      if (res.status === 200) {
+        console.log("impact mapping added successfully");
+      } else {
+        console.log("error while adding impact mapping");
+      }
+    }
+  }
   const addCard = (index) => {
     setShowCard(true);
     setColumnIndex(index.toString());
@@ -53,8 +74,16 @@ export default function ImpactMapping({ data }) {
   const getImpactMappingInfo = async () => {
     console.log('oui')
     const impact = await getImpactMapping(data.dashboardId);
-    console.log('impactMapping12', impact.actors);
-    dispatch(setImpactMapping(impact.goals, impact.actors, impact.impacts, impact.deliverables));
+    console.log('impactMapping12', impact);
+  
+    const impactGoals = Array.isArray(impact.goals) ? impact.goals : [];
+    const impactActors = Array.isArray(impact.actors) ? impact.actors : [];
+    const impactImpacts = Array.isArray(impact.impacts) ? impact.impacts : [];
+    const impactDeliverables = Array.isArray(impact.deliverables) ? impact.deliverables : [];
+    
+    console.log('impact tableau', impactGoals);
+    dispatch(setImpactMapping({goals : impactGoals, actors : impactActors, impacts : impactImpacts, deliverables : impactDeliverables}));
+    console.log('endpoint', state.impactMapping);
   };
   return (
     <TableContainer
@@ -103,7 +132,7 @@ export default function ImpactMapping({ data }) {
                 );
               })}
               {showCard && columnIndex === "0" && (
-                <Card type="form" column={0} onCloseForm={handleButtonForm} />
+                <Card type="form" column={0} onCloseForm={handleButtonForm} dashboardId={data.dashboardId}/>
               )}
               <IconButton aria-label="add" onClick={() => addCard(0)}>
                 <AddIcon />
@@ -129,7 +158,7 @@ export default function ImpactMapping({ data }) {
                 );
               })}
               {showCard && columnIndex === "1" && (
-                <Card type="form" column={1} onCloseForm={handleButtonForm} />
+                <Card type="form" column={1} onCloseForm={handleButtonForm} dashboardId={data.dashboardId} />
               )}
               <IconButton aria-label="add" onClick={() => addCard(1)}>
                 <AddIcon />
@@ -155,7 +184,7 @@ export default function ImpactMapping({ data }) {
                 );
               })}
               {showCard && columnIndex === "2" && (
-                <Card type="form" column={2} onCloseForm={handleButtonForm} />
+                <Card type="form" column={2} onCloseForm={handleButtonForm} dashboardId={data.dashboardId}/>
               )}
               <IconButton aria-label="add" onClick={() => addCard(2)}>
                 <AddIcon />
@@ -182,7 +211,7 @@ export default function ImpactMapping({ data }) {
               })}
 
               {showCard && columnIndex === "3" && (
-                <Card type="form" column={3} onCloseForm={handleButtonForm} />
+                <Card type="form" column={3} onCloseForm={handleButtonForm} dashboardId={data.dashboardId}/>
               )}
               <IconButton aria-label="add" onClick={() => addCard(3)}>
                 <AddIcon />

@@ -58,7 +58,8 @@ const BasicCard = ({
     console.log(dashboardId);
     setId(dashboardId);
   }, [defineColor, texte, goals, actors, impacts, deliverables, dashboardId]);
-  console.log(id);
+
+
   const moveToPersona = () => {
     const personaTab = {
       id: "Persona" + id,
@@ -81,6 +82,7 @@ const BasicCard = ({
     dispatch(addTab(empathyTab));
     dispatch(setActiveTab(empathyTab.id));
   };
+
   const onHandleClick = async () => {
     if (text !== "" && text !== undefined && text !== null) {
       switch (column) {
@@ -111,22 +113,8 @@ const BasicCard = ({
         default:
           break;
       }
-      console.log(text, color);
-      if (goals && actors && deliverables && impacts) {
-        const res = await addImpactMapping({
-          dashboardId:id,
-          goals: goals,
-          actors: actors,
-          impacts: impacts,
-          deliverables: deliverables,
-        });
-        if (res.status === 200) {
-          console.log("impact mapping added successfully");
-          onCloseForm();
-        } else {
-          console.log("error while adding impact mapping");
-        }
-      }
+      console.log(text, color, uniqueId);
+      onCloseForm();
     } else {
       setOpenSnackbar(true);
     }
@@ -248,26 +236,24 @@ const BasicCard = ({
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={color || ""}
+              value={color || ''}
               onChange={handleColorChange}
               displayEmpty
-              sx={{ width: "100%", mt: 1 }}
             >
-              <MenuItem value="" disabled>
-                Choississez une couleur
-              </MenuItem>
-              <MenuItem value="#FFC0CB">Rose</MenuItem>
-              <MenuItem value="#ADD8E6">Bleu clair</MenuItem>
-              <MenuItem value="#90EE90">Vert clair</MenuItem>
-              <MenuItem value="#FFD700">Or</MenuItem>
-              <MenuItem value="#FFA07A">Saumon</MenuItem>
+              <MenuItem value="" disabled style={{ display: 'flex' }}>Choississez une couleur</MenuItem>
+              <MenuItem value="#FFC0CB" style={{ display: 'flex' }}>Rose</MenuItem>
+              <MenuItem value="#ADD8E6" style={{ display: 'flex' }}>Bleu clair</MenuItem>
+              <MenuItem value="#90EE90" style={{ display: 'flex' }}>Vert clair</MenuItem>
+              <MenuItem value="#FFD700" style={{ display: 'flex' }}>Or</MenuItem>
+              <MenuItem value="#FFA07A" style={{ display: 'flex' }}>Saumon</MenuItem>
             </Select>
+
           </FormControl>
           <CardActions sx={{ justifyContent: "flex-end" }}>
-            <Button size="small" onClick={() => onHandleClick()}>
+            <Button size="small" onClick={() => onHandleClick()} style={{ color: '#90caf9' }}>
               Confirmer
             </Button>
-            <Button size="small" color="error" onClick={() => onCloseForm()}>
+            <Button size="small" color="error" onClick={() => onCloseForm()} style={{ color: '#ff5252' }}>
               Annuler
             </Button>
           </CardActions>
@@ -304,18 +290,19 @@ const BasicCard = ({
                 onChange={handleColorChange}
                 sx={{ width: "100%", mt: 1 }}
               >
-                <MenuItem value="#FFC0CB">Rose</MenuItem>
-                <MenuItem value="#ADD8E6">Bleu clair</MenuItem>
-                <MenuItem value="#90EE90">Vert clair</MenuItem>
-                <MenuItem value="#FFD700">Or</MenuItem>
-                <MenuItem value="#FFA07A">Saumon</MenuItem>
+                <MenuItem value="" disabled style={{ display: 'flex' }}>Choississez une couleur</MenuItem>
+                <MenuItem value="#FFC0CB" style={{ display: 'flex' }}>Rose</MenuItem>
+                <MenuItem value="#ADD8E6" style={{ display: 'flex' }}>Bleu clair</MenuItem>
+                <MenuItem value="#90EE90" style={{ display: 'flex' }}>Vert clair</MenuItem>
+                <MenuItem value="#FFD700" style={{ display: 'flex' }}>Or</MenuItem>
+                <MenuItem value="#FFA07A" style={{ display: 'flex' }}>Saumon</MenuItem>
               </Select>
               <CardActions sx={{ justifyContent: "flex-end" }}>
-                <Button size="small" onClick={() => toggleEditForm()}>
-                  Annuler
-                </Button>
-                <Button size="small" onClick={() => onHandleEdit()}>
+                <Button size="small" onClick={() => onHandleEdit()} style={{ color: '#90caf9' }}>
                   Confirmer
+                </Button>
+                <Button size="small" onClick={() => toggleEditForm()} style={{ color: '#ff5252' }}>
+                  Annuler
                 </Button>
               </CardActions>
             </FormControl>
@@ -342,13 +329,14 @@ const BasicCard = ({
                     </Button>
                   </CardActions>
                 )}
-                <Button size="small" onClick={() => toggleEditForm()}>
+                <Button size="small" onClick={() => toggleEditForm()} style={{ color: '#90caf9' }}>
                   Modifier
                 </Button>
                 <Button
                   size="small"
                   color="error"
                   onClick={() => deleteButton()}
+                  style={{ color: '#ff5252' }}
                 >
                   Supprimer
                 </Button>

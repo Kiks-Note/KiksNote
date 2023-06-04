@@ -14,7 +14,6 @@ const addImpactMapping = async (req, res) => {
     res.status(400).send({ message: "Missing required fields" });
     return;
   }
-  console.log(req.params.dashboardId);
   try {
     await db
       .collection("dashboard")
@@ -25,7 +24,7 @@ const addImpactMapping = async (req, res) => {
         actors: req.body.actors,
         deliverables: req.body.deliverables,
         goals: req.body.goals,
-        impacts: req.body.goals,
+        impacts: req.body.impacts,
       });
     res.status(200).send({ message: "Impact mapping added successfully" });
   } catch (error) {
