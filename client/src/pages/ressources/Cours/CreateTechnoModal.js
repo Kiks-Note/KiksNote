@@ -48,7 +48,13 @@ const CreateTechnoModal = (props) => {
         </IconButton>
       </DialogActions>
       <DialogTitle>Création d'une nouvelle techno</DialogTitle>
-      <DialogContent dividers>
+      <DialogContent
+        dividers
+        sx={{
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
         <FormControl>
           <div className="title-cours-date-container">
             <TextField

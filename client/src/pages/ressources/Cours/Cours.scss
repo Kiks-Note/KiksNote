@@ -23,6 +23,30 @@
     padding: 20px;
 }
 
+.techno-cours-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-name-img-cours-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.techno-select-container {
+    display: flex;
+    min-height: 100%;
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+}
+
 .cours-date-container {
     display: flex;
     flex-direction: row;
@@ -34,8 +58,7 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
-    margin-bottom: 20px;
-    width: 100%;
+    width: 80%;
 }
 
 .dropzone-coursimg-container {
@@ -47,11 +70,14 @@
 p.info-dropdown-img {
     font-weight: bold;
     text-align: center;
+    padding: 10px;
+    margin: 0;
 }
 
 .switch-btn-container {
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 img.img-dropdown-zone {

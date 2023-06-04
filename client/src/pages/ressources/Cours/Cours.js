@@ -94,6 +94,8 @@ const Cours = () => {
   const [technoName, setTechnoName] = useState("");
   const [technoImageBase64, setTechnoImageBase64] = useState("");
 
+  const [selectedTechno, setSelectedTechno] = useState("");
+
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
   const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
 
@@ -343,8 +345,6 @@ const Cours = () => {
     return courseDate >= startLastYear && courseDate <= endLastYear;
   });
 
-  console.log(technos);
-
   return (
     <>
       <div className="cours-container">
@@ -470,6 +470,7 @@ const Cours = () => {
             handleFileChange={handleFileChange}
             handleRemove={handleRemove}
             onSubmit={onSubmit}
+            technos={technos}
             courseTitle={courseTitle}
             setCourseTitle={setCourseTitle}
             courseDateStart={courseDateStart}
@@ -491,6 +492,10 @@ const Cours = () => {
             setIdSelectedOwner={setIdSelectedOwner}
             courseDescription={courseDescription}
             setCourseDescription={setCourseDescription}
+            selectedTechno={selectedTechno}
+            setSelectedTechno={setSelectedTechno}
+            handleChange={(e) => setSelectedTechno(e.target.value)}
+            setCourseImageBase64={setCourseImageBase64}
           />
           <CreateTechnoModal
             open={openTechno}
