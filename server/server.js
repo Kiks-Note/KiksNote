@@ -59,6 +59,8 @@ const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
 const studentsProjectsRoutes = require("./studentsProjectsRoutes");
+const jpoRoutes = require("./jpoRoutes");
+const technosRoutes = require("./technosRoutes");
 
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
@@ -85,6 +87,8 @@ wsI.on("request", (request) => {
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
 app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
+app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
+app.use("/ressources", technosRoutes()); // --> Resssources Technos
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
