@@ -96,6 +96,16 @@ const impactMappingSlice = createSlice({
         color: color || state.deliverables[index].color,
       };
       state.deliverables[index] = updatedDeliverable;
+    },
+    setImpactMapping: (state, action) => {
+      const { goals, actors, impacts, deliverables } = action.payload;
+      return {
+        ...state,
+        goals: goals,
+        actors: actors,
+        impacts: impacts,
+        deliverables: deliverables
+      };
     }
   },
 });
@@ -114,6 +124,7 @@ export const {
   editImpactMappingActor,
   editImpactMappingImpact,
   editImpactMappingDeliverable,
+  setImpactMapping
 } = impactMappingSlice.actions;
 
 export default impactMappingSlice.reducer;

@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setActiveTab } from "../../../redux/slices/tabBoardSlice";
 
 TabDemo.propTypes = {
-  tabs: PropTypes.arrayOf(
+  actualTabs: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.oneOfType([PropTypes.string, PropTypes.node]).isRequired,
       id: PropTypes.string.isRequired,
@@ -26,7 +26,6 @@ TabDemo.propTypes = {
     }).isRequired
   ).isRequired,
   selectedTab: PropTypes.string.isRequired,
-  handleChange: PropTypes.func.isRequired,
   handleClose: PropTypes.func.isRequired,
 };
 
@@ -112,7 +111,6 @@ export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
             {tab.component === "Impact" && <ImpactMapping data={tab.data} />}
             {tab.component === "Personas" && <Personas />}
             {tab.component === "Empathy" && <EmpathyMap />}
-            {/* Ajoutez des conditions pour d'autres composants ici */}
           </TabContainer>
         ) : null
       )}

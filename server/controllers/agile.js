@@ -34,21 +34,18 @@ const addImpactMapping = async (req, res) => {
   }
 };
 
-const getImpactMapping = async () => {
+const getImpactMapping = async (req, res) => {
   try {
-    const data = await db
-      .collection("dashboard")
-      .doc(req.params.dashboardId)
-      .collection("agile")
-      .doc("impact_mapping")
-      .get();
-    if (data.exists) {
-      return data.data();
-    } else {
+    const docRef = db.collection("dashboard").doc(req.params.dashboardId).collection("agile").doc("impact_mapping");
+    const doc = await docRef.get();
+    if (!doc.exists) {
       return null;
     }
-  } catch (e) {
-    console.error(e);
+    const data = doc.data();
+    console.log('data',req.params.dashboardId, data);
+    return res.status(200).send(data);
+  } catch (error) {
+    console.error(error);
     res.status(500).send({ message: "Server error for impact mapping" });
   }
 };

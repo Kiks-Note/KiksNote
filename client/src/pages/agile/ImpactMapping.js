@@ -12,12 +12,15 @@ import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 
 import Card from "../../components/agile/Card";
+import { getImpactMapping } from "../../components/agile/agile";
+import { setImpactMapping } from "../../redux/slices/impactMappingSlice";
 
 ImpactMapping.propTypes = {
   data: PropTypes.array.isRequired,
 };
 
 export default function ImpactMapping({ data }) {
+  const dispatch = useDispatch();
   const { goals, actors, impacts, deliverables } = useSelector(
     (state) => state.impactMapping
   );
@@ -30,9 +33,7 @@ export default function ImpactMapping({ data }) {
   const [cardDeliverables, setCardDeliverables] = useState([]);
 
   useEffect(() => {
-    console.log("impactMapping:", { goals, actors, impacts, deliverables });
-    console.log(data);
-    console.log(data.dashboardId);
+    getImpactMappingInfo();
     setCardObjectif(goals);
     setCardActors(actors);
     setCardImpacts(impacts);
@@ -40,7 +41,6 @@ export default function ImpactMapping({ data }) {
   }, [goals, actors, impacts, deliverables]);
 
   const addCard = (index) => {
-    // console.log("addCard");
     setShowCard(true);
     setColumnIndex(index.toString());
   };
@@ -50,6 +50,12 @@ export default function ImpactMapping({ data }) {
     setColumnIndex("");
   };
 
+  const getImpactMappingInfo = async () => {
+    console.log('oui')
+    const impact = await getImpactMapping(data.dashboardId);
+    console.log('impactMapping12', impact.actors);
+    dispatch(setImpactMapping(impact.goals, impact.actors, impact.impacts, impact.deliverables));
+  };
   return (
     <TableContainer
       component={Paper}

@@ -41,7 +41,6 @@ export default function TabBoard() {
   return (
     <Tab
       handleClose={handleClose}
-      // handleChange={handleChange}
       actualTabs={tabs}
       selectedTab={activeTab}
     />

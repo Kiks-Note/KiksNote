@@ -18,12 +18,12 @@ export async function addImpactMapping(impactMapping) {
   }
 }
 
-export const getImpactMapping = (dashboardId) => {
+export const getImpactMapping = async (dashboardId) => {
   try {
-    const res = axios.get(
+    const res = await axios.get(
       `http://localhost:5050/agile/${dashboardId}/get_impact_mapping`
     );
-    return res;
+    return res.data;
   } catch (e) {
     console.error(e);
   }
