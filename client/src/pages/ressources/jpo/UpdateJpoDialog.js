@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 
 import Dropzone from "../Cours/Dropzone";
-import PdfViewer from "./PdfViewer";
 
 const UpdateCoursDialog = (props) => {
   return (
@@ -96,7 +95,6 @@ const UpdateCoursDialog = (props) => {
               )}
             </div>
           </form>
-          <PdfViewer pdfUrl={props.pdfUrl} setPdfUrl={props.setPdfUrl} />
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose} className={props.btnCreateJpo}>

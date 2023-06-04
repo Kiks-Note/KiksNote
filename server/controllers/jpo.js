@@ -306,13 +306,43 @@ const updateJpoById = async (req, res) => {
 
     await jpoRef.update(jpoData);
 
+    const updatedJpo = await jpoRef.get();
+
+    return res.status(200).json({
+      message: "JPO modifiée avec succès.",
+      jpoData: {
+        id: updatedJpo.id,
+        ...updatedJpo.data(),
+      },
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la modification de la JPO.");
+  }
+};
+
+// wip in progress not worked
+const updateJpoPDF = async (req, res) => {
+  try {
+    const jpoId = req.params.jpoId;
+
+    const jpoRef = db.collection("jpo").doc(jpoId);
+
+    const jpoDoc = await jpoRef.get();
+
+    if (!jpoDoc.exists) {
+      return res.status(404).send("JPO non trouvée");
+    }
+
     if (req.file) {
       const pdfFilePath = req.file.path;
       const pdfFileType = mime.lookup(pdfFilePath);
       const pdfFileSize = req.file.size;
 
       const pdfFileName = req.file.originalname;
-      const pdfFileRef = bucket.file(`jpo/${jpoTitle}/${pdfFileName}`);
+      const pdfFileRef = bucket.file(
+        `jpo/${jpoDoc.data().jpoTitle}/${pdfFileName}`
+      );
 
       await pdfFileRef
         .createWriteStream({
@@ -335,13 +365,17 @@ const updateJpoById = async (req, res) => {
             const pdfBuffer = fs.readFileSync(pdfFilePath);
             const pdfBase64 = pdfBuffer.toString("base64");
 
-            await jpoRef.update({
-              "linkCommercialBrochure.url": pdfUrl.toString(),
-              "linkCommercialBrochure.name": pdfFileName,
-              "linkCommercialBrochure.type": pdfFileType,
-              "linkCommercialBrochure.size": pdfFileSize,
-              "linkCommercialBrochure.pdfBase64": pdfBase64,
-            });
+            const updatedData = {
+              linkCommercialBrochure: {
+                url: pdfUrl.toString(),
+                name: pdfFileName,
+                type: pdfFileType,
+                size: pdfFileSize,
+                pdfBase64: pdfBase64,
+              },
+            };
+
+            await jpoRef.update(updatedData);
 
             const updatedJpo = await jpoRef.get();
 
@@ -359,10 +393,16 @@ const updateJpoById = async (req, res) => {
         })
         .end(fs.readFileSync(pdfFilePath));
     } else {
+      const updatedData = {
+        linkCommercialBrochure: null,
+      };
+
+      await jpoRef.update(updatedData);
+
       const updatedJpo = await jpoRef.get();
 
       return res.status(200).json({
-        message: "JPO modifiée avec succès.",
+        message: "Aucun fichier PDF fourni. La JPO reste inchangée.",
         jpoData: {
           id: updatedJpo.id,
           ...updatedJpo.data(),
@@ -414,5 +454,6 @@ module.exports = {
   createJpo,
   linkProjectStudents,
   updateJpoById,
+  updateJpoPDF,
   deleteJpoById,
 };
