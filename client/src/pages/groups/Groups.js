@@ -139,8 +139,6 @@ function App() {
                     await fetchAndSetData();
                 }
 
-
-
                 document.addEventListener('mousemove', (event) => {
                     const cursorPosition = {
                         x: event.clientX,
@@ -448,7 +446,8 @@ function App() {
                         borderRadius: "10px",
                         padding: "0 10px",
                         marginRight: "10px",
-                        color: "white"
+                        color: "white",
+                        fontWeight: "bold",
 
                     }}><GroupIcon style={{
                         marginRight: "10px",
@@ -466,20 +465,38 @@ function App() {
                                 <option value={5}></option>
                             </datalist>
                             <button className="input-button" onClick={resetButton}>
-                                <CachedIcon className="icon-svg" />
+                                <CachedIcon className="icon-svg" style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary
+                                }} />
                             </button>
                             <button className="input-button" onClick={randomGeneration}>
-                                <CasinoIcon className="icon-svg" />
+                                <CasinoIcon className="icon-svg" style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary
+                                }} />
                             </button>
                             <button className="input-button">
-                                {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
+                                {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary,
+                                }} /> : <LockIcon className="icon-svg" onClick={lockGroups} style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary,
+                                }} />}
                             </button>
                             <button className="input-button" onClick={settingsPopUp}>
-                                <SettingsIcon className="icon-svg" />
+                                <SettingsIcon className="icon-svg" style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary
+                                }} />
                             </button>
                         </div>
                         : <div>
-                            <p>Nombre d'élèves par groupe : {nbSPGrp ? nbSPGrp : "En attente.."}</p>
+                            <p style={{
+                                color: theme.palette.text.primary,
+                                fontWeight: "bold",
+                            }}>Nombre d'élèves par groupe : {nbSPGrp ? nbSPGrp : "En attente.."}</p>
                         </div>}
                 </nav>
                 <div
@@ -515,16 +532,18 @@ function App() {
                                                 style={{
                                                     display: "inline-block",
                                                     backgroundColor: userData.color,
-                                                    padding: "2px 6px",
+                                                    padding: "0px 6px",
                                                     color: "#fff",
                                                     fontSize: "12px",
                                                     borderRadius: "4px",
+                                                    margin: "0px"
                                                 }}
                                             >
                                                 <p style={{
                                                     selection: "none",
                                                     fontWeight: "bold",
                                                     textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                                                    margin: "0px"
                                                 }}>
                                                     {userData.name}
                                                 </p>
@@ -547,6 +566,7 @@ function App() {
                                             flexDirection: "column",
                                             alignItems: "center",
                                             width: "100%",
+                                            marginTop: "50px",
                                         }}
                                         key={columnId}
                                     >

@@ -1,6 +1,5 @@
-import { useTheme, useEffect } from "@mui/material";
+import { useTheme } from "@mui/material";
 import useFirebase from "../../hooks/useFirebase";
-import Illu from "../../assets/img/login_img.svg";
 import Call from "../../assets/img/call.svg";
 import Groups from "../../assets/img/groups.svg";
 import Class from "../../assets/img/class.svg";
@@ -40,7 +39,8 @@ function Home() {
               fontWeight: "bold",
               fontSize: "20px",
               fontFamily: "poppins-bold",
-              color: "white"
+              color: "white",
+              marginLeft: "10px",
             }}>
               Votre Feed
             </p>
