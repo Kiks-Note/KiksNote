@@ -52,12 +52,11 @@ const server = http.createServer(app);
 let transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    type: "OAuth2",
     user: process.env.EMAIL,
     pass: process.env.WORD,
-    clientId: process.env.OAUTH_CLIENTID,
-    clientSecret: process.env.OAUTH_CLIENT_SECRET,
-    refreshToken: process.env.OAUTH_REFRESH_TOKEN,
+    // clientId: process.env.OAUTH_CLIENTID,
+    // clientSecret: process.env.OAUTH_CLIENT_SECRET,
+    // refreshToken: process.env.OAUTH_REFRESH_TOKEN,
   },
 });
 
@@ -70,7 +69,7 @@ transporter.verify((error, success) => {
 app.post("/send", function (req, res) {
   let mailOptions = {
     from: `${req.body.mailerState.email}`,
-    to: process.env.EMAIL,
+    to: "elim.florvil@gmail.com",
     subject: `Message from: ${req.body.mailerState.email}`,
     text: `${req.body.mailerState.message}`,
   };
@@ -87,7 +86,7 @@ app.post("/send", function (req, res) {
       });
     }
   });
-})
+});
 
 const wsI = new webSocketServer({
   httpServer: server,
