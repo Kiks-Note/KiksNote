@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
@@ -14,12 +14,14 @@ import StudentProjectLinkDialog from "./StudentProjectLinkDialog";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddLinkIcon from "@mui/icons-material/AddLink";
+import EditIcon from "@mui/icons-material/Edit";
 
 import notify from "../../../assets/img/notify.svg";
 import "./JpoInfo.scss";
 
 import { makeStyles } from "@mui/styles";
 
+import UpdateJpoDialog from "./UpdateJpoDialog";
 import PdfCommercialBrochureViewer from "./PdfCommercialBrochureViewer";
 
 const options = {
@@ -58,6 +60,14 @@ const useStyles = makeStyles({
       fontWeight: "bold",
     },
   },
+  btnEditJpo: {
+    backgroundColor: "#df005a",
+    color: "white",
+    "&:hover": {
+      backgroundColor: "#df005a",
+      fontWeight: "bold",
+    },
+  },
   btnDeleteJop: {
     backgroundColor: "red",
     color: "white",
@@ -81,6 +91,28 @@ const JpoInfo = () => {
   const [projects, setProjects] = useState([]);
 
   const [openStudentsProject, setOpenStudentsProject] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+
+  const [nameJPO, setNameJPO] = useState("");
+  const [JPODateStart, setJPODateStart] = useState("");
+  const [JPODateEnd, setJPODateEnd] = useState("");
+  const [descriptionJPO, setDescriptionJPO] = useState("");
+  const [files, setFiles] = useState([]);
+  const [jpoThumbnail, setJpoThumbnail] = useState("");
+  const rejectedFiles = files.filter((file) => file.errors);
+  const [pdfUrl, setPdfUrl] = useState(null);
+
+  const handleDrop = useCallback((acceptedFiles) => {
+    setFiles((files) => [...files, ...acceptedFiles]);
+  }, []);
+
+  const handleRemove = (file) => () => {
+    setFiles((files) => files.filter((f) => f !== file));
+  };
+
+  const handleFileChange = (fileData) => {
+    setJpoThumbnail(fileData);
+  };
 
   const [loading, setLoading] = useState(true);
 
@@ -90,6 +122,48 @@ const JpoInfo = () => {
         .get(`http://localhost:5050/ressources/jpo/${id}`)
         .then((res) => {
           setJpoData(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const editJpo = async (
+    jpoTitle,
+    jpoDescription,
+    jpoThumbnail,
+    jpoDayStart,
+    jpoDayEnd
+  ) => {
+    const formData = new FormData();
+    formData.append("jpoTitle", jpoTitle);
+    formData.append("jpoDescription", jpoDescription);
+    formData.append("jpoThumbnail", jpoThumbnail);
+    formData.append("jpoDayStart", jpoDayStart);
+    formData.append("jpoDayEnd", jpoDayEnd);
+    formData.append("file", pdfUrl);
+    try {
+      await axios
+        .put(`http://localhost:5050/ressources/jpo/${id}`, {
+          jpoTitle: jpoTitle,
+          jpoDescription: jpoDescription,
+          jpoThumbnail: jpoThumbnail,
+          jpoDayStart: jpoDayStart,
+          jpoDayEnd: jpoDayEnd,
+        })
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data.message === "JPO modifiée avec succès."
+          ) {
+            toastSuccess(
+              `Votre Jpo ${jpoTitle} a bien été modifié avec succès`
+            );
+            getJpoById(id);
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -138,6 +212,36 @@ const JpoInfo = () => {
 
   const handleCloseStudentsProject = () => {
     setOpenStudentsProject(false);
+  };
+
+  const handleClickOpenUpdateDialog = () => {
+    setOpenUpdate(true);
+    setJPODateStart(
+      moment.unix(jpoData?.jpoDayStart._seconds).format("yyyy-MM-DD")
+    );
+    setJPODateEnd(
+      moment.unix(jpoData?.jpoDayEnd._seconds).format("yyyy-MM-DD")
+    );
+  };
+
+  const handleCloseUpdateDialog = () => {
+    setOpenUpdate(false);
+  };
+
+  const onSubmitEditJpo = async () => {
+    try {
+      await editJpo(
+        nameJPO,
+        descriptionJPO,
+        jpoThumbnail,
+        JPODateStart,
+        JPODateEnd
+      );
+      handleCloseUpdateDialog();
+    } catch (error) {
+      console.error(error);
+      toastFail("Erreur lors de la modification de votre cours.");
+    }
   };
 
   const deleteJpo = async () => {
@@ -379,10 +483,39 @@ const JpoInfo = () => {
                       </Button>
                       <Button
                         sx={{ marginTop: "30px", marginBottom: "30px" }}
+                        onClick={() => handleClickOpenUpdateDialog()}
+                        className={classes.btnEditJpo}
+                      >
+                        Modifier <EditIcon />
+                      </Button>
+                      <UpdateJpoDialog
+                        open={openUpdate}
+                        handleClose={handleCloseUpdateDialog}
+                        handleSubmit={onSubmitEditJpo}
+                        nameJPO={jpoData?.jpoTitle}
+                        setNameJPO={setNameJPO}
+                        JPODateStart={JPODateStart}
+                        setJPODateStart={setJPODateStart}
+                        JPODateEnd={JPODateEnd}
+                        setJPODateEnd={setJPODateEnd}
+                        descriptionJPO={jpoData?.jpoDescription}
+                        setDescriptionJPO={setDescriptionJPO}
+                        handleDrop={handleDrop}
+                        handleFileChange={handleFileChange}
+                        rejectedFiles={rejectedFiles}
+                        handleRemove={handleRemove}
+                        pdfUrl={jpoData?.linkCommercialBrochure}
+                        setPdfUrl={setPdfUrl}
+                        btnCreateJpo={classes.btnCreateJpo}
+                      ></UpdateJpoDialog>
+
+                      <Button
+                        sx={{ marginTop: "30px", marginBottom: "30px" }}
                         onClick={deleteJpo}
                         className={classes.btnDeleteJop}
                       >
-                        Supprimer la Jpo <DeleteIcon />
+                        Supprimer
+                        <DeleteIcon />
                       </Button>
                     </div>
                   </>
