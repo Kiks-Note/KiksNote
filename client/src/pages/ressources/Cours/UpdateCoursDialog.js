@@ -141,14 +141,30 @@ const UpdateCoursDialog = (props) => {
             <Select
               value={props.courseIdClass}
               onChange={(event) => {
-                props.setCourseIdClass(event.target.value);
-                props.setCourseClassName(event.target.name);
+                const selectedOption = event.target.value;
+                const selectedMenuItem = props.allclass.find(
+                  (cours) => cours.id === selectedOption
+                );
+
+                if (selectedMenuItem) {
+                  const courseId = selectedMenuItem.id;
+
+                  props.setCourseIdClass(courseId);
+                  props.setCourseClassName(selectedMenuItem.name);
+                }
               }}
               displayEmpty
-              renderValue={(value) => value || props.currentClass}
+              renderValue={(value) => {
+                const selectedOption = props.allclass.find(
+                  (cours) => cours.id === value
+                );
+                return selectedOption
+                  ? selectedOption.name
+                  : props.currentClass;
+              }}
             >
               {props.allclass.map((cours) => (
-                <MenuItem id={cours.id} value={cours.name}>
+                <MenuItem key={cours.id} value={cours.id}>
                   {cours.name}
                 </MenuItem>
               ))}
@@ -171,17 +187,13 @@ const UpdateCoursDialog = (props) => {
                     }`
                   }
                   value={
-                    props.allpo.find((po) => po.name === value) ||
-                    props.currentPO
+                    props.allpo.find((po) => po.id === value) || props.currentPO
                   }
                   onChange={(event, newValue) => {
-                    onChange(newValue ? newValue.id : "");
+                    const selectedOption = newValue;
+                    onChange(selectedOption ? selectedOption.id : "");
                     props.setCoursOwnerId(
-                      newValue
-                        ? `${newValue.lastname.toUpperCase()} ${
-                            newValue.firstname
-                          }`
-                        : null
+                      selectedOption ? selectedOption.id : null
                     );
                   }}
                   renderInput={(params) => (

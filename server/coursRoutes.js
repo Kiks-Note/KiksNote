@@ -19,7 +19,7 @@ const {
 } = require("./controllers/cours");
 
 module.exports = function () {
-  // Route Cours
+  // Routes Cours
   router.get("/cours", getAllCours);
   router.get("/classes", getAllClasses);
   router.get("/instructors", getInstructors);
