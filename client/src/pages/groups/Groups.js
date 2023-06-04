@@ -147,7 +147,7 @@ function App() {
 
                     const message = {
                         type: 'cursorPosition',
-                        data: { position: cursorPosition, userID: user?.id, class: classStudents }
+                        data: { position: cursorPosition, userID: user?.id, class: classStudents, nbStudents: numberOfStudentsInClass }
                     }
                     ws.send(JSON.stringify(message));
                 });
@@ -189,7 +189,7 @@ function App() {
             document.removeEventListener('mousemove', () => { });
             ws.send(JSON.stringify({ type: 'leaveRoom', data: { userID: user?.id, class: classStudents } }));
         }
-    }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, lock, logToExistingRoom, user?.id, user.status, ws]);
+    }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, lock, logToExistingRoom, numberOfStudentsInClass, user?.id, user.status, ws]);
 
     function deleteStudent(userID) {
         const copiedColContent = { ...columns };
@@ -277,7 +277,7 @@ function App() {
         if ((!isNaN(event.target.value) && event.target.value)) {
             const number = event.target.value;
             setNbSPGrp(number);
-            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { nbSPGrp: number, class: classStudents, status: user.status } }));
+            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { nbSPGrp: number, class: classStudents, status: user.status, nbStudents: numberOfStudentsInClass } }));
             const numberOfStudents = columns.students.items.length;
 
             let copiedColContent = { ...columns };
@@ -296,7 +296,7 @@ function App() {
             }
 
             setColumns(copiedColContent);
-            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents } }));
+            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents, nbStudents: numberOfStudentsInClass } }));
         } else {
             //TODO make a toast here
             fetchAndSetData();
