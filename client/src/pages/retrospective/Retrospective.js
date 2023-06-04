@@ -123,24 +123,10 @@ function Retrospective() {
       setAllRetro(allRetros);
       console.log("ééééééééé");
 
-      console.log();
     });
 
 
   }, []);
-  // set all Retros
-
-  const e = () => {
-    let allRetros = [];
-    axios.get("http://localhost:5050/retro/getAll").then((res) => {
-      let responseRetros = res.data;
-      responseRetros.forEach(retro => {
-        allRetros.push(retro["dataRetro"])
-      });
-      setAllRetro(allRetro);
-      console.log(res.data);
-    });
-  }
 
   const handleClickAddButton = (columnId) => {
     setSelectedColumnId(columnId);
@@ -349,25 +335,26 @@ function Retrospective() {
 
       <Button onClick={saveToDb}> save </Button>
       <Button onClick={getRetro}> get </Button>
-      {/* <Button onClick={e}> getAll </Button> */}
 
 
-      {/* <Select
-                >
-                  {allRetro.map((retroElem, index) => (
-                    <MenuItem
-                      key={index}
-                      value={"nom"}
-                      sx={{
-                        width: "100%",
-                      }}
-                     // onChange={console.log("retroElem")} //setColumns(retroElem["dataRetro"])
-                    >
-                    Test {index}
-                    </MenuItem>
-                  ))}
-                </Select> */}
-   
+
+      <Select
+        onChange={(e) => setColumns(e.target.value)}
+      >
+        {allRetro.map((retroElem, index) => (
+          <MenuItem
+            key={index}
+            value={retroElem || null}
+            sx={{
+              width: "100%",
+            }}
+
+          >
+            {index}
+          </MenuItem>
+        ))}
+      </Select>
+
       <div>
         <Button
           variant="outlined"
