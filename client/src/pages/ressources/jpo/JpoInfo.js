@@ -10,6 +10,7 @@ import moment from "moment";
 import { Typography, Button, Card, Skeleton } from "@mui/material";
 
 import StudentProjectLinkDialog from "./StudentProjectLinkDialog";
+import UpdateJpoPdf from "./UpdateJpoPdf";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -92,6 +93,7 @@ const JpoInfo = () => {
 
   const [openStudentsProject, setOpenStudentsProject] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [openUpdatePdf, setOpenUpdatePdf] = useState(false);
 
   const [nameJPO, setNameJPO] = useState("");
   const [JPODateStart, setJPODateStart] = useState("");
@@ -166,6 +168,35 @@ const JpoInfo = () => {
     }
   };
 
+  const editJpoPdf = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("file", pdfUrl);
+      await axios
+        .put(`http://localhost:5050/ressources/jpopdf/${id}`, formData)
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data.message === "JPO modifiée avec succès."
+          ) {
+            toastSuccess(
+              `La nouvelle plaquette commerciale a été bien mise à jour !`
+            );
+            handleCloseUpdatePdfDialog();
+            getJpoById(id);
+          }
+        })
+        .catch((err) => {
+          toastFail(
+            "Erreur lors de la modification de votre plaquette commercial de votre JPO"
+          );
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const DeleteJpoById = async (jpoTitle) => {
     const data = { jpoTitle };
 
@@ -221,6 +252,14 @@ const JpoInfo = () => {
     setOpenUpdate(false);
   };
 
+  const handleClickOpenUpdatePdfDialog = () => {
+    setOpenUpdatePdf(true);
+  };
+
+  const handleCloseUpdatePdfDialog = () => {
+    setOpenUpdatePdf(false);
+  };
+
   const onSubmitEditJpo = async () => {
     try {
       await editJpo(
@@ -234,6 +273,14 @@ const JpoInfo = () => {
     } catch (error) {
       console.error(error);
       toastFail("Erreur lors de la modification de votre cours.");
+    }
+  };
+
+  const onSubmitEditJpoPdf = async () => {
+    try {
+      await editJpoPdf();
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -460,6 +507,13 @@ const JpoInfo = () => {
                 />
                 {userStatus === "pedago" ? (
                   <>
+                    <Button
+                      sx={{ margin: "20px" }}
+                      onClick={handleOpenStudentsProject}
+                      className={classes.btnLinkProject}
+                    >
+                      Lier à un projet étudiant <AddLinkIcon />
+                    </Button>
                     <div
                       style={{
                         display: "flex",
@@ -468,14 +522,7 @@ const JpoInfo = () => {
                       }}
                     >
                       <Button
-                        sx={{ marginTop: "30px", marginBottom: "30px" }}
-                        onClick={handleOpenStudentsProject}
-                        className={classes.btnLinkProject}
-                      >
-                        Lier à un projet étudiant <AddLinkIcon />
-                      </Button>
-                      <Button
-                        sx={{ marginTop: "30px", marginBottom: "30px" }}
+                        sx={{ margin: "20px" }}
                         onClick={() => handleClickOpenUpdateDialog()}
                         className={classes.btnEditJpo}
                       >
@@ -497,20 +544,33 @@ const JpoInfo = () => {
                         handleFileChange={handleFileChange}
                         rejectedFiles={rejectedFiles}
                         handleRemove={handleRemove}
+                        btnCreateJpo={classes.btnCreateJpo}
+                      />
+                      <Button
+                        sx={{ margin: "20px" }}
+                        onClick={() => handleClickOpenUpdatePdfDialog()}
+                        className={classes.btnEditJpo}
+                      >
+                        Plaquette Commerciale <EditIcon />
+                      </Button>
+                      <UpdateJpoPdf
+                        open={openUpdatePdf}
+                        handleClose={handleCloseUpdatePdfDialog}
                         pdfUrl={jpoData?.linkCommercialBrochure}
                         setPdfUrl={setPdfUrl}
+                        handleSubmit={onSubmitEditJpoPdf}
                         btnCreateJpo={classes.btnCreateJpo}
-                      ></UpdateJpoDialog>
-
-                      <Button
-                        sx={{ marginTop: "30px", marginBottom: "30px" }}
-                        onClick={deleteJpo}
-                        className={classes.btnDeleteJop}
-                      >
-                        Supprimer
-                        <DeleteIcon />
-                      </Button>
+                      />
                     </div>
+
+                    <Button
+                      sx={{ margin: "20px" }}
+                      onClick={deleteJpo}
+                      className={classes.btnDeleteJop}
+                    >
+                      Supprimer
+                      <DeleteIcon />
+                    </Button>
                   </>
                 ) : (
                   <div></div>

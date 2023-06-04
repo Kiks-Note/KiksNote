@@ -321,7 +321,6 @@ const updateJpoById = async (req, res) => {
   }
 };
 
-// wip in progress not worked
 const updateJpoPDF = async (req, res) => {
   try {
     const jpoId = req.params.jpoId;
@@ -334,81 +333,148 @@ const updateJpoPDF = async (req, res) => {
       return res.status(404).send("JPO non trouvée");
     }
 
-    if (req.file) {
-      const pdfFilePath = req.file.path;
-      const pdfFileType = mime.lookup(pdfFilePath);
-      const pdfFileSize = req.file.size;
+    await upload(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        res
+          .status(400)
+          .json({ error: "Erreur lors du téléchargement du fichier." });
+        return;
+      } else if (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
 
-      const pdfFileName = req.file.originalname;
-      const pdfFileRef = bucket.file(
-        `jpo/${jpoDoc.data().jpoTitle}/${pdfFileName}`
-      );
+      console.log(req.file);
 
-      await pdfFileRef
-        .createWriteStream({
+      if (req.file) {
+        const pdfFilePath = req.file.path;
+        const pdfFileType = mime.lookup(pdfFilePath);
+        const pdfFileSize = req.file.size;
+
+        const pdfFileName = req.file.originalname;
+        const pdfFileRef = bucket.file(
+          `jpo/${jpoDoc.data().jpoTitle}/${pdfFileName}`
+        );
+
+        await pdfFileRef
+          .createWriteStream({
+            metadata: {
+              contentType: pdfFileType || "application/pdf",
+              cacheControl: "public, max-age=31536000",
+            },
+          })
+          .on("error", (error) => {
+            console.error(error);
+            res.status(400).json({ error: error.message });
+          })
+          .on("finish", async () => {
+            try {
+              const pdfUrl = await pdfFileRef.getSignedUrl({
+                action: "read",
+                expires: "03-17-2025",
+              });
+
+              const pdfBuffer = fs.readFileSync(pdfFilePath);
+              const pdfBase64 = pdfBuffer.toString("base64");
+
+              const updatedData = {
+                linkCommercialBrochure: {
+                  url: pdfUrl.toString(),
+                  name: pdfFileName,
+                  type: pdfFileType,
+                  size: pdfFileSize,
+                  pdfBase64: pdfBase64,
+                },
+              };
+
+              await jpoRef.update(updatedData);
+
+              const updatedJpo = await jpoRef.get();
+
+              return res.status(200).json({
+                message: "JPO modifiée avec succès.",
+                jpoData: {
+                  id: updatedJpo.id,
+                  ...updatedJpo.data(),
+                },
+              });
+            } catch (error) {
+              console.error(error);
+              res.status(500).send("Erreur lors de la modification de la JPO.");
+            }
+          })
+          .end(fs.readFileSync(pdfFilePath));
+      } else if (jpoDoc.data().linkCommercialBrochure === null) {
+        const mimeType = "application/pdf";
+        const fileExtension = mime.extension(mimeType);
+        const fileName = `${jpoDoc.data().jpoTitle}.${fileExtension}`;
+
+        const pdfFilePath = req.file.path;
+        const pdfFileType = mime.lookup(pdfFilePath);
+        const pdfFileSize = req.file.size;
+
+        const pdfFileName = req.file.originalname;
+        const pdfFileRef = bucket.file(
+          `jpo/${jpoDoc.data().jpoTitle}/${pdfFileName}`
+        );
+        const pdfBuffer = fs.readFileSync(pdfFilePath);
+        const pdfBase64 = pdfBuffer.toString("base64");
+
+        const file = bucket.file(`jpo/${jpoDoc.data().jpoTitle}/${fileName}`);
+
+        const options = {
           metadata: {
-            contentType: pdfFileType || "application/pdf",
+            contentType: mimeType || "application/pdf",
             cacheControl: "public, max-age=31536000",
           },
-        })
-        .on("error", (error) => {
-          console.error(error);
-          res.status(400).json({ error: error.message });
-        })
-        .on("finish", async () => {
-          try {
-            const pdfUrl = await pdfFileRef.getSignedUrl({
-              action: "read",
-              expires: "03-17-2025",
-            });
+        };
 
-            const pdfBuffer = fs.readFileSync(pdfFilePath);
-            const pdfBase64 = pdfBuffer.toString("base64");
+        await file.save(buffer, options);
 
-            const updatedData = {
-              linkCommercialBrochure: {
-                url: pdfUrl.toString(),
-                name: pdfFileName,
-                type: pdfFileType,
-                size: pdfFileSize,
-                pdfBase64: pdfBase64,
-              },
-            };
+        const [url] = await file.getSignedUrl({
+          action: "read",
+          expires: "03-17-2025",
+        });
 
-            await jpoRef.update(updatedData);
+        const updatedData = {
+          linkCommercialBrochure: {
+            url: url.toString(),
+            name: fileName,
+            type: mimeType,
+            size: buffer.length,
+            pdfBase64: buffer.toString("base64"),
+          },
+        };
 
-            const updatedJpo = await jpoRef.get();
+        await jpoRef.update(updatedData);
 
-            return res.status(200).json({
-              message: "JPO modifiée avec succès.",
-              jpoData: {
-                id: updatedJpo.id,
-                ...updatedJpo.data(),
-              },
-            });
-          } catch (error) {
-            console.error(error);
-            res.status(500).send("Erreur lors de la modification de la JPO.");
-          }
-        })
-        .end(fs.readFileSync(pdfFilePath));
-    } else {
-      const updatedData = {
-        linkCommercialBrochure: null,
-      };
+        const updatedJpo = await jpoRef.get();
 
-      await jpoRef.update(updatedData);
+        return res.status(200).json({
+          message: "JPO modifiée avec succès.",
+          jpoData: {
+            id: updatedJpo.id,
+            ...updatedJpo.data(),
+          },
+        });
+      } else {
+        const updatedData = {
+          linkCommercialBrochure: null,
+        };
 
-      const updatedJpo = await jpoRef.get();
+        await jpoRef.update(updatedData);
 
-      return res.status(200).json({
-        message: "Aucun fichier PDF fourni. La JPO reste inchangée.",
-        jpoData: {
-          id: updatedJpo.id,
-          ...updatedJpo.data(),
-        },
-      });
-    }
+        const updatedJpo = await jpoRef.get();
+
+        return res.status(200).json({
+          message: "Aucun fichier PDF fourni. La JPO reste inchangée.",
+          jpoData: {
+            id: updatedJpo.id,
+            ...updatedJpo.data(),
+          },
+        });
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).send("Erreur lors de la modification de la JPO.");
