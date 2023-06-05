@@ -28,6 +28,7 @@ import Register from "./pages/register/Register";
 import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import Retrospective from "./pages/retrospective/Retrospective";
+import ArbreFonctionnel from "./pages/agile/ArbreFonctionnel";
 
 
 function RoutesProvider() {

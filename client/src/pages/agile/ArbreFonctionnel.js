@@ -36,10 +36,7 @@ function ArbreFonctionnel() {
     name: "Nouveau projet",
     content: {
       name: "Root",
-      children: [{
-        name: "Root",
-        children: []
-      }],
+      children: [],
     },
   });
 
