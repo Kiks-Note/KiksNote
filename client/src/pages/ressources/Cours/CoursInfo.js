@@ -27,6 +27,7 @@ import {
 } from "@mui/material";
 
 import UpdateCoursDialog from "./UpdateCoursDialog";
+import CoursLinkDialog from "./CoursLinkDialog";
 
 import { makeStyles } from "@mui/styles";
 import EditIcon from "@mui/icons-material/Edit";
@@ -40,6 +41,7 @@ import EventBusyIcon from "@mui/icons-material/EventBusy";
 import LaptopChromebookIcon from "@mui/icons-material/LaptopChromebook";
 import PublicIcon from "@mui/icons-material/Public";
 import LockIcon from "@mui/icons-material/Lock";
+import AddLinkIcon from "@mui/icons-material/AddLink";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
@@ -89,6 +91,8 @@ const CoursInfo = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [allcourses, setCourses] = useState([]);
+
   const [coursData, setCoursData] = useState([]);
   const [coursTitle, setCoursTitle] = useState("");
   const [courseDateStart, setCourseDateStart] = useState("");
@@ -105,6 +109,8 @@ const CoursInfo = () => {
   const [openCours, setOpenCours] = useState(false);
   const [openBacklog, setOpenBacklog] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [openLink, setOpenLink] = useState(false);
+
   const [openDelete, setOpenDelete] = useState(false);
   const [fileCours, setFileCours] = useState(null);
   const [fileBacklog, setFileBacklog] = useState(null);
@@ -176,7 +182,7 @@ const CoursInfo = () => {
       await axios
         .get("http://localhost:5050/ressources/cours")
         .then((res) => {
-          console.log(res);
+          setCourses(res.data.cours);
         })
         .catch((err) => {
           console.log(err);
@@ -352,6 +358,15 @@ const CoursInfo = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleClickOpenLinkCoursDialog = () => {
+    setOpenLink(true);
+    getAllCours();
+  };
+
+  const handleCloseCoursLinkDialog = () => {
+    setOpenLink(false);
   };
 
   const handleClickOpenCoursDialog = () => {
@@ -1168,6 +1183,26 @@ const CoursInfo = () => {
                       ""
                     ) : (
                       <>
+                        <Button
+                          startIcon={<AddLinkIcon />}
+                          onClick={() => handleClickOpenLinkCoursDialog()}
+                          sx={{
+                            bgcolor: "#94258c",
+                            fontWeight: "bold",
+                            color: "white",
+                            mr: 1,
+                          }}
+                          className={classes.updateButton}
+                        >
+                          Lier à un autre cours
+                        </Button>
+                        <CoursLinkDialog
+                          open={openLink}
+                          close={handleCloseCoursLinkDialog}
+                          allcours={allcourses}
+                          coursData={coursData}
+                          getCoursId={getCoursId}
+                        />
                         <div
                           style={{
                             display: "flex",
