@@ -28,6 +28,7 @@ import Register from "./pages/register/Register";
 import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import Retrospective from "./pages/retrospective/Retrospective";
+import ArbreFonctionnel from "./pages/agile/ArbreFonctionnel";
 
 
 function RoutesProvider() {
@@ -39,6 +40,8 @@ function RoutesProvider() {
         <Route element={<PublicRoutes />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
+          <Route path="/arbre" element={<ArbreFonctionnel />} />
+
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
@@ -54,6 +57,8 @@ function RoutesProvider() {
           <Route path="/blog/:id" element={<DetailBlog />} />
 
           <Route path="/profil" element={<Profil />} />
+
+          {/* 404 Page */}
           <Route path="/jpo" element={<Jpo />} />
           <Route path="/jpo/:id" element={<JpoInfo />} />
           <Route path="/jpo/history" element={<HistoryJpo />} />
@@ -65,8 +70,12 @@ function RoutesProvider() {
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
 
+
+
+
           <Route path="/agile" element={<FolderAgile />} />
-                <Route path="/retro" element={<Retrospective />} />
+          <Route path="/retro" element={<Retrospective />} />
+
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
