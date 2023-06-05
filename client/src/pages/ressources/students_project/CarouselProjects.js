@@ -197,7 +197,7 @@ const CarouselProjects = (props) => {
                     ></Chip>
                   </div>
                   <div className="type-promo-project-container">
-                    {project.technosProject.map((techno) => (
+                    {project?.technosProject?.map((techno) => (
                       <Chip
                         avatar={<Avatar alt={techno.name} src={techno.image} />}
                         sx={{
