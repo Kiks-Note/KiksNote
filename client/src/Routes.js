@@ -3,19 +3,18 @@ import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
-import Tuto from "./pages/blog/Tuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
-import CourseBacklogPdf from "./pages/ressources/Cours/PdfCoursBacklog";
-import PDFCourseView from "./pages/ressources/Cours/PdfCourseView";
 import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
-import ArbreFonctionnel from "./pages/agile/ArbreFonctionnel";
-import Jpo from "./pages/ressources/jpo/jpo";
-import StudentsProjects from "./pages/students_project/StudentsProjects";
-import Agile from "./pages/agile/Agile";
-import TabList from "./pages/board_scrum/tabs/TabBoard";
+import TabBoard from "./pages/board_scrum/tabs/TabBoard";
+import FolderAgile from "./pages/agile/FolderAgile";
+import Jpo from "./pages/ressources/jpo/Jpo";
+import JpoInfo from "./pages/ressources/jpo/JpoInfo";
+import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
+import StudentsProjects from "./pages/ressources/students_project/StudentsProjects";
+import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
@@ -26,9 +25,10 @@ import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
-import EmpathyMap from "./pages/agile/EmpathyMap";
-import Personas from "./pages/agile/Personas";
+import Retrospective from "./pages/retrospective/Retrospective";
+
 
 function RoutesProvider() {
   return (
@@ -50,22 +50,31 @@ function RoutesProvider() {
           <Route path="/appel" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groups" element={<Groups />} />
+          <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/" element={<Home />} />
-          <Route path="/tabList" element={<TabList />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/tuto" element={<Tuto />} />
+          <Route path="/blog/:id" element={<DetailBlog />} />
+
           <Route path="/profil" element={<Profil />} />
 
           {/* 404 Page */}
           <Route path="/jpo" element={<Jpo />} />
+          <Route path="/jpo/:id" element={<JpoInfo />} />
+          <Route path="/jpo/history" element={<HistoryJpo />} />
           <Route path="/studentprojects" element={<StudentsProjects />} />
+          <Route
+            path="/studentprojects/:projectid"
+            element={<StudentsProjectsInfo />}
+          />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
-          <Route path="/pdfsupport" element={<PDFCourseView />} />
-          <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
-          <Route path="/agile" element={<Agile />} />
-          <Route path="/agile/empathy-map" element={<EmpathyMap />} />
-          <Route path="/agile/persona" element={<Personas />} />
+
+
+
+
+          <Route path="/agile" element={<FolderAgile />} />
+          <Route path="/retro" element={<Retrospective />} />
+
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />

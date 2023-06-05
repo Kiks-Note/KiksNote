@@ -1,4 +1,4 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import CloseIcon from "@mui/icons-material/Close";
@@ -52,7 +52,7 @@ export default function ListModal({
   const { assignedTo } = info;
   const [selectedAssignees, setSelectedAssignees] = useState(assignedTo);
   const [labels, setLabels] = useState([]);
-
+  const allowedColumnIds = ["0", "1", "5", "6"];
   useEffect(() => {
     setLabels(labelList);
   }, []);
@@ -64,8 +64,31 @@ export default function ListModal({
     resolver: yupResolver(schema),
   });
   const onSubmit = (data) => {
-    console.log(info);
     try {
+      let cardDto;
+      if (allowedColumnIds.includes(columnId)) {
+        cardDto = {
+          id: info.id,
+          title: info.name,
+          desc: info.desc,
+          storyId: info.storyId,
+          color: info.color,
+          assignedTo: info.assignedTo,
+          labels: data.labels,
+        };
+      } else {
+        cardDto = {
+          id: info.id,
+          title: info.name,
+          desc: info.desc,
+          storyId: info.storyId,
+          color: info.color,
+          assignedTo: info.assignedTo,
+          labels: data.labels,
+          estimation: info.estimation,
+          advancement: info.advancement,
+        };
+      }
       axios.put(
         "http://localhost:5050/dashboard/" +
           dashboardId +
@@ -74,15 +97,7 @@ export default function ListModal({
           "/column/" +
           columnId +
           "/editCard",
-        {
-          id: info.id,
-          title: info.name,
-          desc: info.desc,
-          storyId: info.storyId,
-          color: info.color,
-          assignedTo: info.assignedTo,
-          labels: data.labels,
-        }
+        cardDto
       );
       closeModal();
     } catch (error) {
@@ -95,17 +110,11 @@ export default function ListModal({
   const handleClick = (event) => {
     saveStory(event);
   };
-  const saveStory = (story) => {
+  const saveStory = async (story) => {
     try {
-      axios.put(
-        "http://localhost:5050/dashboard/" +
-          dashboardId +
-          "/board/" +
-          boardId +
-          "/column/" +
-          columnId +
-          "/editCard",
-        {
+      let cardDto;
+      if (allowedColumnIds.includes(columnId)) {
+        cardDto = {
           id: info.id,
           title: info.name,
           desc: info.desc,
@@ -113,11 +122,36 @@ export default function ListModal({
           color: story.color,
           assignedTo: info.assignedTo,
           labels: info.labels,
-        }
+        };
+      } else {
+        cardDto = {
+          id: info.id,
+          title: info.name,
+          desc: info.desc,
+          storyId: story.id,
+          color: story.color,
+          assignedTo: info.assignedTo,
+          labels: info.labels,
+          estimation: info.estimation,
+          advancement: info.advancement,
+        };
+      }
+
+      await axios.put(
+        "http://localhost:5050/dashboard/" +
+          dashboardId +
+          "/board/" +
+          boardId +
+          "/column/" +
+          columnId +
+          "/editCard",
+        cardDto
       );
+
       closeModal();
     } catch (error) {
       console.error(error);
+      // Gérer les erreurs de la requête ici
     }
   };
 

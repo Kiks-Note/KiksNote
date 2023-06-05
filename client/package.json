@@ -18,30 +18,44 @@
     "@mui/x-data-grid": "^5.17.14",
     "@mui/x-data-grid-generator": "^6.0.1",
     "@mui/x-date-pickers": "^6.0.3",
-    "@react-pdf-viewer/core": "3.1.0",
+    "@react-pdf-viewer/core": "^3.12.0",
     "@react-pdf-viewer/default-layout": "^3.12.0",
     "@react-pdf/renderer": "^3.1.8",
+<<<<<<< HEAD
     "@reduxjs/toolkit": "^1.9.3",
+=======
+    "@reduxjs/toolkit": "^1.9.5",
+    "@splidejs/react-splide": "^0.7.12",
+>>>>>>> develop
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.3.6",
     "chart.js": "^4.0.1",
     "cors": "^2.8.5",
+<<<<<<< HEAD
     "crypto-js": "^4.1.1",
     "d3": "^7.8.4",
+=======
+>>>>>>> develop
     "date-fns": "^2.29.3",
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
+    "draft-js": "^0.11.7",
+    "draft-js-export-html": "^1.4.1",
+    "draft-js-exporter": "^0.0.5",
+    "draftjs-to-html": "^0.9.1",
+    "draftjs-to-markdown": "^0.6.0",
     "express": "^4.18.2",
     "firebase": "^9.14.0",
     "fs": "^0.0.1-security",
     "history": "^5.3.0",
+    "html-pdf": "^3.0.1",
     "html2pdf.js": "^0.10.1",
     "js-sha256": "^0.9.0",
     "js-sha512": "^0.8.0",
     "jwt-decode": "^3.1.2",
-    "lodash": "4.17.20",
+    "lodash": "4.17.21",
     "moment": "^2.29.4",
     "node-sass": "^8.0.0",
     "pdfjs-dist": "2.12.313",
@@ -60,6 +74,10 @@
     "react-datetime": "^3.2.0",
     "react-dom": "^18.2.0",
     "react-dotenv": "^0.1.3",
+<<<<<<< HEAD
+=======
+    "react-draft-wysiwyg": "^1.15.0",
+>>>>>>> develop
     "react-dropdown-select": "^4.9.3",
     "react-dropzone": "^14.2.3",
     "react-giphy-searchbox": "^1.5.4",
@@ -67,15 +85,26 @@
     "react-hot-toast": "^2.4.0",
     "react-icons": "^4.8.0",
     "react-loader-spinner": "^5.3.4",
+    "react-markdown": "^8.0.7",
     "react-native-sha512": "^1.0.2",
+<<<<<<< HEAD
     "react-pdf": "^6.2.2",
+=======
+    "react-pdf": "^7.0.3",
+>>>>>>> develop
     "react-redux": "^8.0.5",
     "react-router-dom": "^6.4.4",
     "react-scripts": "5.0.1",
+    "react-swipeable-views": "^0.14.0",
+    "react-swipeable-views-utils": "^0.14.0",
     "react-timestamp": "^6.0.0",
-    "react-toastify": "^9.1.1",
+    "react-toastify": "^9.1.3",
     "react-trello": "^2.2.11",
     "reactjs-popup": "^2.0.5",
+<<<<<<< HEAD
+=======
+    "redux": "^4.2.1",
+>>>>>>> develop
     "redux-thunk": "^2.4.2",
     "replace-in-file": "^6.3.5",
     "sass": "^1.56.1",

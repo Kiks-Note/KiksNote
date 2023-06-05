@@ -48,3 +48,25 @@
 .item-list button:hover {
   background-color: #c1c7cd;
 }
+
+.detail-card {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 900px;
+  box-shadow: 24;
+  margin: 0;
+  max-width: 60%;
+  min-width: fit-content;
+}
+.card-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.label-container {
+  display: flex;
+  border-radius: 3px;
+  width: fit-content;
+}
