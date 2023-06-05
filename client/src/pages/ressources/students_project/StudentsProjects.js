@@ -19,6 +19,7 @@ import {
   Chip,
   MenuItem,
   Skeleton,
+  Avatar,
 } from "@mui/material";
 
 import CodeIcon from "@mui/icons-material/Code";
@@ -497,6 +498,8 @@ const StudentsProjects = () => {
                   onChange={(event) => {
                     setSelectedIdFilterTechno(event.target.value);
                   }}
+                  displayEmpty
+                  renderValue={(value) => value || "Techno"}
                 >
                   <MenuItem value="">Choisir une techno</MenuItem>
                   {technos.map((techno) => (
@@ -640,7 +643,7 @@ const StudentsProjects = () => {
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-between",
-                              height: "300px",
+                              height: "370px",
                             }}
                             onClick={() => {
                               navigate(`${project.id}`);
@@ -666,7 +669,7 @@ const StudentsProjects = () => {
                             />
 
                             <CardContent
-                              sx={{ padding: "10px", height: "120px" }}
+                              sx={{ padding: "10px", height: "350px" }}
                             >
                               {project.typeProject === "Web" ? (
                                 <div>
@@ -765,6 +768,29 @@ const StudentsProjects = () => {
                                   </>
                                 }
                               ></Chip>
+                              <div className="type-promo-project-container">
+                                {project.technosProject.map((techno) => (
+                                  <Chip
+                                    avatar={
+                                      <Avatar
+                                        alt={techno.name}
+                                        src={techno.image}
+                                      />
+                                    }
+                                    sx={{
+                                      display: "flex",
+                                      padding: "10px",
+                                    }}
+                                    label={
+                                      <>
+                                        <div style={{ display: "flex" }}>
+                                          <Typography>{techno.name}</Typography>
+                                        </div>
+                                      </>
+                                    }
+                                  ></Chip>
+                                ))}
+                              </div>
                               {userStatus === "po" ? (
                                 <Button
                                   disabled={isButtonDisabled}

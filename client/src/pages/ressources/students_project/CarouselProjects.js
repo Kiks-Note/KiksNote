@@ -12,6 +12,7 @@ import {
   Chip,
   Button,
   Skeleton,
+  Avatar,
 } from "@mui/material";
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
 import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
@@ -194,6 +195,24 @@ const CarouselProjects = (props) => {
                         </>
                       }
                     ></Chip>
+                  </div>
+                  <div className="type-promo-project-container">
+                    {project.technosProject.map((techno) => (
+                      <Chip
+                        avatar={<Avatar alt={techno.name} src={techno.image} />}
+                        sx={{
+                          display: "flex",
+                          padding: "10px",
+                        }}
+                        label={
+                          <>
+                            <div style={{ display: "flex" }}>
+                              <Typography>{techno.name}</Typography>
+                            </div>
+                          </>
+                        }
+                      ></Chip>
+                    ))}
                   </div>
 
                   {userStatus === "po" ? (
