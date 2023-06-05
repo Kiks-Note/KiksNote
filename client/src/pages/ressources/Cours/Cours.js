@@ -74,6 +74,7 @@ const Cours = () => {
   const [view, setView] = useState("module");
 
   const [courses, setCourses] = useState([]);
+  const [technos, setTechnos] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   const [courseTitle, setCourseTitle] = useState("");
@@ -87,6 +88,8 @@ const Cours = () => {
   const [idSelectedClass, setIdSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
+
+  const [selectedTechno, setSelectedTechno] = useState("");
 
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
   const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
@@ -121,6 +124,10 @@ const Cours = () => {
     setCourseImageBase64(fileData);
   };
 
+  const createCourse = () => {
+    setOpen(true);
+  };
+
   const handleClose = () => {
     setOpen(false);
   };
@@ -128,6 +135,22 @@ const Cours = () => {
   const viewChange = (event, nextView) => {
     if (nextView !== null) {
       setView(nextView);
+    }
+  };
+
+  const getAllTechnos = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/technos")
+        .then((res) => {
+          setTechnos(res.data);
+          setIsAllCoursesDataLoaded(true);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -235,6 +258,7 @@ const Cours = () => {
         console.error(error);
         setLoading(false);
       });
+    getAllTechnos();
     getAllPo();
     getAllClass();
   }, []);
@@ -246,10 +270,6 @@ const Cours = () => {
       }
     }
   }, [isAllCoursesDataLoaded]);
-
-  const createCourse = () => {
-    setOpen(true);
-  };
 
   const onSubmit = async () => {
     await createNewCours();
@@ -350,13 +370,13 @@ const Cours = () => {
                 ))}
               </Select>
             </FormControl>
-            {userStatus === "po" ? (
+            {userStatus !== "etudiant" ? (
               <>
                 <div className="btn-add-cours">
                   <Button
                     sx={{
-                      margin: "30px",
                       padding: "10px",
+                      margin: "10px",
                       backgroundColor: "#7a52e1",
                       color: "white",
                       fontWeight: "bold",
@@ -383,6 +403,7 @@ const Cours = () => {
             handleFileChange={handleFileChange}
             handleRemove={handleRemove}
             onSubmit={onSubmit}
+            technos={technos}
             courseTitle={courseTitle}
             setCourseTitle={setCourseTitle}
             courseDateStart={courseDateStart}
@@ -404,6 +425,10 @@ const Cours = () => {
             setIdSelectedOwner={setIdSelectedOwner}
             courseDescription={courseDescription}
             setCourseDescription={setCourseDescription}
+            selectedTechno={selectedTechno}
+            setSelectedTechno={setSelectedTechno}
+            handleChange={(e) => setSelectedTechno(e.target.value)}
+            setCourseImageBase64={setCourseImageBase64}
           />
         </div>
 

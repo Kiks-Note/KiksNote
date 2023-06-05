@@ -127,6 +127,7 @@ const createStudentProject = async (req, res) => {
       RepoProjectLink,
       promoProject,
       membersProject = [],
+      technosProject = [],
       typeProject,
       descriptionProject,
       imgProject,
@@ -217,6 +218,21 @@ const createStudentProject = async (req, res) => {
       }
     }
     projectData.membersProject = membersData;
+
+    const technosData = [];
+
+    for (const technosId of technosProject) {
+      const technosRef = await db.collection("technos").doc(technosId).get();
+      if (technosRef.exists) {
+        const technoData = {
+          id: technosRef.id,
+          name: technosRef.data().name,
+          image: technosRef.data().image,
+        };
+        technosData.push(technoData);
+      }
+    }
+    projectData.technosProject = technosData;
 
     const projectsRef = db.collection("students_projects");
     const newProject = await projectsRef.add(projectData);
