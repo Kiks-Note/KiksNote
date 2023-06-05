@@ -1,9 +1,9 @@
 import * as React from "react";
-import {ThemeProvider, createTheme} from "@mui/material/styles";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 import App from "../App";
 import { frFR } from "@mui/material/locale";
 import CssBaseline from "@mui/material/CssBaseline";
-import {FirebaseContextProvider} from "../hooks/useFirebase";
+import { FirebaseContextProvider } from "../hooks/useFirebase";
 
 export const ColorModeContext = React.createContext();
 
@@ -57,6 +57,9 @@ export default function ToggleColorMode() {
           custom: {
             iconDrawer: mode === "light" ? "#000" : "#fff",
             iconPdf: mode === "light" ? "#fff" : "#000",
+            button: "#7a52e1",
+            buttonHover: "#5f3dc4",
+            selectBackground: "#a78ee6",
           },
         },
         frFR,
@@ -68,7 +71,7 @@ export default function ToggleColorMode() {
     <FirebaseContextProvider>
       <ColorModeContext.Provider value={colorMode}>
         <ThemeProvider theme={theme}>
-           <CssBaseline />
+          <CssBaseline />
           <App />
         </ThemeProvider>
       </ColorModeContext.Provider>

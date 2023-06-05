@@ -5,14 +5,16 @@ import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
-import CourseBacklogPdf from "./pages/ressources/Cours/PdfCoursBacklog";
-import PDFCourseView from "./pages/ressources/Cours/PdfCourseView";
 import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";
-import Jpo from "./pages/ressources/jpo/jpo";
-import StudentsProjects from "./pages/students_project/StudentsProjects";
+import Jpo from "./pages/ressources/jpo/Jpo";
+import JpoInfo from "./pages/ressources/jpo/JpoInfo";
+import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
+import StudentsProjects from "./pages/ressources//students_project/StudentsProjects";
+import StudentsProjectsInfo from "./pages/ressources//students_project/StudentProjectInfo";
+
 import Agile from "./pages/agile/Agile";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
@@ -54,12 +56,16 @@ function RoutesProvider() {
 
           <Route path="/profil" element={<Profil />} />
           <Route path="/jpo" element={<Jpo />} />
+          <Route path="/jpo/:id" element={<JpoInfo />} />
+          <Route path="/jpo/history" element={<HistoryJpo />} />
           <Route path="/studentprojects" element={<StudentsProjects />} />
+          <Route
+            path="/studentprojects/:projectid"
+            element={<StudentsProjectsInfo />}
+          />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
-          <Route path="/pdfsupport" element={<PDFCourseView />} />
-          <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
-          <Route path="/agile" element={<Agile/>}/>
+          <Route path="/agile" element={<Agile />} />
           <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           <Route path="/agile/persona" element={<Personas />} />
           {/* INVENTORY */}

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import useFirebase from "../../hooks/useFirebase";
 import "./cardBlog.css";
 import OrangeHashtag from "../../assets/img/orange-hashtag.svg";
+
 export default function CardBlog({ blog }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useFirebase();
@@ -36,6 +37,7 @@ export default function CardBlog({ blog }) {
   }
 
   const navigate = useNavigate();
+
   function handleClick() {
     navigate(`/blog/${blog.id}`);
   }
@@ -57,7 +59,7 @@ export default function CardBlog({ blog }) {
         <div className="card-blog-content">
           <div className="content-title">
             <h3 className="blog-title">{blog.title}</h3>{" "}
-            {user.id == blog.created_by ? (
+            {user.id === blog.created_by ? (
               <div>
                 <IconButton
                   aria-label="more options"
@@ -89,7 +91,9 @@ export default function CardBlog({ blog }) {
             {blog.tag.length != 0 && Array.isArray(blog.tag) && (
               <>
                 <img src={OrangeHashtag} width={"30"} height={"30"} />
-                {blog.tag.map((tag) => <li>{tag}, </li>)}
+                {blog.tag.map((tag) => (
+                  <li>{tag}, </li>
+                ))}
               </>
             )}
           </ul>
