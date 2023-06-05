@@ -174,7 +174,7 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
             <Button
               title={buttons[0].description}
               className={buttons[0].clas}
-              style={{ backgroundColor: 'green', margin: 10 }}
+              style={{ color: 'green', margin: 10, backgroundColor: 'white', border: 10, borderColor: 'green' }}
               onClick={handleAddButton}
             >
               {buttons[0].icon}
@@ -187,7 +187,7 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
             <Button
               title={buttons[1].description}
               className={buttons[1].clas}
-              style={{ backgroundColor: 'yellow', margin: 10 }}
+              style={{ backgroundColor: 'white', margin: 10, color: 'yellow', border: 10, borderColor: 'yellow' }}
               onClick={handleEditButton}
 
             >
@@ -200,7 +200,7 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
             title={buttons[2].description}
             className={buttons[2].clas}
             onClick={handleDeletedButton}
-            style={{ backgroundColor: 'red' }}
+            style={{ backgroundColor: 'white', color: 'red', margin: 10, borderColor: 'red', border: 10 }}
           >
             {buttons[2].icon}
           </Button>
