@@ -65,8 +65,12 @@ const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 
+const groupsRoute = require("./groupsRoutes");
+const agileRoute = require("./agileRoutes");
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 
+
+app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
 app.use("/retro", retroRoutesNotNeeded);
 wsI.on("request", (request) => {
@@ -78,6 +82,7 @@ wsI.on("request", (request) => {
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
+  app.use("/agile", agileRoute(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/groupes", groupsRoute(connection, pathname));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
