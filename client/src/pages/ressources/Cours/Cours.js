@@ -517,7 +517,8 @@ const Cours = () => {
                       )
                       .filter((course) =>
                         selectedIdFilterClass !== ""
-                          ? course.data.courseClass === selectedIdFilterClass
+                          ? course?.data?.courseClass.id ===
+                            selectedIdFilterClass
                           : true
                       )
                       .map((course) => {
@@ -751,7 +752,8 @@ const Cours = () => {
                       )
                       .filter((course) =>
                         selectedIdFilterClass !== ""
-                          ? course.data.courseClass === selectedIdFilterClass
+                          ? course?.data?.courseClass.id ===
+                            selectedIdFilterClass
                           : true
                       )
                       .map((course) => (
@@ -915,7 +917,7 @@ const Cours = () => {
                 )
                 .filter((course) =>
                   selectedIdFilterClass !== ""
-                    ? course.data.courseClass === selectedIdFilterClass
+                    ? course?.data?.courseClass.id === selectedIdFilterClass
                     : true
                 )
                 .map((course) => (
@@ -1030,7 +1032,7 @@ const Cours = () => {
                 )
                 .filter((course) =>
                   selectedIdFilterClass !== ""
-                    ? course.data.courseClass === selectedIdFilterClass
+                    ? course?.data?.courseClass.id === selectedIdFilterClass
                     : true
                 )
                 .map((course) => (
