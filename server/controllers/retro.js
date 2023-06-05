@@ -11,11 +11,6 @@ const addRetro = async (req, res) => {
     idUser: req.body.idUser
   };
 
-  //const tabRetro = [req.body.dataRetro]
-  console.log(tabRetro);
-
-  //tabRetro.push(req.body.idUser)
-
   db.collection("retro").doc().set(tabRetro);
 
 };
@@ -62,13 +57,10 @@ const editPostit = async (req, res) => {
   console.log(req.body.currentRetroIndex);
   let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
 
-  console.log("TTTTTTTT");
-  console.log("idRetro", idRetro);
-  console.log("TTTTTTTT");
-
-  const idDoc = snapshot.docs[0].id;
+  const idDoc = snapshot.docs[idRetro].id;
 
   let objetRetro = (await db.collection("retro").doc(idDoc).get()).data()
+  
   objetRetro["dataRetro"][req.body.categorie]["items"][req.body.selectedPostItIndex]["content"] = req.body.postItText
   let dba  = await db.collection("retro").doc(idDoc) 
 
