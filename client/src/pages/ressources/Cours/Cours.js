@@ -33,7 +33,6 @@ import {
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModule from "@mui/icons-material/ViewModule";
 import AddIcon from "@mui/icons-material/Add";
-import CodeIcon from "@mui/icons-material/Code";
 import SearchIcon from "@mui/icons-material/SearchRounded";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
@@ -42,7 +41,6 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 
 import CreateCoursModal from "./CreateCoursModal";
-import CreateTechnoModal from "./CreateTechnoModal";
 
 import "./Cours.scss";
 import "react-toastify/dist/ReactToastify.css";
@@ -91,9 +89,6 @@ const Cours = () => {
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
 
-  const [technoName, setTechnoName] = useState("");
-  const [technoImageBase64, setTechnoImageBase64] = useState("");
-
   const [selectedTechno, setSelectedTechno] = useState("");
 
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
@@ -107,7 +102,6 @@ const Cours = () => {
   const rejectedFiles = files.filter((file) => file.errors);
 
   const [open, setOpen] = useState(false);
-  const [openTechno, setOpenTechno] = useState(false);
 
   const [allpo, setAllPo] = useState([]);
   const [allclass, setAllclass] = useState([]);
@@ -136,18 +130,6 @@ const Cours = () => {
 
   const handleClose = () => {
     setOpen(false);
-  };
-
-  const handleOpenTechno = () => {
-    setOpenTechno(true);
-  };
-
-  const handleCloseTechno = () => {
-    setOpenTechno(false);
-  };
-
-  const handleTechnoFileChange = (fileData) => {
-    setTechnoImageBase64(fileData);
   };
 
   const viewChange = (event, nextView) => {
@@ -267,35 +249,6 @@ const Cours = () => {
     }
   };
 
-  const createTechno = async () => {
-    try {
-      await axios
-        .post("http://localhost:5050/ressources/technos", {
-          name: technoName,
-          image: technoImageBase64,
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            toastSuccess(
-              `La nouvelle technologie ${technoName} a bien été ajouté`
-            );
-            handleCloseTechno();
-            getAllTechnos();
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      if (error.response.status === 400) {
-        toastWarning("Veuillez remplir tous les champs.");
-      }
-      console.error(error);
-      toastFail("Erreur lors de la création de votre cours.");
-      throw error;
-    }
-  };
-
   useEffect(() => {
     getAllCours()
       .then(() => {
@@ -320,10 +273,6 @@ const Cours = () => {
 
   const onSubmit = async () => {
     await createNewCours();
-  };
-
-  const onSubmitTechno = async () => {
-    await createTechno();
   };
 
   const today = new Date();
@@ -421,7 +370,7 @@ const Cours = () => {
                 ))}
               </Select>
             </FormControl>
-            {userStatus === "po" ? (
+            {userStatus !== "etudiant" ? (
               <>
                 <div className="btn-add-cours">
                   <Button
@@ -439,22 +388,6 @@ const Cours = () => {
                     onClick={createCourse}
                   >
                     Ajouter un cours
-                  </Button>
-                  <Button
-                    sx={{
-                      padding: "10px",
-                      margin: "10px",
-                      backgroundColor: "#D1229D",
-                      color: "white",
-                      fontWeight: "bold",
-                      "&:hover": {
-                        backgroundColor: "#e10da2",
-                      },
-                    }}
-                    startIcon={<CodeIcon />}
-                    onClick={handleOpenTechno}
-                  >
-                    Ajouter un techno
                   </Button>
                 </div>
               </>
@@ -496,17 +429,6 @@ const Cours = () => {
             setSelectedTechno={setSelectedTechno}
             handleChange={(e) => setSelectedTechno(e.target.value)}
             setCourseImageBase64={setCourseImageBase64}
-          />
-          <CreateTechnoModal
-            open={openTechno}
-            handleClose={handleCloseTechno}
-            handleDrop={handleDrop}
-            handleFileChange={handleTechnoFileChange}
-            handleRemove={handleRemove}
-            rejectedFiles={rejectedFiles}
-            technoName={technoName}
-            setTechnoName={setTechnoName}
-            onSubmit={onSubmitTechno}
           />
         </div>
 

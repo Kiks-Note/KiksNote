@@ -21,6 +21,7 @@ import {
   Skeleton,
 } from "@mui/material";
 
+import CodeIcon from "@mui/icons-material/Code";
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
 import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
 import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
@@ -29,6 +30,7 @@ import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
 
 import CreateProjectDialog from "./CreateProjectDialog";
+import CreateTechnoModal from "./CreateTechnoModal";
 import CarouselProjects from "./CarouselProjects";
 import studentProjectsImg from "../../../assets/img/students-projects.jpg";
 
@@ -65,6 +67,7 @@ const StudentsProjects = () => {
   const [projects, setProjects] = useState([]);
   const [allclass, setAllclass] = useState([]);
   const [allstudents, setAllStudents] = useState([]);
+  const [technos, setTechnos] = useState([]);
 
   const [nameProject, setNameProject] = useState("");
   const [repoProjectLink, setRepoProjectLink] = useState("");
@@ -81,11 +84,16 @@ const StudentsProjects = () => {
     useState("");
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
   const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
+  const [selectedIdFilterTechno, setSelectedIdFilterTechno] = useState("");
   const [filteredProjects, setFilteredProjects] = useState([]);
 
   const [files, setFiles] = useState([]);
   const rejectedFiles = files.filter((file) => file.errors);
   const [projectImageBase64, setProjectImageBase64] = useState("");
+
+  const [openTechno, setOpenTechno] = useState(false);
+  const [technoName, setTechnoName] = useState("");
+  const [technoImageBase64, setTechnoImageBase64] = useState("");
 
   var votePo = 5;
   var votePedago = 3;
@@ -101,6 +109,62 @@ const StudentsProjects = () => {
 
   const handleFileChange = (fileData) => {
     setProjectImageBase64(fileData);
+  };
+
+  const handleOpenTechno = () => {
+    setOpenTechno(true);
+  };
+
+  const handleCloseTechno = () => {
+    setOpenTechno(false);
+  };
+
+  const handleTechnoFileChange = (fileData) => {
+    setTechnoImageBase64(fileData);
+  };
+
+  const createTechno = async () => {
+    try {
+      await axios
+        .post("http://localhost:5050/ressources/technos", {
+          name: technoName,
+          image: technoImageBase64,
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            toastSuccess(
+              `La nouvelle technologie ${technoName} a bien été ajouté`
+            );
+            handleCloseTechno();
+            getAllTechnos();
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } catch (error) {
+      if (error.response.status === 400) {
+        toastWarning("Veuillez remplir tous les champs.");
+      }
+      console.error(error);
+      toastFail("Erreur lors de la création de votre cours.");
+      throw error;
+    }
+  };
+
+  const getAllTechnos = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/technos")
+        .then((res) => {
+          setTechnos(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getAllProjects = async () => {
@@ -223,6 +287,10 @@ const StudentsProjects = () => {
     }
   };
 
+  const onSubmitTechno = async () => {
+    await createTechno();
+  };
+
   const filterProjects = () => {
     const filtered = projects.filter((project) => {
       if (selectedIdFilterClass !== "") {
@@ -263,6 +331,14 @@ const StudentsProjects = () => {
         setLoading(false);
       });
     getAllStudents()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+      });
+    getAllTechnos()
       .then(() => {
         setLoading(false);
       })
@@ -411,6 +487,30 @@ const StudentsProjects = () => {
                   ))}
                 </Select>
               </FormControl>
+              <FormControl sx={{ width: "20%" }}>
+                <Select
+                  labelId="techno-select-label"
+                  id="techno-select"
+                  value={selectedIdFilterTechno}
+                  onChange={(event) => {
+                    setSelectedIdFilterTechno(event.target.value);
+                  }}
+                >
+                  <MenuItem value="">Choisir une techno</MenuItem>
+                  {technos.map((techno) => (
+                    <MenuItem key={techno.id} value={techno.name}>
+                      <div style={{ display: "flex", alignItems: "center" }}>
+                        <img
+                          src={techno.image}
+                          alt={techno.name}
+                          style={{ width: "40px", marginRight: "10px" }}
+                        />
+                        {techno.name}
+                      </div>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               {userStatus === "etudiant" ? (
                 <Button
                   onClick={handleClickOpen}
@@ -422,6 +522,39 @@ const StudentsProjects = () => {
                 >
                   Publier mon projet
                 </Button>
+              ) : (
+                <div></div>
+              )}
+              {userStatus !== "pedago" ? (
+                <>
+                  <Button
+                    sx={{
+                      padding: "10px",
+                      margin: "10px",
+                      backgroundColor: "#D1229D",
+                      color: "white",
+                      fontWeight: "bold",
+                      "&:hover": {
+                        backgroundColor: "#e10da2",
+                      },
+                    }}
+                    startIcon={<CodeIcon />}
+                    onClick={handleOpenTechno}
+                  >
+                    Ajouter un techno
+                  </Button>
+                  <CreateTechnoModal
+                    open={openTechno}
+                    handleClose={handleCloseTechno}
+                    handleDrop={handleDrop}
+                    handleFileChange={handleTechnoFileChange}
+                    handleRemove={handleRemove}
+                    rejectedFiles={rejectedFiles}
+                    technoName={technoName}
+                    setTechnoName={setTechnoName}
+                    onSubmit={onSubmitTechno}
+                  />
+                </>
               ) : (
                 <div></div>
               )}
