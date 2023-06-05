@@ -1,7 +1,7 @@
-import { IconButton, Menu, MenuItem, Typography } from "@mui/material";
+import { Checkbox, IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useFirebase from "../../hooks/useFirebase";
@@ -10,6 +10,7 @@ import OrangeHashtag from "../../assets/img/orange-hashtag.svg";
 export default function CardBlog({ blog }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useFirebase();
+
   const deleteBlog = function () {
     axios
       .delete(`http://localhost:5050/blog/${blog.id}`)
@@ -20,6 +21,19 @@ export default function CardBlog({ blog }) {
         console.log(err);
       });
   };
+
+  const changeVisibility = function () {
+    blog.visibility = !blog.visibility
+
+    axios
+      .put(`http://localhost:5050/blog/${blog.id}/visibility`, { visibility: blog.visibility })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   const navigate = useNavigate();
   function handleClick() {
@@ -72,10 +86,10 @@ export default function CardBlog({ blog }) {
           </p>
 
           <ul className="tags_blog">
-            {blog.tag.length !=0 && Array.isArray(blog.tag) && (
+            {blog.tag.length != 0 && Array.isArray(blog.tag) && (
               <>
                 <img src={OrangeHashtag} width={"30"} height={"30"} />
-               { blog.tag.map((tag) => <li>{tag}, </li>)}
+                {blog.tag.map((tag) => <li>{tag}, </li>)}
               </>
             )}
           </ul>
@@ -88,6 +102,10 @@ export default function CardBlog({ blog }) {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
+        <MenuItem>
+          <Button onClick={changeVisibility}>Visible</Button>
+          <Checkbox onClick={changeVisibility} checked={blog.visibility}></Checkbox>
+        </MenuItem>
         <MenuItem onClick={handleMenuClose}>
           <Button onClick={deleteBlog}>Supprimer</Button>
         </MenuItem>

@@ -93,6 +93,7 @@ function Blog() {
           type: blog.type,
           tag: blog.tag,
           info_creator: blog.info_creator,
+          visibility: blog.visibility
         };
         allBlogs.push(blogFront);
       });
