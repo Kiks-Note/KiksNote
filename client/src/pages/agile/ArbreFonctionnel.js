@@ -1,19 +1,13 @@
 import { useState } from "react";
 import { makeStyles } from "@mui/styles";
-import Tree from "react-d3-tree";
+
 
 import {
-  Drawer,
-  List,
-  ListItem,
-  ListItemText,
   Typography,
-  IconButton,
+
 } from "@mui/material";
 
-import { ExpandMore, ChevronRight, Delete } from "@mui/icons-material";
 
-import { TreeView, TreeItem } from "@mui/lab";
 
 import Arbre from "../../components/agile/Arbre.js";
 
@@ -59,9 +53,10 @@ function ArbreFonctionnel() {
   });
 
   const handleProjectSelect = (project) => {
-    console.log(project)
     setSelectedProject(project);
   };
+
+
 
   const projects = [
     {

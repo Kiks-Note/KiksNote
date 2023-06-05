@@ -1,28 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { Drawer, TextField } from "@mui/material";
+import { Drawer, TextField, Typography } from "@mui/material";
 import { isNameExists, generateUniqueName, findParent } from "../../../utils/FunctionsUtils"
 import Button from '@material-ui/core/Button';
-import { Icon } from '@mui/material';
+
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { set } from 'lodash';
-import { array } from 'prop-types';
+import { margin } from '@mui/system';
+
 
 
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
-
-    width: 50,
+    padding: '10px',
+    width: 100,
     flexShrink: 0,
-    width: '270px',
+
 
   },
   drawerPaper: {
+    padding: '10px',
     transform: 'rotate(180deg)',
-    width: '270px',
+    width: '320px',
     height: '100vh',
   },
   addButton: {
@@ -46,6 +47,20 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.error.white,
     },
   },
+  titleDraw: {
+    textAlign: 'center',
+    marginBottom: 70
+  },
+  addSection: {
+    backgroundColor: 'red',
+    marginBottom: 70
+  },
+  nameSection: {
+    marginBottom: 30
+  },
+  deleteSection: {
+    marginBottom: 30
+  }
 }));
 const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
   const classes = useStyles();
@@ -96,15 +111,18 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
   }
 
   function handleDeletedButton() {
-    var parentNode = findParent(oldTreeData, node.name);
-    var updateChildre = parentNode.children.filter(obj => obj.name !== node.name)
-    console.log(updateChildre)
-    parentNode.children.splice(0, parentNode.children.length, ...updateChildre)
-    console.log(parentNode)
-    const updateoldTreeData = findAndReplaceObject(parentNode.name, parentNode, oldTreeData, 'edit')
-    console.log(updateoldTreeData)
 
+    var parentNode = findParent(oldTreeData, node.name);
+    console.log(parentNode)
+    if (parentNode == null) {
+      return
+    }
+    var updateChildre = parentNode.children.filter(obj => obj.name !== node.name)
+    parentNode.children.splice(0, parentNode.children.length, ...updateChildre)
+    const updateoldTreeData = findAndReplaceObject(parentNode.name, parentNode, oldTreeData, 'edit')
+    setNode(parentNode)
     sendUpdateThree(updateoldTreeData)
+
   }
 
 
@@ -134,6 +152,7 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
   return (
     <div>
       <Drawer
+
         className={classes.drawer}
         variant="permanent"
         classes={{
@@ -141,38 +160,48 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
         }}
         style={{ height: '100vh', right: 0 }}
       >
-        <div>
-          ÉDITION DU NOEUD : {node.name}
-          <br>
-          </br>
+        <div className='headerDraw' >
+          <div className='titleDraw' >
+            <Typography variant="h5" align='center'>ÉDITION DU NOEUD</Typography>
+          </div>
+          <div className='nameNode'>
+            <Typography variant="h6" align='center'>{node.name}</Typography>
+          </div>
         </div>
-        <div>
-          <div>Ajouter un enfant à cette branche : <TextField value={nameAdd} onChange={(e) => handleNameAdd(e)}></TextField></div>
+
+        <br>
+        </br>
+        <div className='addSection'>
+          <div>Ajouter un enfant à cette branche  <TextField value={nameAdd} onChange={(e) => handleNameAdd(e)}></TextField></div>
           <Button
             title={buttons[0].description}
             className={buttons[0].clas}
+            backgroundColor={'green'}
             onClick={handleAddButton}
           >
             {buttons[0].icon}
           </Button>
         </div>
-        <div>
-          <div>Changer le nom : <TextField value={nameEdit} onChange={(e) => handleNameEdit(e)}></TextField></div>
+        <div className='nameSection'>
+          <div >
+            Changer le nom : <TextField value={nameEdit} onChange={(e) => handleNameEdit(e)}></TextField></div>
           <Button
             title={buttons[1].description}
             className={buttons[1].clas}
+            backgroundColor={'yellow'}
             onClick={handleEditButton}
 
           >
             {buttons[1].icon}
           </Button>
         </div>
-        <div>
+        <div className='deleteSection'>
           <div>Supprimer cette branche </div>
           <Button
             title={buttons[1].description}
             className={buttons[1].clas}
             onClick={handleDeletedButton}
+            backgroundColor={'red'}
           >
             {buttons[1].icon}
           </Button>

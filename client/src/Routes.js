@@ -39,6 +39,7 @@ function RoutesProvider() {
         <Route element={<PublicRoutes />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
+          <Route path="/arbre" element={<ArbreFonctionnel />} />
 
         </Route>
         {/* {Route} */}
@@ -54,7 +55,6 @@ function RoutesProvider() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />
-          <Route path="/arbre" element={<ArbreFonctionnel />} />
 
           {/* 404 Page */}
           <Route path="/jpo" element={<Jpo />} />
