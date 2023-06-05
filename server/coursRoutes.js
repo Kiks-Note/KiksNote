@@ -10,6 +10,7 @@ const {
   getInstructors,
   getInstructorById,
   createCours,
+  createLinkedCours,
   updateCours,
   uploadCoursPdf,
   uploadBackLogPdf,
@@ -19,7 +20,7 @@ const {
 } = require("./controllers/cours");
 
 module.exports = function () {
-  // Route Cours
+  // Routes Cours
   router.get("/cours", getAllCours);
   router.get("/classes", getAllClasses);
   router.get("/instructors", getInstructors);
@@ -28,6 +29,7 @@ module.exports = function () {
   router.get("/class/:id", getClassById);
   router.post("/class", createClass);
   router.post("/cours", createCours);
+  router.post("/linkcours/:courseId", createLinkedCours);
   router.put("/cours/:id", updateCours);
   router.post("/cours/upload-pdf", uploadCoursPdf);
   router.post("/cours/backlog/upload-pdf", uploadBackLogPdf);

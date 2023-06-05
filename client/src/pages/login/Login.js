@@ -245,7 +245,7 @@ const Login = () => {
                           edge="end"
                         >
                           {showPassword ? (
-                            <VisibilityOff />
+                            <VisibilityOff  style={{color: "#7a52e1"}}/>
                           ) : (
                             <Visibility style={{color: "#7a52e1"}} />
                           )}

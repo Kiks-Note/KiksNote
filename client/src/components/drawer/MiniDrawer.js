@@ -111,8 +111,8 @@ export default function MiniDrawer({element}) {
         {
           id: 9,
           name: "Fil d'actu",
-          route: "/fil-d-actu",
-          icon: <ListAltIcon sx={{color: theme.palette.custom.iconDrawer}} />,
+          route: "/jpo",
+          icon: <ListAltIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
         },
         {
           id: 10,
@@ -148,45 +148,37 @@ export default function MiniDrawer({element}) {
       route: "#",
       icon: <CalendarTodayIcon sx={{color: theme.palette.custom.iconDrawer}} />,
     },
-    ...(user && user?.status !== "Pédago"
-      ? [
-          {
-            id: 5,
-            name: "Agile",
-            icon: <BallotIcon sx={{color: theme.palette.custom.iconDrawer}} />,
-            children: [
-              {
-                id: 12,
-                name: "Coding Board",
-                route: "/tableau-de-bord",
-                icon: (
-                  <DashboardIcon
-                    sx={{color: theme.palette.custom.iconDrawer}}
-                  />
-                ),
-              },
-              {
-                id: 13,
-                name: "Coding Retro",
-                route: "#",
-                icon: (
-                  <WbIridescentIcon
-                    sx={{color: theme.palette.custom.iconDrawer}}
-                  />
-                ),
-              },
-              {
-                id: 14,
-                name: "Coding Agile",
-                route: "/agile",
-                icon: (
-                  <TimelineIcon sx={{color: theme.palette.custom.iconDrawer}} />
-                ),
-              },
-            ],
-          },
-        ]
-      : []),
+    {
+      id: 5,
+      name: "Agile",
+      icon: <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
+      children: [
+        {
+          id: 12,
+          name: "Coding Board",
+          route: "/tableau-de-bord",
+          icon: (
+            <DashboardIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+          ),
+        },
+        {
+          id: 13,
+          name: "Coding Retro",
+          route: "#",
+          icon: (
+            <WbIridescentIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+          ),
+        },
+        {
+          id: 14,
+          name: "Coding Agile",
+          route: "/agile",
+          icon: (
+            <TimelineIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+          ),
+        },
+      ],
+    },
     {
       id: 6,
       name: "Inventaire",
@@ -450,7 +442,7 @@ export default function MiniDrawer({element}) {
           )}
         </List>
       </Drawer>
-      <Box component="main" sx={{width: "100%"}}>
+      <Box component="main" sx={{ width: "100%" }}>
         <>{element}</>
       </Box>
     </Box>

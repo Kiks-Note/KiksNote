@@ -14,6 +14,7 @@ const {
 } = require("./controllers/studentsProjects");
 
 module.exports = function () {
+  // Routes Students Projects
   router.get("/students", getAllStudents);
   router.get("/student/:id", getStudentById);
   router.get("/blogstutos", getBlogTutorials);
