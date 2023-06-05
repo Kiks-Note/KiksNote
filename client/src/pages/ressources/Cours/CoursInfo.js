@@ -24,9 +24,11 @@ import {
   Chip,
   Avatar,
   Skeleton,
+  CardMedia,
 } from "@mui/material";
 
 import UpdateCoursDialog from "./UpdateCoursDialog";
+import CoursLinkDialog from "./CoursLinkDialog";
 
 import { makeStyles } from "@mui/styles";
 import EditIcon from "@mui/icons-material/Edit";
@@ -40,6 +42,7 @@ import EventBusyIcon from "@mui/icons-material/EventBusy";
 import LaptopChromebookIcon from "@mui/icons-material/LaptopChromebook";
 import PublicIcon from "@mui/icons-material/Public";
 import LockIcon from "@mui/icons-material/Lock";
+import AddLinkIcon from "@mui/icons-material/AddLink";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
@@ -89,6 +92,8 @@ const CoursInfo = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [allcourses, setCourses] = useState([]);
+
   const [coursData, setCoursData] = useState([]);
   const [coursTitle, setCoursTitle] = useState("");
   const [courseDateStart, setCourseDateStart] = useState("");
@@ -105,6 +110,8 @@ const CoursInfo = () => {
   const [openCours, setOpenCours] = useState(false);
   const [openBacklog, setOpenBacklog] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [openLink, setOpenLink] = useState(false);
+
   const [openDelete, setOpenDelete] = useState(false);
   const [fileCours, setFileCours] = useState(null);
   const [fileBacklog, setFileBacklog] = useState(null);
@@ -176,7 +183,7 @@ const CoursInfo = () => {
       await axios
         .get("http://localhost:5050/ressources/cours")
         .then((res) => {
-          console.log(res);
+          setCourses(res.data);
         })
         .catch((err) => {
           console.log(err);
@@ -354,6 +361,15 @@ const CoursInfo = () => {
     }
   };
 
+  const handleClickOpenLinkCoursDialog = () => {
+    setOpenLink(true);
+    getAllCours();
+  };
+
+  const handleCloseCoursLinkDialog = () => {
+    setOpenLink(false);
+  };
+
   const handleClickOpenCoursDialog = () => {
     setOpenCours(true);
   };
@@ -463,7 +479,7 @@ const CoursInfo = () => {
   };
 
   useEffect(() => {
-    getCoursId()
+    getCoursId(id)
       .then(() => {
         setLoading(false);
       })
@@ -471,7 +487,7 @@ const CoursInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, []);
+  }, [id]);
 
   return (
     <>
@@ -565,6 +581,72 @@ const CoursInfo = () => {
                     <p className="p-description-coursinfo">
                       {coursData.description}
                     </p>
+                    {console.log(coursData?.linkedCourse)}
+                    {coursData?.linkedCourse !== undefined ? (
+                      <>
+                        <h2>Cours Liée</h2>
+                        <Divider />
+                        <Card
+                          sx={{
+                            width: "100%",
+                            marginBottom: "20px",
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <CardMedia
+                            sx={{
+                              width: "100%",
+                              minHeight: "150px",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                            }}
+                            component="img"
+                            src={coursData?.linkedCourse.imageCourseUrl}
+                            alt="course image"
+                            style={{
+                              objectFit: "contain",
+                              objectPosition: "center",
+                              width: "100%",
+                              minHeight: "150px",
+                            }}
+                          />
+                          <CardContent
+                            sx={{
+                              display: "flex",
+                              justifyContent: "space-around",
+                              width: "100%",
+                              alignItems: "center",
+                            }}
+                          >
+                            <h4
+                              style={{
+                                width: "70%",
+                                wordBreak: "break-all",
+                                whiteSpace: "normal",
+                              }}
+                            >
+                              {coursData?.linkedCourse.title}
+                            </h4>
+                          </CardContent>
+                          <Button
+                            onClick={(event) => {
+                              event.stopPropagation();
+                              navigate(
+                                `/coursinfo/${coursData?.linkedCourse.id}`
+                              );
+                            }}
+                            sx={{ color: "#7a52e1" }}
+                          >
+                            Voir le cours relié
+                          </Button>
+                        </Card>
+                      </>
+                    ) : (
+                      <div></div>
+                    )}
                     <h2>Contenu du Cours</h2>
                     <Divider />
                     <div className="list-course-pdf">
@@ -1168,6 +1250,26 @@ const CoursInfo = () => {
                       ""
                     ) : (
                       <>
+                        <Button
+                          startIcon={<AddLinkIcon />}
+                          onClick={() => handleClickOpenLinkCoursDialog()}
+                          sx={{
+                            bgcolor: "#94258c",
+                            fontWeight: "bold",
+                            color: "white",
+                            mr: 1,
+                          }}
+                          className={classes.updateButton}
+                        >
+                          Lier à un autre cours
+                        </Button>
+                        <CoursLinkDialog
+                          open={openLink}
+                          close={handleCloseCoursLinkDialog}
+                          allcours={allcourses}
+                          coursData={coursData}
+                          getCoursId={getCoursId}
+                        />
                         <div
                           style={{
                             display: "flex",

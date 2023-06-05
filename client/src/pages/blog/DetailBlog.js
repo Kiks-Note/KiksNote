@@ -58,7 +58,7 @@ function DetailBlog() {
         };
         const dateCreation = new Date(
           blogDto.created_at._seconds * 1000 +
-            blogDto.created_at._nanoseconds / 100000
+          blogDto.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blogDto.like.includes(user.id);
         const userDisliked = blogDto.dislike.includes(user.id);
@@ -143,6 +143,8 @@ function DetailBlog() {
                   />
                   <CardContent>
                     <Typography>{data.editorState}</Typography>
+                    {/* <div dangerouslySetInnerHTML={{ __html: data.inputEditorState }} /> */}
+
                   </CardContent>
                 </Card>
                 <div className="options">

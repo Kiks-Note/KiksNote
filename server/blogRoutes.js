@@ -18,6 +18,7 @@ const {
   getBlogParticipants,
   blogDetailRequests,
   deleteBlogComment,
+  getRepartition,
 } = require("./controllers/blog");
 
 module.exports = function (connection, pathname, upload) {
@@ -36,6 +37,7 @@ module.exports = function (connection, pathname, upload) {
   router.put("/:id/dislike", addDislike);
   router.get("/stats/created_by", getTopCreators);
   router.get("/stats/participant", getBlogParticipants);
+  router.get("/stats/distribution", getRepartition);
 
   switch (pathname) {
     case "/blog":

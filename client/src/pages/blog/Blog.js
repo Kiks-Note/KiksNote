@@ -17,6 +17,7 @@ import TopCreatorsChart from "../../components/blog/TopCreator.js";
 import MostParticipantsChart from "../../components/blog/TopEvent.js";
 import SplitButtonChoice from "../../components/blog/SplitButtonChoice";
 import "./Blog.css";
+import BlogRepartition from "../../components/blog/Repartition.js";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -35,6 +36,10 @@ function Blog() {
       label: "Top des élèves avec le plus de participation",
       component: <MostParticipantsChart />,
     },
+    {
+      label: "Répartition entre les tutoriels et les blogs",
+      component: <BlogRepartition />,
+    }
   ];
   const [activeStep, setActiveStep] = useState(0);
   const handleNext = () => {

@@ -28,6 +28,7 @@ function OverView({ id }) {
   var [boards, setBoards] = useState({});
   const [display, setDisplay] = useState(false);
   const [pdfLink, setPdfLink] = useState("");
+  const [agile, setAgile] = useState([]);
   const dispatch = useDispatch();
 
   const moveToOverView = () => {
@@ -41,6 +42,17 @@ function OverView({ id }) {
     dispatch(addTab(pdfViewTab));
     dispatch(setActiveTab(pdfViewTab.id));
   };
+    const moveToImpact = () => {
+      const impactTab = {
+        id: "Impact" + id,
+        label: "Impact mapping ",
+        closeable: true,
+        component: "Impact",
+        data: { agile: agile, dashboardId: id },
+      };
+      dispatch(addTab(impactTab));
+      dispatch(setActiveTab(impactTab.id));
+    };
 
   useEffect(() => {
     (async () => {
@@ -54,9 +66,11 @@ function OverView({ id }) {
         var data = JSON.parse(message.data);
         setPdfLink(data.pdf_link);
         setRelease((releases = data.release));
-        setBoards((boards = data.boards));
+        setBoards(( data.boards));
         setStories(data.stories);
+        setAgile(data.agile);
         setDisplay(true);
+        console.log(data.agile);
       };
     })();
   }, []);
@@ -90,7 +104,7 @@ function OverView({ id }) {
                 }}
               >
                 {Object.keys(releases).map((item, i) => (
-                  <ListItem key={i+id}>
+                  <ListItem key={i + id}>
                     <Box sx={{ width: "100%" }}>
                       <Accordion>
                         <AccordionSummary
@@ -130,6 +144,9 @@ function OverView({ id }) {
                 ) : (
                   <></>
                 )}
+                <Button variant="contained" onClick={moveToImpact}>
+                  Agile
+                </Button>
               </Box>{" "}
               <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
                 Statistiques

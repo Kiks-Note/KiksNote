@@ -40,6 +40,7 @@ export default function ToggleColorMode() {
             default: mode === "light" ? "#f5f5f5" : "#212121",
             paper: mode === "light" ? "#eaeaea" : "#424242",
             container: mode === "light" ? "#eaeaea" : "#0f0f0f",
+            element: "#7a52e1"
           },
           primary: {
             main: mode === "light" ? "#2196f3" : "#90caf9",
@@ -60,6 +61,7 @@ export default function ToggleColorMode() {
             button: "#7a52e1",
             buttonHover: "#5f3dc4",
             selectBackground: "#a78ee6",
+            card: "#341581"
           },
         },
         frFR,

@@ -9,13 +9,12 @@ import PublicRoutes from "./utils/PublicRoutes";
 import Profil from "./pages/profil/Profil";
 import NotFound from "./pages/not_found/NotFound";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";
+import FolderAgile from "./pages/agile/FolderAgile";
 import Jpo from "./pages/ressources/jpo/Jpo";
 import JpoInfo from "./pages/ressources/jpo/JpoInfo";
 import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
-import StudentsProjects from "./pages/ressources//students_project/StudentsProjects";
-import StudentsProjectsInfo from "./pages/ressources//students_project/StudentProjectInfo";
-
-import Agile from "./pages/agile/Agile";
+import StudentsProjects from "./pages/ressources/students_project/StudentsProjects";
+import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
 import Appel from "./pages/call/Call";
 import Home from "./pages/home/Home";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
@@ -28,8 +27,8 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
-import EmpathyMap from "./pages/agile/EmpathyMap";
-import Personas from "./pages/agile/Personas";
+import Retrospective from "./pages/retrospective/Retrospective";
+
 
 function RoutesProvider() {
   return (
@@ -65,9 +64,9 @@ function RoutesProvider() {
           />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
-          <Route path="/agile" element={<Agile />} />
-          <Route path="/agile/empathy-map" element={<EmpathyMap />} />
-          <Route path="/agile/persona" element={<Personas />} />
+
+          <Route path="/agile" element={<FolderAgile />} />
+                <Route path="/retro" element={<Retrospective />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />

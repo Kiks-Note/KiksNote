@@ -37,6 +37,11 @@ const upload = multer({
   },
 }).single("file");
 
+function isBase64Image(string) {
+  const regex = /^data:image\/(png|jpg|jpeg|gif);base64,/i;
+  return regex.test(string);
+}
+
 const getAllCours = async (req, res) => {
   try {
     const resourcesRef = db.collection("cours");
@@ -200,29 +205,37 @@ const createCours = async (req, res) => {
       ownerData.image = ownerRef.data().image;
     }
 
-    const mimeType = "image/png";
-    const fileExtension = mime.extension(mimeType);
-    const fileName = `${title}.${fileExtension}`;
+    let imageCourseUrl;
 
-    const buffer = Buffer.from(
-      imageBase64.replace(/^data:image\/\w+;base64,/, ""),
-      "base64"
-    );
-    const file = bucket.file(`${courseClass}/${title}/${fileName}`);
+    if (isBase64Image(imageBase64)) {
+      const mimeType = "image/png";
+      const fileExtension = mime.extension(mimeType);
+      const fileName = `${title}.${fileExtension}`;
 
-    const options = {
-      metadata: {
-        contentType: mimeType || "image/jpeg",
-        cacheControl: "public, max-age=31536000",
-      },
-    };
+      const buffer = Buffer.from(
+        imageBase64.replace(/^data:image\/\w+;base64,/, ""),
+        "base64"
+      );
+      const file = bucket.file(`${courseClass}/${title}/${fileName}`);
 
-    await file.save(buffer, options);
+      const options = {
+        metadata: {
+          contentType: mimeType || "image/jpeg",
+          cacheControl: "public, max-age=31536000",
+        },
+      };
 
-    const [url] = await file.getSignedUrl({
-      action: "read",
-      expires: "03-17-2025",
-    });
+      await file.save(buffer, options);
+
+      const [url] = await file.getSignedUrl({
+        action: "read",
+        expires: "03-17-2025",
+      });
+
+      imageCourseUrl = url;
+    } else {
+      imageCourseUrl = imageBase64;
+    }
 
     const resourcesRef = db.collection("cours");
     const newResource = await resourcesRef.add({
@@ -234,7 +247,7 @@ const createCours = async (req, res) => {
       courseClass: courseClassData,
       owner: ownerData,
       private: private,
-      imageCourseUrl: url,
+      imageCourseUrl: imageCourseUrl,
     });
 
     const newResourceData = await newResource.get();
@@ -249,6 +262,42 @@ const createCours = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Erreur lors de la création du cours.");
+  }
+};
+
+const createLinkedCours = async (req, res) => {
+  const courseId = req.params.courseId;
+  const { id } = req.body;
+
+  try {
+    const courseRef = db.collection("cours").doc(courseId);
+
+    const linkedCourseRef = db.collection("cours").doc(id);
+
+    const courseDoc = await linkedCourseRef.get();
+    if (!courseDoc.exists) {
+      return res.status(404).send("Le cours spécifié n'a pas été trouvé.");
+    }
+
+    const linkedCourseDoc = await linkedCourseRef.get();
+    if (!linkedCourseDoc.exists) {
+      return res.status(404).send("Le cours lié spécifié n'a pas été trouvé.");
+    }
+
+    const linkedCourseData = {
+      id: id,
+      title: courseDoc.data().title,
+      imageCourseUrl: courseDoc.data().imageCourseUrl,
+    };
+
+    await courseRef.update({
+      linkedCourse: linkedCourseData,
+    });
+
+    return res.status(200).send("Le cours lié a été ajouté avec succès.");
+  } catch (err) {
+    console.error(err);
+    throw new Error("Erreur lors de la création du lien entre les cours.");
   }
 };
 
@@ -384,7 +433,6 @@ const uploadCoursPdf = async (req, res) => {
         res.status(400).json({ error: err.message });
       } else {
         if (!req.file) {
-          // Check if file was uploaded
           res.status(400).json({ error: "No file uploaded." });
           return;
         }
@@ -642,6 +690,7 @@ module.exports = {
   getInstructors,
   getInstructorById,
   createCours,
+  createLinkedCours,
   updateCours,
   uploadCoursPdf,
   uploadBackLogPdf,

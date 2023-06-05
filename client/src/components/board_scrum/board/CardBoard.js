@@ -4,10 +4,7 @@ import DetailCard from "./DetailCard";
 import InfoIcon from "@mui/icons-material/Info";
 import { Chip, Typography, Avatar, Box, Button } from "@mui/material";
 import Stack from "@mui/material/Stack";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import SubjectIcon from "@mui/icons-material/Subject";
 
 export default function CardBoard(props) {
   const [states, setStates] = React.useState({
@@ -19,16 +16,20 @@ export default function CardBoard(props) {
 
   const handleClose = () => setStates({ open: false, expanded: false });
 
-  const handleAccordion = () => setStates({ expanded: !states.expanded });
-
   const info = props.card_info;
-
 
   var color = info.color;
 
   const assignedTo = props.card_info.assignedTo;
   const assignedToAvatars = assignedTo.slice(0, 2).map((person) => {
-    return <Avatar key={person.id} alt={person.name} src={person.photo} sx={{ width: 24, height: 24 }} />;
+    return (
+      <Avatar
+        key={person.id}
+        alt={person.name}
+        src={person.photo}
+        sx={{ width: 24, height: 24 }}
+      />
+    );
   });
 
   let remainingCount = assignedTo.length - 2;
@@ -99,52 +100,13 @@ export default function CardBoard(props) {
           position: "relative",
         }}
       >
-        {info.desc != "" ? (
-          <Accordion
-            expanded={states.expanded}
-            onClick={handleAccordion}
-            style={{
-              backgroundColor: props.snapshot.isDragging
-                ? "#FFFFFF"
-                : "#FFFFFF",
-              boxShadow: "none",
-              marginTop: "5%",
-            }}
-          >
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="panel1a-content"
-              id="panel1a-header"
-            >
-              <div>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  {Labels}
-                </div>
-                <Typography variant="body1" color="black">
-                  {info.name}
-                </Typography>
-              </div>
-            </AccordionSummary>
-            <AccordionDetails>
-              <Typography
-                style={{
-                  color: "black",
-                }}
-              >
-                {info.desc}
-              </Typography>
-            </AccordionDetails>
-          </Accordion>
-        ) : (
-          <div>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              {Labels}
-            </div>
-            <Typography variant="body1" color="black">
-              {info.name}
-            </Typography>
-          </div>
-        )}
+        <div>
+          <div style={{ display: "flex", alignItems: "center" }}>{Labels}</div>
+          <Typography variant="body1" color="black">
+            {info.name}
+          </Typography>
+        </div>
+        {info.desc != "" ? <SubjectIcon /> : <></>}
         <InfoIcon
           onClick={handleOpen}
           color="primary"
@@ -153,6 +115,7 @@ export default function CardBoard(props) {
             position: "absolute",
             right: "6%",
             top: "5%",
+            cursor: "pointer",
           }}
         />
       </div>
