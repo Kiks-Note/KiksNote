@@ -42,6 +42,9 @@ import PublicIcon from "@mui/icons-material/Public";
 import LockIcon from "@mui/icons-material/Lock";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
+import CallModal from "./CallModal";
+import PDFCourseView from "./PdfCourseView";
+import CourseBacklogPdf from "./PdfCoursBacklog";
 import "./CoursInfo.scss";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -116,6 +119,8 @@ const CoursInfo = () => {
   const [pdfLinksCours, setPdfLinksCours] = useState([]);
   const [pdfLinksBacklog, setPdfLinksBacklog] = useState([]);
 
+  const [openCall, setOpenCall] = useState(false);
+
   const { control } = useForm({
     mode: "onTouched",
   });
@@ -123,6 +128,8 @@ const CoursInfo = () => {
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles();
+
+  let idClass;
 
   const getAllInstructors = async () => {
     try {
@@ -410,6 +417,13 @@ const CoursInfo = () => {
     setFileBacklog(event.target.files[0]);
   };
 
+  const handleOpenCallModal = () => {
+    setOpenCall(true);
+    console.log(courseClass);
+  };
+  const handleCloseCallModal = () => {
+    setOpenCall(false);
+  };
   const handleDownload = (url) => {
     const link = document.createElement("a");
     link.href = url;
@@ -1279,6 +1293,12 @@ const CoursInfo = () => {
           </div>
         </div>
         <ToastContainer></ToastContainer>
+        <CallModal
+          open={openCall}
+          lessonId={id}
+          handleclose={handleCloseCallModal}
+          class={courseClass}
+        ></CallModal>
       </div>
     </>
   );

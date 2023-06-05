@@ -1,11 +1,12 @@
 import QRCode from "qrcode";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import axios from "axios";
 import "./Callteacher.scss";
 import Timer from "../timer/Timer";
 import { w3cwebsocket } from "websocket";
+import useFirebase from "../../hooks/useFirebase";
 
-function AppelProf() {
+function AppelProf(props) {
   const [qrcode, setQrcode] = useState("");
   const [call, setCall] = useState({
     id_lesson: "",
@@ -13,22 +14,53 @@ function AppelProf() {
     student_scan: [],
     chats: [],
   });
+  const { user } = useFirebase();
+
   const ip = process.env.REACT_APP_IP;
   const [users, setUsers] = useState([]);
   const [usersPresent, setUsersPresent] = useState([]);
-  const [Chats, setChats] = useState([]);
+  const [inRoom, setInRoom] = useState(false);
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
   let tempCall;
-  // const ws = new WebSocket(`ws://${ip}:5050`);
+
+  const ws = useMemo(() => {
+    return new w3cwebsocket(`ws://${ip}:5050/Call`);
+  });
 
   useEffect(() => {
-    if (dataFetchedRef.current) {
-      return;
+    const handleOpen = async () => {
+      await LogToExistingRoom();
+
+      if (inRoom) {
+        ws.onmessage = (message) => {
+          const messageReceive = JSON.parse(message.data);
+
+          switch (messageReceive.type) {
+            case "updateRoom":
+              setCall(messageReceive.appel);
+              break;
+            default:
+              break;
+          }
+        };
+      }
+    };
+
+    if (ws.readyState === WebSocket.OPEN) {
+      handleOpen();
+    } else {
+      ws.onopen = handleOpen;
     }
-    dataFetchedRef.current = true;
-    getCall();
-    getUsers();
+
+    return () => {
+      ws.send(
+        JSON.stringify({
+          type: "leaveRoom",
+          data: { userID: user?.id, class: user.class },
+        })
+      );
+    };
   }, []);
 
   useEffect(() => {
@@ -45,49 +77,33 @@ function AppelProf() {
     }
   }, [call]);
 
-  const getCall = () => {
-    axios.get("http://localhost:5050/calls").then((res) => {
-      tempCall = res.data.at(-1);
-      GenerateQrcode();
-      (async () => {
-        const wsComments = new w3cwebsocket(`ws://${ip}:5050/Call`);
-
-        wsComments.onopen = function (e) {
-          console.log("[open] Connection established");
-          console.log("Sending to server");
-          wsComments.send(JSON.stringify({ CallId: tempCall.id }));
-        };
-        wsComments.onmessage = (message) => {
-          const data = JSON.parse(message.data);
-          console.log(data);
-          setCall(data);
-        };
-      })();
-    });
-  };
-
-  const getUsers = () => {
-    axios.get("http://localhost:5050/users").then((res) => {
-      setUsers(res.data);
-    });
-  };
-
-  const GenerateQrcode = () => {
-    QRCode.toDataURL(
-      `http://${ip}:3000/Presence/${tempCall.id}`,
-      {
-        width: 800,
-        margin: 2,
-      },
-      (err, url) => {
-        if (err) return console.log(err);
-        setQrcode(url);
-        tempCall.qrcode = url;
-        setCall(tempCall);
-        generated.current = true;
-      }
-    );
-  };
+  const LogToExistingRoom = useCallback(async () => {
+    try {
+      axios
+        .get(`http://localhost:5050/groupes/call/getcall/` + props.callId)
+        .then((res) => {
+          if (res.data.length > 0) {
+            const message = {
+              type: "joinRoom",
+              data: {
+                userID: user?.id,
+                name: user?.firstname,
+                class: user?.class,
+              },
+            };
+            ws.send(JSON.stringify(message));
+            setInRoom(true);
+            generated.current = true;
+            tempCall = res.data;
+            setCall(res.data);
+            setQrcode(res.data.qrcode);
+          }
+        });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }, [user?.class, user?.id, user?.firstname, ws]);
 
   return (
     <div className="ContentProf">

@@ -1,31 +1,31 @@
 import AppelProf from "../../components/callteacher/Callteacher";
 import AppelEleve from "../../components/callstudent/Callstudent";
-import { useEffect, useRef, useState } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import useFirebase from "../../hooks/useFirebase";
 
 function Appel() {
-  const userID = localStorage.getItem("user_uid");
-  const ip = process.env.REACT_APP_IP;
-  const user = useRef();
   const [admin, setAdmin] = useState(false);
   let generated = false;
+  const { user } = useFirebase();
+  const callId = useParams();
+
   useEffect(() => {
+    console.log(callId.id);
     if (!generated) {
-      getUsers();
       generated = true;
+      user.status == "po" ? setAdmin(true) : setAdmin(false);
     }
   }, []);
 
-  const getUsers = () => {
-    axios
-      .get(`http://${ip}:5050/user`, { params: { id: userID } })
-      .then((res) => {
-        user.current = res.data;
-        user.current.status == "po" ? setAdmin(true) : setAdmin(false);
-      });
-  };
   return (
-    <div>{admin ? <AppelProf></AppelProf> : <AppelEleve></AppelEleve>}</div>
+    <div>
+      {admin ? (
+        <AppelProf callId={callId.id}></AppelProf>
+      ) : (
+        <AppelEleve callId={callId.id}></AppelEleve>
+      )}
+    </div>
   );
 }
 

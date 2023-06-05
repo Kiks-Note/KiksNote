@@ -38,15 +38,15 @@ function RoutesProvider() {
         {/* EXAMPLES */}
 
         <Route element={<PublicRoutes />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Register />} />
+          <Route path="/connexion" element={<Login />} />
+          <Route path="/inscription" element={<Register />} />
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groupes" element={<Groups />} />
           <Route path="/" element={<Home />} />
-          <Route path="/appel" element={<Appel />} />
+          <Route path="/appel/:id" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groups" element={<Groups />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
@@ -65,6 +65,8 @@ function RoutesProvider() {
           />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
+          <Route path="/pdfsupport" element={<PDFCourseView />} />
+          <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
           <Route path="/agile" element={<Agile />} />
           <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           <Route path="/agile/persona" element={<Personas />} />
