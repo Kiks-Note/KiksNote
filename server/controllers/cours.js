@@ -265,6 +265,36 @@ const createCours = async (req, res) => {
   }
 };
 
+const createLinkedCours = async (req, res) => {
+  const courseId = req.params.courseId;
+  const linkedCourseId = req.body.linkedCourseId;
+
+  try {
+    const courseRef = db.collection("cours").doc(courseId);
+
+    const courseDoc = await courseRef.get();
+    if (!courseDoc.exists) {
+      return res.status(404).send("Le cours spécifié n'a pas été trouvé.");
+    }
+
+    const linkedCourseRef = db.collection("cours").doc(linkedCourseId);
+
+    const linkedCourseDoc = await linkedCourseRef.get();
+    if (!linkedCourseDoc.exists) {
+      return res.status(404).send("Le cours lié spécifié n'a pas été trouvé.");
+    }
+
+    await courseRef.update({
+      linkedCourseId: courseDoc.data(),
+    });
+
+    return res.status(200).send("Le cours lié a été ajouté avec succès.");
+  } catch (err) {
+    console.error(err);
+    throw new Error("Erreur lors de la création du lien entre les cours.");
+  }
+};
+
 const updateCours = async (req, res) => {
   try {
     const {
@@ -655,6 +685,7 @@ module.exports = {
   getInstructors,
   getInstructorById,
   createCours,
+  createLinkedCours,
   updateCours,
   uploadCoursPdf,
   uploadBackLogPdf,
