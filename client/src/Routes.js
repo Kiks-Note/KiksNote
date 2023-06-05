@@ -26,6 +26,7 @@ import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
+import ElevatorPitch from "./pages/agile/ElevatorPitch";
 
 
 function RoutesProvider() {
@@ -58,6 +59,7 @@ function RoutesProvider() {
           <Route path="/pdfsupport" element={<PDFCourseView />} />
           <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
           <Route path="/agile" element={<FolderAgile />} />
+          <Route path="/elevator" element={<ElevatorPitch />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
