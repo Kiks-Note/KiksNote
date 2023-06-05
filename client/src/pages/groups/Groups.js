@@ -157,9 +157,11 @@ function App() {
 
                     switch (messageReceive.type) {
                         case 'updateRoom':
+                            console.log(messageReceive.data.currentRoom);
                             displayUserCursorPositions(messageReceive.data.currentRoom.users);
                             if (user.status === "etudiant") {
-                                setNbSPGrp(messageReceive.data.currentRoom.SpGrp);
+                                let number = parseInt(messageReceive.data.currentRoom.nbSPGrp)
+                                setNbSPGrp(number);
                                 setLock(messageReceive.data.currentRoom.lock);
                                 setNumberOfStudentInclass(messageReceive.data.currentRoom.nbStudents);
                             }
@@ -428,7 +430,7 @@ function App() {
             {inRoom ? <div
                 style={{
                     width: "100%",
-                    height: "100vh",
+                    height: "100%",
                     overflow: "hidden",
                 }}>
                 {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
@@ -514,7 +516,6 @@ function App() {
                     }}>
                         {userCursors ? (
                             Array.from(userCursors.entries()).map(([userID, userData]) => {
-                                console.log(userID, userData);
                                 if (userID !== user?.id) {
                                     return (
                                         <div
