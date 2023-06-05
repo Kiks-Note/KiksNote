@@ -13,18 +13,16 @@ const multer = require("multer");
 const DIR = "uploads/";
 
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
+  destination: (req, file, cb) => {
     cb(null, DIR);
   },
-  filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
+  filename: (req, file, cb) => {
+    const fileName = file.originalname.toLowerCase().split(" ").join("-");
+    cb(null, uuidv4() + "-" + fileName);
   },
 });
 
-const upload = multer({
+var upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
     if (
@@ -38,14 +36,13 @@ const upload = multer({
       cb(null, false);
       return cb(new Error("Only .png, .jpg, .jpeg and .pdf format allowed!"));
     }
-    cb(null, true);
   },
-}).single("file");
+});
 
 app.use(express.json());
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 const PORT = process.env.PORT || 5050;
@@ -61,19 +58,24 @@ const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
+const studentsProjectsRoutes = require("./studentsProjectsRoutes");
 const groupsRoute = require("./groupsRoutes");
-app.use("/groupes", groupsRoute);
+const jpoRoutes = require("./jpoRoutes");
+const technosRoutes = require("./technosRoutes");
+const groupsRoute = require("./groupsRoutes");
+
 app.use("/auth", authRoutes);
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
+
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
-  app.use("/blog", blogRoutes(connection, pathname));
-
+  app.use("/blog", blogRoutes(connection, pathname, upload));
+  app.use("/groupes", groupsRoute(connection, pathname));
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
@@ -85,6 +87,9 @@ wsI.on("request", (request) => {
 });
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
+app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
+app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
+app.use("/ressources", technosRoutes()); // --> Resssources Technos
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

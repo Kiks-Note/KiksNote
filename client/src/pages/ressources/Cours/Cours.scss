@@ -7,24 +7,58 @@
     display: flex;
     width: 100%;
     align-items: center;
+    justify-content: space-evenly;
+    border-bottom: 1px solid grey;
 }
 
 .search-bar-container {
     display: flex;
-    width: 80%;
+    width: 40%;
 }
 
 .btn-add-cours {
     display: flex;
-    width: 30%;
+    width: 40%;
     justify-content: center;
+    padding: 20px;
+}
+
+.techno-cours-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.create-name-img-cours-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.techno-select-container {
+    display: flex;
+    min-height: 100%;
+    width: 100%;
+    justify-content: center;
+    padding: 10px;
+}
+
+.cours-date-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
 }
 
 .title-cours-date-container {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
+    justify-content: space-around;
+    width: 80%;
 }
 
 .dropzone-coursimg-container {
@@ -36,11 +70,14 @@
 p.info-dropdown-img {
     font-weight: bold;
     text-align: center;
+    padding: 10px;
+    margin: 0;
 }
 
 .switch-btn-container {
     display: flex;
     align-items: center;
+    width: 100%;
 }
 
 img.img-dropdown-zone {
