@@ -7,11 +7,13 @@
     display: flex;
     width: 100%;
     align-items: center;
+    justify-content: space-evenly;
+    border-bottom: 1px solid grey;
 }
 
 .search-bar-container {
     display: flex;
-    width: 80%;
+    width: 40%;
 }
 
 .btn-add-cours {
@@ -20,11 +22,19 @@
     justify-content: center;
 }
 
+.cours-date-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
 .title-cours-date-container {
     display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .dropzone-coursimg-container {

@@ -43,8 +43,8 @@ const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes")
 
 app.use(express.json());
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 const PORT = process.env.PORT || 5050;
@@ -60,12 +60,13 @@ const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
+const studentsProjectsRoutes = require("./studentsProjectsRoutes");
 const groupsRoute = require("./groupsRoutes");
-
+const jpoRoutes = require("./jpoRoutes");
+const technosRoutes = require("./technosRoutes");
 
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 
-app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
 app.use("/retro", retroRoutesNotNeeded);
 wsI.on("request", (request) => {
@@ -73,11 +74,12 @@ wsI.on("request", (request) => {
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
+
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
-  app.use("/blog", blogRoutes(connection, pathname));
-
+  app.use("/blog", blogRoutes(connection, pathname, upload));
+  app.use("/groupes", groupsRoute(connection, pathname));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
@@ -91,6 +93,9 @@ wsI.on("request", (request) => {
 
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
+app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
+app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
+app.use("/ressources", technosRoutes()); // --> Resssources Technos
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
