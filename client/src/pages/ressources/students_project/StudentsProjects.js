@@ -305,6 +305,11 @@ const StudentsProjects = () => {
       if (selectedFilterTypeProject !== "") {
         return project.typeProject === selectedFilterTypeProject;
       }
+      if (selectedIdFilterTechno !== "") {
+        return project.technosProject.some(
+          (techno) => techno.id === selectedIdFilterTechno
+        );
+      }
       return true;
     });
     filtered.sort((a, b) => b.counterRef - a.counterRef);
@@ -314,7 +319,12 @@ const StudentsProjects = () => {
 
   useEffect(() => {
     filterProjects();
-  }, [selectedFilterTypeProject, selectedIdFilterClass, projects]);
+  }, [
+    selectedFilterTypeProject,
+    selectedIdFilterClass,
+    selectedIdFilterTechno,
+    projects,
+  ]);
 
   useEffect(() => {
     getAllProjects()
@@ -410,8 +420,6 @@ const StudentsProjects = () => {
             <CarouselProjects
               topProjects={filteredProjects.slice(0, 10)}
               loading={loading}
-              selectedFilterType={selectedFilterTypeProject}
-              selectedIdFilterClass={selectedIdFilterClass}
             />
             <h1 className="h1-project">Projets Étudiants</h1>
             <Grid container spacing={2}>
@@ -499,11 +507,16 @@ const StudentsProjects = () => {
                     setSelectedIdFilterTechno(event.target.value);
                   }}
                   displayEmpty
-                  renderValue={(value) => value || "Techno"}
+                  renderValue={(value) => {
+                    const selectedTechno = technos.find(
+                      (techno) => techno.id === value
+                    );
+                    return selectedTechno ? selectedTechno.name : "Techno";
+                  }}
                 >
                   <MenuItem value="">Choisir une techno</MenuItem>
                   {technos.map((techno) => (
-                    <MenuItem key={techno.id} value={techno.name}>
+                    <MenuItem key={techno.id} value={techno.id}>
                       <div style={{ display: "flex", alignItems: "center" }}>
                         <img
                           src={techno.image}
@@ -604,8 +617,6 @@ const StudentsProjects = () => {
             <CarouselProjects
               topProjects={filteredProjects.slice(0, 10)}
               loading={loading}
-              selectedFilterType={selectedFilterTypeProject}
-              selectedIdFilterClass={selectedIdFilterClass}
             />
             <h1 className="h1-project">Projets Étudiants</h1>
             <div
@@ -627,233 +638,220 @@ const StudentsProjects = () => {
                     </div>
                   </>
                 ) : (
-                  filteredProjects
-                    .slice(10)
-                    .filter((project) =>
-                      selectedIdFilterClass !== ""
-                        ? project.promoProject &&
-                          project.promoProject.id === selectedIdFilterClass
-                        : true
-                    )
-                    .map((project) => (
-                      <>
-                        <Grid item xs={12} sm={6} md={3}>
-                          <Card
+                  filteredProjects.slice(10).map((project) => (
+                    <>
+                      <Grid item xs={12} sm={6} md={3}>
+                        <Card
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            height: "370px",
+                          }}
+                          onClick={() => {
+                            navigate(`${project.id}`);
+                          }}
+                        >
+                          <CardMedia
                             sx={{
+                              width: "100%",
+                              minHeight: "150px",
                               display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              height: "370px",
+                              justifyContent: "center",
+                              alignItems: "center",
                             }}
-                            onClick={() => {
-                              navigate(`${project.id}`);
+                            component="img"
+                            src={project.imgProject}
+                            alt="course image"
+                            style={{
+                              objectFit: "contain",
+                              objectPosition: "center",
+                              width: "100%",
+                              minHeight: "150px",
                             }}
+                          />
+
+                          <CardContent
+                            sx={{ padding: "10px", height: "350px" }}
                           >
-                            <CardMedia
-                              sx={{
-                                width: "100%",
-                                minHeight: "150px",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                              }}
-                              component="img"
-                              src={project.imgProject}
-                              alt="course image"
-                              style={{
-                                objectFit: "contain",
-                                objectPosition: "center",
-                                width: "100%",
-                                minHeight: "150px",
-                              }}
-                            />
-
-                            <CardContent
-                              sx={{ padding: "10px", height: "350px" }}
-                            >
-                              {project.typeProject === "Web" ? (
-                                <div>
-                                  <h2
-                                    variant="h3"
-                                    component="div"
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    {project.nameProject} -{" "}
-                                    {project.typeProject}
-                                    <DesktopWindowsRoundedIcon
-                                      sx={{ marginLeft: "5px" }}
-                                    />
-                                  </h2>
-                                </div>
-                              ) : project.typeProject === "Mobile" ? (
-                                <div>
-                                  <h2
-                                    variant="h3"
-                                    component="div"
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    {project.nameProject} -{" "}
-                                    {project.typeProject}
-                                    <SmartphoneRoundedIcon
-                                      sx={{ marginLeft: "5px" }}
-                                    />
-                                  </h2>
-                                </div>
-                              ) : project.typeProject === "Gaming" ? (
-                                <div>
-                                  <h2
-                                    variant="h3"
-                                    component="div"
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    {project.nameProject} -{" "}
-                                    {project.typeProject}
-                                    <SportsEsportsRoundedIcon
-                                      sx={{ marginLeft: "5px" }}
-                                    />
-                                  </h2>
-                                </div>
-                              ) : project.typeProject === "IA" ? (
-                                <div>
-                                  <h2
-                                    variant="h3"
-                                    component="div"
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    {project.nameProject} -{" "}
-                                    {project.typeProject}
-                                    <SmartToyRoundedIcon
-                                      sx={{ marginLeft: "5px" }}
-                                    />
-                                  </h2>
-                                </div>
-                              ) : project.typeProject === "DevOps" ? (
-                                <div>
-                                  <h2
-                                    variant="h3"
-                                    component="div"
-                                    style={{
-                                      display: "flex",
-                                      alignItems: "center",
-                                    }}
-                                  >
-                                    {project.nameProject} -{" "}
-                                    {project.typeProject}
-                                    <MediationRoundedIcon />
-                                  </h2>
-                                </div>
-                              ) : (
-                                <div></div>
-                              )}
-
-                              <Chip
-                                sx={{ marginRight: "10px" }}
-                                label={
-                                  <>
-                                    <Typography>
-                                      {project.promoProject.name}
-                                    </Typography>
-                                  </>
-                                }
-                              ></Chip>
-                              <div className="type-promo-project-container">
-                                {project.technosProject.map((techno) => (
-                                  <Chip
-                                    avatar={
-                                      <Avatar
-                                        alt={techno.name}
-                                        src={techno.image}
-                                      />
-                                    }
-                                    sx={{
-                                      display: "flex",
-                                      padding: "10px",
-                                    }}
-                                    label={
-                                      <>
-                                        <div style={{ display: "flex" }}>
-                                          <Typography>{techno.name}</Typography>
-                                        </div>
-                                      </>
-                                    }
-                                  ></Chip>
-                                ))}
+                            {project.typeProject === "Web" ? (
+                              <div>
+                                <h2
+                                  variant="h3"
+                                  component="div"
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  {project.nameProject} - {project.typeProject}
+                                  <DesktopWindowsRoundedIcon
+                                    sx={{ marginLeft: "5px" }}
+                                  />
+                                </h2>
                               </div>
-                              {userStatus === "po" ? (
-                                <Button
-                                  disabled={isButtonDisabled}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    referStudentProject(
-                                      project.id,
-                                      project.nameProject,
-                                      votePo,
-                                      user?.id
-                                    );
+                            ) : project.typeProject === "Mobile" ? (
+                              <div>
+                                <h2
+                                  variant="h3"
+                                  component="div"
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
                                   }}
-                                  sx={{ color: "#7a52e1" }}
                                 >
-                                  {project.counterRef}{" "}
-                                  <BackHandRoundedIcon
-                                    sx={{ marginLeft: "3px" }}
+                                  {project.nameProject} - {project.typeProject}
+                                  <SmartphoneRoundedIcon
+                                    sx={{ marginLeft: "5px" }}
                                   />
-                                </Button>
-                              ) : userStatus === "pedago" ? (
-                                <Button
-                                  disabled={isButtonDisabled}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    referStudentProject(
-                                      project.id,
-                                      project.nameProject,
-                                      votePedago,
-                                      user?.id
-                                    );
+                                </h2>
+                              </div>
+                            ) : project.typeProject === "Gaming" ? (
+                              <div>
+                                <h2
+                                  variant="h3"
+                                  component="div"
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
                                   }}
-                                  sx={{ color: "#7a52e1" }}
                                 >
-                                  {project.counterRef}{" "}
-                                  <BackHandRoundedIcon
-                                    sx={{ marginLeft: "3px" }}
+                                  {project.nameProject} - {project.typeProject}
+                                  <SportsEsportsRoundedIcon
+                                    sx={{ marginLeft: "5px" }}
                                   />
-                                </Button>
-                              ) : (
-                                <Button
-                                  disabled={isButtonDisabled}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    referStudentProject(
-                                      project.id,
-                                      project.nameProject,
-                                      voteStudent,
-                                      user?.id
-                                    );
+                                </h2>
+                              </div>
+                            ) : project.typeProject === "IA" ? (
+                              <div>
+                                <h2
+                                  variant="h3"
+                                  component="div"
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
                                   }}
-                                  sx={{ color: "#7a52e1" }}
                                 >
-                                  {project.counterRef}{" "}
-                                  <BackHandRoundedIcon
-                                    sx={{ marginLeft: "3px" }}
+                                  {project.nameProject} - {project.typeProject}
+                                  <SmartToyRoundedIcon
+                                    sx={{ marginLeft: "5px" }}
                                   />
-                                </Button>
-                              )}
-                            </CardContent>
-                          </Card>
-                        </Grid>
-                      </>
-                    ))
+                                </h2>
+                              </div>
+                            ) : project.typeProject === "DevOps" ? (
+                              <div>
+                                <h2
+                                  variant="h3"
+                                  component="div"
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}
+                                >
+                                  {project.nameProject} - {project.typeProject}
+                                  <MediationRoundedIcon />
+                                </h2>
+                              </div>
+                            ) : (
+                              <div></div>
+                            )}
+
+                            <Chip
+                              sx={{ marginRight: "10px" }}
+                              label={
+                                <>
+                                  <Typography>
+                                    {project.promoProject.name}
+                                  </Typography>
+                                </>
+                              }
+                            ></Chip>
+                            <div className="type-promo-project-container">
+                              {project.technosProject.map((techno) => (
+                                <Chip
+                                  avatar={
+                                    <Avatar
+                                      alt={techno.name}
+                                      src={techno.image}
+                                    />
+                                  }
+                                  sx={{
+                                    display: "flex",
+                                    padding: "10px",
+                                  }}
+                                  label={
+                                    <>
+                                      <div style={{ display: "flex" }}>
+                                        <Typography>{techno.name}</Typography>
+                                      </div>
+                                    </>
+                                  }
+                                ></Chip>
+                              ))}
+                            </div>
+                            {userStatus === "po" ? (
+                              <Button
+                                disabled={isButtonDisabled}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  referStudentProject(
+                                    project.id,
+                                    project.nameProject,
+                                    votePo,
+                                    user?.id
+                                  );
+                                }}
+                                sx={{ color: "#7a52e1" }}
+                              >
+                                {project.counterRef}{" "}
+                                <BackHandRoundedIcon
+                                  sx={{ marginLeft: "3px" }}
+                                />
+                              </Button>
+                            ) : userStatus === "pedago" ? (
+                              <Button
+                                disabled={isButtonDisabled}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  referStudentProject(
+                                    project.id,
+                                    project.nameProject,
+                                    votePedago,
+                                    user?.id
+                                  );
+                                }}
+                                sx={{ color: "#7a52e1" }}
+                              >
+                                {project.counterRef}{" "}
+                                <BackHandRoundedIcon
+                                  sx={{ marginLeft: "3px" }}
+                                />
+                              </Button>
+                            ) : (
+                              <Button
+                                disabled={isButtonDisabled}
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  referStudentProject(
+                                    project.id,
+                                    project.nameProject,
+                                    voteStudent,
+                                    user?.id
+                                  );
+                                }}
+                                sx={{ color: "#7a52e1" }}
+                              >
+                                {project.counterRef}{" "}
+                                <BackHandRoundedIcon
+                                  sx={{ marginLeft: "3px" }}
+                                />
+                              </Button>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    </>
+                  ))
                 )}
               </Grid>
             </div>
