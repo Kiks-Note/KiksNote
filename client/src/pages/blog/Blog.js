@@ -17,6 +17,7 @@ import TopCreatorsChart from "../../components/blog/TopCreator.js";
 import MostParticipantsChart from "../../components/blog/TopEvent.js";
 import SplitButtonChoice from "../../components/blog/SplitButtonChoice";
 import "./Blog.css";
+
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 function Blog() {
@@ -67,7 +68,7 @@ function Blog() {
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
-          blog.created_at._nanoseconds / 100000
+            blog.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
@@ -93,7 +94,7 @@ function Blog() {
           type: blog.type,
           tag: blog.tag,
           info_creator: blog.info_creator,
-          visibility: blog.visibility
+          visibility: blog.visibility,
         };
         allBlogs.push(blogFront);
       });
@@ -102,6 +103,13 @@ function Blog() {
       setLoading(false);
     };
   }, []);
+
+  // test for sort by date
+  // console.log("blog : ", blog);
+  // const blogSorted = blog.sort((a, b) =>
+  //   b.created_at.localeCompare(a.created_at)
+  // ); // sort by date
+  // console.log("blogSorted : ", blogSorted);
 
   return (
     <>
@@ -114,9 +122,18 @@ function Blog() {
           <Grid item xs={5}>
             <div className="container_blog">
               {!loading ? (
-                blog.map((filtered) => (
-                  <CardBlog blog={filtered} key={filtered.id} />
-                ))
+                blog
+                  .filter((blog) =>
+                    user.status === "etudiant"
+                      ? blog.visibility === true
+                      : blog.visibility === false || blog.visibility === true
+                  )
+                  .map((filtered) => (
+                    <>
+                      <CardBlog blog={filtered} key={filtered.id} />
+                      <Typography>{filtered.created_at}</Typography>
+                    </>
+                  ))
               ) : (
                 <div
                   style={{
