@@ -148,76 +148,66 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
     return updateoldTreeData;
   };
   return (
-    <Drawer
-      className={classes.drawer}
-      variant="permanent"
-      classes={{
-        paper: classes.drawerPaper,
-      }}
-      style={{ height: "100vh", right: 0 }}
-    >
-      <div className="headerDraw">
-        <div className="titleDraw">
-          <Typography variant="h5" align="center">
-            ÉDITION DU NOEUD
-          </Typography>
-        </div>
-        <div className="nameNode">
-          <Typography variant="h6" align="center">
-            {node.name}
-          </Typography>
-        </div>
-      </div>
+    <div>
+      <Drawer
 
-      <br></br>
-      <div className="addSection">
-        <div>
-          Ajouter un enfant à cette branche{" "}
-          <TextField
-            value={nameAdd}
-            onChange={(e) => handleNameAdd(e)}
-          ></TextField>
+        className={classes.drawer}
+        variant="permanent"
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+        style={{ height: '100vh', right: 0 }}
+      >
+        <div className='headerDraw' style={{ marginBottom: '70px' }}>
+          <div className='titleDraw' >
+            <Typography variant="h5" align='center'>ÉDITION DU NOEUD</Typography>
+          </div>
+          <div className='nameNode' style={{ margin: '15px' }}>
+            <Typography variant="h2" align='center'>{node.name}</Typography>
+          </div>
         </div>
-        <Button
-          title={buttons[0].description}
-          className={buttons[0].clas}
-          backgroundColor={"green"}
-          onClick={handleAddButton}
-        >
-          {buttons[0].icon}
-        </Button>
-      </div>
-      <div className="nameSection">
-        <div>
-          Changer le nom :{" "}
-          <TextField
-            value={nameEdit}
-            onChange={(e) => handleNameEdit(e)}
-          ></TextField>
+
+        <br>
+        </br>
+        <div className='addSection' style={{ marginBottom: '70px' }}>
+          <div>  <TextField value={nameAdd} onChange={(e) => handleNameAdd(e)}></TextField>
+            <Button
+              title={buttons[0].description}
+              className={buttons[0].clas}
+              style={{ backgroundColor: 'green', margin: 10 }}
+              onClick={handleAddButton}
+            >
+              {buttons[0].icon}
+            </Button>
+          </div>
         </div>
-        <Button
-          title={buttons[1].description}
-          className={buttons[1].clas}
-          backgroundColor={"yellow"}
-          onClick={handleEditButton}
-        >
-          {buttons[1].icon}
-        </Button>
-      </div>
-      <div className="deleteSection">
-        <div>Supprimer cette branche </div>
-        <Button
-          title={buttons[1].description}
-          className={buttons[1].clas}
-          onClick={handleDeletedButton}
-          backgroundColor={"red"}
-        >
-          {buttons[1].icon}
-        </Button>
-        <button>Supprimer tous ces enfants</button>
-      </div>
-    </Drawer>
-  );
+        <div className='nameSection' style={{ marginBottom: '70px' }}>
+          <div >
+            <TextField value={nameEdit} onChange={(e) => handleNameEdit(e)}></TextField>
+            <Button
+              title={buttons[1].description}
+              className={buttons[1].clas}
+              style={{ backgroundColor: 'yellow', margin: 10 }}
+              onClick={handleEditButton}
+
+            >
+              {buttons[1].icon}
+            </Button>
+          </div>
+        </div>
+        <div className='deleteSection' style={{ marginBottom: '70px' }}>
+          <Button
+            title={buttons[2].description}
+            className={buttons[2].clas}
+            onClick={handleDeletedButton}
+            style={{ backgroundColor: 'red' }}
+          >
+            {buttons[2].icon}
+          </Button>
+        </div>
+      </Drawer>
+    </div>
+  )
 }
 
 export default DrawTools

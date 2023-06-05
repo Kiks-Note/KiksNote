@@ -109,8 +109,6 @@ const Arbre = ({ projet }) => {
   };
   const renderForeignObjectNode = ({
     nodeDatum,
-    toggleNode,
-    foreignObjectProps,
   }) => (
     <g transform="rotate(180,0,0)">
       <rect
