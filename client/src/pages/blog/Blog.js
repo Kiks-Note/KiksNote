@@ -106,9 +106,9 @@ function Blog() {
 
   // test for sort by date
   // console.log("blog : ", blog);
-  // const blogSorted = blog.sort((a, b) =>
-  //   b.created_at.localeCompare(a.created_at)
-  // ); // sort by date
+  const blogSorted = blog.sort((a, b) =>
+    b.created_at.localeCompare(a.created_at)
+  ); // sort by date
   // console.log("blogSorted : ", blogSorted);
 
   return (
