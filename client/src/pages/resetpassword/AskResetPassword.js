@@ -8,6 +8,10 @@ import { Box, TextField, Button } from "@mui/material";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import {
+    useTheme,
+} from "@mui/material";
+
 
 const options = {
     autoClose: 2000,
@@ -25,9 +29,10 @@ export const toastFail = message => {
 
 function AskResetPassword() {
 
+    const theme = useTheme();
     const [mail, setMail] = useState('');
 
-    const sendEmailFromFront = async() => {
+    const sendEmailFromFront = async () => {
         try {
             await axios.post("http://localhost:5050/auth/sendemail", {
                 email: mail
@@ -41,7 +46,7 @@ function AskResetPassword() {
             }).catch((err) => {
                 console.log(err);
             });
-        } catch (error){
+        } catch (error) {
             console.log(error)
         }
     };
@@ -55,13 +60,16 @@ function AskResetPassword() {
     }
 
     return (
-        <div className="form-reset-with-mail-container">
-            <Box sx={{ boxShadow: 5 }} style={{ width: "50%", padding: "15px" }} className="box-form-reset-with-mail">
+
+        <div className="form-reset-with-mail-container" style={{ backgroundColor: theme.palette.background.paper }}>
+            <Box sx={{ boxShadow: 5 }} style={{ width: "50%", padding: "15px", backgroundColor: theme.palette.background.container }} className="box-form-reset-with-mail" >
                 <h1 style={{ margin: 10, fontSize: "2vw" }}>Réinitialiser le mot de passe</h1>
-                <Divider variant="middle" style={{ background: "#000", height: "1px", width: "50%" }} className="divider-form-reset-with-mail" />
+                <Divider variant="middle" style={{ background: "#FFF000", height: "1px", width: "50%" }} className="divider-form-reset-with-mail" />
                 <form className='form-ask-reset' ref={form} onSubmit={(e) => handleSubmit(e)} style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <label>Email</label>
-                    <TextField placeholder="Mail" required id="my-mail-id" type="email" name="user_email" onInput={e => setMail(e.target.value)} style={{ backgroundColor: "#fff", width: "80%", marginTop: "10%" }} />
+                    <TextField placeholder="Mail" required id="my-mail-id" type="email" name="user_email" onInput={e => setMail(e.target.value)} sx={{
+                        input: { color: 'text.primary' }
+                    }} />
                     <Button id='submit-email' type="submit" variant="contained" style={{ backgroundColor: "#fff", color: "black", fontWeight: "bold", textTransform: 'none', margin: 10, marginTop: "10%" }}>Envoyer</Button>
                 </form>
             </Box>
