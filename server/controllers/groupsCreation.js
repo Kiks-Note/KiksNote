@@ -58,6 +58,7 @@ const getRoomPo = async (req, res) => {
 }
 
 const currentRooms = new Map();
+
 const clients = new Map();
 
 const room = async (connection) => {

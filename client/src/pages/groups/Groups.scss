@@ -18,6 +18,7 @@ h2 {
   justify-content: center;
   align-items: center;
   font-size: 20px;
+  padding:10px;
   white-space: nowrap;
   .no-connect-label {
     position: absolute;
@@ -74,6 +75,7 @@ nav {
     border-radius: 5px;
     background-color: #252525;
     color: white;
+    border: none;
   }
 
   datalist {
@@ -87,26 +89,18 @@ nav {
     color: white;
   }
 
-  .icon-svg {
-    color: white;
-    fill: white;
-  }
-
   .input-button {
     width: 40px;
     height: 40px;
     border-radius: 5px;
     transition: all 500ms ease-in-out;
     margin: 0px 5px;
+    background: transparent;
+    border: none;
   }
 
   .input-button:hover {
     cursor: pointer;
     background-color: #46464641;
-  }
-
-  .resetButton:active,
-  .resetButton:hover {
-    background-color: #7d0229;
   }
 }
