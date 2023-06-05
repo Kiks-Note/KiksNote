@@ -41,8 +41,8 @@ var upload = multer({
 
 app.use(express.json());
 app.use(cors());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static("uploads"));
 
 const PORT = process.env.PORT || 5050;
@@ -73,9 +73,8 @@ wsI.on("request", (request) => {
   app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
-  app.use("/blog", blogRoutes(connection, pathname));
+  app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/groupes", groupsRoute(connection, pathname));
-
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });

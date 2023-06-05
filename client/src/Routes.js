@@ -3,7 +3,6 @@ import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
 import PrivateRoutes from "./utils/PrivateRoutes";
-import Tuto from "./pages/blog/Tuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
 import PublicRoutes from "./utils/PublicRoutes";
@@ -27,6 +26,7 @@ import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import EmpathyMap from "./pages/agile/EmpathyMap";
 import Personas from "./pages/agile/Personas";
@@ -52,7 +52,8 @@ function RoutesProvider() {
           <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
-          <Route path="/tuto" element={<Tuto />} />
+          <Route path="/blog/:id" element={<DetailBlog />} />
+
           <Route path="/profil" element={<Profil />} />
           <Route path="/jpo" element={<Jpo />} />
           <Route path="/jpo/:id" element={<JpoInfo />} />
