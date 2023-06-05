@@ -39,18 +39,16 @@ const CoursLinkDialog = (props) => {
   const { id } = useParams();
   const [selectedCoursId, setSelectedCoursId] = useState("");
 
-  const selectedCours = props.allcours.find(
+  const selectedCours = props.allcours?.cours?.find(
     (cours) => cours.id === selectedCoursId
   );
   const selectedCoursTitle = selectedCours ? selectedCours?.data?.title : "";
-
-  console.log(selectedCoursId);
 
   const linkCoursinCoursInfo = async () => {
     try {
       await axios
         .post(`http://localhost:5050/ressources/linkcours/${id}`, {
-          linkedCourseId: selectedCoursId,
+          id: selectedCoursId,
         })
         .then((res) => {
           console.log(res.data);
@@ -88,40 +86,45 @@ const CoursLinkDialog = (props) => {
         <DialogContent>
           <div style={{ height: "600px", overflow: "auto" }}>
             <Grid container spacing={2}>
-              {props.allcours.map((cours) => (
-                <Grid item key={cours.id} xs={12} sm={6} md={4}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ textAlign: "center", marginBottom: "15px" }}
-                  >
-                    {cours.data?.title}
-                  </Typography>
-                  <div style={{ position: "relative" }}>
-                    <FormControlLabel
-                      value={cours.id}
-                      control={
-                        <Radio
-                          color="primary"
-                          checked={selectedCoursId === cours.id}
-                          onChange={handleCoursSelect}
+              {props.allcours?.cours?.map(
+                (cours) => (
+                  console.log(cours.data?.title),
+                  (
+                    <Grid item key={cours.id} xs={12} sm={6} md={4}>
+                      <Typography
+                        variant="subtitle1"
+                        sx={{ textAlign: "center", marginBottom: "15px" }}
+                      >
+                        {cours.data?.title}
+                      </Typography>
+                      <div style={{ position: "relative" }}>
+                        <FormControlLabel
+                          value={cours.id}
+                          control={
+                            <Radio
+                              color="primary"
+                              checked={selectedCoursId === cours.id}
+                              onChange={handleCoursSelect}
+                            />
+                          }
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            right: 0,
+                            zIndex: 1,
+                          }}
                         />
-                      }
-                      style={{
-                        position: "absolute",
-                        top: 0,
-                        right: 0,
-                        zIndex: 1,
-                      }}
-                    />
-                    <img
-                      src={cours.data?.imageCourseUrl}
-                      style={{ width: "100%", cursor: "pointer" }}
-                      alt="blog-tuto-linked-img"
-                      onClick={() => handleImageClick(cours.id)}
-                    />
-                  </div>
-                </Grid>
-              ))}
+                        <img
+                          src={cours.data?.imageCourseUrl}
+                          style={{ width: "100%", cursor: "pointer" }}
+                          alt="blog-tuto-linked-img"
+                          onClick={() => handleImageClick(cours.id)}
+                        />
+                      </div>
+                    </Grid>
+                  )
+                )
+              )}
             </Grid>
           </div>
         </DialogContent>

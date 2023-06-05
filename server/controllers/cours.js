@@ -267,25 +267,31 @@ const createCours = async (req, res) => {
 
 const createLinkedCours = async (req, res) => {
   const courseId = req.params.courseId;
-  const linkedCourseId = req.body.linkedCourseId;
+  const { id } = req.body;
 
   try {
     const courseRef = db.collection("cours").doc(courseId);
 
-    const courseDoc = await courseRef.get();
+    const linkedCourseRef = db.collection("cours").doc(id);
+
+    const courseDoc = await linkedCourseRef.get();
     if (!courseDoc.exists) {
       return res.status(404).send("Le cours spécifié n'a pas été trouvé.");
     }
-
-    const linkedCourseRef = db.collection("cours").doc(linkedCourseId);
 
     const linkedCourseDoc = await linkedCourseRef.get();
     if (!linkedCourseDoc.exists) {
       return res.status(404).send("Le cours lié spécifié n'a pas été trouvé.");
     }
 
+    const linkedCourseData = {
+      id: id,
+      title: courseDoc.data().title,
+      imageCourseUrl: courseDoc.data().imageCourseUrl,
+    };
+
     await courseRef.update({
-      linkedCourseId: courseDoc.data(),
+      linkedCourse: linkedCourseData,
     });
 
     return res.status(200).send("Le cours lié a été ajouté avec succès.");
@@ -427,7 +433,6 @@ const uploadCoursPdf = async (req, res) => {
         res.status(400).json({ error: err.message });
       } else {
         if (!req.file) {
-          // Check if file was uploaded
           res.status(400).json({ error: "No file uploaded." });
           return;
         }
