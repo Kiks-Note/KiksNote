@@ -139,8 +139,6 @@ function App() {
                     await fetchAndSetData();
                 }
 
-
-
                 document.addEventListener('mousemove', (event) => {
                     const cursorPosition = {
                         x: event.clientX,
@@ -149,7 +147,7 @@ function App() {
 
                     const message = {
                         type: 'cursorPosition',
-                        data: { position: cursorPosition, userID: user?.id, class: classStudents }
+                        data: { position: cursorPosition, userID: user?.id, class: classStudents, nbStudents: numberOfStudentsInClass }
                     }
                     ws.send(JSON.stringify(message));
                 });
@@ -159,9 +157,11 @@ function App() {
 
                     switch (messageReceive.type) {
                         case 'updateRoom':
+                            console.log(messageReceive.data.currentRoom);
                             displayUserCursorPositions(messageReceive.data.currentRoom.users);
                             if (user.status === "etudiant") {
-                                setNbSPGrp(messageReceive.data.currentRoom.SpGrp);
+                                let number = parseInt(messageReceive.data.currentRoom.nbSPGrp)
+                                setNbSPGrp(number);
                                 setLock(messageReceive.data.currentRoom.lock);
                                 setNumberOfStudentInclass(messageReceive.data.currentRoom.nbStudents);
                             }
@@ -191,7 +191,7 @@ function App() {
             document.removeEventListener('mousemove', () => { });
             ws.send(JSON.stringify({ type: 'leaveRoom', data: { userID: user?.id, class: classStudents } }));
         }
-    }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, lock, logToExistingRoom, user?.id, user.status, ws]);
+    }, [LogToExistingRoomStudent, classStudents, fetchAndSetData, inRoom, lock, logToExistingRoom, numberOfStudentsInClass, user?.id, user.status, ws]);
 
     function deleteStudent(userID) {
         const copiedColContent = { ...columns };
@@ -279,7 +279,7 @@ function App() {
         if ((!isNaN(event.target.value) && event.target.value)) {
             const number = event.target.value;
             setNbSPGrp(number);
-            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { nbSPGrp: number, class: classStudents, status: user.status } }));
+            ws.send(JSON.stringify({ type: 'nbSPGrp', data: { nbSPGrp: number, class: classStudents, status: user.status, nbStudents: numberOfStudentsInClass } }));
             const numberOfStudents = columns.students.items.length;
 
             let copiedColContent = { ...columns };
@@ -298,7 +298,7 @@ function App() {
             }
 
             setColumns(copiedColContent);
-            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents } }));
+            ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents, nbStudents: numberOfStudentsInClass } }));
         } else {
             //TODO make a toast here
             fetchAndSetData();
@@ -430,7 +430,7 @@ function App() {
             {inRoom ? <div
                 style={{
                     width: "100%",
-                    height: "100vh",
+                    height: "100%",
                     overflow: "hidden",
                 }}>
                 {showSettings && user?.status === "po" ? <PopUp onPopupData={handlePopupData} dataPopUp={settings} showPopUp={handleClosePopUp} /> : null}
@@ -448,6 +448,8 @@ function App() {
                         borderRadius: "10px",
                         padding: "0 10px",
                         marginRight: "10px",
+                        color: "white",
+                        fontWeight: "bold",
 
                     }}><GroupIcon style={{
                         marginRight: "10px",
@@ -465,20 +467,38 @@ function App() {
                                 <option value={5}></option>
                             </datalist>
                             <button className="input-button" onClick={resetButton}>
-                                <CachedIcon className="icon-svg" />
+                                <CachedIcon className="icon-svg" style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary
+                                }} />
                             </button>
                             <button className="input-button" onClick={randomGeneration}>
-                                <CasinoIcon className="icon-svg" />
+                                <CasinoIcon className="icon-svg" style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary
+                                }} />
                             </button>
                             <button className="input-button">
-                                {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} /> : <LockIcon className="icon-svg" onClick={lockGroups} />}
+                                {lock ? <LockOpenIcon className="icon-svg" onClick={lockGroups} style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary,
+                                }} /> : <LockIcon className="icon-svg" onClick={lockGroups} style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary,
+                                }} />}
                             </button>
                             <button className="input-button" onClick={settingsPopUp}>
-                                <SettingsIcon className="icon-svg" />
+                                <SettingsIcon className="icon-svg" style={{
+                                    fill: theme.palette.text.primary,
+                                    color: theme.palette.text.primary
+                                }} />
                             </button>
                         </div>
                         : <div>
-                            <p>Nombre d'élèves par groupe : {nbSPGrp ? nbSPGrp : "En attente.."}</p>
+                            <p style={{
+                                color: theme.palette.text.primary,
+                                fontWeight: "bold",
+                            }}>Nombre d'élèves par groupe : {nbSPGrp ? nbSPGrp : "En attente.."}</p>
                         </div>}
                 </nav>
                 <div
@@ -496,7 +516,6 @@ function App() {
                     }}>
                         {userCursors ? (
                             Array.from(userCursors.entries()).map(([userID, userData]) => {
-                                console.log(userID, userData);
                                 if (userID !== user?.id) {
                                     return (
                                         <div
@@ -514,16 +533,18 @@ function App() {
                                                 style={{
                                                     display: "inline-block",
                                                     backgroundColor: userData.color,
-                                                    padding: "2px 6px",
+                                                    padding: "0px 6px",
                                                     color: "#fff",
                                                     fontSize: "12px",
                                                     borderRadius: "4px",
+                                                    margin: "0px"
                                                 }}
                                             >
                                                 <p style={{
                                                     selection: "none",
                                                     fontWeight: "bold",
                                                     textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                                                    margin: "0px"
                                                 }}>
                                                     {userData.name}
                                                 </p>
@@ -546,6 +567,7 @@ function App() {
                                             flexDirection: "column",
                                             alignItems: "center",
                                             width: "100%",
+                                            marginTop: "50px",
                                         }}
                                         key={columnId}
                                     >
