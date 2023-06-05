@@ -62,8 +62,8 @@ function RoutesProvider() {
           />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
-          <Route path="/pdfsupport" element={<PDFCourseView />} />
-          <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
+          {/* <Route path="/pdfsupport" element={<PDFCourseView />} />
+          <Route path="/pdfbacklog" element={<CourseBacklogPdf />} /> */}
           <Route path="/agile" element={<FolderAgile />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />

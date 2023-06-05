@@ -41,7 +41,7 @@ const getImpactMapping = async (req, res) => {
       return null;
     }
     const data = doc.data();
-    console.log('data',req.params.dashboardId, data);
+    // console.log('data',req.params.dashboardId, data);
     return res.status(200).send(data);
   } catch (error) {
     console.error(error);
@@ -147,8 +147,6 @@ const getPdfEmpathyMapToFolderAgile = async (req, res) => {
         .status(400)
         .json({ error: "Aucun fichier PDF n'a été envoyé." });
     }
-    // Traiter le fichier PDF, par exemple le renommer, le déplacer, etc.
-    // Ici, nous imprimons simplement les informations du fichier
     console.log("Nom du fichier :", pdfFile.originalname);
     console.log("Chemin du fichier temporaire :", pdfFile.path);
     res.status(200).send("Fichier PDF traité avec succès.");
@@ -161,12 +159,16 @@ const getPdfEmpathyMapToFolderAgile = async (req, res) => {
 // !TODO
 const empathyRequest = async (connection) => {
   connection.on("message", async (message) => {
-    const dashboardId = JSON.parse(message.utf8Data);
+    console.log('empathy', message);
+    const empathy = JSON.parse(message.utf8Data);
+    console.log(empathy);
     db.collection("dashboard")
-      .doc(dashboardId)
+      .doc(empathy.dashboardId)
       .collection("agile").doc("empathy_map")
       .onSnapshot(
         (snapshot) => {
+          const data = snapshot.data();
+          console.log('snap123', data)
           connection.sendUTF(JSON.stringify(data));
         },
         (err) => {

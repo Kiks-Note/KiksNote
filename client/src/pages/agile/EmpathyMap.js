@@ -7,8 +7,10 @@ import PostIt from "../../components/agile/PostIt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import axios from "axios";
+import { w3cwebsocket } from "websocket";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import html2pdf from "html2pdf.js";
+
 import "../../components/agile/Postit.scss";
 const taskStatus = {
   think: {
@@ -32,11 +34,24 @@ const taskStatus = {
     items: [],
   },
 };
-export default function EmpathyMap({ dashboardId }) {
+export default function EmpathyMap({ dashboardId, actorId }) {
   const [columns, setColumns] = useState(taskStatus);
   const [showTextField, setShowTextField] = useState(false);
   const [newPostItContent, setNewPostItContent] = useState("");
   const [selectedColumnId, setSelectedColumnId] = useState(null);
+  
+  useEffect(()=>{
+    const wsComments = new w3cwebsocket(`ws://localhost:5050/empathy`);
+    // console.log('ws', wsComments);
+    console.log(dashboardId);
+    // wsComments.onopen = function (e) {
+    //   wsComments.send(JSON.stringify({dashboardId: dashboardId, actorId: actorId}));
+    // };
+
+    wsComments.onmessage = (message) =>{
+      console.log('msg-empathy', JSON.parse(message));
+    }
+  },[]);
 
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;

@@ -292,6 +292,12 @@ const createDashboards = async (req, res) => {
       impacts: [],
       deliverables: [],
     });
+    await agileRef.doc("empathy_map").set({
+      think:[],
+      see:[],
+      do:[],
+      hear:[]
+    });
     await agileRef.doc("agile_folder").set({
       impact_mapping: "",
       empathy_map: "",
@@ -755,11 +761,12 @@ const getRandomColor = () => {
 
 const dashboardRequests = async (connection) => {
   connection.on("message", async (message) => {
+    console.log(message);
     const user = JSON.parse(message.utf8Data);
     groups = [];
 
     if (user.status === "etudiant") {
-      await db
+      db
         .collection("groups")
         .where("students", "array-contains", user.id)
         .onSnapshot((snapshot) => {
@@ -768,7 +775,7 @@ const dashboardRequests = async (connection) => {
           });
         });
     } else if (user.status === "po") {
-      await db
+      db
         .collection("groups")
         .where("po_id", "==", user.id)
         .onSnapshot((snapshot) => {

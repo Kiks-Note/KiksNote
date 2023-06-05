@@ -51,6 +51,7 @@ const BasicCard = ({
   const uniqueId = uuidv4();
 
   useEffect(() => {
+    console.log(actors)
     setColor(defineColor);
     setText(texte);
     console.log(dashboardId);
@@ -70,12 +71,13 @@ const BasicCard = ({
     dispatch(setActiveTab(personaTab.id));
   };
   const moveToEmpathy = () => {
+    console.log(id, actors[index].id)
     const empathyTab = {
       id: "Empathy" + id,
       label: "Empathy ",
       closeable: true,
       component: "Empathy",
-      data: { dashboardId: id },
+      data: { dashboardId: id, actorId: actors[index].id},
     };
     dispatch(addTab(empathyTab));
     dispatch(setActiveTab(empathyTab.id));

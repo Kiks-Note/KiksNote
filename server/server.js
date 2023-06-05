@@ -76,7 +76,7 @@ wsI.on("request", (request) => {
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
-  app.use("/agile", agileRoute(connection, pathname,upload));
+  app.use("/agile", agileRoute(connection, pathname, upload));
   app.use("/groupes", groupsRoute(connection, pathname));
 
   connection.on("error", (error) => {
