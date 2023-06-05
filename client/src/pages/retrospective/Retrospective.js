@@ -111,6 +111,7 @@ function Retrospective() {
   const [selectedColumnId, setSelectedColumnId] = useState(null);
   const [selectedRetro, setSelectedRetro] = useState('');
   const [connectedUsers, setConnectedUsers] = useState([]);
+  const [currentRetroIndex, setCurrentRetroIndex] = useState(null)
 
 
 
@@ -123,7 +124,12 @@ function Retrospective() {
       //  setDocuments(receivedData);
       console.log("$$$$$$$$$$$");
       console.log(receivedData[0]["dataRetro"]);
-      setColumns(receivedData[0]["dataRetro"])
+      if (currentRetroIndex !== null) {
+        setColumns(receivedData[currentRetroIndex]["dataRetro"])
+      } else {
+        console.log("current index is null");
+      }
+      
     };
 
  
@@ -131,7 +137,7 @@ function Retrospective() {
     return () => {
       ws.close();
     };
-  }, []);
+  }, [currentRetroIndex]);
 
   useEffect(() => {
 
@@ -158,18 +164,17 @@ function Retrospective() {
   };
 
   const sendEditPostit = async (categorie,selectedPostItIndex,postItText) => {
+    console.log(currentRetroIndex);
     await axios.put("http://localhost:5050/retro/editPostit", {
       categorie : categorie,
       selectedPostItIndex: selectedPostItIndex,
-      postItText: postItText
+      postItText: postItText,
+      currentRetroIndex: currentRetroIndex
     })
   }
 
   const changePostiTText = () => {
     let selectedColumn = { ...columns }
-
-
-    console.log(selectedColumn);
 
     selectedColumn[categorie]["items"][selectedPostItIndex]["content"] = postItText
     setColumns(selectedColumn)
@@ -177,7 +182,6 @@ function Retrospective() {
     sendEditPostit(categorie,selectedPostItIndex,postItText);
 
     handleCloseEditPostIt();
-
   }
   const setRightPostItCategorie = (obj, i) => {
 
@@ -211,7 +215,8 @@ function Retrospective() {
   const sendMovePostIt = async (source, destination) => {
     axios.put("http://localhost:5050/retro/movePostIt", {
       source: source,
-      destination: destination
+      destination: destination,
+      currentRetroIndex: currentRetroIndex
     })
   } 
 
@@ -288,29 +293,11 @@ function Retrospective() {
     );
   }
 
-  
-  const getRetro = async () => {
-    console.log("front get retro");
-    await axios.get(
-      `http://localhost:5050/retro/getRetro`
-    ).then((response) => {
-      console.log("front response");
-      console.log(response);
-    }).catch(console.error());
-
-
-  }
-
-  // const ws = new w3cwebsocket("ws://localhost:5050/retro");
-  //     ws.onmessage = (message) => {
-  // };
-
-
   const sendAddedPostIt = async (newObjPostIt, columnId) => {
     axios.post("http://localhost:5050/retro/addPostIt", {
-
       newObjPostIt : newObjPostIt,
-      columnId : columnId
+      columnId : columnId,
+      currentRetroIndex: currentRetroIndex
     })
   }
   const addPostIt = (columnId) => {
@@ -377,6 +364,14 @@ function Retrospective() {
 
   }
 
+
+  const f = (e, i ) => {
+    //setColumns(e.target.value);
+    console.log(e.target)
+    console.log(i);
+
+  }
+  
   let board;
   if (retroModel !== "Model de retro") {
     board = <p> Hey Im {retroModel} </p>;
@@ -390,9 +385,6 @@ function Retrospective() {
       <h2> Retrospective </h2>
 
       <Button onClick={saveToDb}> save </Button>
-      <Button onClick={getRetro}> get </Button>
-
-
 
       <Select
         onChange={(e) => setColumns(e.target.value)}
@@ -400,25 +392,17 @@ function Retrospective() {
         {allRetro.map((retroElem, index) => (
           <MenuItem
             key={index}
-            value={retroElem || null}
+            value= {retroElem || null} //retroElem || null
             sx={{
               width: "100%",
             }}
-
+            onClick={()=> setCurrentRetroIndex(index)}
           >
             {index}
           </MenuItem>
         ))}
       </Select>
 
-      {/* <div>
-      <h1>Connected Users:</h1>
-      <ul>
-        {connectedUsers.map((user) => (
-          <li key={user.id}>{user.id}</li>
-        ))}
-      </ul>
-    </div> */}
       <div>
         <Button
           variant="outlined"

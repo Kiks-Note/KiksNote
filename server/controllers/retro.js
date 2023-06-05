@@ -56,9 +56,21 @@ const getRetro = async (req, res) => {
 };
 
 const editPostit = async (req, res) => {
-  let objetRetro = (await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx").get()).data()
+
+  const snapshot = await db.collection('retro').get()
+
+  console.log(req.body.currentRetroIndex);
+  let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
+
+  console.log("TTTTTTTT");
+  console.log("idRetro", idRetro);
+  console.log("TTTTTTTT");
+
+  const idDoc = snapshot.docs[0].id;
+
+  let objetRetro = (await db.collection("retro").doc(idDoc).get()).data()
   objetRetro["dataRetro"][req.body.categorie]["items"][req.body.selectedPostItIndex]["content"] = req.body.postItText
-  let dba  = await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx") 
+  let dba  = await db.collection("retro").doc(idDoc) 
 
 
   dba.update({ dataRetro: objetRetro["dataRetro"] })
@@ -72,7 +84,12 @@ const editPostit = async (req, res) => {
 }
 
 const addPostIt = async (req, res) => {
-  let objetRetro = (await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx").get()).data()
+
+  const snapshot = await db.collection('retro').get()
+  const idDoc = snapshot.docs[0].id;
+
+
+  let objetRetro = (await db.collection("retro").doc(idDoc).get()).data()
 
   const updatedItems = [...objetRetro["dataRetro"][req.body.columnId].items, req.body.newObjPostIt];
   const updatedColumn = {
@@ -80,7 +97,7 @@ const addPostIt = async (req, res) => {
     items: updatedItems,
   };
 
-  let dba  = await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx") 
+  let dba  = await db.collection("retro").doc(idDoc) 
 
   objetRetro["dataRetro"] = {
     ...objetRetro["dataRetro"],
@@ -95,12 +112,14 @@ const addPostIt = async (req, res) => {
     console.error("Error updating document:", error);
   });
 
-
 }
 
 const movePostIt = async (req, res) => {
 
-  let objetRetro = (await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx").get()).data()
+  const snapshot = await db.collection('retro').get()
+  const idDoc = snapshot.docs[0].id;
+
+  let objetRetro = snapshot.docs[0].data()
 
   let postItContent = objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]];
 
@@ -110,11 +129,9 @@ const movePostIt = async (req, res) => {
   } else {
     console.log("not defiiined !!!!");
   }
-  console.log(req.body.source["index"]);
-  console.log(objetRetro["dataRetro"][req.body.source["droppableId"]]["items"]);
 
   const lengthItem = objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"].length;
-  console.log(lengthItem);
+
   if (lengthItem <= 0) {
     objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][0] = postItContent;  
   } else {
@@ -122,9 +139,7 @@ const movePostIt = async (req, res) => {
     objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][lengthItem] = postItContent;  
   }
   
-  let dba  = await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx") 
-
-  console.log(objetRetro["dataRetro"]);
+  let dba  = await db.collection("retro").doc(idDoc) 
 
   dba.update({ dataRetro: objetRetro["dataRetro"] })
   .then(() => {
