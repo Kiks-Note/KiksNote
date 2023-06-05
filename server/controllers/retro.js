@@ -86,7 +86,9 @@ const editPostit = async (req, res) => {
 const addPostIt = async (req, res) => {
 
   const snapshot = await db.collection('retro').get()
-  const idDoc = snapshot.docs[0].id;
+  let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
+
+  const idDoc = snapshot.docs[idRetro].id;
 
 
   let objetRetro = (await db.collection("retro").doc(idDoc).get()).data()
@@ -117,9 +119,12 @@ const addPostIt = async (req, res) => {
 const movePostIt = async (req, res) => {
 
   const snapshot = await db.collection('retro').get()
-  const idDoc = snapshot.docs[0].id;
+  let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
 
-  let objetRetro = snapshot.docs[0].data()
+  
+  const idDoc = snapshot.docs[idRetro].id;
+
+  let objetRetro = snapshot.docs[idRetro].data()
 
   let postItContent = objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]];
 

@@ -281,9 +281,6 @@ function Retrospective() {
   }, []);
 
   const saveToDb = async () => {
-    console.log("^^^^^^^^^^");
-    console.log(columns);
-    console.log();
     await axios.post(
       `http://localhost:5050/retro/newRetro`,
       {
@@ -372,12 +369,7 @@ function Retrospective() {
 
   }
   
-  let board;
-  if (retroModel !== "Model de retro") {
-    board = <p> Hey Im {retroModel} </p>;
-  } else {
-    board = <p>Didn't change</p>;
-  }
+
 
   return (
 
@@ -457,10 +449,6 @@ function Retrospective() {
           </DialogActions>
         </Dialog>
       </div>
-      <div>
-        {board}
-      </div>
-
       {columns !== null ? (<div
         className="parent"
         id="pdf-content"
