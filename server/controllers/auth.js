@@ -48,7 +48,7 @@ const register = async (req, res) => {
           .set({
             firstname: userFirstName,
             lastname: userLastName,
-            password: bcrypt.hashSync(userPassword, saltRounds),
+            // password: bcrypt.hashSync(userPassword, saltRounds),
             dateofbirth: new Date(userBirthDate),
             status: userStatus,
             email: userEmail,

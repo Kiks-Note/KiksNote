@@ -133,8 +133,8 @@ const deleteDevice = async (req, res) => {
 
 const makeRequest = async (req, res) => {
   const {deviceId} = req.params;
-  const {startDate, endDate, requestReason, persons, requesterId} = req.body;
-  console.log(requesterId);
+  const {startDate, endDate, requestReason, persons, requesterId, category} =
+    req.body;
 
   if (requesterId === undefined) {
     return res.status(500).send("You must be logged in to make a request");
@@ -158,6 +158,7 @@ const makeRequest = async (req, res) => {
       reason: requestReason,
       group: persons,
       status: "pending",
+      deviceCategory: category,
     });
 
     await Promise.all([d, r]);
@@ -254,6 +255,31 @@ const rejectRequest = async (req, res) => {
     });
 
     res.send("Request refused");
+  } catch (err) {
+    res.send(err);
+  }
+};
+
+const returnedRequest = async (req, res) => {
+  const {deviceId, requestId} = req.params;
+  const {admin} = req.body;
+
+  try {
+    const deviceRef = await db.collection("inventory").doc(deviceId);
+    const requestRef = await db.collection("inventory_requests").doc(requestId);
+
+    await deviceRef.update({
+      status: "available",
+      lastRequestId: null,
+    });
+
+    await requestRef.update({
+      status: "returned",
+      returnedAt: new Date(),
+      returnedTo: admin,
+    });
+
+    res.send("Request returned");
   } catch (err) {
     res.send(err);
   }
@@ -644,6 +670,7 @@ module.exports = {
   deviceRequests,
   acceptRequest,
   rejectRequest,
+  returnedRequest,
   getRequests,
   updateRequest,
   getCategories,

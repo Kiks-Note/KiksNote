@@ -71,7 +71,7 @@ const Login = () => {
       const token = await loggedInUser.user.getIdToken();
 
       await axios
-        .post("http://192.168.1.47:5050/auth/login", {
+        .post("http://localhost:5050/auth/login", {
           token,
         })
         .then(() => {

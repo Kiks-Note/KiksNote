@@ -1,40 +1,34 @@
+import {makeStyles} from "@material-ui/core";
+import AddIcon from "@mui/icons-material/Add";
 import {
-  Avatar,
   Card,
   CardContent,
-  CardHeader,
-  CardMedia,
-  Fab,
+  FormControl,
   Grid,
-  IconButton,
-  Modal,
+  InputBase,
+  InputLabel,
+  MenuItem,
+  Select,
   Skeleton,
   TextField,
   Typography,
+  styled,
 } from "@mui/material";
 import Box from "@mui/material/Box";
-import axios from "axios";
-import React, {useEffect, useState} from "react";
-import {Toaster, toast} from "react-hot-toast";
-import {Rings} from "react-loader-spinner";
-import {useNavigate} from "react-router-dom";
-import {CustomDropdown} from "../../components/inventory/CustomDropdown";
-import CustomSnackbar from "../../components/inventory/CustomSnackBar";
-import InvBox from "../../components/inventory/InvBox";
-import LoanRequestForm from "../../components/inventory/LoanRequestForm";
-import ModalForm from "../../components/inventory/ModalForm";
-import SideBarModify from "../../components/inventory/SideBarModify";
-import SideBarRequest from "../../components/inventory/SideBarRequest";
-import "../../styles/inventoryGlobal.css";
-import AddIcon from "@mui/icons-material/Add";
+import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
+import axios from "axios";
+import React, {useEffect, useState} from "react";
+import {Toaster, toast} from "react-hot-toast";
+import {w3cwebsocket} from "websocket";
+import InvBox from "../../components/inventory/InvBox";
+import LoanRequestForm from "../../components/inventory/LoanRequestForm";
+import SideBarRequest from "../../components/inventory/SideBarRequest";
 import useFirebase from "../../hooks/useFirebase";
-import {makeStyles} from "@material-ui/core";
+import "../../styles/inventoryGlobal.css";
 
 const Sujection = ({openSujection, setOpenSujection}) => {
   const [url, setUrl] = useState("");
@@ -158,35 +152,43 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const BootstrapInput = styled(InputBase)(({theme}) => ({
+  "label + &": {
+    marginTop: theme.spacing(3),
+    fontFamily: "poppins-regular",
+  },
+  "& .MuiInputBase-input": {
+    borderRadius: 4,
+    position: "relative",
+    backgroundColor: theme.palette.background.paper,
+    border: "1px solid #ced4da",
+    fontSize: 16,
+    padding: "10px 26px 10px 12px",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    width: "200px",
+    margin: "0px",
+    // Use the system font instead of the default Roboto font.
+    fontFamily: "poppins-regular",
+    "&:focus": {
+      borderRadius: 4,
+      borderColor: "#80bdff",
+      boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)",
+    },
+  },
+}));
+
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
-  const [openAdd, setOpenAdd] = useState(false);
   const [openDemand, setOpenDemand] = useState(false);
   const [openRequest, setOpenResquest] = useState(false);
-  const [openModify, setOpenModify] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [clickedDeviceId, setClickedDeviceId] = useState({});
-  const [clickedRequest, setClickedRequest] = useState({});
+  const [clickedDevice, setClickedDevice] = useState({});
   const [campusFilter, setCampusFilter] = useState(null);
-  const [statusFilter, setStatusFilter] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [openSujection, setOpenSujection] = useState(false);
-  const navigate = useNavigate();
   const {user} = useFirebase();
-  const classes = useStyles();
-
-  const toggleDrawerAdd = (event, open) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setOpenAdd(open);
-  };
 
   const toggleDrawerDemand = (event, open) => {
     if (
@@ -210,70 +212,20 @@ function InventoryHome() {
     setOpenResquest(open);
   };
 
-  const toggleDrawerModify = (event, open) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setOpenModify(open);
-  };
-
-  const handleEditClick = (e) => {
-    setIsMenuOpen(false);
-    toggleDrawerModify(e, true);
-  };
-
   useEffect(() => {
-    reloadData();
-  }, [loading]);
+    (async () => {
+      const ws = new w3cwebsocket("ws://localhost:5050/liveInventory");
 
-  const reloadData = async () => {
-    loading &&
-      (await axios
-        .get("http://localhost:5050/inventory")
-        .then((res) => {
-          setInventory(res.data);
-          setLoading(false);
-          // console.log(res.data);
-        })
-        .catch((err) => {
-          console.log(err);
-        }));
-  };
-
-  const fetchRequests = async (deviceId, requestId) => {
-    await axios
-      .get(`http://localhost:5050/inventory/request/${deviceId}/${requestId}`)
-      .then((res) => {
-        setClickedRequest(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
+      const inv = (ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        setInventory(data);
       });
-  };
 
-  const handleDeleteClick = async () => {
-    setIsMenuOpen(false);
-    setSnackBarOpen(false);
-
-    toast.promise(
-      axios.delete(`http://localhost:5050/inventory/delete/${clickedDeviceId}`),
-      {
-        loading: "Suppression en cours",
-        success: (res) => {
-          reloadData();
-          return "Matériel supprimé avec succès";
-        },
-        error: (err) => {
-          console.log(err);
-          return "Une erreur est survenue";
-        },
-      }
-    );
-  };
+      Promise.all([inv]).then(() => {
+        setLoading(false);
+      });
+    })();
+  }, [loading]);
 
   const loadingSkeleton = () => {
     return (
@@ -335,44 +287,13 @@ function InventoryHome() {
 
   return (
     <div>
-      <ModalForm
-        open={openAdd}
-        toggleDrawerAdd={toggleDrawerAdd}
-        reloadData={reloadData}
-      />
-      <LoanRequestForm
-        open={openDemand}
-        toggleDrawerAdd={toggleDrawerDemand}
-        reloadData={reloadData}
-      />
+      <LoanRequestForm open={openDemand} toggleDrawerAdd={toggleDrawerDemand} />
       <SideBarRequest
         open={openRequest}
         toggleDrawerRequest={toggleDrawerRequest}
-        deviceId={clickedDeviceId}
-        reloadData={reloadData}
+        device={clickedDevice}
       />
-      <SideBarModify
-        open={openModify}
-        toggleDrawerModify={toggleDrawerModify}
-        deviceId={clickedDeviceId}
-      />
-      <CustomSnackbar
-        open={snackBarOpen}
-        setOpen={setSnackBarOpen}
-        message="Voulez-vous vraiment supprimer cet appareil ?"
-        onClickCheck={() => {
-          handleDeleteClick();
-        }}
-        onClickClose={() => {
-          setSnackBarOpen(false);
-        }}
-      />
-      {openSujection && (
-        <Sujection
-          openSujection={openSujection}
-          setOpenSujection={setOpenSujection}
-        />
-      )}
+
       <Toaster position="bottom-left" />
       {user?.status !== "etudiant" && (
         <Button
@@ -403,17 +324,37 @@ function InventoryHome() {
           marginTop: "20px",
         }}
       >
-        <CustomDropdown
-          placeholder="Campus"
-          data={[
-            {label: "Cergy", value: "Cergy"},
-            {label: "Paris", value: "Paris"},
-            {label: "Reset", value: "reset"},
-          ]}
-          onChange={(e) => {
-            setCampusFilter(e[0].value);
-          }}
-        />
+        <FormControl sx={{}} variant="standard">
+          <InputLabel id="demo-customized-select-label">Campus</InputLabel>
+          <Select
+            labelId="demo-customized-select-label"
+            id="demo-customized-select"
+            value={campusFilter === null ? "Tous les campus" : campusFilter}
+            onChange={(e) => {
+              setCampusFilter(e.target.value);
+            }}
+            input={<BootstrapInput />}
+          >
+            <MenuItem
+              style={{fontFamily: "poppins-regular", fontSize: "16px"}}
+              value={null}
+            >
+              <em>Vider</em>
+            </MenuItem>
+            <MenuItem
+              style={{fontFamily: "poppins-regular", fontSize: "16px"}}
+              value={"Cergy"}
+            >
+              Cergy
+            </MenuItem>
+            <MenuItem
+              style={{fontFamily: "poppins-regular", fontSize: "16px"}}
+              value={"Paris"}
+            >
+              Paris
+            </MenuItem>
+          </Select>
+        </FormControl>
       </div>
       {loading ? (
         loadingSkeleton()
@@ -454,25 +395,21 @@ function InventoryHome() {
                       onClickRequest={(e) => {
                         if (item.status === "available") {
                           toggleDrawerRequest(e, true);
-                          setClickedDeviceId(item.id);
+                          setClickedDevice(item);
                         } else {
-                          fetchRequests(item.id, item.lastRequestId);
                           toast.error("Cet appareil n'est pas disponible");
                         }
-                      }}
-                      onEditClick={(e) => {
-                        handleEditClick(e);
                       }}
                       onDeleteClick={() => {
                         setSnackBarOpen(true);
                         setIsMenuOpen(false);
-                        setClickedDeviceId(item.id);
+                        setClickedDevice(item);
                       }}
                       isMenuOpen={isMenuOpen}
                       onMenuClick={(e) => {
                         setIsMenuOpen(true);
                         setAnchorEl(e.currentTarget);
-                        setClickedDeviceId(item.id);
+                        setClickedDevice(item);
                       }}
                       onMenuClose={() => setIsMenuOpen(false)}
                       anchorEl={anchorEl}

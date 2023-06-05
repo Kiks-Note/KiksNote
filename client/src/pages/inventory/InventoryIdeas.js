@@ -142,8 +142,6 @@ const InventoryIdeas = () => {
             `http://localhost:5050/inventory/ideas`
           );
 
-          console.log(response.data);
-
           if (params.status === "treated") {
             setIdeas(
               response.data.filter((idea) =>

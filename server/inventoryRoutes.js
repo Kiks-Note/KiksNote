@@ -14,6 +14,7 @@ const {
   deviceRequests,
   acceptRequest,
   rejectRequest,
+  returnedRequest,
   getRequests,
   updateRequest,
   getCategories,
@@ -41,6 +42,7 @@ router.post("/preRequest/:deviceId", makePreRequest);
 router.get("/requests/:deviceId", deviceRequests);
 router.put("/acceptRequest/:deviceId/:requestId", acceptRequest);
 router.put("/refuseRequest/:deviceId/:requestId", rejectRequest);
+router.put("/returnedRequest/:deviceId/:requestId", returnedRequest);
 router.get("/request/:requestId", getRequests);
 router.put("/request/:requestId", updateRequest);
 router.get("/categories", getCategories);

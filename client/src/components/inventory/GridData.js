@@ -6,7 +6,7 @@ const GridData = ({columns, rows}) => {
 
   return (
     <DataGrid
-      autoHeight
+      // autoHeight
       sx={{
         width: "97%",
         mt: 4,
@@ -22,7 +22,9 @@ const GridData = ({columns, rows}) => {
         textOverflow: "ellipsis",
         overflow: "hidden",
         minHeight: 650,
+        maxWidth: "100%",
       }}
+      rowHeight={60}
       rows={rows}
       columns={columns}
       pageSize={pageSize}
