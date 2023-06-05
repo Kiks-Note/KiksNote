@@ -20,7 +20,6 @@ import { green } from "@mui/material/colors";
 const useStyles = makeStyles((theme) => ({
   treeContainer: {
     height: "100vh",
-    width: "100vh",
     transform: "rotate(180deg)",
     backgroundColor: "white",
   },
@@ -166,16 +165,10 @@ const Arbre = ({ projet }) => {
       </div>
       {showeDrawer && (
         <DrawTools
-          className={classes.drawer}
-          variant="permanent"
-          classes={{
-            paper: classes.drawerPaper,
-          }}
-          style={{ height: "100vh", right: 0 }}
           nodeToUpdate={nodeToUpdate}
           sendUpdateThree={handleUpdateThree}
           oldTreeData={treeData}
-        ></DrawTools>
+        />
       )}
     </>
   );

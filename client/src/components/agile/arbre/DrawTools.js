@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { margin } from '@mui/system';
 
 
 
@@ -149,66 +148,76 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
     return updateoldTreeData;
   };
   return (
-    <div>
-      <Drawer
+    <Drawer
+      className={classes.drawer}
+      variant="permanent"
+      classes={{
+        paper: classes.drawerPaper,
+      }}
+      style={{ height: "100vh", right: 0 }}
+    >
+      <div className="headerDraw">
+        <div className="titleDraw">
+          <Typography variant="h5" align="center">
+            ÉDITION DU NOEUD
+          </Typography>
+        </div>
+        <div className="nameNode">
+          <Typography variant="h6" align="center">
+            {node.name}
+          </Typography>
+        </div>
+      </div>
 
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
-        }}
-        style={{ height: '100vh', right: 0 }}
-      >
-        <div className='headerDraw' >
-          <div className='titleDraw' >
-            <Typography variant="h5" align='center'>ÉDITION DU NOEUD</Typography>
-          </div>
-          <div className='nameNode'>
-            <Typography variant="h6" align='center'>{node.name}</Typography>
-          </div>
+      <br></br>
+      <div className="addSection">
+        <div>
+          Ajouter un enfant à cette branche{" "}
+          <TextField
+            value={nameAdd}
+            onChange={(e) => handleNameAdd(e)}
+          ></TextField>
         </div>
-
-        <br>
-        </br>
-        <div className='addSection'>
-          <div>Ajouter un enfant à cette branche  <TextField value={nameAdd} onChange={(e) => handleNameAdd(e)}></TextField></div>
-          <Button
-            title={buttons[0].description}
-            className={buttons[0].clas}
-            backgroundColor={'green'}
-            onClick={handleAddButton}
-          >
-            {buttons[0].icon}
-          </Button>
+        <Button
+          title={buttons[0].description}
+          className={buttons[0].clas}
+          backgroundColor={"green"}
+          onClick={handleAddButton}
+        >
+          {buttons[0].icon}
+        </Button>
+      </div>
+      <div className="nameSection">
+        <div>
+          Changer le nom :{" "}
+          <TextField
+            value={nameEdit}
+            onChange={(e) => handleNameEdit(e)}
+          ></TextField>
         </div>
-        <div className='nameSection'>
-          <div >
-            Changer le nom : <TextField value={nameEdit} onChange={(e) => handleNameEdit(e)}></TextField></div>
-          <Button
-            title={buttons[1].description}
-            className={buttons[1].clas}
-            backgroundColor={'yellow'}
-            onClick={handleEditButton}
-
-          >
-            {buttons[1].icon}
-          </Button>
-        </div>
-        <div className='deleteSection'>
-          <div>Supprimer cette branche </div>
-          <Button
-            title={buttons[1].description}
-            className={buttons[1].clas}
-            onClick={handleDeletedButton}
-            backgroundColor={'red'}
-          >
-            {buttons[1].icon}
-          </Button>
-          <button>Supprimer tous ces enfants</button>
-        </div>
-      </Drawer>
-    </div>
-  )
+        <Button
+          title={buttons[1].description}
+          className={buttons[1].clas}
+          backgroundColor={"yellow"}
+          onClick={handleEditButton}
+        >
+          {buttons[1].icon}
+        </Button>
+      </div>
+      <div className="deleteSection">
+        <div>Supprimer cette branche </div>
+        <Button
+          title={buttons[1].description}
+          className={buttons[1].clas}
+          onClick={handleDeletedButton}
+          backgroundColor={"red"}
+        >
+          {buttons[1].icon}
+        </Button>
+        <button>Supprimer tous ces enfants</button>
+      </div>
+    </Drawer>
+  );
 }
 
 export default DrawTools
