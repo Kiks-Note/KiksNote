@@ -6,21 +6,24 @@ const {
   getCalls,
   updateCall,
   addCall,
-  callRequests,
   getCallsByLessonId,
+  room,
 } = require("./controllers/call");
 
-module.exports = function (connection, pathname) {
-  // Route Call
+function callRoutesWsNotNeeded() {
   router.post("/callAdd", addCall);
   router.put("/updatecall", updateCall);
   router.get("/calls", getCalls);
-  router.get("/getcall", getCall);
-  router.get("/getCallsByLessonId", getCallsByLessonId);
+  router.get("/getcall/:id", getCall);
+  router.get("/getCallsByLessonId/:id_lesson", getCallsByLessonId);
 
+  return router;
+}
+
+function callRoutesWsNeeded(connection, pathname) {
   switch (pathname) {
-    case "/call":
-      callRequests(connection);
+    case "/callws":
+      room(connection);
       console.log("call");
       break;
     default:
@@ -28,4 +31,6 @@ module.exports = function (connection, pathname) {
   }
 
   return router;
-};
+}
+
+module.exports = { callRoutesWsNeeded, callRoutesWsNotNeeded };

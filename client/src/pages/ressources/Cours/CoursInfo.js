@@ -119,6 +119,8 @@ const CoursInfo = () => {
 
   const classes = useStyles();
 
+  let idClass;
+
   const getAllInstructors = async () => {
     try {
       await axios
@@ -422,11 +424,11 @@ const CoursInfo = () => {
   };
 
   const handleOpenCallModal = () => {
-    console.log("test");
     setOpenCall(true);
+    console.log(courseClass);
   };
   const handleCloseCallModal = () => {
-    setOpenCall(true);
+    setOpenCall(false);
   };
   const handleDownload = (url) => {
     const link = document.createElement("a");
@@ -1043,7 +1045,12 @@ const CoursInfo = () => {
           </div>
         </div>
         <ToastContainer></ToastContainer>
-        <CallModal open={openCall}></CallModal>
+        <CallModal
+          open={openCall}
+          lessonId={id}
+          handleclose={handleCloseCallModal}
+          class={courseClass}
+        ></CallModal>
       </div>
     </>
   );

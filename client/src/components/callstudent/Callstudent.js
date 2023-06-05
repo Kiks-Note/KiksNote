@@ -1,5 +1,5 @@
 import ReactGiphySearchbox from "react-giphy-searchbox";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import "./Callstudent.scss";
 import SendIcon from "@mui/icons-material/Send";
 import GifBoxIcon from "@mui/icons-material/GifBox";
@@ -8,7 +8,7 @@ import axios from "axios";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 
-function AppelEleve() {
+function AppelEleve(props) {
   const [Call, setCall] = useState({
     id_lesson: "",
     qrcode: "",
@@ -19,29 +19,75 @@ function AppelEleve() {
   const { user } = useFirebase();
   const open = useRef();
   const msg = useRef();
-  const generated = useRef(false);
+  const [inRoom, setInRoom] = useState(false);
+  const ip = process.env.REACT_APP_IP;
+
   const id = useRef();
+  const ws = useMemo(() => {
+    return new w3cwebsocket(`ws://${ip}:5050/Call`);
+  });
 
   useEffect(() => {
-    const wsComments = new w3cwebsocket(`ws://localhost:5050/call`);
-    if (!id) {
-      wsComments.onopen = function (e) {
-        console.log("[open] Connection established");
-        console.log("Sending to server");
-        wsComments.send(JSON.stringify({ CallId: id }));
-      };
+    const handleOpen = async () => {
+      await LogToExistingRoom();
 
-      wsComments.onmessage = (message) => {
-        console.log(message);
-        const data = JSON.parse(message.data);
-        setCall(data);
-      };
+      if (inRoom) {
+        ws.onmessage = (message) => {
+          const messageReceive = JSON.parse(message.data);
+
+          switch (messageReceive.type) {
+            case "updateRoom":
+              setCall(messageReceive.appel);
+              break;
+            default:
+              break;
+          }
+        };
+      }
+    };
+
+    if (ws.readyState === WebSocket.OPEN) {
+      handleOpen();
+    } else {
+      ws.onopen = handleOpen;
     }
-    if (!generated.current) {
-      getCall();
-      generated.current = true;
-    }
+
+    return () => {
+      ws.send(
+        JSON.stringify({
+          type: "leaveRoom",
+          data: { userID: user?.id, class: user.class },
+        })
+      );
+    };
   }, []);
+
+  const LogToExistingRoom = useCallback(async () => {
+    try {
+      axios
+        .get(`http://localhost:5050/groupes/call/getcall/` + props.callId)
+        .then((res) => {
+          if (res.data.length > 0) {
+            const message = {
+              type: "joinRoom",
+              data: {
+                userID: user?.id,
+                name: user?.firstname,
+                class: user?.class,
+              },
+            };
+            ws.send(JSON.stringify(message));
+            setInRoom(true);
+            id.current = props.id;
+            setCall(res.data);
+            callToUpdate.current = res.data;
+          }
+        });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }, [user?.class, user?.id, user?.firstname, ws]);
 
   const addGif = (gif) => {
     const date = new Date();
@@ -94,25 +140,16 @@ function AppelEleve() {
         id: id.current,
         object: callToUpdate.current,
       });
+      const message = {
+        type: "updateCall",
+        data: {
+          appel: callToUpdate.current,
+        },
+      };
+      ws.send(JSON.stringify(message));
       console.log(res);
     } catch (error) {
       console.error("Error updating call:", error);
-    }
-  };
-
-  const getCall = async () => {
-    try {
-      const response = await axios.get("http://localhost:5050/call/calls");
-      const data = response.data;
-
-      const latestCall = data[data.length - 1];
-      const { id: callId, ...callData } = latestCall;
-
-      id.current = callId;
-      setCall(callData);
-      callToUpdate.current = callData;
-    } catch (error) {
-      console.error("Error retrieving call data:", error);
     }
   };
 

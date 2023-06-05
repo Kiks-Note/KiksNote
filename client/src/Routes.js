@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
@@ -44,7 +44,7 @@ function RoutesProvider() {
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groupes" element={<Groups />} />
           <Route path="/" element={<Home />} />
-          <Route path="/appel" element={<Appel />} />
+          <Route path="/appel/:id" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groups" element={<Groups />} />
           <Route path="/" element={<Home />} />
@@ -58,7 +58,7 @@ function RoutesProvider() {
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
           <Route path="/pdfsupport" element={<PDFCourseView />} />
           <Route path="/pdfbacklog" element={<CourseBacklogPdf />} />
-          <Route path="/agile" element={<Agile/>}/>
+          <Route path="/agile" element={<Agile />} />
           <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           <Route path="/agile/persona" element={<Personas />} />
           {/* INVENTORY */}
