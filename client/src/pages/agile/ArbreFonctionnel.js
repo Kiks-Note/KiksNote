@@ -33,11 +33,10 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
 
   },
-  main: {
+  container_arbre: {
     backgroundcolor: 'white!', width: '100vh',
     height: '100%'
   },
-  main: {},
   ro: {
     flexGrow: 1,
   }
@@ -113,15 +112,14 @@ function ArbreFonctionnel() {
     <div className={classes.root}>
       {/* Barre de sélection des projets */}
 
-
       {/* Mode d'édition du projet sélectionné */}
-      <main className={classes.main}>
+      <div className={classes.container_arbre}>
         {selectedProject ? (
           <Arbre projet={selectedProject}></Arbre>
         ) : (
           <Typography variant="h5">Sélectionnez un projet ou cré</Typography>
         )}
-      </main>
+      </div>
     </div>
   );
 }

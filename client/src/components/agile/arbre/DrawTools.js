@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
   },
   drawerPaper: {
     padding: '10px',
-    transform: 'rotate(180deg)',
     width: '320px',
     height: '100vh',
   },
