@@ -56,9 +56,9 @@ const getRetro = async (req, res) => {
 };
 
 const editPostit = async (req, res) => {
-  let objetRetro = (await db.collection("retro").doc("YfUR5oFc5rtcGJ1ZQvwS").get()).data()
+  let objetRetro = (await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx").get()).data()
   objetRetro["dataRetro"][req.body.categorie]["items"][req.body.selectedPostItIndex]["content"] = req.body.postItText
-  let dba  = await db.collection("retro").doc("YfUR5oFc5rtcGJ1ZQvwS") 
+  let dba  = await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx") 
 
 
   dba.update({ dataRetro: objetRetro["dataRetro"] })
@@ -87,9 +87,6 @@ const addPostIt = async (req, res) => {
     [req.body.columnId]: updatedColumn,
   }
 
-  console.log(objetRetro["dataRetro"]);
-  console.log(dba);
-
   dba.update({ dataRetro: objetRetro["dataRetro"] })
   .then(() => {
     console.log("Document updated successfully!!!!!!!!");
@@ -101,11 +98,49 @@ const addPostIt = async (req, res) => {
 
 }
 
+const movePostIt = async (req, res) => {
+
+  let objetRetro = (await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx").get()).data()
+
+  let postItContent = objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]];
+
+  if(objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]]) {
+    const indexToRemove = req.body.source["index"];
+    objetRetro["dataRetro"][req.body.source["droppableId"]]["items"].splice(indexToRemove, 1);
+  } else {
+    console.log("not defiiined !!!!");
+  }
+  console.log(req.body.source["index"]);
+  console.log(objetRetro["dataRetro"][req.body.source["droppableId"]]["items"]);
+
+  const lengthItem = objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"].length;
+  console.log(lengthItem);
+  if (lengthItem <= 0) {
+    objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][0] = postItContent;  
+  } else {
+    console.log("plesssssssssss");
+    objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][lengthItem] = postItContent;  
+  }
+  
+  let dba  = await db.collection("retro").doc("w3IfzowzetYaNFTnwWDx") 
+
+  console.log(objetRetro["dataRetro"]);
+
+  dba.update({ dataRetro: objetRetro["dataRetro"] })
+  .then(() => {
+    console.log("Document updated successfully!!!!!!!!");
+  })
+  .catch((error) => {
+    console.error("Error updating document:", error);
+  });
+}
+
 module.exports = {
   addRetro,
   retroRequests,
   getRetro,
   getAll,
   editPostit,
-  addPostIt
+  addPostIt,
+  movePostIt
 };

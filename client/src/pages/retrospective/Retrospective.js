@@ -208,6 +208,13 @@ function Retrospective() {
 
   }
 
+  const sendMovePostIt = async (source, destination) => {
+    axios.put("http://localhost:5050/retro/movePostIt", {
+      source: source,
+      destination: destination
+    })
+  } 
+
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
 
@@ -216,6 +223,10 @@ function Retrospective() {
     const sourceColumn = columns[source.droppableId];
     const destColumn = columns[destination.droppableId];
 
+    console.log(source);
+    console.log(destination);
+
+    sendMovePostIt(source, destination)
     if (source.droppableId !== destination.droppableId) {
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
