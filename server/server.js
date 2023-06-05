@@ -39,6 +39,8 @@ var upload = multer({
   },
 });
 
+const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes");
+
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -62,11 +64,15 @@ const studentsProjectsRoutes = require("./studentsProjectsRoutes");
 const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
+
 const groupsRoute = require("./groupsRoutes");
 const agileRoute = require("./agileRoutes");
+const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
+
 
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
+app.use("/retro", retroRoutesNotNeeded);
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
@@ -79,6 +85,7 @@ wsI.on("request", (request) => {
   app.use("/agile", agileRoute(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/groupes", groupsRoute(connection, pathname));
+  app.use("/retro", retroRoutesWsNeeded(connection, pathname));
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
@@ -88,6 +95,7 @@ wsI.on("request", (request) => {
     );
   });
 });
+
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
 app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants

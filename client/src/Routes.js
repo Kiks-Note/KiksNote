@@ -27,6 +27,7 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
+import Retrospective from "./pages/retrospective/Retrospective";
 
 
 function RoutesProvider() {
@@ -63,9 +64,9 @@ function RoutesProvider() {
           />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
-          {/* <Route path="/pdfsupport" element={<PDFCourseView />} />
-          <Route path="/pdfbacklog" element={<CourseBacklogPdf />} /> */}
+
           <Route path="/agile" element={<FolderAgile />} />
+                <Route path="/retro" element={<Retrospective />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
