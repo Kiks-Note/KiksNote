@@ -65,10 +65,8 @@ const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 
-const groupsRoute = require("./groupsRoutes");
 const agileRoute = require("./agileRoutes");
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
-
 
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
@@ -90,12 +88,9 @@ wsI.on("request", (request) => {
     console.log(`WebSocket Error: ${error}`);
   });
   connection.on("close", (reasonCode, description) => {
-    console.log(
-      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
-    );
+    console.log(`WebSocket closed with reasonCode ${reasonCode} and description ${description}`);
   });
 });
-
 
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
 app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
