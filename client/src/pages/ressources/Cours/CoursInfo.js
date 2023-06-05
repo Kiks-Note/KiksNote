@@ -479,7 +479,7 @@ const CoursInfo = () => {
   };
 
   useEffect(() => {
-    getCoursId()
+    getCoursId(id)
       .then(() => {
         setLoading(false);
       })
@@ -487,7 +487,7 @@ const CoursInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, []);
+  }, [id]);
 
   return (
     <>

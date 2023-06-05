@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
@@ -60,6 +60,7 @@ export const toastFail = (message) => {
 
 const StudentProjectInfo = () => {
   const { user } = useFirebase();
+  const navigate = useNavigate();
 
   const { projectid } = useParams();
 
@@ -140,6 +141,8 @@ const StudentProjectInfo = () => {
   const handleCloseBlogTutos = () => {
     setOpenBlogTutos(false);
   };
+
+  console.log(allblogtutos);
 
   return (
     <>
@@ -468,6 +471,7 @@ const StudentProjectInfo = () => {
                       key={blogTutoData.id}
                       button
                       sx={{ display: "flex", flexDirection: "column" }}
+                      onClick={() => navigate(`/blog/${blogTutoData.id}`)}
                     >
                       {blogTutoData.data.thumbnail && (
                         <img
