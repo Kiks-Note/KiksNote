@@ -122,8 +122,6 @@ function Retrospective() {
     ws.onmessage = (message) => {
       const receivedData = JSON.parse(message.data);
       //  setDocuments(receivedData);
-      console.log("$$$$$$$$$$$");
-      console.log(receivedData[0]["dataRetro"]);
       if (currentRetroIndex !== null) {
         setColumns(receivedData[currentRetroIndex]["dataRetro"])
       } else {
@@ -132,12 +130,11 @@ function Retrospective() {
       
     };
 
- 
 
     return () => {
       ws.close();
     };
-  }, [currentRetroIndex]);
+  }, [currentRetroIndex, currentRetroIndex]);
 
   useEffect(() => {
 
@@ -148,8 +145,6 @@ function Retrospective() {
         allRetros.push(retro["dataRetro"])
       });
       setAllRetro(allRetros);
-      console.log("ééééééééé");
-
     });
 
 
@@ -177,9 +172,11 @@ function Retrospective() {
     let selectedColumn = { ...columns }
 
     selectedColumn[categorie]["items"][selectedPostItIndex]["content"] = postItText
-    setColumns(selectedColumn)
 
     sendEditPostit(categorie,selectedPostItIndex,postItText);
+
+    setColumns(selectedColumn)
+
 
     handleCloseEditPostIt();
   }
@@ -261,26 +258,10 @@ function Retrospective() {
       });
     }
   };
-  const ws = new w3cwebsocket("ws://localhost:5050/retro");
-
-
-  useEffect(() => {
-    // Initialize WebSocket connection
-    ws.current = new w3cwebsocket("ws://localhost:5050/retro");
-
-    // Receive messages from the WebSocket server
-    ws.current.onmessage = (message) => {
-      const data = JSON.parse(message.data);
-      // Handle received message here
-    };
-
-    return () => {
-      // Close WebSocket connection on component unmount
-      ws.current.close();
-    };
-  }, []);
 
   const saveToDb = async () => {
+    if (columns == null) return;
+    // setCurrentRetroIndex(allRetro.length)
     await axios.post(
       `http://localhost:5050/retro/newRetro`,
       {
@@ -360,16 +341,6 @@ function Retrospective() {
     setOpen(false);
 
   }
-
-
-  const f = (e, i ) => {
-    //setColumns(e.target.value);
-    console.log(e.target)
-    console.log(i);
-
-  }
-  
-
 
   return (
 
