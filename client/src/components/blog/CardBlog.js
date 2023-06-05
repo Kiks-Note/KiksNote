@@ -72,10 +72,10 @@ export default function CardBlog({ blog }) {
           </p>
 
           <ul className="tags_blog">
-            {blog.tag.length !=0 && Array.isArray(blog.tag) && (
+            {blog.tag.length != 0 && Array.isArray(blog.tag) && (
               <>
                 <img src={OrangeHashtag} width={"30"} height={"30"} />
-               { blog.tag.map((tag) => <li>{tag}, </li>)}
+                {blog.tag.map((tag) => <li>{tag}, </li>)}
               </>
             )}
           </ul>
