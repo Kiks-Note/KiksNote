@@ -159,7 +159,7 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
         }}
         style={{ height: '100vh', right: 0 }}
       >
-        <div className='headerDraw' >
+        <div className='headerDraw' style={{ marginBottom: '70px' }}>
           <div className='titleDraw' >
             <Typography variant="h5" align='center'>ÉDITION DU NOEUD</Typography>
           </div>
@@ -170,41 +170,39 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
 
         <br>
         </br>
-        <div className='addSection'>
-          <div>Ajouter un enfant à cette branche  <TextField value={nameAdd} onChange={(e) => handleNameAdd(e)}></TextField></div>
+        <div className='addSection' style={{ marginBottom: '70px' }}>
+          <div>  <TextField value={nameAdd} onChange={(e) => handleNameAdd(e)}></TextField></div>
           <Button
             title={buttons[0].description}
             className={buttons[0].clas}
-            backgroundColor={'green'}
+            style={{ backgroundColor: 'green', margin: 30 }}
             onClick={handleAddButton}
           >
-            {buttons[0].icon}
+            Ajouter un node
           </Button>
         </div>
-        <div className='nameSection'>
+        <div className='nameSection' style={{ marginBottom: '70px' }}>
           <div >
-            Changer le nom : <TextField value={nameEdit} onChange={(e) => handleNameEdit(e)}></TextField></div>
+            <TextField value={nameEdit} onChange={(e) => handleNameEdit(e)}></TextField></div>
           <Button
             title={buttons[1].description}
             className={buttons[1].clas}
-            backgroundColor={'yellow'}
+            style={{ backgroundColor: 'yellow' }}
             onClick={handleEditButton}
 
           >
-            {buttons[1].icon}
+            Changer le nom
           </Button>
         </div>
-        <div className='deleteSection'>
-          <div>Supprimer cette branche </div>
+        <div className='deleteSection' style={{ marginBottom: '70px' }}>
           <Button
             title={buttons[1].description}
             className={buttons[1].clas}
             onClick={handleDeletedButton}
-            backgroundColor={'red'}
+            style={{ backgroundColor: 'red' }}
           >
-            {buttons[1].icon}
+            Supprimer cette branche
           </Button>
-          <button>Supprimer tous ces enfants</button>
         </div>
       </Drawer>
     </div>
