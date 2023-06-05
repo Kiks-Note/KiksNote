@@ -69,6 +69,8 @@ const technosRoutes = require("./technosRoutes");
 const agileRoute = require("./agileRoutes");
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 
+app.use("/inventory", inventoryRoutes);
+
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
 app.use("/retro", retroRoutesNotNeeded);
@@ -78,13 +80,15 @@ wsI.on("request", (request) => {
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
 
-  app.use("/inventory", inventoryRoutes(connection, pathname));
+  // app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/agile", agileRoute(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/groupes", groupsRoute(connection, pathname));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
+  require("./web/inventoryWebSocket")(connection, pathname);
+
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
