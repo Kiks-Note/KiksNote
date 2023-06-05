@@ -39,7 +39,7 @@ function Blog() {
     {
       label: "Répartition entre les tutoriels et les blogs",
       component: <BlogRepartition />,
-    }
+    },
   ];
   const [activeStep, setActiveStep] = useState(0);
   const handleNext = () => {
@@ -111,9 +111,7 @@ function Blog() {
 
   // test for sort by date
   // console.log("blog : ", blog);
-  const blogSorted = blog.sort((a, b) =>
-    b.created_at.localeCompare(a.created_at)
-  ); // sort by date
+  blog.sort((a, b) => b.created_at.localeCompare(a.created_at)); // sort by date
   // console.log("blogSorted : ", blogSorted);
 
   return (
