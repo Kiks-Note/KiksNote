@@ -551,6 +551,38 @@ const blogDetailRequests = async (connection) => {
   });
 };
 
+const getRepartition = async (req, res) => {
+  const { type } = req.params;
+
+  try {
+    const blogsSnapshot = await db.collection("blog").get();
+
+    let blogCount = 0;
+    let tutorialCount = 0;
+
+    blogsSnapshot.forEach((doc) => {
+      const type = doc.data().type;
+      if (type === "blog") {
+        blogCount++;
+      } else if (type === "tuto") {
+        tutorialCount++;
+      }
+    });
+
+    res.status(200).json({ blogCount, tutorialCount });
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération de la répartition des créations :",
+      error
+    );
+    res.status(500).json({
+      error:
+        "Une erreur est survenue lors de la récupération de la répartition des créations.",
+    });
+  }
+};
+
+
 module.exports = {
   addBlogComment,
   updateBlogVisibility,
@@ -568,4 +600,5 @@ module.exports = {
   getBlogParticipants,
   blogDetailRequests,
   deleteBlogComment,
+  getRepartition,
 };
