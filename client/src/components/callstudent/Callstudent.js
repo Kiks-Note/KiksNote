@@ -24,7 +24,7 @@ function AppelEleve(props) {
 
   const id = useRef();
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://${ip}:5050/Call`);
+    return new w3cwebsocket(`ws://${ip}:5050/callws`);
   });
 
   useEffect(() => {

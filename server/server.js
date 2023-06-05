@@ -62,9 +62,7 @@ const studentsProjectsRoutes = require("./studentsProjectsRoutes");
 const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
-const groupsRoute = require("./groupsRoutes");
 
-const groupsRoute = require("./groupsRoutes");
 const { callRoutesWsNeeded, callRoutesWsNotNeeded } = require("./callRoutes");
 const path = require("path");
 

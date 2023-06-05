@@ -1,4 +1,3 @@
-import QRCode from "qrcode";
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import axios from "axios";
 import "./Callteacher.scss";
@@ -25,11 +24,12 @@ function AppelProf(props) {
   let tempCall;
 
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://${ip}:5050/Call`);
+    return new w3cwebsocket(`ws://${ip}:5050/callws`);
   });
 
   useEffect(() => {
     const handleOpen = async () => {
+      console.log("test");
       await LogToExistingRoom();
 
       if (inRoom) {

@@ -110,15 +110,13 @@ const room = async (connection) => {
         roomClientsC.set(response.data.userID, connection);
 
         clients.set(response.data.class, roomClientsC);
-
+        console.log(currentRooms);
         const messageCreate = {
           type: "updateRoom",
           data: {
             currentRoom: {
               ...currentRooms.get(response.data.class),
-              appel: Object.fromEntries(
-                currentRooms.get(response.data.class).appel
-              ),
+              appel: currentRooms.get(response.data.class).appel,
             },
             class: response.data.class,
           },
@@ -183,9 +181,7 @@ const room = async (connection) => {
           data: {
             currentRoom: {
               ...currentRooms.get(response.data.class),
-              appel: Object.fromEntries(
-                currentRooms.get(response.data.class).appel
-              ),
+              appel: currentRooms.get(response.data.class).appel,
             },
             class: response.data.class,
           },

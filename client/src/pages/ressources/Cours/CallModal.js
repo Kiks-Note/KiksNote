@@ -28,7 +28,6 @@ const CallModal = (props) => {
   });
 
   useEffect(() => {
-    console.log(props.class);
     if (props.open) {
       getCalls();
     }
@@ -79,23 +78,24 @@ const CallModal = (props) => {
         object: call,
       },
     });
-    const res = await axios.put(
-      `http://localhost:5050/cours/class/` + props.class
+    const res = await axios.get(
+      `http://localhost:5050/ressources/class/` + props.class
     );
-    console.log(res);
-    // const message = {
-    //   type: "createRoom",
-    //   data: {
-    //     po_id: user?.id,
-    //     userID: user?.id,
-    //     class: user?.class,
-    //   },
-    // };
-    // if (ws.readyState === WebSocket.OPEN) {
-    //   ws.send(JSON.stringify(message));
-    // } else {
-    //   ws.onopen = ws.send(JSON.stringify(message));
-    // }
+    console.log(res.data.data.name);
+    const message = {
+      type: "createRoom",
+      data: {
+        po_id: user?.id,
+        userID: user?.id,
+        class: res.data.data.name,
+        appel: call,
+      },
+    };
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(message));
+    } else {
+      ws.onopen = ws.send(JSON.stringify(message));
+    }
     navigate("/appel/" + response.data.id);
   };
 
