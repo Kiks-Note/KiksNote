@@ -59,7 +59,7 @@ export default function CardBlog({ blog }) {
         <div className="card-blog-content">
           <div className="content-title">
             <h3 className="blog-title">{blog.title}</h3>{" "}
-            {user.id === blog.created_by ? (
+            {user.status !== "etudiant" || user.email === blog.created_by ? (
               <div>
                 <IconButton
                   aria-label="more options"
@@ -106,10 +106,14 @@ export default function CardBlog({ blog }) {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        <MenuItem>
-          <Button onClick={changeVisibility}>Visible</Button>
-          <Checkbox onClick={changeVisibility} checked={blog.visibility}></Checkbox>
-        </MenuItem>
+        {user.status !== "etudiant" ? (
+          <MenuItem>
+            <Button onClick={changeVisibility}>Visible</Button>
+            <Checkbox onClick={changeVisibility} checked={blog.visibility}></Checkbox>
+          </MenuItem>
+        ) : (
+          <></>
+        )}
         <MenuItem onClick={handleMenuClose}>
           <Button onClick={deleteBlog}>Supprimer</Button>
         </MenuItem>
