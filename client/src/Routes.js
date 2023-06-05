@@ -30,6 +30,7 @@ import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import EmpathyMap from "./pages/agile/EmpathyMap";
 import Personas from "./pages/agile/Personas";
+import Retrospective from "./pages/retrospective/Retrospective";
 
 function RoutesProvider() {
   return (
@@ -68,6 +69,7 @@ function RoutesProvider() {
           <Route path="/agile" element={<Agile />} />
           <Route path="/agile/empathy-map" element={<EmpathyMap />} />
           <Route path="/agile/persona" element={<Personas />} />
+          <Route path="/retro" element={<Retrospective />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
