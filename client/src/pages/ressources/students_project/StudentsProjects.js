@@ -72,6 +72,7 @@ const StudentsProjects = () => {
   const [nameProject, setNameProject] = useState("");
   const [repoProjectLink, setRepoProjectLink] = useState("");
   const [membersProject, setMembersProject] = useState([]);
+  const [technosProject, setTechnosProject] = useState([]);
   const [typeProject, setTypeProject] = useState("");
   const [descriptionProject, setDescriptionProject] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
@@ -221,6 +222,7 @@ const StudentsProjects = () => {
           RepoProjectLink: repoProjectLink,
           promoProject: idSelectedClass,
           membersProject: membersProject,
+          technosProject: technosProject,
           typeProject: typeProject,
           descriptionProject: descriptionProject,
           imgProject: projectImageBase64,
@@ -582,6 +584,8 @@ const StudentsProjects = () => {
                 setSelectedClass={setSelectedClass}
                 membersProject={membersProject}
                 setMembersProject={setMembersProject}
+                technosProject={technosProject}
+                setTechnosProject={setTechnosProject}
                 typeProject={typeProject}
                 setTypeProject={setTypeProject}
                 descriptionProject={descriptionProject}
@@ -590,6 +594,7 @@ const StudentsProjects = () => {
                 control={control}
                 allstudents={allstudents}
                 allclass={allclass}
+                alltechnos={technos}
               />
             </Card>
             <h1 className="h1-project">Top10 Projets Étudiants</h1>
