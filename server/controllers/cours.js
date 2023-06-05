@@ -7,7 +7,12 @@ const mime = require("mime-types");
 const bucket = storageFirebase.bucket();
 const path = require("path");
 
-const DIR = "uploads/";
+const DIR = "./uploads";
+
+// Vérifier et créer le dossier "uploads" s'il n'existe pas
+if (!fs.existsSync(DIR)) {
+  fs.mkdirSync(DIR);
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -103,6 +108,26 @@ const getClassById = async (req, res) => {
   }
 };
 
+const createClass = async (req, res) => {
+  const { name, promo, site, cursus } = req.body;
+
+  try {
+    const classRef = await db.collection("class").add({
+      name: name,
+      promo: promo,
+      site: site,
+      cursus: cursus,
+    });
+    return res.status(200).send({
+      id: classRef.id,
+      message: "Classe créée avec succès.",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Erreur lors de la création de la classe.");
+  }
+};
+
 const getInstructors = async (req, res) => {
   try {
     const snapshot = await db
@@ -150,18 +175,29 @@ const createCours = async (req, res) => {
       imageBase64,
     } = req.body;
 
-    if (
-      !title ||
-      !description ||
-      !dateStartSprint ||
-      !dateEndSprint ||
-      !courseClass ||
-      !owner ||
-      !imageBase64
-    ) {
-      return res
-        .status(400)
-        .send("Veuillez remplir tous les champs obligatoires.");
+    const courseClassRef = await db.collection("class").doc(courseClass).get();
+
+    if (!courseClassRef.exists) {
+      return res.status(404).send("Classe non trouvée");
+    }
+
+    const courseClassData = courseClassRef.data();
+    courseClassData.id = courseClassRef.id;
+
+    const ownerRef = await db.collection("users").doc(owner).get();
+
+    if (!ownerRef.exists) {
+      return res.status(404).send("Utilisateur non trouvé");
+    }
+
+    const ownerData = {
+      id: ownerRef.id,
+      firstname: ownerRef.data().firstname,
+      lastname: ownerRef.data().lastname,
+    };
+
+    if (ownerRef.data().image) {
+      ownerData.image = ownerRef.data().image;
     }
 
     const mimeType = "image/png";
@@ -195,18 +231,21 @@ const createCours = async (req, res) => {
       dateStartSprint: new Date(dateStartSprint),
       dateEndSprint: new Date(dateEndSprint),
       campus_numerique: campus_numerique,
-      courseClass: courseClass,
-      owner: owner,
+      courseClass: courseClassData,
+      owner: ownerData,
       private: private,
       imageCourseUrl: url,
     });
 
     const newResourceData = await newResource.get();
 
-    res.status(200).json({
-      cours_id: newResource.id,
-      cours_created_datas: newResourceData._fieldsProto,
-    });
+    const coursId = newResource.id;
+    const coursData = newResourceData.data();
+
+    const response = {};
+    response[coursId] = coursData;
+
+    res.status(200).json(response);
   } catch (err) {
     console.error(err);
     res.status(500).send("Erreur lors de la création du cours.");
@@ -261,11 +300,33 @@ const updateCours = async (req, res) => {
     }
 
     if (courseClass) {
-      updatedData.courseClass = courseClass;
+      const courseClassRef = await db
+        .collection("class")
+        .doc(courseClass)
+        .get();
+
+      if (!courseClassRef.exists) {
+        return res.status(404).send("Classe non trouvée");
+      }
+
+      updatedData.courseClass = {
+        id: courseClassRef.id,
+        ...courseClassRef.data(),
+      };
     }
 
     if (owner) {
-      updatedData.owner = owner;
+      const ownerRef = await db.collection("users").doc(owner).get();
+
+      if (!ownerRef.exists) {
+        return res.status(404).send("Utilisateur non trouvé");
+      }
+
+      updatedData.owner = {
+        id: ownerRef.id,
+        firstname: ownerRef.data().firstname,
+        lastname: ownerRef.data().lastname,
+      };
     }
 
     if (private) {
@@ -306,7 +367,7 @@ const updateCours = async (req, res) => {
 
     res.status(200).json({
       cours_id: courseId,
-      cours_updated_datas: updatedCourseData._fieldsProto,
+      cours_updated_datas: updatedCourseData.data(),
     });
   } catch (err) {
     console.error(err);
@@ -577,6 +638,7 @@ module.exports = {
   getAllClasses,
   getCoursById,
   getClassById,
+  createClass,
   getInstructors,
   getInstructorById,
   createCours,
