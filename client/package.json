@@ -31,6 +31,7 @@
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "draft-js": "^0.11.7",
+    "draft-js-export-html": "^1.4.1",
     "draft-js-exporter": "^0.0.5",
     "draftjs-to-html": "^0.9.1",
     "draftjs-to-markdown": "^0.6.0",

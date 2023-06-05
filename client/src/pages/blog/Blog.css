@@ -1,101 +1,30 @@
-.wrapper {
-  width: 600px;
-  margin: 0 auto;
-}
-
-.search_logo {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.search_logo svg {
-  height: 88px;
-}
-
-.search_bar {
-  height: 48px;
-  border: 3px solid rgba(131, 149, 179, 0.3);
-  border-radius: 16px;
-  display: flex;
-  padding-left: 24px;
-  padding-right: 4px;
-  justify-content: space-between;
-  box-shadow: 0 12px 20px 0 rgba(131, 149, 179, 0);
-  transition: 0.2s ease box-shadow, 0.2s ease border;
-  align-items: center;
-}
-
-.search_bar:hover,
-.search_bar.focus {
-  border: 3px solid rgba(131, 149, 179, 0.6);
-  box-shadow: 0 12px 20px 0 rgba(131, 149, 179, 0.28);
-}
-
-.search_bar.empty {
-  border-bottom: 3px solid rgba(131, 149, 179, 0.6) !important;
-  border-bottom-left-radius: 16px !important;
-  border-bottom-right-radius: 16px !important;
-}
-
-.search_bar.focus {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  border-bottom: none;
-  box-shadow: none;
-}
-
-.search_icon {
-  width: 20px;
-  display: flex;
-  align-items: center;
-}
-
-.search_bar_blog {
-  height: 42px;
-  padding: 0;
-  padding-left: 8px;
-  border: 0;
-  width: 90%;
-  font-size: 16px;
-  line-height: 30px;
-  letter-spacing: 0.5px;
-  font-weight: 300;
-  background-color: #fff;
-  font-family: inherit;
-}
-
-input:focus {
-  outline: none;
-  outline-offset: none;
-}
-
-.search_input input:hover ~ .search_bar {
-  box-shadow: 1px 1px 1px #0000;
-}
-
-.search_btn {
-  margin-top: 40px;
-  text-align: center;
-}
-
-
 /* WYNSIG*/
 
 .rdw-dropdown-selectedtext {
-    color: black;
+  color: black;
 }
 .rdw-dropdownoption-default {
-    color: black;
+  color: black;
 }
 .rdw-colorpicker-modal-style-label {
-    color: black;
+  color: black;
 }
 .rdw-link-modal-label {
-    color: black;
+  color: black;
 }
 .rdw-link-modal-target-option {
-    color: black;
+  color: black;
 }
 .rdw-embedded-modal {
-    color: black;
+  color: black;
+}
+
+.container_detail_blog {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
+}
+.detail_blog_content {
+    width: 100%;
 }

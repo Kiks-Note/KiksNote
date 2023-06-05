@@ -62,11 +62,14 @@ export default function NewTuto({ open, toggleDrawerModify }) {
       statut = "pending";
       visibility = false;
     }
-
+var tmpeditorStates = editorStates.map((editorState, index) => {
+  const content = convertToRaw(editorState.getCurrentContent());
+  return content ;
+});
     const tutoData = {
       title: title,
       description: description,
-      editorState: editorStates,
+      editorState: tmpeditorStates,
       inputEditorState: inputEditorState,
       inputEditorStateTitle: titleStep,
       created_by: user.id,

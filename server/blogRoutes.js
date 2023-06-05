@@ -16,6 +16,8 @@ const {
   getTags,
   getTopCreators,
   getBlogParticipants,
+  blogDetailRequests,
+  deleteBlogComment,
 } = require("./controllers/blog");
 
 module.exports = function (connection, pathname, upload) {
@@ -24,8 +26,9 @@ module.exports = function (connection, pathname, upload) {
   router.post("/tuto", upload.single("thumbnail"), addNewTuto);
   router.get("/tag", getTags);
   router.put("/:id/visibility", updateBlogVisibility);
-  router.post("/comments", addBlogComment);
+  router.put("/comments", addBlogComment);
   router.delete("/:id", deleteBlog);
+  router.delete("/:blogId/comments/:commentId", deleteBlogComment);
   router.get("/:id", getDescriptions);
   router.put("/:id/participant", addParticipant);
   router.post("/participant", getParticipant);
@@ -38,6 +41,10 @@ module.exports = function (connection, pathname, upload) {
     case "/blog":
       blogRequests(connection);
       console.log(" je suis dans blog");
+      break;
+    case "/blogDetail":
+      blogDetailRequests(connection);
+      console.log(" je suis dans blog Detail");
       break;
     default:
       break;

@@ -5,7 +5,6 @@ import { w3cwebsocket } from "websocket";
 import { Toaster } from "react-hot-toast";
 import { Rings } from "react-loader-spinner";
 import useFirebase from "../../hooks/useFirebase";
-import axios from "axios";
 import MobileStepper from "@mui/material/MobileStepper";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
@@ -18,20 +17,13 @@ import TopCreatorsChart from "../../components/blog/TopCreator.js";
 import MostParticipantsChart from "../../components/blog/TopEvent.js";
 import SplitButtonChoice from "../../components/blog/SplitButtonChoice";
 import "./Blog.css";
-import { id } from "date-fns/locale";
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 function Blog() {
   const theme = useTheme();
   const [blog, setBlog] = useState([]);
-  const [filteredBlog, setFilteredBlog] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tags, setTags] = useState([]);
   const { user } = useFirebase();
-  const [filter, setFilter] = useState({
-    title: "",
-    tags: "",
-  });
 
   const stats = [
     {
@@ -44,16 +36,12 @@ function Blog() {
     },
   ];
   const [activeStep, setActiveStep] = useState(0);
-  const maxSteps = 2;
-
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
-
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
   const handleStepChange = (step) => {
     setActiveStep(step);
   };
@@ -84,7 +72,6 @@ function Blog() {
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
         const userIsParticipant = blog.participant.includes(user.id);
-
         const blogFront = {
           id: blog.id,
           created_at: dateCreation,
@@ -110,48 +97,10 @@ function Blog() {
         allBlogs.push(blogFront);
       });
 
-      fetchTags();
       setBlog(allBlogs);
       setLoading(false);
     };
   }, []);
-  useEffect(() => {
-    // Apply filters whenever they change
-    let filteredBlogs = blog;
-
-    if (filter.title !== ""){
-      filteredBlogs = filteredBlogs.filter((blog) =>
-        blog.title.toLowerCase().includes(filter.title.toLowerCase())
-      );
-    }
-
-    if (filter.tags !== "") {
-      filteredBlogs = filteredBlogs.filter(
-        (blog) =>
-          blog.tag.length > 0 && blog.tag.some((tag) => tag.id == filter.tags)
-      );
-    }
-
-    setFilteredBlog(filteredBlogs);
-  }, [filter, blog]);
-
-  const handleFilterChange = (event) => {
-    const { name, value } = event.target;
-    setFilter((prevFilter) => ({ ...prevFilter, [name]: value }));
-  };
-  const fetchTags = async () => {
-    try {
-      const response = await axios.get("http://localhost:5050/blog/tag");
-      let tags = response.data;
-      const aucunTag = { id: "", name: "Aucun" };
-      tags = [aucunTag, ...tags];
-
-      // Update the state with the retrieved tags
-      setTags(tags);
-    } catch (error) {
-      console.error("Erreur lors de la récupération des tags :", error);
-    }
-  };
 
   return (
     <>
@@ -159,46 +108,13 @@ function Blog() {
       <Box sx={{ margin: 2 }}>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Box
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1rem",
-              }}
-            >
-              <div class="wrapper">
-                <div class="search_bar">
-                  <div class="search_icon">
-                    <svg
-                      fill="#8395B3"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width="24px"
-                      height="24px"
-                    >
-                      <path d="M 9 2 C 5.1458514 2 2 5.1458514 2 9 C 2 12.854149 5.1458514 16 9 16 C 10.747998 16 12.345009 15.348024 13.574219 14.28125 L 14 14.707031 L 14 16 L 19.585938 21.585938 C 20.137937 22.137937 21.033938 22.137938 21.585938 21.585938 C 22.137938 21.033938 22.137938 20.137938 21.585938 19.585938 L 16 14 L 14.707031 14 L 14.28125 13.574219 C 15.348024 12.345009 16 10.747998 16 9 C 16 5.1458514 12.854149 2 9 2 z M 9 4 C 11.773268 4 14 6.2267316 14 9 C 14 11.773268 11.773268 14 9 14 C 6.2267316 14 4 11.773268 4 9 C 4 6.2267316 6.2267316 4 9 4 z" />
-                    </svg>
-                  </div>
-                  <input
-                    className="search_bar_blog "
-                    id="search"
-                    type="text"
-                    name="title"
-                    label="Titre"
-                    value={filter.title}
-                    onChange={handleFilterChange}
-                  />
-                </div>
-              </div>
-            </Box>
+            <SplitButtonChoice />
           </Grid>
           <Grid item xs={5}>
             <div className="container_blog">
-              <SplitButtonChoice />
               {!loading ? (
-                filteredBlog.map((blog) => (
-                  <CardBlog blog={blog} key={blog.id} />
+                blog.map((filtered) => (
+                  <CardBlog blog={filtered} key={filtered.id} />
                 ))
               ) : (
                 <div
@@ -223,64 +139,66 @@ function Blog() {
               )}
             </div>
           </Grid>
-          <Grid item xs={4}>
-            <Paper
-              square
-              elevation={0}
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                pl: 2,
-                bgcolor: "background.default",
-              }}
-            >
-              <Typography variant="h6">{stats[activeStep].label}</Typography>
-            </Paper>
-            <AutoPlaySwipeableViews
-              axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-              index={activeStep}
-              onChangeIndex={handleStepChange}
-              enableMouseEvents
-              interval={20000}
-            >
-              {stats.map((step, index) => (
-                <div key={step.label}>{step.component}</div>
-              ))}
-            </AutoPlaySwipeableViews>
-            <MobileStepper
-              steps={maxSteps}
-              position="static"
-              activeStep={activeStep}
-              nextButton={
-                <Button
-                  size="small"
-                  onClick={handleNext}
-                  disabled={activeStep === stats.length - 1}
-                >
-                  Suivant
-                  {theme.direction === "rtl" ? (
-                    <KeyboardArrowLeft />
-                  ) : (
-                    <KeyboardArrowRight />
-                  )}
-                </Button>
-              }
-              backButton={
-                <Button
-                  size="small"
-                  onClick={handleBack}
-                  disabled={activeStep === 0}
-                >
-                  {theme.direction === "rtl" ? (
-                    <KeyboardArrowRight />
-                  ) : (
-                    <KeyboardArrowLeft />
-                  )}
-                  Précédent
-                </Button>
-              }
-            />
-          </Grid>
+          {user.status != "etudiant" && (
+            <Grid item xs={4}>
+              <Paper
+                square
+                elevation={0}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  pl: 2,
+                  bgcolor: "background.default",
+                }}
+              >
+                <Typography variant="h6">{stats[activeStep].label}</Typography>
+              </Paper>
+              <AutoPlaySwipeableViews
+                axis={theme.direction === "rtl" ? "x-reverse" : "x"}
+                index={activeStep}
+                onChangeIndex={handleStepChange}
+                enableMouseEvents
+                interval={20000}
+              >
+                {stats.map((step, index) => (
+                  <div key={step.label}>{step.component}</div>
+                ))}
+              </AutoPlaySwipeableViews>
+              <MobileStepper
+                steps={stats.length}
+                position="static"
+                activeStep={activeStep}
+                nextButton={
+                  <Button
+                    size="small"
+                    onClick={handleNext}
+                    disabled={activeStep === stats.length - 1}
+                  >
+                    Suivant
+                    {theme.direction === "rtl" ? (
+                      <KeyboardArrowLeft />
+                    ) : (
+                      <KeyboardArrowRight />
+                    )}
+                  </Button>
+                }
+                backButton={
+                  <Button
+                    size="small"
+                    onClick={handleBack}
+                    disabled={activeStep === 0}
+                  >
+                    {theme.direction === "rtl" ? (
+                      <KeyboardArrowRight />
+                    ) : (
+                      <KeyboardArrowLeft />
+                    )}
+                    Précédent
+                  </Button>
+                }
+              />
+            </Grid>
+          )}
         </Grid>
       </Box>
     </>

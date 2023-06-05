@@ -96,10 +96,12 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     var statut = "online";
     var visibility = true;
 
+    const rawContentState = convertToRaw(editorState.getCurrentContent());
+
     const formData = new FormData();
     formData.append("thumbnail", thumbnail);
     formData.append("title", title);
-    formData.append("editorState", JSON.stringify(editorState));
+    formData.append("editorState", JSON.stringify(rawContentState));
     formData.append("inputEditorState", JSON.stringify(inputEditorState));
     formData.append("created_by", user.id);
     formData.append("type", "blog");
@@ -107,7 +109,6 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     formData.append("statut", statut);
     formData.append("visibility", visibility);
     formData.append("description", description);
-
 
     try {
       const response = await axios.post(

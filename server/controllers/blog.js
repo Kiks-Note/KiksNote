@@ -1,5 +1,5 @@
 const { db, FieldValue } = require("../firebase");
-
+const { v4: uuidv4 } = require("uuid");
 //add new Blog
 const addNewBlog = async (req, res) => {
   const {
@@ -104,12 +104,13 @@ const addBlogComment = async (req, res) => {
 
   try {
     const commentData = {
+      id: uuidv4(),
       content: message,
       date: new Date(),
       user_id: userId,
     };
 
-    const blogRef = db.collection("blog_tutos").doc(blogId);
+    const blogRef = db.collection("blog").doc(blogId);
 
     // Récupérer le document du blog
     const blogSnapshot = await blogRef.get();
@@ -129,6 +130,52 @@ const addBlogComment = async (req, res) => {
       // Mettre à jour le document du blog avec le nouveau tableau de commentaires
       await blogRef.update(blogData);
       res.status(200).send("Commentaire ajouté avec succès.");
+    } else {
+      res.status(404).send("Blog non trouvé.");
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Erreur interne du serveur.");
+  }
+};
+//Delete Blog Comment
+const deleteBlogComment = async (req, res) => {
+  const blogId = req.params.blogId;
+  const commentId = req.params.commentId;
+  console.log(blogId);
+  console.log(commentId);
+  console.log("je suis dedans");
+  try {
+    const blogRef = db.collection("blog").doc(blogId);
+
+    // Récupérer le document du blog
+    const blogSnapshot = await blogRef.get();
+
+    if (blogSnapshot.exists) {
+      const blogData = blogSnapshot.data();
+
+      // Vérifier si le champ comment existe dans le document du blog
+      if (blogData.comment && Array.isArray(blogData.comment)) {
+        // Rechercher l'index du commentaire dans le tableau des commentaires
+        const commentIndex = blogData.comment.findIndex(
+          (comment) => comment.id == commentId
+        );
+        console.log(commentIndex);
+
+        // Vérifier si le commentaire a été trouvé
+        if (commentIndex !== -1) {
+          // Supprimer le commentaire du tableau des commentaires
+          blogData.comment.splice(commentIndex, 1);
+
+          // Mettre à jour le document du blog avec le tableau de commentaires modifié
+          await blogRef.update(blogData);
+          res.status(200).send("Commentaire supprimé avec succès.");
+        } else {
+          res.status(404).send("Commentaire non trouvé.");
+        }
+      } else {
+        res.status(404).send("Aucun commentaire trouvé dans ce blog.");
+      }
     } else {
       res.status(404).send("Blog non trouvé.");
     }
@@ -183,7 +230,6 @@ const addParticipant = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
-
 
 const getParticipant = async (req, res) => {
   try {
@@ -428,6 +474,82 @@ const blogRequests = async (connection) => {
     }
   );
 };
+const blogDetailRequests = async (connection) => {
+  connection.on("message", async (message) => {
+    const blogId = JSON.parse(message.utf8Data);
+    db.collection("blog")
+      .doc(blogId)
+      .onSnapshot(
+        async (snapshot) => {
+          if (snapshot.exists) {
+            const data = { ...snapshot.data(), id: snapshot.id };
+
+            // Vérifier si le document du blog contient des commentaires
+            if (data.comment && Array.isArray(data.comment)) {
+              // Trier les commentaires par ordre décroissant de date
+              data.comment.sort((a, b) => b.date - a.date);
+
+              // Parcourir chaque commentaire
+              for (const comment of data.comment) {
+                // Récupérer le document de l'utilisateur associé à user_id
+                const userSnapshot = await db
+                  .collection("users")
+                  .doc(comment.user_id)
+                  .get();
+
+                if (userSnapshot.exists) {
+                  const userData = userSnapshot.data();
+                  // Ajouter les détails de l'utilisateur au commentaire
+                  comment.user = {
+                    id: data.comment.id,
+                    user_id: comment.user_id,
+                    firstname: userData.firstname,
+                    lastname: userData.lastname,
+                    image: userData.image,
+                  };
+                }
+              }
+            }
+
+            // Vérifier si le document du blog contient des participants
+            if (data.participant && Array.isArray(data.participant)) {
+              // Parcourir chaque participant
+              for (const participantId of data.participant) {
+                // Récupérer le document de l'utilisateur associé à participantId
+                const participantSnapshot = await db
+                  .collection("users")
+                  .doc(participantId)
+                  .get();
+
+                if (participantSnapshot.exists) {
+                  const participantData = participantSnapshot.data();
+                  // Ajouter les détails de l'utilisateur au participant
+                  data.participant = data.participant.map((participant) => {
+                    if (participant === participantId) {
+                      return {
+                        id: participantId,
+                        firstname: participantData.firstname,
+                        lastname: participantData.lastname,
+                        image: participantData.image,
+                      };
+                    }
+                    return participant;
+                  });
+                }
+              }
+            }
+
+            connection.sendUTF(JSON.stringify([data]));
+          } else {
+            connection.sendUTF(JSON.stringify([]));
+          }
+        },
+        (err) => {
+          console.log(`Encountered error: ${err}`);
+        }
+      );
+  });
+};
 
 module.exports = {
   addBlogComment,
@@ -444,4 +566,6 @@ module.exports = {
   addDislike,
   getTopCreators,
   getBlogParticipants,
+  blogDetailRequests,
+  deleteBlogComment,
 };
