@@ -6,7 +6,6 @@ import ResetPassword from "./pages/resetpassword/ResetPassword";
 import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
-import Tuto from "./pages/blog/Tuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
 import PublicRoutes from "./utils/PublicRoutes";
