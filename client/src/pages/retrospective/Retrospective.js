@@ -216,7 +216,7 @@ function Retrospective() {
       <div className="container-in-retro">
       <Button variant="outlined"
  onClick={handleClickOpen} className="add-retro"> + Ajouter une retro </Button>
-        <div className="historic">
+        {/* <div className="historic">
           Choix de la retrospective
           <table>
             <tr>
@@ -231,7 +231,7 @@ function Retrospective() {
               </td>
             </tr>
           </table>
-        </div>
+        </div> */}
   
       </div>
 
@@ -283,7 +283,8 @@ function Retrospective() {
               id="model-retro-select"
               value={retroModel}
               label="model de retro"
-              //onChange={handleValidate}
+              // onChange={handleValidate}
+              onChange={(e) => setRetroModel(e.target.value)}
             >
               <MenuItem value="GMDBoard">Glad, Mad, Sad</MenuItem>
               <MenuItem value="fourLBoard">4L</MenuItem>
@@ -294,7 +295,7 @@ function Retrospective() {
             <Select
               labelId="model-retro-select-label"
               id="model-retro-select"
-              value={retroModel}
+              value={choosenCourse}
               onChange={(e) => setChoosenCourse(e.target.value)}
             >
 
