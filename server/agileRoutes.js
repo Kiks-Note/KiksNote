@@ -7,7 +7,9 @@ const {
   getFoldersAgile,
   getZipFolderAgile,
   updatePdfInAgileFolder,
+  addPersona,
   empathyRequest,
+  personaRequest,
   changeIndex,
   createPostit,
   deletePostit,
@@ -23,6 +25,7 @@ module.exports = function (connection, pathname, upload) {
     upload.single("pdfFile"),
     updatePdfInAgileFolder
   );
+  router.post("/:dashboardId/persona/:actorId/create", addPersona);
   router.put("/:dashboardId/empathy/:actorId/setPostit", changeIndex);
   router.put(
     "/:dashboardId/empathy/:actorId/column/:columnId/addPostit",
@@ -37,6 +40,10 @@ module.exports = function (connection, pathname, upload) {
     case "/empathy":
       empathyRequest(connection);
       console.log("empathy");
+      break;
+    case "/persona":
+      personaRequest(connection);
+      console.log("persona");
       break;
     default:
       break;

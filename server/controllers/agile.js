@@ -310,6 +310,36 @@ const updatePdfInAgileFolder = async (req, res) => {
   }
 };
 
+/// Path to add Persona
+const addPersona = async (req, res) => {
+  try {
+    const data = req.body;
+    const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
+    const agileRef = dashboardRef.collection("agile").doc(req.params.actorId);
+    const snapshot = await agileRef.get();
+    const persona = snapshot.data().persona;
+
+    // Vérifier si l'objet persona existe et le mettre à jour
+    if (Object.keys(persona).length === 0) {
+      // Si l'objet persona est vide, le créer avec les nouvelles données
+      await agileRef.set({
+        persona: data,
+      });
+    } else {
+      // Si l'objet persona existe, fusionner les nouvelles données avec les données existantes
+      const updatedPersona = { ...persona, ...data };
+      await agileRef.update({
+        persona: updatedPersona,
+      });
+    }
+
+    res.send({ message: "Persona added successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+
 const empathyRequest = async (connection) => {
   connection.on("message", async (message) => {
     const empathy = JSON.parse(message.utf8Data);
@@ -371,6 +401,36 @@ const empathyRequest = async (connection) => {
     );
   });
 };
+const personaRequest = async (connection) => {
+  connection.on("message", async (message) => {
+    const persona = JSON.parse(message.utf8Data);
+    var agileDocumentRef = db
+      .collection("dashboard")
+      .doc(persona.dashboardId)
+      .collection("agile")
+      .doc(persona.actorId);
+
+    // Check if the document exists
+    const documentSnapshot = await agileDocumentRef.get();
+
+    if (!documentSnapshot.exists) {
+      await agileDocumentRef.set({
+        persona: {},
+      });
+    }
+
+    // Listen to changes in the document
+    agileDocumentRef.onSnapshot(
+      (snapshot) => {
+        const data = snapshot.data();
+        connection.sendUTF(JSON.stringify(data));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
+  });
+};
 
 module.exports = {
   addImpactMapping,
@@ -378,7 +438,9 @@ module.exports = {
   getFoldersAgile,
   getZipFolderAgile,
   updatePdfInAgileFolder,
+  addPersona,
   empathyRequest,
+  personaRequest,
   changeIndex,
   createPostit,
   deletePostit,

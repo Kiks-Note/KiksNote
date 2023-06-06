@@ -46,13 +46,10 @@ export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
 
   const handleChange = useCallback(
     (event, value) => {
-      console.log("2", value);
       if (checkIfActiveTabExists(tabs, value)) {
-        console.log("activeTab existe dans tabs");
         setActiveTabLocal(value);
         dispatch(setActiveTab(value));
       } else {
-        console.log("activeTab n'existe pas dans tabs");
         setActiveTabLocal(tabs[0].id);
         dispatch(setActiveTab(tabs[0].id));
       }
@@ -109,7 +106,12 @@ export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
               />
             )}
             {tab.component === "Impact" && <ImpactMapping data={tab.data} />}
-            {tab.component === "Personas" && <Personas />}
+            {tab.component === "Personas" && (
+              <Personas
+                dashboardId={tab.data.dashboardId}
+                actorId={tab.data.actorId}
+              />
+            )}
             {tab.component === "Empathy" && (
               <EmpathyMap
                 dashboardId={tab.data.dashboardId}

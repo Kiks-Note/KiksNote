@@ -70,7 +70,6 @@ const BasicCard = ({
     dispatch(setActiveTab(personaTab.id));
   };
   const moveToEmpathy = () => {
-    console.log(id, actors[index].id);
     const empathyTab = {
       id: "Empathy" + id,
       label: "Empathy ",
@@ -112,7 +111,6 @@ const BasicCard = ({
         default:
           break;
       }
-      console.log(text, color, uniqueId);
       onCloseForm();
     } else {
       setOpenSnackbar(true);
@@ -136,7 +134,6 @@ const BasicCard = ({
       default:
         break;
     }
-    console.log("delete", index);
   };
   const handleColorChange = (e) => {
     setColor(e.target.value);
@@ -154,7 +151,6 @@ const BasicCard = ({
   };
 
   const onHandleEdit = () => {
-    console.log(index, text, color);
     switch (column) {
       case 0:
         dispatch(
@@ -183,7 +179,6 @@ const BasicCard = ({
       default:
         break;
     }
-    console.log("edit", index);
     toggleEditForm();
   };
 
