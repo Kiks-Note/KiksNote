@@ -69,7 +69,7 @@ const technosRoutes = require("./technosRoutes");
 const agileRoute = require("./agileRoutes");
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 
-app.use("/inventory", inventoryRoutes);
+//app.use("/inventory", inventoryRoutes);
 
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
