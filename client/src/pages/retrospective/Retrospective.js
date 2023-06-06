@@ -46,6 +46,7 @@ function Retrospective() {
   const [currentRetroIndex, setCurrentRetroIndex] = useState(null)
   const [allCourses, setAllCourses] = useState([]);
   const [choosenCourse, setChoosenCourse] = useState(null)
+  const [boardTitle, setBoardTitle] = useState("")
 
   const GMDBoard = {
     Glad: {
@@ -207,6 +208,44 @@ function Retrospective() {
 
   }
 
+
+  const validateBoard = () => {
+    console.log(boardTitle);
+    console.log(choosenCourse);
+    console.log(retroModel);
+
+    if (boardTitle && choosenCourse && retroModel) {
+
+      let choosenModel = null;
+
+      if (retroModel == "GMDBoard") {
+        choosenModel = GMDBoard;
+      } else if (retroModel == "fourLBoard") {
+        choosenModel = FourLBoard;
+      } else if (retroModel == "PNABoard") {
+        choosenModel = PNABoard;
+      }
+
+      axios.post("http://localhost:5050/retro/newRetro", 
+        {
+          dataRetro: choosenModel,
+          titleRetro: boardTitle,
+          courseRetro: choosenCourse,
+          idUser: user?.id
+        }
+      )
+
+      setBoardTitle("")
+      setChoosenCourse(null)
+      setRetroModel("'Model de retro'")
+
+      handleClose();
+      
+    } else {
+      console.log("champ manquant");
+    }
+  }
+
   return (
 
     <div className="container-retro">
@@ -273,7 +312,7 @@ function Retrospective() {
             placeholder="Titre"
             
             fullWidth
-            //onChange={(e) => setText(e.target.value)}
+            onChange={(e) => setBoardTitle(e.target.value)}
             wrap="true"
           />
 
@@ -314,7 +353,7 @@ function Retrospective() {
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Annuler</Button>
-            <Button >Valider</Button> 
+            <Button onClick={validateBoard}>Valider</Button> 
           </DialogActions>
         </Dialog>
       </div>

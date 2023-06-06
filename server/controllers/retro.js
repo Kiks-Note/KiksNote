@@ -7,6 +7,8 @@ const addRetro = async (req, res) => {
   res.json({ message: "addRetro works!" });
 
   const tabRetro = {
+    titleRetro: req.body.titleRetro,
+    courseRetro: req.body.courseRetro,
     dataRetro: req.body.dataRetro,
     idUser: req.body.idUser
   };
