@@ -9,8 +9,7 @@ import { Toaster, toast } from "react-hot-toast";
 import { Switch } from "@mui/material";
 import { w3cwebsocket } from "websocket";
 import { PropTypes } from "prop-types";
-import SettingsIcon from "@mui/icons-material/Settings";
-import Button from "@mui/material/Button";
+
 
 Board.propTypes = {
   dashboardId: PropTypes.string.isRequired,
@@ -113,48 +112,7 @@ export default function Board({ boardId, dashboardId }) {
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
       const [removed] = sourceItems.splice(source.index, 1);
-      var currentDate = new Date();
-      // Options pour le format de la date
-      var options = { day: "2-digit", month: "2-digit", year: "numeric" };
-      // Formater la date au format "DD/MM/YYYY"
-      var formattedDate = currentDate.toLocaleDateString("fr-FR", options);
-      // Modifier la propriété 'advancement' en fonction de 'destinationId'
-      if (destinationId == "2") {
-        // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
-        for (const item of removed.advancement) {
-          if (
-            new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") ==
-            formattedDate
-          ) {
-            item.advance = 0;
-            break; // Sortir de la boucle une fois l'élément trouvé
-          }
-        }
-      } else if (destinationId == "3") {
-        // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
-        for (const item of removed.advancement) {
-          if (
-            new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") ==
-            formattedDate
-          ) {
-            item.advance = removed.estimation / 2;
-            break; // Sortir de la boucle une fois l'élément trouvé
-          }
-        }
-      } else if (destinationId == "4") {
-        // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
-        for (const item of removed.advancement) {
-          if (
-            new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") ==
-            formattedDate
-          ) {
-            item.advance = removed.estimation;
-            break; // Sortir de la boucle une fois l'élément trouvé
-          }
-        }
-      }
       destItems.splice(destination.index, 0, removed);
-
       changeCardIndex({
         ...columns,
         [source.droppableId]: {
@@ -182,24 +140,17 @@ export default function Board({ boardId, dashboardId }) {
 
   return (
     <>
-      <section class="board-info-bar">
-        <div class="board-controls">
-          <h2> {boardName}</h2>
-
-          <Switch
-            checked={label}
-            onChange={labelChange}
-            inputProps={{ "aria-label": "controlled" }}
-          />
-        </div>
-
-        {/* <Button variant="outlined" startIcon={<SettingsIcon />}>
-          Paramètres
-        </Button> */}
-      </section>
       <div>
+        <Typography style={{ textAlign: "center" }} variant="h5">
+          {boardName}
+        </Typography>
+        <Switch
+          checked={label}
+          onChange={labelChange}
+          inputProps={{ "aria-label": "controlled" }}
+        />
         <Toaster />
-        <div className="board_container_all grid-container-board ">
+        <div className="board_container_all grid-container">
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
           >
@@ -229,10 +180,11 @@ export default function Board({ boardId, dashboardId }) {
                             style={{
                               background: snapshot.isDraggingOver
                                 ? "#ed6c0247"
-                                : "#c4c9cc",
-                              paddingInline: 14,
-                              minHeight: 20,
-                              maxHeight: "30vh",
+                                : "#ebecf0",
+                              padding: 4,
+                              width: 260,
+                              minHeight: 30,
+                              maxHeight: "40vh",
                               overflow: "auto",
                               height: "auto",
                             }}

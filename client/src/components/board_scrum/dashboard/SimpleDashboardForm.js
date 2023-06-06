@@ -37,8 +37,8 @@ const schema = yup.object().shape({
       (startingDate, schema) =>
         startingDate &&
         schema.min(
-          new Date(new Date(startingDate).getTime() + 7 * 24 * 60 * 60 * 1000),
-          "L'intervalle entre les dates doit être de 7 jours au minimum"
+          startingDate,
+          "La date de fin doit être postérieure à la date de début"
         )
     ),
   starting_date: yup.date(),

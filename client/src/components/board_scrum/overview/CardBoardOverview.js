@@ -69,7 +69,7 @@ export default function CardBoardOverview({
   const progressPercentage = Math.round(timeLeft.progress * 100);
 
   return (
-    <Box className="card__board" onClick={moveToOverView}>
+    <Box className="card" onClick={moveToOverView}>
       <Typography variant="h6" className="title">
         {title}
       </Typography>

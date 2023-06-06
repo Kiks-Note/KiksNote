@@ -15,8 +15,6 @@ const {
   addUsersToStory,
   boardRequests,
   dashboardRequests,
-  dashboardRequestsPo,
-  dashboardRequestsPedago,
   overviewRequests,
 } = require("./controllers/dashboard");
 

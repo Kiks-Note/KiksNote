@@ -43,26 +43,28 @@ export default function Dashboard() {
       );
     } catch (error) {
       console.error(error);
+      // Gérer l'erreur de manière appropriée, par exemple :
       // throw new Error('Erreur lors de la mise à jour du document');
     }
   }
 
   useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:5050/profil/student/${user.id}`
-        );
-        setMembers(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+ const fetchMembers = async () => {
+   try {
+     const response = await axios.get(
+       `http://localhost:5050/profil/student/${user.id}`
+     );
+     setMembers(response.data);
+   } catch (error) {
+     console.error(error);
+   }
+ };
+
 
     const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
 
     wsComments.onopen = function (e) {
-      wsComments.send(JSON.stringify({id:user.id,status: user.status}));
+      wsComments.send(JSON.stringify(user.id));
     };
 
     wsComments.onmessage = (message) => {

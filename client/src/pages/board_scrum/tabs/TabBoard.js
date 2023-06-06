@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Tab from "./Tabs";
 import {
@@ -12,6 +12,13 @@ export default function TabBoard() {
   const tabs = useSelector((state) => state.tabBoard.tabs);
   const activeTab = useSelector((state) => state.tabBoard.activeTab);
 
+  const handleChange = useCallback(
+    (event, activeTab) => {
+      dispatch(setActiveTab(activeTab));
+    },
+    [dispatch]
+  );
+
   const handleClose = useCallback(
     (tabToDelete) => {
       const updatedTabs = tabs.filter((tab) => tab.id !== tabToDelete.id);
@@ -20,11 +27,10 @@ export default function TabBoard() {
       const newActiveTab = updatedTabs[0].id;
       dispatch(setActiveTab(newActiveTab));
     },
-    [tabs, dispatch]
+    [tabs, activeTab, dispatch]
   );
 
   useEffect(() => {
-    console.log('active', activeTab);
     if (tabs.length === 0) {
       const initialTab = {
         id: "Dashboard",
@@ -36,12 +42,13 @@ export default function TabBoard() {
       dispatch(addTab(initialTab));
       dispatch(setActiveTab(initialTab.id));
     }
-  }, [tabs, dispatch, activeTab]);
+  }, [tabs, dispatch]);
 
   return (
     <Tab
       handleClose={handleClose}
-      actualTabs={tabs}
+      handleChange={handleChange}
+      tabs={tabs}
       selectedTab={activeTab}
     />
   );

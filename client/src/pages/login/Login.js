@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import React, {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {Visibility, VisibilityOff} from "@mui/icons-material";
 import LockIcon from "@mui/icons-material/Lock";
 import MailIcon from "@mui/icons-material/Mail";
 import {
@@ -15,12 +15,12 @@ import {
   Typography,
 } from "@mui/material";
 import Cookies from "universal-cookie";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import {signInWithEmailAndPassword} from "firebase/auth";
 
 import imgLogin from "./../../assets/img/login_img.svg";
 import "./Login.scss";
 import useFirebase from "../../hooks/useFirebase";
-import { Toaster, toast } from "react-hot-toast";
+import {Toaster, toast} from "react-hot-toast";
 import axios from "axios";
 
 const Login = () => {
@@ -35,7 +35,7 @@ const Login = () => {
   const regex = /@edu\.esiee-it\.fr/;
   const theme = useTheme();
   const cookies = new Cookies();
-  const { auth } = useFirebase();
+  const {auth} = useFirebase();
 
   const navigate = useNavigate();
 
@@ -111,24 +111,28 @@ const Login = () => {
     if (email === "") {
       setErrorEmail(true);
       setMessageEmail("L'adresse email est requis");
-    } else if (regex.test(email)) {
+    }
+    else if (regex.test(email)) {
       setErrorEmail(false);
       setMessageEmail("");
-    } else {
+    }
+    else {
       setErrorEmail(true);
       setMessageEmail("L'email doit finir par @edu.esiee-it.fr");
     }
     if (password === "") {
       setErrorPassword(true);
       setMessagePassword("Le mot de passe est requis");
-    } else if (password.length >= 6) {
+    }
+    else if (password.length >= 6) {
       setErrorPassword(false);
       setMessagePassword("");
-    } else {
+    }
+    else {
       setErrorPassword(true);
       setMessagePassword("Le mot de passe est incorrect");
     }
-  };
+  }
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -150,10 +154,7 @@ const Login = () => {
             backgroundColor: "#7a52e1",
           }}
         ></Container>
-        <div
-          className="login-header"
-          style={{ backgroundColor: theme.palette.background.container }}
-        >
+        <div className="login-header" style={{ backgroundColor: theme.palette.background.container}}>
           <Container
             sx={{
               marginTop: "20%",
@@ -200,7 +201,7 @@ const Login = () => {
                   defaultValue={email}
                   onChange={onChangeEmail}
                   sx={{
-                    input: { color: "text.primary" },
+                    input: { color: 'text.primary' }
                   }}
                   error={errorEmail}
                   helperText={messageEmail}
@@ -232,7 +233,7 @@ const Login = () => {
                   defaultValue={password}
                   onChange={onChangePassword}
                   sx={{
-                    input: { color: "text.primary" },
+                    input: { color: 'text.primary' },
                   }}
                   error={errorPassword}
                   helperText={messagePassword}
@@ -245,9 +246,9 @@ const Login = () => {
                           edge="end"
                         >
                           {showPassword ? (
-                            <VisibilityOff style={{ color: "#7a52e1" }} />
+                            <VisibilityOff  style={{color: "#7a52e1"}}/>
                           ) : (
-                            <Visibility style={{ color: "#7a52e1" }} />
+                            <Visibility style={{color: "#7a52e1"}} />
                           )}
                         </IconButton>
                       </InputAdornment>
@@ -266,7 +267,7 @@ const Login = () => {
                   sx={{
                     color: "#7a52e1",
                     textDecoration: "none",
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                 >
                   Mot de passe oublié ?
@@ -279,7 +280,7 @@ const Login = () => {
                   sx={{
                     backgroundColor: "#7a52e1",
                     color: "white",
-                    cursor: "pointer",
+                    cursor: "pointer"
                   }}
                   variant="contained"
                 >
@@ -296,10 +297,10 @@ const Login = () => {
                   color: "#7a52e1",
                   textDecoration: "none",
                   fontWeight: "bold",
-                  cursor: "pointer",
+                  cursor: "pointer"
                 }}
               >
-                Ici
+              Ici
               </Link>
             </p>
           </Container>

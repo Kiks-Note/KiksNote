@@ -8,6 +8,19 @@ export const CustomDropdown = ({placeholder, data = [], onChange}) => {
   const itemRenderer = ({item, itemIndex, state, methods}) => {
     return (
       <div
+        // style={{
+        //   display: "flex",
+        //   flexDirection: "row",
+        //   justifyContent: "flex-start",
+        //   alignItems: "center",
+        //   backgroundColor: state.cursor === itemIndex ? "#F6F6F6" : "white",
+        //   padding: 10,
+        //   width: "100%",
+        //   height: 40,
+        //   fontFamily: "poppins-regular",
+        //   fontSize: 16,
+        //   margin: 0,
+        // }}
         className="dropdown-item"
         onClick={() => methods.addItem(item)}
         onMouseOver={() => {
@@ -67,8 +80,7 @@ export const CustomDropdown = ({placeholder, data = [], onChange}) => {
             fontFamily: "poppins-regular",
             fontSize: 18,
             margin: 0,
-            // color: state.values.length === 0 && "#BDBDBD",
-            // backgroundColor: "#F1F1F1",
+            color: state.values.length === 0 && "#BDBDBD",
           }}
         >
           {state.values.length === 0 ? placeholder : state.values[0].label}
@@ -86,7 +98,7 @@ export const CustomDropdown = ({placeholder, data = [], onChange}) => {
         border: "none",
         outline: "none",
         borderRadius: 5,
-        // backgroundColor: "#F1F1F1",
+        backgroundColor: "#F1F1F1",
         height: 35,
         padding: 10,
       }}
@@ -94,8 +106,6 @@ export const CustomDropdown = ({placeholder, data = [], onChange}) => {
       onDropdownOpen={() => setPressed(true)}
       onDropdownClose={() => setPressed(false)}
       itemRenderer={itemRenderer}
-      clearable={true}
-      onClearAll={() => onChange([])}
       dropdownHandleRenderer={handleRenderer}
       contentRenderer={contentRenderer}
     />

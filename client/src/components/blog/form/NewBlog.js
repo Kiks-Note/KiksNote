@@ -94,7 +94,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     }
 
     var statut = "online";
-    var visibility = "pending";
+    var visibility = true;
 
     const rawContentState = convertToRaw(editorState.getCurrentContent());
 

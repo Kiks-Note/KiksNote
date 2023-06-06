@@ -55,14 +55,6 @@ const createCard = async (req, res) => {
     const data = req.body;
     const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
     const boardRef = dashboardRef.collection("board").doc(req.params.boardId);
-    const boardSnapshot = await dashboardRef.get();
-    const { starting_date, ending_date } = boardSnapshot.data();
-
-    const startingDate = new Date(starting_date._seconds * 1000);
-    const endingDate = new Date(ending_date._seconds * 1000);
-    const totalDays =
-      Math.ceil((endingDate - startingDate) / (1000 * 60 * 60 * 24)) + 1;
-
     const snapshot = await boardRef.get();
     const columns = snapshot.data();
     const allBoardRef = dashboardRef.collection("board");
@@ -143,11 +135,7 @@ const createCard = async (req, res) => {
         color: "#fff",
         storyId: "",
         estimation: data.estimation,
-        advancement: Array.from({ length: totalDays }, (_, i) => ({
-          day: `Jour ${i}`,
-          advance: 0,
-          dayNow: new Date(startingDate.getTime() + i * 24 * 60 * 60 * 1000),
-        })),
+        advancement: "",
       };
     } else {
       newCard = {
@@ -171,6 +159,7 @@ const createCard = async (req, res) => {
 
 // Move stories
 const moveStories = async (req, res) => {
+  console.log("Stories moving");
   try {
     const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
     const sourceBoardId = req.params.boardId;
@@ -246,6 +235,7 @@ const moveStories = async (req, res) => {
 
     await batch.commit();
 
+    console.log("Stories moved");
     res.send({ message: "Stories moved successfully" });
   } catch (error) {
     console.error(error);
@@ -257,6 +247,7 @@ const moveStories = async (req, res) => {
 
 //Path to create Dashboard
 const createDashboards = async (req, res) => {
+  console.log("Creating dashboard...");
   try {
     const dashboardRef = await createDashboard(req.body, true);
     const releases = await createReleases(
@@ -286,24 +277,11 @@ const createDashboards = async (req, res) => {
     });
 
     const agileRef = dashboardRef.collection("agile");
-    await agileRef.doc("impact_mapping").set({
+    await agileRef.add({
       goals: [],
       actors: [],
       impacts: [],
       deliverables: [],
-    });
-    await agileRef.doc("empathy_map").set({
-      think:[],
-      see:[],
-      do:[],
-      hear:[]
-    });
-    await agileRef.doc("agile_folder").set({
-      impact_mapping: "",
-      empathy_map: "",
-      personas: [],
-      three: "",
-      elevator_pitch: "",
     });
     await batch.commit();
 
@@ -311,6 +289,7 @@ const createDashboards = async (req, res) => {
       message: "Dashboard created successfully",
       id: dashboardRef.id,
     });
+    console.log("Dashboard created successfully");
   } catch (error) {
     console.error("Error creating dashboard", error);
     res
@@ -397,7 +376,6 @@ const createStory = async (req, res) => {
 /// PATH to update a info card
 const editCard = async (req, res) => {
   const data = req.body;
-
   const columnId = req.params.columnId;
   try {
     const boardRef = db
@@ -432,11 +410,9 @@ const editCard = async (req, res) => {
       case "4":
         updatedItems = setColumnItems(columns.done.items, data, true);
         name = "Done";
-        break;
       case "5":
         updatedItems = setColumnItems(columns.done.items, data, false);
         name = "DoD";
-        break;
       case "6":
         updatedItems = setColumnItems(columns.done.items, data, false);
         name = "DoF";
@@ -444,21 +420,14 @@ const editCard = async (req, res) => {
       default:
         throw new Error("Invalid column ID");
     }
-
-    const updateData = {
+    console.log(updatedItems);
+    console.log(name);
+    await boardRef.update({
       [getColumnField(parseInt(columnId))]: {
         items: updatedItems,
         name: name,
       },
-    };
-
-    // Check if estimation is defined before adding it to the update data
-    if (data.estimation !== undefined) {
-      updateData[getColumnField(parseInt(columnId))].items[0].estimation =
-        data.estimation;
-    }
-
-    await boardRef.update(updateData);
+    });
 
     console.log("card edited");
     res.send({ message: "Card edited successfully" });
@@ -467,7 +436,6 @@ const editCard = async (req, res) => {
     res.status(500).send({ error: "An error occurred while editing the card" });
   }
 };
-
 /// PATH to delete a card
 const deleteCard = async (req, res) => {
   try {
@@ -632,9 +600,6 @@ function setColumnItems(
       };
 
       if (includeEstimationAndAdvancement) {
-        console.log(updatedItem.estimation);
-        console.log(updatedItem.advancement);
-
         newItem.estimation = updatedItem.estimation;
         newItem.advancement = updatedItem.advancement;
       }
@@ -649,17 +614,21 @@ function setColumnItems(
 async function createReleases(startingDate, endingDate, dashboardRef) {
   const releaseDuration = 28; // 4 weeks
   const sprintDuration = 7; // 1 week
+  console.log("startingDate " + startingDate);
+  console.log("endingDate " + endingDate);
 
   const releaseCount = Math.ceil(
     moment(endingDate).diff(moment(startingDate), "days") / releaseDuration
   );
+  console.log("releaseCount " + releaseCount);
   const releases = {};
   for (let i = 0; i < releaseCount; i++) {
     const releaseStart = moment(startingDate)
       .add(i * releaseDuration, "days")
       .toDate();
-    const releaseEnd = moment(endingDate).toDate();
-
+    const releaseEnd = moment(releaseStart)
+      .add(releaseDuration, "days")
+      .toDate();
     const sprints = await createSprints(
       releaseStart,
       releaseEnd,
@@ -681,7 +650,6 @@ async function createSprints(
   const sprintCount = Math.ceil(
     moment(releaseEnd).diff(moment(releaseStart), "days") / sprintDuration
   );
-
   const sprints = [];
 
   for (let i = 0; i < sprintCount; i++) {
@@ -761,48 +729,27 @@ const getRandomColor = () => {
 
 const dashboardRequests = async (connection) => {
   connection.on("message", async (message) => {
-    console.log(message);
-    const user = JSON.parse(message.utf8Data);
+    const studentId = JSON.parse(message.utf8Data);
     groups = [];
 
-    if (user.status === "etudiant") {
-      db
-        .collection("groups")
-        .where("students", "array-contains", user.id)
-        .onSnapshot((snapshot) => {
-          snapshot.forEach((doc) => {
-            groups.push({ id: doc.id, data: doc.data() });
-          });
+    await db
+      .collection("groups")
+      .where("students", "array-contains", studentId)
+      .onSnapshot((snapshot) => {
+        snapshot.forEach((doc) => {
+          groups.push({ id: doc.id, data: doc.data() });
         });
-    } else if (user.status === "po") {
-      db
-        .collection("groups")
-        .where("po_id", "==", user.id)
-        .onSnapshot((snapshot) => {
-          snapshot.forEach((doc) => {
-            groups.push({ id: doc.id, data: doc.data() });
-          });
-        });
-    }
-
+      });
     db.collection("dashboard").onSnapshot(
       (snapshot) => {
         const data = [];
         addDashboard(groups, db);
         snapshot.forEach((doc) => {
-          if (user.status === "etudiant") {
-            doc.data().students?.forEach((student) => {
-              if (student == user.id) {
-                data.push({ ...doc.data(), id: doc.id });
-              }
-            });
-          } else if (user.status === "po") {
-            if (doc.data().created_by == user.id) {
+          doc.data().students?.forEach((student) => {
+            if (student == studentId) {
               data.push({ ...doc.data(), id: doc.id });
             }
-          } else {
-            data.push({ ...doc.data(), id: doc.id });
-          }
+          });
         });
         connection.sendUTF(JSON.stringify(data));
       },
@@ -855,6 +802,8 @@ const boardRequests = async (connection) => {
             console.error("Error getting dashboard data:", error);
           });
         // Récupérer les données du board
+        console.log(boardId);
+        console.log(dashboardId);
         db.collection("dashboard")
           .doc(dashboardId)
           .collection("board")
@@ -902,18 +851,14 @@ const overviewRequests = async (connection) => {
     const dashboardRef = db.collection("dashboard").doc(dashboardId);
     const boardRef = dashboardRef.collection("board");
     const storieRef = dashboardRef.collection("stories");
-    const agileRef = dashboardRef.collection("agile");
     const snapshotDashboard = await dashboardRef.get();
     const snapshotBoard = await boardRef.get();
     const snapshotStorie = await storieRef.get();
-    const snapshotAgile = await agileRef.get();
-
     const data = snapshotDashboard.data();
     dataReturn.push(data.release);
 
     var stories = [];
     var boards = [];
-    var agile = [];
     snapshotBoard.forEach((doc) => {
       dataReturn.map((release) => {
         for (var r in release) {
@@ -922,26 +867,30 @@ const overviewRequests = async (connection) => {
               const toDoItems = doc.data().toDo.items;
               const inProgressItems = doc.data().inProgress.items;
               const doneItems = doc.data().done.items;
-              const end = new Date(x.ending_date);
-              const start = new Date(x.starting_date);
+              const end = x.ending_date;
+              const start = x.starting_date;
 
               const board = {
                 id: doc.id,
                 name: r + " / " + x.name,
-                ending_date: end,
-                starting_date: start,
                 data: {
                   toDo: {
                     count: toDoItems.length,
                     items: toDoItems,
+                    ending_date: end,
+                    starting_date: start,
                   },
                   inProgress: {
                     count: inProgressItems.length,
                     items: inProgressItems,
+                    ending_date: end,
+                    starting_date: start,
                   },
                   done: {
                     count: doneItems.length,
                     items: doneItems,
+                    ending_date: end,
+                    starting_date: start,
                   },
                 },
               };
@@ -956,16 +905,12 @@ const overviewRequests = async (connection) => {
     snapshotStorie.forEach((doc) => {
       stories.push(doc.data());
     });
-    snapshotAgile.forEach((doc) => {
-      agile.push({ id: doc.id, ...doc.data() });
-    });
     connection.sendUTF(
       JSON.stringify({
         stories: stories,
         release: dataReturn[0],
         boards: boards,
         pdf_link: data.pdf_link,
-        agile: agile,
       })
     );
   });
@@ -1034,18 +979,11 @@ async function addDashboard(groups, db) {
       }
 
       const agileRef = dashboardRef.collection("agile");
-      await agileRef.doc("impact_mapping").set({
+      await agileRef.add({
         goals: [],
         actors: [],
         impacts: [],
         deliverables: [],
-      });
-      await agileRef.doc("agile_folder").set({
-        impact_mapping: "",
-        empathy_map: "",
-        personas: [],
-        three: "",
-        elevator_pitch: "",
       });
     }
   }
