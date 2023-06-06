@@ -6,7 +6,7 @@ const {
   getImpactMapping,
   getFoldersAgile,
   getZipFolderAgile,
-  getPdfEmpathyMapToFolderAgile,
+  updatePdfInAgileFolder,
   empathyRequest,
   changeIndex,
   createPostit,
@@ -19,9 +19,9 @@ module.exports = function (connection, pathname, upload) {
   router.get("/:userId/agile_folder", getFoldersAgile);
   router.get("/folder", getZipFolderAgile);
   router.post(
-    "/empathy_map",
+    "/:dashboardId/folder",
     upload.single("pdfFile"),
-    getPdfEmpathyMapToFolderAgile
+    updatePdfInAgileFolder
   );
   router.put("/:dashboardId/empathy/:actorId/setPostit", changeIndex);
   router.put(

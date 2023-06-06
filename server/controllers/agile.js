@@ -1,7 +1,7 @@
 const { auth, db } = require("../firebase");
 const archiver = require("archiver");
 const axios = require("axios");
-const { log } = require("console");
+const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const addImpactMapping = async (req, res) => {
@@ -249,7 +249,7 @@ const changeIndex = async (req, res) => {
     .collection("dashboard")
     .doc(req.params.dashboardId)
     .collection("agile")
-    .doc(req.params.empathy.actorId)
+    .doc(req.params.actorId)
     .update({
       empathy_map: {
         think: data.think,
@@ -259,7 +259,8 @@ const changeIndex = async (req, res) => {
       },
     });
 };
-const getPdfEmpathyMapToFolderAgile = async (req, res) => {
+
+const updatePdfInAgileFolder = async (req, res) => {
   try {
     const pdfFile = req.file;
     if (!pdfFile) {
@@ -267,6 +268,39 @@ const getPdfEmpathyMapToFolderAgile = async (req, res) => {
         .status(400)
         .json({ error: "Aucun fichier PDF n'a été envoyé." });
     }
+
+    const fieldName = req.body.fieldName;
+    if (!fieldName) {
+      return res.status(400).json({ error: "Le nom du champ est requis." });
+    }
+
+    const fieldValue = req.protocol + "://" + req.get("host") + pdfFile.path;
+
+    const agileDocumentRef = db
+      .collection("dashboard")
+      .doc(req.params.dashboardId)
+      .collection("agile")
+      .doc("agile_folder");
+
+    const snapshot = await agileDocumentRef.get();
+    const previousFieldValue = snapshot.exists
+      ? snapshot.data()[fieldName]
+      : null;
+
+    if (previousFieldValue) {
+      // Supprimer le fichier précédent s'il existe
+      const previousFileName = previousFieldValue.split("/").pop();
+      const previousFilePathOnDisk = __dirname + "/uploads/" + previousFileName;
+      if (fs.existsSync(previousFilePathOnDisk)) {
+        fs.unlinkSync(previousFilePathOnDisk);
+      }
+    }
+
+    const updateData = {};
+    updateData[fieldName] = fieldValue;
+
+    await agileDocumentRef.update(updateData);
+
     console.log("Nom du fichier :", pdfFile.originalname);
     console.log("Chemin du fichier temporaire :", pdfFile.path);
     res.status(200).send("Fichier PDF traité avec succès.");
@@ -343,7 +377,7 @@ module.exports = {
   getImpactMapping,
   getFoldersAgile,
   getZipFolderAgile,
-  getPdfEmpathyMapToFolderAgile,
+  updatePdfInAgileFolder,
   empathyRequest,
   changeIndex,
   createPostit,

@@ -2,7 +2,7 @@
   position: relative;
   background: #ffa;
   overflow: hidden;
-  margin: 30px auto;
+  margin: 10px;
   padding: 20px;
   border-radius: 0 0 0 30px/45px;
   box-shadow: inset 0 -40px 40px rgba(0, 0, 0, 0.2),
@@ -15,6 +15,6 @@
   color: #130d6b;
 
   &--custom {
-    margin:30px; /* Modifier la marge selon vos besoins */
+    margin: 30px; /* Modifier la marge selon vos besoins */
   }
 }

@@ -12,6 +12,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import html2pdf from "html2pdf.js";
 import "../../components/agile/Postit.scss";
 import { Rings } from "react-loader-spinner";
+import { Toaster, toast } from "react-hot-toast";
 
 export default function EmpathyMap({ dashboardId, actorId }) {
   const [columns, setColumns] = useState([]);
@@ -98,20 +99,28 @@ export default function EmpathyMap({ dashboardId, actorId }) {
       });
     }
   };
-
   const addPostIt = (columnId) => {
-    axios.put("http://localhost:5050/agile/" + dashboardId + "/empathy/"+actorId +"/column/"+columnId+"/addPostit", {
-      content: newPostItContent,
-    });
+    axios.put(
+      "http://localhost:5050/agile/" +
+        dashboardId +
+        "/empathy/" +
+        actorId +
+        "/column/" +
+        columnId +
+        "/addPostit",
+      {
+        content: newPostItContent,
+      }
+    );
     setShowTextField(false); // Hide the TextField and button after adding the post-it
     setNewPostItContent(""); // Reset the new post-it content
   };
-  //!TODO
   async function changeCardIndex(newColumns) {
     await axios.put(
       "http://localhost:5050/agile/" +
         dashboardId +
-        "/empathy/"+actorId +
+        "/empathy/" +
+        actorId +
         "/setPostit",
       newColumns
     );
@@ -155,14 +164,25 @@ export default function EmpathyMap({ dashboardId, actorId }) {
           new Blob([buffer], { type: "application/pdf" }),
           "empathy-map.pdf"
         );
+        formData.append("fieldName", "empathy_map");
 
-        return axios.post("http://localhost:5050/agile/empathy_map", formData);
+        return axios.post(
+          "http://localhost:5050/agile/" + dashboardId + "/folder",
+          formData
+        );
       })
       .then((response) => {
-        console.log("PDF envoyé avec succès !");
+        toast.success("Votre empathy a été ajouté a votre dossier agile", {
+          duration: 5000,
+        });
       })
       .catch((error) => {
-        console.error("Erreur lors de l'envoi du PDF :", error);
+        toast.error(
+          "Une erreur s'est produite veuillez réessayer ultérieurement",
+          {
+            duration: 5000,
+          }
+        );
       });
   };
 
@@ -193,13 +213,13 @@ export default function EmpathyMap({ dashboardId, actorId }) {
           <Button variant="contained" onClick={exportToPDF}>
             Exporter mon EmpathyMap
           </Button>
+          <Toaster />
           <div
             className="parent"
             id="pdf-content"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(4, 1fr)",
-              gridTemplateRows: "repeat(4, 1fr)",
               gridColumnGap: "10px",
               gridRowGap: "10px",
               margin: "40px",
@@ -213,10 +233,10 @@ export default function EmpathyMap({ dashboardId, actorId }) {
                   <div
                     style={{
                       backgroundColor: column.color,
-                      height: "100%",
+                      height: "800px",
                       padding: "10px",
                       borderRadius: "4%",
-                      height: "100%",
+                      "max-height": "1000px",
                     }}
                     key={columnId}
                   >
@@ -260,7 +280,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
                               display: "flex",
                               background: "#00000030",
                               minHeight: 30,
-                              maxHeight: "90%",
+                              "max-height": "700px",
                               overflow: "auto",
                               height: "auto",
                               borderRadius: "4%",
