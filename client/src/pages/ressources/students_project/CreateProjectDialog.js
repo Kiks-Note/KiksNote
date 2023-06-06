@@ -9,6 +9,7 @@ import {
   Select,
   MenuItem,
   Autocomplete,
+  Typography,
 } from "@mui/material";
 
 import Dropzone from "../Cours/Dropzone";
@@ -102,9 +103,21 @@ const CreateProjectDialog = (props) => {
               DevOps
             </MenuItem>
           </Select>
-          <Select
-            value={props.selectedClass}
-            sx={{ marginBottom: "10px" }}
+
+          <Autocomplete
+            multiple
+            id="tags-outlined"
+            sx={{
+              width: "100%",
+            }}
+            options={props.allclass}
+            getOptionLabel={(option) => (
+              <>
+                <Typography>{option.name}</Typography>
+              </>
+            )}
+            defaultValue={props.promoProject}
+            filterSelectedOptions
             onChange={(event) => {
               props.setSelectedClass(event.target.value);
               const selectedCours = props.allclass.find(
@@ -112,16 +125,19 @@ const CreateProjectDialog = (props) => {
               );
               props.setIdSelectedClass(selectedCours ? selectedCours.id : "");
             }}
-            displayEmpty
-            renderValue={(value) => value || "Choisir la classe"}
-          >
-            <MenuItem value="">Choisir une option</MenuItem>
-            {props.allclass.map((cours) => (
-              <MenuItem key={cours.id} value={cours.name}>
-                {cours.name}
-              </MenuItem>
-            ))}
-          </Select>
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select a promo"
+                variant="outlined"
+                inputProps={{
+                  ...params.inputProps,
+                  name: "student",
+                }}
+              />
+            )}
+          />
+
           <Autocomplete
             multiple
             id="tags-outlined"
