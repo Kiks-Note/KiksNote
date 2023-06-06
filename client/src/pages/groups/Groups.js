@@ -81,6 +81,7 @@ function App() {
                             userID: user?.id,
                             name: user?.firstname,
                             class: user?.class,
+                            type: "group"
                         }
                     };
                     ws.send(JSON.stringify(message));
@@ -104,7 +105,8 @@ function App() {
                         data: {
                             userID: user?.id,
                             name: user?.firstname,
-                            class: res.data[0].class
+                            class: res.data[0].class,
+                            type: "group"
                         }
                     };
                     ws.send(JSON.stringify(message));
@@ -211,16 +213,17 @@ function App() {
         setColumns({ ...columns });
     }
 
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-    const { source, destination } = result;
-    if (source.droppableId === destination.droppableId) return;
-    if (source.droppableId !== destination.droppableId) {
-      const sourceColumn = columns[source.droppableId];
-      const destColumn = columns[destination.droppableId];
-      const sourceItems = [...sourceColumn.items];
-      const destItems = [...destColumn.items];
-      let nsgp = parseInt(document.querySelector('input[type="text"]').value);
+    const onDragEnd = (result) => {
+        if (!result.destination) return;
+        const { source, destination } = result;
+        if (source.droppableId === destination.droppableId) return;
+        if (source.droppableId !== destination.droppableId) {
+            const sourceColumn = columns[source.droppableId];
+            const destColumn = columns[destination.droppableId];
+            const sourceItems = [...sourceColumn.items];
+            const destItems = [...destColumn.items];
+            const [removed] = sourceItems.splice(source.index, 1);
+            destItems.splice(destination.index, 0, removed);
 
             setColumns({
                 ...columns,
@@ -242,8 +245,13 @@ function App() {
             const [removed] = copiedItems.splice(source.index, 1);
             copiedItems.splice(destination.index, 0, removed);
 
-      const [removed] = sourceItems.splice(source.index, 1);
-      destItems.splice(destination.index, 0, removed);
+            setColumns({
+                ...columns,
+                [source.droppableId]: {
+                    ...column,
+                    items: copiedItems,
+                },
+            });
 
             ws.send(JSON.stringify({
                 type: 'updateCol', data: {
@@ -264,20 +272,10 @@ function App() {
         }
     };
 
-      setColumns({
-        ...columns,
-        [source.droppableId]: {
-          ...column,
-          items: copiedItems,
-        },
-      });
-
-      // move the item directly to the clicked column
-      const columnId = destination.droppableId;
-      const student = columns[columnId].items[destination.index];
-      moveOnClick(columnId, student, columns);
+    function resetButton() {
+        document.querySelector('input[type="text"]').value = "";
+        fetchAndSetData();
     }
-  };
 
     function generateGroupCase(event) {
         if ((!isNaN(event.target.value) && event.target.value)) {
@@ -288,13 +286,18 @@ function App() {
 
             let copiedColContent = { ...columns };
 
-      let copiedColContent = { ...columns };
+            let numberOfCase = Math.floor(numberOfStudents / number);
 
-      let numberOfCase = Math.floor(numberOfStudents / number);
+            if (numberOfStudents % number !== 0) {
+                numberOfCase++;
+            }
 
-      if (numberOfStudents % number !== 0) {
-        numberOfCase++;
-      }
+            for (let index = 1; index < numberOfCase + 1; index++) {
+                copiedColContent[`g${index}`] = {
+                    name: `Group ${index}`,
+                    items: [],
+                };
+            }
 
             setColumns(copiedColContent);
             ws.send(JSON.stringify({ type: 'updateCol', data: { columns: copiedColContent, class: classStudents, nbStudents: numberOfStudentsInClass } }));
@@ -308,15 +311,21 @@ function App() {
         let currentIndex = array.length,
             randomIndex;
 
-      setColumns(copiedColContent);
-    } else {
-      //TODO make a toast here
-      fetchAndSetData();
+        // While there remain elements to shuffle.
+        while (currentIndex !== 0) {
+            // Pick a remaining element.
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex--;
+
+            // And swap it with the current element.
+            [array[currentIndex], array[randomIndex]] = [
+                array[randomIndex],
+                array[currentIndex],
+            ];
+        }
+
+        return array;
     }
-  }
-  function shuffle(array) {
-    let currentIndex = array.length,
-      randomIndex;
 
     const handlePopupData = (data) => {
         setClassStudents(data.classChoose);
@@ -325,11 +334,8 @@ function App() {
         setInRoom(true);
     };
 
-      // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex],
-        array[currentIndex],
-      ];
+    const handleClosePopUp = (showFalse) => {
+        setShowSettings(showFalse);
     }
 
     async function saveGroups() {
@@ -372,9 +378,7 @@ function App() {
                 };
             }
 
-      if (numberOfStudents % nsgp !== 0) {
-        numberOfCase++;
-      }
+            setColumns(copiedColContent);
 
             var studentsArrayRandom = shuffle(columns.students.items);
             var groups = Object.keys(copiedColContent).filter((key) => key.startsWith("g"));
@@ -409,27 +413,20 @@ function App() {
         }
     }
 
-        groupIndex++;
-      }
-      columns[students[0]].items = [];
-      setColumns({ ...columns });
+
+    function settingsPopUp() {
+        setShowSettings(true);
     }
-  }
 
     if (!columns && inRoom) {
         return <p>Loading...</p>;
     }
-  }
 
     if (user?.status === "po" && !inRoom) {
         return <PopUp onPopupData={handlePopupData} dataPopUp={null} showPopUp={null} />;
     }
 
-  if (!columns) {
-    return <p>Loading...</p>;
-  }
 
-  if (!classStudents) {
     return (
         <>
             {inRoom ? <div
@@ -651,61 +648,7 @@ function App() {
                                         {!nbSPGrp ? <p style={{ color: "grey", fontSize: "70px", textAlign: "center", fontWeight: "bold" }}>Veuillez choisir le nombre d'élèves par groupe</p> : null}
                                     </div>
                                 );
-                              })}
-                              {provided.placeholder}
-                            </div>
-                          );
-                        }}
-                      </Droppable>
-                    </div>
-                  </div>
-                );
-              } else if (index !== 0) {
-                return (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      width: "45 %",
-                    }}
-                    key={columnId}
-                  >
-                    {" "}
-                    <h2>{column.name}</h2>
-                    <div style={{ margin: 8 }}>
-                      <Droppable droppableId={columnId} key={columnId}>
-                        {(provided, snapshot) => {
-                          return (
-                            <div
-                              {...provided.droppableProps}
-                              ref={provided.innerRef}
-                              style={{
-                                backgroundColor: snapshot.isDraggingOver
-                                  ? "#e697b3"
-                                  : "#252525",
-                                padding: 4,
-                                width: 250,
-                                minHeight: 140,
-                                maxHeight: 500,
-                                overflow: "auto",
-                                height: "auto",
-                                ...(!lock && {
-                                  backgroundColor: "#999999",
-                                  opacity: 0.5,
-                                  pointerEvents: "none",
-                                }),
-                              }}
-                              className="group"
-                              onClick={() => {
-                                if (columns.students.items.length > 0) {
-                                  const student = columns.students.items.pop();
-                                  moveOnClick(columnId, student, columns);
-                                  setColumns({ ...columns });
-                                }
-                              }}
-                            >
-                              {column.items.map((item, index) => {
+                            } else if (index !== 0) {
                                 return (
                                     <div
                                         style={{
@@ -791,9 +734,7 @@ function App() {
                                                 }}
                                             </Droppable>
                                         </div>
-                                      );
-                                    }}
-                                  </Draggable>
+                                    </div>
                                 );
                             }
                             else {

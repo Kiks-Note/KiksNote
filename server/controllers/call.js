@@ -65,6 +65,30 @@ const updateCall = async (req, res) => {
       console.log(err);
     });
 };
+
+const getRoom = async (req, res) => {
+  const { classStudent } = req.params;
+  const snapshot = await db
+    .collection("rooms")
+    .where('class', '==', classStudent)
+    .where('type', '==', 'call')
+    .get();
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  res.status(200).send(documents);
+}
+
+const getRoomPo = async (req, res) => {
+  const { po_id } = req.params;
+  const snapshot = await db
+    .collection("rooms")
+    .where('po_id', '==', po_id)
+    .where('type', '==', 'call')
+    .get();
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  res.status(200).send(documents);
+}
+
+
 const currentRooms = new Map();
 const clients = new Map();
 
@@ -234,4 +258,6 @@ module.exports = {
   updateCall,
   room,
   getCallsByLessonId,
+  getRoom,
+  getRoomPo
 };

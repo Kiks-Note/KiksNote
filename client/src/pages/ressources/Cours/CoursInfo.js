@@ -46,8 +46,6 @@ import AddLinkIcon from "@mui/icons-material/AddLink";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import CallModal from "./CallModal";
-import PDFCourseView from "./PdfCourseView";
-import CourseBacklogPdf from "./PdfCoursBacklog";
 import "./CoursInfo.scss";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -135,8 +133,6 @@ const CoursInfo = () => {
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles();
-
-  let idClass;
 
   const getAllInstructors = async () => {
     try {
@@ -435,7 +431,6 @@ const CoursInfo = () => {
 
   const handleOpenCallModal = () => {
     setOpenCall(true);
-    console.log(courseClass);
   };
   const handleCloseCallModal = () => {
     setOpenCall(false);
@@ -501,7 +496,7 @@ const CoursInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, [id]);
+  }, [getCoursId, id]);
 
   return (
     <>
@@ -1238,6 +1233,7 @@ const CoursInfo = () => {
                               color: "#ffffff",
                             }}
                             className={classes.callButton}
+                            onClick={handleOpenCallModal}
                           >
                             Lancer l'appel
                           </Button>
@@ -1251,6 +1247,7 @@ const CoursInfo = () => {
                               color: "#ffffff",
                             }}
                             className={classes.joinCallButton}
+                            onClick={handleOpenCallModal}
                           >
                             Rejoindre l'appel
                           </Button>
@@ -1398,8 +1395,8 @@ const CoursInfo = () => {
         <CallModal
           open={openCall}
           lessonId={id}
-          handleclose={handleCloseCallModal}
-          class={courseClass}
+          handleClose={handleCloseCallModal}
+          classId={courseIdClass}
         ></CallModal>
       </div>
     </>

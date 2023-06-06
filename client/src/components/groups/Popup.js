@@ -57,22 +57,13 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
                 end_date: end_date.current.value,
                 classChoose: classChoose
             });
-            createRoom({ po_id: user.id, class: classChoose, name: user?.firstname, settings: { start_date: start_date.current.value, end_date: end_date.current.value, classChoose: classChoose } });
+            createRoom({ po_id: user.id, class: classChoose, name: user?.firstname, settings: { start_date: start_date.current.value, end_date: end_date.current.value, classChoose: classChoose, type: "group" } });
         }
     }
-  }, [dataPopUp]);
 
-  function validate() {
-    if (!classChoose || !start_date.current.value || !end_date.current.value) {
-      alert("Veuillez remplir tous les champs");
-    } else {
-      onPopupData({
-        start_date: start_date.current.value,
-        end_date: end_date.current.value,
-        classChoose: classChoose,
-      });
+    function closePopUp() {
+        showPopUp(false);
     }
-  }
 
     return (
         <div className="pop-up">
@@ -137,21 +128,6 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
                     }} onClick={validate}>Ok !</Button>
                 </div>
             </div>
-            <div className="date-input">
-              <label>Date de fin de Sprint</label>
-              <input
-                type="date"
-                defaultValue={dataPopUp ? dataPopUp.end_date : ""}
-                ref={end_date}
-              />
-            </div>
-          </div>
-          {dataPopUp ? <Button onClick={closePopUp}>Annuler</Button> : null}
-          <Button variant="contained" onClick={validate}>
-            Ok !
-          </Button>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
