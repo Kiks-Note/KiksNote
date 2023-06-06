@@ -20,6 +20,7 @@ import Snackbar from "../../components/inventory/CustomSnackBar";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AddCardIcon from '@mui/icons-material/AddCard';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
@@ -242,6 +243,20 @@ function InventoryHome() {
                 onClick={(e) => navigate("/inventory/pdfGenerator")}
               >
                 <AddCardIcon />
+              </Fab>
+            </Tooltip>
+            <Tooltip
+              title="Voir les statistiques"
+              aria-label="add"
+              sx={{ marginBottom: "20px" }}
+              placement="left"
+            >
+              <Fab
+                color="primary"
+                aria-label="add"
+                onClick={(e) => navigate("/inventory/statistics")}
+              >
+                <QueryStatsIcon />
               </Fab>
             </Tooltip>
           </>

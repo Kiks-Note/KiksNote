@@ -5,6 +5,33 @@ const generatePDF = require('./pdfGenerator');
 
 module.exports = (app, db, user, ws) => {
 
+  app.get("/inventory/statistics", async (req, res) => {
+    const docRef = db.collection("inventory");
+    const snapshot = await docRef.orderBy("createdAt").limit(5).get();
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    try {
+      res.status(200).json(documents);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Une erreur est survenue lors de la récupération des données.");
+    }
+  });
+
+  app.get("/inventory/statistics2", async (req, res) => {
+    const docRef = db.collection("inventory_requests");
+    const snapshot = await docRef.orderBy("deviceId").get();
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    try {
+      res.status(200).json(documents);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Une erreur est survenue lors de la récupération des données.");
+    }
+  });
+
+
   app.get("/inventory", async (req, res) => {
     const docRef = db.collection("inventory");
     const snapshot = await docRef.orderBy("createdAt").get();
