@@ -343,12 +343,19 @@ const deleteActor = async (req, res) => {
   try {
     const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
     const agileRef = dashboardRef.collection("agile").doc(req.params.actorId);
-
+    const agileFolderRef = agileRef.collection("agile").doc("agile_folder");
     const snapshot = await agileRef.get();
 
     if (snapshot.exists) {
       // Le document existe, on peut le supprimer
       await agileRef.delete();
+
+      // Mettre à jour les champs empathy_map et personas dans agile_folder
+      await agileFolderRef.update({
+        empathy_map: "", // Mettre à vide (string vide)
+        personas: [], // Mettre à vide (tableau vide)
+      });
+
       res.status(204).send({ message: "Actor deleted successfully" });
     } else {
       // Le document n'existe pas
@@ -359,7 +366,7 @@ const deleteActor = async (req, res) => {
     // Erreur côté serveur
     res
       .status(500)
-      .send({ message: "An error occurred while deleting the card" });
+      .send({ message: "An error occurred while deleting the actor" });
   }
 };
 
