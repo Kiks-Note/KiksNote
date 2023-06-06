@@ -12,6 +12,8 @@ import { useSelector, useDispatch } from "react-redux";
 import PropTypes from "prop-types";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import { w3cwebsocket } from "websocket";
+
 
 import Card from "../../components/agile/Card";
 import { getImpactMapping, addImpactMapping } from "../../components/agile/agile";
@@ -56,7 +58,8 @@ export default function ImpactMapping({ data }) {
     setOpenSnackbar(false);
   };
   const addDataToImpactMappingDB = async () => {
-    if (goals && actors && deliverables && impacts) {
+    if (goals && actors && deliverables && impacts && goals.length !== 0) {
+      console.log(deliverables.length)
       const res = await addImpactMapping({
         dashboardId: data.dashboardId,
         goals: goals,
@@ -85,14 +88,17 @@ export default function ImpactMapping({ data }) {
   };
 
   const getImpactMappingInfo = async () => {
-    const impact = await getImpactMapping(data.dashboardId);
+    const wsComments = new w3cwebsocket(`ws://localhost:5050/impact`);
+    wsComments.onopen = ( ) =>{
+      console.log('Connected to server');
+      wsComments.send(JSON.stringify({dashboardId: data.dashboardId}))
+    };
+    wsComments.onmessage =  (message) =>{
+      const data = JSON.parse(message.data);
+      console.log(data);
+      dispatch(setImpactMapping({ goals: data.goals, actors: data.actors, impacts: data.impacts, deliverables: data.deliverables}));
+    }
 
-    const impactGoals = Array.isArray(impact.goals) ? impact.goals : [];
-    const impactActors = Array.isArray(impact.actors) ? impact.actors : [];
-    const impactImpacts = Array.isArray(impact.impacts) ? impact.impacts : [];
-    const impactDeliverables = Array.isArray(impact.deliverables) ? impact.deliverables : [];
-
-    dispatch(setImpactMapping({ goals: impactGoals, actors: impactActors, impacts: impactImpacts, deliverables: impactDeliverables }));
   };
   return (
     <TableContainer
