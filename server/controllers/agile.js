@@ -53,6 +53,34 @@ const getImpactMapping = async (req, res) => {
     res.status(500).send({ message: "Server error for impact mapping" });
   }
 };
+const impactMappingRequest = async (connection) => {
+  connection.on("message", async (message) => {
+    const impactMapping = JSON.parse(message.utf8Data);
+
+    let impactMappingRef = db
+      .collection("dashboard")
+      .doc(impactMapping.dashboardId)
+      .collection("agile")
+      .doc("impact_mapping");
+
+    const documentSnapshot = await impactMappingRef.get();
+
+    if (!documentSnapshot.exists) {
+      return null;
+    }
+
+    impactMappingRef.onSnapshot(
+      (snapshot) => {
+        const data = snapshot.data();
+        connection.sendUTF(JSON.stringify(data));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
+  });
+};
+
 /// Path to recup all foldersAgile
 const getFoldersAgile = async (req, res) => {
   try {
@@ -469,6 +497,7 @@ const personaRequest = async (connection) => {
 module.exports = {
   addImpactMapping,
   getImpactMapping,
+  impactMappingRequest,
   getFoldersAgile,
   getZipFolderAgile,
   updatePdfInAgileFolder,

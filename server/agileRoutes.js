@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   addImpactMapping,
   getImpactMapping,
+  impactMappingRequest,
   getFoldersAgile,
   getZipFolderAgile,
   updatePdfInAgileFolder,
@@ -39,6 +40,10 @@ module.exports = function (connection, pathname, upload) {
   router.delete("/:dashboardId/actor/:actorId", deleteActor);
 
   switch (pathname) {
+    case "/impact":
+      impactMappingRequest(connection);
+      console.log("impact");
+      break;
     case "/empathy":
       empathyRequest(connection);
       console.log("empathy");
