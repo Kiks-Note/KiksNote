@@ -1,5 +1,4 @@
 const express = require("express");
-const router = express.Router();
 
 const {
   getCall,
@@ -13,8 +12,8 @@ const {
 } = require("./controllers/call");
 
 function callRoutesWsNotNeeded() {
-  router.post("/callAdd", addCall);
-  router.put("/updatecall", updateCall);
+  const router = express.Router();
+
   router.get("/calls", getCalls);
   router.get("/getcall/:id", getCall);
   router.get("/getCallsByLessonId/:id_lesson", getCallsByLessonId);
@@ -25,8 +24,14 @@ function callRoutesWsNotNeeded() {
 }
 
 function callRoutesWsNeeded(connection, pathname) {
+  const router = express.Router();
+
+  router.post("/callAdd", addCall);
+  router.put("/updatecall", updateCall);
+
+
   switch (pathname) {
-    case "/callws":
+    case "/call":
       room(connection);
       console.log("call");
       break;

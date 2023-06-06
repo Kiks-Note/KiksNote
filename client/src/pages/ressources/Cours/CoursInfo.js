@@ -164,7 +164,7 @@ const CoursInfo = () => {
     }
   };
 
-  const getCoursId = async () => {
+  const getCoursId = useCallback(async () => {
     try {
       await axios
         .get(`http://localhost:5050/ressources/cours/${id}`)
@@ -179,7 +179,7 @@ const CoursInfo = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [id]);
 
   const getAllCours = async () => {
     try {
@@ -1392,11 +1392,14 @@ const CoursInfo = () => {
           </div>
         </div>
         <ToastContainer></ToastContainer>
+        {console.log(coursData?.courseClass)}
         <CallModal
           open={openCall}
           lessonId={id}
           handleClose={handleCloseCallModal}
-          classId={courseIdClass}
+          classId={coursData?.courseClass?.id}
+          className={coursData?.courseClass?.name}
+          user={user}
         ></CallModal>
       </div>
     </>

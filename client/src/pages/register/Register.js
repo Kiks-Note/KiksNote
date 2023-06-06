@@ -452,7 +452,7 @@ const Register = () => {
           <div className="text-xs font-medium text-center m-3">
             <p style={{ color: theme.palette.text.primary, fontWeight: "bold" }} >Vous avez déjà un compte ?
               <Link
-                href="/connexion"
+                href="/login"
                 sx={{
                   color: "#7a52e1",
                   textDecoration: "none",

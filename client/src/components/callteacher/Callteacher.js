@@ -24,7 +24,7 @@ function AppelProf(callId) {
   const [tempCall, setTempCall] = useState({});
 
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://${ip}:5050/Call`);
+    return new w3cwebsocket(`ws://${ip}:5050/call`);
   }, []);
 
   const LogToExistingRoom = useCallback(async () => {

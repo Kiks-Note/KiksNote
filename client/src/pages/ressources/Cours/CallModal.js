@@ -12,56 +12,58 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import QRCode from "qrcode";
 import { w3cwebsocket } from "websocket";
-import useFirebase from "../../../hooks/useFirebase";
 
-const CallModal = ({ classId, open, handleClose, lessonId }) => {
+const CallModal = ({ classId, open, handleClose, lessonId, user, className }) => {
   const [calls, setCalls] = useState([]);
   let navigate = useNavigate();
   const ip = "localhost";
   const qrcode = useRef("");
 
-  const user = useFirebase();
+  console.log(classId);
+  console.log(lessonId);
+  console.log(open);
 
-  const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://localhost:5050`);
+  const createWebSocket = useCallback(() => {
+    const websocket = new w3cwebsocket(`ws://localhost:5050/call`);
+    return websocket;
   }, []);
+
+  const ws = useMemo(() => createWebSocket(), [createWebSocket]);
 
   const createCall = useCallback(async () => {
     const date = new Date();
     const response = await axios.post("http://localhost:5050/call/callAdd", {
-      params: {
-        id_lesson: lessonId,
-        date: date,
-        status: "new",
-        qrcode: "",
-        students_scan: [],
-        chats: [],
-      },
+      id_lesson: lessonId,
+      date: date,
+      status: "new",
+      qrcode: "",
+      students_scan: [],
+      chats: [],
     });
-    let call = response.data;
+    const call = response.data;
     GenerateQrcode(response.data.id);
-    call["qrcode"] = qrcode.current;
+    call.qrcode = qrcode.current;
     await axios.put(`http://localhost:5050/call/updatecall`, {
-      params: {
-        id: response.data.id,
-        object: call,
-      },
+      id: response.data.id,
+      object: call,
     });
 
     const message = {
       type: "createRoom",
       data: {
-        po_id: user?.id,
-        userID: user?.id,
-        class: user?.class,
+        po_id: user.id,
+        userID: user.id,
+        class: className,
         type: "call",
       },
     };
     ws.send(JSON.stringify(message));
-    navigate("/appel/" + response.data.id);
-  }, [lessonId, navigate, user?.class, user?.id, ws]);
-  useEffect(() => {
 
+  }, [className, lessonId, user.id, ws]);
+
+
+
+  useEffect(() => {
     const getCalls = async () => {
       const response = await axios.get(
         "http://localhost:5050/call/getCallsByLessonId/" + lessonId
@@ -70,10 +72,20 @@ const CallModal = ({ classId, open, handleClose, lessonId }) => {
       setCalls(response.data);
     };
 
-    if (open) {
+    const handleWebSocketOpen = () => {
       getCalls();
+    };
+
+    if (ws.readyState === WebSocket.OPEN) {
+      handleWebSocketOpen();
+    } else {
+      ws.onopen = handleWebSocketOpen;
     }
-  }, [createCall, lessonId, navigate, open]);
+  }, [lessonId, ws]);
+
+
+
+
 
 
   const GenerateQrcode = (callId) => {

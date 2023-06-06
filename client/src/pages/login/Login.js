@@ -1,6 +1,6 @@
-import React, {useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {Visibility, VisibilityOff} from "@mui/icons-material";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
 import LockIcon from "@mui/icons-material/Lock";
 import MailIcon from "@mui/icons-material/Mail";
 import {
@@ -15,12 +15,12 @@ import {
   Typography,
 } from "@mui/material";
 import Cookies from "universal-cookie";
-import {signInWithEmailAndPassword} from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 import imgLogin from "./../../assets/img/login_img.svg";
 import "./Login.scss";
 import useFirebase from "../../hooks/useFirebase";
-import {Toaster, toast} from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
 import axios from "axios";
 
 const Login = () => {
@@ -35,7 +35,7 @@ const Login = () => {
   const regex = /@edu\.esiee-it\.fr/;
   const theme = useTheme();
   const cookies = new Cookies();
-  const {auth} = useFirebase();
+  const { auth } = useFirebase();
 
   const navigate = useNavigate();
 
@@ -71,7 +71,7 @@ const Login = () => {
       const token = await loggedInUser.user.getIdToken();
 
       await axios
-        .post("http://localhost:5050/auth/connexion", {
+        .post("http://localhost:5050/auth/login", {
           token,
         })
         .then(() => {
@@ -152,7 +152,7 @@ const Login = () => {
         ></Container>
         <div
           className="login-header"
-          style={{backgroundColor: theme.palette.background.container}}
+          style={{ backgroundColor: theme.palette.background.container }}
         >
           <Container
             sx={{
@@ -200,7 +200,7 @@ const Login = () => {
                   defaultValue={email}
                   onChange={onChangeEmail}
                   sx={{
-                    input: {color: "text.primary"},
+                    input: { color: "text.primary" },
                   }}
                   error={errorEmail}
                   helperText={messageEmail}
@@ -232,7 +232,7 @@ const Login = () => {
                   defaultValue={password}
                   onChange={onChangePassword}
                   sx={{
-                    input: {color: "text.primary"},
+                    input: { color: "text.primary" },
                   }}
                   error={errorPassword}
                   helperText={messagePassword}
@@ -245,9 +245,9 @@ const Login = () => {
                           edge="end"
                         >
                           {showPassword ? (
-                            <VisibilityOff  style={{color: "#7a52e1"}}/>
+                            <VisibilityOff style={{ color: "#7a52e1" }} />
                           ) : (
-                            <Visibility style={{color: "#7a52e1"}} />
+                            <Visibility style={{ color: "#7a52e1" }} />
                           )}
                         </IconButton>
                       </InputAdornment>
