@@ -66,6 +66,7 @@ const CreateProjectDialog = (props) => {
 
           <form className="student-project-form">
             <Editor
+              placeholder="Commencer à écrire une petite description de votre projet"
               onEditorStateChange={handleEditorChange}
               editorState={editorState}
               toolbarClassName="toolbarClassName"

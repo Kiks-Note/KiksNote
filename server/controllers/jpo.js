@@ -114,8 +114,14 @@ const createJpo = async (req, res) => {
         return;
       }
 
-      const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd } =
-        req.body;
+      const {
+        jpoTitle,
+        jpoDescription,
+        jpoThumbnail,
+        jpoDayStart,
+        jpoDayEnd,
+        jpoParticipants = [],
+      } = req.body;
 
       const mimeType = "image/png";
       const fileExtension = mime.extension(mimeType);
@@ -149,6 +155,29 @@ const createJpo = async (req, res) => {
         jpoDayEnd: new Date(jpoDayEnd),
         linkCommercialBrochure: null,
       };
+
+      const jpoParticipantsData = [];
+      for (const participantId of jpoParticipants) {
+        const jpoParticipantRef = await db
+          .collection("users")
+          .doc(participantId)
+          .get();
+        if (jpoParticipantRef.exists) {
+          const participantsData = {
+            id: jpoParticipantRef.id,
+            firstname: jpoParticipantRef.data().firstname,
+            lastname: jpoParticipantRef.data().lastname,
+            status: jpoParticipantRef.data().status,
+          };
+
+          if (jpoParticipantRef.data().image) {
+            memberData.image = memberRef.data().image;
+          }
+
+          jpoParticipantsData.push(participantsData);
+        }
+      }
+      jpoData.jpoParticipants = jpoParticipantsData;
 
       if (req.file) {
         const pdfFilePath = req.file.path;
