@@ -7,7 +7,18 @@ import { toast, ToastContainer } from "react-toastify";
 
 import moment from "moment";
 
-import { Typography, Button, Card, Skeleton } from "@mui/material";
+import {
+  Typography,
+  Button,
+  Card,
+  Skeleton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  Divider,
+} from "@mui/material";
 
 import StudentProjectLinkDialog from "./StudentProjectLinkDialog";
 import UpdateJpoPdf from "./UpdateJpoPdf";
@@ -45,6 +56,9 @@ export const toastFail = (message) => {
 };
 
 const useStyles = makeStyles({
+  avatar: {
+    marginRight: "20px",
+  },
   btnProject: {
     backgroundColor: "#7a52e1",
     color: "white",
@@ -432,6 +446,29 @@ const JpoInfo = () => {
                     __html: jpoData?.jpoDescription,
                   }}
                 />
+                <Typography sx={{ fontWeight: "bold" }}>
+                  Liste des participants lors de cette JPO
+                </Typography>
+                <List>
+                  {jpoData?.jpoParticipants.map((participant, index) => (
+                    <React.Fragment key={participant.id}>
+                      <ListItem alignItems="flex-start">
+                        <ListItemAvatar>
+                          <Avatar className={classes.avatar}>
+                            {participant.firstname.charAt(0)}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={`${participant.firstname} ${participant.lastname}`}
+                          secondary={participant.status}
+                        />
+                      </ListItem>
+                      {index < jpoData?.jpoParticipants.length - 1 && (
+                        <Divider variant="inset" component="li" />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </List>
                 <div className="list-students-project-linked">
                   <Typography
                     sx={{
