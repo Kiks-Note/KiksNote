@@ -142,8 +142,6 @@ const StudentProjectInfo = () => {
     setOpenBlogTutos(false);
   };
 
-  console.log(allblogtutos);
-
   return (
     <>
       {loading ? (
@@ -625,9 +623,11 @@ const StudentProjectInfo = () => {
                 />
               </div>
               <div className="text-project-box">
-                <Typography sx={{ textAlign: "justify" }}>
-                  {selectedProjectData.descriptionProject}
-                </Typography>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: selectedProjectData.descriptionProject,
+                  }}
+                />
                 <Typography sx={{ paddingTop: "20px", textAlign: "right" }}>
                   Publié par :{" "}
                   {selectedProjectData &&

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Button,
@@ -12,13 +12,41 @@ import {
   Typography,
 } from "@mui/material";
 
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw } from "draft-js";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from "draftjs-to-html";
+
 import Dropzone from "../Cours/Dropzone";
 
 import "./StudentsProjects.scss";
 
 const CreateProjectDialog = (props) => {
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [inputEditorState, setInputEditorState] = useState("");
+
+  const handleEditorChange = (e) => {
+    setEditorState(e);
+    setInputEditorState(draftToHtml(convertToRaw(e.getCurrentContent())));
+  };
+
+  useEffect(() => {
+    props.setDescriptionProject(inputEditorState);
+  }, [inputEditorState]);
+
   return (
-    <Dialog open={props.open} onClose={props.handleClose}>
+    <Dialog
+      open={props.open}
+      onClose={props.handleClose}
+      sx={{
+        "& .MuiDialog-container": {
+          "& .MuiPaper-root": {
+            width: "100%",
+            maxWidth: "1000px",
+          },
+        },
+      }}
+    >
       <DialogContent>
         <form onSubmit={props.handleSubmit} className="student-project-form">
           <TextField
@@ -35,17 +63,26 @@ const CreateProjectDialog = (props) => {
             defaultValue={props.repoProjectLink}
             onChange={(event) => props.setRepoProjectLink(event.target.value)}
           />
-          <TextField
-            sx={{ marginBottom: "10px" }}
-            label="Description du projet"
-            fullWidth
-            multiline
-            rows={4}
-            defaultValue={props.descriptionProject}
-            onChange={(event) =>
-              props.setDescriptionProject(event.target.value)
-            }
-          />
+
+          <form className="student-project-form">
+            <Editor
+              onEditorStateChange={handleEditorChange}
+              editorState={editorState}
+              toolbarClassName="toolbarClassName"
+              wrapperClassName="wrapperClassName"
+              editorClassName="editorClassName"
+              editorStyle={{
+                border: "1px solid black",
+                minHeight: "180px",
+                height: "300px",
+                padding: "10px",
+                borderRadius: "5px",
+                boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+                marginBottom: "16px",
+              }}
+            />
+          </form>
+
           <div className="dropzone-coursimg-container">
             <p className="info-dropdown-img">
               Drag and drop an image file here, or click to select an image
