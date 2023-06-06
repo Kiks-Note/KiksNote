@@ -4,13 +4,17 @@ console.log("in retro controller");
 
 const addRetro = async (req, res) => {
   // Implementation of adding retro logic
-  res.json({ message: "addRetro works!" });
 
   const tabRetro = {
     titleRetro: req.body.titleRetro,
     courseRetro: req.body.courseRetro,
     dataRetro: req.body.dataRetro,
-    idUser: req.body.idUser
+    idUser: req.body.idUser,
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
+    creationDate: new Date().toISOString()
+
+
   };
 
   db.collection("retro").doc().set(tabRetro);
@@ -51,6 +55,19 @@ const getRetro = async (req, res) => {
   console.log("in get Retro");
   res.json({ message: "getRetro works!" });
 };
+
+const getRetrosByUser = async (req, res) => {
+  let retros = [];
+  let colRetro = await db.collection("retro");
+  colRetro.onSnapshot((snapshot) => {
+    snapshot.docs.map((doc) =>  {
+      if (doc.data().idUser == req.params.idUser) {
+        retros.push(doc.data())
+      }
+    });
+    res.send(retros)
+  });
+}
 
 const editPostit = async (req, res) => {
 
@@ -153,6 +170,7 @@ module.exports = {
   addRetro,
   retroRequests,
   getRetro,
+  getRetrosByUser,
   getAll,
   editPostit,
   addPostIt,

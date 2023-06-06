@@ -18,15 +18,25 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 
+import * as React from 'react';
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { setDoc } from "firebase/firestore";
 import Board from "../../components/retro/board";
 
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
+import { TableVirtuoso, TableComponents } from 'react-virtuoso';
+
+
 function Retrospective() {
   const { user } = useFirebase();
   
-
 
   const [open, setOpen] = useState(false);
   const [openPostItEdit, setOpenPostItEdit] = useState(false);
@@ -47,6 +57,95 @@ function Retrospective() {
   const [allCourses, setAllCourses] = useState([]);
   const [choosenCourse, setChoosenCourse] = useState(null)
   const [boardTitle, setBoardTitle] = useState("")
+  const [listRetros, setListRetros] = useState([]);
+
+
+
+const sample = [
+  ['Frozen yoghurt', 159, 6.0, 24, 4.0],
+  ['Ice cream sandwich', 237, 9.0, 37, 4.3],
+  ['Eclair', 262, 16.0, 24, 6.0],
+  ['Cupcake', 305, 3.7, 67, 4.3],
+  ['Gingerbread', 356, 16.0, 49, 3.9],
+];
+
+// function createData(id, dessert, calories, fat, carbs, protein) {
+//   return { id, dessert, calories, fat, carbs, protein };
+// }
+
+const columno = [
+  {
+    width: 200,
+    label: 'idUser',
+    dataKey: 'idUser',
+  },
+  {
+    width: 120,
+    label: 'titleRetro',
+    dataKey: 'titleRetro',
+    //numeric: true,
+  },
+  {
+    width: 120,
+    label: 'k',
+    dataKey: 'k',
+    numeric: true,
+  }
+];
+
+// const rows = Array.from({ length: allRetro.length }, (_, index) => {
+//   //const randomSelection = sample[Math.floor(Math.random() * sample.length)];
+//   //console.log(createData(index, ...randomSelection));
+//   return createData(index, allRetro[index]);
+// });
+
+const VirtuosoTableComponents = {
+  Scroller: React.forwardRef((props, ref) => (
+    <TableContainer component={Paper} {...props} ref={ref} />
+  )),
+  Table: (props) => (
+    <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
+  ),
+  TableHead,
+  TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
+  TableBody: React.forwardRef((props, ref) => <TableBody {...props} ref={ref} />),
+};
+
+function fixedHeaderContent() {
+  return (
+    <TableRow>
+      {columno.map((column) => (
+        <TableCell
+          key={column.dataKey}
+          variant="head"
+          align={column.numeric || false ? 'right' : 'left'}
+          style={{ width: column.width }}
+          sx={{
+            backgroundColor: 'background.paper',
+          }}
+        >
+          {column.label}
+        </TableCell>
+      ))}
+    </TableRow>
+  );
+}
+
+function rowContent(_index, row) {
+  return (
+    <React.Fragment>
+      {columno.map((column) => (
+        <TableCell
+          key={column.dataKey}
+          align={column.numeric || false ? 'right' : 'left'}
+        >
+          {row[column.dataKey]}
+        </TableCell>
+      ))}
+    </React.Fragment>
+  );
+}
+
 
   const GMDBoard = {
     Glad: {
@@ -131,6 +230,7 @@ function Retrospective() {
 
   useEffect(() => {
     f(user.id)
+    getAllRetroByUser();
   }, []);
   
 
@@ -169,22 +269,6 @@ function Retrospective() {
   }, []);
 
 
-
-
-  const saveToDb = async () => {
-    if (columns == null) return;
-    // setCurrentRetroIndex(allRetro.length)
-    await axios.post(
-      `http://localhost:5050/retro/newRetro`,
-      {
-        dataRetro: columns,
-        idUser: user?.id
-      }
-    );
-  }
-
-
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -208,6 +292,20 @@ function Retrospective() {
 
   }
 
+  const getAllRetroByUser = async () =>  {
+    const userId = user.id;
+
+    axios.get(`http://localhost:5050/retro/getRetrosByUser/${userId}`
+
+    ).then((res)=> {
+      console.log("************");
+      console.log(res.data)
+      console.log("************");
+      setListRetros(res.data)
+    }).catch((err)=> {
+      console.log(err)
+    })
+   } 
 
   const validateBoard = () => {
     console.log(boardTitle);
@@ -226,38 +324,46 @@ function Retrospective() {
         choosenModel = PNABoard;
       }
 
+      console.log(user);
+
       axios.post("http://localhost:5050/retro/newRetro", 
         {
           dataRetro: choosenModel,
           titleRetro: boardTitle,
           courseRetro: choosenCourse,
-          idUser: user?.id
+          idUser: user?.id,
+          firstname: user?.firstname,
+          lastname: user?.lastname
         }
       )
-
       setBoardTitle("")
       setChoosenCourse(null)
       setRetroModel("'Model de retro'")
-
       handleClose();
-      
     } else {
       console.log("champ manquant");
     }
   }
+
+  const table = [
+    { idUser: "jean@edu.esiee-it.fr", titleRetro: "hehehe", k: "ttt" },
+    { idUser: "jean@edu.esiee-it.fr", titleRetro: "hehehe", k: "ttt" },
+  ];
 
   return (
 
     <div className="container-retro">
       <h2> Retrospective </h2>
 
+      <Button onClick={getAllRetroByUser} > Get retros </Button>
+
 
       <div className="container-in-retro">
       <Button variant="outlined"
  onClick={handleClickOpen} className="add-retro"> + Ajouter une retro </Button>
-        {/* <div className="historic">
+        <div className="historic">
           Choix de la retrospective
-          <table>
+          {/* <table>
             <tr>
               <td>
                 Nom
@@ -269,29 +375,19 @@ function Retrospective() {
                 Nom
               </td>
             </tr>
-          </table>
-        </div> */}
+          </table> */}
+          <Paper style={{ height: 400, width: '100%' }}>
+      <TableVirtuoso
+        data={table}
+        components={VirtuosoTableComponents}
+        fixedHeaderContent={fixedHeaderContent}
+        itemContent={rowContent}
+      />
+    </Paper>
+
+        </div>
   
       </div>
-
-      
-{/* 
-      <Select
-        onChange={(e) => setColumns(e.target.value)}
-      >
-        {allRetro.map((retroElem, index) => (
-          <MenuItem
-            key={index}
-            value= {retroElem || null} 
-            sx={{
-              width: "100%",
-            }}
-            onClick={()=> setCurrentRetroIndex(index)}
-          >
-            {index}
-          </MenuItem>
-        ))}
-      </Select> */}
 
       <div>
         <Dialog
@@ -359,7 +455,6 @@ function Retrospective() {
       </div>
     
       {columns !== null ? <Board choosenColumn = {columns}/> : (<></>)}
-
 
     </div>
   );

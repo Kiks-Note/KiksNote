@@ -5,6 +5,7 @@ const {
   addRetro,
   retroRequests,
   getRetro,
+  getRetrosByUser,
   getAll,
   editPostit,
   addPostIt,
@@ -27,6 +28,8 @@ const retroRoutesWsNotNeeded = () => {
 const retroRoutesWsNeeded = (connection, pathname) => {
   const router = express.Router(); // Create a new router instance
 
+  router.get("/getRetrosByUser/:idUser", getRetrosByUser)
+  
   switch (pathname) {
     case "/retro":
       retroRequests(connection);
