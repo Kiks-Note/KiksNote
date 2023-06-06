@@ -152,6 +152,44 @@ const CreateProjectDialog = (props) => {
               />
             )}
           />
+          <Autocomplete
+            multiple
+            id="tags-outlined"
+            sx={{
+              width: "100%",
+              marginTop: "10px",
+            }}
+            options={props.alltechnos}
+            getOptionLabel={(option) => (
+              <>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <img
+                    src={option.image}
+                    alt={option.name}
+                    style={{ width: "40px", marginRight: "10px" }}
+                  />
+                  {option.name}
+                </div>
+              </>
+            )}
+            defaultValue={props.technosProject}
+            filterSelectedOptions
+            onChange={(event, newValue) => {
+              const selectedTechnos = newValue.map((techno) => techno.id);
+              props.setTechnosProject(selectedTechnos);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select technos"
+                variant="outlined"
+                inputProps={{
+                  ...params.inputProps,
+                  name: "technos",
+                }}
+              />
+            )}
+          />
         </form>
       </DialogContent>
       <DialogActions>

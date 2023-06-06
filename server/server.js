@@ -39,6 +39,8 @@ var upload = multer({
   },
 });
 
+const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes");
+
 app.use(express.json());
 app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -52,6 +54,7 @@ const wsI = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
+
 const authRoutes = require("./authRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
@@ -62,13 +65,18 @@ const studentsProjectsRoutes = require("./studentsProjectsRoutes");
 const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
-const groupsRoute = require("./groupsRoutes");
 
-const groupsRoute = require("./groupsRoutes");
 const { callRoutesWsNeeded, callRoutesWsNotNeeded } = require("./callRoutes");
 const path = require("path");
 
+const agileRoute = require("./agileRoutes");
+const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
+
+app.use("/inventory", inventoryRoutes);
+
+app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
+app.use("/retro", retroRoutesNotNeeded);
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
@@ -76,11 +84,15 @@ wsI.on("request", (request) => {
   connection ? console.log("connection ok") : console.log("connection failed");
   app.use("/callws", callRoutesWsNeeded(connection, pathname));
 
-  app.use("/inventory", inventoryRoutes(connection, pathname));
+  // app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
+  app.use("/agile", agileRoute(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/groupes", groupsRoute(connection, pathname));
+  app.use("/retro", retroRoutesWsNeeded(connection, pathname));
+  require("./web/inventoryWebSocket")(connection, pathname);
+
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
