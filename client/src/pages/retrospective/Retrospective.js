@@ -44,6 +44,7 @@ function Retrospective() {
   const [selectedRetro, setSelectedRetro] = useState('');
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [currentRetroIndex, setCurrentRetroIndex] = useState(null)
+  const [choosenCourse, setChoosenCourse] = useState(null)
 
   const GMDBoard = {
     Glad: {
@@ -193,11 +194,34 @@ function Retrospective() {
 
   return (
 
-    <div>
+    <div className="container-retro">
       <h2> Retrospective </h2>
 
-      <Button onClick={saveToDb}> save </Button>
 
+      <div className="container-in-retro">
+      <Button variant="outlined"
+ onClick={handleClickOpen} className="add-retro"> + Ajouter une retro </Button>
+        <div className="historic">
+          Choix de la retrospective
+          <table>
+            <tr>
+              <tl>
+                Nom
+              </tl>
+              <tl>
+                Nom
+              </tl>
+              <tl>
+                Nom
+              </tl>
+            </tr>
+          </table>
+        </div>
+  
+      </div>
+
+      
+{/* 
       <Select
         onChange={(e) => setColumns(e.target.value)}
       >
@@ -213,16 +237,9 @@ function Retrospective() {
             {index}
           </MenuItem>
         ))}
-      </Select>
+      </Select> */}
 
       <div>
-        <Button
-          variant="outlined"
-          onClick={handleClickOpen}
-          sx={{ marginRight: 1 }}
-        >
-          Créer une rétrospective
-        </Button>
         <Dialog
           open={open}
           onClose={handleClose}
@@ -230,18 +247,44 @@ function Retrospective() {
           maxWidth={"sm"}
         >
           <DialogTitle>Créer une nouvelle retrospective</DialogTitle>
+  
           <DialogContent>
+                    
+            <TextField
+            
+            aria-describedby="my-helper-text"
+            //InputLabelProps={{ shrink: true }}
+            variant="outlined"
+            placeholder="Titre"
+            
+            fullWidth
+            //onChange={(e) => setText(e.target.value)}
+            wrap="true"
+          />
+
             <InputLabel id="demo-simple-select-label">Type de representation</InputLabel>
             <Select
               labelId="model-retro-select-label"
               id="model-retro-select"
               value={retroModel}
               label="model de retro"
-              onChange={handleValidate}
+              //onChange={handleValidate}
             >
               <MenuItem value="GMDBoard">Glad, Mad, Sad</MenuItem>
               <MenuItem value="fourLBoard">4L</MenuItem>
               <MenuItem value="PNABoard">Positif, Negatif, Axe d'amélioration</MenuItem>
+            </Select>
+
+            <InputLabel id="select-course">Cours</InputLabel>
+            <Select
+              labelId="model-retro-select-label"
+              id="model-retro-select"
+              value={retroModel}
+              onChange={setChoosenCourse}
+            >
+              <MenuItem value="HTML/CSS">HTML/CSS</MenuItem>
+              <MenuItem value="JS">JavaScript</MenuItem>
+              <MenuItem value="Python">Python</MenuItem>
             </Select>
           </DialogContent>
           <DialogActions>
