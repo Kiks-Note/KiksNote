@@ -3,6 +3,7 @@ const router = express.Router();
 
 const {
   getAllCours,
+  getCoursesByOwnerId,
   getAllClasses,
   getCoursById,
   getClassById,
@@ -22,6 +23,7 @@ const {
 module.exports = function () {
   // Routes Cours
   router.get("/cours", getAllCours);
+  router.get("/coursbyowner/:ownerid", getCoursesByOwnerId);
   router.get("/classes", getAllClasses);
   router.get("/instructors", getInstructors);
   router.get("/instructor/:id", getInstructorById);

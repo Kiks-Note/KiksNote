@@ -44,6 +44,7 @@ function Retrospective() {
   const [selectedRetro, setSelectedRetro] = useState('');
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [currentRetroIndex, setCurrentRetroIndex] = useState(null)
+  const [allCourses, setAllCourses] = useState([]);
   const [choosenCourse, setChoosenCourse] = useState(null)
 
   const GMDBoard = {
@@ -116,10 +117,24 @@ function Retrospective() {
   };
 
 
+  
+  const f = async (idOwner) => {
+    console.log(user);
+    await axios.get(`http://localhost:5050/ressources/coursbyowner/${idOwner}`).then(
+      (res) => {
+        console.log(res.data)
+        setAllCourses(res.data)
+      }
+    )
+  }
+
+  useEffect(() => {
+    f(user.id)
+  }, []);
+  
 
 
   useEffect(() => {
-
     const ws = new w3cwebsocket("ws://localhost:5050/retro");
     ws.onmessage = (message) => {
       const receivedData = JSON.parse(message.data);
@@ -205,15 +220,15 @@ function Retrospective() {
           Choix de la retrospective
           <table>
             <tr>
-              <tl>
+              <td>
                 Nom
-              </tl>
-              <tl>
+              </td>
+              <td>
                 Nom
-              </tl>
-              <tl>
+              </td>
+              <td>
                 Nom
-              </tl>
+              </td>
             </tr>
           </table>
         </div>
@@ -280,15 +295,25 @@ function Retrospective() {
               labelId="model-retro-select-label"
               id="model-retro-select"
               value={retroModel}
-              onChange={setChoosenCourse}
+              onChange={(e) => setChoosenCourse(e.target.value)}
             >
-              <MenuItem value="HTML/CSS">HTML/CSS</MenuItem>
-              <MenuItem value="JS">JavaScript</MenuItem>
-              <MenuItem value="Python">Python</MenuItem>
+
+              {allCourses.map((course, index) => (
+                        <MenuItem
+                          key={index}
+                          value= {course} 
+                          sx={{
+                            width: "100%",
+                          }}
+                        >
+                          {course.title}
+                        </MenuItem>
+                      ))}
             </Select>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Annuler</Button>
+            <Button >Valider</Button> 
           </DialogActions>
         </Dialog>
       </div>
