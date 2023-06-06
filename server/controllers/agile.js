@@ -353,7 +353,10 @@ const empathyRequest = async (connection) => {
     // Check if the document exists
     const documentSnapshot = await agileDocumentRef.get();
 
-    if (!documentSnapshot.exists) {
+    if (
+      !documentSnapshot.exists ||
+      !documentSnapshot.data().hasOwnProperty("empathy_map")
+    ) {
       await agileDocumentRef.set({
         empathy_map: {
           think: {
@@ -401,6 +404,7 @@ const empathyRequest = async (connection) => {
     );
   });
 };
+
 const personaRequest = async (connection) => {
   connection.on("message", async (message) => {
     const persona = JSON.parse(message.utf8Data);
@@ -413,7 +417,7 @@ const personaRequest = async (connection) => {
     // Check if the document exists
     const documentSnapshot = await agileDocumentRef.get();
 
-    if (!documentSnapshot.exists) {
+    if (!documentSnapshot.exists || !documentSnapshot.data().hasOwnProperty("persona")) {
       await agileDocumentRef.set({
         persona: {},
       });
