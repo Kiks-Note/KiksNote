@@ -13,8 +13,6 @@ const addRetro = async (req, res) => {
     firstname: req.body.firstname,
     lastname: req.body.lastname,
     creationDate: new Date().toISOString()
-
-
   };
 
   db.collection("retro").doc().set(tabRetro);
