@@ -54,7 +54,7 @@ const wsI = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
-
+const homeRoutes = require("./homeRoutes");
 const authRoutes = require("./authRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
@@ -65,7 +65,6 @@ const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 const agileRoute = require("./agileRoutes");
-const homeRoutes = require("./homeRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 

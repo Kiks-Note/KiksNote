@@ -1,8 +1,9 @@
 const express = require("express");
 const router = express.Router();
 
-const { saveWidget } = require("./controllers/home");
+const { saveWidget, getWidget } = require("./controllers/home");
 
-router.post("/saveWidget/:userId'", saveWidget);
+router.get("/:userId", getWidget);
+router.post("/save/:userId/widgets", saveWidget);
 
 module.exports = router;

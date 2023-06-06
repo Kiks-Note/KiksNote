@@ -24,14 +24,17 @@ function Home() {
       isUnique = layouts.every((layout) => layout.i !== updatedLayout.i);
     }
     setLayouts((prevLayouts) => [...prevLayouts, updatedLayout]);
+    saveLayout();
   };
 
   const removeLayout = (layoutToRemove) => {
     setLayouts((prevLayouts) => prevLayouts.filter((layout) => layout.i !== layoutToRemove.i));
+    saveLayout();
   };
 
   const handleLayoutChange = (newLayouts) => {
     setLayouts(newLayouts);
+    saveLayout();
   };
 
   const enterEdition = () => {
@@ -57,27 +60,26 @@ function Home() {
   };
 
   useEffect(() => {
-    const saveLayout = () => {
-      const userId = user?.id;
-      axios
-        .post(`http://localhost:5050/home/saveWidget/${userId}`, {
-          layouts: layouts
-        })
-        .then((response) => {
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    };
-    return (
-      () => {
-        saveLayout();
+    const getLayout = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5050/home/${user.id}`);
+        setLayouts(response.data.widgets);
+      } catch (error) {
+        console.error(error);
       }
-    )
-  }, [layouts, user?.id]);
+    };
 
+    getLayout();
+  }, []);
 
+  const saveLayout = async () => {
+    try {
+      const response = await axios.post(`http://localhost:5050/home/save/${user.id}/widgets`, layouts);
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <div className="home">
       <div className="home-dashboard">
