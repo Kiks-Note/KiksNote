@@ -65,10 +65,11 @@ const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 const agileRoute = require("./agileRoutes");
-
+const homeRoutes = require("./homeRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 
+app.use("/home", homeRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
 app.use("/retro", retroRoutesNotNeeded);

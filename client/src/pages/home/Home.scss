@@ -1,6 +1,6 @@
 .home-dashboard {
   display: flex;
-  flex-direction: row-reverse;
+
   padding: 50px;
   flex-wrap: nowrap;
 }
@@ -27,16 +27,21 @@
     transform: translateX(0);
   }
   25% {
-    transform: translateX(-5px) rotate(-5deg);
+    transform: translateX(-5px);
   }
   75% {
-    transform: translateX(5px) rotate(5deg);
+    transform: translateX(5px);
   }
   100% {
-    transform: translateX(0) rotate(0);
+    transform: translateX(0);
   }
 }
 
 .shaky {
   animation: shaky 0.5s infinite;
+}
+
+.grid {
+  background-size: 62px 35px;
+  background-image: radial-gradient(circle, #878686 1px, rgba(0, 0, 0, 0) 1px);
 }

@@ -12,8 +12,9 @@ import Calendar from "../../assets/img/calendar.svg";
 import Agile from "../../assets/img/agile.svg";
 import Widget from "../../components/widget/Widget";
 import WidgetSelection from "./WidgetSelectionModal";
-
-const Modal = ({ addLayout, enterEdition, leaveEdition }) => {
+import SettingsIcon from "@mui/icons-material/Settings";
+import AddIcon from "@mui/icons-material/Add";
+const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
   const [showModal, setShowModal] = useState(false);
   const [showSelectionModal, setShowSelectionModal] = useState(false);
   const [card, setcard] = useState({});
@@ -23,16 +24,21 @@ const Modal = ({ addLayout, enterEdition, leaveEdition }) => {
   const widgetList = {};
 
   const handleOpenModal = () => {
-    enterEdition();
     setShowModal(true);
   };
 
+  const handleEdit = () => {
+    if (edition) {
+      leaveEdition();
+    } else {
+      enterEdition();
+    }
+  };
+
   const handleCloseModal = () => {
-    leaveEdition();
     setShowModal(false);
   };
   const handleCloseSelectionModal = () => {
-    leaveEdition();
     setShowSelectionModal(false);
   };
 
@@ -44,12 +50,13 @@ const Modal = ({ addLayout, enterEdition, leaveEdition }) => {
   };
   return (
     <div>
-      <svg onClick={handleOpenModal} xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
-        <path
-          fill="currentColor"
-          d="M19.14 12.94c.04-.3.06-.61.06-.94c0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6s3.6 1.62 3.6 3.6s-1.62 3.6-3.6 3.6z"
-        ></path>
-      </svg>
+      <AddIcon onClick={handleOpenModal} style={{ marginTop: "45%", fontSize: "30" }}></AddIcon>
+      <SettingsIcon
+        onClick={() => {
+          handleEdit();
+        }}
+        style={{ marginTop: "45%", fontSize: "30" }}
+      ></SettingsIcon>
       {showModal && (
         <div
           className="modal-overlay"
@@ -66,10 +73,8 @@ const Modal = ({ addLayout, enterEdition, leaveEdition }) => {
               height: "100%",
               padding: "10px",
               display: "flex",
-              flexDirection: "row",
-              flexWrap: "nowrap",
-              justifyContent: "flex-start",
               alignItems: "center",
+              overflow: "scroll",
             }}
           >
             <Widget
@@ -90,17 +95,35 @@ const Modal = ({ addLayout, enterEdition, leaveEdition }) => {
               handleOpen={() => handleOpenSelectionModal(Boards, "Boards")}
             ></Widget>
             <Widget
-              image={Boards}
-              text={"Boards"}
+              image={Groups}
+              text={"Groupes"}
               path={"/"}
-              handleOpen={() => handleOpenSelectionModal(Boards, "Boards")}
+              handleOpen={() => handleOpenSelectionModal(Groups, "Groupes")}
             ></Widget>
             <Widget
-              image={Boards}
-              text={"Boards"}
+              image={Class}
+              text={"Classe"}
               path={"/"}
-              handleOpen={() => handleOpenSelectionModal(Boards, "Boards")}
+              handleOpen={() => handleOpenSelectionModal(Class, "Classe")}
             ></Widget>
+            <Widget
+              image={Blog}
+              text={"blogs"}
+              path={"/"}
+              handleOpen={() => handleOpenSelectionModal(Blog, "Blogs")}
+            ></Widget>{" "}
+            <Widget
+              image={Retro}
+              text={"Rétrospective"}
+              path={"/"}
+              handleOpen={() => handleOpenSelectionModal(Retro, "Rétrospective")}
+            ></Widget>{" "}
+            <Widget
+              image={Calendar}
+              text={"Calendrier"}
+              path={"/"}
+              handleOpen={() => handleOpenSelectionModal(Calendar, "Calendrier")}
+            ></Widget>{" "}
             <button onClick={handleCloseModal} style={{ position: "absolute", top: "5px", left: "5px" }}>
               <CloseIcon />
             </button>

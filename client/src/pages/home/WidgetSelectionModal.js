@@ -49,7 +49,6 @@ const WidgetSelection = ({ open, handleClose, img, text, addLayout }) => {
                     x: 0,
                     y: 0,
                   };
-
                   addLayout(modifiedCard);
                 }}
                 key={card.i}
