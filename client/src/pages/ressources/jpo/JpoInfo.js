@@ -177,7 +177,8 @@ const JpoInfo = () => {
         .then((res) => {
           if (
             res.status === 200 &&
-            res.data.message === "JPO modifiée avec succès."
+            res.data.message ===
+              "Votre plaquette commercial a été ajouté avec succès."
           ) {
             toastSuccess(
               `La nouvelle plaquette commerciale a été bien mise à jour !`
@@ -426,13 +427,14 @@ const JpoInfo = () => {
             </div>
             <div className="jpoinfo-sections">
               <section className="jpo-left-side-section">
-                <Typography variant="body1" sx={{ color: "lightgray" }}>
-                  {jpoData?.jpoDescription}
-                </Typography>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: jpoData?.jpoDescription,
+                  }}
+                />
                 <div className="list-students-project-linked">
                   <Typography
                     sx={{
-                      fontWeight: "bold",
                       padding: "10px",
                     }}
                   >

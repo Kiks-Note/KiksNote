@@ -63,26 +63,23 @@ const CreateProjectDialog = (props) => {
             defaultValue={props.repoProjectLink}
             onChange={(event) => props.setRepoProjectLink(event.target.value)}
           />
-
-          <form className="student-project-form">
-            <Editor
-              placeholder="Commencer à écrire une petite description de votre projet"
-              onEditorStateChange={handleEditorChange}
-              editorState={editorState}
-              toolbarClassName="toolbarClassName"
-              wrapperClassName="wrapperClassName"
-              editorClassName="editorClassName"
-              editorStyle={{
-                border: "1px solid black",
-                minHeight: "180px",
-                height: "300px",
-                padding: "10px",
-                borderRadius: "5px",
-                boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
-                marginBottom: "16px",
-              }}
-            />
-          </form>
+          <Editor
+            placeholder={`Commencer à écrire une petite description de ton projet ${props.nameProject}`}
+            onEditorStateChange={handleEditorChange}
+            editorState={editorState}
+            toolbarClassName="toolbarClassName"
+            wrapperClassName="wrapperClassName"
+            editorClassName="editorClassName"
+            editorStyle={{
+              border: "1px solid black",
+              minHeight: "180px",
+              height: "300px",
+              padding: "10px",
+              borderRadius: "5px",
+              boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+              marginBottom: "16px",
+            }}
+          />
 
           <div className="dropzone-coursimg-container">
             <p className="info-dropdown-img">
