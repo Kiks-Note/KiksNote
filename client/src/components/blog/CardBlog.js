@@ -1,4 +1,10 @@
-import { Checkbox, IconButton, Menu, MenuItem, Typography } from "@mui/material";
+import {
+  Checkbox,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import { useState } from "react";
@@ -24,17 +30,23 @@ export default function CardBlog({ blog }) {
   };
 
   const changeVisibility = function () {
-    blog.visibility = !blog.visibility
-
+    // blog.visibility = !blog.visibility
+    if (blog.visibility === "pending") {
+      blog.visibility = "public";
+    } else {
+      blog.visibility = "pending";
+    }
     axios
-      .put(`http://localhost:5050/blog/${blog.id}/visibility`, { visibility: blog.visibility })
+      .put(`http://localhost:5050/blog/${blog.id}/visibility`, {
+        visibility: blog.visibility,
+      })
       .then((res) => {
         console.log(res);
       })
       .catch((err) => {
         console.log(err);
       });
-  }
+  };
 
   const navigate = useNavigate();
 
@@ -106,13 +118,14 @@ export default function CardBlog({ blog }) {
         open={Boolean(anchorEl)}
         onClose={handleMenuClose}
       >
-        {user.status !== "etudiant" ? (
+        {user.status !== "etudiant" && (
           <MenuItem>
             <Button onClick={changeVisibility}>Visible</Button>
-            <Checkbox onClick={changeVisibility} checked={blog.visibility}></Checkbox>
+            <Checkbox
+              onClick={changeVisibility}
+              checked={blog.visibility !== "pending"}
+            ></Checkbox>
           </MenuItem>
-        ) : (
-          <></>
         )}
         <MenuItem onClick={handleMenuClose}>
           <Button onClick={deleteBlog}>Supprimer</Button>

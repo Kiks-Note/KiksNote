@@ -124,17 +124,42 @@ function Blog() {
           </Grid>
           <Grid item xs={5}>
             <div className="container_blog">
+              <div className="container_blog">
+                <Typography>En attente de validation</Typography>
+                {!loading &&
+                  blog
+                    .filter((blog) =>
+                      user.status !== "etudiant"
+                        ? blog.visibility === "pending"
+                        : user.email === blog.created_by
+                        ? blog.visibility === "pending"
+                        : undefined
+                    )
+                    .map((filtered) => (
+                      <>
+                        <CardBlog blog={filtered} key={filtered.id} />
+                        {/*<Typography>{user.email}</Typography>*/}
+                        {/*<Typography>{filtered.created_by}</Typography>*/}
+                        {/*<Typography>{filtered.visibility}</Typography>*/}
+                        {/*<Typography>{!filtered.visibility}</Typography>*/}
+                      </>
+                    ))}
+                <Typography>Fin attente de validation</Typography>
+              </div>
               {!loading ? (
                 blog
                   .filter((blog) =>
                     user.status === "etudiant"
-                      ? blog.visibility === true
-                      : blog.visibility === false || blog.visibility === true
+                      ? blog.visibility === "public"
+                      : blog.visibility === "pending" ||
+                        blog.visibility === "public"
                   )
                   .map((filtered) => (
                     <>
                       <CardBlog blog={filtered} key={filtered.id} />
-                      <Typography>{filtered.created_at}</Typography>
+                      {/*<Typography>{user.email}</Typography>*/}
+                      {/*<Typography>{filtered.created_by}</Typography>*/}
+                      {/*<Typography>{filtered.visibility}</Typography>*/}
                     </>
                   ))
               ) : (
@@ -160,7 +185,7 @@ function Blog() {
               )}
             </div>
           </Grid>
-          {user.status != "etudiant" && (
+          {user.status !== "etudiant" && (
             <Grid item xs={4}>
               <Paper
                 square
