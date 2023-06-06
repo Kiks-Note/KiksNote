@@ -8,7 +8,7 @@ import axios from "axios";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 
-function AppelEleve(props) {
+function AppelEleve({ callId }) {
   const [Call, setCall] = useState({
     id_lesson: "",
     qrcode: "",
@@ -20,12 +20,37 @@ function AppelEleve(props) {
   const open = useRef();
   const msg = useRef();
   const [inRoom, setInRoom] = useState(false);
-  const ip = process.env.REACT_APP_IP;
+  const ip = "localhost";
 
   const id = useRef();
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://${ip}:5050/callws`);
-  });
+    return new w3cwebsocket(`ws://${ip}:5050/Call`);
+  }, []);
+
+  const LogToExistingRoom = useCallback(async () => {
+    try {
+      axios
+        .get(`http://localhost:5050/groupes/getRoom/${user?.class}`)
+        .then((res) => {
+          if (res.data.length > 0) {
+            const message = {
+              type: "joinRoom",
+              data: {
+                userID: user?.id,
+                name: user?.firstname,
+                class: user?.class,
+                type: "call",
+              },
+            };
+            ws.send(JSON.stringify(message));
+            setInRoom(true);
+            setCall(res.data);
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [user?.id, user?.firstname, user?.class, ws]);
 
   useEffect(() => {
     const handleOpen = async () => {
@@ -60,34 +85,7 @@ function AppelEleve(props) {
         })
       );
     };
-  }, []);
-
-  const LogToExistingRoom = useCallback(async () => {
-    try {
-      axios
-        .get(`http://localhost:5050/groupes/call/getcall/` + props.callId)
-        .then((res) => {
-          if (res.data.length > 0) {
-            const message = {
-              type: "joinRoom",
-              data: {
-                userID: user?.id,
-                name: user?.firstname,
-                class: user?.class,
-              },
-            };
-            ws.send(JSON.stringify(message));
-            setInRoom(true);
-            id.current = props.id;
-            setCall(res.data);
-            callToUpdate.current = res.data;
-          }
-        });
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }, [user?.class, user?.id, user?.firstname, ws]);
+  }, [LogToExistingRoom, inRoom, user.class, user?.id, ws]);
 
   const addGif = (gif) => {
     const date = new Date();

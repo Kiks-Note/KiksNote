@@ -6,17 +6,17 @@ import useFirebase from "../../hooks/useFirebase";
 
 function Appel() {
   const [admin, setAdmin] = useState(false);
-  let generated = false;
   const { user } = useFirebase();
   const callId = useParams();
+  const [generated, setGenerated] = useState(false);
 
   useEffect(() => {
     console.log(callId.id);
     if (!generated) {
-      generated = true;
-      user.status == "po" ? setAdmin(true) : setAdmin(false);
+      setGenerated(true);
+      user.status === "po" ? setAdmin(true) : setAdmin(false);
     }
-  }, []);
+  }, [callId.id, generated, user.status]);
 
   return (
     <div>

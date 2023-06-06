@@ -5,7 +5,7 @@ import Timer from "../timer/Timer";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 
-function AppelProf(props) {
+function AppelProf(callId) {
   const [qrcode, setQrcode] = useState("");
   const [call, setCall] = useState({
     id_lesson: "",
@@ -15,17 +15,45 @@ function AppelProf(props) {
   });
   const { user } = useFirebase();
 
-  const ip = process.env.REACT_APP_IP;
+  const ip = "localhost";
   const [users, setUsers] = useState([]);
   const [usersPresent, setUsersPresent] = useState([]);
   const [inRoom, setInRoom] = useState(false);
   const dataFetchedRef = useRef(false);
   const generated = useRef(false);
-  let tempCall;
+  const [tempCall, setTempCall] = useState({});
 
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://${ip}:5050/callws`);
-  });
+    return new w3cwebsocket(`ws://${ip}:5050/Call`);
+  }, []);
+
+  const LogToExistingRoom = useCallback(async () => {
+    try {
+      axios
+        .get(`http://localhost:5050/groupes/getRoomPo/${user?.id}`)
+        .then((res) => {
+          if (res.data.length > 0) {
+            const message = {
+              type: "joinRoom",
+              data: {
+                userID: user?.id,
+                name: user?.firstname,
+                class: user?.class,
+                type: "call",
+              },
+            };
+            ws.send(JSON.stringify(message));
+            setInRoom(true);
+            generated.current = true;
+            setTempCall(res.data);
+            setCall(res.data);
+            setQrcode(res.data.qrcode);
+          }
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  }, [user?.id, user?.firstname, user?.class, ws]);
 
   useEffect(() => {
     const handleOpen = async () => {
@@ -61,7 +89,7 @@ function AppelProf(props) {
         })
       );
     };
-  }, []);
+  }, [LogToExistingRoom, inRoom, user.class, user?.id, ws]);
 
   useEffect(() => {
     if (generated.current) {
@@ -75,35 +103,7 @@ function AppelProf(props) {
       );
       setUsers(filteredUsers);
     }
-  }, [call]);
-
-  const LogToExistingRoom = useCallback(async () => {
-    try {
-      axios
-        .get(`http://localhost:5050/groupes/call/getcall/` + props.callId)
-        .then((res) => {
-          if (res.data.length > 0) {
-            const message = {
-              type: "joinRoom",
-              data: {
-                userID: user?.id,
-                name: user?.firstname,
-                class: user?.class,
-              },
-            };
-            ws.send(JSON.stringify(message));
-            setInRoom(true);
-            generated.current = true;
-            tempCall = res.data;
-            setCall(res.data);
-            setQrcode(res.data.qrcode);
-          }
-        });
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  }, [user?.class, user?.id, user?.firstname, ws]);
+  }, [call, users]);
 
   return (
     <div className="ContentProf">
@@ -112,7 +112,7 @@ function AppelProf(props) {
       </div>
       <div className="ContentInfo">
         <div className="DivQr">
-          <img src={qrcode} className="Qrcode" />
+          <img src={qrcode} className="Qrcode" alt="" />
         </div>
         <div className="DivList">
           <div>
@@ -150,7 +150,7 @@ function AppelProf(props) {
                   </div>
                   <div>
                     {chat.isGif ? (
-                      <img src={chat.content} />
+                      <img src={chat.content} alt="" />
                     ) : (
                       <span>{chat.content}</span>
                     )}

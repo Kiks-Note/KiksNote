@@ -8,6 +8,8 @@ const {
   addCall,
   getCallsByLessonId,
   room,
+  getRoom,
+  getRoomPo,
 } = require("./controllers/call");
 
 function callRoutesWsNotNeeded() {
@@ -16,6 +18,8 @@ function callRoutesWsNotNeeded() {
   router.get("/calls", getCalls);
   router.get("/getcall/:id", getCall);
   router.get("/getCallsByLessonId/:id_lesson", getCallsByLessonId);
+  router.get("/getRoom/:class", getRoom);
+  router.get("/getRoom/:id", getRoomPo);
 
   return router;
 }

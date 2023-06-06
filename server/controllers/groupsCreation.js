@@ -45,17 +45,26 @@ const deleteRoom = async (req, res) => {
 
 const getRoom = async (req, res) => {
     const { classStudent } = req.params;
-    const snapshot = await db.collection("rooms").where('class', '==', classStudent).get();
+    const snapshot = await db
+        .collection("rooms")
+        .where('class', '==', classStudent)
+        .where('type', '==', 'group')
+        .get();
     const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     res.status(200).send(documents);
 }
 
 const getRoomPo = async (req, res) => {
     const { po_id } = req.params;
-    const snapshot = await db.collection("rooms").where('po_id', '==', po_id).get();
+    const snapshot = await db
+        .collection("rooms")
+        .where('po_id', '==', po_id)
+        .where('type', '==', 'group')
+        .get();
     const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     res.status(200).send(documents);
 }
+
 
 const currentRooms = new Map();
 
