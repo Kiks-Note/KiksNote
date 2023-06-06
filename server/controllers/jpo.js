@@ -262,8 +262,14 @@ const linkProjectStudents = async (req, res) => {
 const updateJpoById = async (req, res) => {
   try {
     const jpoId = req.params.jpoId;
-    const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd } =
-      req.body;
+    const {
+      jpoTitle,
+      jpoDescription,
+      jpoThumbnail,
+      jpoDayStart,
+      jpoDayEnd,
+      jpoParticipants,
+    } = req.body;
 
     const jpoRef = db.collection("jpo").doc(jpoId);
 
@@ -289,6 +295,30 @@ const updateJpoById = async (req, res) => {
     }
     if (jpoDayEnd) {
       jpoData.jpoDayEnd = new Date(jpoDayEnd);
+    }
+    if (jpoParticipants) {
+      const jpoParticipantsData = [];
+      for (const participantId of jpoParticipants) {
+        const jpoParticipantRef = await db
+          .collection("users")
+          .doc(participantId)
+          .get();
+        if (jpoParticipantRef.exists) {
+          const participantsData = {
+            id: jpoParticipantRef.id,
+            firstname: jpoParticipantRef.data().firstname,
+            lastname: jpoParticipantRef.data().lastname,
+            status: jpoParticipantRef.data().status,
+          };
+
+          if (jpoParticipantRef.data().image) {
+            participantsData.image = jpoParticipantRef.data().image;
+          }
+
+          jpoParticipantsData.push(participantsData);
+        }
+      }
+      jpoData.jpoParticipants = jpoParticipantsData;
     }
 
     await jpoRef.update(jpoData);
