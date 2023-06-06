@@ -127,6 +127,8 @@ function TopCreatorsChart() {
           options={{
             plugins: {
               legend: {
+                text: "Top 10 des créateurs d'articles",
+
                 display: true,
                 position: "bottom",
               },

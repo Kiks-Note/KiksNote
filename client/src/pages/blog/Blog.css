@@ -28,3 +28,11 @@
 .detail_blog_content {
     width: 100%;
 }
+
+.options{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+ 
+}

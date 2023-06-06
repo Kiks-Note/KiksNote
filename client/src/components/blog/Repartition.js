@@ -43,7 +43,7 @@ function BlogRepartition() {
 
     return (
         <div>
-            <h2>Répartition des créations</h2>
+
             {creationDistributionData.labels && creationDistributionData.labels.length > 0 ? (
                 <Doughnut
                     data={creationDistributionData}

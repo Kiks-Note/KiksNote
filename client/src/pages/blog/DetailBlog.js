@@ -1,15 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Button,
-  Typography,
-  Box,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-} from "@mui/material";
+import { Box, Card, CardHeader, CardMedia, CardContent, Typography, Button } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
@@ -21,6 +13,8 @@ import useFirebase from "../../hooks/useFirebase";
 import { Rings } from "react-loader-spinner";
 import { convertFromRaw } from "draft-js";
 import ListParticipants from "../../components/blog/ListParticipants";
+import "./Blog.css";
+import { Grid } from "@mui/material";
 
 function DetailBlog() {
   const [data, setData] = useState(null);
@@ -37,6 +31,8 @@ function DetailBlog() {
   const handleShowLess = () => {
     setVisibleComments(visibleComments - 5);
   };
+
+
 
   useEffect(() => {
     const ws = new w3cwebsocket("ws://localhost:5050/blogDetail");
@@ -128,111 +124,131 @@ function DetailBlog() {
   }
   return (
     <>
-      <Box sx={{ margin: 2 }}>
+      <Box
+        sx={{
+          margin: 2,
+          width: "100%",
+          borderRadius: "10px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#FFFFFF",
+          padding: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
         {!loading ? (
-          <>
-            <div className="container_detail_blog">
-              <div className="detail_blog_content">
-                <Card>
-                  <CardHeader title={data.title} />
-                  <CardMedia
-                    component="img"
-                    src={data.thumbnail}
-                    alt={data.title}
-                    sx={{ width: 300, height: 200 }}
-                  />
-                  <CardContent>
-                    <Typography>{data.editorState}</Typography>
-                    {/* <div dangerouslySetInnerHTML={{ __html: data.inputEditorState }} /> */}
-
-                  </CardContent>
-                </Card>
-                <div className="options">
-                  <button className="like__btn" onClick={handleLike}>
-                    <span id="icon">
-                      {data.userLiked ? (
-                        <ThumbUpIcon color={"primary"} />
-                      ) : (
-                        <ThumbUpOffAltIcon />
-                      )}
-                    </span>
-                    <span id="count">{data.like.length}</span> J'aime
-                  </button>
-                  <button className="like__btn" onClick={handleDislike}>
-                    <span id="icon">
-                      {data.userDisliked ? (
-                        <ThumbDownAltIcon color={"error"} />
-                      ) : (
-                        <ThumbDownOffAltIcon />
-                      )}
-                    </span>
-                    <span id="count">{data.dislike.length}</span> J'aime pas
-                  </button>
-
-                  {data.type != "blog" ? (
-                    <></>
-                  ) : (
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <div className="container_detail_blog">
+                <div className="detail_blog_content">
+                  <Card>
+                    <CardHeader title={data.title} />
+                    <CardMedia
+                      component="img"
+                      src={data.thumbnail}
+                      alt={data.title}
+                      sx={{ width: 300, height: 200 }}
+                    />
+                    <CardContent>
+                      <Typography>{data.editorState}</Typography>
+                    </CardContent>
+                  </Card>
+                  <div className="options">
                     <Button
-                      size="small"
-                      onClick={handleParticipate}
-                      style={{
-                        background: data.userIsParticipant ? "green" : "gray",
+                      variant="contained"
+                      startIcon={data.userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />}
+                      onClick={handleLike}
+                      sx={{
+                        backgroundColor: data.userLiked ? "#00BFFF" : "#F5F5F5",
+                        color: data.userLiked ? "#FFFFFF" : "#000000",
+                        ":hover": {
+                          backgroundColor: data.userLiked ? "#0080FF" : "#EEEEEE",
+                        },
                       }}
                     >
-                      {data.userIsParticipant
-                        ? "Participant"
-                        : " Ne participe pas"}
+                      J'aime ({data.like.length})
                     </Button>
-                  )}
-                </div>
-                <CreateComment tutoId={id} />
-                {data &&
-                  data.comment &&
-                  Array.isArray(data.comment) &&
-                  data.comment
-                    .slice(0, visibleComments)
-                    .map((comment, index) => (
+                    <Button
+                      variant="contained"
+                      startIcon={data.userDisliked ? <ThumbDownAltIcon /> : <ThumbDownOffAltIcon />}
+                      onClick={handleDislike}
+                      sx={{
+                        backgroundColor: data.userDisliked ? "#FF0000" : "#F5F5F5",
+                        color: data.userDisliked ? "#FFFFFF" : "#000000",
+                        ":hover": {
+                          backgroundColor: data.userDisliked ? "#CC0000" : "#EEEEEE",
+                        },
+                        marginRight: 50,
+                      }}
+                    >
+                      J'aime pas ({data.dislike.length})
+                    </Button>
+                    {data.type === "blog" && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleParticipate}
+                        sx={{
+                          backgroundColor: data.userIsParticipant ? "#008000" : "#F5F5F5",
+                          color: data.userIsParticipant ? "#FFFFFF" : "#000000",
+                          ":hover": {
+                            backgroundColor: data.userIsParticipant ? "#006400" : "#EEEEEE",
+                          },
+                        }}
+                      >
+                        {data.userIsParticipant ? "Je participe" : "Ne participe pas"}
+                      </Button>
+                    )}
+                  </div>
+                  <br />
+                  <CreateComment tutoId={id} />
+                  {data &&
+                    data.comment &&
+                    Array.isArray(data.comment) &&
+                    data.comment.slice(0, visibleComments).map((comment, index) => (
                       <DisplayComment key={index} comment={comment} tutoId={id} />
                     ))}
-                {visibleComments < data.comment.length ? (
-                  <>
-                    <button onClick={handleShowMore}>Voir plus</button>
-                    {visibleComments > 5 && (
-                      <button onClick={handleShowLess}>Voir moins</button>
-                    )}
-                  </>
-                ) : (
-                  visibleComments > 5 && (
-                    <button onClick={handleShowLess}>Voir moins</button>
-                  )
-                )}
+                  {visibleComments < data.comment.length ? (
+                    <>
+                      <button onClick={handleShowMore}>Voir plus</button>
+                      {visibleComments > 5 && <button onClick={handleShowLess}>Voir moins</button>}
+                    </>
+                  ) : (
+                    visibleComments > 5 && <button onClick={handleShowLess}>Voir moins</button>
+                  )}
+                </div>
               </div>
+            </Grid>
+            <Grid item xs={12} sm={4}>
               <div className="detail_blog_content_list">
-                {data.participant.length != 0 && (
+                {data.participant.length !== 0 && (
                   <>
                     <Typography variant="h5">Liste des participants</Typography>
                     <ListParticipants participants={data.participant} />
                   </>
                 )}
               </div>
-            </div>
-
-            <Button
-              variant="contained"
-              onClick={() => {
-                window.history.back();
-              }}
-            >
-              Retour à la page de blog{" "}
-            </Button>
-          </>
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  window.history.back();
+                }}
+                sx={{ marginTop: 2 }}
+              >
+                Retour à la page de blog
+              </Button>
+            </Grid>
+          </Grid>
         ) : (
           <div
             style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              height: "100%",
+              height: "70%",
             }}
           >
             <Rings
@@ -248,6 +264,8 @@ function DetailBlog() {
           </div>
         )}
       </Box>
+
+
     </>
   );
 }
