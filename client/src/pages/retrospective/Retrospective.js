@@ -57,47 +57,34 @@ function Retrospective() {
   const [allCourses, setAllCourses] = useState([]);
   const [choosenCourse, setChoosenCourse] = useState(null)
   const [boardTitle, setBoardTitle] = useState("")
-  const [listRetros, setListRetros] = useState([]);
+  const [listRetros, setListRetros] = useState();
+  const [previewRetro, setPreviewRetro] = useState([]);
+  const [retroListUpdated, setRetroListUpdated] = useState([]);
+  const [rows, setRows] = useState([]);
 
 
 
-const sample = [
-  ['Frozen yoghurt', 159, 6.0, 24, 4.0],
-  ['Ice cream sandwich', 237, 9.0, 37, 4.3],
-  ['Eclair', 262, 16.0, 24, 6.0],
-  ['Cupcake', 305, 3.7, 67, 4.3],
-  ['Gingerbread', 356, 16.0, 49, 3.9],
-];
 
-// function createData(id, dessert, calories, fat, carbs, protein) {
-//   return { id, dessert, calories, fat, carbs, protein };
-// }
 
 const columno = [
   {
     width: 200,
-    label: 'idUser',
-    dataKey: 'idUser',
+    label: 'titleRetro',
+    dataKey: 'titleRetro',
   },
   {
     width: 120,
-    label: 'titleRetro',
-    dataKey: 'titleRetro',
+    label: 'date',
+    dataKey: 'date',
     //numeric: true,
   },
   {
     width: 120,
-    label: 'k',
-    dataKey: 'k',
+    label: 'name',
+    dataKey: 'name',
     numeric: true,
   }
 ];
-
-// const rows = Array.from({ length: allRetro.length }, (_, index) => {
-//   //const randomSelection = sample[Math.floor(Math.random() * sample.length)];
-//   //console.log(createData(index, ...randomSelection));
-//   return createData(index, allRetro[index]);
-// });
 
 const VirtuosoTableComponents = {
   Scroller: React.forwardRef((props, ref) => (
@@ -146,6 +133,7 @@ function rowContent(_index, row) {
   );
 }
 
+  //let previewRetro = []
 
   const GMDBoard = {
     Glad: {
@@ -218,7 +206,7 @@ function rowContent(_index, row) {
 
 
   
-  const f = async (idOwner) => {
+  const getCourse = async (idOwner) => {
     console.log(user);
     await axios.get(`http://localhost:5050/ressources/coursbyowner/${idOwner}`).then(
       (res) => {
@@ -229,8 +217,16 @@ function rowContent(_index, row) {
   }
 
   useEffect(() => {
-    f(user.id)
-    getAllRetroByUser();
+    getCourse(user.id)
+    // getAllRetroByUser().then(() => {
+    //   let a = []
+    //   // listRetros.map((retro => {
+    //   //   a.push({ retroTitle: retro["titleRetro"], date: retro["creationDate"], name: retro["firstname"] + " " + retro["lastname"]  })
+    //   //   setPreviewRetro(a)
+    //   // }))
+    //   console.log(listRetros);
+    // });
+    
   }, []);
   
 
@@ -245,10 +241,7 @@ function rowContent(_index, row) {
       } else {
         console.log("current index is null");
       }
-      
     };
-
-
     return () => {
       ws.close();
     };
@@ -295,7 +288,7 @@ function rowContent(_index, row) {
   const getAllRetroByUser = async () =>  {
     const userId = user.id;
 
-    axios.get(`http://localhost:5050/retro/getRetrosByUser/${userId}`
+    await axios.get(`http://localhost:5050/retro/getRetrosByUser/${userId}`
 
     ).then((res)=> {
       console.log("************");
@@ -307,7 +300,33 @@ function rowContent(_index, row) {
     })
    } 
 
-  const validateBoard = () => {
+   useEffect(() => {
+    getAllRetroByUser();
+  }, []);
+  
+  useEffect(() => {
+    console.log(listRetros);
+    console.log(retroListUpdated);
+    if (listRetros !== undefined) {
+      const updatedRows = listRetros.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"]));
+      setRows(updatedRows);
+    }
+  }, [listRetros]);
+
+  //  useEffect(() => {
+  //   setRetroListUpdated(listRetros)
+  //   console.log(listRetros);
+  //   console.log(retroListUpdated);
+  //   if (listRetros !== undefined) {
+  //     listRetros.map((retro) => {
+  //       const row = createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"]);
+  //       rows.push(row);
+  //     })
+  //   }
+  //     //a.push({ retroTitle: retro["titleRetro"], date: retro["creationDate"], name: retro["firstname"] + " " + retro["lastname"]  })
+  // }, [listRetros]);
+
+  const validateBoard = async () => {
     console.log(boardTitle);
     console.log(choosenCourse);
     console.log(retroModel);
@@ -324,9 +343,7 @@ function rowContent(_index, row) {
         choosenModel = PNABoard;
       }
 
-      console.log(user);
-
-      axios.post("http://localhost:5050/retro/newRetro", 
+      await axios.post("http://localhost:5050/retro/newRetro", 
         {
           dataRetro: choosenModel,
           titleRetro: boardTitle,
@@ -345,10 +362,13 @@ function rowContent(_index, row) {
     }
   }
 
-  const table = [
-    { idUser: "jean@edu.esiee-it.fr", titleRetro: "hehehe", k: "ttt" },
-    { idUser: "jean@edu.esiee-it.fr", titleRetro: "hehehe", k: "ttt" },
-  ];
+
+  function createData(titleRetro, date, name) {
+    return { titleRetro, date, name };
+  }
+  
+  
+ 
 
   return (
 
@@ -363,27 +383,39 @@ function rowContent(_index, row) {
  onClick={handleClickOpen} className="add-retro"> + Ajouter une retro </Button>
         <div className="historic">
           Choix de la retrospective
-          {/* <table>
-            <tr>
-              <td>
-                Nom
-              </td>
-              <td>
-                Nom
-              </td>
-              <td>
-                Nom
-              </td>
-            </tr>
-          </table> */}
-          <Paper style={{ height: 400, width: '100%' }}>
-      <TableVirtuoso
-        data={table}
-        components={VirtuosoTableComponents}
-        fixedHeaderContent={fixedHeaderContent}
-        itemContent={rowContent}
-      />
-    </Paper>
+
+          {/* <Paper style={{ height: 400, width: '100%' }}>
+            <TableVirtuoso
+              data={previewRetro}
+              components={VirtuosoTableComponents}
+              fixedHeaderContent={fixedHeaderContent}
+              itemContent={rowContent}
+            />
+          </Paper> */}
+
+    <TableContainer component={Paper} style={{ maxHeight: '500px', overflowY: 'auto' }}>
+          <Table sx={{ minWidth: 650 }} aria-label="caption table">
+            <TableHead>
+              <TableRow>
+                <TableCell>Nom retro</TableCell>
+                <TableCell align="left">Date</TableCell>
+                <TableCell align="left">Proprietaire</TableCell>
+    
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((row) => (
+                <TableRow key={row.name}>
+                  <TableCell component="th" scope="row">
+                    {row.titleRetro}
+                  </TableCell>
+                  <TableCell align="left">{row.date}</TableCell>
+                  <TableCell align="left">{row.name}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
 
         </div>
   
