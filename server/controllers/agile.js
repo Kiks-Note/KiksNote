@@ -53,6 +53,7 @@ const getImpactMapping = async (req, res) => {
     res.status(500).send({ message: "Server error for impact mapping" });
   }
 };
+/// Path to recup all foldersAgile
 const getFoldersAgile = async (req, res) => {
   try {
     const userQuerySnapshot = await db
@@ -88,6 +89,7 @@ const getFoldersAgile = async (req, res) => {
   }
 };
 
+/// Path to Upload zip foldersAgile
 const getZipFolderAgile = async (req, res) => {
   try {
     const { files } = req.query;
@@ -259,7 +261,7 @@ const changeIndex = async (req, res) => {
       },
     });
 };
-
+/// Path to upload pdf on agile Folder
 const updatePdfInAgileFolder = async (req, res) => {
   try {
     const pdfFile = req.file;
@@ -309,7 +311,6 @@ const updatePdfInAgileFolder = async (req, res) => {
     res.status(500).send(err);
   }
 };
-
 /// Path to add Persona
 const addPersona = async (req, res) => {
   try {
@@ -339,6 +340,7 @@ const addPersona = async (req, res) => {
     res.status(500).send({ message: "Server error" });
   }
 };
+/// Path to delete actor 
 const deleteActor = async (req, res) => {
   try {
     const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
@@ -370,6 +372,7 @@ const deleteActor = async (req, res) => {
   }
 };
 
+/// Path to websocket
 const empathyRequest = async (connection) => {
   connection.on("message", async (message) => {
     const empathy = JSON.parse(message.utf8Data);
