@@ -3,6 +3,12 @@
     width: 100%;
 }
 
+.cours-img {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
 .main-cours-container {
     display: flex;
     justify-content: space-between;

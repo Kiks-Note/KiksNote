@@ -1059,13 +1059,16 @@ const CoursInfo = () => {
               ) : (
                 <>
                   <div className="cours-right-side-container">
-                    <img
-                      style={{
-                        borderTopRightRadius: "10px",
-                      }}
-                      src={coursData.imageCourseUrl}
-                      alt="course-img"
-                    />
+                    <div className="cours-img">
+                      <img
+                        style={{
+                          borderTopRightRadius: "10px",
+                          maxWidth: "80%",
+                        }}
+                        src={coursData.imageCourseUrl}
+                        alt="course-img"
+                      />
+                    </div>
                     <div className="display-date">
                       <h4 className="h4-data-cours-info">
                         <CalendarTodayIcon />

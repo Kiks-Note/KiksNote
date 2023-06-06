@@ -152,8 +152,17 @@ const StudentProjectInfo = () => {
             <div className="left-side-project">
               <div className="type-project-info-container">
                 <Typography sx={{ marginRight: "5px" }}>
+                  <Skeleton width={100} />
+                </Typography>
+              </div>
+              <div className="type-project-info-container">
+                <Typography sx={{ marginRight: "5px" }}>
                   Type du projet :
                 </Typography>
+                <Skeleton width={100} />
+              </div>
+              <div className="type-project-info-container">
+                <Typography sx={{ marginRight: "5px" }}>Technos :</Typography>
                 <Skeleton width={100} />
               </div>
               <Typography
@@ -322,6 +331,9 @@ const StudentProjectInfo = () => {
         <>
           <div className="project-content">
             <div className="left-side-project">
+              <Typography variant="h3" sx={{ fontWeight: "bold" }}>
+                {selectedProjectData.nameProject}
+              </Typography>
               {selectedProjectData.typeProject === "Web" ? (
                 <div className="type-project-info-container">
                   <Typography sx={{ marginRight: "5px" }}>
@@ -365,6 +377,25 @@ const StudentProjectInfo = () => {
               ) : (
                 <div></div>
               )}
+              <div className="type-promo-project-container">
+                <Typography sx={{ marginRight: "5px" }}>Technos :</Typography>{" "}
+                {selectedProjectData.technosProject.map((techno) => (
+                  <Chip
+                    avatar={<Avatar alt={techno.name} src={techno.image} />}
+                    sx={{
+                      display: "flex",
+                      padding: "10px",
+                    }}
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography>{techno.name}</Typography>
+                        </div>
+                      </>
+                    }
+                  ></Chip>
+                ))}
+              </div>
               <Typography
                 sx={{
                   display: "flex",
@@ -384,27 +415,24 @@ const StudentProjectInfo = () => {
                   />
                 </a>
               </Typography>
-              <Chip
-                sx={{
-                  display: "flex",
-                  width: "fit-content",
-                  padding: "10px",
-                  margin: "15px 0px",
-                  alignItems: "center",
-                }}
-                label={
-                  <>
-                    <div style={{ display: "flex" }}>
-                      <Typography>
-                        {selectedProjectData &&
-                          selectedProjectData.promoProject &&
-                          selectedProjectData.promoProject.name}
-                      </Typography>
-                      <SchoolIcon />
-                    </div>
-                  </>
-                }
-              ></Chip>
+              <div className="type-promo-project-container">
+                {selectedProjectData.promoProject.map((promo) => (
+                  <Chip
+                    sx={{
+                      display: "flex",
+                      padding: "10px",
+                    }}
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography>{promo.name}</Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                  ></Chip>
+                ))}
+              </div>
               <List
                 sx={{
                   width: "100%",

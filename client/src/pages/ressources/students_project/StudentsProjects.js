@@ -29,6 +29,7 @@ import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded
 import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
+import SchoolIcon from "@mui/icons-material/School";
 
 import CreateProjectDialog from "./CreateProjectDialog";
 import CreateTechnoModal from "./CreateTechnoModal";
@@ -80,7 +81,6 @@ const StudentsProjects = () => {
   const [idSelectedClass, setIdSelectedClass] = useState("");
 
   const [loading, setLoading] = useState(true);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const [selectedFilterTypeProject, setSelectedFilterTypeProject] =
     useState("");
@@ -254,7 +254,6 @@ const StudentsProjects = () => {
     userId
   ) => {
     try {
-      setIsButtonDisabled(true);
       await axios
         .post("http://localhost:5050/ressources/refprojects", {
           projectId: projectId,
@@ -278,15 +277,11 @@ const StudentsProjects = () => {
         .catch((err) => {
           toastFail(`Vous avez déjà mis en avant le projet ${projectName}`);
           console.log(err);
-        })
-        .finally(() => {
-          setIsButtonDisabled(false);
         });
     } catch (error) {
       console.log(error.response.status);
       console.log(error.response.data.message);
       toastWarning(`Erreur lors de la mise en avant du projet ${projectName}`);
-      setIsButtonDisabled(false);
     }
   };
 
@@ -543,7 +538,7 @@ const StudentsProjects = () => {
               ) : (
                 <div></div>
               )}
-              {userStatus !== "pedago" ? (
+              {userStatus === "po" ? (
                 <>
                   <Button
                     sx={{
@@ -767,6 +762,24 @@ const StudentsProjects = () => {
                               }
                             ></Chip>
                             <div className="type-promo-project-container">
+                              {project.promoProject.map((promo) => (
+                                <Chip
+                                  sx={{
+                                    display: "flex",
+                                    padding: "10px",
+                                  }}
+                                  label={
+                                    <>
+                                      <div style={{ display: "flex" }}>
+                                        <Typography>{promo.name}</Typography>
+                                        <SchoolIcon />
+                                      </div>
+                                    </>
+                                  }
+                                ></Chip>
+                              ))}
+                            </div>
+                            <div className="type-promo-project-container">
                               {project.technosProject.map((techno) => (
                                 <Chip
                                   avatar={
@@ -791,7 +804,6 @@ const StudentsProjects = () => {
                             </div>
                             {userStatus === "po" ? (
                               <Button
-                                disabled={isButtonDisabled}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   referStudentProject(
@@ -810,7 +822,6 @@ const StudentsProjects = () => {
                               </Button>
                             ) : userStatus === "pedago" ? (
                               <Button
-                                disabled={isButtonDisabled}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   referStudentProject(
@@ -829,7 +840,6 @@ const StudentsProjects = () => {
                               </Button>
                             ) : (
                               <Button
-                                disabled={isButtonDisabled}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   referStudentProject(
