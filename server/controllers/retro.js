@@ -3,21 +3,42 @@ const { db } = require("../firebase");
 console.log("in retro controller");
 
 const addRetro = async (req, res) => {
-  // Implementation of adding retro logic
+  try {
+    // Implementation of adding retro logic
 
-  const tabRetro = {
-    titleRetro: req.body.titleRetro,
-    courseRetro: req.body.courseRetro,
-    dataRetro: req.body.dataRetro,
-    idUser: req.body.idUser,
-    firstname: req.body.firstname,
-    lastname: req.body.lastname,
-    creationDate: new Date().toISOString()
-  };
+    const tabRetro = {
+      titleRetro: req.body.titleRetro,
+      courseRetro: req.body.courseRetro,
+      dataRetro: req.body.dataRetro,
+      idUser: req.body.idUser,
+      firstname: req.body.firstname,
+      lastname: req.body.lastname,
+      creationDate: new Date().toISOString()
+    };
 
-  db.collection("retro").doc().set(tabRetro);
+//    await db.collection("retro").doc().set(tabRetro);
 
+    await db.collection("retro").doc().set(tabRetro)
+    .then(() => {
+     
+      //const message = JSON.stringify({ type: 'retroAdded' });
+      //connection.sendUTF(message);
+      res.json({ success: true });
+    })
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ success: false, error: 'Failed to add retro' });
+    });
+
+    
+    //res.status(200).json({ message: "Retro added successfully" });
+  } catch (error) {
+    
+    console.log(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
+
 
 const getAll = async (req, res) => {
   const allRetrosQuery = await db.collection("retro").get()
@@ -28,7 +49,7 @@ const getAll = async (req, res) => {
   });
 
   res.send(allRetros)
-  console.log(allRetros);
+  //console.log(allRetros);
 
 }
 
@@ -41,6 +62,7 @@ const retroRequests = async (connection) => {
         ...doc.data(),
       }));
       connection.sendUTF(JSON.stringify(documents));
+      console.log("change db");
     },
     (err) => {
       console.log(err);

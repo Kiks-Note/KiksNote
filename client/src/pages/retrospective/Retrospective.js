@@ -233,32 +233,46 @@ function rowContent(_index, row) {
 
   useEffect(() => {
     const ws = new w3cwebsocket("ws://localhost:5050/retro");
-    ws.onmessage = (message) => {
-      const receivedData = JSON.parse(message.data);
-      //  setDocuments(receivedData);
-      if (currentRetroIndex !== null) {
-        setColumns(receivedData[currentRetroIndex]["dataRetro"])
-      } else {
-        console.log("current index is null");
-      }
+    ws.onmessage = async (message) => {
+      //const message = JSON.parse(event.data);
+
+      console.log("wsss");
+        let allRetros = [];
+        await axios.get("http://localhost:5050/retro/getAll").then((res) => {
+          console.log(res.data);
+          let responseRetros = res.data;
+          responseRetros.forEach(retro => {
+            allRetros.push(retro["dataRetro"])
+          });
+          const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"]));
+          setRows(updatedRows);
+        })
     };
     return () => {
       ws.close();
     };
-  }, [currentRetroIndex, currentRetroIndex]);
+  }, []);
+
+
+  const f = async (dataResponse) => {
+    let allRetros = [];
+
+    dataResponse.forEach(retro => {
+      allRetros.push(retro["dataRetro"])
+    });
+
+    console.log(allRetros);
+    console.log(allRetro);
+    setAllRetro(allRetros);
+  }
 
   useEffect(() => {
-
     let allRetros = [];
     axios.get("http://localhost:5050/retro/getAll").then((res) => {
       let responseRetros = res.data;
-      responseRetros.forEach(retro => {
-        allRetros.push(retro["dataRetro"])
-      });
-      setAllRetro(allRetros);
+      f(res.data);
+  
     });
-
-
   }, []);
 
 
@@ -288,7 +302,7 @@ function rowContent(_index, row) {
   const getAllRetroByUser = async () =>  {
     const userId = user.id;
 
-    await axios.get(`http://localhost:5050/retro/getRetrosByUser/${userId}`
+    await axios.get(`http://localhost:5050/retro/getAll`
 
     ).then((res)=> {
       console.log("************");
@@ -312,19 +326,6 @@ function rowContent(_index, row) {
       setRows(updatedRows);
     }
   }, [listRetros]);
-
-  //  useEffect(() => {
-  //   setRetroListUpdated(listRetros)
-  //   console.log(listRetros);
-  //   console.log(retroListUpdated);
-  //   if (listRetros !== undefined) {
-  //     listRetros.map((retro) => {
-  //       const row = createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"]);
-  //       rows.push(row);
-  //     })
-  //   }
-  //     //a.push({ retroTitle: retro["titleRetro"], date: retro["creationDate"], name: retro["firstname"] + " " + retro["lastname"]  })
-  // }, [listRetros]);
 
   const validateBoard = async () => {
     console.log(boardTitle);
@@ -403,9 +404,9 @@ function rowContent(_index, row) {
     
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody style={{cursor: "pointer"}}>
               {rows.map((row) => (
-                <TableRow key={row.name}>
+                <TableRow key={row.date}>
                   <TableCell component="th" scope="row">
                     {row.titleRetro}
                   </TableCell>
@@ -450,7 +451,6 @@ function rowContent(_index, row) {
               id="model-retro-select"
               value={retroModel}
               label="model de retro"
-              // onChange={handleValidate}
               onChange={(e) => setRetroModel(e.target.value)}
             >
               <MenuItem value="GMDBoard">Glad, Mad, Sad</MenuItem>
