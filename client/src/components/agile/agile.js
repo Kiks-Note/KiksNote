@@ -28,3 +28,15 @@ export const getImpactMapping = async (dashboardId) => {
     console.error(e);
   }
 };
+
+// ! A FAIRE 
+export const deleteActors = async (dashboardId, actorId) => {
+  try {
+    const res = await axios.delete(
+      `http://localhost:5050/agile/${dashboardId}/actor/${actorId}`
+    );
+    return res.data;
+  } catch (e) {
+    console.error(e);
+  }
+};

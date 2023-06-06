@@ -51,10 +51,8 @@ const BasicCard = ({
   const uniqueId = uuidv4();
 
   useEffect(() => {
-    console.log(actors);
     setColor(defineColor);
     setText(texte);
-    console.log(dashboardId);
     setId(dashboardId);
   }, [defineColor, texte, goals, actors, impacts, deliverables, dashboardId]);
 

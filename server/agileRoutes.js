@@ -8,6 +8,7 @@ const {
   getZipFolderAgile,
   updatePdfInAgileFolder,
   addPersona,
+  deleteActor,
   empathyRequest,
   personaRequest,
   changeIndex,
@@ -35,6 +36,7 @@ module.exports = function (connection, pathname, upload) {
     "/:dashboardId/empathy/:actorId/column/:columnId/postit/:postitId",
     deletePostit
   );
+  router.delete("/:dashboardId/actor/:actorId", deleteActor);
 
   switch (pathname) {
     case "/empathy":

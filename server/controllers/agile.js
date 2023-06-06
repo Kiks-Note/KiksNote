@@ -339,6 +339,29 @@ const addPersona = async (req, res) => {
     res.status(500).send({ message: "Server error" });
   }
 };
+const deleteActor = async (req, res) => {
+  try {
+    const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
+    const agileRef = dashboardRef.collection("agile").doc(req.params.actorId);
+
+    const snapshot = await agileRef.get();
+
+    if (snapshot.exists) {
+      // Le document existe, on peut le supprimer
+      await agileRef.delete();
+      res.status(204).send({ message: "Actor deleted successfully" });
+    } else {
+      // Le document n'existe pas
+      res.status(404).send({ message: "Actor not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    // Erreur côté serveur
+    res
+      .status(500)
+      .send({ message: "An error occurred while deleting the card" });
+  }
+};
 
 const empathyRequest = async (connection) => {
   connection.on("message", async (message) => {
@@ -353,11 +376,8 @@ const empathyRequest = async (connection) => {
     // Check if the document exists
     const documentSnapshot = await agileDocumentRef.get();
 
-    if (
-      !documentSnapshot.exists ||
-      !documentSnapshot.data().hasOwnProperty("empathy_map")
-    ) {
-      await agileDocumentRef.set({
+    if (!documentSnapshot.data().hasOwnProperty("empathy_map")) {
+      await agileDocumentRef.update({
         empathy_map: {
           think: {
             name: "Penser",
@@ -417,8 +437,8 @@ const personaRequest = async (connection) => {
     // Check if the document exists
     const documentSnapshot = await agileDocumentRef.get();
 
-    if (!documentSnapshot.exists || !documentSnapshot.data().hasOwnProperty("persona")) {
-      await agileDocumentRef.set({
+    if (!documentSnapshot.data().hasOwnProperty("persona")) {
+      await agileDocumentRef.update({
         persona: {},
       });
     }
@@ -443,6 +463,7 @@ module.exports = {
   getZipFolderAgile,
   updatePdfInAgileFolder,
   addPersona,
+  deleteActor,
   empathyRequest,
   personaRequest,
   changeIndex,

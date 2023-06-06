@@ -106,7 +106,7 @@ const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
     borderRadius: 1,
   },
 }));
-export default function FormPersona({ dashboardId, actorId, persona }) {
+export default function FormPersona({ dashboardId, actorId}) {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [avatars, setAvatars] = useState([]);
@@ -155,8 +155,6 @@ export default function FormPersona({ dashboardId, actorId, persona }) {
 
   useEffect(() => {
     generateRandomAvatars();
-    setFormData(persona);
-    console.log(persona);
   }, []);
   const handleNext = async () => {
     try {
