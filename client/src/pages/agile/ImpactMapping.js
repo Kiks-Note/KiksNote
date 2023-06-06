@@ -9,40 +9,91 @@ import Paper from "@mui/material/Paper";
 import IconButton from "@mui/material/IconButton";
 import AddIcon from "@mui/icons-material/Add";
 import { useSelector, useDispatch } from "react-redux";
+import PropTypes from "prop-types";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
-import Card from "./Card";
+import Card from "../../components/agile/Card";
+import { getImpactMapping, addImpactMapping } from "../../components/agile/agile";
+import { setImpactMapping } from "../../redux/slices/impactMappingSlice";
 
-const ImpactMapping = () => {
+ImpactMapping.propTypes = {
+  data: PropTypes.object.isRequired,
+};
+
+export default function ImpactMapping({ data }) {
+  const dispatch = useDispatch();
+  const state = useSelector((state) => state);
   const { goals, actors, impacts, deliverables } = useSelector(
     (state) => state.impactMapping
   );
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+
   const [showCard, setShowCard] = useState(false);
   const [columnIndex, setColumnIndex] = useState("");
-
+  const [textAlert, setTextAlert] = useState("undefined");
   const [cardObjectif, setCardObjectif] = useState([]);
   const [cardActors, setCardActors] = useState([]);
   const [cardImpacts, setCardImpacts] = useState([]);
   const [cardDeliverables, setCardDeliverables] = useState([]);
 
   useEffect(() => {
-    console.log("impactMapping:", { goals, actors, impacts, deliverables });
+    getImpactMappingInfo();
+  }, []);
+
+  useEffect(() => {
+    addDataToImpactMappingDB();
     setCardObjectif(goals);
     setCardActors(actors);
     setCardImpacts(impacts);
     setCardDeliverables(deliverables);
   }, [goals, actors, impacts, deliverables]);
 
+  const handleCloseSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpenSnackbar(false);
+  };
+  const addDataToImpactMappingDB = async () => {
+    if (goals && actors && deliverables && impacts) {
+      const res = await addImpactMapping({
+        dashboardId: data.dashboardId,
+        goals: goals,
+        actors: actors,
+        impacts: impacts,
+        deliverables: deliverables,
+      });
+      if (res.status === 200) {
+        setTextAlert('Impact mapping mis à jour.')
+        setOpenSnackbar(true);
+      } else {
+        setTextAlert('Erreur lors de la mise à jour de votre impact mapping.')
+      }
+    }
+  };
+
   const addCard = (index) => {
-    // console.log("addCard");
     setShowCard(true);
     setColumnIndex(index.toString());
   };
 
   const handleButtonForm = () => {
     setShowCard(false);
+    setTextAlert("");
     setColumnIndex("");
   };
 
+  const getImpactMappingInfo = async () => {
+    const impact = await getImpactMapping(data.dashboardId);
+
+    const impactGoals = Array.isArray(impact.goals) ? impact.goals : [];
+    const impactActors = Array.isArray(impact.actors) ? impact.actors : [];
+    const impactImpacts = Array.isArray(impact.impacts) ? impact.impacts : [];
+    const impactDeliverables = Array.isArray(impact.deliverables) ? impact.deliverables : [];
+
+    dispatch(setImpactMapping({ goals: impactGoals, actors: impactActors, impacts: impactImpacts, deliverables: impactDeliverables }));
+  };
   return (
     <TableContainer
       component={Paper}
@@ -85,11 +136,12 @@ const ImpactMapping = () => {
                     key={index}
                     index={index}
                     defineColor={goal.color}
+                    dashboardId={data.dashboardId}
                   />
                 );
               })}
               {showCard && columnIndex === "0" && (
-                <Card type="form" column={0} onCloseForm={handleButtonForm} />
+                <Card type="form" column={0} onCloseForm={handleButtonForm} dashboardId={data.dashboardId} />
               )}
               <IconButton aria-label="add" onClick={() => addCard(0)}>
                 <AddIcon />
@@ -110,11 +162,12 @@ const ImpactMapping = () => {
                     key={index}
                     index={index}
                     defineColor={actor.color}
+                    dashboardId={data.dashboardId}
                   />
                 );
               })}
               {showCard && columnIndex === "1" && (
-                <Card type="form" column={1} onCloseForm={handleButtonForm} />
+                <Card type="form" column={1} onCloseForm={handleButtonForm} dashboardId={data.dashboardId} />
               )}
               <IconButton aria-label="add" onClick={() => addCard(1)}>
                 <AddIcon />
@@ -135,11 +188,12 @@ const ImpactMapping = () => {
                     key={index}
                     index={index}
                     defineColor={impact.color}
+                    dashboardId={data.dashboardId}
                   />
                 );
               })}
               {showCard && columnIndex === "2" && (
-                <Card type="form" column={2} onCloseForm={handleButtonForm} />
+                <Card type="form" column={2} onCloseForm={handleButtonForm} dashboardId={data.dashboardId} />
               )}
               <IconButton aria-label="add" onClick={() => addCard(2)}>
                 <AddIcon />
@@ -160,12 +214,13 @@ const ImpactMapping = () => {
                     key={index}
                     index={index}
                     defineColor={deliverable.color}
+                    dashboardId={data.dashboardId}
                   />
                 );
               })}
 
               {showCard && columnIndex === "3" && (
-                <Card type="form" column={3} onCloseForm={handleButtonForm} />
+                <Card type="form" column={3} onCloseForm={handleButtonForm} dashboardId={data.dashboardId} />
               )}
               <IconButton aria-label="add" onClick={() => addCard(3)}>
                 <AddIcon />
@@ -174,8 +229,21 @@ const ImpactMapping = () => {
           </TableRow>
         </TableBody>
       </Table>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="warning"
+          sx={{ width: "100%" }}
+        >
+          {textAlert}
+        </Alert>
+      </Snackbar>
     </TableContainer>
-  );
-};
 
-export default ImpactMapping;
+  );
+}

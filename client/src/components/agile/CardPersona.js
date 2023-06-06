@@ -18,12 +18,12 @@ const CardPersona = ({ info }) => {
     <>
       <Card sx={{ maxWidth: 700 }}>
         <CardHeader
-          title={`${civilite} ${info.firstName} ${info.lastName}`}
+          title={`${info.firstName} ${info.lastName}`}
           subheader={`${info.age} ans ${info.city}, ${info.country}`}
           avatar={
             <Avatar
               alt="Avatar"
-              src={info.picture}
+              src={info.avatar}
               sx={{ width: 100, height: 100 }}
             />
           }
@@ -40,7 +40,7 @@ const CardPersona = ({ info }) => {
             </Grid>
             <Grid item xs={12}>
               <Typography variant="h6" color="text.primary">
-                Fristrations:
+                Frustrations:
               </Typography>
               <Typography variant="body2" color="text.primary">
                 {info.frustrations}
