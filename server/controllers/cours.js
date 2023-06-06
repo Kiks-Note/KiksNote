@@ -7,7 +7,12 @@ const mime = require("mime-types");
 const bucket = storageFirebase.bucket();
 const path = require("path");
 
-const DIR = "uploads/";
+const DIR = "./uploads";
+
+// Vérifier et créer le dossier "uploads" s'il n'existe pas
+if (!fs.existsSync(DIR)) {
+  fs.mkdirSync(DIR);
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -31,6 +36,11 @@ const upload = multer({
     cb(null, true);
   },
 }).single("file");
+
+function isBase64Image(string) {
+  const regex = /^data:image\/(png|jpg|jpeg|gif);base64,/i;
+  return regex.test(string);
+}
 
 const getAllCours = async (req, res) => {
   try {
@@ -103,6 +113,26 @@ const getClassById = async (req, res) => {
   }
 };
 
+const createClass = async (req, res) => {
+  const { name, promo, site, cursus } = req.body;
+
+  try {
+    const classRef = await db.collection("class").add({
+      name: name,
+      promo: promo,
+      site: site,
+      cursus: cursus,
+    });
+    return res.status(200).send({
+      id: classRef.id,
+      message: "Classe créée avec succès.",
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Erreur lors de la création de la classe.");
+  }
+};
+
 const getInstructors = async (req, res) => {
   try {
     const snapshot = await db
@@ -150,43 +180,62 @@ const createCours = async (req, res) => {
       imageBase64,
     } = req.body;
 
-    if (
-      !title ||
-      !description ||
-      !dateStartSprint ||
-      !dateEndSprint ||
-      !courseClass ||
-      !owner ||
-      !imageBase64
-    ) {
-      return res
-        .status(400)
-        .send("Veuillez remplir tous les champs obligatoires.");
+    const courseClassRef = await db.collection("class").doc(courseClass).get();
+
+    if (!courseClassRef.exists) {
+      return res.status(404).send("Classe non trouvée");
     }
 
-    const mimeType = "image/png";
-    const fileExtension = mime.extension(mimeType);
-    const fileName = `${title}.${fileExtension}`;
+    const courseClassData = courseClassRef.data();
+    courseClassData.id = courseClassRef.id;
 
-    const buffer = Buffer.from(
-      imageBase64.replace(/^data:image\/\w+;base64,/, ""),
-      "base64"
-    );
-    const file = bucket.file(`${courseClass}/${title}/${fileName}`);
+    const ownerRef = await db.collection("users").doc(owner).get();
 
-    const options = {
-      metadata: {
-        contentType: mimeType || "image/jpeg",
-        cacheControl: "public, max-age=31536000",
-      },
+    if (!ownerRef.exists) {
+      return res.status(404).send("Utilisateur non trouvé");
+    }
+
+    const ownerData = {
+      id: ownerRef.id,
+      firstname: ownerRef.data().firstname,
+      lastname: ownerRef.data().lastname,
     };
 
-    await file.save(buffer, options);
+    if (ownerRef.data().image) {
+      ownerData.image = ownerRef.data().image;
+    }
 
-    const [url] = await file.getSignedUrl({
-      action: "read",
-      expires: "03-17-2025",
-    });
+    let imageCourseUrl;
+
+    if (isBase64Image(imageBase64)) {
+      const mimeType = "image/png";
+      const fileExtension = mime.extension(mimeType);
+      const fileName = `${title}.${fileExtension}`;
+
+      const buffer = Buffer.from(
+        imageBase64.replace(/^data:image\/\w+;base64,/, ""),
+        "base64"
+      );
+      const file = bucket.file(`${courseClass}/${title}/${fileName}`);
+
+      const options = {
+        metadata: {
+          contentType: mimeType || "image/jpeg",
+          cacheControl: "public, max-age=31536000",
+        },
+      };
+
+      await file.save(buffer, options);
+
+      const [url] = await file.getSignedUrl({
+        action: "read",
+        expires: "03-17-2025",
+      });
+
+      imageCourseUrl = url;
+    } else {
+      imageCourseUrl = imageBase64;
+    }
 
     const resourcesRef = db.collection("cours");
     const newResource = await resourcesRef.add({
@@ -195,21 +244,60 @@ const createCours = async (req, res) => {
       dateStartSprint: new Date(dateStartSprint),
       dateEndSprint: new Date(dateEndSprint),
       campus_numerique: campus_numerique,
-      courseClass: courseClass,
-      owner: owner,
+      courseClass: courseClassData,
+      owner: ownerData,
       private: private,
-      imageCourseUrl: url,
+      imageCourseUrl: imageCourseUrl,
     });
 
     const newResourceData = await newResource.get();
 
-    res.status(200).json({
-      cours_id: newResource.id,
-      cours_created_datas: newResourceData._fieldsProto,
-    });
+    const coursId = newResource.id;
+    const coursData = newResourceData.data();
+
+    const response = {};
+    response[coursId] = coursData;
+
+    res.status(200).json(response);
   } catch (err) {
     console.error(err);
     res.status(500).send("Erreur lors de la création du cours.");
+  }
+};
+
+const createLinkedCours = async (req, res) => {
+  const courseId = req.params.courseId;
+  const { id } = req.body;
+
+  try {
+    const courseRef = db.collection("cours").doc(courseId);
+
+    const linkedCourseRef = db.collection("cours").doc(id);
+
+    const courseDoc = await linkedCourseRef.get();
+    if (!courseDoc.exists) {
+      return res.status(404).send("Le cours spécifié n'a pas été trouvé.");
+    }
+
+    const linkedCourseDoc = await linkedCourseRef.get();
+    if (!linkedCourseDoc.exists) {
+      return res.status(404).send("Le cours lié spécifié n'a pas été trouvé.");
+    }
+
+    const linkedCourseData = {
+      id: id,
+      title: courseDoc.data().title,
+      imageCourseUrl: courseDoc.data().imageCourseUrl,
+    };
+
+    await courseRef.update({
+      linkedCourse: linkedCourseData,
+    });
+
+    return res.status(200).send("Le cours lié a été ajouté avec succès.");
+  } catch (err) {
+    console.error(err);
+    throw new Error("Erreur lors de la création du lien entre les cours.");
   }
 };
 
@@ -261,11 +349,33 @@ const updateCours = async (req, res) => {
     }
 
     if (courseClass) {
-      updatedData.courseClass = courseClass;
+      const courseClassRef = await db
+        .collection("class")
+        .doc(courseClass)
+        .get();
+
+      if (!courseClassRef.exists) {
+        return res.status(404).send("Classe non trouvée");
+      }
+
+      updatedData.courseClass = {
+        id: courseClassRef.id,
+        ...courseClassRef.data(),
+      };
     }
 
     if (owner) {
-      updatedData.owner = owner;
+      const ownerRef = await db.collection("users").doc(owner).get();
+
+      if (!ownerRef.exists) {
+        return res.status(404).send("Utilisateur non trouvé");
+      }
+
+      updatedData.owner = {
+        id: ownerRef.id,
+        firstname: ownerRef.data().firstname,
+        lastname: ownerRef.data().lastname,
+      };
     }
 
     if (private) {
@@ -306,7 +416,7 @@ const updateCours = async (req, res) => {
 
     res.status(200).json({
       cours_id: courseId,
-      cours_updated_datas: updatedCourseData._fieldsProto,
+      cours_updated_datas: updatedCourseData.data(),
     });
   } catch (err) {
     console.error(err);
@@ -323,7 +433,6 @@ const uploadCoursPdf = async (req, res) => {
         res.status(400).json({ error: err.message });
       } else {
         if (!req.file) {
-          // Check if file was uploaded
           res.status(400).json({ error: "No file uploaded." });
           return;
         }
@@ -577,9 +686,11 @@ module.exports = {
   getAllClasses,
   getCoursById,
   getClassById,
+  createClass,
   getInstructors,
   getInstructorById,
   createCours,
+  createLinkedCours,
   updateCours,
   uploadCoursPdf,
   uploadBackLogPdf,

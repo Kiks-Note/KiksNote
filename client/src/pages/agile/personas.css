@@ -1,0 +1,30 @@
+.selected-avatar {
+  border: 4px solid rgba(82, 253, 45, 1);
+}
+
+.container-all {
+  height: max-content;
+  display: flex;
+  flex-direction: row;
+}
+.container-step-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 30px;
+}
+.description-step {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto;
+  padding: 10px;
+}
+.grid-item {
+  margin: 10px;
+}

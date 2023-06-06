@@ -30,8 +30,6 @@ function PrivateRoutes() {
           navigate("/login");
         });
     })();
-
-    console.log(lastConnectionAt, currentTime);
   }, []);
 
   return user && <MiniDrawer element={<Outlet />} />;

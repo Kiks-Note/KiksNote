@@ -8,17 +8,21 @@ const {
   createCard,
   moveStories,
   createDashboards,
+  deleteDashboard,
   createStory,
   editCard,
   deleteCard,
+  addUsersToStory,
   boardRequests,
   dashboardRequests,
+  dashboardRequestsPo,
+  dashboardRequestsPedago,
   overviewRequests,
 } = require("./controllers/dashboard");
 
 module.exports = function (connection, pathname) {
   // Route Dashboard
-  router.put("/:dashboardId/:favorite", favorite);
+  router.put("/favorite/:dashboardId", favorite);
   router.put("/:dashboardId/board/:boardId/setCards", changeIndex);
   router.put(
     "/:dashboardId/board/:boardId/column/:columnId/addCard",
@@ -26,14 +30,19 @@ module.exports = function (connection, pathname) {
   );
   router.post("/:dashboardId/moveStories", moveStories);
   router.post("/creation", createDashboards);
+  router.delete("/:dashboardId", deleteDashboard);
   router.post("/creation/:dashboardId/stories", createStory);
   router.put(
     "/:dashboardId/board/:boardId/column/:columnId/editCard",
     editCard
   );
-  router.get(
+  router.delete(
     "/:dashboardId/board/:boardId/column/:columnId/card/:cardId",
     deleteCard
+  );
+  router.post(
+    "/:dashboardId/board/:boardId/column/:columnId/story/:storyId/add-users",
+    addUsersToStory
   );
 
   switch (pathname) {

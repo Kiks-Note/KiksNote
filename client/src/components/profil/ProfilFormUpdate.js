@@ -69,7 +69,7 @@ function ProfilFormUpdate({ onClose, user }) {
 
   const sendData = async (data) => {
     const formData = new FormData();
-    formData.append("dateofbirth", dateBirthday);
+    formData.append("dateofbirth", data.dateBirthday);
     formData.append("job", data.job);
     formData.append("linkedin", data.linkedin);
     formData.append("git", data.gitLink);
