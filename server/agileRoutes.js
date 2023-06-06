@@ -8,6 +8,9 @@ const {
   getZipFolderAgile,
   getPdfEmpathyMapToFolderAgile,
   empathyRequest,
+  changeIndex,
+  createPostit,
+  deletePostit,
 } = require("./controllers/agile");
 
 module.exports = function (connection, pathname, upload) {
@@ -19,6 +22,15 @@ module.exports = function (connection, pathname, upload) {
     "/empathy_map",
     upload.single("pdfFile"),
     getPdfEmpathyMapToFolderAgile
+  );
+  router.put("/:dashboardId/empathy/:actorId/setPostit", changeIndex);
+  router.put(
+    "/:dashboardId/empathy/:actorId/column/:columnId/addPostit",
+    createPostit
+  );
+  router.delete(
+    "/:dashboardId/empathy/:actorId/column/:columnId/postit/:postitId",
+    deletePostit
   );
 
   switch (pathname) {

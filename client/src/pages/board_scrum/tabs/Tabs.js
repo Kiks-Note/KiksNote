@@ -110,7 +110,12 @@ export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
             )}
             {tab.component === "Impact" && <ImpactMapping data={tab.data} />}
             {tab.component === "Personas" && <Personas />}
-            {tab.component === "Empathy" && <EmpathyMap/>}
+            {tab.component === "Empathy" && (
+              <EmpathyMap
+                dashboardId={tab.data.dashboardId}
+                actorId={tab.data.actorId}
+              />
+            )}
           </TabContainer>
         ) : null
       )}

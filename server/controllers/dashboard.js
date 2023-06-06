@@ -292,12 +292,6 @@ const createDashboards = async (req, res) => {
       impacts: [],
       deliverables: [],
     });
-    await agileRef.doc("empathy_map").set({
-      think:[],
-      see:[],
-      do:[],
-      hear:[]
-    });
     await agileRef.doc("agile_folder").set({
       impact_mapping: "",
       empathy_map: "",

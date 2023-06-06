@@ -1,8 +1,9 @@
 const { auth, db } = require("../firebase");
 const archiver = require("archiver");
 const axios = require("axios");
+const { log } = require("console");
 const path = require("path");
-
+const { v4: uuidv4 } = require("uuid");
 const addImpactMapping = async (req, res) => {
   if (
     !req.body ||
@@ -35,7 +36,11 @@ const addImpactMapping = async (req, res) => {
 
 const getImpactMapping = async (req, res) => {
   try {
-    const docRef = db.collection("dashboard").doc(req.params.dashboardId).collection("agile").doc("impact_mapping");
+    const docRef = db
+      .collection("dashboard")
+      .doc(req.params.dashboardId)
+      .collection("agile")
+      .doc("impact_mapping");
     const doc = await docRef.get();
     if (!doc.exists) {
       return null;
@@ -124,21 +129,136 @@ const getZipFolderAgile = async (req, res) => {
     res.status(500).send(err);
   }
 };
-// const changeIndex = async (req, res) => {
-//   var data = req.body;
-//   console.log(data);
-//   await db
-//     .collection("dashboard")
-//     .doc(req.params.dashboardId)
-//     .collection("board")
-//     .doc(req.params.boardId)
-//     .update({
-//       think: data[0],
-//       see: data[1],
-//       do: data[2],
-//       hear: data[3],
-//     });
-// };
+
+/// PATH to create a postit
+const createPostit = async (req, res) => {
+  try {
+    const data = req.body;
+    const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
+    const agileRef = dashboardRef.collection("agile").doc(req.params.actorId);
+    const snapshot = await agileRef.get();
+    const columns = snapshot.data().empathy_map;
+    let column;
+    let columnName;
+    switch (req.params.columnId) {
+      case "think":
+        column = columns.think;
+        columnName = "think";
+        break;
+      case "see":
+        column = columns.see;
+        columnName = "see";
+        break;
+      case "do":
+        column = columns.do;
+        columnName = "do";
+        break;
+      case "hear":
+        column = columns.hear;
+        columnName = "hear";
+        break;
+      default:
+        res.status(400).send({ message: "Invalid column id" });
+        return;
+    }
+
+    const id = uuidv4();
+    const cards = column.items || [];
+    const newCard = {
+      id: id,
+      content: data.content,
+    };
+
+    column.items = [...cards, newCard];
+
+    // Créer un nouvel objet pour mettre à jour uniquement la colonne spécifiée
+    const updateData = {
+      empathy_map: { ...columns, [columnName]: column },
+    };
+
+    await agileRef.update(updateData);
+    res.send({ message: "Card created successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+/// PATH to delete a postit
+const deletePostit = async (req, res) => {
+  try {
+    const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
+    const agileRef = dashboardRef.collection("agile").doc(req.params.actorId);
+    const snapshot = await agileRef.get();
+    const columns = snapshot.data().empathy_map;
+    let column;
+    let columnName;
+    switch (req.params.columnId) {
+      case "think":
+        column = columns.think;
+        columnName = "think";
+        break;
+      case "see":
+        column = columns.see;
+        columnName = "see";
+        break;
+      case "do":
+        column = columns.do;
+        columnName = "do";
+        break;
+      case "hear":
+        column = columns.hear;
+        columnName = "hear";
+        break;
+      default:
+        res.status(400).send({ message: "Invalid column id" });
+        return;
+    }
+
+    const cards = column.items || [];
+    const cardIndex = cards.findIndex((card) => {
+      if (card.id == req.params.postitId) {
+        return card.id;
+      }
+    });
+    if (cardIndex == -1) {
+      res.status(404).send({ message: "Card not found" });
+      return;
+    }
+
+    column.items = cards.filter((card) => card.id != req.params.postitId);
+    // Créer un nouvel objet pour mettre à jour uniquement la colonne spécifiée
+    const updateData = {
+      empathy_map: { ...columns, [columnName]: column },
+    };
+    await agileRef.update(updateData);
+
+    // Card deleted successfully
+    res.status(204).send({ message: "Card deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    // Server error
+    res
+      .status(500)
+      .send({ message: "An error occurred while deleting the card" });
+  }
+};
+/// PATH to change a postit index
+const changeIndex = async (req, res) => {
+  var data = req.body;
+  await db
+    .collection("dashboard")
+    .doc(req.params.dashboardId)
+    .collection("agile")
+    .doc(req.params.empathy.actorId)
+    .update({
+      empathy_map: {
+        think: data.think,
+        see: data.see,
+        do: data.do,
+        hear: data.hear,
+      },
+    });
+};
 const getPdfEmpathyMapToFolderAgile = async (req, res) => {
   try {
     const pdfFile = req.file;
@@ -156,27 +276,68 @@ const getPdfEmpathyMapToFolderAgile = async (req, res) => {
   }
 };
 
-// !TODO
 const empathyRequest = async (connection) => {
   connection.on("message", async (message) => {
-    console.log('empathy', message);
     const empathy = JSON.parse(message.utf8Data);
-    console.log(empathy);
-    db.collection("dashboard")
+
+    var agileDocumentRef = db
+      .collection("dashboard")
       .doc(empathy.dashboardId)
-      .collection("agile").doc("empathy_map")
-      .onSnapshot(
-        (snapshot) => {
-          const data = snapshot.data();
-          console.log('snap123', data)
-          connection.sendUTF(JSON.stringify(data));
+      .collection("agile")
+      .doc(empathy.actorId);
+
+    // Check if the document exists
+    const documentSnapshot = await agileDocumentRef.get();
+
+    if (!documentSnapshot.exists) {
+      await agileDocumentRef.set({
+        empathy_map: {
+          think: {
+            name: "Penser",
+            color: "#BF2020",
+            items: [],
+          },
+          see: {
+            name: "Voir",
+            color: "#3295AC",
+            items: [],
+          },
+          do: {
+            name: "Dire",
+            color: "#9ACD32",
+            items: [],
+          },
+          hear: {
+            name: "Entendre",
+            color: "#ed7ee2",
+            items: [],
+          },
         },
-        (err) => {
-          console.log(`Encountered error: ${err}`);
-        }
-      );
+      });
+    }
+
+    // Listen to changes in the document
+    agileDocumentRef.onSnapshot(
+      (snapshot) => {
+        const data = snapshot.data();
+        const empathyMap = new Map([
+          ["think", data.empathy_map.think],
+          ["see", data.empathy_map.see],
+          ["do", data.empathy_map.do],
+          ["hear", data.empathy_map.hear],
+        ]);
+        const orderedData = {
+          empathy_map: Object.fromEntries(empathyMap),
+        };
+        connection.sendUTF(JSON.stringify(orderedData));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
   });
 };
+
 module.exports = {
   addImpactMapping,
   getImpactMapping,
@@ -184,5 +345,7 @@ module.exports = {
   getZipFolderAgile,
   getPdfEmpathyMapToFolderAgile,
   empathyRequest,
-  //changeIndex,
+  changeIndex,
+  createPostit,
+  deletePostit,
 };

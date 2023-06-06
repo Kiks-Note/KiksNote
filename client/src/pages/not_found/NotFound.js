@@ -2,7 +2,7 @@ import notFoundImg from "./../../assets/img/not_found.svg";
 import React from "react";
 import { useTheme } from "@mui/material";
 
-import "./NotFound.scss"
+import "./notFound.scss"
 
 function NotFound() {
 
