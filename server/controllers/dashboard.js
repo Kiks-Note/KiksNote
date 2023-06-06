@@ -639,7 +639,7 @@ function setColumnItems(
     }
   });
 }
-
+///Path to create Releases
 async function createReleases(startingDate, endingDate, dashboardRef) {
   const releaseDuration = 28; // 4 weeks
   const sprintDuration = 7; // 1 week
@@ -665,7 +665,7 @@ async function createReleases(startingDate, endingDate, dashboardRef) {
   await Promise.all(Object.values(releases));
   return releases;
 }
-
+///Path to create Sprints
 async function createSprints(
   releaseStart,
   releaseEnd,
@@ -710,7 +710,7 @@ async function createSprints(
 
   return sprints;
 }
-
+///Path to create Dashboard
 async function createDashboard(body, bool) {
   var dashboardRef;
   if (bool) {
@@ -743,7 +743,7 @@ async function createDashboard(body, bool) {
 
   return dashboardRef;
 }
-
+/// Function to have randomColor
 const getRandomColor = () => {
   const hexLetters = "0123456789ABCDEF";
   let color = "#";
@@ -752,7 +752,7 @@ const getRandomColor = () => {
   }
   return color;
 };
-
+/// Path to Websocket 
 const dashboardRequests = async (connection) => {
   connection.on("message", async (message) => {
     console.log(message);
@@ -964,7 +964,7 @@ const overviewRequests = async (connection) => {
     );
   });
 };
-
+/// Function to addDashboard
 async function addDashboard(groups, db) {
   const dashboardSnapshot = await db.collection("dashboard").get();
 
