@@ -57,21 +57,26 @@ function Home() {
   };
 
   useEffect(() => {
-    saveLayout();
-  }, [layouts]);
+    const saveLayout = () => {
+      const userId = user?.id;
+      axios
+        .post(`http://localhost:5050/home/saveWidget/${userId}`, {
+          layouts: layouts
+        })
+        .then((response) => {
+          console.log(response.data);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    };
+    return (
+      () => {
+        saveLayout();
+      }
+    )
+  }, [layouts, user?.id]);
 
-  const saveLayout = () => {
-    const userId = user.id;
-
-    axios
-      .post(`http://localhost:5050/home/saveWidget/${userId}`, { layouts })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
 
   return (
     <div className="home">

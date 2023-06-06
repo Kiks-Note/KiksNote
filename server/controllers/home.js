@@ -16,5 +16,5 @@ const saveWidget = async (req, res) => {
 };
 
 module.exports = {
-  saveWidget,
+  saveWidget
 };
