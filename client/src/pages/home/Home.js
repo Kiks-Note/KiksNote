@@ -75,7 +75,6 @@ function Home() {
   const saveLayout = async () => {
     try {
       const response = await axios.post(`http://localhost:5050/home/save/${user.id}/widgets`, layouts);
-      console.log(response.data);
     } catch (error) {
       console.error(error);
     }
