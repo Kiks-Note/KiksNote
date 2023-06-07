@@ -40,6 +40,8 @@ var upload = multer({
 });
 
 const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes");
+const { callRoutesWsNeeded, callRoutesWsNotNeeded } = require("./callRoutes");
+
 
 app.use(express.json());
 app.use(cors());
@@ -66,23 +68,24 @@ const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 
-const { callRoutesWsNeeded, callRoutesWsNotNeeded } = require("./callRoutes");
 const path = require("path");
 
 const agileRoute = require("./agileRoutes");
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
+const callRoutesNotNeeded = callRoutesWsNotNeeded();
 
 app.use("/inventory", inventoryRoutes);
 
 app.use("/groupes", groupsRoute);
 app.use("/auth", authRoutes);
 app.use("/retro", retroRoutesNotNeeded);
+app.use("/call", callRoutesNotNeeded);
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
-  app.use("/callws", callRoutesWsNeeded(connection, pathname));
+  app.use("/call", callRoutesWsNeeded(connection, pathname));
 
   // app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
@@ -107,7 +110,6 @@ app.use("/ressources", coursRoutes()); // --> Resssources Cours
 app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
 app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
 app.use("/ressources", technosRoutes()); // --> Resssources Technos
-app.use("/call", callRoutesWsNotNeeded());
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });

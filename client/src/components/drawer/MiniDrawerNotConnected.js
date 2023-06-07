@@ -103,7 +103,7 @@ export default function MiniDrawerNotConnected({ element }) {
     {
       id: 3,
       name: "Connexion",
-      route: "/connexion",
+      route: "/login",
       icon: (
         <ConnectWithoutContactIcon
           sx={{ color: theme.palette.custom.iconDrawer }}
@@ -288,7 +288,7 @@ export default function MiniDrawerNotConnected({ element }) {
           )}
         </List>
       </Drawer>
-      <Box component="main" sx={{width: '100%'}}>
+      <Box component="main" sx={{ width: '100%' }}>
         <>{element}</>
       </Box>
     </Box>

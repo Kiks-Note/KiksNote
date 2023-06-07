@@ -3,12 +3,12 @@ const { db } = require("../firebase");
 const addCall = async (req, res) => {
   try {
     const docRef = await db.collection("calls").add({
-      id_lesson: req.body.params.id_lesson,
-      date: req.body.params.date,
-      status: req.body.params.status,
-      qrcode: req.body.params.qrcode,
-      students_scan: req.body.params.students_scan,
-      chats: req.body.params.chats,
+      id_lesson: req.body.id_lesson,
+      date: req.body.date,
+      status: req.body.status,
+      qrcode: req.body.qrcode,
+      students_scan: req.body.students_scan,
+      chats: req.body.chats,
     });
 
     const docSnapshot = await docRef.get();
@@ -55,8 +55,8 @@ const getCall = async (req, res) => {
 const updateCall = async (req, res) => {
   await db
     .collection("calls")
-    .doc(req.body.params.id)
-    .update(req.body.params.object)
+    .doc(req.body.id)
+    .update(req.body.object)
     .then(() => {
       console.log("c'est modifié");
       res.send("modification effectué");
@@ -109,6 +109,8 @@ const room = async (connection) => {
   connection.on("message", (message) => {
     const response = JSON.parse(message.utf8Data);
 
+    console.log(response);
+
     switch (response.type) {
       case "createRoom":
         const newRoomRef = db.collection("rooms").doc();
@@ -117,6 +119,7 @@ const room = async (connection) => {
           class: response.data.class,
           type: "call",
         });
+        console.log("createRoom");
         currentRooms.set(response.data.class, defaultRoom);
 
         const roomUsersC = currentRooms.get(response.data.class) || defaultRoom;
@@ -146,7 +149,7 @@ const room = async (connection) => {
           },
         };
 
-        sendToAllClients(messageCreate, response.data.class);
+        //    sendToAllClients(messageCreate, response.data.class);
 
         break;
       case "joinRoom":

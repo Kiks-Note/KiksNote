@@ -24,7 +24,7 @@ function AppelEleve({ callId }) {
 
   const id = useRef();
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://${ip}:5050/Call`);
+    return new w3cwebsocket(`ws://${ip}:5050/call`);
   }, []);
 
   const LogToExistingRoom = useCallback(async () => {
