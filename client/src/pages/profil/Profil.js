@@ -23,6 +23,7 @@ import ProfilSkeleton from "../../components/profil/ProfilSkeleton";
 import useFirebase from "../../hooks/useFirebase";
 
 export default function Profil() {
+    const queryParameters = new URLSearchParams(window.location.search)
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -30,6 +31,9 @@ export default function Profil() {
   const {user} = useFirebase();
   const [userProfil, setUserProfil] = useState({});
   const fileInputRef = useRef(null);
+
+  const id = queryParameters.get("id");
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -104,7 +108,7 @@ export default function Profil() {
         console.log("dddd");
 
         setUserProfil({
-          id: user?.id,
+          id: id,
           firstname: data.firstname,
           lastname: data.lastname,
           description: data.description,
@@ -131,7 +135,7 @@ export default function Profil() {
         console.log("Loading");
       };
     })();
-  }, [user?.id]);
+  }, [id, user?.id]);
   return (
     <>
       {isLoading ? (
