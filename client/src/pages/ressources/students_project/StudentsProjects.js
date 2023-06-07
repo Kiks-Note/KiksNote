@@ -214,35 +214,41 @@ const StudentsProjects = () => {
   };
 
   const publishStudentProject = async () => {
-    try {
-      await axios
-        .post("http://localhost:5050/ressources/students-projects", {
-          StudentId: user?.id,
-          nameProject: nameProject,
-          RepoProjectLink: repoProjectLink,
-          promoProject: promoProject,
-          membersProject: membersProject,
-          technosProject: technosProject,
-          typeProject: typeProject,
-          descriptionProject: descriptionProject,
-          imgProject: projectImageBase64,
-          counterRef: 0,
-        })
-        .then((res) => {
-          console.log(res);
-          if (
-            res.status === 200 &&
-            res.data?.message === "Projet étudiant créé avec succès."
-          ) {
-            toastSuccess(`Votre project ${nameProject} a bien été uploadé !`);
-          }
-        })
-        .catch((error) => {
-          toastFail("Erreur lors de la création d'un projet étudiant");
-          console.log(error);
-        });
-    } catch (error) {
-      throw error;
+    if (nameProject === "" || repoProjectLink === "" || !promoProject || !membersProject || !technosProject || typeProject === "" || descriptionProject === "" || projectImageBase64 === "") {
+      toast.error("Veuillez remplir tous les champs !");
+      return;
+    }
+    else{
+      try {
+        await axios
+          .post("http://localhost:5050/ressources/students-projects", {
+            StudentId: user?.id,
+            nameProject: nameProject,
+            RepoProjectLink: repoProjectLink,
+            promoProject: promoProject,
+            membersProject: membersProject,
+            technosProject: technosProject,
+            typeProject: typeProject,
+            descriptionProject: descriptionProject,
+            imgProject: projectImageBase64,
+            counterRef: 0,
+          })
+          .then((res) => {
+            console.log(res);
+            if (
+              res.status === 200 &&
+              res.data?.message === "Projet étudiant créé avec succès."
+            ) {
+              toastSuccess(`Votre project ${nameProject} a bien été uploadé !`);
+            }
+          })
+          .catch((error) => {
+            toastFail("Erreur lors de la création d'un projet étudiant");
+            console.log(error);
+          });
+      } catch (error) {
+        throw error;
+      }
     }
   };
 
@@ -370,8 +376,13 @@ const StudentsProjects = () => {
   const handleSubmit = async (event) => {
     await publishStudentProject();
     event.preventDefault();
-    setOpen(false);
-    getAllProjects();
+    if (nameProject === "" || repoProjectLink === "" || !promoProject || !membersProject || !technosProject || typeProject === "" || descriptionProject === "" || projectImageBase64 === "") {
+      
+    }
+    else{
+      setOpen(false);
+      getAllProjects();
+    }
   };
 
   const allTypesProject = [

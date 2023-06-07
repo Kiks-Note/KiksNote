@@ -216,36 +216,42 @@ const Cours = () => {
   };
 
   const createNewCours = async () => {
-    try {
-      await axios
-        .post("http://localhost:5050/ressources/cours", {
-          title: courseTitle,
-          description: courseDescription,
-          dateStartSprint: courseDateStart,
-          dateEndSprint: courseDateEnd,
-          campus_numerique: courseCampusNumerique,
-          courseClass: idSelectedClass,
-          owner: idSelectedOwner,
-          private: coursePrivate,
-          imageBase64: courseImageBase64,
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            toastSuccess(`Votre cours ${courseTitle} a bien été ajouté`);
-            handleClose();
-            getAllCours();
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      if (error.response.status === 400) {
-        toastWarning("Veuillez remplir tous les champs.");
+    if (courseTitle === "" || courseDescription === "" || courseDateStart === "" || courseDateEnd === "" || idSelectedClass === "" || idSelectedOwner === "" || courseImageBase64 === "") {
+      toast.error("Veuillez remplir tous les champs !");
+      return;
+    }
+    else{
+      try {
+        await axios
+          .post("http://localhost:5050/ressources/cours", {
+            title: courseTitle,
+            description: courseDescription,
+            dateStartSprint: courseDateStart,
+            dateEndSprint: courseDateEnd,
+            campus_numerique: courseCampusNumerique,
+            courseClass: idSelectedClass,
+            owner: idSelectedOwner,
+            private: coursePrivate,
+            imageBase64: courseImageBase64,
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              toastSuccess(`Votre cours ${courseTitle} a bien été ajouté`);
+              handleClose();
+              getAllCours();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } catch (error) {
+        if (error.response.status === 400) {
+          toastWarning("Veuillez remplir tous les champs.");
+        }
+        console.error(error);
+        toastFail("Erreur lors de la création de votre cours.");
+        throw error;
       }
-      console.error(error);
-      toastFail("Erreur lors de la création de votre cours.");
-      throw error;
     }
   };
 

@@ -139,6 +139,11 @@ const Jpo = () => {
   };
 
   const publishJpo = async () => {
+    if (nameJPO === "" || descriptionJPO === "" || jpoThumbnail === "" || JPODateStart === "" || JPODateEnd === "" || !jpoParticipants) {
+      toast.error("Veuillez remplir tous les champs !");
+      return;
+    }
+    else{
     try {
       await axios
         .post("http://localhost:5050/ressources/jpo", {
@@ -166,13 +171,19 @@ const Jpo = () => {
     } catch (error) {
       console.error(error);
     }
+  }
   };
 
   const handleSubmit = async (event) => {
     await publishJpo();
     event.preventDefault();
-    setOpen(false);
-    getAllJpo();
+    if (nameJPO === "" || descriptionJPO === "" || jpoThumbnail === "" || JPODateStart === "" || JPODateEnd === "" || !jpoParticipants) {
+      
+    }
+    else{
+      setOpen(false);
+      getAllJpo();
+    }
   };
 
   useEffect(() => {
