@@ -1034,6 +1034,10 @@ async function addDashboard(groups, db) {
         impacts: [],
         deliverables: [],
       });
+      await agileRef.doc("elevator_pitch").set({
+        name: "",
+        description:""
+      });
       await agileRef.doc("agile_folder").set({
         impact_mapping: "",
         empathy_map: "",

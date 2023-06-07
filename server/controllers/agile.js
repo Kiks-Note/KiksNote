@@ -34,25 +34,6 @@ const addImpactMapping = async (req, res) => {
   }
 };
 
-const getImpactMapping = async (req, res) => {
-  try {
-    const docRef = db
-      .collection("dashboard")
-      .doc(req.params.dashboardId)
-      .collection("agile")
-      .doc("impact_mapping");
-    const doc = await docRef.get();
-    if (!doc.exists) {
-      return null;
-    }
-    const data = doc.data();
-    // console.log('data',req.params.dashboardId, data);
-    return res.status(200).send(data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ message: "Server error for impact mapping" });
-  }
-};
 const impactMappingRequest = async (connection) => {
   connection.on("message", async (message) => {
     const impactMapping = JSON.parse(message.utf8Data);
@@ -496,7 +477,6 @@ const personaRequest = async (connection) => {
 
 module.exports = {
   addImpactMapping,
-  getImpactMapping,
   impactMappingRequest,
   getFoldersAgile,
   getZipFolderAgile,
