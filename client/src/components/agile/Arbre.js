@@ -1,21 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Tree from "react-d3-tree";
-import Button from "@material-ui/core/Button";
-import { Icon } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  AddRounded,
-  EditNotificationsRounded,
-  NoEncryption,
-} from "@mui/icons-material";
-import { array } from "prop-types";
-import { isNameExists, generateUniqueName } from "../../utils/FunctionsUtils";
-import InputNode from "./arbre/InputNode";
+
 import DrawTools from "./arbre/DrawTools";
-import { green } from "@mui/material/colors";
+
 
 const useStyles = makeStyles((theme) => ({
   treeContainer: {
@@ -63,11 +51,9 @@ const useStyles = makeStyles((theme) => ({
 
 const Arbre = ({ projet }) => {
   const classes = useStyles();
-  const [showToolbar, setShowToolbar] = useState(false);
-  const [hoveredNode, setHoveredNode] = useState(null);
-  const [showInput, setShowInput] = useState(false);
+
   const [currentProjetId, setCurrentProjetId] = useState(null);
-  const [showInputFor, setShowInputFor] = useState(null);
+
   const [treeData, setTreeData] = useState({
     name: "Root",
     children: [],
@@ -82,24 +68,20 @@ const Arbre = ({ projet }) => {
     }
   }, [projet]);
 
-  const handleNodeMouseOver = (event) => {
-    console.log(event);
-    setHoveredNode(event);
-  };
 
-  const handleNodeMouseOut = () => {
-    setHoveredNode(null);
-  };
 
   const handleUpdateThree = (data) => {
-    console.log(data);
-    setTreeData(data);
+    setNodeToUpdate(data.updateNode)
+    setTreeData(data.updateTree);
+    showDrawer(null, data.updateNode)
+
   };
 
   /*FINNNNN TOOOOLBAR*/
 
   const showDrawer = (e, node) => {
-    if (nodeToUpdate != null && node.name == nodeToUpdate.name) {
+    setShoweDrawer(false);
+    if (nodeToUpdate != null && node.name == nodeToUpdate.name && e != null) {
       setShoweDrawer(false);
       setNodeToUpdate(null);
       return;
@@ -117,14 +99,7 @@ const Arbre = ({ projet }) => {
         x="-50"
         y="-30"
         onClick={(e) => showDrawer(e, nodeDatum)}
-        onMouseEnter={() => {
-          setShowToolbar(true);
-          handleNodeMouseOver(nodeDatum.name);
-        }}
-        onMouseLeave={() => {
-          setShowToolbar(false);
-          handleNodeMouseOut();
-        }}
+
       ></rect>
       <text dominantBaseline="middle" textAnchor="middle" fill="white">
         {nodeDatum.name}
@@ -161,13 +136,14 @@ const Arbre = ({ projet }) => {
           }
         />
       </div>
-      {showeDrawer && (
-        <DrawTools
-          nodeToUpdate={nodeToUpdate}
-          sendUpdateThree={handleUpdateThree}
-          oldTreeData={treeData}
-        />
-      )}
+
+      <DrawTools
+        nodeToUpdate={nodeToUpdate}
+        sendUpdateThree={handleUpdateThree}
+        oldTreeData={treeData}
+        open={showeDrawer ? true : false}
+      />
+
     </>
   );
 };

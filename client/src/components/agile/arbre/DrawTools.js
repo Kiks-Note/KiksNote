@@ -3,65 +3,14 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Drawer, TextField, Typography } from "@mui/material";
 import { isNameExists, generateUniqueName, findParent } from "../../../utils/FunctionsUtils"
 import Button from '@material-ui/core/Button';
+import { SwipeableDrawer } from '@mui/material';
 
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 
-
-
-const useStyles = makeStyles((theme) => ({
-  drawer: {
-    padding: '10px',
-    width: 100,
-    flexShrink: 0,
-
-
-  },
-  drawerPaper: {
-    padding: '10px',
-    width: '320px',
-    height: '100vh',
-  },
-  addButton: {
-    color: theme.palette.primary.contrastText,
-    backgroundColor: 'green',
-    '&:hover': {
-      backgroundColor: theme.palette.primary.white,
-    },
-  },
-  editButton: {
-    color: theme.palette.secondary.contrastText,
-    backgroundColor: 'yellow',
-    '&:hover': {
-      backgroundColor: theme.palette.secondary.white,
-    },
-  },
-  deleteButton: {
-    color: theme.palette.error.contrastText,
-    backgroundColor: 'red',
-    '&:hover': {
-      backgroundColor: theme.palette.error.white,
-    },
-  },
-  titleDraw: {
-    textAlign: 'center',
-    marginBottom: 70
-  },
-  addSection: {
-    backgroundColor: 'red',
-    marginBottom: 70
-  },
-  nameSection: {
-    marginBottom: 30
-  },
-  deleteSection: {
-    marginBottom: 30
-  }
-}));
-const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
-  const classes = useStyles();
+const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData, open }) => {
   const [node, setNode] = useState(nodeToUpdate)
   const [nameEdit, setNameEdit] = useState('')
   const [nameAdd, setNameAdd] = useState('')
@@ -80,8 +29,9 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
     }
     const updatedOldTreeData = findAndReplaceObject(node.name, newBranch, oldTreeData, 'add');
     setNode(newBranch);
+    let data = { updateTree: updatedOldTreeData, updateNode: newBranch }
     setNameAdd('');
-    sendUpdateThree(updatedOldTreeData);
+    sendUpdateThree(data);
   }
 
   function handleEditButton() {
@@ -96,7 +46,8 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
     const updatedOldTreeData = findAndReplaceObject(node.name, newBranch, oldTreeData, 'edit');
     setNameEdit('');
     setNode(newBranch);
-    sendUpdateThree(updatedOldTreeData);
+    let data = { updateTree: updatedOldTreeData, updateNode: newBranch }
+    sendUpdateThree(data);
   }
 
   function handleNameAdd(e) {
@@ -119,7 +70,9 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
     parentNode.children.splice(0, parentNode.children.length, ...updateChildre)
     const updateoldTreeData = findAndReplaceObject(parentNode.name, parentNode, oldTreeData, 'edit')
     setNode(parentNode)
-    sendUpdateThree(updateoldTreeData)
+    let data = { updateTree: updateoldTreeData, updateNode: parentNode }
+    sendUpdateThree(data);
+
 
   }
 
@@ -149,41 +102,44 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
   };
   return (
     <div>
+
       <Drawer
 
-        className={classes.drawer}
-        variant="permanent"
-        classes={{
-          paper: classes.drawerPaper,
+
+        open={open}
+        variant="persistent"
+        onClose={!open}
+        PaperProps={{
+          style: {
+            width: '500px',
+            height: '150px',
+            borderRadius: '20px',
+            marginLeft: '75px'
+          },
         }}
-        style={{ height: '100vh', right: 0 }}
+        style={{ height: '50px', right: 0 }}
       >
-        <div className='headerDraw' style={{ marginBottom: '70px' }}>
-          <div className='titleDraw' >
-            <Typography variant="h5" align='center'>ÉDITION DU NOEUD</Typography>
-          </div>
-          <div className='nameNode' style={{ margin: '15px' }}>
-            <Typography variant="h2" align='center'>{node.name}</Typography>
+        <div className='headerDraw' >
+          <div className='nameNode' style={{ margin: '1px' }}>
+            <Typography variant="h4" align='center'>{node == null ? ' ' : node.name}</Typography>
           </div>
         </div>
 
         <br>
         </br>
-        <div className='addSection' style={{ marginBottom: '70px' }}>
-          <div>  <TextField value={nameAdd} onChange={(e) => handleNameAdd(e)}></TextField>
+        <div className='addSection' style={{ marginBottom: '3px', display: 'flex', justifyContent: 'space-between', width: '500px', height: '40px', margin: '10px' }}>
+          <div >
+            <TextField value={nameAdd} onChange={(e) => handleNameAdd(e)} style={{ width: '120px', height: '5px' }}></TextField>
             <Button
-              title={buttons[0].description}
-              className={buttons[0].clas}
+              s className={buttons[0].clas}
               style={{ color: 'green', margin: 10, backgroundColor: 'white', border: 10, borderColor: 'green' }}
               onClick={handleAddButton}
             >
               {buttons[0].icon}
             </Button>
           </div>
-        </div>
-        <div className='nameSection' style={{ marginBottom: '70px' }}>
           <div >
-            <TextField value={nameEdit} onChange={(e) => handleNameEdit(e)}></TextField>
+            <TextField value={nameEdit} onChange={(e) => handleNameEdit(e)} style={{ width: '120px', height: '5px' }}></TextField>
             <Button
               title={buttons[1].description}
               className={buttons[1].clas}
@@ -194,16 +150,16 @@ const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
               {buttons[1].icon}
             </Button>
           </div>
-        </div>
-        <div className='deleteSection' style={{ marginBottom: '70px' }}>
-          <Button
-            title={buttons[2].description}
-            className={buttons[2].clas}
-            onClick={handleDeletedButton}
-            style={{ backgroundColor: 'white', color: 'red', margin: 10, borderColor: 'red', border: 10 }}
-          >
-            {buttons[2].icon}
-          </Button>
+          <div style={{ marginBottom: '7px' }}>
+            <Button
+              title={buttons[2].description}
+              className={buttons[2].clas}
+              onClick={handleDeletedButton}
+              style={{ backgroundColor: 'white', color: 'red', margin: 10, borderColor: 'red', border: 10 }}
+            >
+              {buttons[2].icon}
+            </Button>
+          </div>
         </div>
       </Drawer>
     </div>
