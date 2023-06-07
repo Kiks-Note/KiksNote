@@ -14,6 +14,7 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PostIt from "../../components/agile/PostIt";
 import { useParams } from "react-router-dom";
+import { w3cwebsocket } from "websocket";
 import { useLocation } from 'react-router-dom';
 
 
@@ -30,16 +31,32 @@ export default function Board() {
   const [selectedRetro, setSelectedRetro] = useState('');
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [currentRetroIndex, setCurrentRetroIndex] = useState(null)
-
-
-
   const location = useLocation();
-  const retroData = location.state && location.state.retro;
-  const [columns, setColumns] = useState([]);
+  const [retroData, setRetroData] = useState(location.state && location.state.retro);
+  const [columns, setColumns] = useState(retroData["dataRetro"]);
 
   useEffect(() => {
-    setColumns(retroData["dataRetro"])
-  },[])
+
+    async function handleOpen() {    
+      await axios.get(`http://localhost:5050/retro/getRetroById/${retroData["idRetro"]}`).then((res) => {
+        console.log(res.data);
+        setColumns(res.data["dataRetro"])
+      })
+    }
+
+    const ws = new w3cwebsocket("ws://localhost:5050/retro");
+    ws.onmessage = async (message) => {
+      if (ws.readyState === WebSocket.OPEN) {
+        handleOpen();
+      } else {
+        ws.onopen = handleOpen;
+      }
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []);
 
   const GMDBoard = {
     Glad: {
@@ -125,40 +142,35 @@ export default function Board() {
 
   const sendAddedPostIt = async (newObjPostIt, columnId) => {
     axios.post("http://localhost:5050/retro/addPostIt", {
-      newObjPostIt : newObjPostIt,
-      columnId : columnId,
+      newObjPostIt: newObjPostIt,
+      columnId: columnId,
       idCurrentRetro: retroData["idRetro"]
     })
   }
 
-  const sendEditPostit = async (categorie,selectedPostItIndex,postItText) => {
+  const sendEditPostit = async (categorie, selectedPostItIndex, postItText) => {
     console.log(currentRetroIndex);
     await axios.put("http://localhost:5050/retro/editPostit", {
-      categorie : categorie,
+      categorie: categorie,
       selectedPostItIndex: selectedPostItIndex,
       postItText: postItText,
     })
   }
-
-
+  
   const sendMovePostIt = async (source, destination) => {
     axios.put("http://localhost:5050/retro/movePostIt", {
       source: source,
       destination: destination,
     })
-  } 
-
-
-
+  }
 
   const changePostiTText = () => {
     let selectedColumn = { ...columns }
     selectedColumn[categorie]["items"][selectedPostItIndex]["content"] = postItText
-    sendEditPostit(categorie,selectedPostItIndex,postItText);
+    sendEditPostit(categorie, selectedPostItIndex, postItText);
     setColumns(selectedColumn)
     handleCloseEditPostIt();
   }
-
 
   const addPostIt = (columnId) => {
     const newPostIt = {
@@ -186,8 +198,6 @@ export default function Board() {
 
     console.log(columns);
   };
-
-
 
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
@@ -240,7 +250,7 @@ export default function Board() {
     setShowTextField(false);
   };
 
-  
+
   const setRightPostItCategorie = (obj, i) => {
 
     if (obj["name"] == "Glad") {
@@ -268,179 +278,179 @@ export default function Board() {
     setSelectedPostItIndex(i)
   }
 
-    return (
+  return (
 
-        (
-            <>
-             <div>
-            <Dialog
-              open={openPostItEdit}
-              onClose={handleCloseEditPostIt}
-              fullWidth={true}
-              maxWidth={"sm"}
-            >
-              <DialogTitle>Post it</DialogTitle>
-              <DialogContent>
-                <TextField placeholder="Veuillez écrire votre texte ici"
-                  fullWidth
-                  onChange={(e) => setPostItText(e.target.value)}
-                ></TextField>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={changePostiTText} >Modifier</Button>
-                <Button onClick={handleCloseEditPostIt}>Annuler</Button>
-              </DialogActions>
-            </Dialog>
-          </div>
-        <div
-            className="parent"
-            id="pdf-content"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gridTemplateRows: "repeat(4, 1fr)",
-              gridColumnGap: "10px",
-              gridRowGap: "10px",
-              height: "90vh",
-            }}
+    (
+      <>
+        <div>
+          <Dialog
+            open={openPostItEdit}
+            onClose={handleCloseEditPostIt}
+            fullWidth={true}
+            maxWidth={"sm"}
           >
-    
-            <DragDropContext
-              onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
-            >
-              {Object.entries(columns).map(([columnId, column]) => {
-                return (
+            <DialogTitle>Post it</DialogTitle>
+            <DialogContent>
+              <TextField placeholder="Veuillez écrire votre texte ici"
+                fullWidth
+                onChange={(e) => setPostItText(e.target.value)}
+              ></TextField>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={changePostiTText} >Modifier</Button>
+              <Button onClick={handleCloseEditPostIt}>Annuler</Button>
+            </DialogActions>
+          </Dialog>
+        </div>
+        <div
+          className="parent"
+          id="pdf-content"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(4, 1fr)",
+            gridTemplateRows: "repeat(4, 1fr)",
+            gridColumnGap: "10px",
+            gridRowGap: "10px",
+            height: "90vh",
+          }}
+        >
+
+          <DragDropContext
+            onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+          >
+            {Object.entries(columns).map(([columnId, column]) => {
+              return (
+                <div
+                  style={{
+                    backgroundColor: column.color,
+                    height: "100%",
+                    gridArea: column.params,
+                    padding: "10px",
+                    borderRadius: "4%",
+                    height: "100%",
+                  }}
+                  key={columnId}
+                >
                   <div
                     style={{
-                      backgroundColor: column.color,
-                      height: "100%",
-                      gridArea: column.params,
                       padding: "10px",
+                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
                       borderRadius: "4%",
-                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
                     }}
-                    key={columnId}
                   >
-                    <div
+                    <Typography
+                      variant="h6"
                       style={{
-                        padding: "10px",
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                        borderRadius: "4%",
-                        display: "flex",
-                        alignItems: "center",
+                        fontWeight: "bold",
+                        color: "black",
+                        marginLeft: "5%",
                       }}
                     >
-                      <Typography
-                        variant="h6"
-                        style={{
-                          fontWeight: "bold",
-                          color: "black",
-                          marginLeft: "5%",
-                        }}
-                      >
-                        {column.name}
-                      </Typography>
-                      <IconButton
-                        aria-label="Add"
-                        color="primary"
-                        size="small"
-                        style={{ marginLeft: "auto" }}
-                        onClick={() => handleClickAddButton(columnId)}
-                      >
-                        <AddIcon />
-                      </IconButton>
-                    </div>
-    
-                    <Droppable droppableId={columnId} key={columnId}>
-                      {(provided, snapshot) => {
-                        return (
-                          <div
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                            style={{
-                              display: "flex",
-                              background: "#00000030",
-                              minHeight: 30,
-                              maxHeight: "90%",
-                              overflow: "auto",
-                              height: "auto",
-                              borderRadius: "4%",
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            {selectedColumnId === columnId && showTextField ? (
-                              <div className="empathy-post-it empathy-post-it--custom">
-                                <TextField
-                                  variant="outlined"
-                                  autoFocus
-                                  value={newPostItContent}
-                                  onChange={handleChange}
-                                  style={{ marginRight: "10px" }}
-                                  InputProps={{
-                                    style: {
-                                      color: "#130d6b",
-                                      fontFamily: "Permanent Marker, cursive",
-                                    },
-                                  }}
-                                  placeholder="Saisissez un titre pour cette carte…"
-                                />
-                                <IconButton
-                                  aria-label="Add"
-                                  color="success"
-                                  size="small"
-                                  disabled={!newPostItContent}
-                                  onClick={() => addPostIt(columnId)}
-                                >
-                                  <CheckCircleIcon />
-                                </IconButton>
-                                <IconButton
-                                  aria-label="Cancel"
-                                  color="error"
-                                  size="small"
-                                  onClick={cancelClick}
-                                >
-                                  <CancelIcon />
-                                </IconButton>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {column.items.map((item, index) => {
-                              return (
-                                <Draggable
-                                  key={item.id}
-                                  draggableId={item.id}
-                                  index={index}
-                                >
-                                  {(provided, snapshot) => {
-                                    return (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                        onClick={() => setRightPostItCategorie(column, index)}
-                                      >
-                                        <PostIt text={item.content} />
-                                      </div>
-                                    );
-                                  }}
-                                </Draggable>
-                              );
-                            })}
-                            {provided.placeholder}
-                          </div>
-                        );
-                      }}
-                    </Droppable>
+                      {column.name}
+                    </Typography>
+                    <IconButton
+                      aria-label="Add"
+                      color="primary"
+                      size="small"
+                      style={{ marginLeft: "auto" }}
+                      onClick={() => handleClickAddButton(columnId)}
+                    >
+                      <AddIcon />
+                    </IconButton>
                   </div>
-                );
-              })}
-            </DragDropContext>
-          </div>
-            </>
-           )
 
+                  <Droppable droppableId={columnId} key={columnId}>
+                    {(provided, snapshot) => {
+                      return (
+                        <div
+                          {...provided.droppableProps}
+                          ref={provided.innerRef}
+                          style={{
+                            display: "flex",
+                            background: "#00000030",
+                            minHeight: 30,
+                            maxHeight: "90%",
+                            overflow: "auto",
+                            height: "auto",
+                            borderRadius: "4%",
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          {selectedColumnId === columnId && showTextField ? (
+                            <div className="empathy-post-it empathy-post-it--custom">
+                              <TextField
+                                variant="outlined"
+                                autoFocus
+                                value={newPostItContent}
+                                onChange={handleChange}
+                                style={{ marginRight: "10px" }}
+                                InputProps={{
+                                  style: {
+                                    color: "#130d6b",
+                                    fontFamily: "Permanent Marker, cursive",
+                                  },
+                                }}
+                                placeholder="Saisissez un titre pour cette carte…"
+                              />
+                              <IconButton
+                                aria-label="Add"
+                                color="success"
+                                size="small"
+                                disabled={!newPostItContent}
+                                onClick={() => addPostIt(columnId)}
+                              >
+                                <CheckCircleIcon />
+                              </IconButton>
+                              <IconButton
+                                aria-label="Cancel"
+                                color="error"
+                                size="small"
+                                onClick={cancelClick}
+                              >
+                                <CancelIcon />
+                              </IconButton>
+                            </div>
+                          ) : (
+                            <></>
+                          )}
+                          {column.items.map((item, index) => {
+                            return (
+                              <Draggable
+                                key={item.id}
+                                draggableId={item.id}
+                                index={index}
+                              >
+                                {(provided, snapshot) => {
+                                  return (
+                                    <div
+                                      ref={provided.innerRef}
+                                      {...provided.draggableProps}
+                                      {...provided.dragHandleProps}
+                                      onClick={() => setRightPostItCategorie(column, index)}
+                                    >
+                                      <PostIt text={item.content} />
+                                    </div>
+                                  );
+                                }}
+                              </Draggable>
+                            );
+                          })}
+                          {provided.placeholder}
+                        </div>
+                      );
+                    }}
+                  </Droppable>
+                </div>
+              );
+            })}
+          </DragDropContext>
+        </div>
+      </>
     )
+
+  )
 
 
 }

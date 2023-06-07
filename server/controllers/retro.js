@@ -71,10 +71,21 @@ const retroRequests = async (connection) => {
   );
 };
 
-const getRetro = async (req, res) => {
-  console.log("in getRetro");
-  console.log("in get Retro");
-  res.json({ message: "getRetro works!" });
+const getRetroById = async (req, res) => {
+  let currentIdRetro = req.params.id;
+
+  console.log("in get Retro by id", req.params.id);
+
+  let data = null;
+
+  const snapshot = await db.collection("retro").where("idRetro", "==", currentIdRetro).get();
+  currentRetro = snapshot.docs.map((doc) => (data = doc.data()));
+
+  res.send(data)
+
+
+
+  //res.json({ message: "getRetro works!" });
 };
 
 const getRetrosByUser = async (req, res) => {
@@ -213,7 +224,7 @@ const movePostIt = async (req, res) => {
 module.exports = {
   addRetro,
   retroRequests,
-  getRetro,
+  getRetroById,
   getRetrosByUser,
   getAll,
   editPostit,
