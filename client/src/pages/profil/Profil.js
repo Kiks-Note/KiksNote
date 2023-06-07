@@ -308,7 +308,7 @@ export default function Profil() {
                     </svg>{" "}
                     <Typography>{userProfil.discord ? userProfil.discord : "Pas encore renseigné"}</Typography>
                   </div>
-                  <Typography>
+                  <div>
                     <Typography>Langages de programmation : </Typography>
                     <div
                       style={{
@@ -334,7 +334,7 @@ export default function Profil() {
                         </div>
                       ))}
                     </div>
-                  </Typography>
+                  </div>
                 </Box>
               </div>
               <div>
