@@ -111,6 +111,13 @@ const register = async (req, res) => {
 const sendemail = async (req, res) => {
   try {
     const { email } = req.body;
+
+    try {
+      await auth.getUserByEmail(email);
+    } catch (error) {
+      return res.status(404).json({ message: "Cet utilisateur n'existe pas." });
+    }
+
     console.log(email);
     auth.generatePasswordResetLink(email).then((link) => {
       console.log(link);
