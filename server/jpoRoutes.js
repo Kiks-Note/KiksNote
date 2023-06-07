@@ -5,6 +5,8 @@ const {
   getAllJpo,
   getPastJpo,
   getJpoById,
+  getAllJpoParticipants,
+  getAllJpoByParticipant,
   createJpo,
   linkProjectStudents,
   updateJpoById,
@@ -17,6 +19,8 @@ module.exports = function () {
   router.get("/jpo", getAllJpo);
   router.get("/pastjpo", getPastJpo);
   router.get("/jpo/:id", getJpoById);
+  router.get("/jpoparticipants", getAllJpoParticipants);
+  router.get("/jpoparticipant/:participantId", getAllJpoParticipants);
   router.post("/jpo", createJpo);
   router.post("/jpo/:jpoId", linkProjectStudents);
   router.put("/jpo/:jpoId", updateJpoById);

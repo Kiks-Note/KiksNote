@@ -29,6 +29,7 @@ import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded
 import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
+import SchoolIcon from "@mui/icons-material/School";
 
 import CreateProjectDialog from "./CreateProjectDialog";
 import CreateTechnoModal from "./CreateTechnoModal";
@@ -72,15 +73,13 @@ const StudentsProjects = () => {
 
   const [nameProject, setNameProject] = useState("");
   const [repoProjectLink, setRepoProjectLink] = useState("");
+  const [promoProject, setPromoProject] = useState([]);
   const [membersProject, setMembersProject] = useState([]);
   const [technosProject, setTechnosProject] = useState([]);
   const [typeProject, setTypeProject] = useState("");
   const [descriptionProject, setDescriptionProject] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [idSelectedClass, setIdSelectedClass] = useState("");
 
   const [loading, setLoading] = useState(true);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const [selectedFilterTypeProject, setSelectedFilterTypeProject] =
     useState("");
@@ -221,7 +220,7 @@ const StudentsProjects = () => {
           StudentId: user?.id,
           nameProject: nameProject,
           RepoProjectLink: repoProjectLink,
-          promoProject: idSelectedClass,
+          promoProject: promoProject,
           membersProject: membersProject,
           technosProject: technosProject,
           typeProject: typeProject,
@@ -254,7 +253,6 @@ const StudentsProjects = () => {
     userId
   ) => {
     try {
-      setIsButtonDisabled(true);
       await axios
         .post("http://localhost:5050/ressources/refprojects", {
           projectId: projectId,
@@ -278,15 +276,11 @@ const StudentsProjects = () => {
         .catch((err) => {
           toastFail(`Vous avez déjà mis en avant le projet ${projectName}`);
           console.log(err);
-        })
-        .finally(() => {
-          setIsButtonDisabled(false);
         });
     } catch (error) {
       console.log(error.response.status);
       console.log(error.response.data.message);
       toastWarning(`Erreur lors de la mise en avant du projet ${projectName}`);
-      setIsButtonDisabled(false);
     }
   };
 
@@ -543,7 +537,7 @@ const StudentsProjects = () => {
               ) : (
                 <div></div>
               )}
-              {userStatus !== "pedago" ? (
+              {userStatus === "po" ? (
                 <>
                   <Button
                     sx={{
@@ -596,8 +590,8 @@ const StudentsProjects = () => {
                 setNameProject={setNameProject}
                 repoProjectLink={repoProjectLink}
                 setRepoProjectLink={setRepoProjectLink}
-                selectedClass={selectedClass}
-                setSelectedClass={setSelectedClass}
+                promoProject={promoProject}
+                setPromoProject={setPromoProject}
                 membersProject={membersProject}
                 setMembersProject={setMembersProject}
                 technosProject={technosProject}
@@ -606,7 +600,6 @@ const StudentsProjects = () => {
                 setTypeProject={setTypeProject}
                 descriptionProject={descriptionProject}
                 setDescriptionProject={setDescriptionProject}
-                setIdSelectedClass={setIdSelectedClass}
                 control={control}
                 allstudents={allstudents}
                 allclass={allclass}
@@ -767,6 +760,24 @@ const StudentsProjects = () => {
                               }
                             ></Chip>
                             <div className="type-promo-project-container">
+                              {project.promoProject.map((promo) => (
+                                <Chip
+                                  sx={{
+                                    display: "flex",
+                                    padding: "10px",
+                                  }}
+                                  label={
+                                    <>
+                                      <div style={{ display: "flex" }}>
+                                        <Typography>{promo.name}</Typography>
+                                        <SchoolIcon />
+                                      </div>
+                                    </>
+                                  }
+                                ></Chip>
+                              ))}
+                            </div>
+                            <div className="type-promo-project-container">
                               {project.technosProject.map((techno) => (
                                 <Chip
                                   avatar={
@@ -791,7 +802,6 @@ const StudentsProjects = () => {
                             </div>
                             {userStatus === "po" ? (
                               <Button
-                                disabled={isButtonDisabled}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   referStudentProject(
@@ -810,7 +820,6 @@ const StudentsProjects = () => {
                               </Button>
                             ) : userStatus === "pedago" ? (
                               <Button
-                                disabled={isButtonDisabled}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   referStudentProject(
@@ -829,7 +838,6 @@ const StudentsProjects = () => {
                               </Button>
                             ) : (
                               <Button
-                                disabled={isButtonDisabled}
                                 onClick={(event) => {
                                   event.stopPropagation();
                                   referStudentProject(
