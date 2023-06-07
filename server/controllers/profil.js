@@ -15,20 +15,15 @@ const updateProfil = async (req, res) => {
   const userDoc = await db.collection("users").doc(userId).get();
   const userData = userDoc.data();
   if (userData.image && imageTmp !== userData.image) {
-    imageUrlToDelete = userData.image.replace(
-      req.protocol + "://" + req.get("host") + "/uploads",
-      ""
-    );
+    imageUrlToDelete = userData.image.replace(req.protocol + "://" + req.get("host") + "/uploads", "");
   }
-  console.log(req.body);
+
   // Add the new image URL to userDataToUpdate
   const userDataToUpdate = {
     ...req.body,
     dateofbirth: new Date(req.body.dateofbirth),
     image: image ? url + image : userData.image,
-    programmationLanguage: createProgrammingLanguageArray(
-      req.body.programmationLanguage
-    ),
+    programmationLanguage: createProgrammingLanguageArray(req.body.programmationLanguage),
   };
   console.log(userDataToUpdate);
 
@@ -63,21 +58,13 @@ const updateBackgroundImage = async (req, res) => {
   // Check if the user already has an image
   const userDoc = await db.collection("users").doc(userId).get();
   const userData = userDoc.data();
-  if (
-    userData.imagebackground &&
-    imagebackgroundTmp !== userData.imagebackground
-  ) {
-    imageUrlToDelete = userData.imagebackground.replace(
-      req.protocol + "://" + req.get("host") + "/uploads",
-      ""
-    );
+  if (userData.imagebackground && imagebackgroundTmp !== userData.imagebackground) {
+    imageUrlToDelete = userData.imagebackground.replace(req.protocol + "://" + req.get("host") + "/uploads", "");
   }
 
   // Add the new image URL to userDataToUpdate
   const userDataToUpdate = {
-    imagebackground: imagebackground
-      ? url + imagebackground
-      : userData.imagebackground,
+    imagebackground: imagebackground ? url + imagebackground : userData.imagebackground,
   };
 
   // Update user data in Firestore
@@ -86,11 +73,7 @@ const updateBackgroundImage = async (req, res) => {
     .update(userDataToUpdate)
     .then(() => {
       // If the user had an image and the image was changed, delete the old image from the "uploads" folder
-      if (
-        imageUrlToDelete &&
-        imagebackgroundTmp &&
-        imagebackgroundTmp !== userData.imagebackground
-      ) {
+      if (imageUrlToDelete && imagebackgroundTmp && imagebackgroundTmp !== userData.imagebackground) {
         const imagePath = path.join(__dirname, "uploads", imageUrlToDelete);
         fs.unlink(imagePath, (err) => {
           if (err) {
@@ -138,6 +121,24 @@ const getStudent = async (req, res) => {
     });
 };
 
+const getUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const userDoc = await db.collection("users").doc(userId).get();
+
+    if (!userDoc.exists) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const user = userDoc.data();
+    res.json(user);
+  } catch (error) {
+    console.error("Error retrieving user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 function createProgrammingLanguageArray(programmingLanguageString) {
   return programmingLanguageString.split(",");
