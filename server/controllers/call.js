@@ -119,18 +119,16 @@ const room = async (connection) => {
           class: response.data.class,
           type: "call",
         });
-        console.log("createRoom");
+
         currentRooms.set(response.data.class, defaultRoom);
 
-        const roomUsersC = currentRooms.get(response.data.class) || defaultRoom;
+        const createRoom = currentRooms.get(response.data.class);
 
-        roomUsersC.users.set(response.data.userID, {
+        createRoom.users.set(response.data.userID, {
           name: response.data.name,
         });
 
-        roomUsersC.appel = response.data.appel;
-
-        currentRooms.set(response.data.class, roomUsersC);
+        currentRooms.set(response.data.class, createRoom);
 
         const roomClientsC = clients.get(response.data.class) || new Map();
 
@@ -143,13 +141,15 @@ const room = async (connection) => {
           data: {
             currentRoom: {
               ...currentRooms.get(response.data.class),
-              appel: currentRooms.get(response.data.class).appel,
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
             },
             class: response.data.class,
           },
         };
 
-        //    sendToAllClients(messageCreate, response.data.class);
+        sendToAllClients(messageCreate, response.data.class);
 
         break;
       case "joinRoom":
@@ -159,6 +159,7 @@ const room = async (connection) => {
         roomUsers.users.set(response.data.userID, {
           name: response.data.name,
         });
+        roomUsers.appel = response.data.appel;
 
         currentRooms.set(response.data.class, roomUsers);
 
@@ -173,8 +174,8 @@ const room = async (connection) => {
           data: {
             currentRoom: {
               ...currentRooms.get(response.data.class),
-              appel: Object.fromEntries(
-                currentRooms.get(response.data.class).appel
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
               ),
             },
             class: response.data.class,
@@ -191,15 +192,15 @@ const room = async (connection) => {
 
         break;
       case "leaveRoom":
-        const userRoom = currentRooms.get(response.data.class) || defaultRoom;
-        userRoom.users.delete(response.data.userID);
-
         console.log("User left room");
+        const userRoom = currentRooms.get(response.data.class) || defaultRoom;
+
+        userRoom.users.delete(response.data.userID);
 
         currentRooms.set(response.data.class, userRoom);
 
-        let allClientsInRoomLeave =
-          clients.get(response.data.class) || new Map();
+        let allClientsInRoomLeave = clients.get(response.data.class) || new Map();
+
         allClientsInRoomLeave.delete(response.data.userID);
         clients.set(response.data.class, allClientsInRoomLeave);
 
@@ -208,7 +209,9 @@ const room = async (connection) => {
           data: {
             currentRoom: {
               ...currentRooms.get(response.data.class),
-              appel: currentRooms.get(response.data.class).appel,
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
             },
             class: response.data.class,
           },
@@ -217,10 +220,21 @@ const room = async (connection) => {
         sendToAllClients(messageLeave, response.data.class);
 
       case "updateCall":
+        const userRoomLeave = currentRooms.get(response.data.class) || defaultRoom;
+        userRoomLeave.appel = response.data.appel;
+
+        currentRooms.set(response.data.class, userRoomLeave);
+
         const messageUpdate = {
           type: "updateRoom",
           data: {
-            appel: response.data.appel,
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
           },
         };
         sendToAllClients(messageUpdate, response.data.class);
