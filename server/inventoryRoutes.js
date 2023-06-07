@@ -29,6 +29,8 @@ const {
   refuseIdea,
   deleteIdea,
   getIdeaByUser,
+  getInventoryStatistics,
+  getInventoryRequestsStatistics,
 } = require("./controllers/inventory");
 
 router.get("/", inventory);
@@ -58,5 +60,7 @@ router.put("/ideas/:id/refuse", refuseIdea);
 router.delete("/idea/:ideaId", deleteIdea);
 router.get("/ideaByUser/:userId", getIdeaByUser);
 router.post("/ideas/comment/:ideaId", makeIdeaComment);
+router.get("/statistics", getInventoryStatistics);
+router.get("/statistics2", getInventoryRequestsStatistics);
 
 module.exports = router;

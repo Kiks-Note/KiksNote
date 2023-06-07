@@ -19,23 +19,23 @@ import {
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
-import React, {useEffect, useState} from "react";
-import {toast, Toaster} from "react-hot-toast";
-import {useNavigate} from "react-router";
-import {w3cwebsocket} from "websocket";
+import React, { useEffect, useState } from "react";
+import { toast, Toaster } from "react-hot-toast";
+import { useNavigate } from "react-router";
+import { w3cwebsocket } from "websocket";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
 import ModalForm from "../../components/inventory/ModalForm";
 import SideBarModify from "../../components/inventory/SideBarModify";
-import {UserListDialog} from "../../components/inventory/UserListDialog";
+import { UserListDialog } from "../../components/inventory/UserListDialog";
 import theme from "../../theme";
 import "./inventory.css";
 import CloseIcon from "@mui/icons-material/Close";
 import FaInfoCircle from "@mui/icons-material/Info";
-import {IoIosEye} from "react-icons/io";
+import { IoIosEye } from "react-icons/io";
 import useFirebase from "../../hooks/useFirebase";
 import BoxStats from "../../components/inventory/BoxStats";
 
-const Item = styled(Paper)(({theme}) => ({
+const Item = styled(Paper)(({ theme }) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
   ...theme.typography.body2,
   padding: theme.spacing(1),
@@ -43,7 +43,7 @@ const Item = styled(Paper)(({theme}) => ({
   color: theme.palette.text.secondary,
 }));
 
-const CategoryDialog = ({open, setDialogOpen}) => {
+const CategoryDialog = ({ open, setDialogOpen }) => {
   const [category, setCategory] = useState("");
 
   const handleSubmit = async (e) => {
@@ -86,7 +86,7 @@ const CategoryDialog = ({open, setDialogOpen}) => {
   );
 };
 
-const CategoriesList = ({open, setCategoriesListOpen}) => {
+const CategoriesList = ({ open, setCategoriesListOpen }) => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editableIndex, setEditableIndex] = useState(-1);
@@ -147,7 +147,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
 
   return (
     <Dialog open={open} onClose={() => setCategoriesListOpen(false)}>
-      <div style={{maxWidth: 500, maxHeight: 750, overflow: "auto"}}>
+      <div style={{ maxWidth: 500, maxHeight: 750, overflow: "auto" }}>
         <DialogTitle
           sx={{
             display: "flex",
@@ -158,7 +158,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
           <Typography variant="h6">Liste des catégories</Typography>
           <IconButton
             onClick={() => setCategoriesListOpen(false)}
-            sx={{color: theme.colors.components.light}}
+            sx={{ color: theme.colors.components.light }}
           >
             <CloseIcon />
           </IconButton>
@@ -249,7 +249,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
                             <Tooltip title="Annuler">
                               <IconButton
                                 onClick={() => handleCancel(category)}
-                                sx={{color: "#FF0000"}}
+                                sx={{ color: "#FF0000" }}
                               >
                                 <CloseIcon />
                               </IconButton>
@@ -258,7 +258,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
                             <Tooltip title="Modifier">
                               <IconButton
                                 onClick={() => handleEdit(category)}
-                                sx={{color: theme.colors.components.dark}}
+                                sx={{ color: theme.colors.components.dark }}
                                 disabled={
                                   editableIndex !== -1 &&
                                   editableIndex !== index
@@ -272,7 +272,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
                         <Tooltip title="Supprimer">
                           <IconButton
                             onClick={() => deleteCategory(category)}
-                            sx={{color: "#FF0000"}}
+                            sx={{ color: "#FF0000" }}
                           >
                             <DeleteIcon />
                           </IconButton>
@@ -311,7 +311,7 @@ const CardSkeletonLoader = () => {
         variant="text"
         width="80%"
         height={45}
-        sx={{marginBottom: 1, backgroundColor: "rgba(255, 255, 255, 0.2)"}}
+        sx={{ marginBottom: 1, backgroundColor: "rgba(255, 255, 255, 0.2)" }}
       />
       <Divider
         sx={{
@@ -326,7 +326,7 @@ const CardSkeletonLoader = () => {
         variant="text"
         width="20%"
         height={60}
-        sx={{marginBottom: 1, backgroundColor: "rgba(255, 255, 255, 0.2)"}}
+        sx={{ marginBottom: 1, backgroundColor: "rgba(255, 255, 255, 0.2)" }}
       />
       <IconButton
         disabled
@@ -337,7 +337,7 @@ const CardSkeletonLoader = () => {
           opacity: 0.8,
         }}
       >
-        <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.6}} />
+        <IoIosEye style={{ fontSize: 30, color: "#fff", opacity: 0.6 }} />
       </IconButton>
     </Box>
   );
@@ -351,12 +351,13 @@ const InventoryAdminDashboard = () => {
   const [emailsDialogOpen, setEmailsDialogOpen] = useState(false);
   const [emails, setEmails] = useState([]);
   const [ideas, setIdeas] = useState([]);
+  const [statistics, setStatistics] = useState([]);
 
   const [inventory, setInventory] = useState([]);
 
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const {user} = useFirebase();
+  const { user } = useFirebase();
 
   const toggleDrawerAdd = (event, open) => {
     if (
@@ -414,11 +415,11 @@ const InventoryAdminDashboard = () => {
         toogleDialog={setEmailsDialogOpen}
         emails={emails}
       />
-      <Container style={{padding: 0, margin: 0, minWidth: "100%"}}>
+      <Container style={{ padding: 0, margin: 0, minWidth: "100%" }}>
         <Typography
           variant="h5"
           className="inventory-admin-dashboard-title"
-          sx={{color: "white", fontFamily: "poppins-semibold", mb: 2.5}}
+          sx={{ color: "white", fontFamily: "poppins-semibold", mb: 2.5 }}
         >
           Inventaire Admin Dashboard
         </Typography>
@@ -469,20 +470,32 @@ const InventoryAdminDashboard = () => {
           >
             Liste des categories
           </Button>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/inventory/statistics")}
+            sx={{
+              backgroundColor: "#ffffff",
+              color: "#1A2027",
+              fontFamily: "poppins-semibold",
+              boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            }}
+          >
+            Voir les statistiques
+          </Button>
         </div>
 
         {loading ? (
           <>
-            <div style={{display: "flex", gap: "30px", flexWrap: "wrap"}}>
+            <div style={{ display: "flex", gap: "30px", flexWrap: "wrap" }}>
               {Array.from(new Array(3)).map((_, index) => CardSkeletonLoader())}
             </div>
-            <div style={{display: "flex", gap: "30px", flexWrap: "wrap"}}>
+            <div style={{ display: "flex", gap: "30px", flexWrap: "wrap" }}>
               {Array.from(new Array(3)).map((_, index) => CardSkeletonLoader())}
             </div>
           </>
         ) : (
           <>
-            <div style={{display: "flex", gap: "30px", flexWrap: "wrap"}}>
+            <div style={{ display: "flex", gap: "30px", flexWrap: "wrap" }}>
               <BoxStats
                 label={"Nombre d'idées non traitées"}
                 value={ideas.filter((i) => i.status === "pending").length}
@@ -503,7 +516,7 @@ const InventoryAdminDashboard = () => {
                 onClick={() => navigate("/inventory/ideas")}
               />
             </div>
-            <div style={{display: "flex", gap: "30px", flexWrap: "wrap"}}>
+            <div style={{ display: "flex", gap: "30px", flexWrap: "wrap" }}>
               <BoxStats
                 label={"Nombre de peripheriques"}
                 value={inventory.length}
