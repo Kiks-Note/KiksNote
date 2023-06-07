@@ -29,6 +29,7 @@ import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import ElevatorPitch from "./pages/agile/ElevatorPitch";
 import Retrospective from "./pages/retrospective/Retrospective";
+import ElevatorPitch from "./pages/agile/ElevatorPitch";
 
 
 function RoutesProvider() {
@@ -67,8 +68,8 @@ function RoutesProvider() {
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
 
           <Route path="/agile" element={<FolderAgile />} />
-          <Route path="/elevator" element={<ElevatorPitch />} />
-          <Route path="/retro" element={<Retrospective />} />
+                <Route path="/retro" element={<Retrospective />} />
+                <Route path="/elevator" element={<ElevatorPitch />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />

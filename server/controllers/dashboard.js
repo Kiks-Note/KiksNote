@@ -291,6 +291,10 @@ const createDashboards = async (req, res) => {
       actors: [],
       impacts: [],
       deliverables: [],
+    })
+    await agileRef.doc("elevator_pitch").set({
+      name: "",
+      description:""
     });
     await agileRef.doc("agile_folder").set({
       impact_mapping: "",
