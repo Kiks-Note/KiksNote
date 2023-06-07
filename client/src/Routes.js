@@ -56,7 +56,7 @@ function RoutesProvider() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
 
-          <Route path="/profil" element={<Profil />} />
+          <Route path="/profil/:id" element={<Profil />} />
 
           {/* 404 Page */}
           <Route path="/jpo" element={<Jpo />} />
