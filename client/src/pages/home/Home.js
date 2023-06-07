@@ -39,24 +39,32 @@ function Home() {
 
   const enterEdition = () => {
     setEdition(true);
-    const updatedLayouts = layouts.map((item) => {
-      return {
-        ...item,
-        static: false,
-      };
-    });
-    setLayouts(updatedLayouts);
+    if (layouts) {
+      const updatedLayouts = layouts.map((item) => {
+        return {
+          ...item,
+          static: false,
+        };
+      });
+      setLayouts(updatedLayouts);
+    } else {
+      setLayouts([]);
+    }
   };
 
   const leaveEdition = () => {
     setEdition(false);
-    const updatedLayouts = layouts.map((item) => {
-      return {
-        ...item,
-        static: true,
-      };
-    });
-    setLayouts(updatedLayouts);
+    if (layouts) {
+      const updatedLayouts = layouts.map((item) => {
+        return {
+          ...item,
+          static: true,
+        };
+      });
+      setLayouts(updatedLayouts);
+    } else {
+      setLayouts([]);
+    }
   };
 
   useEffect(() => {
@@ -125,6 +133,7 @@ function Home() {
               }}
             >
               {layouts &&
+                layouts.length > 0 &&
                 layouts.map((card) => (
                   <div
                     key={card.i}

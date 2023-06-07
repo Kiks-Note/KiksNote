@@ -12,7 +12,6 @@ import ProfilFormUpdate from "../../components/profil/ProfilFormUpdate.js";
 import ProfilSkeleton from "../../components/profil/ProfilSkeleton";
 import useFirebase from "../../hooks/useFirebase";
 import { useParams } from "react-router";
-import { useSearchParams } from "react-router-dom";
 import "./Profil.scss";
 
 export default function Profil() {
@@ -222,7 +221,6 @@ export default function Profil() {
               <div>
                 {recentJpo.length >= 1 &&
                   recentJpo.map((jpo) => {
-                    console.log(jpo);
                     return <JpoCard key={jpo.id} jpoData={jpo} />;
                   })}
               </div>
@@ -317,22 +315,23 @@ export default function Profil() {
                         flexWrap: "wrap",
                       }}
                     >
-                      {userProfil.programmationLanguage.map((language) => (
-                        <div
-                          key={language}
-                          style={{
-                            marginRight: "5%",
-                            display: "flex",
-                          }}
-                        >
-                          <img
-                            src={`https://api.iconify.design/logos:${language.toLowerCase()}.svg`}
-                            style={{ marginRight: "10%" }}
-                            alt=""
-                          />
-                          <Typography>{language}</Typography>
-                        </div>
-                      ))}
+                      {userProfil.programmationLanguage &&
+                        userProfil.programmationLanguage.map((language) => (
+                          <div
+                            key={language}
+                            style={{
+                              marginRight: "5%",
+                              display: "flex",
+                            }}
+                          >
+                            <img
+                              src={`https://api.iconify.design/logos:${language.toLowerCase()}.svg`}
+                              style={{ marginRight: "10%" }}
+                              alt=""
+                            />
+                            <Typography>{language}</Typography>
+                          </div>
+                        ))}
                     </div>
                   </div>
                 </Box>
