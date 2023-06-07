@@ -194,6 +194,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
       // tags: selectedTags,
       // thumbnail: thumbnail,
       markdownStepsInfo: markdownStepsInfo,
+      titleStep: titleStep,
       visibility: visibility,
       statut: statut,
       created_by: user.id,
