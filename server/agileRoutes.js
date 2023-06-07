@@ -14,6 +14,7 @@ const {
   changeIndex,
   createPostit,
   deletePostit,
+  agileRequest,
 } = require("./controllers/agile");
 
 module.exports = function (connection, pathname, upload) {
@@ -38,6 +39,10 @@ module.exports = function (connection, pathname, upload) {
   router.delete("/:dashboardId/actor/:actorId", deleteActor);
 
   switch (pathname) {
+    case "/agile":
+      agileRequest(connection);
+      console.log("agile");
+      break;
     case "/impact":
       impactMappingRequest(connection);
       console.log("impact");

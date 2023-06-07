@@ -42,17 +42,29 @@ function OverView({ id }) {
     dispatch(addTab(pdfViewTab));
     dispatch(setActiveTab(pdfViewTab.id));
   };
-    const moveToImpact = () => {
-      const impactTab = {
-        id: "Impact" + id,
-        label: "Impact mapping ",
+    const moveToAgileHome = () => {
+      const agileTab = {
+        id: "Agile" + id,
+        label: "Agile",
         closeable: true,
-        component: "Impact",
-        data: { agile: agile, dashboardId: id },
+        component: "AgileHome",
+        data: { dashboardId: id },
       };
-      dispatch(addTab(impactTab));
-      dispatch(setActiveTab(impactTab.id));
+      dispatch(addTab(agileTab));
+      dispatch(setActiveTab(agileTab.id));
     };
+
+    // const moveToAgileHome = () => {
+    //   const impactTab = {
+    //     id: "Impact" + id,
+    //     label: "Impact mapping ",
+    //     closeable: true,
+    //     component: "Impact",
+    //     data: { agile: agile, dashboardId: id },
+    //   };
+    //   dispatch(addTab(impactTab));
+    //   dispatch(setActiveTab(impactTab.id));
+    // };
 
   useEffect(() => {
     (async () => {
@@ -144,7 +156,7 @@ function OverView({ id }) {
                 ) : (
                   <></>
                 )}
-                <Button variant="contained" onClick={moveToImpact}>
+                <Button variant="contained" onClick={moveToAgileHome}>
                   Agile
                 </Button>
               </Box>{" "}

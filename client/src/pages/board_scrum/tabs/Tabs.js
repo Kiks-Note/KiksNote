@@ -14,6 +14,7 @@ import EmpathyMap from "../../agile/EmpathyMap";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveTab } from "../../../redux/slices/tabBoardSlice";
+import AgileHome from "../../agile/AgileHome";
 
 TabDemo.propTypes = {
   actualTabs: PropTypes.arrayOf(
@@ -117,6 +118,9 @@ export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
                 dashboardId={tab.data.dashboardId}
                 actorId={tab.data.actorId}
               />
+            )}
+            {tab.component === "AgileHome" && (
+              <AgileHome dashboardId={tab.data.dashboardId} />
             )}
           </TabContainer>
         ) : null

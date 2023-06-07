@@ -33,26 +33,6 @@ const addImpactMapping = async (req, res) => {
     res.status(500).send({ message: "Server error" });
   }
 };
-
-const getImpactMapping = async (req, res) => {
-  try {
-    const docRef = db
-      .collection("dashboard")
-      .doc(req.params.dashboardId)
-      .collection("agile")
-      .doc("impact_mapping");
-    const doc = await docRef.get();
-    if (!doc.exists) {
-      return null;
-    }
-    const data = doc.data();
-    // console.log('data',req.params.dashboardId, data);
-    return res.status(200).send(data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ message: "Server error for impact mapping" });
-  }
-};
 /// Path to recup all foldersAgile
 const getFoldersAgile = async (req, res) => {
   try {
@@ -276,7 +256,8 @@ const updatePdfInAgileFolder = async (req, res) => {
       return res.status(400).json({ error: "Le nom du champ est requis." });
     }
 
-    const fieldValue = req.protocol + "://" + req.get("host") +"/"+ pdfFile.path;
+    const fieldValue =
+      req.protocol + "://" + req.get("host") + "/" + pdfFile.path;
 
     const agileDocumentRef = db
       .collection("dashboard")
@@ -340,7 +321,7 @@ const addPersona = async (req, res) => {
     res.status(500).send({ message: "Server error" });
   }
 };
-/// Path to delete actor 
+/// Path to delete actor
 const deleteActor = async (req, res) => {
   try {
     const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
@@ -375,24 +356,56 @@ const deleteActor = async (req, res) => {
 /// Path to websocket
 const agileRequest = async (connection) => {
   connection.on("message", async (message) => {
-    const persona = JSON.parse(message.utf8Data);
-    var agileDocumentRef = db
+    const dashboardId = JSON.parse(message.utf8Data);
+    const agileCollectionRef = db
       .collection("dashboard")
-      .doc(persona.dashboardId)
-      .collection("agile")
-      .doc(persona.actorId);
+      .doc(dashboardId)
+      .collection("agile");
 
-    // Check if the document exists
-    const documentSnapshot = await agileDocumentRef.get();
+    try {
+      const querySnapshot = await agileCollectionRef.get();
 
-    if (!documentSnapshot.data().hasOwnProperty("persona")) {
-      await agileDocumentRef.update({
-        persona: {},
+      const data = {
+        folder: [],
+        impactMapping: [],
+        others: [],
+      };
+
+      querySnapshot.forEach((doc) => {
+        const obj = doc.data();
+        if (doc.id === "agile_folder") {
+          data.folder.push(obj);
+        } else if (doc.id === "impact_mapping") {
+          data.impactMapping.push(obj);
+        } else {
+          data.others.push(obj);
+        }
       });
+
+      connection.sendUTF(JSON.stringify(data));
+    } catch (error) {
+      console.error(error);
+    }
+  });
+};
+
+const impactMappingRequest = async (connection) => {
+  connection.on("message", async (message) => {
+    const impactMapping = JSON.parse(message.utf8Data);
+
+    let impactMappingRef = db
+      .collection("dashboard")
+      .doc(impactMapping.dashboardId)
+      .collection("agile")
+      .doc("impact_mapping");
+
+    const documentSnapshot = await impactMappingRef.get();
+
+    if (!documentSnapshot.exists) {
+      return null;
     }
 
-    // Listen to changes in the document
-    agileDocumentRef.onSnapshot(
+    impactMappingRef.onSnapshot(
       (snapshot) => {
         const data = snapshot.data();
         connection.sendUTF(JSON.stringify(data));
@@ -498,15 +511,16 @@ const personaRequest = async (connection) => {
 
 module.exports = {
   addImpactMapping,
-  getImpactMapping,
   getFoldersAgile,
   getZipFolderAgile,
-  updatePdfInAgileFolder,
-  addPersona,
-  deleteActor,
-  empathyRequest,
-  personaRequest,
   changeIndex,
   createPostit,
   deletePostit,
+  updatePdfInAgileFolder,
+  addPersona,
+  deleteActor,
+  agileRequest,
+  impactMappingRequest,
+  empathyRequest,
+  personaRequest,
 };
