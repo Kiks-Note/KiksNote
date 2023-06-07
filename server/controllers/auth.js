@@ -1,20 +1,6 @@
 const { auth, db } = require("../firebase");
 const nodemailer = require("nodemailer");
 
-const actionCodeSettings = {
-  url: "http://www.localhost:3000",
-  handleCodeInApp: true,
-  iOS: {
-    bundleId: "com.example.ios",
-  },
-  android: {
-    packageName: "com.example.android",
-    installApp: true,
-    minimumVersion: "12",
-  },
-  dynamicLinkDomain: "coolapp.page.link",
-};
-
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -24,16 +10,16 @@ var transporter = nodemailer.createTransport({
 });
 
 const login = async (req, res) => {
-  const { email, token } = req.body;
+  const { token } = req.body;
   try {
     const decodedToken = await auth.verifyIdToken(token);
-    const { email: decodedEmail, email_verified } = decodedToken;
+    const { email } = decodedToken;
 
-    if (email !== decodedEmail || !email_verified) {
-      return res.status(401).json({
-        message:
-          "Connexion non autorisée. Veuillez vérifier votre adresse e-mail.",
-      });
+    const user = await auth.getUserByEmail(email);
+    if (!user.emailVerified) {
+      return res
+        .status(401)
+        .json({ message: "Veuillez vérifier votre adresse e-mail" });
     }
 
     res.status(200).json({ message: "Success" });
