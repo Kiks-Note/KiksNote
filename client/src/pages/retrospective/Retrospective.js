@@ -280,25 +280,8 @@ function Retrospective() {
     setOpen(false);
   };
 
-
-  const handleValidate = (e) => {
-    let value = e.target.value;
-    if (value == "GMDBoard") {
-      setColumns(GMDBoard)
-    } else if (value == "fourLBoard") {
-      setColumns(FourLBoard)
-    } else if (value == "PNABoard") {
-      setColumns(PNABoard)
-    }
-    setRetroModel(e.target.value)
-    setOpen(false);
-
-  }
-
   const getAllRetroByUser = async () => {
     const userId = user.id;
-
-
 
     await axios.get(`http://localhost:5050/retro/getAll`
     ).then((res) => {

@@ -197,8 +197,6 @@ export default function Board() {
 
     setShowTextField(false); // Hide the TextField and button after adding the post-it
     setNewPostItContent(""); // Reset the new post-it content
-
-    console.log(columns);
   };
 
   const onDragEnd = (result, columns, setColumns) => {

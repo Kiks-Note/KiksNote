@@ -140,7 +140,7 @@ const editPostit = async (req, res) => {
 const addPostIt = async (req, res) => {
 
   const snapshot = await db.collection('retro').get()
-  // let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
+
   let currentIdRetro = req.body.idCurrentRetro;
 
   let currentRetro = [];
@@ -155,7 +155,6 @@ const addPostIt = async (req, res) => {
   } catch (err) {
     console.error(err);
   }
-
 
    const idDocCurrentRetro = currentRetro[0]["id"]
 
