@@ -124,54 +124,55 @@ function Home() {
                 width: "100%",
               }}
             >
-              {layouts.map((card) => (
-                <div
-                  key={card.i}
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    position: "relative",
-                    borderRadius: "30px",
-                  }}
-                >
-                  {edition && (
-                    <DeleteIcon
-                      onClick={() => {
-                        removeLayout(card);
-                      }}
-                      style={{ position: "absolute", top: "0", right: "0", color: "red" }}
-                    />
-                  )}
-                  <img
-                    src={card.i.split("%")[1]}
-                    alt="illustration"
+              {layouts &&
+                layouts.map((card) => (
+                  <div
+                    key={card.i}
                     style={{
-                      backgroundColor: theme.palette.custom.button,
-                      maxWidth: "100%",
-                      maxHeight: "100%",
-                    }}
-                  />
-                  <p
-                    style={{
-                      color: theme.palette.text.primary,
-                      backgroundColor: "#0005",
-                      position: "absolute",
-                      width: "100%",
-                      height: "30%",
-                      bottom: "0",
-                      left: "0",
-                      margin: "0",
-                      maxHeight: "50px",
                       display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      fontWeight: "bold",
+                      flexDirection: "column",
+                      position: "relative",
+                      borderRadius: "30px",
                     }}
                   >
-                    {card.i.split("%")[2]}
-                  </p>
-                </div>
-              ))}
+                    {edition && (
+                      <DeleteIcon
+                        onClick={() => {
+                          removeLayout(card);
+                        }}
+                        style={{ position: "absolute", top: "0", right: "0", color: "red" }}
+                      />
+                    )}
+                    <img
+                      src={card.i.split("%")[1]}
+                      alt="illustration"
+                      style={{
+                        backgroundColor: theme.palette.custom.button,
+                        maxWidth: "100%",
+                        maxHeight: "100%",
+                      }}
+                    />
+                    <p
+                      style={{
+                        color: theme.palette.text.primary,
+                        backgroundColor: "#0005",
+                        position: "absolute",
+                        width: "100%",
+                        height: "30%",
+                        bottom: "0",
+                        left: "0",
+                        margin: "0",
+                        maxHeight: "50px",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {card.i.split("%")[2]}
+                    </p>
+                  </div>
+                ))}
             </GridLayout>
           </div>
         </div>
