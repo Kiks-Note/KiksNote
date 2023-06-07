@@ -89,6 +89,43 @@ const addNewTuto = async (req, res) => {
   }
 };
 
+const addNewTuto2 = async (req, res) => {
+  console.log("req.body 1 : ", req.body);
+  const {
+    title,
+    // description,
+    // tags,
+    // thumbnail,
+    markdownStepsInfo,
+    visibility,
+    statut,
+    created_by,
+  } = req.body;
+  console.log("req.body 2 : ", req.body);
+  try {
+    await db.collection("blog").doc().set({
+      title: title,
+      // description: description,
+      // thumbnail: thumbnail,
+      markdownStepsInfo: markdownStepsInfo,
+      statut: statut,
+      created_by: created_by,
+      participant: [],
+      comment: [],
+      like: [],
+      dislike: [],
+      // tag: tags,
+      type: "tuto",
+      updated_at: "",
+      visibility: visibility,
+      created_at: new Date(),
+    });
+    res.send("Document successfully written!");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+};
 //update tutorial visibility
 const updateBlogVisibility = async (req, res) => {
   console.log(req.body.visibility);
@@ -585,12 +622,12 @@ const getRepartition = async (req, res) => {
   }
 };
 
-
 module.exports = {
   addBlogComment,
   updateBlogVisibility,
   addNewBlog,
   addNewTuto,
+  addNewTuto2,
   blogRequests,
   deleteBlog,
   getDescriptions,

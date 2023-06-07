@@ -18,6 +18,8 @@ import Step from "@mui/material/Step";
 import StepButton from "@mui/material/StepButton";
 import Markdown from "./Markdown";
 import MDEditor, { commands } from "@uiw/react-md-editor";
+import useFirebase from "../../../hooks/useFirebase";
+import { da } from "date-fns/locale";
 
 export default function NewTuto2({ open, toggleDrawerModify }) {
   const [tags, setTags] = useState([]);
@@ -28,6 +30,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
   const [titleStep, setTitleStep] = useState([]);
   const [valueMarkdown, setValueMarkdown] = useState("**Hello world!!!**");
   const [markdownStepsInfo, setMarkdownStepsInfo] = useState([]);
+  const { user } = useFirebase();
 
   const [title, setTitle] = useState("");
   const fetchTags = async () => {
@@ -158,6 +161,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     console.log("markdownStepsInfo : ", markdownStepsInfo);
     setActiveStep(0);
     setCompleted({});
+    newTuto2();
   };
 
   const help = {
@@ -175,6 +179,40 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     execute: (state, api) => {
       window.open("https://www.markdownguide.org/basic-syntax/", "_blank");
     },
+  };
+
+  const newTuto2 = async (e) => {
+    let statut = "online";
+    let visibility = "public";
+    if (user.status === "etudiant") {
+      statut = "pending";
+      visibility = "pending";
+    }
+    const data = {
+      title: title,
+      // description: description,
+      // tags: selectedTags,
+      // thumbnail: thumbnail,
+      markdownStepsInfo: markdownStepsInfo,
+      visibility: visibility,
+      statut: statut,
+      created_by: user.id,
+    };
+    console.log("data : ", data);
+    // const formData = new FormData();
+    // formData.append("tutoData", JSON.stringify(data));
+    try {
+      const response = await axios.post(
+        "http://localhost:5050/blog/tuto",
+        data
+      );
+      toast.success("Tuto crée avec succès");
+      toggleDrawerModify(e, false);
+      handleCancel();
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const tutoInfo = () => (
@@ -263,7 +301,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
                   </Typography>
                   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                     <Box sx={{ flex: "1 1 auto" }} />
-                    <Button onClick={handleReset}>Reset</Button>
+                    <Button onClick={handleReset}>Upload</Button>
                   </Box>
                 </>
               ) : (
