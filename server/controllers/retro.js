@@ -105,10 +105,21 @@ const editPostit = async (req, res) => {
 
   const snapshot = await db.collection('retro').get()
 
-  console.log(req.body.currentRetroIndex);
-  let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
+  let currentIdRetro = req.body.idCurrentRetro;
 
-  const idDoc = snapshot.docs[idRetro].id;
+  let currentRetro = [];
+
+  try {
+    const snapshot = await db.collection("retro").where("idRetro", "==", currentIdRetro).get();
+    currentRetro = snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+  } catch (err) {
+    console.error(err);
+  }
+
+
+  const idDocCurrentRetro = currentRetro[0]["id"]
+
+  const idDoc = idDocCurrentRetro;
 
   let objetRetro = (await db.collection("retro").doc(idDoc).get()).data()
   
@@ -132,8 +143,6 @@ const addPostIt = async (req, res) => {
   // let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
   let currentIdRetro = req.body.idCurrentRetro;
 
-  console.log("id retro = " + currentIdRetro);
-
   let currentRetro = [];
 
   try {
@@ -147,14 +156,10 @@ const addPostIt = async (req, res) => {
     console.error(err);
   }
 
-  console.log(currentRetro);
-
-
-
 
    const idDocCurrentRetro = currentRetro[0]["id"]
 
-   console.log(idDocCurrentRetro);
+
 
 
   let objetRetro = (await db.collection("retro").doc(idDocCurrentRetro).get()).data()

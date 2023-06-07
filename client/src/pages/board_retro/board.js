@@ -154,9 +154,10 @@ export default function Board() {
       categorie: categorie,
       selectedPostItIndex: selectedPostItIndex,
       postItText: postItText,
+      idCurrentRetro: retroData["idRetro"]
     })
   }
-  
+
   const sendMovePostIt = async (source, destination) => {
     axios.put("http://localhost:5050/retro/movePostIt", {
       source: source,
