@@ -13,10 +13,12 @@ import IconButton from "@mui/material/IconButton";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PostIt from "../../components/agile/PostIt";
+import { useParams } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
 
 
 
-export default function Board(props) {
+export default function Board() {
 
   const [openPostItEdit, setOpenPostItEdit] = useState(false);
   const [postItText, setPostItText] = useState("");
@@ -27,13 +29,25 @@ export default function Board(props) {
   const [selectedColumnId, setSelectedColumnId] = useState(null);
   const [selectedRetro, setSelectedRetro] = useState('');
   const [connectedUsers, setConnectedUsers] = useState([]);
-  const [columns, setColumns] = useState(props.choosenColumn);
   const [currentRetroIndex, setCurrentRetroIndex] = useState(null)
 
 
-  console.log(props);
+
+  const location = useLocation();
+  const retroData = location.state && location.state.retro;
+  const [columns, setColumns] = useState([]);
+
+  useEffect(() => {
+
+    setColumns(retroData["dataRetro"])
+    console.log(columns);
+
+  },[])
 
 
+  console.log("$$$$$$$$$");
+  console.log(retroData);
+  console.log("$$$$$$$$$");
   const GMDBoard = {
     Glad: {
       name: "Glad",
@@ -439,6 +453,7 @@ export default function Board(props) {
           </div>
             </>
            )
+
     )
 
 

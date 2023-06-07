@@ -17,12 +17,13 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
+import { useNavigate } from "react-router-dom";
 
 import * as React from 'react';
 
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import { setDoc } from "firebase/firestore";
-import Board from "../../components/retro/board";
+import Board from "../board_retro/board";
 
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -61,7 +62,9 @@ function Retrospective() {
   const [previewRetro, setPreviewRetro] = useState([]);
   const [retroListUpdated, setRetroListUpdated] = useState([]);
   const [rows, setRows] = useState([]);
+  const [datas, setDatas] = useState(null);
 
+  let navigate = useNavigate();
 
 
 
@@ -234,8 +237,6 @@ function rowContent(_index, row) {
   useEffect(() => {
     const ws = new w3cwebsocket("ws://localhost:5050/retro");
     ws.onmessage = async (message) => {
-      //const message = JSON.parse(event.data);
-
       console.log("wsss");
         let allRetros = [];
         await axios.get("http://localhost:5050/retro/getAll").then((res) => {
@@ -246,6 +247,7 @@ function rowContent(_index, row) {
           });
           const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"]));
           setRows(updatedRows);
+          setDatas(res.data)
         })
     };
     return () => {
@@ -254,7 +256,7 @@ function rowContent(_index, row) {
   }, []);
 
 
-  const f = async (dataResponse) => {
+  const setAllRetrosAtbeginning = async (dataResponse) => {
     let allRetros = [];
 
     dataResponse.forEach(retro => {
@@ -270,7 +272,7 @@ function rowContent(_index, row) {
     let allRetros = [];
     axios.get("http://localhost:5050/retro/getAll").then((res) => {
       let responseRetros = res.data;
-      f(res.data);
+      setAllRetrosAtbeginning(res.data);
   
     });
   }, []);
@@ -326,6 +328,24 @@ function rowContent(_index, row) {
       setRows(updatedRows);
     }
   }, [listRetros]);
+
+    const goToBoard = (date) => {
+
+    console.log(allRetro);
+    console.log(datas);
+    datas.map(retro => {
+      console.log(retro["creationDate"]);
+      console.log(date);
+      if (retro["creationDate"] == date) {
+        console.log(retro);
+        navigate('/boardRetro', { state: { retro } });
+
+        //navigate(`/boardRetro/${retro}`)
+      }
+    })
+
+  }
+
 
   const validateBoard = async () => {
     console.log(boardTitle);
@@ -404,7 +424,7 @@ function rowContent(_index, row) {
     
               </TableRow>
             </TableHead>
-            <TableBody style={{cursor: "pointer"}}>
+            <TableBody > {/*style={{cursor: "pointer"}}*/}
               {rows.map((row) => (
                 <TableRow key={row.date}>
                   <TableCell component="th" scope="row">
@@ -412,6 +432,9 @@ function rowContent(_index, row) {
                   </TableCell>
                   <TableCell align="left">{row.date}</TableCell>
                   <TableCell align="left">{row.name}</TableCell>
+                  <TableCell> 
+                    <Button onClick={() => goToBoard(row.date)}> go board </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

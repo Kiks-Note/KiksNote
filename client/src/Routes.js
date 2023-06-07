@@ -31,6 +31,7 @@ import StudentsProjects from "./pages/ressources/students_project/StudentsProjec
 import Retrospective from "./pages/retrospective/Retrospective";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
+import Board from "./pages/board_retro/board";
 
 function RoutesProvider() {
   return (
@@ -72,6 +73,7 @@ function RoutesProvider() {
 
           <Route path="/agile" element={<FolderAgile />} />
           <Route path="/retro" element={<Retrospective />} />
+          <Route path="/boardRetro" element={<Board />} />
 
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
