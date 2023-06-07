@@ -26,9 +26,9 @@ import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import DetailBlog from "./pages/blog/DetailBlog";
+import DetailTuto from "./pages/blog/DetailTuto";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import Retrospective from "./pages/retrospective/Retrospective";
-
 
 function RoutesProvider() {
   return (
@@ -52,6 +52,7 @@ function RoutesProvider() {
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
+          <Route path="/tuto/:id" element={<DetailTuto />} />
 
           <Route path="/profil" element={<Profil />} />
           <Route path="/jpo" element={<Jpo />} />
@@ -66,7 +67,7 @@ function RoutesProvider() {
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
 
           <Route path="/agile" element={<FolderAgile />} />
-                <Route path="/retro" element={<Retrospective />} />
+          <Route path="/retro" element={<Retrospective />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
