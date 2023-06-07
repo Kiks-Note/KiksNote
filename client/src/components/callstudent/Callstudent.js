@@ -30,7 +30,7 @@ function AppelEleve({ callId }) {
   const LogToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/groupes/getRoom/${user?.class}`)
+        .get(`http://localhost:5050/call/getRoom/${user?.class}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -54,7 +54,9 @@ function AppelEleve({ callId }) {
 
   useEffect(() => {
     const handleOpen = async () => {
-      await LogToExistingRoom();
+      if (user.status === "student") {
+        await LogToExistingRoom();
+      }
 
       if (inRoom) {
         ws.onmessage = (message) => {
@@ -78,14 +80,11 @@ function AppelEleve({ callId }) {
     }
 
     return () => {
-      ws.send(
-        JSON.stringify({
-          type: "leaveRoom",
-          data: { userID: user?.id, class: user.class },
-        })
-      );
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send({ type: "leaveRoom", data: { userID: user?.id, class: user?.class } });
+      }
     };
-  }, [LogToExistingRoom, inRoom, user.class, user?.id, ws]);
+  }, [LogToExistingRoom, inRoom, user.class, user?.id, user.status, ws]);
 
   const addGif = (gif) => {
     const date = new Date();

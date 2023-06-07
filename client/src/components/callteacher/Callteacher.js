@@ -30,7 +30,7 @@ function AppelProf(callId) {
   const LogToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/groupes/getRoomPo/${user?.id}`)
+        .get(`http://localhost:5050/call/getRoomPo/${user?.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -57,7 +57,9 @@ function AppelProf(callId) {
 
   useEffect(() => {
     const handleOpen = async () => {
-      await LogToExistingRoom();
+      if (user.status === "po") {
+        await LogToExistingRoom();
+      }
 
       if (inRoom) {
         ws.onmessage = (message) => {
@@ -81,14 +83,11 @@ function AppelProf(callId) {
     }
 
     return () => {
-      ws.send(
-        JSON.stringify({
-          type: "leaveRoom",
-          data: { userID: user?.id, class: user.class },
-        })
-      );
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send({ type: "leaveRoom", data: { userID: user?.id, class: user?.class } });
+      }
     };
-  }, [LogToExistingRoom, inRoom, user.class, user?.id, ws]);
+  }, [LogToExistingRoom, call, inRoom, user.class, user.id, user.status, ws]);
 
   useEffect(() => {
     if (generated.current) {

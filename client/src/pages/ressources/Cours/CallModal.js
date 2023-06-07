@@ -55,11 +55,15 @@ const CallModal = ({ classId, open, handleClose, lessonId, user, className }) =>
         userID: user.id,
         class: className,
         type: "call",
+        appel: call,
+        name: user.firstname
       },
     };
     ws.send(JSON.stringify(message));
 
-  }, [className, lessonId, user.id, ws]);
+    navigate("/appel/" + response.data.id);
+
+  }, [className, lessonId, navigate, user.firstname, user.id, ws]);
 
 
 
