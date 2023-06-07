@@ -413,8 +413,16 @@ function DetailTuto() {
               </div>
             </Box>
 
-            <div className="detail_blog_content">
-              <div className="options">
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+                px: 2,
+                my: 2,
+              }}
+            >
+              <Box sx={{ display: "flex" }}>
                 <Button
                   variant="contained"
                   startIcon={
@@ -427,6 +435,7 @@ function DetailTuto() {
                     ":hover": {
                       backgroundColor: data.userLiked ? "#0080FF" : "#EEEEEE",
                     },
+                    mr: 3,
                   }}
                 >
                   J'aime ({data.like.length})
@@ -449,13 +458,14 @@ function DetailTuto() {
                         ? "#CC0000"
                         : "#EEEEEE",
                     },
-                    marginRight: 50,
                   }}
                 >
                   J'aime pas ({data.dislike.length})
                 </Button>
-              </div>
+              </Box>
               <CreateComment tutoId={id} />
+            </Box>
+            <Box sx={{ width: "100%" }}>
               {data &&
                 data.comment &&
                 Array.isArray(data.comment) &&
@@ -476,7 +486,7 @@ function DetailTuto() {
                   <button onClick={handleShowLess}>Voir moins</button>
                 )
               )}
-            </div>
+            </Box>
 
             {/*<h1>detail Tuto</h1>*/}
             {/*<h1>{data.title}</h1>*/}
