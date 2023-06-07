@@ -159,9 +159,6 @@ const addPostIt = async (req, res) => {
 
    const idDocCurrentRetro = currentRetro[0]["id"]
 
-
-
-
   let objetRetro = (await db.collection("retro").doc(idDocCurrentRetro).get()).data()
 
   const updatedItems = [...objetRetro["dataRetro"][req.body.columnId].items, req.body.newObjPostIt];
@@ -188,14 +185,23 @@ const addPostIt = async (req, res) => {
 }
 
 const movePostIt = async (req, res) => {
-
   const snapshot = await db.collection('retro').get()
-  let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
 
-  
-  const idDoc = snapshot.docs[idRetro].id;
+  let currentIdRetro = req.body.idCurrentRetro;
 
-  let objetRetro = snapshot.docs[idRetro].data()
+  let currentRetro = [];
+
+  try {
+    const snapshot = await db.collection("retro").where("idRetro", "==", currentIdRetro).get();
+    currentRetro = snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+  } catch (err) {
+    console.error(err);
+  }
+
+
+  const idDocCurrentRetro = currentRetro[0]["id"]
+
+  let objetRetro = (await db.collection("retro").doc(idDocCurrentRetro).get()).data()
 
   let postItContent = objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]];
 
@@ -215,9 +221,9 @@ const movePostIt = async (req, res) => {
     objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][lengthItem] = postItContent;  
   }
   
-  let dba  = await db.collection("retro").doc(idDoc) 
+  let currentRetroDb  = await db.collection("retro").doc(idDocCurrentRetro) 
 
-  dba.update({ dataRetro: objetRetro["dataRetro"] })
+  currentRetroDb.update({ dataRetro: objetRetro["dataRetro"] })
   .then(() => {
     console.log("Document updated successfully!!!!!!!!");
   })

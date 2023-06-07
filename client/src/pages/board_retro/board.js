@@ -162,6 +162,7 @@ export default function Board() {
     axios.put("http://localhost:5050/retro/movePostIt", {
       source: source,
       destination: destination,
+      idCurrentRetro: retroData["idRetro"]
     })
   }
 
