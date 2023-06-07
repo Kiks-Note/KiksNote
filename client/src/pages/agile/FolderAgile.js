@@ -4,7 +4,7 @@ import { Grid, Button, Typography } from "@material-ui/core";
 import useFirebase from "../../hooks/useFirebase";
 import "./agile.css";
 
-const FolderAgile = () => {
+export default function FolderAgile({ dashboardId, actorId }) {
   const { user } = useFirebase();
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState(null);
@@ -117,4 +117,4 @@ const FolderAgile = () => {
   );
 };
 
-export default FolderAgile;
+

@@ -34,34 +34,25 @@ const addImpactMapping = async (req, res) => {
   }
 };
 
-const impactMappingRequest = async (connection) => {
-  connection.on("message", async (message) => {
-    const impactMapping = JSON.parse(message.utf8Data);
-
-    let impactMappingRef = db
+const getImpactMapping = async (req, res) => {
+  try {
+    const docRef = db
       .collection("dashboard")
-      .doc(impactMapping.dashboardId)
+      .doc(req.params.dashboardId)
       .collection("agile")
       .doc("impact_mapping");
-
-    const documentSnapshot = await impactMappingRef.get();
-
-    if (!documentSnapshot.exists) {
+    const doc = await docRef.get();
+    if (!doc.exists) {
       return null;
     }
-
-    impactMappingRef.onSnapshot(
-      (snapshot) => {
-        const data = snapshot.data();
-        connection.sendUTF(JSON.stringify(data));
-      },
-      (err) => {
-        console.log(`Encountered error: ${err}`);
-      }
-    );
-  });
+    const data = doc.data();
+    // console.log('data',req.params.dashboardId, data);
+    return res.status(200).send(data);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error for impact mapping" });
+  }
 };
-
 /// Path to recup all foldersAgile
 const getFoldersAgile = async (req, res) => {
   try {
@@ -285,7 +276,7 @@ const updatePdfInAgileFolder = async (req, res) => {
       return res.status(400).json({ error: "Le nom du champ est requis." });
     }
 
-    const fieldValue = req.protocol + "://" + req.get("host") + pdfFile.path;
+    const fieldValue = req.protocol + "://" + req.get("host") +"/"+ pdfFile.path;
 
     const agileDocumentRef = db
       .collection("dashboard")
@@ -382,6 +373,36 @@ const deleteActor = async (req, res) => {
 };
 
 /// Path to websocket
+const agileRequest = async (connection) => {
+  connection.on("message", async (message) => {
+    const persona = JSON.parse(message.utf8Data);
+    var agileDocumentRef = db
+      .collection("dashboard")
+      .doc(persona.dashboardId)
+      .collection("agile")
+      .doc(persona.actorId);
+
+    // Check if the document exists
+    const documentSnapshot = await agileDocumentRef.get();
+
+    if (!documentSnapshot.data().hasOwnProperty("persona")) {
+      await agileDocumentRef.update({
+        persona: {},
+      });
+    }
+
+    // Listen to changes in the document
+    agileDocumentRef.onSnapshot(
+      (snapshot) => {
+        const data = snapshot.data();
+        connection.sendUTF(JSON.stringify(data));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
+  });
+};
 const empathyRequest = async (connection) => {
   connection.on("message", async (message) => {
     const empathy = JSON.parse(message.utf8Data);
@@ -477,7 +498,7 @@ const personaRequest = async (connection) => {
 
 module.exports = {
   addImpactMapping,
-  impactMappingRequest,
+  getImpactMapping,
   getFoldersAgile,
   getZipFolderAgile,
   updatePdfInAgileFolder,
