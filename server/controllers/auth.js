@@ -1,16 +1,13 @@
-const { auth , db } = require("../firebase");
-const bcrypt = require("bcrypt");
-const nodemailer = require('nodemailer');
+const { auth, db } = require("../firebase");
+const nodemailer = require("nodemailer");
 
-const saltRounds = 12;
 var transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: "gmail",
   auth: {
-      user: 'services.kiksnote.noreply@gmail.com',
-      pass: "njujpddhfbazaifo"
-  }
-  });
-  
+    user: "services.kiksnote.noreply@gmail.com",
+    pass: "njujpddhfbazaifo",
+  },
+});
 
 const login = async (req, res) => {
   const { token } = req.body;
@@ -33,76 +30,83 @@ const register = async (req, res) => {
     userStatus,
     userClass,
   } = req.body;
-  auth
-    .createUser({
+
+  try {
+    const userSnapshot = await db.collection("users").doc(userEmail).get();
+    if (userSnapshot.exists) {
+      return res
+        .status(400)
+        .send({ message: "L'adresse e-mail est déjà utilisée." });
+    }
+
+    await auth.createUser({
       email: userEmail,
       password: userPassword,
-    })
-    .then(() => {
-      if (userClass === "") {
-        db.collection("users")
-          .doc(userEmail)
-          .set({
-            firstname: userFirstName,
-            lastname: userLastName,
-            password: bcrypt.hashSync(userPassword, saltRounds),
-            dateofbirth: new Date(userBirthDate),
-            status: userStatus,
-            email: userEmail,
-            create_at: new Date(),
-          });
-      } else {
-        db.collection("users")
-          .doc(userEmail)
-          .set({
-            firstname: userFirstName,
-            lastname: userLastName,
-            password: bcrypt.hashSync(userPassword, saltRounds),
-            dateofbirth: new Date(userBirthDate),
-            status: userStatus,
-            email: userEmail,
-            class: userClass,
-            create_at: new Date(),
-          });
-      }
-      res.send({ message: "User created successfully" });
-    })
-    .catch((err) => {
-      console.log(err);
     });
+
+    const userData = {
+      firstname: userFirstName,
+      lastname: userLastName,
+      dateofbirth: new Date(userBirthDate),
+      status: userStatus,
+      email: userEmail,
+      create_at: new Date(),
+    };
+
+    if (userClass !== "") {
+      userData.class = userClass;
+    }
+
+    await db.collection("users").doc(userEmail).set(userData);
+
+    res.send({ message: "Utilisateur créé avec succès." });
+  } catch (error) {
+    console.log(error);
+
+    if (error.code === "auth/email-already-exists") {
+      res.status(400).send({
+        message: "L'adresse e-mail est déjà utilisée.",
+      });
+    } else {
+      res.status(500).send({
+        message:
+          "Une erreur s'est produite lors de la création de l'utilisateur.",
+      });
+    }
+  }
 };
 
 // email for reset password
 const sendemail = async (req, res) => {
   try {
-        const { email } = req.body;
-          console.log(email)
-          auth.generatePasswordResetLink(email).then((link) => {
-            console.log(link)
-            var mailOptions = {
-              from: 'services.kiksnote.noreply@gmail.com',
-              to: email,
-              subject: 'Récupération du mot de passe',
-              text: `Bonjour,\n\n
+    const { email } = req.body;
+    console.log(email);
+    auth.generatePasswordResetLink(email).then((link) => {
+      console.log(link);
+      var mailOptions = {
+        from: "services.kiksnote.noreply@gmail.com",
+        to: email,
+        subject: "Récupération du mot de passe",
+        text: `Bonjour,\n\n
                     \t Vous avez demandé la réinitialisation de votre mot de passe pour le compte ${email}.\n
                     \t Voici le lien pour réinitialiser votre mot de passe :\n
-                    ${link}\n`
-          };
-          
-          transporter.sendMail(mailOptions, function (error, info) {
-              if (error) {
-              console.log(error);
-              } else {
-              console.log('Email sent: ' + info.response);
-              }
-          });
-            res.send({ message: 'Le lien à été généré avec succès et l\'email envoyé.' });
-          })
+                    ${link}\n`,
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("Email sent: " + info.response);
+        }
+      });
+      res.send({
+        message: "Le lien à été généré avec succès et l'email envoyé.",
+      });
+    });
   } catch (error) {
     res.status(401).json({ message: "Connexion non autorisée" });
-  } 
+  }
 };
 
-
-
-module.exports = { login, register, sendemail};
+module.exports = { login, register, sendemail };
