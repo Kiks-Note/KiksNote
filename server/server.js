@@ -80,10 +80,10 @@ wsI.on("request", (request) => {
   connection ? console.log("connection ok") : console.log("connection failed");
 
   //app.use("/inventory", inventoryRoutes(connection, pathname));
+  app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/agile", agileRoute(connection, pathname, upload));
-  app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/groupes", groupsRoute(connection, pathname));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
   require("./web/inventoryWebSocket")(connection, pathname);

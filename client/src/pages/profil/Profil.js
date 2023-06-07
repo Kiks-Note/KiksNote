@@ -1,9 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
 import { w3cwebsocket } from "websocket";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import "./Profil.scss";
-import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import GitHubIcon from "@mui/icons-material/GitHub";
 import SettingsIcon from "@mui/icons-material/Settings";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
@@ -13,11 +10,13 @@ import { Avatar, Box, Typography, MenuItem, Menu, Dialog, DialogContent } from "
 import ProfilFormUpdate from "../../components/profil/ProfilFormUpdate.js";
 import ProfilSkeleton from "../../components/profil/ProfilSkeleton";
 import useFirebase from "../../hooks/useFirebase";
+import "./Profil.scss";
 
 export default function Profil() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [recentBlogs, SetRecentBlogs] = useState([]);
   const radioGroupRef = React.useRef(null);
   const { user } = useFirebase();
   const [userProfil, setUserProfil] = useState({});
@@ -105,12 +104,38 @@ export default function Profil() {
           phoneNumber: data.phone,
           status: data.status,
         });
-
         setIsLoading(true);
         console.log("Loading");
       };
     })();
   }, [user?.id]);
+
+  const filterTwoMostRecentBlogs = (blogs) => {
+    const sortedBlogs = blogs.sort((a, b) => {
+      const timestampA = new Date(a.created_at.seconds * 1000 + a.created_at.nanoseconds / 1000000);
+      const timestampB = new Date(b.created_at.seconds * 1000 + b.created_at.nanoseconds / 1000000);
+      return timestampB - timestampA;
+    });
+
+    const twoMostRecentBlogs = sortedBlogs.slice(0, 2);
+
+    return twoMostRecentBlogs;
+  };
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const response = await axios.get("http://localhost:5050/blog/user/ilan.petiot@edu.esiee-it.fr");
+        var filtredBlogs = filterTwoMostRecentBlogs(response.data, 2);
+        SetRecentBlogs(filtredBlogs);
+      } catch (error) {
+        console.error("Error fetching blogs:", error);
+      }
+    };
+
+    fetchBlogs();
+  }, []);
+
   return (
     <>
       {isLoading ? (
@@ -246,11 +271,7 @@ export default function Profil() {
                       ></path>
                     </svg>
                     <Typography variant="h6">
-                      {userProfil.phoneNumber ? (
-                        userProfil.phoneNumber
-                      ) : (
-                        <p style={{ fontSize: "medium" }}>Pas encore renseigné</p>
-                      )}
+                      {userProfil.phoneNumber ? userProfil.phoneNumber : "Pas encore renseigné"}
                     </Typography>
                   </div>
                   <div
@@ -270,11 +291,7 @@ export default function Profil() {
                       ></path>
                     </svg>{" "}
                     <Typography variant="h6">
-                      {userProfil.discord ? (
-                        userProfil.discord
-                      ) : (
-                        <p style={{ fontSize: "medium" }}>Pas encore renseigné</p>
-                      )}
+                      {userProfil.discord ? userProfil.discord : "Pas encore renseigné"}
                     </Typography>
                   </div>
                   <Typography>
