@@ -1,37 +1,28 @@
 import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import CloseIcon from '@mui/icons-material/Close';
-import Button from '@mui/material/Button';
-import toast from 'react-hot-toast';
 import "../agile/agile.css";
-import { Swipe } from '@mui/icons-material';
+import Stepper from '@mui/material/Stepper';
+import EPName from '../../components/agile/EPName';
+import EPDesc from '../../components/agile/EPDesc';
+import Button from '@mui/material/Button';
 
 export default function ElevatorPitch() {
 
+    const [activeStep, setActiveStep] = useState(0);
     const [isClicked, setIsClicked] = useState(false);
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
 
-    const handleChange = (e) => {
-        if(!name || !description){
-            toast.error("Veuillez remplir tous les champs!");
-        }
+    const handleNext = () => {
+      setActiveStep((prevStep) => prevStep + 1);
+    };
 
-        const formValues = {
-            name,
-            description,
-        }
+    const handleBack = () => {
+      setActiveStep((prevStep) => prevStep - 1);
+    };
 
-        console.log(formValues);
-    }
-
-    const handleSubmit = (e) => {
-        
-    }
-
-    const handleClick = () => {
-        setIsClicked(true);
-    }
+    const steps = [
+      'Nom et Description du projet',
+      'Create an ad group',
+      'Create an ad',
+    ];
 
     return (
       <div style={{
@@ -39,86 +30,50 @@ export default function ElevatorPitch() {
         color: '#000',
       }}>
         <h1>Elevator Pitch</h1>
-        <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-        }}>
-            <div className="clickable_div" style={{
-                    width: isClicked ? '70%' : '50%',
-                    height: isClicked ? '70%' : '50%',
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    background: '#7CB9E8',
-                    borderRadius: '20px',
-                    position: 'relative',
-                    transition: 'width 0.3s, height 0.3s',
-                }}
-                onClick={handleClick}
-            >
-                <form onSubmit={handleSubmit}>
-                    <div style={{
-                        width: '100%',
-                        height: '100%',
-                        marginTop: '40px',
-                        position: 'absolute',
-                        top: '0',
-                        left: '0',
-                        opacity: '0.7',
-                    }}>
-                        {!isClicked && (
-                            <div>
-                                <h3>Salut 👋 ! Clique ici pour remplir ton Élévator pitch</h3>
-                                <p>Rempli chaque champs</p>
-                            </div>
-                        )}
-                        {isClicked && (
-                            <div>
-                                <h2>Le nom de ton projet ? 📚</h2>
-                                <TextField
-                                    id="outlined-basic"
-                                    label="Prénom"
-                                    variant="outlined"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                />
-                            </div>
-                        )}
-                    </div>
-                    <br/>
-                    <div style={{
-                        marginTop: '20%',
-                        marginLeft: '1%'
-                    }}>
-                        {isClicked && (
-                            <div>
-                                <h2>La description de ton projet ? 💻</h2>
-                                <p><em>appuyez sur entré pour avoir un saut de ligne*</em></p>
-                                <TextField
-                                    id="outlined-multiline-flexible"
-                                    multiline
-                                    maxRows={4}
-                                    label="Description"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                />
-                                <br/>
-                                <Button variant="contained" style={{
-                                    marginTop: '10%',
-                                }} type='submit' >
-                                    Valider
-                                </Button>
-                            </div>
-                        )}
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div>
-            
-        </div>
+        
+          <div>
+            <Stepper activeStep={activeStep} >
+              <div style={{
+                position: 'absolute',
+                bottom: '0',
+                right: '0',
+                left: '70px',
+                padding: '50px',
+              }} >
+                  <div>
+                    <Button
+                      variant="contained"
+                      onClick={handleBack}
+                      disabled={activeStep === 0}
+                      style={{
+                          marginTop: '10%',
+                      }}
+                      type='button'
+                    >
+                      Back
+                    </Button>
+                    <Button
+                      variant="contained"
+                      onClick={handleNext}
+                      disabled={activeStep === steps.length - 1}
+                      style={{
+                          marginTop: '10%',
+                          marginLeft: '20%',
+                      }}
+                      type='button'
+                    >
+                      Suivant
+                    </Button>
+                  </div>
+              </div>
+            </Stepper>
+
+            {activeStep === 0 && <EPName />}
+            {activeStep === 1 && <EPDesc />}
+            {activeStep === 2 && <EPName />}
+
+          </div>
+
       </div>
     )
 }

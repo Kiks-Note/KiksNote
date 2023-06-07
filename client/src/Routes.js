@@ -29,7 +29,6 @@ import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import ElevatorPitch from "./pages/agile/ElevatorPitch";
 import Retrospective from "./pages/retrospective/Retrospective";
-import ElevatorPitch from "./pages/agile/ElevatorPitch";
 
 
 function RoutesProvider() {
