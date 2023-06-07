@@ -27,6 +27,7 @@ import MDEditor, { commands } from "@uiw/react-md-editor";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepButton from "@mui/material/StepButton";
+import "./Blog.css";
 
 function DetailTuto() {
   const [data, setData] = useState(null);
@@ -192,14 +193,15 @@ function DetailTuto() {
       <Box
         sx={{
           margin: 2,
-          width: "100%",
-          borderRadius: "10px",
-          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          // height: "95vh",
+          // borderRadius: "10px",
+          // boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
           // backgroundColor: "#FFFFFF",
-          padding: 2,
+          // padding: 2,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
+          // backgroundColor: "green",
         }}
       >
         {!loading ? (
@@ -340,7 +342,16 @@ function DetailTuto() {
                     </Grid>
                     */
           <>
-            <Box sx={{ width: "100%" }}>
+            <Box
+              sx={{
+                width: "100%",
+                height: "100%",
+                boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+                borderRadius: 2,
+                p: 2,
+                // backgroundColor: "red",
+              }}
+            >
               <Stepper nonLinear activeStep={activeStep}>
                 {steps.map((label, index) => (
                   <Step key={label} completed={completed[index]}>
@@ -363,12 +374,11 @@ function DetailTuto() {
                   </>
                 ) : (
                   <>
-                    <Typography sx={{ mt: 2, mb: 1, py: 1 }}>
-                      Step {activeStep + 1} {steps[activeStep]}
+                    <Box sx={{ m: 3, height: "50vh" }}>
                       <MDEditor.Markdown
                         source={data.markdownStepsInfo[activeStep]}
                       />
-                    </Typography>
+                    </Box>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Button
                         color="inherit"
@@ -402,6 +412,72 @@ function DetailTuto() {
                 )}
               </div>
             </Box>
+
+            <div className="detail_blog_content">
+              <div className="options">
+                <Button
+                  variant="contained"
+                  startIcon={
+                    data.userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />
+                  }
+                  onClick={handleLike}
+                  sx={{
+                    backgroundColor: data.userLiked ? "#00BFFF" : "#F5F5F5",
+                    color: data.userLiked ? "#FFFFFF" : "#000000",
+                    ":hover": {
+                      backgroundColor: data.userLiked ? "#0080FF" : "#EEEEEE",
+                    },
+                  }}
+                >
+                  J'aime ({data.like.length})
+                </Button>
+                <Button
+                  variant="contained"
+                  startIcon={
+                    data.userDisliked ? (
+                      <ThumbDownAltIcon />
+                    ) : (
+                      <ThumbDownOffAltIcon />
+                    )
+                  }
+                  onClick={handleDislike}
+                  sx={{
+                    backgroundColor: data.userDisliked ? "#FF0000" : "#F5F5F5",
+                    color: data.userDisliked ? "#FFFFFF" : "#000000",
+                    ":hover": {
+                      backgroundColor: data.userDisliked
+                        ? "#CC0000"
+                        : "#EEEEEE",
+                    },
+                    marginRight: 50,
+                  }}
+                >
+                  J'aime pas ({data.dislike.length})
+                </Button>
+              </div>
+              <CreateComment tutoId={id} />
+              {data &&
+                data.comment &&
+                Array.isArray(data.comment) &&
+                data.comment
+                  .slice(0, visibleComments)
+                  .map((comment, index) => (
+                    <DisplayComment key={index} comment={comment} tutoId={id} />
+                  ))}
+              {visibleComments < data.comment.length ? (
+                <>
+                  <button onClick={handleShowMore}>Voir plus</button>
+                  {visibleComments > 5 && (
+                    <button onClick={handleShowLess}>Voir moins</button>
+                  )}
+                </>
+              ) : (
+                visibleComments > 5 && (
+                  <button onClick={handleShowLess}>Voir moins</button>
+                )
+              )}
+            </div>
+
             {/*<h1>detail Tuto</h1>*/}
             {/*<h1>{data.title}</h1>*/}
             {/*<h1>{data.markdownStepsInfo}</h1>*/}
