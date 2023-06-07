@@ -119,6 +119,34 @@ const getAllJpoParticipants = async (req, res) => {
   }
 };
 
+const getAllJpoByParticipant = async (req, res) => {
+  try {
+    const participantId = req.params.participantId;
+
+    const currentDate = new Date();
+
+    const snapshot = await db
+      .collection("jpo")
+      .where("jpoDayEnd", ">=", currentDate)
+      .get();
+
+    const jpoList = [];
+    snapshot.forEach((doc) => {
+      jpoList.push({
+        id: doc.id,
+        ...doc.data(),
+      });
+    });
+
+    res.status(200).json(jpoList);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send("Erreur lors de la récupération des JPO par participant.");
+  }
+};
+
 const createJpo = async (req, res) => {
   try {
     await upload(req, res, async (err) => {
@@ -466,6 +494,7 @@ module.exports = {
   getPastJpo,
   getJpoById,
   getAllJpoParticipants,
+  getAllJpoByParticipant,
   createJpo,
   linkProjectStudents,
   updateJpoById,
