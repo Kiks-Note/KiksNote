@@ -10,9 +10,18 @@ var transporter = nodemailer.createTransport({
 });
 
 const login = async (req, res) => {
-  const { token } = req.body;
+  const { email, token } = req.body;
   try {
-    await auth.verifyIdToken(token);
+    const decodedToken = await auth.verifyIdToken(token);
+    const { email: decodedEmail, email_verified } = decodedToken;
+
+    if (email !== decodedEmail || !email_verified) {
+      return res.status(401).json({
+        message:
+          "Connexion non autorisée. Veuillez vérifier votre adresse e-mail.",
+      });
+    }
+
     res.status(200).json({ message: "Success" });
     console.log("Success");
   } catch (error) {
@@ -59,7 +68,27 @@ const register = async (req, res) => {
 
     await db.collection("users").doc(userEmail).set(userData);
 
-    res.send({ message: "Utilisateur créé avec succès." });
+    const emailVerificationLink = await auth.generateEmailVerificationLink(
+      userEmail
+    );
+
+    const mailOptions = {
+      from: "services.kiksnote.noreply@gmail.com",
+      to: userEmail,
+      subject: "Vérification du compte",
+      text: `Bonjour,\n\n
+          \t Veuillez cliquer sur le lien suivant pour vérifier votre compte :\n
+          ${emailVerificationLink}\n`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+    res.status(200).send({ message: "Utilisateur créé avec succès." });
   } catch (error) {
     console.log(error);
 

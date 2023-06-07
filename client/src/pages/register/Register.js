@@ -475,9 +475,7 @@ const Register = () => {
               }}
             >
               <FormControl sx={{ m: 1, minWidth: 120 }} error={errorStatus}>
-                <InputLabel id="demo-simple-select-helper-label">
-                  Status
-                </InputLabel>
+                <InputLabel>Status</InputLabel>
                 <Select
                   variant="filled"
                   id="input-status"
