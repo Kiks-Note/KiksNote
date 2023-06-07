@@ -73,12 +73,11 @@ const StudentsProjects = () => {
 
   const [nameProject, setNameProject] = useState("");
   const [repoProjectLink, setRepoProjectLink] = useState("");
+  const [promoProject, setPromoProject] = useState([]);
   const [membersProject, setMembersProject] = useState([]);
   const [technosProject, setTechnosProject] = useState([]);
   const [typeProject, setTypeProject] = useState("");
   const [descriptionProject, setDescriptionProject] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [idSelectedClass, setIdSelectedClass] = useState("");
 
   const [loading, setLoading] = useState(true);
 
@@ -221,7 +220,7 @@ const StudentsProjects = () => {
           StudentId: user?.id,
           nameProject: nameProject,
           RepoProjectLink: repoProjectLink,
-          promoProject: idSelectedClass,
+          promoProject: promoProject,
           membersProject: membersProject,
           technosProject: technosProject,
           typeProject: typeProject,
@@ -591,8 +590,8 @@ const StudentsProjects = () => {
                 setNameProject={setNameProject}
                 repoProjectLink={repoProjectLink}
                 setRepoProjectLink={setRepoProjectLink}
-                selectedClass={selectedClass}
-                setSelectedClass={setSelectedClass}
+                promoProject={promoProject}
+                setPromoProject={setPromoProject}
                 membersProject={membersProject}
                 setMembersProject={setMembersProject}
                 technosProject={technosProject}
@@ -601,7 +600,6 @@ const StudentsProjects = () => {
                 setTypeProject={setTypeProject}
                 descriptionProject={descriptionProject}
                 setDescriptionProject={setDescriptionProject}
-                setIdSelectedClass={setIdSelectedClass}
                 control={control}
                 allstudents={allstudents}
                 allclass={allclass}

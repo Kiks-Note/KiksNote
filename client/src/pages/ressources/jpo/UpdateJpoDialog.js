@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Button,
@@ -8,9 +8,22 @@ import {
   DialogContent,
 } from "@mui/material";
 
+import { Editor } from "react-draft-wysiwyg";
+import {
+  EditorState,
+  convertToRaw,
+  convertFromHTML,
+  convertFromRaw,
+} from "draft-js";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
 import Dropzone from "../Cours/Dropzone";
 
 const UpdateCoursDialog = (props) => {
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+
+  console.log(props.descriptionJPO);
+
   return (
     <>
       <Dialog open={props.open} onClose={props.handleClose}>
@@ -49,14 +62,23 @@ const UpdateCoursDialog = (props) => {
                 sx={{ width: "90%" }}
               />
             </div>
-            <TextField
-              sx={{ marginBottom: "10px" }}
-              label="Description de la JPO"
-              fullWidth
-              multiline
-              rows={4}
-              defaultValue={props.descriptionJPO}
-              onChange={(event) => props.setDescriptionJPO(event.target.value)}
+
+            <Editor
+              placeholder={`Commencer à écrire une petite description de la JPO ${props.nameJPO}`}
+              // onEditorStateChange={handleEditorChange}
+              editorState={editorState}
+              toolbarClassName="toolbarClassName"
+              wrapperClassName="wrapperClassName"
+              editorClassName="editorClassName"
+              editorStyle={{
+                border: "1px solid black",
+                minHeight: "180px",
+                height: "300px",
+                padding: "10px",
+                borderRadius: "5px",
+                boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+                marginBottom: "16px",
+              }}
             />
             <div className="dropzone-coursimg-container">
               <p className="info-dropdown-img">

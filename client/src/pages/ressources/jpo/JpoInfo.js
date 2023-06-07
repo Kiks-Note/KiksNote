@@ -132,6 +132,8 @@ const JpoInfo = () => {
 
   const [loading, setLoading] = useState(true);
 
+  console.log(jpoData?.jpoDescription);
+
   const getJpoById = async () => {
     try {
       await axios
@@ -318,6 +320,13 @@ const JpoInfo = () => {
       });
   }, []);
 
+  // const descriptionJpoConvert = jpoData
+  //   ? convertToRaw(jpoData.jpoDescription)
+  //   : null;
+  // const htmlDescriptionJpo = descriptionJpoConvert
+  //   ? stateToHTML(descriptionJpoConvert)
+  //   : "";
+
   return (
     <>
       {loading ? (
@@ -441,11 +450,11 @@ const JpoInfo = () => {
             </div>
             <div className="jpoinfo-sections">
               <section className="jpo-left-side-section">
-                <div
+                {/* <div
                   dangerouslySetInnerHTML={{
-                    __html: jpoData?.jpoDescription,
+                    __html: htmlDescriptionJpo,
                   }}
-                />
+                /> */}
                 <Typography sx={{ fontWeight: "bold" }}>
                   Liste des participants lors de cette JPO
                 </Typography>

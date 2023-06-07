@@ -12,7 +12,6 @@ import {
 import { Editor } from "react-draft-wysiwyg";
 import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from "draftjs-to-html";
 
 import Dropzone from "../Cours/Dropzone";
 
@@ -24,7 +23,7 @@ const CreateJpoModal = (props) => {
 
   const handleEditorChange = (e) => {
     setEditorState(e);
-    setInputEditorState(draftToHtml(convertToRaw(e.getCurrentContent())));
+    setInputEditorState(convertToRaw(e.getCurrentContent()));
   };
 
   useEffect(() => {

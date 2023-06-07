@@ -153,12 +153,9 @@ const CreateProjectDialog = (props) => {
             )}
             defaultValue={props.promoProject}
             filterSelectedOptions
-            onChange={(event) => {
-              props.setSelectedClass(event.target.value);
-              const selectedCours = props.allclass.find(
-                (cours) => cours.name === event.target.value
-              );
-              props.setIdSelectedClass(selectedCours ? selectedCours.id : "");
+            onChange={(event, newValue) => {
+              const selectedPromos = newValue.map((promo) => promo.id);
+              props.setPromoProject(selectedPromos);
             }}
             renderInput={(params) => (
               <TextField
@@ -167,7 +164,7 @@ const CreateProjectDialog = (props) => {
                 variant="outlined"
                 inputProps={{
                   ...params.inputProps,
-                  name: "student",
+                  name: "promo",
                 }}
               />
             )}
