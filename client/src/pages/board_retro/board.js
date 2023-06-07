@@ -38,16 +38,9 @@ export default function Board() {
   const [columns, setColumns] = useState([]);
 
   useEffect(() => {
-
     setColumns(retroData["dataRetro"])
-    console.log(columns);
-
   },[])
 
-
-  console.log("$$$$$$$$$");
-  console.log(retroData);
-  console.log("$$$$$$$$$");
   const GMDBoard = {
     Glad: {
       name: "Glad",
@@ -134,7 +127,7 @@ export default function Board() {
     axios.post("http://localhost:5050/retro/addPostIt", {
       newObjPostIt : newObjPostIt,
       columnId : columnId,
-      //currentRetroIndex: currentRetroIndex
+      idCurrentRetro: retroData["idRetro"]
     })
   }
 
@@ -144,7 +137,6 @@ export default function Board() {
       categorie : categorie,
       selectedPostItIndex: selectedPostItIndex,
       postItText: postItText,
-   //   currentRetroIndex: currentRetroIndex
     })
   }
 
@@ -153,7 +145,6 @@ export default function Board() {
     axios.put("http://localhost:5050/retro/movePostIt", {
       source: source,
       destination: destination,
-   //  currentRetroIndex: currentRetroIndex
     })
   } 
 
@@ -162,14 +153,9 @@ export default function Board() {
 
   const changePostiTText = () => {
     let selectedColumn = { ...columns }
-
     selectedColumn[categorie]["items"][selectedPostItIndex]["content"] = postItText
-
     sendEditPostit(categorie,selectedPostItIndex,postItText);
-
     setColumns(selectedColumn)
-
-
     handleCloseEditPostIt();
   }
 

@@ -118,12 +118,35 @@ const editPostit = async (req, res) => {
 const addPostIt = async (req, res) => {
 
   const snapshot = await db.collection('retro').get()
-  let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
+  // let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
+  let currentIdRetro = req.body.idCurrentRetro;
 
-  const idDoc = snapshot.docs[idRetro].id;
+  console.log("id retro = " + currentIdRetro);
+
+  let currentRetro = [];
+
+  try {
+    const snapshot = await db.collection("retro").where("idRetro", "==", currentIdRetro).get();
+    currentRetro = snapshot.docs.map((doc) => ({ id: doc.id, data: doc.data() }));
+
+  
+    console.log("Retrieved retroo data:");
+    console.log(currentRetro);
+  } catch (err) {
+    console.error(err);
+  }
+
+  console.log(currentRetro);
 
 
-  let objetRetro = (await db.collection("retro").doc(idDoc).get()).data()
+
+
+   const idDocCurrentRetro = currentRetro[0]["id"]
+
+   console.log(idDocCurrentRetro);
+
+
+  let objetRetro = (await db.collection("retro").doc(idDocCurrentRetro).get()).data()
 
   const updatedItems = [...objetRetro["dataRetro"][req.body.columnId].items, req.body.newObjPostIt];
   const updatedColumn = {
@@ -131,14 +154,14 @@ const addPostIt = async (req, res) => {
     items: updatedItems,
   };
 
-  let dba  = await db.collection("retro").doc(idDoc) 
+  let currentRetroDb  = await db.collection("retro").doc(idDocCurrentRetro) 
 
   objetRetro["dataRetro"] = {
     ...objetRetro["dataRetro"],
     [req.body.columnId]: updatedColumn,
   }
 
-  dba.update({ dataRetro: objetRetro["dataRetro"] })
+  currentRetroDb.update({ dataRetro: objetRetro["dataRetro"] })
   .then(() => {
     console.log("Document updated successfully!!!!!!!!");
   })
