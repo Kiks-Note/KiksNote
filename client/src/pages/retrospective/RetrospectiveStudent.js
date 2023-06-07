@@ -66,7 +66,11 @@ function Retrospective() {
   let navigate = useNavigate();
 
 
-
+  useEffect(() => {
+    if (user?.status == "po") {
+        navigate('/retro');
+    }
+  })
 
   const columno = [
     {
@@ -204,12 +208,6 @@ function Retrospective() {
     }
   };
 
-  useEffect(() => {
-    if (user?.status == "etudiant") {
-        navigate('/retroStudent');
-    }
-  })
-
 
 
   const getCourse = async (idOwner) => {
@@ -298,18 +296,30 @@ function Retrospective() {
   const getAllRetroByUser = async () => {
     const userId = user.id;
 
+    if (user.status == "po") {
+      console.log("im a po");
+      await axios.get(`http://localhost:5050/retro/getAll`
+      ).then((res) => {
+        console.log("************");
+        console.log(res.data)
+        console.log("************");
+        setListRetros(res.data)
+      }).catch((err) => {
+        console.log(err)
+      })
+    } else if (user.status == "etudiant") {
+      console.log("im a student ");
+      await axios.get(`http://localhost:5050/retro/getAll`
+      ).then((res) => {
+        console.log("************");
+        console.log(res.data)
+        console.log("************");
+        setListRetros(res.data)
+      }).catch((err) => {
+        console.log(err)
+      })
 
-
-    await axios.get(`http://localhost:5050/retro/getAll`
-    ).then((res) => {
-      console.log("************");
-      console.log(res.data)
-      console.log("************");
-      setListRetros(res.data)
-    }).catch((err) => {
-      console.log(err)
-    })
-    
+    }
   }
 
 
