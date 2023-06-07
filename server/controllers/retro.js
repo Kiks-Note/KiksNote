@@ -1,4 +1,5 @@
 const { db } = require("../firebase");
+const { v4: uuidv4 } = require("uuid");
 
 console.log("in retro controller");
 
@@ -7,6 +8,7 @@ const addRetro = async (req, res) => {
     // Implementation of adding retro logic
 
     const tabRetro = {
+      idRetro: uuidv4(),
       titleRetro: req.body.titleRetro,
       courseRetro: req.body.courseRetro,
       dataRetro: req.body.dataRetro,
@@ -38,7 +40,6 @@ const addRetro = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 const getAll = async (req, res) => {
   const allRetrosQuery = await db.collection("retro").get()

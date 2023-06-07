@@ -245,7 +245,7 @@ function rowContent(_index, row) {
           responseRetros.forEach(retro => {
             allRetros.push(retro["dataRetro"])
           });
-          const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"]));
+          const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
           setRows(updatedRows);
           setDatas(res.data)
         })
@@ -324,34 +324,22 @@ function rowContent(_index, row) {
     console.log(listRetros);
     console.log(retroListUpdated);
     if (listRetros !== undefined) {
-      const updatedRows = listRetros.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"]));
+      const updatedRows = listRetros.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
       setRows(updatedRows);
     }
   }, [listRetros]);
 
-    const goToBoard = (date) => {
-
-    console.log(allRetro);
-    console.log(datas);
+  const goToBoard = (idRetro) => {
     datas.map(retro => {
-      console.log(retro["creationDate"]);
-      console.log(date);
-      if (retro["creationDate"] == date) {
+      if (retro["idRetro"] == idRetro) {
         console.log(retro);
         navigate('/boardRetro', { state: { retro } });
-
-        //navigate(`/boardRetro/${retro}`)
       }
     })
-
   }
 
 
   const validateBoard = async () => {
-    console.log(boardTitle);
-    console.log(choosenCourse);
-    console.log(retroModel);
-
     if (boardTitle && choosenCourse && retroModel) {
 
       let choosenModel = null;
@@ -384,8 +372,8 @@ function rowContent(_index, row) {
   }
 
 
-  function createData(titleRetro, date, name) {
-    return { titleRetro, date, name };
+  function createData(titleRetro, date, name, idRetro) {
+    return { titleRetro, date, name, idRetro };
   }
   
   
@@ -433,7 +421,7 @@ function rowContent(_index, row) {
                   <TableCell align="left">{row.date}</TableCell>
                   <TableCell align="left">{row.name}</TableCell>
                   <TableCell> 
-                    <Button onClick={() => goToBoard(row.date)}> go board </Button>
+                    <Button onClick={() => goToBoard(row.idRetro)}> go board </Button>
                   </TableCell>
                 </TableRow>
               ))}
