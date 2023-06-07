@@ -1,6 +1,20 @@
 const { auth, db } = require("../firebase");
 const nodemailer = require("nodemailer");
 
+const actionCodeSettings = {
+  url: "http://www.localhost:3000",
+  handleCodeInApp: true,
+  iOS: {
+    bundleId: "com.example.ios",
+  },
+  android: {
+    packageName: "com.example.android",
+    installApp: true,
+    minimumVersion: "12",
+  },
+  dynamicLinkDomain: "coolapp.page.link",
+};
+
 var transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -68,27 +82,29 @@ const register = async (req, res) => {
 
     await db.collection("users").doc(userEmail).set(userData);
 
-    const emailVerificationLink = await auth.generateEmailVerificationLink(
-      userEmail
-    );
+    await auth
+      .generateEmailVerificationLink(userEmail)
+      .then((link) => {
+        const mailOptions = {
+          from: "services.kiksnote.noreply@gmail.com",
+          to: userEmail,
+          subject: "Vérification de l'email du compte",
+          text: `Bonjour ${userFirstName},\n
+          \t Veuillez cliquer sur le lien suivant pour vérifier votre compte :\n : ${link}`,
+        };
 
-    const mailOptions = {
-      from: "services.kiksnote.noreply@gmail.com",
-      to: userEmail,
-      subject: "Vérification du compte",
-      text: `Bonjour,\n\n
-          \t Veuillez cliquer sur le lien suivant pour vérifier votre compte :\n
-          ${emailVerificationLink}\n`,
-    };
-
-    transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.log(error);
+          } else {
+            console.log("E-mail envoyé : " + info.response);
+          }
+        });
+        res.status(200).send({ message: "Utilisateur créé avec succès." });
+      })
+      .catch((error) => {
         console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
-    res.status(200).send({ message: "Utilisateur créé avec succès." });
+      });
   } catch (error) {
     console.log(error);
 
