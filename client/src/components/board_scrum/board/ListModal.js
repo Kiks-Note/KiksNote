@@ -65,30 +65,6 @@ export default function ListModal({
   });
   const onSubmit = (data) => {
     try {
-      let cardDto;
-      if (allowedColumnIds.includes(columnId)) {
-        cardDto = {
-          id: info.id,
-          title: info.name,
-          desc: info.desc,
-          storyId: info.storyId,
-          color: info.color,
-          assignedTo: info.assignedTo,
-          labels: data.labels,
-        };
-      } else {
-        cardDto = {
-          id: info.id,
-          title: info.name,
-          desc: info.desc,
-          storyId: info.storyId,
-          color: info.color,
-          assignedTo: info.assignedTo,
-          labels: data.labels,
-          estimation: info.estimation,
-          advancement: info.advancement,
-        };
-      }
       axios.put(
         "http://localhost:5050/dashboard/" +
           dashboardId +
@@ -97,7 +73,15 @@ export default function ListModal({
           "/column/" +
           columnId +
           "/editCard",
-        cardDto
+        {
+          id: info.id,
+          title: info.name,
+          desc: info.desc,
+          storyId: info.storyId,
+          color: info.color,
+          assignedTo: info.assignedTo,
+          labels: data.labels,
+        }
       );
       closeModal();
     } catch (error) {
@@ -165,6 +149,9 @@ export default function ListModal({
       break;
     case "labels":
       titleModal = "Choix de label";
+      break;
+    case "avancement":
+      titleModal = "Mettre à jour l'avancement";
       break;
     default:
       titleModal = "";
@@ -296,6 +283,9 @@ export default function ListModal({
                   Ajouter
                 </Button>
               </Box>
+            )}
+            {type === "avancement" && (
+              <Box sx={{ display: "flex", flexDirection: "column" }}></Box>
             )}
           </Box>
         </Card>
