@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, {useCallback, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Tab from "./Tabs";
 import {
@@ -20,7 +20,7 @@ export default function TabBoard() {
       const newActiveTab = updatedTabs[0].id;
       dispatch(setActiveTab(newActiveTab));
     },
-    [tabs, activeTab, dispatch]
+    [tabs, dispatch]
   );
 
   useEffect(() => {

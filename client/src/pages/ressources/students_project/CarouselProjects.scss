@@ -1,0 +1,38 @@
+.carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel {
+    width: 90%;
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+    color: #7a52e1;
+}
+
+.no-projects-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-weight: bold;
+}
+
+.splide_container {
+    padding: 0;
+}
+
+.project-type-typo {
+    display: flex;
+    align-items: center;
+    padding: 10px
+}
+
+.type-promo-project-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}

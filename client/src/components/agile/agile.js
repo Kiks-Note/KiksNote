@@ -18,10 +18,22 @@ export async function addImpactMapping(impactMapping) {
   }
 }
 
-export const getImpactMapping = async (dashboardId) => {
+// export const getImpactMapping = async (dashboardId) => {
+//   try {
+//     const res = await axios.get(
+//       `http://localhost:5050/agile/${dashboardId}/get_impact_mapping`
+//     );
+//     return res.data;
+//   } catch (e) {
+//     console.error(e);
+//   }
+// };
+
+// ! A FAIRE 
+export const deleteActors = async (dashboardId, actorId) => {
   try {
-    const res = await axios.get(
-      `http://localhost:5050/agile/${dashboardId}/get_impact_mapping`
+    const res = await axios.delete(
+      `http://localhost:5050/agile/${dashboardId}/actor/${actorId}`
     );
     return res.data;
   } catch (e) {

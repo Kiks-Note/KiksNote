@@ -43,7 +43,6 @@ export default function Dashboard() {
       );
     } catch (error) {
       console.error(error);
-      // Gérer l'erreur de manière appropriée, par exemple :
       // throw new Error('Erreur lors de la mise à jour du document');
     }
   }

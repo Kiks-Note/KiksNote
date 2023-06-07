@@ -1,8 +1,9 @@
 const { auth, db } = require("../firebase");
 const archiver = require("archiver");
 const axios = require("axios");
+const fs = require("fs");
 const path = require("path");
-
+const { v4: uuidv4 } = require("uuid");
 const addImpactMapping = async (req, res) => {
   if (
     !req.body ||
@@ -35,19 +36,52 @@ const addImpactMapping = async (req, res) => {
 
 const getImpactMapping = async (req, res) => {
   try {
-    const docRef = db.collection("dashboard").doc(req.params.dashboardId).collection("agile").doc("impact_mapping");
+    const docRef = db
+      .collection("dashboard")
+      .doc(req.params.dashboardId)
+      .collection("agile")
+      .doc("impact_mapping");
     const doc = await docRef.get();
     if (!doc.exists) {
       return null;
     }
     const data = doc.data();
-    console.log('data',req.params.dashboardId, data);
+    // console.log('data',req.params.dashboardId, data);
     return res.status(200).send(data);
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Server error for impact mapping" });
   }
 };
+const impactMappingRequest = async (connection) => {
+  connection.on("message", async (message) => {
+    const impactMapping = JSON.parse(message.utf8Data);
+
+    let impactMappingRef = db
+      .collection("dashboard")
+      .doc(impactMapping.dashboardId)
+      .collection("agile")
+      .doc("impact_mapping");
+
+    const documentSnapshot = await impactMappingRef.get();
+
+    if (!documentSnapshot.exists) {
+      return null;
+    }
+
+    impactMappingRef.onSnapshot(
+      (snapshot) => {
+        const data = snapshot.data();
+        connection.sendUTF(JSON.stringify(data));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
+  });
+};
+
+/// Path to recup all foldersAgile
 const getFoldersAgile = async (req, res) => {
   try {
     const userQuerySnapshot = await db
@@ -83,6 +117,7 @@ const getFoldersAgile = async (req, res) => {
   }
 };
 
+/// Path to Upload zip foldersAgile
 const getZipFolderAgile = async (req, res) => {
   try {
     const { files } = req.query;
@@ -124,22 +159,138 @@ const getZipFolderAgile = async (req, res) => {
     res.status(500).send(err);
   }
 };
-// const changeIndex = async (req, res) => {
-//   var data = req.body;
-//   console.log(data);
-//   await db
-//     .collection("dashboard")
-//     .doc(req.params.dashboardId)
-//     .collection("board")
-//     .doc(req.params.boardId)
-//     .update({
-//       think: data[0],
-//       see: data[1],
-//       do: data[2],
-//       hear: data[3],
-//     });
-// };
-const getPdfEmpathyMapToFolderAgile = async (req, res) => {
+
+/// PATH to create a postit
+const createPostit = async (req, res) => {
+  try {
+    const data = req.body;
+    const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
+    const agileRef = dashboardRef.collection("agile").doc(req.params.actorId);
+    const snapshot = await agileRef.get();
+    const columns = snapshot.data().empathy_map;
+    let column;
+    let columnName;
+    switch (req.params.columnId) {
+      case "think":
+        column = columns.think;
+        columnName = "think";
+        break;
+      case "see":
+        column = columns.see;
+        columnName = "see";
+        break;
+      case "do":
+        column = columns.do;
+        columnName = "do";
+        break;
+      case "hear":
+        column = columns.hear;
+        columnName = "hear";
+        break;
+      default:
+        res.status(400).send({ message: "Invalid column id" });
+        return;
+    }
+
+    const id = uuidv4();
+    const cards = column.items || [];
+    const newCard = {
+      id: id,
+      content: data.content,
+    };
+
+    column.items = [...cards, newCard];
+
+    // Créer un nouvel objet pour mettre à jour uniquement la colonne spécifiée
+    const updateData = {
+      empathy_map: { ...columns, [columnName]: column },
+    };
+
+    await agileRef.update(updateData);
+    res.send({ message: "Card created successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+/// PATH to delete a postit
+const deletePostit = async (req, res) => {
+  try {
+    const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
+    const agileRef = dashboardRef.collection("agile").doc(req.params.actorId);
+    const snapshot = await agileRef.get();
+    const columns = snapshot.data().empathy_map;
+    let column;
+    let columnName;
+    switch (req.params.columnId) {
+      case "think":
+        column = columns.think;
+        columnName = "think";
+        break;
+      case "see":
+        column = columns.see;
+        columnName = "see";
+        break;
+      case "do":
+        column = columns.do;
+        columnName = "do";
+        break;
+      case "hear":
+        column = columns.hear;
+        columnName = "hear";
+        break;
+      default:
+        res.status(400).send({ message: "Invalid column id" });
+        return;
+    }
+
+    const cards = column.items || [];
+    const cardIndex = cards.findIndex((card) => {
+      if (card.id == req.params.postitId) {
+        return card.id;
+      }
+    });
+    if (cardIndex == -1) {
+      res.status(404).send({ message: "Card not found" });
+      return;
+    }
+
+    column.items = cards.filter((card) => card.id != req.params.postitId);
+    // Créer un nouvel objet pour mettre à jour uniquement la colonne spécifiée
+    const updateData = {
+      empathy_map: { ...columns, [columnName]: column },
+    };
+    await agileRef.update(updateData);
+
+    // Card deleted successfully
+    res.status(204).send({ message: "Card deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    // Server error
+    res
+      .status(500)
+      .send({ message: "An error occurred while deleting the card" });
+  }
+};
+/// PATH to change a postit index
+const changeIndex = async (req, res) => {
+  var data = req.body;
+  await db
+    .collection("dashboard")
+    .doc(req.params.dashboardId)
+    .collection("agile")
+    .doc(req.params.actorId)
+    .update({
+      empathy_map: {
+        think: data.think,
+        see: data.see,
+        do: data.do,
+        hear: data.hear,
+      },
+    });
+};
+/// Path to upload pdf on agile Folder
+const updatePdfInAgileFolder = async (req, res) => {
   try {
     const pdfFile = req.file;
     if (!pdfFile) {
@@ -147,8 +298,39 @@ const getPdfEmpathyMapToFolderAgile = async (req, res) => {
         .status(400)
         .json({ error: "Aucun fichier PDF n'a été envoyé." });
     }
-    // Traiter le fichier PDF, par exemple le renommer, le déplacer, etc.
-    // Ici, nous imprimons simplement les informations du fichier
+
+    const fieldName = req.body.fieldName;
+    if (!fieldName) {
+      return res.status(400).json({ error: "Le nom du champ est requis." });
+    }
+
+    const fieldValue = req.protocol + "://" + req.get("host") + pdfFile.path;
+
+    const agileDocumentRef = db
+      .collection("dashboard")
+      .doc(req.params.dashboardId)
+      .collection("agile")
+      .doc("agile_folder");
+
+    const snapshot = await agileDocumentRef.get();
+    const previousFieldValue = snapshot.exists
+      ? snapshot.data()[fieldName]
+      : null;
+
+    if (previousFieldValue) {
+      // Supprimer le fichier précédent s'il existe
+      const previousFileName = previousFieldValue.split("/").pop();
+      const previousFilePathOnDisk = __dirname + "/uploads/" + previousFileName;
+      if (fs.existsSync(previousFilePathOnDisk)) {
+        fs.unlinkSync(previousFilePathOnDisk);
+      }
+    }
+
+    const updateData = {};
+    updateData[fieldName] = fieldValue;
+
+    await agileDocumentRef.update(updateData);
+
     console.log("Nom du fichier :", pdfFile.originalname);
     console.log("Chemin du fichier temporaire :", pdfFile.path);
     res.status(200).send("Fichier PDF traité avec succès.");
@@ -157,30 +339,173 @@ const getPdfEmpathyMapToFolderAgile = async (req, res) => {
     res.status(500).send(err);
   }
 };
+/// Path to add Persona
+const addPersona = async (req, res) => {
+  try {
+    const data = req.body;
+    const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
+    const agileRef = dashboardRef.collection("agile").doc(req.params.actorId);
+    const snapshot = await agileRef.get();
+    const persona = snapshot.data().persona;
 
-// !TODO
+    // Vérifier si l'objet persona existe et le mettre à jour
+    if (Object.keys(persona).length === 0) {
+      // Si l'objet persona est vide, le créer avec les nouvelles données
+      await agileRef.set({
+        persona: data,
+      });
+    } else {
+      // Si l'objet persona existe, fusionner les nouvelles données avec les données existantes
+      const updatedPersona = { ...persona, ...data };
+      await agileRef.update({
+        persona: updatedPersona,
+      });
+    }
+
+    res.send({ message: "Persona added successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+/// Path to delete actor 
+const deleteActor = async (req, res) => {
+  try {
+    const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
+    const agileRef = dashboardRef.collection("agile").doc(req.params.actorId);
+    const agileFolderRef = agileRef.collection("agile").doc("agile_folder");
+    const snapshot = await agileRef.get();
+
+    if (snapshot.exists) {
+      // Le document existe, on peut le supprimer
+      await agileRef.delete();
+
+      // Mettre à jour les champs empathy_map et personas dans agile_folder
+      await agileFolderRef.update({
+        empathy_map: "", // Mettre à vide (string vide)
+        personas: [], // Mettre à vide (tableau vide)
+      });
+
+      res.status(204).send({ message: "Actor deleted successfully" });
+    } else {
+      // Le document n'existe pas
+      res.status(404).send({ message: "Actor not found" });
+    }
+  } catch (error) {
+    console.error(error);
+    // Erreur côté serveur
+    res
+      .status(500)
+      .send({ message: "An error occurred while deleting the actor" });
+  }
+};
+
+/// Path to websocket
 const empathyRequest = async (connection) => {
   connection.on("message", async (message) => {
-    const dashboardId = JSON.parse(message.utf8Data);
-    db.collection("dashboard")
-      .doc(dashboardId)
-      .collection("agile").doc("empathy_map")
-      .onSnapshot(
-        (snapshot) => {
-          connection.sendUTF(JSON.stringify(data));
+    const empathy = JSON.parse(message.utf8Data);
+
+    var agileDocumentRef = db
+      .collection("dashboard")
+      .doc(empathy.dashboardId)
+      .collection("agile")
+      .doc(empathy.actorId);
+
+    // Check if the document exists
+    const documentSnapshot = await agileDocumentRef.get();
+
+    if (!documentSnapshot.data().hasOwnProperty("empathy_map")) {
+      await agileDocumentRef.update({
+        empathy_map: {
+          think: {
+            name: "Penser",
+            color: "#BF2020",
+            items: [],
+          },
+          see: {
+            name: "Voir",
+            color: "#3295AC",
+            items: [],
+          },
+          do: {
+            name: "Dire",
+            color: "#9ACD32",
+            items: [],
+          },
+          hear: {
+            name: "Entendre",
+            color: "#ed7ee2",
+            items: [],
+          },
         },
-        (err) => {
-          console.log(`Encountered error: ${err}`);
-        }
-      );
+      });
+    }
+
+    // Listen to changes in the document
+    agileDocumentRef.onSnapshot(
+      (snapshot) => {
+        const data = snapshot.data();
+        const empathyMap = new Map([
+          ["think", data.empathy_map.think],
+          ["see", data.empathy_map.see],
+          ["do", data.empathy_map.do],
+          ["hear", data.empathy_map.hear],
+        ]);
+        const orderedData = {
+          empathy_map: Object.fromEntries(empathyMap),
+        };
+        connection.sendUTF(JSON.stringify(orderedData));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
   });
 };
+
+const personaRequest = async (connection) => {
+  connection.on("message", async (message) => {
+    const persona = JSON.parse(message.utf8Data);
+    var agileDocumentRef = db
+      .collection("dashboard")
+      .doc(persona.dashboardId)
+      .collection("agile")
+      .doc(persona.actorId);
+
+    // Check if the document exists
+    const documentSnapshot = await agileDocumentRef.get();
+
+    if (!documentSnapshot.data().hasOwnProperty("persona")) {
+      await agileDocumentRef.update({
+        persona: {},
+      });
+    }
+
+    // Listen to changes in the document
+    agileDocumentRef.onSnapshot(
+      (snapshot) => {
+        const data = snapshot.data();
+        connection.sendUTF(JSON.stringify(data));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
+  });
+};
+
 module.exports = {
   addImpactMapping,
   getImpactMapping,
+  impactMappingRequest,
   getFoldersAgile,
   getZipFolderAgile,
-  getPdfEmpathyMapToFolderAgile,
+  updatePdfInAgileFolder,
+  addPersona,
+  deleteActor,
   empathyRequest,
-  //changeIndex,
+  personaRequest,
+  changeIndex,
+  createPostit,
+  deletePostit,
 };
