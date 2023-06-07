@@ -293,6 +293,10 @@ function InventoryHome() {
         toggleDrawerRequest={toggleDrawerRequest}
         device={clickedDevice}
       />
+      <Sujection
+        openSujection={openSujection}
+        setOpenSujection={setOpenSujection}
+      />
 
       <Toaster position="bottom-left" />
       {user?.status !== "etudiant" && (
