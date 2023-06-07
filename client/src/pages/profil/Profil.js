@@ -10,20 +10,21 @@ import { Avatar, Box, Typography, MenuItem, Menu, Dialog, DialogContent } from "
 import ProfilFormUpdate from "../../components/profil/ProfilFormUpdate.js";
 import ProfilSkeleton from "../../components/profil/ProfilSkeleton";
 import useFirebase from "../../hooks/useFirebase";
+import { useParams } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import "./Profil.scss";
 
 export default function Profil() {
-    const queryParameters = new URLSearchParams(window.location.search)
+  const queryParameters = new URLSearchParams(window.location.pathname);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [recentBlogs, SetRecentBlogs] = useState([]);
   const radioGroupRef = React.useRef(null);
   const { user } = useFirebase();
+  const { id } = useParams();
   const [userProfil, setUserProfil] = useState({});
   const fileInputRef = useRef(null);
-
-  const id = queryParameters.get("id");
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -79,7 +80,7 @@ export default function Profil() {
       const wsComments = new w3cwebsocket(`ws://localhost:5050/profil`);
 
       wsComments.onopen = function (e) {
-        wsComments.send(JSON.stringify(user?.id));
+        wsComments.send(JSON.stringify(id));
       };
 
       wsComments.onmessage = (message) => {
@@ -112,7 +113,7 @@ export default function Profil() {
         console.log("Loading");
       };
     })();
-  }, [id, user?.id]);
+  }, [id]);
 
   const filterTwoMostRecentBlogs = (blogs) => {
     const sortedBlogs = blogs.sort((a, b) => {
@@ -154,20 +155,24 @@ export default function Profil() {
       url(${userProfil.imagebackground})`,
             }}
           >
-            <IconButton aria-label="settings" onClick={handleClick} sx={{ position: "absolute", top: 25, right: 25 }}>
-              <SettingsIcon />
-            </IconButton>
-            <Menu id="profile-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
-              <MenuItem className="menuItem" onClick={handleOpenDialog}>
-                <EditIcon style={{ color: "orange" }} />
-                Modifier mon profil
-              </MenuItem>
-              <MenuItem className="menuItem" onClick={handleEditBanner}>
-                <EditIcon style={{ color: "orange" }} />
-                Modifier ma bannière
-                <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleOnChange} />
-              </MenuItem>
-            </Menu>
+            {user.id == userProfil.id && (
+              <IconButton aria-label="settings" onClick={handleClick} sx={{ position: "absolute", top: 25, right: 25 }}>
+                <SettingsIcon />
+              </IconButton>
+            )}
+            {user.id == userProfil.id && (
+              <Menu id="profile-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+                <MenuItem className="menuItem" onClick={handleOpenDialog}>
+                  <EditIcon style={{ color: "orange" }} />
+                  Modifier mon profil
+                </MenuItem>
+                <MenuItem className="menuItem" onClick={handleEditBanner}>
+                  <EditIcon style={{ color: "orange" }} />
+                  Modifier ma bannière
+                  <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleOnChange} />
+                </MenuItem>
+              </Menu>
+            )}
             <Dialog
               fullWidth
               maxWidth="xl"
@@ -363,7 +368,7 @@ export default function Profil() {
                       ></path>
                     </svg>
                     {userProfil.git ? (
-                      <a href={userProfil.git} target="_blank" style={{ marginLeft: "5%" }}  rel="noreferrer">
+                      <a href={userProfil.git} target="_blank" style={{ marginLeft: "5%" }} rel="noreferrer">
                         {userProfil.git.split("/").pop()}
                       </a>
                     ) : (
