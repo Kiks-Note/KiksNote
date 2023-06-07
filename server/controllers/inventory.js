@@ -550,20 +550,23 @@ const getIdeaByUser = async (req, res) => {
 const makeIdeaComment = async (req, res) => {
   try {
     const {ideaId} = req.params;
-    const {comment, user} = req.body;
+    const {comment, userId} = req.body;
 
     const docRef = db.collection("inventory-ideas").doc(ideaId);
 
     await docRef.update({
       comments: FieldValue.arrayUnion({
         comment: comment,
-        user: user,
+        userId: userId,
         createdAt: new Date(),
       }),
     });
 
     res.status(200).send("Commentaire ajouté avec succès");
-  } catch (err) {}
+  } catch (err) {
+    res.status(500).send("Une erreur est survenue");
+    console.log(err);
+  }
 };
 
 const liveCategories = async (connection) => {
@@ -657,6 +660,23 @@ const borrowedList = async (connection) => {
     );
 };
 
+const getIdeaComments = async (connection, request) => {
+  connection.on("message", (message) => {
+    const value = JSON.parse(message.utf8Data).value; // Parse the received message
+
+    try {
+      db.collection("inventory-ideas")
+        .doc(value)
+        .onSnapshot((snapshot) => {
+          const idea = snapshot.data();
+          connection.sendUTF(JSON.stringify(idea.comments || []));
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  });
+};
+
 module.exports = {
   inventory,
   inventoryLength,
@@ -689,4 +709,5 @@ module.exports = {
   liveCategories,
   liveInventory,
   borrowedList,
+  getIdeaComments,
 };

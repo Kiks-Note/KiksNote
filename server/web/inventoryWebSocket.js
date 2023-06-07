@@ -5,6 +5,7 @@ const {
   liveCategories,
   liveInventory,
   borrowedList,
+  getIdeaComments,
 } = require("../controllers/inventory");
 
 module.exports = function (wsI) {
@@ -33,6 +34,9 @@ module.exports = function (wsI) {
         borrowedList(connection);
         console.log("adminBorrowedList");
         break;
+      case "/getIdeaComments":
+        getIdeaComments(connection, request);
+        console.log("getIdeasComments");
       default:
         break;
     }
