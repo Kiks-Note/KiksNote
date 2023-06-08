@@ -1,10 +1,10 @@
-import {Button, Fab, Grid, Tooltip} from "@mui/material";
+import { Button, Fab, Grid, Tooltip } from "@mui/material";
 import Box from "@mui/material/Box";
 import axios from "axios";
-import React, {useEffect, useState} from "react";
-import {toast, Toaster} from "react-hot-toast";
-import {Rings} from "react-loader-spinner";
-import {CustomDropdown} from "../../components/inventory/CustomDropdown";
+import React, { useEffect, useState } from "react";
+import { toast, Toaster } from "react-hot-toast";
+import { Rings } from "react-loader-spinner";
+import { CustomDropdown } from "../../components/inventory/CustomDropdown";
 import InvBox from "../../components/inventory/InvBox";
 import ModalForm from "../../components/inventory/ModalForm";
 import LoanRequestForm from "../../components/inventory/LoanRequestForm";
@@ -13,7 +13,7 @@ import AddIcon from "@mui/icons-material/Add";
 import AccessibilityNewRoundedIcon from "@mui/icons-material/AccessibilityNewRounded";
 import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import "../../styles/inventoryGlobal.css";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SideBarModify from "../../components/inventory/SideBarModify";
 import Snackbar from "../../components/inventory/CustomSnackBar";
 import CustomSnackbar from "../../components/inventory/CustomSnackBar";
@@ -166,6 +166,11 @@ function InventoryHome() {
           setSnackBarOpen(false);
         }}
       />
+      <Sujection
+        openSujection={openSujection}
+        setOpenSujection={setOpenSujection}
+      />
+
       <Toaster position="bottom-left" />
 
       {/* <div className="buttons-wrapper">
@@ -242,9 +247,9 @@ function InventoryHome() {
         <CustomDropdown
           placeholder="Campus"
           data={[
-            {label: "Cergy", value: "Cergy"},
-            {label: "Paris", value: "Paris"},
-            {label: "Reset", value: "reset"},
+            { label: "Cergy", value: "Cergy" },
+            { label: "Paris", value: "Paris" },
+            { label: "Reset", value: "reset" },
           ]}
           onChange={(e) => {
             setCampusFilter(e[0].value);
@@ -272,7 +277,7 @@ function InventoryHome() {
           />
         </div>
       ) : (
-        <Box sx={{flexGrow: 1}}>
+        <Box sx={{ flexGrow: 1 }}>
           <Grid container spacing={4}>
             {!loading &&
               inventory
