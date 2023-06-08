@@ -51,8 +51,11 @@ export default function CardBlog({ blog, tags }) {
 
   const navigate = useNavigate();
 
-  function handleClick() {
+  function handleClickBlog() {
     navigate(`/blog/${blog.id}`);
+  }
+  function handleClickTuto() {
+    navigate(`/tuto/${blog.id}`);
   }
 
   function handleMenuOpen(event) {
@@ -65,7 +68,7 @@ export default function CardBlog({ blog, tags }) {
 
   const getTag = function (id) {
     let tag = "";
-    id = id.toString();
+    id = id?.toString();
     for (let i = 0; i < tags.length; i++) {
       if (tags[i].id === id) {
         tag = tags[i].name;
@@ -148,12 +151,12 @@ export default function CardBlog({ blog, tags }) {
 
       <div className="card_blog" color="background.default">
         <div className="card-img-holder">
-          <img src={blog.thumbnail} alt={blog.thumbnail} />
+          <img src={blog?.thumbnail} alt={blog?.thumbnail} />
         </div>
         <div className="card-blog-content">
           <div className="content-title">
             <h3 className="blog-title">{blog.title}</h3>{" "}
-            {user.status !== "etudiant" || user.email === blog.created_by ? (
+            {user.status !== "etudiant" || user.email === blog?.created_by ? (
               <div style={{ zIndex: 2 }}>
                 <IconButton
                   aria-label="more options"
@@ -187,8 +190,8 @@ export default function CardBlog({ blog, tags }) {
             }}
           >
             <Typography variant="caption">
-              {blog.created_at} | J'aime {blog.like.length} | J'aime pas{" "}
-              {blog.dislike.length} | Commentaires {blog.comment.length}
+              {blog?.created_at} | J'aime {blog?.like?.length} | J'aime pas{" "}
+              {blog?.dislike.length} | Commentaires {blog?.comment?.length}
             </Typography>
             <Box
               sx={{
@@ -198,26 +201,35 @@ export default function CardBlog({ blog, tags }) {
               }}
             >
               <Typography sx={{ textOverflow: "ellipsis" }}>
-                {blog.description}
+                {blog?.description}
               </Typography>
 
               <Box sx={{ display: "flex", justifyContent: "space-around" }}>
                 <Button
                   size="small"
-                  onClick={handleClick}
+                  onClick={
+                    blog?.type === "tuto" ? handleClickTuto : handleClickBlog
+                  }
                   variant="contained"
                   color="success"
                 >
-                  Consulter
+                  {blog?.type === "tuto" ? "Commencer" : "Consulter"}
                 </Button>
 
                 <ul className="tags_blog">
-                  {blog.tag.length !== 0 && (
+                  {blog?.tag?.length}
+                  {blog?.tag?.length !== 0 && Array.isArray(blog.tag) && (
                     <>
                       <img src={OrangeHashtag} width={"30"} height={"30"} />
-                      <Typography variant="body2">
-                        {getTag(blog.tag)}
-                      </Typography>
+                      {blog?.tag?.map((tag) => (
+                        // <li>{tag}, </li>
+                        <Typography variant="body2">
+                          {getTag(blog?.tag)}
+                        </Typography>
+                      ))}
+                      {/*<Typography variant="body2">*/}
+                      {/*  {getTag(blog?.tag)}*/}
+                      {/*</Typography>*/}
                     </>
                   )}
                 </ul>
@@ -238,7 +250,7 @@ export default function CardBlog({ blog, tags }) {
             <Button onClick={changeVisibility}>Visible</Button>
             <Checkbox
               onClick={changeVisibility}
-              checked={blog.visibility !== "pending"}
+              checked={blog?.visibility !== "pending"}
             ></Checkbox>
           </MenuItem>
         )}
