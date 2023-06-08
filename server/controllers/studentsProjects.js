@@ -1,6 +1,38 @@
 const { db, storageFirebase } = require("../firebase");
-const bucket = storageFirebase.bucket();
+const multer = require("multer");
+const fs = require("fs");
 const mime = require("mime-types");
+const bucket = storageFirebase.bucket();
+const path = require("path");
+
+const DIR = "./uploads";
+
+// Vérifier et créer le dossier "uploads" s'il n'existe pas
+if (!fs.existsSync(DIR)) {
+  fs.mkdirSync(DIR);
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, DIR);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype !== "application/pdf" && file.mimetype !== "video/mp4") {
+      return cb(new Error("Le fichier doit être un PDF ou un MP4."));
+    }
+    cb(null, true);
+  },
+}).single("media");
 
 const getAllStudents = async (req, res) => {
   try {
@@ -252,6 +284,82 @@ const createStudentProject = async (req, res) => {
   }
 };
 
+const uploadMediaProject = async (req, res) => {
+  try {
+    await upload(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Error uploading file." });
+      } else if (err) {
+        res.status(400).json({ error: err.message });
+      } else {
+        if (!req.file) {
+          res.status(400).json({ error: "No file uploaded." });
+          return;
+        }
+
+        const { projectId, nameProject } = req.body;
+        const file = req.file;
+        const filePath = req.file.path;
+
+        const fileName = req.file.originalname;
+        const fileSize = req.file.size;
+        const fileType = mime.lookup(filePath);
+
+        if (!file) {
+          return res.status(400).send("Aucun fichier n'a été téléchargé.");
+        }
+
+        const projectRef = db.collection("students_projects").doc(projectId);
+        const projectSnapshot = await projectRef.get();
+
+        if (!projectSnapshot.exists) {
+          return res.status(404).send("Projet étudiant non trouvé.");
+        }
+
+        const fileRef = bucket.file(
+          `students_projects/${nameProject}/${fileName}`
+        );
+
+        const options = {
+          metadata: {
+            contentType: file.mimetype || "video/mp4",
+            cacheControl: "public, max-age=31536000",
+          },
+        };
+
+        await fileRef.save(file.buffer, options);
+
+        const [url] = await fileRef.getSignedUrl({
+          action: "read",
+          expires: "03-17-2025",
+        });
+
+        const mediaData = {
+          url: url,
+          name: fileName,
+          type: fileType,
+          size: fileSize,
+        };
+
+        await projectRef.update({
+          mediaProject: mediaData,
+        });
+
+        res.status(200).json({
+          message: "Fichier vidéo uploadé avec succès.",
+          mediaData: mediaData,
+        });
+      }
+    });
+  } catch (err) {
+    if (err instanceof multer.MulterError) {
+      res.status(400).json({ error: "Error uploading file." });
+    } else {
+      res.status(400).json({ error: err.message });
+    }
+  }
+};
+
 const refStudentProject = async (req, res) => {
   try {
     const { projectId, counterRefToAdd, userId } = req.body;
@@ -344,6 +452,7 @@ module.exports = {
   getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,
+  uploadMediaProject,
   refStudentProject,
   createLinkedBlogTuto,
 };

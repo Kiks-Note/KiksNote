@@ -214,11 +214,19 @@ const StudentsProjects = () => {
   };
 
   const publishStudentProject = async () => {
-    if (nameProject === "" || repoProjectLink === "" || !promoProject || !membersProject || !technosProject || typeProject === "" || descriptionProject === "" || projectImageBase64 === "") {
+    if (
+      nameProject === "" ||
+      repoProjectLink === "" ||
+      !promoProject ||
+      !membersProject ||
+      !technosProject ||
+      typeProject === "" ||
+      descriptionProject === "" ||
+      projectImageBase64 === ""
+    ) {
       toast.error("Veuillez remplir tous les champs !");
       return;
-    }
-    else{
+    } else {
       try {
         await axios
           .post("http://localhost:5050/ressources/students-projects", {
@@ -376,10 +384,17 @@ const StudentsProjects = () => {
   const handleSubmit = async (event) => {
     await publishStudentProject();
     event.preventDefault();
-    if (nameProject === "" || repoProjectLink === "" || !promoProject || !membersProject || !technosProject || typeProject === "" || descriptionProject === "" || projectImageBase64 === "") {
-      
-    }
-    else{
+    if (
+      nameProject === "" ||
+      repoProjectLink === "" ||
+      !promoProject ||
+      !membersProject ||
+      !technosProject ||
+      typeProject === "" ||
+      descriptionProject === "" ||
+      projectImageBase64 === ""
+    ) {
+    } else {
       setOpen(false);
       getAllProjects();
     }
@@ -465,6 +480,10 @@ const StudentsProjects = () => {
         </>
       ) : (
         <>
+          <video
+            src="https://firebasestorage.googleapis.com/v0/b/codenote2-adad2.appspot.com/o/7%20Projects%20to%20Improve%20Your%20Web%20Dev%20Skills.mp4?alt=media&token=9fe5bb7e-64cc-423d-a306-99238e384d53&_gl=1*ijznk2*_ga*MTYyMTQ5ODM0OS4xNjY5NTc2Mjgz*_ga_CW55HF8NVT*MTY4NjIwODAzOC45Ni4xLjE2ODYyMDgwNTMuMC4wLjA."
+            controls
+          ></video>
           <div className="students-project-container">
             <div className="header-students-projects">
               <FormControl sx={{ width: "20%" }}>
