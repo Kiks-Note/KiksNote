@@ -46,6 +46,13 @@ const BlogTutosLinkDialog = (props) => {
     ? selectedBlogTuto.data.title
     : "";
 
+    /* 
+      Link a blog tuto with the current project using 
+      projectId (String),
+      selectedBlogTutoId (String) 
+      and selectedBlogTutoName (String)
+    */
+
   const publishStudentProject = async () => {
     try {
       await axios

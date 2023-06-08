@@ -79,6 +79,10 @@ const StudentProjectInfo = () => {
     setOpenVoters(!openVoters);
   };
 
+  /*
+    Get an Array that contains every blog tuto and set it into allBlogTuto 
+  */
+
   const getBlogTutorials = async () => {
     try {
       await axios
@@ -93,6 +97,12 @@ const StudentProjectInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    Get an Array that contains every blog tuto data 
+    and set it into blogTutoData using the blogTutoId (String) 
+  */
+
   const getBlogTutoById = async (blogTutoId) => {
     try {
       const response = await axios.get(
@@ -104,6 +114,10 @@ const StudentProjectInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    Get an Array that contains every blog tuto and set it into allBlogTuto 
+  */
 
   const getStudentProjectById = async () => {
     try {
@@ -120,6 +134,7 @@ const StudentProjectInfo = () => {
     getStudentProjectById()
       .then(() => {
         setLoading(false);
+        console.log(typeof(selectedProjectData));
       })
       .catch((error) => {
         console.error(error);

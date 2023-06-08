@@ -124,6 +124,10 @@ const StudentsProjects = () => {
     setTechnoImageBase64(fileData);
   };
 
+  /*
+    Create a techno using form values technoName (String), technoImageBase64 (String)
+  */
+
   const createTechno = async () => {
     try {
       await axios
@@ -153,6 +157,10 @@ const StudentsProjects = () => {
     }
   };
 
+  /*
+    Get an Array of technos then set it in technos
+  */
+
   const getAllTechnos = async () => {
     try {
       await axios
@@ -167,6 +175,10 @@ const StudentsProjects = () => {
       console.error(error);
     }
   };
+
+  /*
+    Get an Array of projects then set it in projects
+  */
 
   const getAllProjects = async () => {
     try {
@@ -183,6 +195,10 @@ const StudentsProjects = () => {
     }
   };
 
+  /*
+    Get an Array of classes then set it in allClass
+  */
+
   const getAllClass = async () => {
     try {
       await axios
@@ -198,6 +214,10 @@ const StudentsProjects = () => {
     }
   };
 
+  /*
+    Get an Array of students then set it in allStudents
+  */
+
   const getAllStudents = async () => {
     try {
       await axios
@@ -212,6 +232,18 @@ const StudentsProjects = () => {
       console.error(error);
     }
   };
+
+  /*
+    Create a student project using form values 
+    nameProject (String),
+    repoProjectLink (String),
+    promoPorject (Object),
+    membersProject (Object),
+    technosProject (Object),
+    typeProject (String),
+    descriptionProject (String),
+    projectImagebase64 (String)
+  */
 
   const publishStudentProject = async () => {
     if (
@@ -260,6 +292,13 @@ const StudentsProjects = () => {
     }
   };
 
+  /*
+    Update a student project using 
+    projectId (String),
+    countRefAdd (int),
+    userId (String)
+  */
+
   const referStudentProject = async (
     projectId,
     projectName,
@@ -301,6 +340,12 @@ const StudentsProjects = () => {
   const onSubmitTechno = async () => {
     await createTechno();
   };
+
+  /*
+    Filter projects (Array) checking 
+    if it type equals null, 
+    if it techno equals null
+  */
 
   const filterProjects = () => {
     const filtered = projects.filter((project) => {

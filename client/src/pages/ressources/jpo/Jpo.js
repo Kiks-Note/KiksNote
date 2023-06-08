@@ -108,6 +108,10 @@ const Jpo = () => {
     setOpen(false);
   };
 
+  /*
+    get an Array of all jpo then put it in allJpo
+  */
+
   const getAllJpo = async () => {
     try {
       await axios
@@ -123,6 +127,10 @@ const Jpo = () => {
     }
   };
 
+  /*
+    get an Array of all jpo participants then put it in allJpoParticipants
+  */
+
   const getAllJpoParticipants = async () => {
     try {
       await axios
@@ -137,6 +145,16 @@ const Jpo = () => {
       console.error(error);
     }
   };
+
+  /*
+    Create a JPO if values in the form aren't null
+    nameJPO (String)
+    descriptionJPO (String)
+    jpoThumbnail (String)
+    JPODateStart (String)
+    JPODateEnd (String)
+    jpoParticipants (Object)
+  */
 
   const publishJpo = async () => {
     if (nameJPO === "" || descriptionJPO === "" || jpoThumbnail === "" || JPODateStart === "" || JPODateEnd === "" || !jpoParticipants) {

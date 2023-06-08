@@ -46,6 +46,13 @@ const StudentProjectLinkDialog = (props) => {
     ? selectedProject.nameProject
     : "";
 
+  /*
+    Update the jpo using 
+    id (String), 
+    selectedStudentProjectId (String),
+    selectedStudentProjectName (String)
+  */
+
   const linkStudentProjectToJpo = async () => {
     try {
       await axios

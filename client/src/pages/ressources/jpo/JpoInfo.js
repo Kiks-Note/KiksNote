@@ -131,8 +131,11 @@ const JpoInfo = () => {
   };
 
   const [loading, setLoading] = useState(true);
-
   console.log(jpoData?.jpoDescription);
+
+  /*
+    get an Object of all jpo data using the jpo id then put it in jpoData
+  */
 
   const getJpoById = async () => {
     try {
@@ -148,6 +151,15 @@ const JpoInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    update the curent jpo using
+    jpoTitle (String),
+    jpoDescription (String),
+    jpoThumbnail (String),
+    jpoDayStart (Date),
+    jpoDayEnd (Date)
+  */
 
   const editJpo = async (
     jpoTitle,
@@ -184,6 +196,12 @@ const JpoInfo = () => {
     }
   };
 
+  /*
+    update the jpo pdf using
+    pdfUrl (String)
+    and jpo id
+  */
+
   const editJpoPdf = async () => {
     try {
       const formData = new FormData();
@@ -214,6 +232,10 @@ const JpoInfo = () => {
     }
   };
 
+  /*
+    delete the jpo using the jpo id and title
+  */
+
   const DeleteJpoById = async (jpoTitle) => {
     const data = { jpoTitle };
 
@@ -230,6 +252,10 @@ const JpoInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    get an Array of all projects then set it in projects
+  */
 
   const getAllProjects = async () => {
     try {

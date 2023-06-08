@@ -57,6 +57,10 @@ const CarouselProjects = (props) => {
 
   let navigate = useNavigate();
 
+  /* 
+    Update the project identified by the projectId (String) adding countRefAdd (int)
+  */
+
   const referStudentProject = async (
     projectId,
     projectName,
