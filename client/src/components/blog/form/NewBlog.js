@@ -93,8 +93,12 @@ export default function NewBlog({ open, toggleDrawerModify }) {
       return;
     }
 
-    var statut = "online";
-    var visibility = "pending";
+    let statut = "online";
+    let visibility = "public";
+    if (user.status === "etudiant") {
+      statut = "pending";
+      visibility = "pending";
+    }
 
     const rawContentState = convertToRaw(editorState.getCurrentContent());
 
