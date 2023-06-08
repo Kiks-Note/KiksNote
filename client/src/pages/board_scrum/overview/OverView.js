@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  List,
-  ListItem,
-  Typography,
-} from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -18,6 +11,7 @@ import Grid from "@mui/material/Grid";
 import { w3cwebsocket } from "websocket";
 import PropTypes from "prop-types";
 import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
+import PDFGenerator from "./pdf";
 
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
@@ -42,29 +36,29 @@ function OverView({ id }) {
     dispatch(addTab(pdfViewTab));
     dispatch(setActiveTab(pdfViewTab.id));
   };
-    const moveToAgileHome = () => {
-      const agileTab = {
-        id: "Agile" + id,
-        label: "Agile",
-        closeable: true,
-        component: "AgileHome",
-        data: {agile: agile, dashboardId: id },
-      };
-      dispatch(addTab(agileTab));
-      dispatch(setActiveTab(agileTab.id));
+  const moveToAgileHome = () => {
+    const agileTab = {
+      id: "Agile" + id,
+      label: "Agile",
+      closeable: true,
+      component: "AgileHome",
+      data: { dashboardId: id },
     };
+    dispatch(addTab(agileTab));
+    dispatch(setActiveTab(agileTab.id));
+  };
 
-    // const moveToAgileHome = () => {
-    //   const impactTab = {
-    //     id: "Impact" + id,
-    //     label: "Impact mapping ",
-    //     closeable: true,
-    //     component: "Impact",
-    //     data: { agile: agile, dashboardId: id },
-    //   };
-    //   dispatch(addTab(impactTab));
-    //   dispatch(setActiveTab(impactTab.id));
-    // };
+  // const moveToAgileHome = () => {
+  //   const impactTab = {
+  //     id: "Impact" + id,
+  //     label: "Impact mapping ",
+  //     closeable: true,
+  //     component: "Impact",
+  //     data: { agile: agile, dashboardId: id },
+  //   };
+  //   dispatch(addTab(impactTab));
+  //   dispatch(setActiveTab(impactTab.id));
+  // };
 
   useEffect(() => {
     (async () => {
@@ -78,7 +72,7 @@ function OverView({ id }) {
         var data = JSON.parse(message.data);
         setPdfLink(data.pdf_link);
         setRelease((releases = data.release));
-        setBoards(( data.boards));
+        setBoards(data.boards);
         setStories(data.stories);
         setAgile(data.agile);
         setDisplay(true);
@@ -94,11 +88,7 @@ function OverView({ id }) {
           {display ? (
             <>
               <Typography variant="h4">Stories</Typography>
-              <StoryList
-                stories={stories}
-                sprints={releases}
-                dashboardId={id}
-              />
+              <StoryList stories={stories} sprints={releases} dashboardId={id} />
               <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
                 Release / Sprint
               </Typography>
@@ -128,11 +118,7 @@ function OverView({ id }) {
                         </AccordionSummary>
                         <AccordionDetails sx={{ width: "100%" }}>
                           <Box sx={{ width: "100%" }}>
-                            <CardSprint
-                              key={id}
-                              release={releases[item]}
-                              dashboardId={id}
-                            />
+                            <CardSprint key={id} release={releases[item]} dashboardId={id} />
                           </Box>
                         </AccordionDetails>
                       </Accordion>
@@ -159,7 +145,8 @@ function OverView({ id }) {
                 <Button variant="contained" onClick={moveToAgileHome}>
                   Agile
                 </Button>
-              </Box>{" "}
+                <PDFGenerator stories={stories} releases={releases}></PDFGenerator>
+              </Box>
               <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
                 Statistiques
               </Typography>

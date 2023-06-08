@@ -167,7 +167,6 @@ const moveStories = async (req, res) => {
     const selectedStories = req.body.selectedStories;
     const storiesToMove = [];
     const cardsToMove = {};
-
     // TODO :
     // Liste de stoy récup avec leur boardId
 
