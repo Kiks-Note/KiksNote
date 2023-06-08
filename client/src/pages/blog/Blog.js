@@ -18,6 +18,7 @@ import MostParticipantsChart from "../../components/blog/TopEvent.js";
 import SplitButtonChoice from "../../components/blog/SplitButtonChoice";
 import "./Blog.css";
 import BlogRepartition from "../../components/blog/Repartition.js";
+import { useSnapCarousel } from "react-snap-carousel";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -114,6 +115,88 @@ function Blog() {
   blog.sort((a, b) => b.created_at.localeCompare(a.created_at)); // sort by date
   // console.log("blogSorted : ", blogSorted);
 
+  const AdvancedCarousel = () => {
+    const { scrollRef, pages, activePageIndex, next, prev, goTo } =
+      useSnapCarousel();
+    return (
+      <>
+        <ul
+          ref={scrollRef}
+          style={{
+            display: "flex",
+            overflow: "auto",
+            scrollSnapType: "x mandatory",
+          }}
+        >
+          {blog
+            .filter((blog) => blog.type !== "tuto")
+            .filter((blog) =>
+              user.status === "etudiant"
+                ? blog.visibility === "public"
+                : blog.visibility === "pending" || blog.visibility === "public"
+            )
+            .map((filtered) => (
+              <Box
+                sx={{
+                  // backgroundColor: "aqua",
+                  fontSize: "50px",
+                  width: 300,
+                  height: "auto",
+                  flexShrink: 0,
+                  color: "#fff",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  py: 2,
+                  mx: 1,
+                }}
+              >
+                <CardBlog blog={filtered} key={filtered.id} />
+                {/*<Typography>{user.email}</Typography>*/}
+                {/*<Typography>{filtered.created_by}</Typography>*/}
+                {/*<Typography>{filtered.visibility}</Typography>*/}
+              </Box>
+            ))}
+        </ul>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Button onClick={() => prev()}>
+            <KeyboardArrowLeft />
+          </Button>
+          <ol style={{ display: "flex", padding: "0px" }}>
+            {pages.map((_, i) => (
+              <li key={i} style={{ listStyle: "none" }}>
+                <button
+                  onClick={() => goTo(i)}
+                  color="red"
+                  style={{
+                    transition: "opacity 100ms ease-out",
+                    opacity: i !== activePageIndex ? 0.5 : 1,
+                    display: "inline-block",
+                    padding: "6px",
+                    margin: "5px",
+                    backgroundColor: "#374151",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                    border: "none",
+                  }}
+                ></button>
+              </li>
+            ))}
+          </ol>
+          <Button onClick={() => next()}>
+            <KeyboardArrowRight />
+          </Button>
+        </Box>
+      </>
+    );
+  };
+
   return (
     <>
       <Toaster />
@@ -122,6 +205,9 @@ function Blog() {
           <Grid item xs={12}>
             <SplitButtonChoice />
           </Grid>
+          <Box sx={{ width: "94vw" }}>
+            <AdvancedCarousel />
+          </Box>
           <Grid item xs={5}>
             <div className="container_blog">
               <div className="container_blog">
