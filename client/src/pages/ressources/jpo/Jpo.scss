@@ -72,3 +72,10 @@ p.p-start-end-date-jpo-label {
     display: flex;
     justify-content: flex-end;
 }
+
+.jpo-dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 650px;
+}
