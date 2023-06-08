@@ -1,6 +1,18 @@
 const { db } = require("../firebase");
 const { v4: uuidv4 } = require("uuid");
 
+const pastelColors = [
+  "#FFA07A",
+  "#FF7F50",
+  "#FFEE93",
+  "#A0CED9",
+  "#ADF7B6",
+  "#ffb3c6",
+  "#a9def9",
+  "#eccaff",
+];
+let indexColor = 0;
+
 console.log("in retro controller");
 
 const getRoom = async (req, res) => {
@@ -14,12 +26,14 @@ const getRoom = async (req, res) => {
   res.status(200).send(documents);
 };
 
-const getAllRooms = async (req, res) => { 
-  const snapshot = await db.collection("rooms").where("type","==","retro").get();
+const getAllRooms = async (req, res) => {
+  const snapshot = await db
+    .collection("rooms")
+    .where("type", "==", "retro")
+    .get();
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.status(200).send(documents);
 };
-
 
 const currentRooms = new Map();
 
@@ -78,9 +92,8 @@ const room = async (connection) => {
         console.log("createRoom");
         const newRoomRef = db.collection("rooms").doc();
         newRoomRef.set({
-          po_id: response.data.po_id,
+          userID: response.data.userID,
           class: response.data.class,
-          settings: response.data.settings,
           type: "retro",
         });
         currentRooms.set(response.data.class, defaultRoom);
@@ -211,54 +224,9 @@ const room = async (connection) => {
         sendToAllClients(messageLeave, response.data.class);
 
         break;
-      case "lock":
-        if (response.data.status === "po") {
-          let roomLock = currentRooms.get(response.data.class) || defaultRoom;
-          roomLock.lock = response.data.lock;
-          currentRooms.set(response.data.class, roomLock);
-
-          const messageLock = {
-            type: "updateRoom",
-            data: {
-              currentRoom: {
-                ...currentRooms.get(response.data.class),
-                users: Object.fromEntries(
-                  currentRooms.get(response.data.class).users
-                ),
-              },
-              class: response.data.class,
-            },
-          };
-          sendToAllClients(messageLock, response.data.class);
-        }
-        break;
-      case "nbSPGrp":
-        if (response.data.status === "po") {
-          let roomNbSPGrp =
-            currentRooms.get(response.data.class) || defaultRoom;
-          roomNbSPGrp.nbSPGrp = response.data.nbSPGrp;
-          currentRooms.set(response.data.class, roomNbSPGrp);
-
-          const messageNbSPGrp = {
-            type: "updateRoom",
-            data: {
-              currentRoom: {
-                ...currentRooms.get(response.data.class),
-                users: Object.fromEntries(
-                  currentRooms.get(response.data.class).users
-                ),
-              },
-              class: response.data.class,
-            },
-          };
-
-          sendToAllClients(messageNbSPGrp, response.data.class);
-        }
-        break;
       case "updateCol":
         let roomCol = currentRooms.get(response.data.class) || defaultRoom;
         roomCol.columns = response.data.columns;
-        roomCol.nbStudents = response.data.nbStudents;
         currentRooms.set(response.data.class, roomCol);
 
         const messageUpdateCol = {
@@ -278,10 +246,8 @@ const room = async (connection) => {
   });
 };
 
-
-
 module.exports = {
   getAllRooms,
   getRoom,
-  room
+  room,
 };

@@ -6,37 +6,40 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import CreateIcon from '@mui/icons-material/Create';
+import CreateIcon from "@mui/icons-material/Create";
 import DialogTitle from "@mui/material/DialogTitle";
-import { TextField, Typography } from "@mui/material";
+import {
+  TextField,
+  Typography,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PostIt from "../../components/retro/PostIt";
-import { useParams } from "react-router-dom";
 import { w3cwebsocket } from "websocket";
-import { useLocation } from 'react-router-dom';
 import useFirebase from "../../hooks/useFirebase";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
-
+import { set } from "date-fns";
 
 export default function Board() {
-
   const [openPostItEdit, setOpenPostItEdit] = useState(false);
   const [postItText, setPostItText] = useState("");
-  const [categorie, setCategorie] = useState("")
+  const [categorie, setCategorie] = useState("");
   const [selectedPostItIndex, setSelectedPostItIndex] = useState();
   const [showTextField, setShowTextField] = useState(false);
   const [newPostItContent, setNewPostItContent] = useState("");
   const [selectedColumnId, setSelectedColumnId] = useState(null);
   const [connectedUsers, setConnectedUsers] = useState([]);
   const [userCursors, setUserCursors] = useState();
-  const location = useLocation();
-  const [retroData, setRetroData] = useState(location.state && location.state.retro);
-  const [columns, setColumns] = useState(retroData["dataRetro"]);
+
+  const [columns, setColumns] = useState();
   const [inRoom, setInRoom] = useState(false);
   const [classStudents, setClassStudents] = useState();
   const [roomAvailables, setRoomAvailables] = useState();
@@ -61,13 +64,13 @@ export default function Board() {
         type: "updateCol",
         data: {
           columns: colContent,
-          class: classStudents, 
+          class: classStudents,
         },
       })
     );
     setColumns(colContent);
   }, [ws, classStudents]);
-  
+
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
       axios
@@ -84,6 +87,17 @@ export default function Board() {
             };
             ws.send(JSON.stringify(message));
             setInRoom(true);
+          } else {
+            const message = {
+              type: "createRoom",
+              data: {
+                userID: user?.id,
+                name: user?.firstname,
+                class: classStudents,
+              },
+            };
+            ws.send(JSON.stringify(message));
+            setInRoom(true);
           }
         });
     } catch (error) {
@@ -91,16 +105,17 @@ export default function Board() {
       throw error;
     }
   }, [classStudents, user?.id, user?.firstname, ws]);
-  
-  const getRoomsAvailables = useCallback(async () => { 
+
+  const getRoomsAvailables = useCallback(async () => {
     axios.get("http://localhost:5050/retro/getAllRooms").then((res) => {
-      setRoomAvailables(res.data);
+      if (res.data.length > 0) {
+        setRoomAvailables(res.data);
+      }
     });
   }, []);
 
   useEffect(() => {
-
-    if (user?.class) {
+    if (user?.class && user?.status === "etudiant") {
       setClassStudents(user.class);
     }
 
@@ -109,70 +124,88 @@ export default function Board() {
     }
 
     async function handleOpen() {
-
-      if (classStudents) {
+      if (user?.status === "etudiant" && classStudents) {
         await LogToExistingRoomStudent();
-        
+      }
+      if (classStudents) {
         document.addEventListener("mousemove", (event) => {
           const cursorPosition = {
             x: event.clientX,
             y: event.clientY,
           };
-  
+
           const message = {
             type: "cursorPosition",
             data: {
               position: cursorPosition,
               userID: user?.id,
-              class: classStudents, 
+              class: classStudents,
             },
           };
           ws.send(JSON.stringify(message));
         });
-        
-              if (inRoom) {   
-                ws.onmessage = (message) => {
-                  const messageReceive = JSON.parse(message.data);
-          
-                  switch (messageReceive.type) {
-                    case "updateRoom":
-                      displayUserCursorPositions(messageReceive.data.currentRoom.users);
-                      if (messageReceive.data.currentRoom.columns) {
-                        setColumns(messageReceive.data.currentRoom.columns);
-                      } else {
-                        fetchAndSetData();
-                      }
-                      setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
-                      break;
-                    case "closeRoom":
-                      setInRoom(false);
-                      navigate("/");
-                      break;
-                    default:
-                      break;
-                  }
-                };
-              }
+
+        if (inRoom) {
+          ws.onmessage = (message) => {
+            const messageReceive = JSON.parse(message.data);
+
+            switch (messageReceive.type) {
+              case "updateRoom":
+                displayUserCursorPositions(
+                  messageReceive.data.currentRoom.users
+                );
+                if (messageReceive.data.currentRoom.columns) {
+                  setColumns(messageReceive.data.currentRoom.columns);
+                } else {
+                  fetchAndSetData();
+                }
+                setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
+                break;
+              case "updateCol":
+                setColumns(messageReceive.data.currentRoom.columns);
+                setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
+                break;
+              case "closeRoom":
+                setInRoom(false);
+                navigate("/");
+                break;
+              default:
+                break;
+            }
+          };
+        }
       }
     }
-      if (ws.readyState === WebSocket.OPEN) {
-        handleOpen();
-      } else {
-        ws.onopen = handleOpen;
-    };
-    //hehe la fonction random du useEffect
+    if (ws.readyState === WebSocket.OPEN) {
+      handleOpen();
+    } else {
+      ws.onopen = handleOpen;
+    }
 
     return () => {
-      document.removeEventListener("mousemove", () => { });
-      ws.send(
-        JSON.stringify({
-          type: "leaveRoom",
-          data: { userID: user?.id, class: classStudents },
-        })
-      );
+      document.removeEventListener("mousemove", () => {});
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(
+          JSON.stringify({
+            type: "leaveRoom",
+            data: { userID: user?.id, class: classStudents },
+          })
+        );
+      }
     };
-  }, [classStudents, fetchAndSetData, inRoom, navigate, retroData, user?.id, ws]); 
-// dependance de la fonction random du useEffect (pour le moment)
+  }, [
+    LogToExistingRoomStudent,
+    classStudents,
+    fetchAndSetData,
+    getRoomsAvailables,
+    inRoom,
+    navigate,
+    user.class,
+    user?.id,
+    user?.status,
+    ws,
+  ]);
+
   const GMDBoard = {
     Glad: {
       name: "Glad",
@@ -191,7 +224,7 @@ export default function Board() {
       color: "#9ACD32",
       params: "3 / 1 / 5 / 3",
       items: [],
-    }
+    },
   };
 
   const PNABoard = {
@@ -212,7 +245,7 @@ export default function Board() {
       color: "#9ACD32",
       params: "3 / 1 / 5 / 3",
       items: [],
-    }
+    },
   };
 
   const FourLBoard = {
@@ -239,29 +272,15 @@ export default function Board() {
       color: "#FFFF00",
       params: "3 / 3 / 5 / 5",
       items: [],
-    }
+    },
   };
 
-  const deletePostit = async (obj, i) => {
-    try {
-      if (obj["name"]) {
-        setCategorie(obj["name"])
-      }
-      console.log(categorie);
-      console.log(selectedPostItIndex);
-      console.log(retroData["idRetro"]);
-      await axios.delete("http://localhost:5050/retro/deletePostIt", {
-        data: {
-          categorie: categorie,
-          selectedPostItIndex: selectedPostItIndex,
-          idCurrentRetro: retroData["idRetro"]
-        }
-      });
-    } catch (error) { }
+  const deletePostit = async (item) => {
+    console.log(item);
   };
 
   const handleClickOpenEditPostIt = () => {
-    setOpenPostItEdit(true)
+    setOpenPostItEdit(true);
   };
 
   const handleChange = (event) => {
@@ -273,11 +292,20 @@ export default function Board() {
   };
 
   const changePostiTText = () => {
-    let selectedColumn = { ...columns }
-    selectedColumn[categorie]["items"][selectedPostItIndex]["content"] = postItText
-    setColumns(selectedColumn)
+    let selectedColumn = { ...columns };
+    selectedColumn[categorie]["items"][selectedPostItIndex]["content"] =
+      postItText;
+    setColumns(selectedColumn);
+    const message = {
+      type: "updateCol",
+      data: {
+        columns: selectedColumn,
+        class: classStudents,
+      },
+    };
+    ws.send(JSON.stringify(message));
     handleCloseEditPostIt();
-  }
+  };
 
   const addPostIt = (columnId) => {
     const newPostIt = {
@@ -296,6 +324,17 @@ export default function Board() {
       ...columns,
       [columnId]: updatedColumn,
     });
+    const message = {
+      type: "updateCol",
+      data: {
+        columns: {
+          ...columns,
+          [columnId]: updatedColumn,
+        },
+        class: classStudents,
+      },
+    };
+    ws.send(JSON.stringify(message));
 
     console.log(columnId);
 
@@ -303,7 +342,7 @@ export default function Board() {
     setNewPostItContent(""); // Reset the new post-it content
   };
 
-  const onDragEnd = (result, columns, setColumns) => {
+  const onDragEnd = (result, columns) => {
     if (!result.destination) return;
 
     const source = result.source;
@@ -330,6 +369,25 @@ export default function Board() {
           items: destItems,
         },
       });
+
+      const message = {
+        type: "updateCol",
+        data: {
+          columns: {
+            ...columns,
+            [source.droppableId]: {
+              ...sourceColumn,
+              items: sourceItems,
+            },
+            [destination.droppableId]: {
+              ...destColumn,
+              items: destItems,
+            },
+          },
+          class: classStudents,
+        },
+      };
+      ws.send(JSON.stringify(message));
     } else {
       const copiedItems = [...sourceColumn.items];
       const [removed] = copiedItems.splice(source.index, 1);
@@ -341,6 +399,21 @@ export default function Board() {
           items: copiedItems,
         },
       });
+
+      const message = {
+        type: "updateCol",
+        data: {
+          columns: {
+            ...columns,
+            [source.droppableId]: {
+              ...sourceColumn,
+              items: copiedItems,
+            },
+          },
+          class: classStudents,
+        },
+      };
+      ws.send(JSON.stringify(message));
     }
   };
 
@@ -357,19 +430,51 @@ export default function Board() {
     console.log(room);
   };
 
-
   const setRightPostItCategorie = (obj, i) => {
     if (obj["name"]) {
-      setCategorie(obj["name"])
+      setCategorie(obj["name"]);
     }
     handleClickOpenEditPostIt();
-    setSelectedPostItIndex(i)
-  }
+    setSelectedPostItIndex(i);
+  };
 
-  if (!inRoom && user?.status === "po" && roomAvailables.length > 0) {
+  const createRoom = () => {
+    console.log("create room");
+
+    if (!classStudents) {
+      alert("Veuillez renseigner une classe");
+      return;
+    }
+
+    const message = {
+      type: "createRoom",
+      data: {
+        userID: user?.id,
+        class: classStudents,
+      },
+    };
+    ws.send(JSON.stringify(message));
+
+    setInRoom(true);
+  };
+
+  const saveRetro = async () => {
+    const message = {
+      type: "closeRoom",
+      data: {
+        userID: user?.id,
+        class: classStudents,
+      },
+    };
+    ws.send(JSON.stringify(message));
+  };
+
+  if (!inRoom && user?.status === "po" && roomAvailables) {
+    console.log(roomAvailables);
     return (
       <div>
         <h1>Voici les rooms disponible: </h1>
+        // TODO:fix here
         {roomAvailables.map(([room, index]) => {
           return (
             <div key={index}>
@@ -379,262 +484,312 @@ export default function Board() {
           );
         })}
       </div>
-    )
+    );
   }
 
+  if (!inRoom && user?.status === "po" && !roomAvailables) {
+    return (
+      <div>
+        <h1>Il n'y a pas de room disponible</h1>
+        <FormControl sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-helper-label">Classe</InputLabel>
+          <Select
+            variant="filled"
+            id="input-class"
+            sx={{ color: "text.primary" }}
+            value={classStudents}
+            onChange={(e) => setClassStudents(e.target.value)}
+          >
+            <MenuItem value="L1-paris">L1-Paris</MenuItem>
+            <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
+            <MenuItem value="L2-paris">L2-Paris</MenuItem>
+            <MenuItem value="L2-cergy">L2-Cergy</MenuItem>
+            <MenuItem value="L3-paris">L3-Paris</MenuItem>
+            <MenuItem value="L3-cergy">L3-Cergy</MenuItem>
+            <MenuItem value="M1-lead">M1-LeadDev</MenuItem>
+            <MenuItem value="M1-gaming">M1-Gaming</MenuItem>
+            <MenuItem value="M2-lead">M2-LeadDev</MenuItem>
+            <MenuItem value="M2-gaming">M2-Gaming</MenuItem>
+          </Select>
+        </FormControl>
+        <button onClick={() => createRoom()}>Créer une room</button>
+      </div>
+    );
+  }
 
   return (
     <>
-    {inRoom ?
-      <div>
-      
+      {inRoom ? (
         <div>
-          <Dialog
-            open={openPostItEdit}
-            onClose={handleCloseEditPostIt}
-            fullWidth={true}
-            maxWidth={"sm"}
-          >
-            <DialogTitle>Post it</DialogTitle>
-            <DialogContent>
-              <TextField placeholder="Veuillez écrire votre texte ici"
-                fullWidth
-                onChange={(e) => setPostItText(e.target.value)}
-              ></TextField>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={changePostiTText} >Modifier</Button>
-              <Button onClick={handleCloseEditPostIt}>Annuler</Button>
-            </DialogActions>
-          </Dialog>
-        </div>
-      
-        <div
-          className="parent"
-          id="pdf-content"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            gridTemplateRows: "repeat(4, 1fr)",
-            gridColumnGap: "10px",
-            gridRowGap: "10px",
-            height: "90vh",
-          }}
-        >
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              position: "relative",
-            }}
-          >
-            {userCursors
-              ? Array.from(userCursors.entries()).map(
-                ([userID, userData]) => {
-                  if (userID !== user?.id) {
-                    return (
-                      <div
-                        key={userID}
-                        style={{
-                          position: "absolute",
-                          left: userData.position?.x,
-                          top: userData.position?.y,
-                          zIndex: 100,
-                        }}
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 50 50"
-                          width="30px"
-                          height="30px"
-                        >
-                          <path
-                            fill={userData.color}
-                            d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
-                          />
-                        </svg>
-
-                        <div
-                          style={{
-                            display: "inline-block",
-                            backgroundColor: userData.color,
-                            padding: "0px 6px",
-                            color: "#fff",
-                            fontSize: "12px",
-                            borderRadius: "4px",
-                            margin: "0px",
-                          }}
-                        >
-                          <p
-                            style={{
-                              selection: "none",
-                              fontWeight: "bold",
-                              textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
-                              margin: "0px",
-                            }}
-                          >
-                            {userData.name}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  } else {
-                    return null;
-                  }
-                }
-              )
-              : null}
+          <div>
+            <Dialog
+              open={openPostItEdit}
+              onClose={handleCloseEditPostIt}
+              fullWidth={true}
+              maxWidth={"sm"}
+            >
+              <DialogTitle>Post it</DialogTitle>
+              <DialogContent>
+                <TextField
+                  placeholder="Veuillez écrire votre texte ici"
+                  fullWidth
+                  onChange={(e) => setPostItText(e.target.value)}
+                ></TextField>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={changePostiTText}>Modifier</Button>
+                <Button onClick={handleCloseEditPostIt}>Annuler</Button>
+              </DialogActions>
+            </Dialog>
           </div>
 
-          <DragDropContext
-            onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+          <div
+            className="parent"
+            id="pdf-content"
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gridTemplateRows: "repeat(4, 1fr)",
+              gridColumnGap: "10px",
+              gridRowGap: "10px",
+              height: "90vh",
+            }}
           >
-            {Object.entries(columns).map(([columnId, column]) => {
-              return (
-                <div
-                  style={{
-                    backgroundColor: column.color,
-                    height: "100%",
-                    gridArea: column.params,
-                    padding: "10px",
-                    borderRadius: "4%",
-                  }}
-                  key={columnId}
-                >
+            <div
+              style={{
+                width: "100%",
+                height: "100%",
+                position: "relative",
+              }}
+            >
+              {userCursors
+                ? Array.from(userCursors.entries()).map(
+                    ([userID, userData]) => {
+                      if (userID !== user?.id) {
+                        return (
+                          <div
+                            key={userID}
+                            style={{
+                              position: "absolute",
+                              left: userData.position?.x,
+                              top: userData.position?.y,
+                              zIndex: 100,
+                            }}
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 50 50"
+                              width="30px"
+                              height="30px"
+                            >
+                              <path
+                                fill={userData.color}
+                                d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
+                              />
+                            </svg>
+
+                            <div
+                              style={{
+                                display: "inline-block",
+                                backgroundColor: userData.color,
+                                padding: "0px 6px",
+                                color: "#fff",
+                                fontSize: "12px",
+                                borderRadius: "4px",
+                                margin: "0px",
+                              }}
+                            >
+                              <p
+                                style={{
+                                  selection: "none",
+                                  fontWeight: "bold",
+                                  textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                                  margin: "0px",
+                                }}
+                              >
+                                {userData.name}
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      } else {
+                        return null;
+                      }
+                    }
+                  )
+                : null}
+            </div>
+            {connectedUsers ? (
+              <div>
+                <p>Connectés: {connectedUsers}</p>
+              </div>
+            ) : null}
+            <DragDropContext onDragEnd={(result) => onDragEnd(result, columns)}>
+              {Object.entries(columns).map(([columnId, column]) => {
+                return (
                   <div
                     style={{
+                      backgroundColor: column.color,
+                      height: "100%",
+                      gridArea: column.params,
                       padding: "10px",
-                      boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
                       borderRadius: "4%",
-                      display: "flex",
-                      alignItems: "center",
                     }}
+                    key={columnId}
                   >
-                    <Typography
-                      variant="h6"
+                    <div
                       style={{
-                        fontWeight: "bold",
-                        color: "black",
-                        marginLeft: "5%",
+                        padding: "10px",
+                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
+                        borderRadius: "4%",
+                        display: "flex",
+                        alignItems: "center",
                       }}
                     >
-                      {column.name}
-                    </Typography>
-                    <IconButton
-                      aria-label="Add"
-                      color="primary"
-                      size="small"
-                      style={{ marginLeft: "auto" }}
-                      onClick={() => handleClickAddButton(columnId)}
-                    >
-                      <AddIcon />
-                    </IconButton>
-                  </div>
+                      <Typography
+                        variant="h6"
+                        style={{
+                          fontWeight: "bold",
+                          color: "black",
+                          marginLeft: "5%",
+                        }}
+                      >
+                        {column.name}
+                      </Typography>
+                      <IconButton
+                        aria-label="Add"
+                        color="primary"
+                        size="small"
+                        style={{ marginLeft: "auto" }}
+                        onClick={() => handleClickAddButton(columnId)}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </div>
 
-                  <Droppable droppableId={columnId} key={columnId}>
-                    {(provided, snapshot) => {
-                      return (
-                        <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
-                          style={{
-                            display: "flex",
-                            background: "#00000030",
-                            minHeight: 30,
-                            maxHeight: "90%",
-                            overflow: "auto",
-                            height: "auto",
-                            borderRadius: "4%",
-                            flexWrap: "wrap",
-                          }}
-                        >
-                          {selectedColumnId === columnId && showTextField ? (
-                            <div className="empathy-post-it empathy-post-it--custom">
-                              <TextField
-                                variant="outlined"
-                                autoFocus
-                                value={newPostItContent}
-                                onChange={handleChange}
-                                style={{ marginRight: "10px" }}
-                                InputProps={{
-                                  style: {
-                                    color: "#130d6b",
-                                    fontFamily: "Permanent Marker, cursive",
-                                  },
-                                }}
-                                placeholder="Saisissez un titre pour cette carte…"
-                              />
-                              <IconButton
-                                aria-label="Add"
-                                color="success"
-                                size="small"
-                                disabled={!newPostItContent}
-                                onClick={() => addPostIt(columnId)}
-                              >
-                                <CheckCircleIcon />
-                              </IconButton>
-                              <IconButton
-                                aria-label="Cancel"
-                                color="error"
-                                size="small"
-                                onClick={cancelClick}
-                              >
-                                <CancelIcon />
-                              </IconButton>
-                            </div>
-                          ) : (
-                            <></>
-                          )}
-                          {column.items.map((item, index) => {
-                            return (
-                              <Draggable
-                                key={item.id}
-                                draggableId={item.id}
-                                index={index}
-                              >
-                                {(provided, snapshot) => {
-                                  return (
-                                    <div
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                    >
-                                      <div className="empathy-post-it">
-                                        {item.content}
-                                        <IconButton
-                                          style={{ position: "absolute", top: 0, right: 0, color: "red" }}
-                                          aria-label="delete"
-                                          onClick={() => deletePostit(column, index)}
-                                          size="small"
-                                        ><DeleteIcon />
-                                        </IconButton>
-                                        <IconButton
-                                          style={{ position: "absolute", bottom: 0, right: 0, color: "black" }}
-                                          aria-label="Edit"
-                                          onClick={() => setRightPostItCategorie(column, index)}
-                                          size="small"
-                                        ><CreateIcon />
-                                        </IconButton>
+                    <Droppable droppableId={columnId} key={columnId}>
+                      {(provided, snapshot) => {
+                        return (
+                          <div
+                            {...provided.droppableProps}
+                            ref={provided.innerRef}
+                            style={{
+                              display: "flex",
+                              background: "#00000030",
+                              minHeight: 30,
+                              maxHeight: "90%",
+                              overflow: "auto",
+                              height: "auto",
+                              borderRadius: "4%",
+                              flexWrap: "wrap",
+                            }}
+                          >
+                            {selectedColumnId === columnId && showTextField ? (
+                              <div className="empathy-post-it empathy-post-it--custom">
+                                <TextField
+                                  variant="outlined"
+                                  autoFocus
+                                  value={newPostItContent}
+                                  onChange={handleChange}
+                                  style={{ marginRight: "10px" }}
+                                  InputProps={{
+                                    style: {
+                                      color: "#130d6b",
+                                      fontFamily: "Permanent Marker, cursive",
+                                    },
+                                  }}
+                                  placeholder="Saisissez un titre pour cette carte…"
+                                />
+                                <IconButton
+                                  aria-label="Add"
+                                  color="success"
+                                  size="small"
+                                  disabled={!newPostItContent}
+                                  onClick={() => addPostIt(columnId)}
+                                >
+                                  <CheckCircleIcon />
+                                </IconButton>
+                                <IconButton
+                                  aria-label="Cancel"
+                                  color="error"
+                                  size="small"
+                                  onClick={cancelClick}
+                                >
+                                  <CancelIcon />
+                                </IconButton>
+                              </div>
+                            ) : (
+                              <></>
+                            )}
+                            {column.items.map((item, index) => {
+                              return (
+                                <Draggable
+                                  key={item.id}
+                                  draggableId={item.id}
+                                  index={index}
+                                >
+                                  {(provided, snapshot) => {
+                                    return (
+                                      <div
+                                        ref={provided.innerRef}
+                                        {...provided.draggableProps}
+                                        {...provided.dragHandleProps}
+                                      >
+                                        <div className="empathy-post-it">
+                                          {item.content}
+                                          <IconButton
+                                            style={{
+                                              position: "absolute",
+                                              top: 0,
+                                              right: 0,
+                                              color: "red",
+                                            }}
+                                            aria-label="delete"
+                                            onClick={() => deletePostit(item)}
+                                            size="small"
+                                          >
+                                            <DeleteIcon />
+                                          </IconButton>
+                                          <IconButton
+                                            style={{
+                                              position: "absolute",
+                                              bottom: 0,
+                                              right: 0,
+                                              color: "black",
+                                            }}
+                                            aria-label="Edit"
+                                            onClick={() =>
+                                              setRightPostItCategorie(
+                                                column,
+                                                index
+                                              )
+                                            }
+                                            size="small"
+                                          >
+                                            <CreateIcon />
+                                          </IconButton>
+                                        </div>
                                       </div>
-
-                                    </div>
-                                  );
-                                }}
-                              </Draggable>
-                            );
-                          })}
-                          {provided.placeholder}
-                        </div>
-                      );
-                    }}
-                  </Droppable>
-                </div>
-              );
-            })}
-          </DragDropContext>
+                                    );
+                                  }}
+                                </Draggable>
+                              );
+                            })}
+                            {provided.placeholder}
+                          </div>
+                        );
+                      }}
+                    </Droppable>
+                  </div>
+                );
+              })}
+            </DragDropContext>
+          </div>
+          {user.status === "po" ? (
+            <button onClick={saveRetro}>Terminer la Retro</button>
+          ) : null}
         </div>
-      </div>
-      : null}
-      </>
-    )
+      ) : null}
+    </>
+  );
 }

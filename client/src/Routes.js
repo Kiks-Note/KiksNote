@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ArbreFonctionnel from "./pages/agile/ArbreFonctionnel";
 import FolderAgile from "./pages/agile/FolderAgile";
 import Blog from "./pages/blog/Blog";
@@ -73,9 +73,7 @@ function RoutesProvider() {
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
 
           <Route path="/agile" element={<FolderAgile />} />
-          <Route path="/retro" element={<Retrospective />} />
-          <Route path="/retroStudent" element={<RetrospectiveStudent />} />
-          <Route path="/boardRetro" element={<Board />} />
+          <Route path="/retro" element={<Board />} />
 
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
