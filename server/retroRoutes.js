@@ -2,37 +2,27 @@ const express = require("express");
 
 
 const {
-  addRetro,
-  retroRequests,
-  getRetroById,
-  getRetrosByUser,
-  getAll,
-  editPostit,
-  addPostIt,
-  movePostIt
+  getRoom,
+  getAllRooms,
+  room,
 } = require("./controllers/retro");
 
 const retroRoutesWsNotNeeded = () => {
   const router = express.Router(); // Create a new router instance
 
   console.log("in route");
-  router.post("/newRetro", addRetro);
-  router.get("/getAll", getAll)
-  router.put("/editPostit", editPostit)
-  router.post("/addPostIt", addPostIt)
-  router.put("/movePostIt", movePostIt)
   return router;
 }
 
 const retroRoutesWsNeeded = (connection, pathname) => {
   const router = express.Router(); // Create a new router instance
 
-  router.get("/getRetrosByUser/:idUser", getRetrosByUser);
-  router.get("/getRetroById/:id", getRetroById);
+  router.get("/getAllRooms", getAllRooms);
+  router.get("/getRoom/:class", getRoom);
 
   switch (pathname) {
     case "/retro":
-      retroRequests(connection);
+      room(connection);
       break;
     default:
       break;

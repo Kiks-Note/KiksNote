@@ -1,10 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import axios from "axios";
 import Button from "@mui/material/Button";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
+import CreateIcon from '@mui/icons-material/Create';
 import DialogTitle from "@mui/material/DialogTitle";
 import { TextField, Typography } from "@mui/material";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -12,11 +14,13 @@ import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import PostIt from "../../components/agile/PostIt";
+import PostIt from "../../components/retro/PostIt";
 import { useParams } from "react-router-dom";
 import { w3cwebsocket } from "websocket";
 import { useLocation } from 'react-router-dom';
-
+import useFirebase from "../../hooks/useFirebase";
+import { useNavigate } from "react-router-dom";
+import { useTheme } from "@mui/material";
 
 
 export default function Board() {
@@ -28,36 +32,147 @@ export default function Board() {
   const [showTextField, setShowTextField] = useState(false);
   const [newPostItContent, setNewPostItContent] = useState("");
   const [selectedColumnId, setSelectedColumnId] = useState(null);
-  const [selectedRetro, setSelectedRetro] = useState('');
   const [connectedUsers, setConnectedUsers] = useState([]);
-  const [currentRetroIndex, setCurrentRetroIndex] = useState(null)
+  const [userCursors, setUserCursors] = useState();
   const location = useLocation();
   const [retroData, setRetroData] = useState(location.state && location.state.retro);
   const [columns, setColumns] = useState(retroData["dataRetro"]);
+  const [inRoom, setInRoom] = useState(false);
+  const [classStudents, setClassStudents] = useState();
+  const [roomAvailables, setRoomAvailables] = useState();
+
+  const { user } = useFirebase();
+  const theme = useTheme();
+  const navigate = useNavigate();
+
+  const ws = useMemo(() => {
+    return new w3cwebsocket("ws://localhost:5050/retro");
+  }, []);
+
+  function displayUserCursorPositions(users) {
+    const map = new Map(Object.entries(users));
+    setUserCursors(map);
+  }
+
+  const fetchAndSetData = useCallback(async () => {
+    const colContent = await axios.get();
+    ws.send(
+      JSON.stringify({
+        type: "updateCol",
+        data: {
+          columns: colContent,
+          class: classStudents, 
+        },
+      })
+    );
+    setColumns(colContent);
+  }, [ws, classStudents]);
+  
+  const LogToExistingRoomStudent = useCallback(async () => {
+    try {
+      axios
+        .get(`http://localhost:5050/retro/getRoom/${classStudents}`)
+        .then((res) => {
+          if (res.data.length > 0) {
+            const message = {
+              type: "joinRoom",
+              data: {
+                userID: user?.id,
+                name: user?.firstname,
+                class: classStudents,
+              },
+            };
+            ws.send(JSON.stringify(message));
+            setInRoom(true);
+          }
+        });
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }, [classStudents, user?.id, user?.firstname, ws]);
+  
+  const getRoomsAvailables = useCallback(async () => { 
+    axios.get("http://localhost:5050/retro/getAllRooms").then((res) => {
+      setRoomAvailables(res.data);
+    });
+  }, []);
 
   useEffect(() => {
 
-    async function handleOpen() {    
-      await axios.get(`http://localhost:5050/retro/getRetroById/${retroData["idRetro"]}`).then((res) => {
-        console.log(res.data);
-        setColumns(res.data["dataRetro"])
-      })
+    if (user?.class) {
+      setClassStudents(user.class);
     }
 
-    const ws = new w3cwebsocket("ws://localhost:5050/retro");
-    ws.onmessage = async (message) => {
+    if (user?.status === "po") {
+      getRoomsAvailables();
+    }
+
+    async function handleOpen() {
+
+      if (classStudents) {
+        await LogToExistingRoomStudent();
+        
+        document.addEventListener("mousemove", (event) => {
+          const cursorPosition = {
+            x: event.clientX,
+            y: event.clientY,
+          };
+  
+          const message = {
+            type: "cursorPosition",
+            data: {
+              position: cursorPosition,
+              userID: user?.id,
+              class: classStudents, 
+            },
+          };
+          ws.send(JSON.stringify(message));
+        });
+        
+              if (inRoom) {   
+                ws.onmessage = (message) => {
+                  const messageReceive = JSON.parse(message.data);
+          
+                  switch (messageReceive.type) {
+                    case "updateRoom":
+                      displayUserCursorPositions(messageReceive.data.currentRoom.users);
+                      if (messageReceive.data.currentRoom.columns) {
+                        setColumns(messageReceive.data.currentRoom.columns);
+                      } else {
+                        fetchAndSetData();
+                      }
+                      setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
+                      break;
+                    case "closeRoom":
+                      setInRoom(false);
+                      navigate("/");
+                      break;
+                    default:
+                      break;
+                  }
+                };
+              }
+      }
+    }
       if (ws.readyState === WebSocket.OPEN) {
         handleOpen();
       } else {
         ws.onopen = handleOpen;
-      }
     };
+    //hehe la fonction random du useEffect
 
     return () => {
-      ws.close();
+      document.removeEventListener("mousemove", () => { });
+      ws.send(
+        JSON.stringify({
+          type: "leaveRoom",
+          data: { userID: user?.id, class: classStudents },
+        })
+      );
     };
-  }, []);
-
+  }, [classStudents, fetchAndSetData, inRoom, navigate, retroData, user?.id, ws]); 
+// dependance de la fonction random du useEffect (pour le moment)
   const GMDBoard = {
     Glad: {
       name: "Glad",
@@ -127,6 +242,23 @@ export default function Board() {
     }
   };
 
+  const deletePostit = async (obj, i) => {
+    try {
+      if (obj["name"]) {
+        setCategorie(obj["name"])
+      }
+      console.log(categorie);
+      console.log(selectedPostItIndex);
+      console.log(retroData["idRetro"]);
+      await axios.delete("http://localhost:5050/retro/deletePostIt", {
+        data: {
+          categorie: categorie,
+          selectedPostItIndex: selectedPostItIndex,
+          idCurrentRetro: retroData["idRetro"]
+        }
+      });
+    } catch (error) { }
+  };
 
   const handleClickOpenEditPostIt = () => {
     setOpenPostItEdit(true)
@@ -140,36 +272,9 @@ export default function Board() {
     setOpenPostItEdit(false);
   };
 
-  const sendAddedPostIt = async (newObjPostIt, columnId) => {
-    axios.post("http://localhost:5050/retro/addPostIt", {
-      newObjPostIt: newObjPostIt,
-      columnId: columnId,
-      idCurrentRetro: retroData["idRetro"]
-    })
-  }
-
-  const sendEditPostit = async (categorie, selectedPostItIndex, postItText) => {
-    console.log(currentRetroIndex);
-    await axios.put("http://localhost:5050/retro/editPostit", {
-      categorie: categorie,
-      selectedPostItIndex: selectedPostItIndex,
-      postItText: postItText,
-      idCurrentRetro: retroData["idRetro"]
-    })
-  }
-
-  const sendMovePostIt = async (source, destination) => {
-    axios.put("http://localhost:5050/retro/movePostIt", {
-      source: source,
-      destination: destination,
-      idCurrentRetro: retroData["idRetro"]
-    })
-  }
-
   const changePostiTText = () => {
     let selectedColumn = { ...columns }
     selectedColumn[categorie]["items"][selectedPostItIndex]["content"] = postItText
-    sendEditPostit(categorie, selectedPostItIndex, postItText);
     setColumns(selectedColumn)
     handleCloseEditPostIt();
   }
@@ -193,7 +298,6 @@ export default function Board() {
     });
 
     console.log(columnId);
-    sendAddedPostIt(newPostIt, columnId);
 
     setShowTextField(false); // Hide the TextField and button after adding the post-it
     setNewPostItContent(""); // Reset the new post-it content
@@ -210,7 +314,6 @@ export default function Board() {
     console.log(source);
     console.log(destination);
 
-    sendMovePostIt(source, destination)
     if (source.droppableId !== destination.droppableId) {
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
@@ -250,38 +353,41 @@ export default function Board() {
     setShowTextField(false);
   };
 
+  const joinRoom = (room) => {
+    console.log(room);
+  };
+
 
   const setRightPostItCategorie = (obj, i) => {
-
-    if (obj["name"] == "Glad") {
-      setCategorie("Glad")
-    } else if (obj["name"] == "Mad") {
-      setCategorie("Mad")
-    } else if (obj["name"] == "Sad") {
-      setCategorie("Sad")
-    } else if (obj["name"] == "Positif") {
-      setCategorie("Positif")
-    } else if (obj["name"] == "Négatif") {
-      setCategorie("Negatif")
-    } else if (obj["name"] == "Axe d'amélioration") {
-      setCategorie("Axe")
-    } else if (obj["name"] == "Liked") {
-      setCategorie("Liked")
-    } else if (obj["name"] == "Learned") {
-      setCategorie("Learned")
-    } else if (obj["name"] == "Longed") {
-      setCategorie("Longed")
-    } else if (obj["name"] == "Lacked") {
-      setCategorie("Lacked")
+    if (obj["name"]) {
+      setCategorie(obj["name"])
     }
     handleClickOpenEditPostIt();
     setSelectedPostItIndex(i)
   }
 
-  return (
+  if (!inRoom && user?.status === "po" && roomAvailables.length > 0) {
+    return (
+      <div>
+        <h1>Voici les rooms disponible: </h1>
+        {roomAvailables.map(([room, index]) => {
+          return (
+            <div key={index}>
+              <h2>{room}</h2>
+              <button onClick={() => joinRoom(room)}>Rejoindre la room</button>
+            </div>
+          );
+        })}
+      </div>
+    )
+  }
 
-    (
-      <>
+
+  return (
+    <>
+    {inRoom ?
+      <div>
+      
         <div>
           <Dialog
             open={openPostItEdit}
@@ -302,6 +408,7 @@ export default function Board() {
             </DialogActions>
           </Dialog>
         </div>
+      
         <div
           className="parent"
           id="pdf-content"
@@ -314,6 +421,70 @@ export default function Board() {
             height: "90vh",
           }}
         >
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "relative",
+            }}
+          >
+            {userCursors
+              ? Array.from(userCursors.entries()).map(
+                ([userID, userData]) => {
+                  if (userID !== user?.id) {
+                    return (
+                      <div
+                        key={userID}
+                        style={{
+                          position: "absolute",
+                          left: userData.position?.x,
+                          top: userData.position?.y,
+                          zIndex: 100,
+                        }}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 50 50"
+                          width="30px"
+                          height="30px"
+                        >
+                          <path
+                            fill={userData.color}
+                            d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
+                          />
+                        </svg>
+
+                        <div
+                          style={{
+                            display: "inline-block",
+                            backgroundColor: userData.color,
+                            padding: "0px 6px",
+                            color: "#fff",
+                            fontSize: "12px",
+                            borderRadius: "4px",
+                            margin: "0px",
+                          }}
+                        >
+                          <p
+                            style={{
+                              selection: "none",
+                              fontWeight: "bold",
+                              textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                              margin: "0px",
+                            }}
+                          >
+                            {userData.name}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    return null;
+                  }
+                }
+              )
+              : null}
+          </div>
 
           <DragDropContext
             onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
@@ -327,7 +498,6 @@ export default function Board() {
                     gridArea: column.params,
                     padding: "10px",
                     borderRadius: "4%",
-                    height: "100%",
                   }}
                   key={columnId}
                 >
@@ -428,9 +598,25 @@ export default function Board() {
                                       ref={provided.innerRef}
                                       {...provided.draggableProps}
                                       {...provided.dragHandleProps}
-                                      onClick={() => setRightPostItCategorie(column, index)}
                                     >
-                                      <PostIt text={item.content} />
+                                      <div className="empathy-post-it">
+                                        {item.content}
+                                        <IconButton
+                                          style={{ position: "absolute", top: 0, right: 0, color: "red" }}
+                                          aria-label="delete"
+                                          onClick={() => deletePostit(column, index)}
+                                          size="small"
+                                        ><DeleteIcon />
+                                        </IconButton>
+                                        <IconButton
+                                          style={{ position: "absolute", bottom: 0, right: 0, color: "black" }}
+                                          aria-label="Edit"
+                                          onClick={() => setRightPostItCategorie(column, index)}
+                                          size="small"
+                                        ><CreateIcon />
+                                        </IconButton>
+                                      </div>
+
                                     </div>
                                   );
                                 }}
@@ -447,10 +633,8 @@ export default function Board() {
             })}
           </DragDropContext>
         </div>
+      </div>
+      : null}
       </>
     )
-
-  )
-
-
 }
