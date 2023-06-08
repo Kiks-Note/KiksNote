@@ -17,6 +17,7 @@ import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryPendingRequests from "./pages/inventory/InventoryPendingRequests";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
+import AskResetPassword from "./pages/resetpassword/AskResetPassword";
 import NotFound from "./pages/not_found/NotFound";
 import Presence from "./pages/presence/Presence";
 import Profil from "./pages/profil/Profil";
@@ -41,6 +42,7 @@ function RoutesProvider() {
         <Route element={<PublicRoutes />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
+          <Route path="/askresetpassword" element={<AskResetPassword />} />
           <Route path="/arbre" element={<ArbreFonctionnel />} />
         </Route>
         {/* {Route} */}
@@ -61,7 +63,10 @@ function RoutesProvider() {
           <Route path="/jpo/:id" element={<JpoInfo />} />
           <Route path="/jpo/history" element={<HistoryJpo />} />
           <Route path="/studentprojects" element={<StudentsProjects />} />
-          <Route path="/studentprojects/:projectid" element={<StudentsProjectsInfo />} />
+          <Route
+            path="/studentprojects/:projectid"
+            element={<StudentsProjectsInfo />}
+          />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
 
@@ -75,15 +80,24 @@ function RoutesProvider() {
           <Route path="/inventory/ideas/:status" element={<InventoryIdeas />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
           <Route path="/inventory/devices" element={<InventoryDevices />} />
-          <Route path="/inventory/admin/dashboard" element={<InventoryAdminDashboard />} />
+          <Route
+            path="/inventory/admin/dashboard"
+            element={<InventoryAdminDashboard />}
+          />
           {/* <Route
             path="/inventory/device/:deviceId"
             element={<PhoneRequestDevice />}
           /> */}
 
           <Route path="/inventory/admin/list" element={<InventoryList />} />
-          <Route path="/inventory/admin/borrowed" element={<InventoryListBorrowed />} />
-          <Route path="/inventory/requests/:status" element={<InventoryPendingRequests />} />
+          <Route
+            path="/inventory/admin/borrowed"
+            element={<InventoryListBorrowed />}
+          />
+          <Route
+            path="/inventory/requests/:status"
+            element={<InventoryPendingRequests />}
+          />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
           <Route path="*" element={<NotFound />} />
         </Route>
