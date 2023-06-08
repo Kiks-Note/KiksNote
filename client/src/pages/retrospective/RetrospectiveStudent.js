@@ -64,6 +64,7 @@ function Retrospective() {
   const [datas, setDatas] = useState(null);
   const [role, setRole] = useState("");
   const [allTeamMates, setAllTeamMates] = useState([])
+  const [choosenTeamMates, setChoosenTeamMates] = useState([])
 
   let navigate = useNavigate();
 
@@ -479,7 +480,9 @@ function Retrospective() {
 
 
   const validateBoard = async () => {
-    if (boardTitle && choosenCourse && retroModel) {
+
+    console.log(boardTitle, choosenTeamMates, retroModel);
+    if (boardTitle && choosenTeamMates && retroModel) {
 
       let choosenModel = null;
 
@@ -495,14 +498,15 @@ function Retrospective() {
         {
           dataRetro: choosenModel,
           titleRetro: boardTitle,
-          courseRetro: choosenCourse,
+          choosenTeamMates: choosenTeamMates,
           idUser: user?.id,
           firstname: user?.firstname,
-          lastname: user?.lastname
+          lastname: user?.lastname,
+          status: "etudiant"
         }
       )
       setBoardTitle("")
-      setChoosenCourse(null)
+      //setAllTeamMates(null)
       setRetroModel("'Model de retro'")
       handleClose();
     } else {
@@ -514,7 +518,6 @@ function Retrospective() {
   function createData(titleRetro, date, name, idRetro) {
     return { titleRetro, date, name, idRetro };
   }
-
 
   return (
 
@@ -604,6 +607,7 @@ function Retrospective() {
             options={allTeamMates}
             sx={{ width: 300 }}
             renderInput={(params) => <TextField {...params}  />} //label="Movie"
+            onChange={(event,value) => setChoosenTeamMates(value)}
           />
           </DialogContent>
           <DialogActions>

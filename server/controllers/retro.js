@@ -7,16 +7,31 @@ const addRetro = async (req, res) => {
   try {
     // Implementation of adding retro logic
 
-    const tabRetro = {
-      idRetro: uuidv4(),
-      titleRetro: req.body.titleRetro,
-      courseRetro: req.body.courseRetro,
-      dataRetro: req.body.dataRetro,
-      idUser: req.body.idUser,
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      creationDate: new Date().toISOString()
-    };
+    let tabRetro = {}
+    if (req.body.status == "etudiant") {
+      tabRetro = {
+        idRetro: uuidv4(),
+        titleRetro: req.body.titleRetro,
+        choosenTeamMates: req.body.choosenTeamMates,
+        dataRetro: req.body.dataRetro,
+        idUser: req.body.idUser,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        creationDate: new Date().toISOString()
+      };
+    } else {
+      tabRetro = {
+        idRetro: uuidv4(),
+        titleRetro: req.body.titleRetro,
+        courseRetro: req.body.courseRetro,
+        dataRetro: req.body.dataRetro,
+        idUser: req.body.idUser,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        creationDate: new Date().toISOString()
+      };
+    }
+    
 
 //    await db.collection("retro").doc().set(tabRetro);
 
