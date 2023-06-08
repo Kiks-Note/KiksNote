@@ -1392,7 +1392,6 @@ const CoursInfo = () => {
           </div>
         </div>
         <ToastContainer></ToastContainer>
-        {console.log(coursData?.courseClass)}
         <CallModal
           open={openCall}
           lessonId={id}

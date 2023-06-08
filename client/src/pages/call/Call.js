@@ -5,7 +5,6 @@ import { useParams } from "react-router-dom";
 import useFirebase from "../../hooks/useFirebase";
 
 function Appel() {
-  const [admin, setAdmin] = useState(false);
   const { user } = useFirebase();
   const callId = useParams();
   const [generated, setGenerated] = useState(false);
@@ -14,13 +13,12 @@ function Appel() {
     console.log(callId.id);
     if (!generated) {
       setGenerated(true);
-      user.status === "po" ? setAdmin(true) : setAdmin(false);
     }
   }, [callId.id, generated, user.status]);
 
   return (
     <div>
-      {admin ? (
+      {user.status === "po" ? (
         <AppelProf callId={callId.id}></AppelProf>
       ) : (
         <AppelEleve callId={callId.id}></AppelEleve>

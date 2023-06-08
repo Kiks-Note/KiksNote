@@ -1,16 +1,17 @@
-const {auth, db} = require("../firebase");
+const { auth, db } = require("../firebase");
 const bcrypt = require("bcrypt");
 
 const saltRounds = 12;
 
 const login = async (req, res) => {
-  const {token} = req.body;
+  const { token } = req.body;
   try {
+    console.log(token);
     await auth.verifyIdToken(token);
-    res.status(200).json({message: "Success"});
+    res.status(200).json({ message: "Success" });
     console.log("Success");
   } catch (error) {
-    res.status(401).json({message: "Connexion non autorisée"});
+    res.status(401).json({ message: "Connexion non autorisée" });
   }
 };
 
@@ -56,11 +57,11 @@ const register = async (req, res) => {
             create_at: new Date(),
           });
       }
-      res.send({message: "User created successfully"});
+      res.send({ message: "User created successfully" });
     })
     .catch((err) => {
       console.log(err);
     });
 };
 
-module.exports = {login, register};
+module.exports = { login, register };

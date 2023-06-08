@@ -20,7 +20,7 @@ function AppelEleve({ callId }) {
   const open = useRef();
   const msg = useRef();
   const [inRoom, setInRoom] = useState(false);
-  const ip = "localhost";
+  const ip = process.env.REACT_APP_IP;
 
   const id = useRef();
   const ws = useMemo(() => {
@@ -42,7 +42,7 @@ function AppelEleve({ callId }) {
                 type: "call",
               },
             };
-            ws.send(JSON.stringify(message));
+            //ws.send(JSON.stringify(message));
             setInRoom(true);
             setCall(res.data);
           }
@@ -55,7 +55,9 @@ function AppelEleve({ callId }) {
   useEffect(() => {
     const handleOpen = async () => {
       if (user.status === "student") {
-        await LogToExistingRoom();
+        if (!inRoom) {
+          await LogToExistingRoom();
+        }
       }
 
       if (inRoom) {
@@ -80,9 +82,14 @@ function AppelEleve({ callId }) {
     }
 
     return () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send({ type: "leaveRoom", data: { userID: user?.id, class: user?.class } });
-      }
+      /*       if (ws.readyState === WebSocket.OPEN) {
+        ws.send(
+          JSON.stringify({
+            type: "leaveRoom",
+            data: { userID: user?.id, class: user?.class },
+          })
+        );
+      } */
     };
   }, [LogToExistingRoom, inRoom, user.class, user?.id, user.status, ws]);
 

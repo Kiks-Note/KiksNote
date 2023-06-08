@@ -39,12 +39,18 @@ var upload = multer({
   },
 });
 
-const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes");
+const {
+  retroRoutesWsNeeded,
+  retroRoutesWsNotNeeded,
+} = require("./retroRoutes");
 const { callRoutesWsNeeded, callRoutesWsNotNeeded } = require("./callRoutes");
 
-
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static("uploads"));

@@ -7,21 +7,30 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import QRCode from "qrcode";
 import { w3cwebsocket } from "websocket";
 
-const CallModal = ({ classId, open, handleClose, lessonId, user, className }) => {
+const CallModal = ({
+  classId,
+  open,
+  handleClose,
+  lessonId,
+  user,
+  className,
+}) => {
   const [calls, setCalls] = useState([]);
   let navigate = useNavigate();
-  const ip = "localhost";
+  const ip = process.env.REACT_APP_IP;
   const qrcode = useRef("");
-
-  console.log(classId);
-  console.log(lessonId);
-  console.log(open);
 
   const createWebSocket = useCallback(() => {
     const websocket = new w3cwebsocket(`ws://localhost:5050/call`);
@@ -56,23 +65,20 @@ const CallModal = ({ classId, open, handleClose, lessonId, user, className }) =>
         class: className,
         type: "call",
         appel: call,
-        name: user.firstname
+        name: user.firstname,
+        callId: response.data.id,
       },
     };
     ws.send(JSON.stringify(message));
 
     navigate("/appel/" + response.data.id);
-
   }, [className, lessonId, navigate, user.firstname, user.id, ws]);
-
-
 
   useEffect(() => {
     const getCalls = async () => {
       const response = await axios.get(
         "http://localhost:5050/call/getCallsByLessonId/" + lessonId
       );
-      console.log(response);
       setCalls(response.data);
     };
 
@@ -87,12 +93,8 @@ const CallModal = ({ classId, open, handleClose, lessonId, user, className }) =>
     }
   }, [lessonId, ws]);
 
-
-
-
-
-
   const GenerateQrcode = (callId) => {
+    console.log(ip);
     QRCode.toDataURL(
       `http://${ip}:3000/Presence/${callId}`,
       {
@@ -107,12 +109,7 @@ const CallModal = ({ classId, open, handleClose, lessonId, user, className }) =>
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      maxWidth={"md"}
-      fullWidth
-    >
+    <Dialog open={open} onClose={handleClose} maxWidth={"md"} fullWidth>
       <DialogTitle>Liste des appels</DialogTitle>
       <DialogContent>
         <Box
@@ -128,7 +125,8 @@ const CallModal = ({ classId, open, handleClose, lessonId, user, className }) =>
               return (
                 <Box sx={{ display: "flex" }} key={call.id}>
                   <Typography>
-                    Appel du {date.getDate()}/{date.getMonth()}/{date.getFullYear()}
+                    Appel du {date.getDate()}/{date.getMonth()}/
+                    {date.getFullYear()}
                   </Typography>
                 </Box>
               );

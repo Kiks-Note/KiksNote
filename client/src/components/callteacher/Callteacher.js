@@ -15,14 +15,11 @@ function AppelProf(callId) {
   });
   const { user } = useFirebase();
 
-  const ip = "localhost";
+  const ip = process.env.REACT_APP_IP;
   const [users, setUsers] = useState([]);
   const [usersPresent, setUsersPresent] = useState([]);
   const [inRoom, setInRoom] = useState(false);
-  const dataFetchedRef = useRef(false);
   const generated = useRef(false);
-  const [tempCall, setTempCall] = useState({});
-
   const ws = useMemo(() => {
     return new w3cwebsocket(`ws://${ip}:5050/call`);
   }, []);
@@ -30,7 +27,9 @@ function AppelProf(callId) {
   const LogToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/call/getRoomPo/${user?.id}`)
+        .get(`http://localhost:5050/call/getRoomPo/${user?.id}`, {
+          params: { callId: callId },
+        })
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -38,16 +37,14 @@ function AppelProf(callId) {
               data: {
                 userID: user?.id,
                 name: user?.firstname,
-                class: user?.class,
+                class: res.data[0].class,
                 type: "call",
               },
             };
-            ws.send(JSON.stringify(message));
+            console.log("sending");
+            const msgToSend = JSON.stringify(message);
+            ws.send(msgToSend);
             setInRoom(true);
-            generated.current = true;
-            setTempCall(res.data);
-            setCall(res.data);
-            setQrcode(res.data.qrcode);
           }
         });
     } catch (error) {
@@ -58,7 +55,9 @@ function AppelProf(callId) {
   useEffect(() => {
     const handleOpen = async () => {
       if (user.status === "po") {
-        await LogToExistingRoom();
+        if (!inRoom) {
+          await LogToExistingRoom();
+        }
       }
 
       if (inRoom) {
@@ -67,7 +66,13 @@ function AppelProf(callId) {
 
           switch (messageReceive.type) {
             case "updateRoom":
-              setCall(messageReceive.appel);
+              const keys = Object.keys(
+                messageReceive.data.currentRoom.appel
+              )[0];
+              const appel = messageReceive.data.currentRoom.appel[keys].appel;
+              setCall(appel);
+              setQrcode(appel.qrcode);
+              getUsers(appel.id_lesson);
               break;
             default:
               break;
@@ -83,12 +88,24 @@ function AppelProf(callId) {
     }
 
     return () => {
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send({ type: "leaveRoom", data: { userID: user?.id, class: user?.class } });
-      }
+      /* if (ws.readyState === WebSocket.OPEN) {
+        ws.send(
+          JSON.stringify({
+            type: "leaveRoom",
+            data: { userID: user?.id, class: user?.class },
+          })
+        );
+      } */
     };
   }, [LogToExistingRoom, call, inRoom, user.class, user.id, user.status, ws]);
 
+  const getUsers = (coursId) => {
+    axios
+      .get(`http://localhost:5050/call/getUsersFromClassiId/${coursId}`)
+      .then((res) => {
+        setUsers(res.data);
+      });
+  };
   useEffect(() => {
     if (generated.current) {
       setUsersPresent(call.student_scan);
@@ -105,9 +122,7 @@ function AppelProf(callId) {
 
   return (
     <div className="ContentProf">
-      <div className="Timer">
-        <Timer />
-      </div>
+      <div className="Timer">{/* <Timer /> */}</div>
       <div className="ContentInfo">
         <div className="DivQr">
           <img src={qrcode} className="Qrcode" alt="" />
@@ -139,7 +154,7 @@ function AppelProf(callId) {
         <div className="DivChat">
           <h1>Chat</h1>
           <div className="Chat">
-            {call.chats.map((chat) => {
+            {/* {call.chats.map((chat) => {
               return (
                 <div className="ChatContent">
                   <div className="ChatContentHeader">
@@ -155,7 +170,7 @@ function AppelProf(callId) {
                   </div>
                 </div>
               );
-            })}
+            })} */}
           </div>
         </div>
       </div>

@@ -1,3 +1,4 @@
+const { get } = require("http");
 const { db } = require("../firebase");
 
 const addCall = async (req, res) => {
@@ -70,27 +71,49 @@ const getRoom = async (req, res) => {
   const { classStudent } = req.params;
   const snapshot = await db
     .collection("rooms")
-    .where('class', '==', classStudent)
-    .where('type', '==', 'call')
+    .where("class", "==", classStudent)
+    .where("type", "==", "call")
     .get();
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.status(200).send(documents);
-}
+};
 
 const getRoomPo = async (req, res) => {
-  const { po_id } = req.params;
+  const { id } = req.params;
   const snapshot = await db
     .collection("rooms")
-    .where('po_id', '==', po_id)
-    .where('type', '==', 'call')
+    .where("po_id", "==", id)
+    .where("callId", "==", req.query.callId.callId)
+    .where("type", "==", "call")
     .get();
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.status(200).send(documents);
-}
+};
 
+const getClassUsers = async (req, res) => {
+  const { idCours } = req.params;
+  let idClass = "";
+  await db
+    .collection("cours")
+    .doc(idCours)
+    .get()
+    .then((response) => {
+      idClass = response.data().courseClass.id;
+    });
+  const snapshot = await db
+    .collection("users")
+    .where("class", "==", idClass)
+    .get();
+  const documents = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  res.status(200).send(documents);
+};
 
 const currentRooms = new Map();
 const clients = new Map();
+const appels = new Map();
 
 const room = async (connection) => {
   const defaultRoom = {
@@ -107,9 +130,7 @@ const room = async (connection) => {
   };
 
   connection.on("message", (message) => {
-    const response = JSON.parse(message.utf8Data);
-
-    console.log(response);
+    let response = JSON.parse(message.utf8Data);
 
     switch (response.type) {
       case "createRoom":
@@ -117,6 +138,7 @@ const room = async (connection) => {
         newRoomRef.set({
           po_id: response.data.po_id,
           class: response.data.class,
+          callId: response.data.callId,
           type: "call",
         });
 
@@ -128,6 +150,15 @@ const room = async (connection) => {
           name: response.data.name,
         });
 
+        const appelsCreate = appels.get(response.data.class) || new Map();
+
+        appelsCreate.set(response.data.userID, {
+          appel: response.data.appel,
+        });
+
+        appels.set(response.data.class, appelsCreate);
+        createRoom.appel = appels.get(response.data.class);
+
         currentRooms.set(response.data.class, createRoom);
 
         const roomClientsC = clients.get(response.data.class) || new Map();
@@ -135,7 +166,6 @@ const room = async (connection) => {
         roomClientsC.set(response.data.userID, connection);
 
         clients.set(response.data.class, roomClientsC);
-        console.log(currentRooms);
         const messageCreate = {
           type: "updateRoom",
           data: {
@@ -143,6 +173,9 @@ const room = async (connection) => {
               ...currentRooms.get(response.data.class),
               users: Object.fromEntries(
                 currentRooms.get(response.data.class).users
+              ),
+              appel: Object.fromEntries(
+                currentRooms.get(response.data.class).appel
               ),
             },
             class: response.data.class,
@@ -159,15 +192,14 @@ const room = async (connection) => {
         roomUsers.users.set(response.data.userID, {
           name: response.data.name,
         });
-        roomUsers.appel = response.data.appel;
+
+        roomUsers.appel = appels.get(response.data.class);
 
         currentRooms.set(response.data.class, roomUsers);
 
         const roomClients = clients.get(response.data.class) || new Map();
 
         roomClients.set(response.data.userID, connection);
-
-        clients.set(response.data.class, roomClients);
 
         const messageJoin = {
           type: "updateRoom",
@@ -176,6 +208,9 @@ const room = async (connection) => {
               ...currentRooms.get(response.data.class),
               users: Object.fromEntries(
                 currentRooms.get(response.data.class).users
+              ),
+              appel: Object.fromEntries(
+                currentRooms.get(response.data.class).appel
               ),
             },
             class: response.data.class,
@@ -199,7 +234,8 @@ const room = async (connection) => {
 
         currentRooms.set(response.data.class, userRoom);
 
-        let allClientsInRoomLeave = clients.get(response.data.class) || new Map();
+        let allClientsInRoomLeave =
+          clients.get(response.data.class) || new Map();
 
         allClientsInRoomLeave.delete(response.data.userID);
         clients.set(response.data.class, allClientsInRoomLeave);
@@ -212,6 +248,9 @@ const room = async (connection) => {
               users: Object.fromEntries(
                 currentRooms.get(response.data.class).users
               ),
+              appel: Object.fromEntries(
+                currentRooms.get(response.data.class).appel
+              ),
             },
             class: response.data.class,
           },
@@ -220,7 +259,8 @@ const room = async (connection) => {
         sendToAllClients(messageLeave, response.data.class);
 
       case "updateCall":
-        const userRoomLeave = currentRooms.get(response.data.class) || defaultRoom;
+        const userRoomLeave =
+          currentRooms.get(response.data.class) || defaultRoom;
         userRoomLeave.appel = response.data.appel;
 
         currentRooms.set(response.data.class, userRoomLeave);
@@ -232,6 +272,9 @@ const room = async (connection) => {
               ...currentRooms.get(response.data.class),
               users: Object.fromEntries(
                 currentRooms.get(response.data.class).users
+              ),
+              appel: Object.fromEntries(
+                currentRooms.get(response.data.class).appel
               ),
             },
             class: response.data.class,
@@ -272,5 +315,6 @@ module.exports = {
   room,
   getCallsByLessonId,
   getRoom,
-  getRoomPo
+  getRoomPo,
+  getClassUsers,
 };
