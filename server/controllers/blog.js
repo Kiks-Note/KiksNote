@@ -93,9 +93,9 @@ const addNewTuto2 = async (req, res) => {
   console.log("req.body 1 : ", req.body);
   const {
     title,
-    // description,
-    // tags,
+    description,
     // thumbnail,
+    tags,
     markdownStepsInfo,
     titleStep,
     visibility,
@@ -106,7 +106,7 @@ const addNewTuto2 = async (req, res) => {
   try {
     await db.collection("blog").doc().set({
       title: title,
-      // description: description,
+      description: description,
       // thumbnail: thumbnail,
       markdownStepsInfo: markdownStepsInfo,
       titleStep: titleStep,
@@ -116,7 +116,7 @@ const addNewTuto2 = async (req, res) => {
       comment: [],
       like: [],
       dislike: [],
-      // tag: tags,
+      tag: tags,
       type: "tuto",
       updated_at: "",
       visibility: visibility,

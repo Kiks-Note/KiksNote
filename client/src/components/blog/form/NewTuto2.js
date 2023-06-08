@@ -20,6 +20,7 @@ import Markdown from "./Markdown";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import useFirebase from "../../../hooks/useFirebase";
 import { da } from "date-fns/locale";
+import Autocomplete from "@mui/material/Autocomplete";
 
 export default function NewTuto2({ open, toggleDrawerModify }) {
   const [tags, setTags] = useState([]);
@@ -33,6 +34,11 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
   const { user } = useFirebase();
 
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [thumbnail, setThumbnail] = useState(null);
+  const [previewImage, setPreviewImage] = useState("");
+  const [selectedTags, setSelectedTags] = useState([]);
+
   const fetchTags = async () => {
     try {
       const response = await axios.get("http://localhost:5050/blog/tag");
@@ -98,7 +104,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     setNumSteps(1);
     setEditorStates([]);
     setTitle("");
-    // setDescription("");
+    setDescription("");
     setTitleStep([]);
     // setSelectedTags([]);
     // setThumbnail(null);
@@ -190,8 +196,8 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     }
     const data = {
       title: title,
-      // description: description,
-      // tags: selectedTags,
+      description: description,
+      tags: selectedTags,
       // thumbnail: thumbnail,
       markdownStepsInfo: markdownStepsInfo,
       titleStep: titleStep,
@@ -243,7 +249,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
           <CloseIcon />
         </IconButton>
         {showForm ? (
-          <form onSubmit={handleFormSubmit}>
+          <form onSubmit={handleFormSubmit} style={{ width: "80%" }}>
             <TextField
               type="text"
               label="Titre"
@@ -251,6 +257,35 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
               value={title}
               onChange={(event) => setTitle(event.target.value)}
               sx={{ mb: 2 }}
+            />
+            <TextField
+              type="text"
+              label="Description"
+              fullWidth
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <Autocomplete
+              sx={{ mb: 2 }}
+              multiple
+              id="tags"
+              options={tags}
+              getOptionLabel={(tag) => tag.name}
+              value={selectedTags.map((tagId) =>
+                tags.find((tag) => tag.id === tagId)
+              )}
+              onChange={(event, newValue) => {
+                setSelectedTags(newValue.map((tag) => tag.id));
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Tags"
+                  variant="outlined"
+                  size="small"
+                />
+              )}
             />
             <TextField
               type="number"
