@@ -72,6 +72,7 @@ export default function CardBlog({ blog, tags }) {
     for (let i = 0; i < tags.length; i++) {
       if (tags[i].id === id) {
         tag = tags[i].name;
+        break;
       }
     }
     return tag;
@@ -217,19 +218,18 @@ export default function CardBlog({ blog, tags }) {
                 </Button>
 
                 <ul className="tags_blog">
-                  {blog?.tag?.length}
                   {blog?.tag?.length !== 0 && Array.isArray(blog.tag) && (
                     <>
                       <img src={OrangeHashtag} width={"30"} height={"30"} />
                       {blog?.tag?.map((tag) => (
                         // <li>{tag}, </li>
-                        <Typography variant="body2">
-                          {getTag(blog?.tag)}
+                        <Typography
+                          variant="body1"
+                          sx={{ mr: 1, color: "white" }}
+                        >
+                          {getTag(tag)}
                         </Typography>
                       ))}
-                      {/*<Typography variant="body2">*/}
-                      {/*  {getTag(blog?.tag)}*/}
-                      {/*</Typography>*/}
                     </>
                   )}
                 </ul>

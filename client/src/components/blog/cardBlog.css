@@ -76,6 +76,7 @@
   list-style: none;
   display: flex;
   padding: 0.5rem 0;
+  align-items: center;
 }
 
 .tags_blog li:not(:last-child) {
