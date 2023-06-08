@@ -1075,8 +1075,7 @@ const CoursInfo = () => {
                         Date début de Sprint :{" "}
                       </h4>
                       <p className="pl-2">
-                        {coursData?.dateStartSprint &&
-                          coursData.dateStartSprint._seconds &&
+                        {coursData?.dateStartSprint?._seconds &&
                           moment
                             .unix(coursData.dateStartSprint._seconds)
                             .format("DD.MM.YYYY")}
@@ -1088,8 +1087,7 @@ const CoursInfo = () => {
                         Date fin de Sprint :{" "}
                       </h4>
                       <p className="pl-2">
-                        {coursData?.dateEndSprint &&
-                          coursData.dateEndSprint._seconds &&
+                        {coursData?.dateEndSprint?._seconds &&
                           moment
                             .unix(coursData.dateEndSprint._seconds)
                             .format("DD.MM.YYYY")}
@@ -1121,9 +1119,7 @@ const CoursInfo = () => {
                         label={
                           <>
                             <div style={{ display: "flex" }}>
-                              {coursData &&
-                                coursData.courseClass &&
-                                coursData.courseClass.name && (
+                              {coursData?.courseClass?.name && (
                                   <>
                                     <Typography>
                                       {coursData.courseClass.name}
@@ -1295,11 +1291,8 @@ const CoursInfo = () => {
                           >
                             Modifier
                           </Button>
-                          {coursData &&
-                            coursData.courseClass &&
-                            coursData.courseClass.name &&
-                            coursData &&
-                            coursData.owner &&
+                          {coursData?.courseClass?.name &&
+                            coursData?.owner &&
                             coursData.owner.lastname &&
                             coursData.owner.firstname && (
                               <UpdateCoursDialog
@@ -1309,8 +1302,7 @@ const CoursInfo = () => {
                                 handleDrop={handleDrop}
                                 coursTitle={coursData.title}
                                 coursDate={
-                                  coursData?.date &&
-                                  coursData.date._seconds &&
+                                  coursData?.date?._seconds &&
                                   moment
                                     .unix(coursData.date._seconds)
                                     .format("YYYY-MM-DD")

@@ -134,7 +134,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 2,
       name: "Profil",
-      route: "/profil",
+      route: `/profil/${user?.id}`,
       icon: <Person2Icon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {

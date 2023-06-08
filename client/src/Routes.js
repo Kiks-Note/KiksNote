@@ -3,6 +3,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import AskResetPassword from "./pages/resetpassword/AskResetPassword";
 import ResetPassword from "./pages/resetpassword/ResetPassword";
+import ArbreFonctionnel from "./pages/agile/ArbreFonctionnel";
+import FolderAgile from "./pages/agile/FolderAgile";
 import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
 import Groups from "./pages/groups/Groups";
@@ -52,14 +54,15 @@ function RoutesProvider() {
           <Route path="/groupes" element={<Groups />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel" element={<Appel />} />
-          <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groups" element={<Groups />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
 
           <Route path="/profil" element={<Profil />} />
+          <Route path="/profil/:id" element={<Profil />} />
+
+          {/* 404 Page */}
           <Route path="/jpo" element={<Jpo />} />
           <Route path="/jpo/:id" element={<JpoInfo />} />
           <Route path="/jpo/history" element={<HistoryJpo />} />
@@ -81,11 +84,19 @@ function RoutesProvider() {
             path="/inventory/admin/dashboard"
             element={<InventoryAdminDashboard />}
           />
+          {/* <Route
+            path="/inventory/device/:deviceId"
+            element={<PhoneRequestDevice />}
+          /> */}
 
           <Route path="/inventory/admin/list" element={<InventoryList />} />
           <Route
             path="/inventory/admin/borrowed"
             element={<InventoryListBorrowed />}
+          />
+          <Route
+            path="/inventory/requests/:status"
+            element={<InventoryPendingRequests />}
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
           <Route path="*" element={<NotFound />} />

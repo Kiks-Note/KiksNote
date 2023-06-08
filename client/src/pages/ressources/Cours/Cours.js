@@ -619,18 +619,14 @@ const Cours = () => {
                                   >
                                     <CalendarTodayIcon />
                                     {"Début "}
-                                    {course &&
-                                      course.data &&
-                                      course.data.dateStartSprint &&
+                                    {course?.data?.dateStartSprint &&
                                       moment
                                         .unix(
                                           course.data.dateStartSprint._seconds
                                         )
                                         .format("DD.MM.YYYY")}{" "}
                                     - {"Fin "}
-                                    {course &&
-                                      course.data &&
-                                      course.data.dateEndSprint &&
+                                    {course?.data?.dateEndSprint &&
                                       moment
                                         .unix(
                                           course.data.dateEndSprint._seconds
@@ -849,18 +845,14 @@ const Cours = () => {
                                 >
                                   <CalendarTodayIcon />
                                   {"Début "}
-                                  {course &&
-                                    course.data &&
-                                    course.data.dateStartSprint &&
+                                  {course?.data?.dateStartSprint &&
                                     moment
                                       .unix(
                                         course.data.dateStartSprint._seconds
                                       )
                                       .format("DD.MM.YYYY")}{" "}
                                   - {"Fin "}
-                                  {course &&
-                                    course.data &&
-                                    course.data.dateEndSprint &&
+                                  {course?.data?.dateEndSprint &&
                                     moment
                                       .unix(course.data.dateEndSprint._seconds)
                                       .format("DD.MM.YYYY")}
@@ -978,16 +970,12 @@ const Cours = () => {
                             >
                               <CalendarTodayIcon />
                               {"Début "}
-                              {course &&
-                                course.data &&
-                                course.data.dateStartSprint &&
+                              {course?.data?.dateStartSprint &&
                                 moment
                                   .unix(course.data.dateStartSprint._seconds)
                                   .format("DD.MM.YYYY")}{" "}
                               - {"Fin "}
-                              {course &&
-                                course.data &&
-                                course.data.dateEndSprint &&
+                              {course?.data?.dateEndSprint &&
                                 moment
                                   .unix(course.data.dateEndSprint._seconds)
                                   .format("DD.MM.YYYY")}
@@ -1098,16 +1086,12 @@ const Cours = () => {
                             >
                               <CalendarTodayIcon />
                               {"Début "}
-                              {course &&
-                                course.data &&
-                                course.data.dateStartSprint &&
+                              {course?.data?.dateStartSprint &&
                                 moment
                                   .unix(course.data.dateStartSprint._seconds)
                                   .format("DD.MM.YYYY")}{" "}
                               - {"Fin "}
-                              {course &&
-                                course.data &&
-                                course.data.dateEndSprint &&
+                              {course?.data?.dateEndSprint &&
                                 moment
                                   .unix(course.data.dateEndSprint._seconds)
                                   .format("DD.MM.YYYY")}
