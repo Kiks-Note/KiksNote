@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 
@@ -13,6 +13,7 @@ import {
   Button,
   Skeleton,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
 import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
@@ -54,6 +55,7 @@ export const toastFail = (message) => {
 const CarouselProjects = (props) => {
   const { user } = useFirebase();
   const userStatus = user?.status;
+  const [loading, setLoading] = useState(false);
 
   let navigate = useNavigate();
 
@@ -68,24 +70,49 @@ const CarouselProjects = (props) => {
     userId
   ) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5050/ressources/refprojects",
-        {
-          projectId: projectId,
-          counterRefToAdd: countRefAdd,
-          userId: userId,
-        }
-      );
-
-      if (response.data.message === "Projet étudiant mis à jour avec succès.") {
-        toastSuccess(`Vous avez bien mis en avant le projet ${projectName}`);
-      } else {
-        toastWarning(`Vous avez déjà mis en avant le projet ${projectName}!`);
+      if (loading) {
+        return;
       }
+
+      setLoading(true);
+
+      setTimeout(async () => {
+        try {
+          const response = await axios.post(
+            "http://localhost:5050/ressources/refprojects",
+            {
+              projectId: projectId,
+              counterRefToAdd: countRefAdd,
+              userId: userId,
+            }
+          );
+          if (
+            response.data.message === "Projet étudiant mis à jour avec succès."
+          ) {
+            toastSuccess(
+              `Vous avez bien mis en avant le projet ${projectName}`
+            );
+          } else {
+            toastWarning(
+              `Vous avez déjà mis en avant le projet ${projectName}!`
+            );
+          }
+        } catch (error) {
+          if (
+            error.response.status === 403 &&
+            error.response.data.message ===
+              "Vous avez déjà mise en avant ce projet."
+          ) {
+            toastWarning(
+              `Vous avez déjà mise en avant le projet ${projectName}`
+            );
+          }
+        } finally {
+          setLoading(false);
+        }
+      }, 1000);
     } catch (error) {
-      console.log(error.response.status);
-      console.log(error.response.data.message);
-      toastWarning(`Erreur lors de la mise en avant du projet ${projectName}`);
+      setLoading(false);
     }
   };
 
@@ -236,8 +263,14 @@ const CarouselProjects = (props) => {
                       }}
                       sx={{ color: "#7a52e1" }}
                     >
-                      {project.counterRef}{" "}
-                      <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                      {loading ? (
+                        <CircularProgress sx={{ color: "#7a52e1" }} />
+                      ) : (
+                        <>
+                          {project.counterRef}{" "}
+                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                        </>
+                      )}
                     </Button>
                   ) : userStatus === "pedago" ? (
                     <Button
@@ -252,8 +285,14 @@ const CarouselProjects = (props) => {
                       }}
                       sx={{ color: "#7a52e1" }}
                     >
-                      {project.counterRef}{" "}
-                      <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                      {loading ? (
+                        <CircularProgress sx={{ color: "#7a52e1" }} />
+                      ) : (
+                        <>
+                          {project.counterRef}{" "}
+                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                        </>
+                      )}
                     </Button>
                   ) : (
                     <Button
@@ -268,8 +307,14 @@ const CarouselProjects = (props) => {
                       }}
                       sx={{ color: "#7a52e1" }}
                     >
-                      {project.counterRef}{" "}
-                      <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                      {loading ? (
+                        <CircularProgress sx={{ color: "#7a52e1" }} />
+                      ) : (
+                        <>
+                          {project.counterRef}{" "}
+                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                        </>
+                      )}
                     </Button>
                   )}
                 </CardContent>

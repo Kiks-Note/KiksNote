@@ -20,6 +20,7 @@ import {
   MenuItem,
   Skeleton,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 
 import CodeIcon from "@mui/icons-material/Code";
@@ -95,6 +96,8 @@ const StudentsProjects = () => {
   const [openTechno, setOpenTechno] = useState(false);
   const [technoName, setTechnoName] = useState("");
   const [technoImageBase64, setTechnoImageBase64] = useState("");
+
+  const [loadingProjects, setLoadingProjects] = useState(false);
 
   var votePo = 5;
   var votePedago = 3;
@@ -306,34 +309,49 @@ const StudentsProjects = () => {
     userId
   ) => {
     try {
-      await axios
-        .post("http://localhost:5050/ressources/refprojects", {
-          projectId: projectId,
-          counterRefToAdd: countRefAdd,
-          userId: userId,
-        })
-        .then((res) => {
+      if (loadingProjects) {
+        return;
+      }
+
+      setLoadingProjects(true);
+
+      setTimeout(async () => {
+        try {
+          const response = await axios.post(
+            "http://localhost:5050/ressources/refprojects",
+            {
+              projectId: projectId,
+              counterRefToAdd: countRefAdd,
+              userId: userId,
+            }
+          );
           if (
-            res.data.message === "Projet étudiant mis à jour avec succès." &&
-            res.status === 200
+            response.data.message === "Projet étudiant mis à jour avec succès."
           ) {
             toastSuccess(
               `Vous avez bien mis en avant le projet ${projectName}`
             );
-            getAllProjects();
           } else {
             toastWarning(
               `Vous avez déjà mis en avant le projet ${projectName}!`
             );
           }
-        })
-        .catch((err) => {
-          toastFail(`Vous avez déjà mis en avant le projet ${projectName}`);
-          console.log(err);
-        });
+        } catch (error) {
+          if (
+            error.response.status === 403 &&
+            error.response.data.message ===
+              "Vous avez déjà mise en avant ce projet."
+          ) {
+            toastWarning(
+              `Vous avez déjà mise en avant le projet ${projectName}`
+            );
+          }
+        } finally {
+          setLoadingProjects(false);
+        }
+      }, 1000);
     } catch (error) {
-      console.log(error);
-      toastWarning(`${error.response.data.message}`);
+      setLoadingProjects(false);
     }
   };
 
@@ -894,10 +912,18 @@ const StudentsProjects = () => {
                                   }}
                                   sx={{ color: "#7a52e1" }}
                                 >
-                                  {project.counterRef}{" "}
-                                  <BackHandRoundedIcon
-                                    sx={{ marginLeft: "3px" }}
-                                  />
+                                  {loadingProjects ? (
+                                    <CircularProgress
+                                      sx={{ color: "#7a52e1" }}
+                                    />
+                                  ) : (
+                                    <>
+                                      {project.counterRef}{" "}
+                                      <BackHandRoundedIcon
+                                        sx={{ marginLeft: "3px" }}
+                                      />
+                                    </>
+                                  )}
                                 </Button>
                               ) : userStatus === "pedago" ? (
                                 <Button
@@ -912,10 +938,18 @@ const StudentsProjects = () => {
                                   }}
                                   sx={{ color: "#7a52e1" }}
                                 >
-                                  {project.counterRef}{" "}
-                                  <BackHandRoundedIcon
-                                    sx={{ marginLeft: "3px" }}
-                                  />
+                                  {loadingProjects ? (
+                                    <CircularProgress
+                                      sx={{ color: "#7a52e1" }}
+                                    />
+                                  ) : (
+                                    <>
+                                      {project.counterRef}{" "}
+                                      <BackHandRoundedIcon
+                                        sx={{ marginLeft: "3px" }}
+                                      />
+                                    </>
+                                  )}
                                 </Button>
                               ) : (
                                 <Button
@@ -930,10 +964,18 @@ const StudentsProjects = () => {
                                   }}
                                   sx={{ color: "#7a52e1" }}
                                 >
-                                  {project.counterRef}{" "}
-                                  <BackHandRoundedIcon
-                                    sx={{ marginLeft: "3px" }}
-                                  />
+                                  {loadingProjects ? (
+                                    <CircularProgress
+                                      sx={{ color: "#7a52e1" }}
+                                    />
+                                  ) : (
+                                    <>
+                                      {project.counterRef}{" "}
+                                      <BackHandRoundedIcon
+                                        sx={{ marginLeft: "3px" }}
+                                      />
+                                    </>
+                                  )}
                                 </Button>
                               )}
                             </CardContent>
