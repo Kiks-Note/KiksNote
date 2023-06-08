@@ -32,8 +32,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { LocalizationProvider } from '@mui/x-date-pickers-pro';
+import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
+import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
 import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 
+//import "./Retrospective.scss"
 
 function Retrospective() {
   const { user } = useFirebase();
@@ -62,6 +67,12 @@ function Retrospective() {
   const [rows, setRows] = useState([]);
   const [datas, setDatas] = useState(null);
   const [role, setRole] = useState("");
+
+  const [filterName, setFilterName] = useState("")
+  const [filterDate, setFilterDate] = useState(null)
+  const [filterOwner, setFilterOwner] = useState("")
+  const [selectedRange, setSelectedRange] = useState([null, null]);
+
 
   let navigate = useNavigate();
 
@@ -206,7 +217,7 @@ function Retrospective() {
 
   useEffect(() => {
     if (user?.status == "etudiant") {
-        navigate('/retroStudent');
+      navigate('/retroStudent');
     }
   })
 
@@ -222,7 +233,7 @@ function Retrospective() {
     )
   }
 
-  
+
   useEffect(() => {
     getCourse(user.id)
   }, []);
@@ -239,6 +250,7 @@ function Retrospective() {
         (res) => {
           console.log(res.data)
           const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+          setAllRetro(res.data)
           setRows(updatedRows);
           setDatas(res.data)
         }
@@ -276,7 +288,7 @@ function Retrospective() {
     }).catch((err) => {
       console.log(err)
     })
-    
+
   }
 
   useEffect(() => {
@@ -330,9 +342,68 @@ function Retrospective() {
   }
 
 
+
+
+
   function createData(titleRetro, date, name, idRetro) {
     return { titleRetro, date, name, idRetro };
   }
+
+  const filterRetro = (val, typeFilter) => {
+
+    let lowerCaseValue = val.toLowerCase();
+
+    let filteredAllRetroByOwner = allRetro.map((el) => {
+      let comparedToElement;
+      typeFilter == "owner" ? comparedToElement = el.firstname.toLowerCase() + " " + el.lastname.toLowerCase() : comparedToElement = el.titleRetro
+      console.log(el)
+
+      console.log(comparedToElement);
+
+      return comparedToElement.includes(lowerCaseValue) ? el : null
+    }).filter(el => el !== null);
+
+    const updatedRows = filteredAllRetroByOwner.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+    setRows(updatedRows);
+  }
+
+  const handleDateRangeChange = (dateRange) => {
+    setSelectedRange(dateRange);
+    
+
+    if (dateRange[0] &&  dateRange[1]) {
+      console.log(dateRange[0]["$d"]);
+      console.log(dateRange[1]["$d"]);
+      const startDate = new Date(dateRange[0]["$d"]);
+      const endDate = new Date(dateRange[1]["$d"]);
+      console.log(dateRange);
+
+      console.log(startDate);
+      console.log(typeof startDate);
+      console.log(typeof allRetro[0].creationDate);
+      console.log(typeof new Date(allRetro[0].creationDate));
+  
+  
+      console.log(allRetro);
+      let filteredDates = []
+
+      allRetro.map((el) => {
+        console.log(new Date(el.creationDate).setHours(23));
+        if(startDate <= new Date(el.creationDate) &&  endDate.setHours(23) >=  new Date(el.creationDate)) {
+
+          filteredDates.push(el)
+        }
+      })
+  
+      console.log(filteredDates);
+
+      const updatedRows = filteredDates.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+      setRows(updatedRows);
+    }
+
+
+    
+  };
 
 
   return (
@@ -348,6 +419,43 @@ function Retrospective() {
           onClick={handleClickOpen} className="add-retro"> + Ajouter une retro </Button>
         <div className="historic">
           Choix de la retrospective
+          <div className="filter-section">
+
+
+            <TextField
+              aria-describedby="my-helper-text"
+              //InputLabelProps={{ shrink: true }}
+              variant="outlined"
+              placeholder="Nom"
+
+              fullWidth
+              onChange={(e) => filterRetro(e.target.value, "name")}
+              wrap="true"
+            />
+
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DemoContainer components={['DateRangePicker']}>
+                  <DateRangePicker
+                    localeText={{ start: 'Debut', end: 'fin' }}
+                    value={selectedRange}
+                    onChange={(e) => handleDateRangeChange(e)}
+                  />
+                </DemoContainer>
+              </LocalizationProvider>
+
+
+            <TextField
+              aria-describedby="my-helper-text"
+              //InputLabelProps={{ shrink: true }}
+              variant="outlined"
+              placeholder="Proprietaire"
+
+              fullWidth
+              onChange={(e) => filterRetro(e.target.value, "owner")}
+              wrap="true"
+            />
+
+          </div>
           <TableContainer component={Paper} style={{ maxHeight: '500px', overflowY: 'auto' }}>
             <Table sx={{ minWidth: 650 }} aria-label="caption table">
               <TableHead>
