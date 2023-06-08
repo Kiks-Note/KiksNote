@@ -1,6 +1,7 @@
 const { db, FieldValue } = require("../firebase");
 const fs = require("fs");
 const path = require("path");
+
 const updateProfil = async (req, res) => {
   const { userId } = req.params;
   // Vérifier que `userId` est une chaîne non vide

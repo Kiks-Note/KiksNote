@@ -1,7 +1,8 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Blog from "./pages/blog/Blog";
 import Presence from "./pages/presence/Presence";
-import Groups from "./pages/groups/Groups";
+import GroupsCreation from "./pages/groups/Groups";
+import Groups from "./pages/groups/GroupsDisplay";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import Tuto from "./pages/blog/Tuto";
 import Cours from "./pages/ressources/Cours/Cours";
@@ -45,12 +46,12 @@ function RoutesProvider() {
         <Route element={<PrivateRoutes />}>
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groupes" element={<Groups />} />
+          <Route path="/groupes/creation" element={<GroupsCreation />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groups" element={<Groups />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
-          <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tuto" element={<Tuto />} />
           <Route path="/profil" element={<Profil />} />

@@ -155,46 +155,46 @@ export default function MiniDrawer({ element }) {
     },
     ...(user && user?.status !== "Pédago"
       ? [
-          {
-            id: 5,
-            name: "Agile",
-            icon: (
-              <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-            ),
-            children: [
-              {
-                id: 12,
-                name: "Coding Board",
-                route: "/tableau-de-bord",
-                icon: (
-                  <DashboardIcon
-                    sx={{ color: theme.palette.custom.iconDrawer }}
-                  />
-                ),
-              },
-              {
-                id: 13,
-                name: "Coding Retro",
-                route: "#",
-                icon: (
-                  <WbIridescentIcon
-                    sx={{ color: theme.palette.custom.iconDrawer }}
-                  />
-                ),
-              },
-              {
-                id: 14,
-                name: "Coding Agile",
-                route: "/agile",
-                icon: (
-                  <TimelineIcon
-                    sx={{ color: theme.palette.custom.iconDrawer }}
-                  />
-                ),
-              },
-            ],
-          },
-        ]
+        {
+          id: 5,
+          name: "Agile",
+          icon: (
+            <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+          ),
+          children: [
+            {
+              id: 12,
+              name: "Coding Board",
+              route: "/tableau-de-bord",
+              icon: (
+                <DashboardIcon
+                  sx={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
+            },
+            {
+              id: 13,
+              name: "Coding Retro",
+              route: "#",
+              icon: (
+                <WbIridescentIcon
+                  sx={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
+            },
+            {
+              id: 14,
+              name: "Coding Agile",
+              route: "/agile",
+              icon: (
+                <TimelineIcon
+                  sx={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
+            },
+          ],
+        },
+      ]
       : []),
     {
       id: 6,
@@ -205,7 +205,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 7,
       name: "Groupes",
-      route: "#",
+      route: "/groupes",
       icon: <GroupsIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {

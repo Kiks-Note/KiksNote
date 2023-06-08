@@ -59,11 +59,14 @@ const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
 const studentsProjectsRoutes = require("./studentsProjectsRoutes");
-const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 
+const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
+const groupNoWs = groupNoWsNeeded();
+
 app.use("/auth", authRoutes);
+app.use("/groupes", groupNoWs);
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
@@ -74,7 +77,7 @@ wsI.on("request", (request) => {
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/blog", blogRoutes(connection, pathname));
-  app.use("/groupes", groupsRoute(connection, pathname));
+  app.use("/groupes", groupWsNeeded(connection, pathname));
 
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);

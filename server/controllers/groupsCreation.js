@@ -18,6 +18,7 @@ const pastelColors = [
 let indexColor = 0;
 
 const path = require("path");
+const { log } = require("console");
 
 const DIR = "./uploads";
 
@@ -60,52 +61,63 @@ const getStudents = async (req, res) => {
 };
 
 const sendGroups = async (req, res) => {
-  const { students, po_id } = req.body;
+  try {
+    const newGroupRef = db.collection("groups").doc();
+    await newGroupRef.set({
+      start_date: moment.unix(Math.floor(new Date(req.body.start_date).valueOf() / 1000)).toDate(),
+      end_date: moment.unix(Math.floor(new Date(req.body.end_date).valueOf() / 1000)).toDate(),
+      students: req.body.students,
+      po_id: req.body.po_id,
+    });
 
-  console.log(students);
-  console.log(po_id);
+    res.status(200).send("Groups successfully added!");
+  } catch (error) {
+    res.status(500).send(error);
+    console.log(error);
+  }
+}
+
+/* const sendGroups = async (req, res) => {
+  const { students, po_id, start_date, end_date } = req.body;
+
+
+
+  console.log(po_id)
+  console.log("nbvg,fkdl")
+
 
   try {
     await upload(req, res, async (err) => {
       if (err instanceof multer.MulterError) {
-        res.status(400).json({ error: "Error uploading file." });
+        return res.status(400).json({ error: "Error uploading file." });
       } else if (err) {
-        res.status(400).json({ error: err.message });
-      } else {
-        if (!req.file) {
-          const newGroupRef = db.collection("groups").doc();
-          await newGroupRef.set({
-            start_date: moment
-              .unix(Math.floor(new Date(req.body.start_date).valueOf() / 1000))
-              .toDate(),
-            end_date: moment
-              .unix(Math.floor(new Date(req.body.end_date).valueOf() / 1000))
-              .toDate(),
-            students: students,
-            po_id: po_id,
-            backlog: "",
-          });
+        return res.status(400).json({ error: err.message });
+      }
 
-          res.status(200).send("Groups successfully added!");
-        } else {
-          const filePath = req.file.path;
-          const fileType = mime.lookup(filePath);
-          const fileSize = req.file.size;
+      const groupData = {
+        start_date: new Date(start_date),
+        end_date: new Date(end_date),
+        students: students,
+        po_id: po_id,
+        backlog: "",
+      };
 
-          const folderPath = `Groups/${req.body.po_id}`;
-          const fileName = req.file.originalname;
+      if (req.file) {
+        const filePath = req.file.path;
+        const fileType = mime.lookup(filePath);
 
-          const fileRef = bucket.file(`${folderPath}/${fileName}`);
+        const folderPath = `Groups/${po_id}`;
+        const fileName = req.file.originalname;
 
-          let pdfLinkCours;
+        const fileRef = bucket.file(`${folderPath}/${fileName}`);
 
-          fileRef
-            .createWriteStream({
-              metadata: {
-                contentType: fileType || "application/pdf",
-                cacheControl: "public, max-age=31536000",
-              },
-            })
+        try {
+          await fileRef.createWriteStream({
+            metadata: {
+              contentType: fileType || "application/pdf",
+              cacheControl: "public, max-age=31536000",
+            },
+          })
             .on("error", (error) => {
               console.error(error);
               res.status(400).json({ error: error.message });
@@ -114,58 +126,39 @@ const sendGroups = async (req, res) => {
               try {
                 const url = await fileRef.getSignedUrl({
                   action: "read",
-                  expires: new Date(req.body.end_date),
+                  expires: new Date(end_date),
                 });
+                groupData.backlog = url[0];
 
-                pdfLinkCours = url.toString();
-
-                const newGroupRef = db.collection("groups").doc();
-                await newGroupRef.set({
-                  start_date: moment
-                    .unix(
-                      Math.floor(new Date(req.body.start_date).valueOf() / 1000)
-                    )
-                    .toDate(),
-                  end_date: moment
-                    .unix(
-                      Math.floor(new Date(req.body.end_date).valueOf() / 1000)
-                    )
-                    .toDate(),
-                  students: req.body.students,
-                  po_id: req.body.po_id,
-                  backlog: pdfLinkCours,
-                });
-
-                res.status(200).send("Groups successfully added!");
               } catch (error) {
                 console.error(error);
                 res.status(400).json({ error: error.message });
               }
             })
             .end(fs.readFileSync(filePath));
+
+        } catch (error) {
+          console.error(error);
+          return res.status(400).json({ error: error.message });
         }
       }
+
+      try {
+        const newGroupRef = db.collection("groups").doc();
+        await newGroupRef.set(groupData);
+
+        return res.status(200).send("Groups successfully added!");
+      } catch (error) {
+        console.error(error);
+        return res.status(400).json({ error: error.message });
+      }
     });
-
-    /*     const newGroupRef = db.collection("groups").doc();
-    await newGroupRef.set({
-      start_date: moment
-        .unix(Math.floor(new Date(req.body.start_date).valueOf() / 1000))
-        .toDate(),
-      end_date: moment
-        .unix(Math.floor(new Date(req.body.end_date).valueOf() / 1000))
-        .toDate(),
-      students: req.body.students,
-      po_id: req.body.po_id,
-      backlog: "",
-    }); */
-
-    res.status(200).send("Groups successfully added!");
   } catch (error) {
-    res.status(500).send(error);
-    console.log(error);
+    console.error(error);
+    return res.status(500).send(error);
   }
 };
+ */
 
 const deleteRoom = async (req, res) => {
   const { po_id } = req.params;
@@ -206,6 +199,38 @@ const getRoomPo = async (req, res) => {
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.status(200).send(documents);
 };
+
+const getGroupsPo = async (req, res) => {
+  const { po_id } = req.params;
+  const currentDateTime = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
+  const snapshot = await db
+    .collection("groups")
+    .where("po_id", "==", po_id)
+    .where("end_date._seconds", ">=", currentDateTime)
+    .get();
+
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  console.log(documents);
+
+  res.status(200).send(documents);
+}
+
+
+const getGroups = async (req, res) => {
+  const { student_id } = req.params;
+  const currentDateTime = Math.floor(Date.now() / 1000); // Get current timestamp in seconds
+  const snapshot = await db
+    .collection("groups")
+    .where("students", "array-contains", student_id)
+    .where("end_date._seconds", ">=", currentDateTime)
+    .get();
+
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+  console.log(documents);
+  res.status(200).send(documents);
+}
+
 
 const currentRooms = new Map();
 
@@ -264,6 +289,7 @@ const room = async (connection) => {
 
         break;
       case "createRoom":
+        console.log("createRoom");
         const newRoomRef = db.collection("rooms").doc();
         newRoomRef.set({
           po_id: response.data.po_id,
@@ -357,11 +383,13 @@ const room = async (connection) => {
         break;
       case "closeRoom":
         currentRooms.delete(response.data.class);
+        clients.delete(response.data.class);
 
-        let allClientsInRoomClose =
-          clients.get(response.data.class) || new Map();
-        allClientsInRoomClose.delete(response.data.userID);
-        clients.set(response.data.class, allClientsInRoomClose);
+        const messageClose = {
+          type: "closeRoom",
+        };
+
+        sendToAllClients(messageClose, response.data.class);
 
         break;
       case "leaveRoom":
@@ -415,8 +443,6 @@ const room = async (connection) => {
               class: response.data.class,
             },
           };
-          console.log("lock: ", messageLock);
-
           sendToAllClients(messageLock, response.data.class);
         }
         break;
@@ -473,4 +499,6 @@ module.exports = {
   deleteRoom,
   getRoom,
   getRoomPo,
+  getGroups,
+  getGroupsPo,
 };
