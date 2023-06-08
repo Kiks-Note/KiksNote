@@ -34,15 +34,20 @@ const favorite = async (req, res) => {
 const changeIndex = async (req, res) => {
   var data = req.body;
   console.log(data);
-  await db.collection("dashboard").doc(req.params.dashboardId).collection("board").doc(req.params.boardId).update({
-    requested: data[0],
-    acceptance: data[1],
-    toDo: data[2],
-    inProgress: data[3],
-    done: data[4],
-    definitionOfDone: data[5],
-    definitionOfFun: data[6],
-  });
+  await db
+    .collection("dashboard")
+    .doc(req.params.dashboardId)
+    .collection("board")
+    .doc(req.params.boardId)
+    .update({
+      requested: data[0],
+      acceptance: data[1],
+      toDo: data[2],
+      inProgress: data[3],
+      done: data[4],
+      definitionOfDone: data[5],
+      definitionOfFun: data[6],
+    });
 };
 /// PATH to add a info card
 const createCard = async (req, res) => {
@@ -55,7 +60,8 @@ const createCard = async (req, res) => {
 
     const startingDate = new Date(starting_date._seconds * 1000);
     const endingDate = new Date(ending_date._seconds * 1000);
-    const totalDays = Math.ceil((endingDate - startingDate) / (1000 * 60 * 60 * 24)) + 1;
+    const totalDays =
+      Math.ceil((endingDate - startingDate) / (1000 * 60 * 60 * 24)) + 1;
 
     const snapshot = await boardRef.get();
     const columns = snapshot.data();
@@ -123,7 +129,11 @@ const createCard = async (req, res) => {
         color: color,
         storyId: id,
       };
-    } else if (columnName == "toDo" || columnName == "inProgress" || columnName == "done") {
+    } else if (
+      columnName == "toDo" ||
+      columnName == "inProgress" ||
+      columnName == "done"
+    ) {
       newCard = {
         id: id,
         name: data.title,
@@ -172,36 +182,58 @@ const moveStories = async (req, res) => {
 
     //  -  A recuperer leur card associés puis les bouger...
 
-    const destinationBoardSnapshot = await dashboardRef.collection("board").doc(destinationBoardId).get();
+    const destinationBoardSnapshot = await dashboardRef
+      .collection("board")
+      .doc(destinationBoardId)
+      .get();
     const destinationBoardData = destinationBoardSnapshot.data();
 
     selectedStories.forEach(async (story) => {
-      const sourceBoardSnapshot = await dashboardRef.collection("board").doc(story.boardId).get();
+      const sourceBoardSnapshot = await dashboardRef
+        .collection("board")
+        .doc(story.boardId)
+        .get();
       const sourceBoardData = sourceBoardSnapshot.data();
-      const otherColumns = Object.keys(sourceBoardData).filter((column) => column);
+      const otherColumns = Object.keys(sourceBoardData).filter(
+        (column) => column
+      );
       console.log(otherColumns);
 
       otherColumns.forEach((column) => {
         if (column == "requested") {
-          destinationBoardData[column].items = destinationBoardData[column].items.concat(story);
-          sourceBoardData[column].items = sourceBoardData[column].items.filter((card) => card.id !== story.id);
+          destinationBoardData[column].items =
+            destinationBoardData[column].items.concat(story);
+          sourceBoardData[column].items = sourceBoardData[column].items.filter(
+            (card) => card.id !== story.id
+          );
         } else {
           sourceBoardData[column].items.forEach((card) => {
             if (story.id == card.storyId) {
-              destinationBoardData[column].items = destinationBoardData[column].items.concat(card);
-              sourceBoardData[column].items = sourceBoardData[column].items.filter((card) => card !== card);
+              destinationBoardData[column].items =
+                destinationBoardData[column].items.concat(card);
+              sourceBoardData[column].items = sourceBoardData[
+                column
+              ].items.filter((card) => card !== card);
             }
           });
         }
       });
       // Update Firestore documents with the modified data
-      await dashboardRef.collection("board").doc(destinationBoardId).update(destinationBoardData);
-      await dashboardRef.collection("board").doc(story.boardId).update(sourceBoardData);
+      await dashboardRef
+        .collection("board")
+        .doc(destinationBoardId)
+        .update(destinationBoardData);
+      await dashboardRef
+        .collection("board")
+        .doc(story.boardId)
+        .update(sourceBoardData);
     });
     res.send({ message: "Stories moved successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: "An error occurred while moving the stories" });
+    res
+      .status(500)
+      .send({ message: "An error occurred while moving the stories" });
   }
 };
 
@@ -209,7 +241,11 @@ const moveStories = async (req, res) => {
 const createDashboards = async (req, res) => {
   try {
     const dashboardRef = await createDashboard(req.body, true);
-    const releases = await createReleases(req.body.starting_date, req.body.ending_date, dashboardRef);
+    const releases = await createReleases(
+      req.body.starting_date,
+      req.body.ending_date,
+      dashboardRef
+    );
 
     dashboardRef.update({ release: JSON.parse(JSON.stringify(releases)) });
 
@@ -242,6 +278,7 @@ const createDashboards = async (req, res) => {
       name: "",
       description: "",
     });
+    await agileRef.doc("functional-tree").set({});
     await agileRef.doc("agile_folder").set({
       impact_mapping: "",
       empathy_map: "",
@@ -257,7 +294,9 @@ const createDashboards = async (req, res) => {
     });
   } catch (error) {
     console.error("Error creating dashboard", error);
-    res.status(500).send({ message: "An error occurred while creating the dashboard" });
+    res
+      .status(500)
+      .send({ message: "An error occurred while creating the dashboard" });
   }
 };
 //Path to delete a dashboard
@@ -284,7 +323,8 @@ const deleteDashboard = async (req, res) => {
     console.error(error);
     res.status(500).json({
       success: false,
-      error: "Une erreur s'est produite lors de la suppression du tableau de bord.",
+      error:
+        "Une erreur s'est produite lors de la suppression du tableau de bord.",
     });
   }
 };
@@ -341,7 +381,11 @@ const editCard = async (req, res) => {
 
   const columnId = req.params.columnId;
   try {
-    const boardRef = db.collection("dashboard").doc(req.params.dashboardId).collection("board").doc(req.params.boardId);
+    const boardRef = db
+      .collection("dashboard")
+      .doc(req.params.dashboardId)
+      .collection("board")
+      .doc(req.params.boardId);
     const boardSnapshot = await boardRef.get();
 
     const columns = boardSnapshot.data();
@@ -391,7 +435,8 @@ const editCard = async (req, res) => {
 
     // Check if estimation is defined before adding it to the update data
     if (data.estimation !== undefined) {
-      updateData[getColumnField(parseInt(columnId))].items[0].estimation = data.estimation;
+      updateData[getColumnField(parseInt(columnId))].items[0].estimation =
+        data.estimation;
     }
 
     await boardRef.update(updateData);
@@ -471,7 +516,9 @@ const deleteCard = async (req, res) => {
   } catch (error) {
     console.error(error);
     // Server error
-    res.status(500).send({ message: "An error occurred while deleting the card" });
+    res
+      .status(500)
+      .send({ message: "An error occurred while deleting the card" });
   }
 };
 /// Path to addUserToStory
@@ -493,7 +540,9 @@ const addUsersToStory = async (req, res) => {
     const columnField = getColumnField(parseInt(columnId));
 
     // Trouver l'histoire dans la colonne
-    const storyIndex = boardData[columnField].items.findIndex((story) => story.id === storyId);
+    const storyIndex = boardData[columnField].items.findIndex(
+      (story) => story.id === storyId
+    );
 
     if (storyIndex === -1) {
       res.status(404).send({ message: "Story not found" });
@@ -546,7 +595,11 @@ function getColumnField(columnId) {
   }
 }
 //Setter ColumnItems
-function setColumnItems(columnItems, updatedItem, includeEstimationAndAdvancement) {
+function setColumnItems(
+  columnItems,
+  updatedItem,
+  includeEstimationAndAdvancement
+) {
   return columnItems.map((item) => {
     if (item.id === updatedItem.id) {
       const newItem = {
@@ -578,7 +631,9 @@ async function createReleases(startingDate, endingDate, dashboardRef) {
   const releaseDuration = 28; // 4 weeks
   const sprintDuration = 7; // 1 week
 
-  const releaseCount = Math.ceil(moment(endingDate).diff(moment(startingDate), "days") / releaseDuration);
+  const releaseCount = Math.ceil(
+    moment(endingDate).diff(moment(startingDate), "days") / releaseDuration
+  );
   const releases = {};
   for (let i = 0; i < releaseCount; i++) {
     const releaseStart = moment(startingDate)
@@ -586,15 +641,27 @@ async function createReleases(startingDate, endingDate, dashboardRef) {
       .toDate();
     const releaseEnd = moment(endingDate).toDate();
 
-    const sprints = await createSprints(releaseStart, releaseEnd, sprintDuration, dashboardRef);
+    const sprints = await createSprints(
+      releaseStart,
+      releaseEnd,
+      sprintDuration,
+      dashboardRef
+    );
     releases[`Release ${i + 1}`] = sprints;
   }
   await Promise.all(Object.values(releases));
   return releases;
 }
 ///Path to create Sprints
-async function createSprints(releaseStart, releaseEnd, sprintDuration, dashboardRef) {
-  const sprintCount = Math.ceil(moment(releaseEnd).diff(moment(releaseStart), "days") / sprintDuration);
+async function createSprints(
+  releaseStart,
+  releaseEnd,
+  sprintDuration,
+  dashboardRef
+) {
+  const sprintCount = Math.ceil(
+    moment(releaseEnd).diff(moment(releaseStart), "days") / sprintDuration
+  );
 
   const sprints = [];
 
@@ -798,7 +865,10 @@ const boardRequests = async (connection) => {
           );
       })
       .catch((error) => {
-        console.error("Erreur lors de la récupération de la sous-collection:", error);
+        console.error(
+          "Erreur lors de la récupération de la sous-collection:",
+          error
+        );
       });
   });
 };
@@ -887,7 +957,9 @@ async function addDashboard(groups, db) {
   const dashboardSnapshot = await db.collection("dashboard").get();
 
   for (const group of groups) {
-    const haveGroupId = dashboardSnapshot.docs.some((doc) => doc.data().groupId === group.id);
+    const haveGroupId = dashboardSnapshot.docs.some(
+      (doc) => doc.data().groupId === group.id
+    );
     if (!haveGroupId) {
       var body = {
         students: group.data.students,
@@ -901,18 +973,28 @@ async function addDashboard(groups, db) {
       console.log(body);
       const dashboardRef = await createDashboard(body, false);
 
-      const startingDate = new Date(body.starting_date._seconds * 1000 + body.starting_date._nanoseconds / 1000000)
+      const startingDate = new Date(
+        body.starting_date._seconds * 1000 +
+          body.starting_date._nanoseconds / 1000000
+      )
         .toLocaleDateString("fr")
         .split("/")
         .reverse()
         .join("-");
 
-      const endingDate = new Date(body.ending_date._seconds * 1000 + body.ending_date._nanoseconds / 1000000)
+      const endingDate = new Date(
+        body.ending_date._seconds * 1000 +
+          body.ending_date._nanoseconds / 1000000
+      )
         .toLocaleDateString("fr")
         .split("/")
         .reverse()
         .join("-");
-      const releases = await createReleases(startingDate, endingDate, dashboardRef);
+      const releases = await createReleases(
+        startingDate,
+        endingDate,
+        dashboardRef
+      );
 
       dashboardRef.update({ release: JSON.parse(JSON.stringify(releases)) });
       // Add labels collection creation
@@ -944,6 +1026,7 @@ async function addDashboard(groups, db) {
         name: "",
         description: "",
       });
+      await agileRef.doc("functional-tree").set({});
       await agileRef.doc("agile_folder").set({
         impact_mapping: "",
         empathy_map: "",

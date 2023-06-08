@@ -7,8 +7,9 @@ import "./agile.css";
 import { setActiveTab, addTab } from "../../redux/slices/tabBoardSlice";
 export default function AgileHome({ dashboardId, agile }) {
   const { user } = useFirebase();
-  const [folder, setFolder] = useState([]);
+  const [elevator, setElevator] = useState({});
   const [impact, setImpact] = useState({});
+  const [three, setThree] = useState({});
   const [others, setOthers] = useState([]);
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
@@ -22,10 +23,10 @@ export default function AgileHome({ dashboardId, agile }) {
       try {
         const data = JSON.parse(message.data);
         console.log(data);
-        setFolder(data.folder);
+        setElevator(data.elevator);
         setImpact(data.impactMapping);
         setOthers(data.others);
-
+        setThree(data.functionalTree);
         setLoading(false);
       } catch (error) {
         setLoading(true);
@@ -46,7 +47,7 @@ export default function AgileHome({ dashboardId, agile }) {
   };
   const moveToPersona = (id) => {
     const personaTab = {
-      id: "Persona" + dashboardId,
+      id: "Persona" + id,
       label: "Persona ",
       closeable: true,
       component: "Personas",
@@ -57,7 +58,7 @@ export default function AgileHome({ dashboardId, agile }) {
   };
   const moveToEmpathy = (id) => {
     const empathyTab = {
-      id: "Empathy" + dashboardId,
+      id: "Empathy" + id,
       label: "Empathy ",
       closeable: true,
       component: "Empathy",
@@ -70,7 +71,11 @@ export default function AgileHome({ dashboardId, agile }) {
     <Grid container>
       <p className="title_folder__">Agile</p>
       <Grid item xs={12}>
-        <div className="folder" key={impact.id} onClick={() => moveToImpact()}>
+        <div
+          className="folder folder_cursor"
+          key={impact.id}
+          onClick={() => moveToImpact()}
+        >
           <div className="folder_content">
             <Typography>ImpactMapping</Typography>
           </div>
@@ -79,7 +84,7 @@ export default function AgileHome({ dashboardId, agile }) {
           <div key={fold.id}>
             {fold.persona && (
               <div
-                className="folder"
+                className="folder folder_cursor"
                 key={fold.id + "persona"}
                 onClick={() => moveToPersona(fold.id)}
               >
@@ -90,7 +95,7 @@ export default function AgileHome({ dashboardId, agile }) {
             )}
             {fold.empathy_map && (
               <div
-                className="folder"
+                className="folder folder_cursor"
                 key={fold.id + "empathy"}
                 onClick={() => moveToEmpathy(fold.id)}
               >
@@ -101,6 +106,24 @@ export default function AgileHome({ dashboardId, agile }) {
             )}
           </div>
         ))}
+        <div
+          className="folder folder_cursor"
+          key={three.id}
+          //onClick={() => moveToImpact()}
+        >
+          <div className="folder_content">
+            <Typography>Arbre Fonctionnel</Typography>
+          </div>
+        </div>
+        <div
+          className="folder folder_cursor"
+          key={elevator.id}
+          //onClick={() => moveToImpact()}
+        >
+          <div className="folder_content">
+            <Typography>Elevator Pitch</Typography>
+          </div>
+        </div>
       </Grid>
     </Grid>
   );

@@ -8,11 +8,10 @@ import {
   Grid,
 } from "@mui/material";
 
-
 const CardPersona = ({ info }) => {
-      const [civilite, setCivilite] = useState(null);
-      useEffect(() => {
-   setCivilite(info.gender == "Masculin" ? "Mr" : "Mme");
+  const [civilite, setCivilite] = useState(null);
+  useEffect(() => {
+    setCivilite(info.gender == "Masculin" ? "Mr" : "Mme");
   }, []);
   return (
     <>
