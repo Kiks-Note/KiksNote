@@ -9,6 +9,7 @@ const {
   getAll,
   editPostit,
   addPostIt,
+  getAllRetroByPO,
   movePostIt
 } = require("./controllers/retro");
 
@@ -29,6 +30,7 @@ const retroRoutesWsNeeded = (connection, pathname) => {
   const router = express.Router(); // Create a new router instance
 
   router.get("/getRetrosByUser/:idUser", getRetrosByUser)
+  router.get("/getAllRetroByPO/:idPO", getAllRetroByPO)
   
   switch (pathname) {
     case "/retro":

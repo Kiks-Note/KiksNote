@@ -90,6 +90,42 @@ const getRetrosByUser = async (req, res) => {
   });
 }
 
+
+const getAllRetroByPO = async (req, res) => {
+
+    try {
+      const snapshot = await db.collection("cours").get();
+    
+      const classList = [];
+      snapshot.forEach((doc) => {
+        if (doc.data().owner.id == req.params.idPO) {
+          classList.push(doc.data().courseClass.name);
+        }
+      });
+    
+      const filteredClassList = [...new Set(classList)];
+
+      const snapshotRetro = await db.collection("retro").get();
+      let allRetros = [];
+      snapshotRetro.forEach((doc)=> {
+        for(let i = 0; i < filteredClassList.length; i ++) {
+          if (doc.data().courseRetro.courseClass.name == filteredClassList[i]) 
+          allRetros.push(doc.data())
+        } 
+      });
+
+      console.log(filteredClassList);
+      res.send(allRetros)
+      console.log(allRetros);
+    } catch (error) {
+      console.log(error);
+    }
+    
+
+
+
+
+}
 const editPostit = async (req, res) => {
 
   const snapshot = await db.collection('retro').get()
@@ -195,5 +231,6 @@ module.exports = {
   getAll,
   editPostit,
   addPostIt,
-  movePostIt
+  movePostIt,
+  getAllRetroByPO
 };

@@ -222,6 +222,7 @@ function Retrospective() {
     )
   }
 
+  
   useEffect(() => {
     getCourse(user.id)
   }, []);
@@ -233,16 +234,15 @@ function Retrospective() {
     ws.onmessage = async (message) => {
       console.log("wsss");
       let allRetros = [];
-      await axios.get("http://localhost:5050/retro/getAll").then((res) => {
-        console.log(res.data);
-        let responseRetros = res.data;
-        responseRetros.forEach(retro => {
-          allRetros.push(retro["dataRetro"])
-        });
-        const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
-        setRows(updatedRows);
-        setDatas(res.data)
-      })
+      let idOwner = user.id;
+      await axios.get(`http://localhost:5050/retro/getAllRetroByPO/${idOwner}`).then(
+        (res) => {
+          console.log(res.data)
+          const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+          setRows(updatedRows);
+          setDatas(res.data)
+        }
+      )
     };
     return () => {
       ws.close();
@@ -250,26 +250,7 @@ function Retrospective() {
   }, []);
 
 
-  const setAllRetrosAtbeginning = async (dataResponse) => {
-    let allRetros = [];
 
-    dataResponse.forEach(retro => {
-      allRetros.push(retro["dataRetro"])
-    });
-
-    console.log(allRetros);
-    console.log(allRetro);
-    setAllRetro(allRetros);
-  }
-
-  useEffect(() => {
-    let allRetros = [];
-    axios.get("http://localhost:5050/retro/getAll").then((res) => {
-      let responseRetros = res.data;
-      setAllRetrosAtbeginning(res.data);
-
-    });
-  }, []);
 
 
   const handleClickOpen = () => {
@@ -280,20 +261,6 @@ function Retrospective() {
     setOpen(false);
   };
 
-
-  const handleValidate = (e) => {
-    let value = e.target.value;
-    if (value == "GMDBoard") {
-      setColumns(GMDBoard)
-    } else if (value == "fourLBoard") {
-      setColumns(FourLBoard)
-    } else if (value == "PNABoard") {
-      setColumns(PNABoard)
-    }
-    setRetroModel(e.target.value)
-    setOpen(false);
-
-  }
 
   const getAllRetroByUser = async () => {
     const userId = user.id;
@@ -311,12 +278,6 @@ function Retrospective() {
     })
     
   }
-
-
-
-  useEffect(() => {
-    getAllRetroByUser();
-  }, []);
 
   useEffect(() => {
     console.log(listRetros);
