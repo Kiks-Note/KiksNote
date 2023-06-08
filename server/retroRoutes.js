@@ -24,7 +24,7 @@ const retroRoutesWsNotNeeded = () => {
   router.put("/editPostit", editPostit)
   router.post("/addPostIt", addPostIt)
   router.put("/movePostIt", movePostIt)
-  router.get("/getTeamMates/:studentClass", getTeamMates)
+  router.get("/getTeamMates/:studentClass/:studentId", getTeamMates)
   return router;
 }
 

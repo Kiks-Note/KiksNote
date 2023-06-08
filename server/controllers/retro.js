@@ -165,8 +165,9 @@ const getTeamMates = async (req, res) => {
 
   let currentUserPromo = req.params.studentClass.substring(0,2)
   snapshot.forEach((doc) => {
-    if (doc.data().status == "etudiant" && typeof doc.data().class == "string" && currentUserPromo == doc.data().class.substring(0,2)) {
-      console.log(doc.data().class);
+    if (doc.data().status == "etudiant" && typeof doc.data().class == "string" 
+        && currentUserPromo == doc.data().class.substring(0,2)
+        && req.params.studentId !== doc.id) {
       listTeamMates.push(doc.data())
     }
     

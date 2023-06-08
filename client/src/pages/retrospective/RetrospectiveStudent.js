@@ -340,9 +340,11 @@ function Retrospective() {
 
   const getTeamMates = async () => {
      let studentClass = user?.class
+     console.log(user);
+     let studentId = user?.id
 
     try {
-      const response = await axios.get(`http://localhost:5050/retro/getTeamMates/${studentClass}`);
+      const response = await axios.get(`http://localhost:5050/retro/getTeamMates/${studentClass}/${studentId}`);
       const allTeamMates = response.data;  
       const listeTeamMates = allTeamMates.map(el => ({ label: el.firstname + "/" +el.class, data: el }));  
       setAllTeamMates(listeTeamMates);
