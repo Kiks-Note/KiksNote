@@ -374,7 +374,7 @@ function DetailTuto() {
                   </>
                 ) : (
                   <>
-                    <Box sx={{ m: 3, height: "50vh" }}>
+                    <Box sx={{ m: 3 }}>
                       <MDEditor.Markdown
                         source={data.markdownStepsInfo[activeStep]}
                       />
