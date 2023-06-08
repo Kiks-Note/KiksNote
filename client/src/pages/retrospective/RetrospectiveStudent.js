@@ -343,13 +343,9 @@ function Retrospective() {
 
     try {
       const response = await axios.get(`http://localhost:5050/retro/getTeamMates/${studentClass}`);
-      const allTeamMates = response.data;
-      console.log(allTeamMates);
-  
-      const liste = allTeamMates.map(el => ({ label: el.firstname + "/" +el.class, data: el }));
-      console.log(liste);
-  
-      setAllTeamMates(liste);
+      const allTeamMates = response.data;  
+      const listeTeamMates = allTeamMates.map(el => ({ label: el.firstname + "/" +el.class, data: el }));  
+      setAllTeamMates(listeTeamMates);
     } catch (error) {
       console.error(error);
     }
@@ -362,10 +358,10 @@ function Retrospective() {
   useEffect(() => {
     const ws = new w3cwebsocket("ws://localhost:5050/retro");
     ws.onmessage = async (message) => {
-      console.log("wsss");
       let allRetros = [];
-      await axios.get("http://localhost:5050/retro/getAll").then((res) => {
-        console.log(res.data);
+      let nameUser = user?.firstname + " " + user?.lastname;
+      let classe = user?.class
+      await axios.get(`http://localhost:5050/retro/getRetroForStudent/${nameUser}/${classe}`).then((res) => {
         let responseRetros = res.data;
         responseRetros.forEach(retro => {
           allRetros.push(retro["dataRetro"])
@@ -393,15 +389,6 @@ function Retrospective() {
     setAllRetro(allRetros);
   }
 
-  useEffect(() => {
-    let allRetros = [];
-    axios.get("http://localhost:5050/retro/getAll").then((res) => {
-      let responseRetros = res.data;
-      setAllRetrosAtbeginning(res.data);
-
-    });
-  }, []);
-
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -428,31 +415,16 @@ function Retrospective() {
 
   const getAllRetroByUser = async () => {
     const userId = user.id;
+    let nameUser = user?.firstname + " " + user?.lastname;
+    let classe = user?.class
+    await axios.get(`http://localhost:5050/retro/getRetroForStudent/${nameUser}/${classe}`)
+    .then((res) => {
+      setListRetros(res.data)
+    }).catch((err) => {
+      console.log(err)
+    })
 
-    if (user.status == "po") {
-      console.log("im a po");
-      await axios.get(`http://localhost:5050/retro/getAll`
-      ).then((res) => {
-        console.log("************");
-        console.log(res.data)
-        console.log("************");
-        setListRetros(res.data)
-      }).catch((err) => {
-        console.log(err)
-      })
-    } else if (user.status == "etudiant") {
-      console.log("im a student ");
-      await axios.get(`http://localhost:5050/retro/getAll`
-      ).then((res) => {
-        console.log("************");
-        console.log(res.data)
-        console.log("************");
-        setListRetros(res.data)
-      }).catch((err) => {
-        console.log(err)
-      })
-
-    }
+  
   }
 
 
@@ -462,7 +434,6 @@ function Retrospective() {
   }, []);
 
   useEffect(() => {
-    console.log(listRetros);
     if (listRetros !== undefined) {
       const updatedRows = listRetros.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
       setRows(updatedRows);

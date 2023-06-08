@@ -32,14 +32,9 @@ const addRetro = async (req, res) => {
       };
     }
     
-
-//    await db.collection("retro").doc().set(tabRetro);
-
     await db.collection("retro").doc().set(tabRetro)
     .then(() => {
      
-      //const message = JSON.stringify({ type: 'retroAdded' });
-      //connection.sendUTF(message);
       res.json({ success: true });
     })
     .catch((error) => {
@@ -47,10 +42,7 @@ const addRetro = async (req, res) => {
       res.status(500).json({ success: false, error: 'Failed to add retro' });
     });
 
-    
-    //res.status(200).json({ message: "Retro added successfully" });
-  } catch (error) {
-    
+  } catch (error) {    
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -91,6 +83,38 @@ const getRetro = async (req, res) => {
   console.log("in get Retro");
   res.json({ message: "getRetro works!" });
 };
+
+const getRetroForStudent = async (req,res) => {
+
+  const snapshot = await db.collection('retro').get()
+
+
+  
+  let userInfo = req.params;
+  let name  = userInfo["userName"];
+  let studentClass = userInfo["userClass"]
+
+  let allRetros = []
+
+  snapshot.forEach((doc) => {
+    if (doc.data().choosenTeamMates) {
+      doc.data().choosenTeamMates.forEach(
+        el => {
+          if (name == el.data.firstname + " " + el.data.lastname) {
+            allRetros.push(doc.data())
+          }
+        }
+      )      
+    } else {
+      if (doc.data().courseRetro.courseClass.name.replace(/\s+/g, '').toLowerCase() == studentClass.replace(/\s+/g, '').toLowerCase()) {
+        allRetros.push(doc.data())
+      }
+    }
+  });
+
+  res.send(allRetros)
+  
+}
 
 const getRetrosByUser = async (req, res) => {
   let retros = [];
@@ -231,5 +255,6 @@ module.exports = {
   editPostit,
   addPostIt,
   movePostIt,
-  getTeamMates
+  getTeamMates,
+  getRetroForStudent
 };
