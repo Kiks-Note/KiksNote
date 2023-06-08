@@ -12607,6 +12607,11 @@ react-scripts@5.0.1:
   optionalDependencies:
     fsevents "^2.3.2"
 
+react-snap-carousel@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/react-snap-carousel/-/react-snap-carousel-0.3.2.tgz#91bad605692cb41c88181cb6f1217e97c65ce875"
+  integrity sha512-3o4pA+k/OhphCNWt3gVxddSzp98XQ3e9+JtVeU3js2cStfysBQDj45L1dhO0kSh4PBAnuhXB+gsQjDDzIVU10g==
+
 react-swipeable-views-core@^0.14.0:
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/react-swipeable-views-core/-/react-swipeable-views-core-0.14.0.tgz#6ac443a7cc7bc5ea022fbd549292bb5fff361cce"
