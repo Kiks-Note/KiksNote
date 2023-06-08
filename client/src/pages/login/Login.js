@@ -20,19 +20,33 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import imgLogin from "./../../assets/img/login_img.svg";
 import "./Login.scss";
 import useFirebase from "../../hooks/useFirebase";
-import { Toaster, toast } from "react-hot-toast";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+
+const options = {
+  autoClose: 2000,
+  className: "",
+  position: toast.POSITION.TOP_RIGHT,
+  theme: "colored",
+};
+
+export const toastSuccess = (message) => {
+  toast.success(message, options);
+};
+
+export const toastFail = (message) => {
+  toast.error(message, options);
+};
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setMessageError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorEmail, setErrorEmail] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
   const [messageEmail, setMessageEmail] = useState("");
   const [messagePassword, setMessagePassword] = useState("");
-  const regex = /@edu\.esiee-it\.fr/;
   const theme = useTheme();
   const cookies = new Cookies();
   const { auth } = useFirebase();
@@ -59,7 +73,7 @@ const Login = () => {
 
   const login = async () => {
     if (!email || !password) {
-      toast.error("Veuillez remplir tous les champs !");
+      toastFail("Veuillez remplir tous les champs !");
       return;
     }
     try {
@@ -91,18 +105,18 @@ const Login = () => {
         })
         .catch((err) => {
           console.log(err);
-          toast.error(err.message);
+          toastFail(err.response.data.message);
         });
     } catch (e) {
       if (e.message.includes("auth/invalid-email")) {
-        toast.error("Cet email n'est associé à aucun compte !");
+        toastFail("Cet email n'est associé à aucun compte !");
         return;
       }
       if (e.message.includes("auth/wrong-password")) {
-        toast.error("Mot de passe incorrect !");
+        toastFail("Mot de passe incorrect !");
         return;
       }
-      toast.error("Une erreur est survenue");
+      toastFail("Une erreur est survenue");
       console.log(e);
     }
   };
@@ -111,22 +125,21 @@ const Login = () => {
     if (email === "") {
       setErrorEmail(true);
       setMessageEmail("L'adresse email est requis");
-    } else if (regex.test(email)) {
+    } else {
       setErrorEmail(false);
       setMessageEmail("");
-    } else {
-      setErrorEmail(true);
-      setMessageEmail("L'email doit finir par @edu.esiee-it.fr");
     }
     if (password === "") {
       setErrorPassword(true);
       setMessagePassword("Le mot de passe est requis");
-    } else if (password.length >= 6) {
+    } else if (password.length < 6) {
+      setErrorPassword(false);
+      setMessagePassword(
+        "Le mot de passe doit rentrer doit comporter plus de 6 caractères"
+      );
+    } else {
       setErrorPassword(false);
       setMessagePassword("");
-    } else {
-      setErrorPassword(true);
-      setMessagePassword("Le mot de passe est incorrect");
     }
   };
 
@@ -138,7 +151,6 @@ const Login = () => {
 
   return (
     <div className="login-page-container">
-      <Toaster />
       <div className="login">
         <Container
           className="login-image-box"
@@ -305,6 +317,7 @@ const Login = () => {
           </Container>
         </div>
       </div>
+      <ToastContainer></ToastContainer>
     </div>
   );
 };
