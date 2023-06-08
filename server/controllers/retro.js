@@ -105,6 +105,10 @@ const getRetroForStudent = async (req,res) => {
           }
         }
       )      
+      // if the student is the owner
+      if (name == doc.data().firstname + " " + doc.data().lastname) {
+        allRetros.push(doc.data())
+      }
     } else {
       if (doc.data().courseRetro.courseClass.name.replace(/\s+/g, '').toLowerCase() == studentClass.replace(/\s+/g, '').toLowerCase()) {
         allRetros.push(doc.data())
