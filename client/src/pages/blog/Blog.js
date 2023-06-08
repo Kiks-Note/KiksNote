@@ -379,6 +379,18 @@ function Blog() {
   const AdvancedCarouselEvent = () => {
     const { scrollRef, pages, activePageIndex, next, prev, goTo } =
       useSnapCarousel();
+    // console.log("123");
+    // console.log(blog);
+    // for (let i = 0; i < blog?.length; i++) {
+    //   for (let j = 0; j < blog[i]?.tag?.length; j++) {
+    //     if (blog[i]?.tag[j] === "u6OdMq2h22MOR2Qhfw2w") {
+    //       console.log("event", blog[i]?.tag[j]);
+    //       console.log(blog[i]);
+    //     }
+    //   }
+    // }
+    // blog.filter((blog) => blog.filter((tag) => tag === "u6OdMq2h22MOR2Qhfw2w"));
+    // console.log("456");
     return (
       <>
         <ul
@@ -390,34 +402,29 @@ function Blog() {
           }}
         >
           {blog
-            .filter((blog) => blog.type === "blog")
-            .filter((blog) => blog.visibility === "public").length > 0
-            ? blog
-                .filter((blog) => blog.type === "blog")
-                .filter((blog) => blog.visibility === "public")
-                .map((filtered) => (
-                  <Box
-                    sx={{
-                      // backgroundColor: "aqua",
-                      fontSize: "50px",
-                      width: 450,
-                      height: "auto",
-                      flexShrink: 0,
-                      color: "#fff",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      py: 2,
-                      mx: 1,
-                    }}
-                  >
-                    <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                    {/*<Typography>{user.email}</Typography>*/}
-                    {/*<Typography>{filtered.created_by}</Typography>*/}
-                    {/*<Typography>{filtered.visibility}</Typography>*/}
-                  </Box>
-                ))
-            : "Pas de blog disponible"}
+            .filter((blog) => blog.visibility === "public")
+            .map((filtered) => (
+              <Box
+                sx={{
+                  // backgroundColor: "aqua",
+                  fontSize: "50px",
+                  width: 450,
+                  height: "auto",
+                  flexShrink: 0,
+                  color: "#fff",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  py: 2,
+                  mx: 1,
+                }}
+              >
+                <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                {/*<Typography>{user.email}</Typography>*/}
+                {/*<Typography>{filtered.created_by}</Typography>*/}
+                {/*<Typography>{filtered.visibility}</Typography>*/}
+              </Box>
+            ))}
         </ul>
         <Box
           sx={{
@@ -460,21 +467,21 @@ function Blog() {
 
   return (
     <>
-      <Toaster />
+      {/*<Toaster />*/}
       <Box sx={{ margin: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
+        <Box>
+          <Box>
             <SplitButtonChoice />
-          </Grid>
-          <Box sx={{ width: "94vw" }}>
+          </Box>
+          <Box sx={{ width: "93vw" }}>
             pending
             <AdvancedCarouselPending />
             tuto
             <AdvancedCarouselTuto />
             blog
             <AdvancedCarouselBlog />
-            {/*event*/}
-            {/*<AdvancedCarouselEvent />*/}
+            event
+            <AdvancedCarouselEvent />
           </Box>
           {/*
 
@@ -547,7 +554,7 @@ function Blog() {
             </div>
           </Grid>
 */}
-
+          {/*
           {user.status !== "etudiant" && (
             <Grid item xs={4}>
               <Paper
@@ -608,7 +615,8 @@ function Blog() {
               />
             </Grid>
           )}
-        </Grid>
+          */}
+        </Box>
       </Box>
     </>
   );
