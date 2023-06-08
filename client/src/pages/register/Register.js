@@ -106,7 +106,9 @@ const Register = () => {
       .then((res) => {
         console.log(res.status);
         if (res.status === 200) {
-          toastSuccess("Utilisateur enregistré");
+          toastSuccess(
+            `Utilisateur inscrit ! Vous avez recu un mail de confirmation sur ${userEmail}`
+          );
         } else {
           toastFail("Utilisateur non enregistré");
         }
