@@ -1,50 +1,194 @@
-import { Button, Fab, Grid, Tooltip } from "@mui/material";
+import {makeStyles} from "@material-ui/core";
+import AddIcon from "@mui/icons-material/Add";
+import {
+  Card,
+  CardContent,
+  FormControl,
+  Grid,
+  InputBase,
+  InputLabel,
+  MenuItem,
+  Select,
+  Skeleton,
+  TextField,
+  Typography,
+  styled,
+} from "@mui/material";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { toast, Toaster } from "react-hot-toast";
-import { Rings } from "react-loader-spinner";
-import { CustomDropdown } from "../../components/inventory/CustomDropdown";
+import React, {useEffect, useState} from "react";
+import {Toaster, toast} from "react-hot-toast";
+import {w3cwebsocket} from "websocket";
 import InvBox from "../../components/inventory/InvBox";
-import ModalForm from "../../components/inventory/ModalForm";
 import LoanRequestForm from "../../components/inventory/LoanRequestForm";
 import SideBarRequest from "../../components/inventory/SideBarRequest";
-import AddIcon from "@mui/icons-material/Add";
-import AccessibilityNewRoundedIcon from "@mui/icons-material/AccessibilityNewRounded";
-import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
+import useFirebase from "../../hooks/useFirebase";
 import "../../styles/inventoryGlobal.css";
-import { useNavigate } from "react-router-dom";
-import SideBarModify from "../../components/inventory/SideBarModify";
-import Snackbar from "../../components/inventory/CustomSnackBar";
-import CustomSnackbar from "../../components/inventory/CustomSnackBar";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+
+const Sujection = ({openSujection, setOpenSujection}) => {
+  const [url, setUrl] = useState("");
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
+  const [description, setDescription] = useState("");
+  const [reason, setReason] = useState("");
+  const [loading, setLoading] = useState(false);
+  const {user} = useFirebase();
+
+  const handleSendSujection = async () => {
+    setLoading(true);
+    await axios
+      .post("http://localhost:5050/inventory/createIdea", {
+        name,
+        url,
+        price,
+        description,
+        reason,
+        createdBy: user.id,
+      })
+      .then((res) => {
+        toast.success(res.data);
+        setOpenSujection(false);
+        setLoading(false);
+      })
+      .catch((err) => {
+        toast.error(err.response.data);
+        setLoading(false);
+      });
+  };
+
+  return (
+    <div>
+      <Dialog open={openSujection} onClose={() => setOpenSujection(false)}>
+        <DialogTitle>Idée d'achat</DialogTitle>
+        <DialogContent sx={{minWidth: "500px"}}>
+          {/* <DialogContentText> */}
+          {/* </DialogContentText> */}
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="url"
+            label="URL du produit"
+            type="url"
+            fullWidth
+            variant="outlined"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+          />
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Nom du produit"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="price"
+            label="Prix du produit"
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+          />
+          <TextField
+            // required
+            autoFocus
+            margin="dense"
+            id="description"
+            label="Description du produit"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="motivation"
+            label="Motif de l'achat"
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          {!loading && (
+            <>
+              <Button onClick={() => setOpenSujection(false)}>Annuler</Button>
+              <Button onClick={() => handleSendSujection()}>Envoyer</Button>
+            </>
+          )}
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
+
+const useStyles = makeStyles((theme) => ({
+  card: {
+    maxWidth: 445,
+    margin: theme.spacing(2),
+  },
+  media: {
+    height: 190,
+  },
+}));
+
+const BootstrapInput = styled(InputBase)(({theme}) => ({
+  "label + &": {
+    marginTop: theme.spacing(3),
+    fontFamily: "poppins-regular",
+  },
+  "& .MuiInputBase-input": {
+    borderRadius: 4,
+    position: "relative",
+    backgroundColor: theme.palette.background.paper,
+    border: "1px solid #ced4da",
+    fontSize: 16,
+    padding: "10px 26px 10px 12px",
+    transition: theme.transitions.create(["border-color", "box-shadow"]),
+    width: "200px",
+    margin: "0px",
+    // Use the system font instead of the default Roboto font.
+    fontFamily: "poppins-regular",
+    "&:focus": {
+      borderRadius: 4,
+      borderColor: "#80bdff",
+      boxShadow: "0 0 0 0.2rem rgba(0,123,255,.25)",
+    },
+  },
+}));
 
 function InventoryHome() {
   const [inventory, setInventory] = useState([]);
-  const [openAdd, setOpenAdd] = useState(false);
   const [openDemand, setOpenDemand] = useState(false);
   const [openRequest, setOpenResquest] = useState(false);
-  const [openModify, setOpenModify] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [clickedDeviceId, setClickedDeviceId] = useState({});
-  const [clickedRequest, setClickedRequest] = useState({});
+  const [clickedDevice, setClickedDevice] = useState({});
   const [campusFilter, setCampusFilter] = useState(null);
-  const [statusFilter, setStatusFilter] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
-  const navigate = useNavigate();
-
-  const toggleDrawerAdd = (event, open) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setOpenAdd(open);
-  };
+  const [openSujection, setOpenSujection] = useState(false);
+  const {user} = useFirebase();
 
   const toggleDrawerDemand = (event, open) => {
     if (
@@ -68,103 +212,86 @@ function InventoryHome() {
     setOpenResquest(open);
   };
 
-  const toggleDrawerModify = (event, open) => {
-    if (
-      event &&
-      event.type === "keydown" &&
-      (event.key === "Tab" || event.key === "Shift")
-    ) {
-      return;
-    }
-    setOpenModify(open);
-  };
-
-  const handleEditClick = (e) => {
-    setIsMenuOpen(false);
-    toggleDrawerModify(e, true);
-  };
-
   useEffect(() => {
-    reloadData();
-  }, []);
+    (async () => {
+      const ws = new w3cwebsocket("ws://localhost:5050/liveInventory");
 
-  const reloadData = async () => {
-    await axios
-      .get("http://localhost:5050/inventory")
-      .then((res) => {
-        setInventory(res.data);
+      const inv = (ws.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+        setInventory(data);
+      });
+
+      Promise.all([inv]).then(() => {
         setLoading(false);
-        console.log(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
       });
-  };
+    })();
+  }, [loading]);
 
-  const fetchRequests = async (deviceId, requestId) => {
-    await axios
-      .get(`http://localhost:5050/inventory/request/${deviceId}/${requestId}`)
-      .then((res) => {
-        setClickedRequest(res.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  const loadingSkeleton = () => {
+    return (
+      <Grid spacing={4} container>
+        {[...Array(12)].map((item, index) => (
+          <Grid item>
+            <Card
+              style={{
+                width: 250,
+                margin: "auto",
+                transition: "0.3s",
+                boxShadow: "0 8px 40px -12px rgba(0,0,0,0.3)",
+                "&:hover": {
+                  boxShadow: "0 16px 70px -12.125px rgba(0,0,0,0.3)",
+                },
+              }}
+            >
+              <Skeleton
+                variant="rectangular"
+                height={0}
+                style={{paddingTop: "56.25%"}}
+              />
 
-  const handleDeleteClick = async () => {
-    setIsMenuOpen(false);
-    setSnackBarOpen(false);
-
-    toast.promise(
-      axios.delete(`http://localhost:5050/inventory/delete/${clickedDeviceId}`),
-      {
-        loading: "Suppression en cours",
-        success: (res) => {
-          reloadData();
-          return "Matériel supprimé avec succès";
-        },
-        error: (err) => {
-          console.log(err);
-          return "Une erreur est survenue";
-        },
-      }
+              <CardContent style={{textAlign: "left", flexDirection: "column"}}>
+                <Typography variant="h6" gutterBottom paragraph>
+                  <Skeleton variant="text" />
+                </Typography>
+                <Typography variant="caption" paragraph>
+                  <Skeleton variant="text" />
+                </Typography>
+                <Typography variant="caption" paragraph>
+                  <Skeleton variant="text" />
+                </Typography>
+                <Typography variant="caption" paragraph>
+                  <Skeleton variant="text" />
+                </Typography>
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    marginTop: 10,
+                  }}
+                >
+                  <Skeleton
+                    variant="circular"
+                    width={40}
+                    height={40}
+                    style={{marginRight: 10}}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
     );
   };
 
   return (
     <div>
-      <ModalForm
-        open={openAdd}
-        toggleDrawerAdd={toggleDrawerAdd}
-        reloadData={reloadData}
-      />
-      <LoanRequestForm
-        open={openDemand}
-        toggleDrawerAdd={toggleDrawerDemand}
-        reloadData={reloadData}
-      />
+      <LoanRequestForm open={openDemand} toggleDrawerAdd={toggleDrawerDemand} />
       <SideBarRequest
         open={openRequest}
         toggleDrawerRequest={toggleDrawerRequest}
-        deviceId={clickedDeviceId}
-        reloadData={reloadData}
-      />
-      <SideBarModify
-        open={openModify}
-        toggleDrawerModify={toggleDrawerModify}
-        deviceId={clickedDeviceId}
-      />
-      <CustomSnackbar
-        open={snackBarOpen}
-        setOpen={setSnackBarOpen}
-        message="Voulez-vous vraiment supprimer cet appareil ?"
-        onClickCheck={() => {
-          handleDeleteClick();
-        }}
-        onClickClose={() => {
-          setSnackBarOpen(false);
-        }}
+        device={clickedDevice}
       />
       <Sujection
         openSujection={openSujection}
@@ -172,69 +299,25 @@ function InventoryHome() {
       />
 
       <Toaster position="bottom-left" />
-
-      {/* <div className="buttons-wrapper">
-        {user.admin && (
-          <>
-            <Tooltip
-              title="Demander un emprunt"
-              aria-label="add"
-              sx={{marginBottom: "20px"}}
-              placement="left"
-            >
-              <Fab
-                color="primary"
-                aria-label="add"
-                onClick={(e) => toggleDrawerDemand(e, true)}
-              >
-                <AddCircleIcon />
-              </Fab>
-            </Tooltip>
-            <Tooltip
-              title="Ajouter un appareil"
-              aria-label="add"
-              sx={{marginBottom: "20px"}}
-              placement="left"
-            >
-              <Fab
-                color="primary"
-                aria-label="add"
-                onClick={(e) => toggleDrawerAdd(e, true)}
-              >
-                <AddIcon />
-              </Fab>
-            </Tooltip>
-            <Tooltip
-              title="Voir les demandes"
-              aria-label="add"
-              sx={{marginBottom: "20px"}}
-              placement="left"
-            >
-              <Fab
-                color="primary"
-                aria-label="add"
-                onClick={() => navigate("/inventory/requests")}
-              >
-                <AccessibilityNewRoundedIcon />
-              </Fab>
-            </Tooltip>
-            <Tooltip
-              title="Voir la liste de matériel"
-              aria-label="add"
-              sx={{marginBottom: "20px"}}
-              placement="left"
-            >
-              <Fab
-                color="primary"
-                aria-label="add"
-                onClick={() => navigate("/inventory/devices")}
-              >
-                <FormatListNumberedIcon />
-              </Fab>
-            </Tooltip>
-          </>
-        )}
-      </div> */}
+      {user?.status !== "etudiant" && (
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setOpenSujection(true)}
+          style={{marginTop: "20px"}}
+          sx={{
+            backgroundColor: "#3f51b5",
+            color: "#fff",
+            fontFamily: "poppins-semiBold",
+            "&:hover": {
+              backgroundColor: "#3f51b5",
+              color: "#fff",
+            },
+          }}
+        >
+          Ajouter une idée d'achat
+        </Button>
+      )}
 
       <div
         style={{
@@ -242,42 +325,45 @@ function InventoryHome() {
           gap: "20px",
           alignItems: "center",
           marginBottom: "20px",
+          marginTop: "20px",
         }}
       >
-        <CustomDropdown
-          placeholder="Campus"
-          data={[
-            { label: "Cergy", value: "Cergy" },
-            { label: "Paris", value: "Paris" },
-            { label: "Reset", value: "reset" },
-          ]}
-          onChange={(e) => {
-            setCampusFilter(e[0].value);
-          }}
-        />
+        <FormControl sx={{}} variant="standard">
+          <InputLabel id="demo-customized-select-label">Campus</InputLabel>
+          <Select
+            labelId="demo-customized-select-label"
+            id="demo-customized-select"
+            value={campusFilter === null ? "Tous les campus" : campusFilter}
+            onChange={(e) => {
+              setCampusFilter(e.target.value);
+            }}
+            input={<BootstrapInput />}
+          >
+            <MenuItem
+              style={{fontFamily: "poppins-regular", fontSize: "16px"}}
+              value={null}
+            >
+              <em>Vider</em>
+            </MenuItem>
+            <MenuItem
+              style={{fontFamily: "poppins-regular", fontSize: "16px"}}
+              value={"Cergy"}
+            >
+              Cergy
+            </MenuItem>
+            <MenuItem
+              style={{fontFamily: "poppins-regular", fontSize: "16px"}}
+              value={"Paris"}
+            >
+              Paris
+            </MenuItem>
+          </Select>
+        </FormControl>
       </div>
       {loading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-          }}
-        >
-          <Rings
-            height="200"
-            width="200"
-            color="#00BFFF"
-            radius="6"
-            wrapperStyle={{}}
-            wrapperClass="loader"
-            visible={true}
-            ariaLabel="rings-loading"
-          />
-        </div>
+        loadingSkeleton()
       ) : (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{flexGrow: 1}}>
           <Grid container spacing={4}>
             {!loading &&
               inventory
@@ -313,25 +399,21 @@ function InventoryHome() {
                       onClickRequest={(e) => {
                         if (item.status === "available") {
                           toggleDrawerRequest(e, true);
-                          setClickedDeviceId(item.id);
+                          setClickedDevice(item);
                         } else {
-                          fetchRequests(item.id, item.lastRequestId);
                           toast.error("Cet appareil n'est pas disponible");
                         }
-                      }}
-                      onEditClick={(e) => {
-                        handleEditClick(e);
                       }}
                       onDeleteClick={() => {
                         setSnackBarOpen(true);
                         setIsMenuOpen(false);
-                        setClickedDeviceId(item.id);
+                        setClickedDevice(item);
                       }}
                       isMenuOpen={isMenuOpen}
                       onMenuClick={(e) => {
                         setIsMenuOpen(true);
                         setAnchorEl(e.currentTarget);
-                        setClickedDeviceId(item.id);
+                        setClickedDevice(item);
                       }}
                       onMenuClose={() => setIsMenuOpen(false)}
                       anchorEl={anchorEl}

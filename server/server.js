@@ -39,10 +39,7 @@ var upload = multer({
   },
 });
 
-const {
-  retroRoutesWsNeeded,
-  retroRoutesWsNotNeeded,
-} = require("./retroRoutes");
+const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes");
 
 app.use(express.json());
 app.use(cors());
@@ -64,6 +61,7 @@ const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
 const studentsProjectsRoutes = require("./studentsProjectsRoutes");
+const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 const agileRoute = require("./agileRoutes");
@@ -87,13 +85,14 @@ wsI.on("request", (request) => {
   app.use("/profil", profilRoutes(connection, pathname, upload));
   app.use("/agile", agileRoute(connection, pathname, upload));
   app.use("/groupes", groupsRoute(connection, pathname));
+  app.use("/retro", retroRoutesWsNeeded(connection, pathname));
+  require("./web/inventoryWebSocket")(connection, pathname);
+
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
   connection.on("close", (reasonCode, description) => {
-    console.log(
-      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
-    );
+    console.log(`WebSocket closed with reasonCode ${reasonCode} and description ${description}`);
   });
 });
 
