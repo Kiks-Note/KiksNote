@@ -482,6 +482,18 @@ const InventoryAdminDashboard = () => {
           >
             Voir les statistiques
           </Button>
+          <Button
+            variant="contained"
+            onClick={() => navigate("/inventory/pdfGenerator")}
+            sx={{
+              backgroundColor: "#ffffff",
+              color: "#1A2027",
+              fontFamily: "poppins-semibold",
+              boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            }}
+          >
+            Télécharger un pdf de l'inventaire
+          </Button>
         </div>
 
         {loading ? (

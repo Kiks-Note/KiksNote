@@ -32,6 +32,7 @@ import Register from "./pages/register/Register";
 import PhoneRequestDevice from "./pages/inventory/PhoneRequestDevice";
 import InventoryPendingRequests from "./pages/inventory/InventoryPendingRequests";
 import InventoryStatistics from "./pages/inventory/InventoryStatistics";
+import InventoryPdfGenerator from "./pages/inventory/InventoryPdfGenerator";
 
 function RoutesProvider() {
   return (
@@ -79,6 +80,7 @@ function RoutesProvider() {
           <Route path="/inventory/requests" element={<InventoryRequests />} />
           <Route path="/inventory/devices" element={<InventoryDevices />} />
           <Route path="/inventory/statistics" element={<InventoryStatistics />} />
+          <Route path="/inventory/pdfGenerator" element={<InventoryPdfGenerator />} />
           <Route
             path="/inventory/admin/dashboard"
             element={<InventoryAdminDashboard />}

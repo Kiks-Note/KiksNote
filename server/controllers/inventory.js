@@ -1,6 +1,9 @@
 const { db, FieldValue } = require("../firebase");
 const { parse } = require("url");
 const moment = require("moment");
+const generatePDF = require('./pdfGenerator');
+const path = require('path');
+
 
 const inventory = async (req, res) => {
   const docRef = db.collection("inventory");
@@ -40,6 +43,21 @@ const getInventoryRequestsStatistics = async (req, res) => {
   }
 };
 
+const getPdfGenerator = async (req, res) => {
+  const docRef = db.collection("inventory");
+  const snapshot = await docRef.orderBy('createdAt').get();
+  console.log('Snapshot:', snapshot);
+
+  const inventoryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  console.log('Inventory Data:', inventoryData);
+
+  try {
+    generatePDF(inventoryData, res);
+  } catch (err) {
+    console.error('Erreur lors de la génération du PDF:', err);
+    res.status(500).send('Erreur lors de la génération du PDF');
+  }
+};
 
 const inventoryLength = async (req, res) => {
   try {
@@ -718,4 +736,5 @@ module.exports = {
   borrowedList,
   getInventoryStatistics,
   getInventoryRequestsStatistics,
+  getPdfGenerator,
 };

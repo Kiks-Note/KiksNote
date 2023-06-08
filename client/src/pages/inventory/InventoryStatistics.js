@@ -51,16 +51,16 @@ function InventoryStatistics() {
                 labels: labels,
                 datasets: [
                     {
-                        label: 'Matériels',
+                        label: 'Matériels les plus anciens',
                         data: [100, 75, 50, 25, 10],
                         backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                            'rgba(255, 159, 64, 0.2)',
-                            'rgba(255, 205, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(201, 203, 207, 0.2)',
+                            'rgba(255, 99, 132)',
+                            'rgba(255, 159, 64)',
+                            'rgba(255, 205, 86)',
+                            'rgba(75, 192, 192)',
+                            'rgba(54, 162, 235)',
+                            'rgba(153, 102, 255)',
+                            'rgba(201, 203, 207)',
                         ],
                         borderColor: [
                             'rgb(255, 99, 132)',
@@ -96,9 +96,13 @@ function InventoryStatistics() {
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Matériels',
+                        text: 'Matériels les plus anciens',
                         position: 'top',
                         align: 'center',
+                        font: {
+                            size: 18,
+                            weight: 'bold',
+                        },
                     },
                     legend: {
                         display: false,
@@ -123,8 +127,8 @@ function InventoryStatistics() {
     }, [data]);
 
     return (
-        <div style={{ width: '600px', height: '400px' }}>
-            <h1>Statistiques</h1>
+        <div style={{ width: '600px', height: '250px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <h1 style={{ fontSize: '40px', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>Statistiques</h1>
             <canvas ref={chartRef}></canvas>
         </div>
     );
@@ -162,11 +166,8 @@ function MostUsedMaterials() {
                 const top5Materials = topMaterialsArray.slice(0, 5);
 
                 // Extraire les labels et les valeurs pour le graphique
-                const labels = top5Materials.map(document => document.materialId);
+                const labels = top5Materials.map(document => document.deviceId);
                 const values = top5Materials.map(document => document.count);
-
-
-                // Traitez les données pour obtenir le top 5 des matériels les plus utilisés
 
                 const chartData = {
                     labels: labels,
@@ -175,11 +176,11 @@ function MostUsedMaterials() {
                             label: 'Les matériels les plus utilisés',
                             data: values,
                             backgroundColor: [
-                                'rgba(255, 99, 132, 0.2)',
-                                'rgba(255, 159, 64, 0.2)',
-                                'rgba(255, 205, 86, 0.2)',
-                                'rgba(75, 192, 192, 0.2)',
-                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 99, 132)',
+                                'rgba(255, 159, 64)',
+                                'rgba(255, 205, 86)',
+                                'rgba(75, 192, 192)',
+                                'rgba(54, 162, 235)',
                             ],
                             hoverOffset: 4,
                         },
@@ -187,21 +188,24 @@ function MostUsedMaterials() {
                 };
 
                 const options = {
-                    type: 'doughnut',
-                    responsive: true,
-                    maintainAspectRatio: false,
                     plugins: {
                         title: {
                             display: true,
                             text: 'Matériels les plus utilisés',
                             position: 'top',
                             align: 'center',
+                            font: {
+                                size: 18,
+                                weight: 'bold',
+                            },
                         },
                         legend: {
                             display: true,
                             position: 'right',
                         },
                     },
+                    responsive: true,
+                    maintainAspectRatio: false,
                 };
 
                 if (chartRef.current) {
@@ -221,7 +225,7 @@ function MostUsedMaterials() {
     }, []);
 
     return (
-        <div style={{ width: '600px', height: '400px' }}>
+        <div style={{ width: '600px', height: '330px' }}>
             <canvas ref={chartRef}></canvas>
         </div>
     );
@@ -254,17 +258,19 @@ function TotalMacCount() {
         fetchMacData();
     }, []);
 
-    return <div>Nombre total de Mac : <span style={{ color: 'white' }}>{macCount}</span></div>;
+    return <div>Nombre total de Mac : <span >{macCount}</span></div>;
 }
 
 
 
 function DashboardStats() {
     return (
-        <div>
-            <InventoryStatistics />
-            <MostUsedMaterials />
-            <TotalMacCount />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <div style={{ display: 'grid', gridGap: '80px' }}> {/* Increase the gridGap value as desired */}
+                <InventoryStatistics />
+                <MostUsedMaterials />
+                <TotalMacCount />
+            </div>
         </div>
     );
 }
