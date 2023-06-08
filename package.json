@@ -9,6 +9,9 @@
     "react-beautiful-dnd": "^13.1.1",
     "react-chartjs-2": "^5.2.0",
     "react-day-picker": "^8.6.0",
-    "styled-components": "^5.3.8"
+    "react-easy-swipe": "^0.0.23",
+    "react-slick": "^0.29.0",
+    "styled-components": "^5.3.8",
+    "swiper": "^9.3.2"
   }
 }

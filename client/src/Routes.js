@@ -27,6 +27,7 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
+import ElevatorPitchPage from "./pages/agile/ElevatorPitchPage";
 import Retrospective from "./pages/retrospective/Retrospective";
 
 
@@ -67,6 +68,7 @@ function RoutesProvider() {
 
           <Route path="/agile" element={<FolderAgile />} />
                 <Route path="/retro" element={<Retrospective />} />
+                <Route path="/elevator" element={<ElevatorPitchPage />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
