@@ -43,6 +43,8 @@
   font-weight: bold;
   color: white;
   bottom: 150px;
+  background-color: rgba(14, 14, 13, 0.5);
+  padding: 0.3rem;
 }
 
 .blog-time {
