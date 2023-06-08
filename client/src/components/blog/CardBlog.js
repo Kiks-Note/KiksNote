@@ -4,6 +4,7 @@ import {
   Menu,
   MenuItem,
   Typography,
+  Box,
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -14,7 +15,7 @@ import useFirebase from "../../hooks/useFirebase";
 import "./cardBlog.css";
 import OrangeHashtag from "../../assets/img/orange-hashtag.svg";
 
-export default function CardBlog({ blog }) {
+export default function CardBlog({ blog, tags }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useFirebase();
 
@@ -62,8 +63,20 @@ export default function CardBlog({ blog }) {
     setAnchorEl(null);
   }
 
+  const getTag = function (id) {
+    let tag = "";
+    id = id.toString();
+    for (let i = 0; i < tags.length; i++) {
+      if (tags[i].id === id) {
+        tag = tags[i].name;
+      }
+    }
+    return tag;
+  };
+
   return (
     <>
+      {/*
       <div className="card_blog" color="background.default">
         <div className="card-img-holder">
           <img src={blog.thumbnail} alt={blog.thumbnail} />
@@ -109,6 +122,108 @@ export default function CardBlog({ blog }) {
               </>
             )}
           </ul>
+        </div>
+      </div>
+
+      <Menu
+        id="card-menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleMenuClose}
+      >
+        {user.status !== "etudiant" && (
+          <MenuItem>
+            <Button onClick={changeVisibility}>Visible</Button>
+            <Checkbox
+              onClick={changeVisibility}
+              checked={blog.visibility !== "pending"}
+            ></Checkbox>
+          </MenuItem>
+        )}
+        <MenuItem onClick={handleMenuClose}>
+          <Button onClick={deleteBlog}>Supprimer</Button>
+        </MenuItem>
+      </Menu>
+*/}
+
+      <div className="card_blog" color="background.default">
+        <div className="card-img-holder">
+          <img src={blog.thumbnail} alt={blog.thumbnail} />
+        </div>
+        <div className="card-blog-content">
+          <div className="content-title">
+            <h3 className="blog-title">{blog.title}</h3>{" "}
+            {user.status !== "etudiant" || user.email === blog.created_by ? (
+              <div style={{ zIndex: 2 }}>
+                <IconButton
+                  aria-label="more options"
+                  aria-controls="card-menu"
+                  aria-haspopup="true"
+                  onClick={handleMenuOpen}
+                  className="menu_three_blog"
+                  sx={{ color: "#ffff" }}
+                >
+                  <MoreVertIcon />
+                </IconButton>
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
+
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-around",
+              px: 1,
+              bottom: 0,
+              position: "absolute",
+              left: "0px",
+              maxHeight: "190%",
+              width: "100%",
+              borderRadius: "0.5rem",
+              backgroundColor: "rgba(14, 14, 13, 0.5)",
+            }}
+          >
+            <Typography variant="caption">
+              {blog.created_at} | J'aime {blog.like.length} | J'aime pas{" "}
+              {blog.dislike.length} | Commentaires {blog.comment.length}
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                maxWidth: "80%",
+              }}
+            >
+              <Typography sx={{ textOverflow: "ellipsis" }}>
+                {blog.description}
+              </Typography>
+
+              <Box sx={{ display: "flex", justifyContent: "space-around" }}>
+                <Button
+                  size="small"
+                  onClick={handleClick}
+                  variant="contained"
+                  color="success"
+                >
+                  Consulter
+                </Button>
+
+                <ul className="tags_blog">
+                  {blog.tag.length !== 0 && (
+                    <>
+                      <img src={OrangeHashtag} width={"30"} height={"30"} />
+                      <Typography variant="body2">
+                        {getTag(blog.tag)}
+                      </Typography>
+                    </>
+                  )}
+                </ul>
+              </Box>
+            </Box>
+          </Box>
         </div>
       </div>
 
