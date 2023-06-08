@@ -44,6 +44,10 @@ const CoursLinkDialog = (props) => {
   );
   const selectedCoursTitle = selectedCours ? selectedCours?.data?.title : "";
 
+  /*
+    Link a selected cours using it selectedCoursId (String)
+  */
+
   const linkCoursinCoursInfo = async () => {
     try {
       await axios

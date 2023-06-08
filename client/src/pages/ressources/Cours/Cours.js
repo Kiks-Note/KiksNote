@@ -138,6 +138,10 @@ const Cours = () => {
     }
   };
 
+  /*
+    Get an array of technos then set it in the empty array techno
+ */
+
   const getAllTechnos = async () => {
     try {
       await axios
@@ -153,6 +157,10 @@ const Cours = () => {
       console.error(error);
     }
   };
+
+  /*
+    Get an array of cours then set it in the empty array courses
+ */
 
   const getAllCours = async () => {
     try {
@@ -170,6 +178,10 @@ const Cours = () => {
     }
   };
 
+  /*
+    Get an array of all PO then set it in the empty array allPo
+ */
+
   const getAllPo = async () => {
     try {
       await axios
@@ -184,6 +196,10 @@ const Cours = () => {
       console.error(error);
     }
   };
+
+  /*
+    Get an array of all classes data from their class id then set it in the empty array userClass
+ */
 
   const getClassId = async (classId) => {
     try {
@@ -200,6 +216,10 @@ const Cours = () => {
     }
   };
 
+  /*
+    Get an array of all id classes then set it in the empty array allClass
+ */
+
   const getAllClass = async () => {
     try {
       await axios
@@ -214,6 +234,10 @@ const Cours = () => {
       console.error(error);
     }
   };
+
+  /*
+    create a cours in the database if every data are not null
+ */
 
   const createNewCours = async () => {
     if (courseTitle === "" || courseDescription === "" || courseDateStart === "" || courseDateEnd === "" || idSelectedClass === "" || idSelectedOwner === "" || courseImageBase64 === "") {
@@ -255,6 +279,10 @@ const Cours = () => {
     }
   };
 
+  /*
+    Get all cours, technos, po, class when the page is loading
+ */
+
   useEffect(() => {
     getAllCours()
       .then(() => {
@@ -269,6 +297,10 @@ const Cours = () => {
     getAllClass();
   }, []);
 
+  /*
+    Get the class of the current user if it's a student by using his class id
+ */
+
   useEffect(() => {
     if (isAllCoursesDataLoaded) {
       if (userClassConnected !== undefined) {
@@ -277,9 +309,24 @@ const Cours = () => {
     }
   }, [isAllCoursesDataLoaded]);
 
+  /*
+    Submit the data from the CreateCours form to the function createNewCours() 
+ */
+
   const onSubmit = async () => {
     await createNewCours();
   };
+
+  /*
+    Set all Dates value we need
+    today = current date
+    currentYear = current year
+    lastYear = last year
+    startCurrentYear = date when the scholar year start (September the 1st)
+    endCurrentYear = date when the scholar year end
+    startLastYear = date when the last scholar year start
+    endLastYear = date when the last scholar year end
+ */
 
   const today = new Date();
   const currentYear =
@@ -290,10 +337,18 @@ const Cours = () => {
   const startLastYear = new Date(lastYear, 8, 1);
   const endLastYear = new Date(lastYear + 1, 7, 31);
 
+  /*
+    Filter the courses and get every cours from the current year
+ */
+
   const filteredCoursesCurrentYear = courses.filter((course) => {
     const courseDate = timeConverter(course.data.dateStartSprint);
     return courseDate >= startCurrentYear && courseDate <= endCurrentYear;
   });
+
+  /*
+    Filter the courses and get every cours from the last year
+ */
 
   const filteredCoursesLastYear = courses.filter((course) => {
     const courseDate = timeConverter(course.data.dateStartSprint);

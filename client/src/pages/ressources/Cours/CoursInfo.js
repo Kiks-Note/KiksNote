@@ -131,6 +131,10 @@ const CoursInfo = () => {
 
   const classes = useStyles();
 
+  /*
+    get an Array of all PO then put it in allPo
+ */
+
   const getAllInstructors = async () => {
     try {
       await axios
@@ -146,6 +150,10 @@ const CoursInfo = () => {
     }
   };
 
+    /*
+    get an Array of all classes then put it in allclass
+ */
+
   const getAllClass = async () => {
     try {
       await axios
@@ -160,6 +168,10 @@ const CoursInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    get an Array of the cours data, an Arry of cours pdf and an Array of backlog pdf using the cours id then put them in coursData, pdfLinkCours and pdfLinkBacklog
+ */
 
   const getCoursId = async () => {
     try {
@@ -178,6 +190,10 @@ const CoursInfo = () => {
     }
   };
 
+  /*
+    get an Array of all cours then put it in courses
+ */
+
   const getAllCours = async () => {
     try {
       await axios
@@ -192,6 +208,14 @@ const CoursInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    set a formData with the pdf cours file, 
+    the class of the cours, 
+    the title of the cours,
+    and the id of the cours 
+    then post it to the database
+ */
 
   const uploadCoursPdf = async () => {
     try {
@@ -220,6 +244,14 @@ const CoursInfo = () => {
       toastFail(`Le pdf que vous essayez d'uploader rencontre un problème.`);
     }
   };
+
+  /*
+    set a formData with the pdf backlog file, 
+    the class of the cours, 
+    the title of the cours,
+    and the id of the cours 
+    then post it to the database
+ */
 
   const uploadBacklogPdf = async () => {
     try {
@@ -253,6 +285,10 @@ const CoursInfo = () => {
     }
   };
 
+  /*
+    delete the cours pdf using courseClass, title, fileName, pdfLinkCours and courseId
+ */
+
   const deleteCoursPdf = (
     courseClass,
     title,
@@ -278,6 +314,10 @@ const CoursInfo = () => {
       });
   };
 
+  /*
+    delete the backlog pdf using courseClass, title, fileName, pdfLinkBackLog and courseId
+ */
+
   const deleteBackLogPdf = (
     courseClass,
     title,
@@ -302,6 +342,19 @@ const CoursInfo = () => {
         );
       });
   };
+
+  /*
+    update the cours data using 
+    title (String),
+    description (String),
+    dateStartSprint (Date),
+    dateEndSprint (Date),
+    distanciel (String),
+    coursClass (String),
+    owner (String),
+    coursPrivate (String),
+    imageBase64 (String)
+ */
 
   const updateCours = async (
     title,
@@ -343,6 +396,13 @@ const CoursInfo = () => {
       throw error;
     }
   };
+
+  /*
+    delete the cours using 
+    cours_id (String),
+    courseClass (String),
+    title (String)
+ */
 
   const deleteCours = async (cours_id, courseClass, title) => {
     try {

@@ -27,6 +27,12 @@ const CreateCoursModal = (props) => {
   const [displayContainer, setDisplayContainer] = useState(true);
   const [displaySelect, setDisplaySelect] = useState(true);
 
+  /*
+    If a selectedTechno.name equals selectedValue, 
+    set the cours name and the image with selectedTechno.name and selectedTechno.image.
+    Else, display the left side of the form where you can choose the name and the image.
+  */
+
   const handleChange = (event) => {
     const selectedValue = event.target.value;
     const selectedTechno = props.technos.find(
@@ -49,6 +55,10 @@ const CreateCoursModal = (props) => {
       setDisplaySelect(true);
     }
   };
+
+  /*
+    If the name is not null, remove the right side of the form 
+  */
 
   const handleTextFieldChange = (event) => {
     if (event.target.value.trim().length === 0) {
