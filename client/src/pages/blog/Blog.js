@@ -19,6 +19,7 @@ import SplitButtonChoice from "../../components/blog/SplitButtonChoice";
 import "./Blog.css";
 import BlogRepartition from "../../components/blog/Repartition.js";
 import { useSnapCarousel } from "react-snap-carousel";
+import axios from "axios";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -27,6 +28,7 @@ function Blog() {
   const [blog, setBlog] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useFirebase();
+  const [tags, setTags] = useState([]);
 
   const stats = [
     {
@@ -106,9 +108,20 @@ function Blog() {
       });
 
       setBlog(allBlogs);
+      fetchTags();
       setLoading(false);
     };
   }, []);
+
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get("http://localhost:5050/blog/tag");
+      const tags = response.data;
+      setTags(tags);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des tags :", error);
+    }
+  };
 
   // test for sort by date
   // console.log("blog : ", blog);
@@ -140,7 +153,7 @@ function Blog() {
                 sx={{
                   // backgroundColor: "aqua",
                   fontSize: "50px",
-                  width: 300,
+                  width: 450,
                   height: "auto",
                   flexShrink: 0,
                   color: "#fff",
@@ -151,7 +164,7 @@ function Blog() {
                   mx: 1,
                 }}
               >
-                <CardBlog blog={filtered} key={filtered.id} />
+                <CardBlog blog={filtered} key={filtered.id} tags={tags} />
                 {/*<Typography>{user.email}</Typography>*/}
                 {/*<Typography>{filtered.created_by}</Typography>*/}
                 {/*<Typography>{filtered.visibility}</Typography>*/}
@@ -223,7 +236,11 @@ function Blog() {
                     )
                     .map((filtered) => (
                       <>
-                        <CardBlog blog={filtered} key={filtered.id} />
+                        <CardBlog
+                          blog={filtered}
+                          key={filtered.id}
+                          tags={tags}
+                        />
                         {/*<Typography>{user.email}</Typography>*/}
                         {/*<Typography>{filtered.created_by}</Typography>*/}
                         {/*<Typography>{filtered.visibility}</Typography>*/}
@@ -243,7 +260,7 @@ function Blog() {
                   )
                   .map((filtered) => (
                     <>
-                      <CardBlog blog={filtered} key={filtered.id} />
+                      <CardBlog blog={filtered} key={filtered.id} tags={tags} />
                       {/*<Typography>{user.email}</Typography>*/}
                       {/*<Typography>{filtered.created_by}</Typography>*/}
                       {/*<Typography>{filtered.visibility}</Typography>*/}
