@@ -198,7 +198,7 @@ export default function CardBlog({ blog, tags }) {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                maxWidth: "80%",
+                maxWidth: "90%",
               }}
             >
               <Typography sx={{ textOverflow: "ellipsis" }}>
@@ -207,6 +207,7 @@ export default function CardBlog({ blog, tags }) {
 
               <Box sx={{ display: "flex", justifyContent: "space-around" }}>
                 <Button
+                  sx={{ mr: 1 }}
                   size="small"
                   onClick={
                     blog?.type === "tuto" ? handleClickTuto : handleClickBlog
@@ -221,7 +222,7 @@ export default function CardBlog({ blog, tags }) {
                   {blog?.tag?.length !== 0 && Array.isArray(blog.tag) && (
                     <>
                       <img src={OrangeHashtag} width={"30"} height={"30"} />
-                      {blog?.tag?.map((tag) => (
+                      {blog?.tag?.slice(0, 3).map((tag) => (
                         // <li>{tag}, </li>
                         <Typography
                           variant="body1"
