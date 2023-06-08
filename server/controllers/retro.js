@@ -115,6 +115,26 @@ const editPostit = async (req, res) => {
   
 }
 
+const getTeamMates = async (req, res) => {
+  const snapshot = await db.collection('users').get()
+
+  let listTeamMates = [];
+
+  let currentUserPromo = req.params.studentClass.substring(0,2)
+  snapshot.forEach((doc) => {
+    if (doc.data().status == "etudiant" && typeof doc.data().class == "string" && currentUserPromo == doc.data().class.substring(0,2)) {
+      console.log(doc.data().class);
+      listTeamMates.push(doc.data())
+    }
+    
+
+  })
+
+  res.send(listTeamMates)
+
+  
+}
+
 const addPostIt = async (req, res) => {
 
   const snapshot = await db.collection('retro').get()
@@ -195,5 +215,6 @@ module.exports = {
   getAll,
   editPostit,
   addPostIt,
-  movePostIt
+  movePostIt,
+  getTeamMates
 };
