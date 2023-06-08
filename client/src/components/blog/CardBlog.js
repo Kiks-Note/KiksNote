@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useFirebase from "../../hooks/useFirebase";
-import "./cardBlog.css";
 import OrangeHashtag from "../../assets/img/orange-hashtag.svg";
+import "./cardBlog.css";
 
 export default function CardBlog({ blog }) {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -62,27 +62,36 @@ export default function CardBlog({ blog }) {
             )}
           </div>
 
-          <span className="blog-time">
-            {blog.created_at} | J'aime {blog.like.length} | J'aime pas{" "}
-            {blog.dislike.length} | Commentaires {blog.comment.length}
-          </span>
-          <p className="description">
-            {blog.description}{" "}
-            <Button size="small" onClick={handleClick}>
-              Consulter
-            </Button>
-          </p>
 
-          <ul className="tags_blog">
-            {blog.tag.length != 0 && Array.isArray(blog.tag) && (
-              <>
-                <img src={OrangeHashtag} width={"30"} height={"30"} />
-                {blog.tag.map((tag) => (
-                  <li>{tag}, </li>
-                ))}
-              </>
-            )}
-          </ul>
+          <div className="back-text">
+            <span className="blog-time">
+              {blog.created_at} | J'aime {blog.like.length} | J'aime pas{" "}
+              {blog.dislike.length} | Commentaires {blog.comment.length}
+            </span>
+            <p className="description">
+              {blog.description}{" "}
+              <br />
+
+              <Button size="small" onClick={handleClick}
+                variant="contained"
+                color="success"
+
+              >
+                Consulter
+              </Button>
+            </p>
+
+            <ul className="tags_blog">
+              {blog.tag.length != 0 && Array.isArray(blog.tag) && (
+                <>
+                  <img src={OrangeHashtag} width={"30"} height={"30"} />
+                  {blog.tag.map((tag) => (
+                    <li>{tag}, </li>
+                  ))}
+                </>
+              )}
+            </ul>
+          </div>
         </div>
       </div>
 
