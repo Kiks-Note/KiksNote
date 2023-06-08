@@ -364,23 +364,36 @@ const agileRequest = async (connection) => {
 
     try {
       const querySnapshot = await agileCollectionRef.get();
-
       const data = {
-        folder: [],
-        impactMapping: [],
+        folder: {},
+        impactMapping: {},
         others: [],
       };
 
-      querySnapshot.forEach((doc) => {
+      for (const doc of querySnapshot.docs) {
         const obj = doc.data();
         if (doc.id === "agile_folder") {
-          data.folder.push(obj);
+          data.folder = { ...obj, id: doc.id };
         } else if (doc.id === "impact_mapping") {
-          data.impactMapping.push(obj);
+          data.impactMapping = { ...obj, id: doc.id };
         } else {
-          data.others.push(obj);
+          const impactMappingRef = agileCollectionRef.doc("impact_mapping");
+          const impactMappingSnapshot = await impactMappingRef.get();
+          if (!impactMappingSnapshot.empty) {
+            const impactMappingData = impactMappingSnapshot.data();
+            const actors = impactMappingData.actors || [];
+            obj.id = doc.id;
+            actors.forEach((actor) => {
+              if (actor.id === obj.id) {
+                const otherObj = { ...obj, id: doc.id, text: actor.text };
+                data.others.push(otherObj);
+              } else {
+                data.others.push({ ...obj, id: doc.id });
+              }
+            });
+          }
         }
-      });
+      }
 
       connection.sendUTF(JSON.stringify(data));
     } catch (error) {

@@ -1,7 +1,7 @@
 /*------------- folder box----------- */
 .folder {
-  width: 150px;
-  height: 105px;
+  width: 330px;
+  height: 240px;
   margin: 50px 50px;
   float: left;
   position: relative;
@@ -49,7 +49,7 @@
 .folder p {
   margin: 0%;
   font-family: "Source Sans Pro", Arial, sans-serif;
-  font-size: 20px;
+  font-size: 35px;
   font-weight: 900;
   color: white;
 }

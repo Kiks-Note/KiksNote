@@ -48,7 +48,7 @@ function OverView({ id }) {
         label: "Agile",
         closeable: true,
         component: "AgileHome",
-        data: { dashboardId: id },
+        data: {agile: agile, dashboardId: id },
       };
       dispatch(addTab(agileTab));
       dispatch(setActiveTab(agileTab.id));

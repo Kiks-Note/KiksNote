@@ -4,7 +4,7 @@ import { Grid, Button, Typography } from "@material-ui/core";
 import useFirebase from "../../hooks/useFirebase";
 import "./agile.css";
 
-export default function FolderAgile({ dashboardId, actorId }) {
+export default function FolderAgile({ dashboardId, actorId }){
   const { user } = useFirebase();
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState(null);
@@ -86,7 +86,7 @@ export default function FolderAgile({ dashboardId, actorId }) {
     <Grid container>
       <p className="title_folder__">Dossier agile</p>
       {folders.map((fold, index) => (
-        <Grid item xs={2} key={fold.id + index}>
+        <Grid item xs={4} key={fold.id + index}>
           <div
             className={`container${selectedFolder === fold ? " active" : ""}`}
             onClick={(event) => handleOpenContextMenu(event, fold)}

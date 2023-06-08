@@ -120,7 +120,7 @@ export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
               />
             )}
             {tab.component === "AgileHome" && (
-              <AgileHome dashboardId={tab.data.dashboardId} />
+              <AgileHome dashboardId={tab.data.dashboardId} agile={tab.data.agile} />
             )}
           </TabContainer>
         ) : null
