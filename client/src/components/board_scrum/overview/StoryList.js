@@ -66,7 +66,7 @@ export default function StoryList({ stories, sprints, dashboardId }) {
       {display ? (
         <DataGrid
           style={{
-            "& .MuiDataGridVirtualScroller": {
+            "& .MuiDataGrid-virtualScroller": {
               width: "fit-content",
             },
             maxHeight: "44vh",

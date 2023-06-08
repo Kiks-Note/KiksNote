@@ -67,6 +67,10 @@
 
 .label-container {
   display: flex;
+  border-style: solid;
   border-radius: 3px;
+  margin-right: 2%;
   width: fit-content;
+  padding-right: 3%;
+  padding-left: 1%;
 }

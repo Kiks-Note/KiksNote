@@ -79,10 +79,7 @@ const addNewTuto = async (req, res) => {
 
 //update tutorial visibility
 const updateBlogVisibility = async (req, res) => {
-  console.log(req.body.visibility);
-  console.log(req.params.id);
-
-  await db.collection("blog").doc(req.params.id).update({
+  await db.collection("blog_tutos").doc(req.params.id).update({
     visibility: req.body.visibility,
   });
 };

@@ -1,21 +1,34 @@
 import CloseIcon from "@mui/icons-material/Close";
-import {IconButton, Typography} from "@mui/material";
+import {
+  IconButton,
+  TextField,
+  TextareaAutosize,
+  Typography,
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import axios from "axios";
 import * as React from "react";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {DateRange} from "react-date-range";
-import * as locales from "react-date-range/dist/locale";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import toast from "react-hot-toast";
+import {Rings} from "react-loader-spinner";
+import * as locales from "react-date-range/dist/locale";
 import StyledTextField from "./StyledTextField";
-import {FiInfo} from "react-icons/fi";
+// import useAuth from "../../hooks/useAuth";
 import useFirebase from "../../hooks/useFirebase";
 
-export default function SideBarRequest({open, toggleDrawerRequest, device}) {
+export default function SideBarRequest({
+  open,
+  toggleDrawerRequest,
+  deviceId,
+  reloadData,
+}) {
+  const [device, setDevice] = useState({});
+  const [loading, setLoading] = useState(true);
   const [requestReason, setRequestReason] = useState("");
   const [persons, setPersons] = useState([]);
   const [selectDates, setSelectedDates] = useState([
@@ -27,7 +40,24 @@ export default function SideBarRequest({open, toggleDrawerRequest, device}) {
   ]);
   const {user} = useFirebase();
 
+  useEffect(() => {
+    open === true &&
+      (async () => {
+        await axios
+          .get(`http://localhost:5050/inventory/device/${deviceId}`)
+          .then((res) => {
+            setDevice(res.data);
+            setLoading(false);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      })();
+  }, [open === true]);
+
   const handleRequest = async () => {
+    const category = device.category;
+
     if (!selectDates[0].startDate || !selectDates[0].endDate) {
       toast.error("Veuillez choisir une date de début et de fin");
       return;
@@ -36,17 +66,17 @@ export default function SideBarRequest({open, toggleDrawerRequest, device}) {
       return;
     } else {
       await axios
-        .post(`http://localhost:5050/inventory/request/${device.id}`, {
+        .post(`http://localhost:5050/inventory/request/${deviceId}`, {
           startDate: new Date(selectDates[0].startDate),
           endDate: new Date(selectDates[0].endDate),
           requestReason: requestReason,
           persons: persons.split(",").map((person) => person.trim()) || [],
           requesterId: user.id,
-          category: device.category,
         })
         .then((res) => {
           console.log(res);
           toast.success("Demande envoyée");
+          reloadData();
           toggleDrawerRequest(false);
         })
         .catch((err) => {
@@ -79,8 +109,9 @@ export default function SideBarRequest({open, toggleDrawerRequest, device}) {
       >
         <CloseIcon />
       </IconButton>
-
-      {/* <StyledTextField
+      {!loading ? (
+        <>
+          {/* <StyledTextField
             type={"text"}
             placeholder="Raison"
             defaultValue={device.requestReason}
@@ -89,106 +120,111 @@ export default function SideBarRequest({open, toggleDrawerRequest, device}) {
             }}
             value={requestReason}
           /> */}
-      <StyledTextField
-        sx={{marginBottom: 2, width: "100%"}}
-        placeholder="Raison"
-        onChange={(e) => {
-          setRequestReason(e.target.value);
-        }}
-        value={requestReason}
-        multiline={true}
-        rows={4}
-      />
-      <StyledTextField
-        // sx={{marginBottom: 2}}
-        id="outlined-search"
-        type={"text"}
-        placeholder="Personnes concernées"
-        fullWidth
-        onChange={(e) => {
-          setPersons(e.target.value);
-        }}
-        value={persons}
-      />
+          <StyledTextField
+            sx={{marginBottom: 2, width: "100%"}}
+            placeholder="Raison"
+            onChange={(e) => {
+              setRequestReason(e.target.value);
+            }}
+            value={requestReason}
+            multiline={true}
+            rows={4}
+          />
+          <StyledTextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
+            placeholder="Personnes concernées"
+            fullWidth
+            onChange={(e) => {
+              setPersons(e.target.value);
+            }}
+            value={persons}
+          />
+          <StyledTextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
+            disabled
+            name="label"
+            defaultValue={device.label}
+            fullWidth
+          />
+          <StyledTextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
+            placeholder="Référence"
+            defaultValue={device.reference}
+            disabled
+            fullWidth
+          />
 
-      <div style={{display: "flex"}}>
-        <FiInfo size={20} />
+          <StyledTextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
+            placeholder="category"
+            defaultValue={device.category}
+            disabled
+            fullWidth
+          />
 
-        <Typography
-          sx={{
-            marginBottom: 2,
-            fontSize: 12,
-            fontFamily: "poppins-semiBold",
-            marginLeft: 1,
+          <StyledTextField
+            sx={{marginBottom: 2}}
+            id="outlined-search"
+            type={"text"}
+            placeholder="campus"
+            defaultValue={device.campus}
+            disabled
+            fullWidth
+          />
+          <Typography variant="h6" sx={{marginBottom: 2}}>
+            Choisissez les dates
+          </Typography>
+          <DateRange
+            editableDateInputs={true}
+            onChange={(item) => {
+              setSelectedDates([item.selection]);
+            }}
+            moveRangeOnFirstSelection={false}
+            ranges={selectDates}
+            locale={locales.fr}
+            minDate={new Date()}
+          />
+          <Button
+            variant="contained"
+            sx={{marginBottom: 2}}
+            fullWidth
+            onClick={(e) => {
+              handleRequest();
+              // toggleDrawerRequest(e, false);
+            }}
+          >
+            Confirmer
+          </Button>
+        </>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
           }}
         >
-          Veillez à bien séparer les personnes par une virgule
-        </Typography>
-      </div>
-
-      <StyledTextField
-        sx={{marginBottom: 2}}
-        id="outlined-search"
-        type={"text"}
-        disabled
-        name="Label"
-        value={device && device.label}
-        fullWidth
-      />
-      <StyledTextField
-        sx={{marginBottom: 2}}
-        id="outlined-search"
-        type={"text"}
-        placeholder="Référence"
-        value={device && device.reference}
-        disabled
-        fullWidth
-      />
-
-      <StyledTextField
-        sx={{marginBottom: 2}}
-        id="outlined-search"
-        type={"text"}
-        placeholder="Catégorie"
-        value={device && device.category}
-        disabled
-        fullWidth
-      />
-
-      <StyledTextField
-        sx={{marginBottom: 2}}
-        id="outlined-search"
-        type={"text"}
-        placeholder="Campus"
-        // defaultValue={device && device.campus}
-        value={device && device.campus}
-        disabled
-        fullWidth
-      />
-      <Typography variant="h6" sx={{marginBottom: 2}}>
-        Choisissez les dates
-      </Typography>
-      <DateRange
-        editableDateInputs={true}
-        onChange={(item) => {
-          setSelectedDates([item.selection]);
-        }}
-        moveRangeOnFirstSelection={false}
-        ranges={selectDates}
-        locale={locales.fr}
-        minDate={new Date()}
-      />
-      <Button
-        variant="contained"
-        sx={{marginBottom: 2, marginTop: 4}}
-        fullWidth
-        onClick={(e) => {
-          handleRequest();
-          // toggleDrawerRequest(e, false);
-        }}
-      >
-        Confirmer
-      </Button>
+          <Rings
+            height="200"
+            width="200"
+            color="#00BFFF"
+            radius="6"
+            wrapperStyle={{}}
+            wrapperClass="loader"
+            visible={true}
+            ariaLabel="rings-loading"
+          />
+        </div>
+      )}
     </Box>
   );
 

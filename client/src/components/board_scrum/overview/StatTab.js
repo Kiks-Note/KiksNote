@@ -19,61 +19,145 @@ import {
 import { Doughnut, Line } from "react-chartjs-2";
 import TabPanel from "./TabPanel";
 
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
+
 StatTab.propTypes = {
   boards: PropTypes.array.isRequired,
 };
-
-ChartJS.register(
-  ArcElement,
-  Title,
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Filler,
-  Tooltip,
-  Legend
-);
 export default function StatTab({ boards }) {
+  // useEffect(() => {
+
+  // }, [props]);
+
+
+  ChartJS.register(
+    ArcElement,
+    Tooltip,
+    Legend,
+    Title,
+    LineElement,
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    Filler
+  );
+  const optionsBurnDown = {
+    responsive: true,
+    title: {
+      display: true,
+      text: "Burndown Chart",
+    },
+    scales: {
+      xAxes: [
+        {
+          type: "time",
+          time: {
+            unit: "day",
+            displayFormats: {
+              day: "MMM DD",
+            },
+          },
+        },
+      ],
+      yAxes: [
+        {
+          ticks: {
+            beginAtZero: true,
+          },
+        },
+      ],
+    },
+    legend: {
+      display: true,
+      position: "bottom",
+    },
+  };
+  const dataBurnDown = {
+    labels: [
+      "Jour1",
+      "Jour 2",
+      "Jour 3",
+      "Jour 4",
+      "Jour 5",
+      "Jour 6",
+      "Jour 7",
+    ],
+    datasets: [
+      {
+        label: "Estimation",
+        data: [0, 7.5, 15, 22.5, 30, 37.5, 45],
+        fill: true,
+        borderColor: "orange",
+      },
+      {
+        label: "Réalisé",
+        data: [0, 10, 14, 18, 24, 29, 45],
+        fill: false,
+        borderColor: "green",
+      },
+    ],
+  };
   const [value, setValue] = useState(0);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  function a11yProps(index) {
-    return {
-      id: `simple-tab-${index}`,
-      "aria-controls": `simple-tabpanel-${index}`,
-    };
-  }
+  var index = -1;
+  var indexTab = -1;
   return (
     <Box
       style={{
-        minHeight: "70vh",
-        maxHeight: "70vh",
+        minHeight: "80vh",
+        maxHeight: "80vh",
       }}
     >
-      {boards.map((board, index) => {
-        const toDoCount = board.data.toDo.count;
-        const inProgressCount = board.data.inProgress.count;
-        const doneCount = board.data.done.count;
+      {boards.map((board) => {
+        index += 1;
+        const toDoCount = board["data"]["toDo"]["count"];
+        const inProgressCount = board["data"]["inProgress"]["count"];
+        const doneCount = board["data"]["done"]["count"];
 
-        const hasTasks =
-          toDoCount !== 0 || inProgressCount !== 0 || doneCount !== 0;
-
-        return (
-          <TabPanel key={index} value={value} index={index}>
-            <Typography variant="h4">{board.name}</Typography>
-            {hasTasks ? (
-              <Box style={{ width: "200px", height: "200px" }}>
+        if (toDoCount === 0 && inProgressCount === 0 && doneCount === 0) {
+          return (
+            <TabPanel
+              key={index}
+              value={value}
+              index={index}
+            >
+              <Typography variant="h4">{board["name"]}</Typography>
+              <Box
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  height: "54vh",
+                }}
+              >
+                <Typography variant="h6">
+                  Pas de tâche pour le moment
+                </Typography>
+              </Box>
+            </TabPanel>
+          );
+        } else {
+          return (
+            <TabPanel key={index} value={value} index={index}>
+              <Typography variant="h4">{board["name"]}</Typography>
+              <Box
+              >
                 <Doughnut
-                  width={200}
-                  height={200}
                   data={{
                     labels: ["To Do", "In Progress", "Done"],
                     datasets: [
                       {
-                        label: "Nombre de tâches",
+                        label: "nombre de tâches",
                         data: [toDoCount, inProgressCount, doneCount],
                         backgroundColor: [
                           "rgba(255, 99, 132, 0.2)",
@@ -91,165 +175,28 @@ export default function StatTab({ boards }) {
                   }}
                 />
               </Box>
-            ) : (
-              <Box
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  height: "54vh",
-                }}
-              >
-                <Typography variant="h6">
-                  Pas de tâche pour le moment
-                </Typography>
-              </Box>
-            )}
-          </TabPanel>
-        );
-      })}
-
-      {boards.map((board, index) => {
-        const startingDate = new Date(board.starting_date);
-        const endingDate = new Date(board.ending_date);
-        // Calculer la durée totale du sprint en jours
-        const totalDays =
-          Math.ceil((endingDate - startingDate) / (1000 * 60 * 60 * 24)) + 1;
-
-        const toDoEstimationData = board.data.toDo.items.map(
-          (item) => item.estimation
-        );
-        const inProgressEstimationData = board.data.inProgress.items.map(
-          (item) => item.estimation
-        );
-        const doneEstimationData = board.data.done.items.map(
-          (item) => item.estimation
-        );
-
-        // Estimation Data
-        const estimationData = [
-          ...toDoEstimationData,
-          ...inProgressEstimationData,
-          ...doneEstimationData,
-        ];
-
-        // Calculer la somme totale des estimations
-        const totalEstimation = estimationData.reduce(
-          (acc, value) => acc + value,
-          0
-        );
-
-        // Calculer le coefficient
-        const coefficient = totalEstimation / totalDays;
-
-        // Générer le tableau d'estimation finale
-        const finalEstimationData = Array.from(
-          { length: totalDays },
-          (_, i) => coefficient * i
-        );
-
-        // Realisation Data
-        const realisationData = Array.from({ length: totalDays }, (_, i) => {
-          const day = `Jour ${i}`;
-
-          // Somme des avancements pour le jour `day` dans la colonne "toDo"
-          const toDoSum = board.data.toDo.items.reduce((acc, item) => {
-            const advancements = item.advancement.filter(
-              (adv) => adv.day === day
-            );
-            if (advancements.length > 0) {
-              const sum = advancements.reduce(
-                (total, adv) => total + adv.advance,
-                0
-              );
-              return acc + sum;
-            }
-            return acc;
-          }, 0);
-
-          // Somme des avancements pour le jour `day` dans la colonne "inProgress"
-          const inProgressSum = board.data.inProgress.items.reduce(
-            (acc, item) => {
-              const advancements = item.advancement.filter(
-                (adv) => adv.day === day
-              );
-              if (advancements.length > 0) {
-                const sum = advancements.reduce(
-                  (total, adv) => total + adv.advance,
-                  0
-                );
-                return acc + sum;
-              }
-              return acc;
-            },
-            0
+            </TabPanel>
           );
+        }
+      })}
 
-          // Somme des avancements pour le jour `day` dans la colonne "done"
-          const doneSum = board.data.done.items.reduce((acc, item) => {
-            const advancements = item.advancement.filter(
-              (adv) => adv.day === day
-            );
-            if (advancements.length > 0) {
-              const sum = advancements.reduce(
-                (total, adv) => total + adv.advance,
-                0
-              );
-              return acc + sum;
-            }
-            return acc;
-          }, 0);
-
-          // Somme totale des avancements pour le jour `day`
-          return toDoSum + inProgressSum + doneSum;
-        });
-
-        console.log(realisationData);
-
+      {boards.map((board) => {
+        index += 1;
         return (
-          <TabPanel key={index} value={value} index={index}>
-            <Typography variant="h4">Burndown {board.name}</Typography>
-            {/* Remplacez les données de réalisation ci-dessous par les réalisations réelles du sprint */}
-            <Box>
-              <Line
-                data={{
-                  labels: Array.from(
-                    { length: totalDays },
-                    (_, i) => `Jour ${i}`
-                  ),
-                  datasets: [
-                    {
-                      label: "Estimation",
-                      data: finalEstimationData, // Remplacez les données d'estimation par les valeurs réelles du sprint
-                      fill: true,
-                      borderColor: "orange",
-                    },
-                    {
-                      label: "Réalisé",
-                      data: realisationData, // Remplacez ces données par les réalisations réelles du sprint
-                      fill: false,
-                      borderColor: "green",
-                    },
-                  ],
-                }}
-                options={{
-                  responsive: true,
-                  title: {
-                    display: true,
-                    text: "Burndown Chart",
-                  },
-                  legend: {
-                    display: true,
-                    position: "top",
-                  },
-                }}
-              />
-            </Box>
+          <TabPanel
+            key={index}
+            value={value}
+            index={index}
+            // style={{
+            //   height: "75vh",
+            //   maxHeight: "80vh",
+            // }}
+          >
+            <Typography variant="h4">Burndown {board["name"]}</Typography>
+            <Line data={dataBurnDown} options={optionsBurnDown} />
           </TabPanel>
         );
       })}
-
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs
           value={value}
@@ -259,9 +206,22 @@ export default function StatTab({ boards }) {
           allowScrollButtonsMobile
           aria-label="scrollable force tabs example"
         >
-          {boards.map((board, index) => (
-            <Tab key={index} label={board.name} {...a11yProps(index)} />
-          ))}
+          {boards.map((board, item) => {
+            indexTab += 1;
+            return (
+              <Tab key={item} label={board["name"]} {...a11yProps(indexTab)} />
+            );
+          })}
+          {boards.map((board, item) => {
+            indexTab += 1;
+            return (
+              <Tab
+                key={item}
+                label={"Burdown " + board["name"]}
+                {...a11yProps(indexTab)}
+              />
+            );
+          })}
         </Tabs>
       </Box>
     </Box>

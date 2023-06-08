@@ -14,16 +14,6 @@ const inventory = async (req, res) => {
   }
 };
 
-const inventoryLength = async (req, res) => {
-  try {
-    const docRef = db.collection("inventory");
-    const snapshot = await docRef.get();
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
-
-    res.status(200).send({length: documents.length});
-  } catch (err) {}
-};
-
 const inventoryDeviceId = async (req, res) => {
   try {
     const {deviceId} = req.params;
@@ -133,8 +123,8 @@ const deleteDevice = async (req, res) => {
 
 const makeRequest = async (req, res) => {
   const {deviceId} = req.params;
-  const {startDate, endDate, requestReason, persons, requesterId, category} =
-    req.body;
+  const {startDate, endDate, requestReason, persons, requesterId} = req.body;
+  console.log(requesterId);
 
   if (requesterId === undefined) {
     return res.status(500).send("You must be logged in to make a request");
@@ -158,7 +148,6 @@ const makeRequest = async (req, res) => {
       reason: requestReason,
       group: persons,
       status: "pending",
-      deviceCategory: category,
     });
 
     await Promise.all([d, r]);
@@ -166,34 +155,6 @@ const makeRequest = async (req, res) => {
     res.status(200).send("Request successfully made!");
   } catch (err) {
     res.status(500).send(err);
-  }
-};
-
-const makePreRequest = async (req, res) => {
-  const {deviceId} = req.params;
-
-  try {
-    const deviceRef = db.collection("inventory").doc(deviceId);
-    const requestRef = db.collection("inventory_requests").doc();
-
-    const d = deviceRef.update({
-      status: "requested",
-      lastRequestId: requestRef.id,
-    });
-
-    const r = requestRef.set({
-      deviceId: deviceId,
-      createdAt: new Date(),
-      requesterId: null,
-      status: "pending",
-    });
-
-    await Promise.all([d, r]);
-
-    res.status(200).send("Request successfully made!");
-  } catch (err) {
-    res.status(500).send(err);
-    console.log(err);
   }
 };
 
@@ -255,31 +216,6 @@ const rejectRequest = async (req, res) => {
     });
 
     res.send("Request refused");
-  } catch (err) {
-    res.send(err);
-  }
-};
-
-const returnedRequest = async (req, res) => {
-  const {deviceId, requestId} = req.params;
-  const {admin} = req.body;
-
-  try {
-    const deviceRef = await db.collection("inventory").doc(deviceId);
-    const requestRef = await db.collection("inventory_requests").doc(requestId);
-
-    await deviceRef.update({
-      status: "available",
-      lastRequestId: null,
-    });
-
-    await requestRef.update({
-      status: "returned",
-      returnedAt: new Date(),
-      returnedTo: admin,
-    });
-
-    res.send("Request returned");
   } catch (err) {
     res.send(err);
   }
@@ -415,156 +351,6 @@ const getDeviceRequests = async (req, res) => {
   }
 };
 
-const createIdea = async (req, res) => {
-  const {name, url, price, description, reason, createdBy} = req.body;
-
-  if (!name || !url || !price || !reason || !createdBy) {
-    return res.status(400).send("Veuillez remplir tous les champs");
-  }
-
-  // verify url
-  const regex = new RegExp(
-    "^(https?://)?(www.)?([a-z0-9]+(-[a-z0-9]+)*.)+[a-z]{2,}$"
-  );
-
-  if (!regex.test(url)) {
-    return res.status(400).send("Veuillez entrer une url valide");
-  }
-
-  // verify price
-  if (isNaN(price)) {
-    return res.status(400).send("Veuillez entrer un prix valide");
-  } else if (parseFloat(price) <= 0) {
-    return res.status(400).send("Veuillez entrer un prix valide");
-  }
-
-  try {
-    const docRef = db.collection("inventory-ideas").doc();
-
-    await docRef.set({
-      url: url,
-      name: name,
-      price: parseFloat(price.replace(",", ".")),
-      description: description,
-      reason: reason,
-      createdBy: createdBy,
-      createdAt: new Date(),
-      status: "pending",
-    });
-
-    res.status(200).send("Idée d'achat envoyée. Merci ! 😁");
-  } catch (err) {
-    res.status(500).send("Une erreur est survenue");
-    console.log(err);
-  }
-};
-
-const getNotTreatedIdeas = async (req, res) => {
-  try {
-    const snapshot = await db
-      .collection("inventory-ideas")
-      .where("status", "==", "pending")
-      .get();
-
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
-
-    res.status(200).send(documents);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
-
-const getIdeas = async (req, res) => {
-  try {
-    const snapshot = await db.collection("inventory-ideas").get();
-
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
-
-    res.status(200).send(documents);
-  } catch (error) {
-    res.status(500).send(error);
-  }
-};
-
-const acceptIdea = async (req, res) => {
-  const {id} = req.params;
-
-  try {
-    const docRef = db.collection("inventory-ideas").doc(id);
-
-    await docRef.update({status: "accepted"});
-
-    res.status(200).send("Idée acceptée avec succès");
-  } catch (err) {
-    res.status(500).send("Une erreur est survenue");
-    console.log(err);
-  }
-};
-
-const refuseIdea = async (req, res) => {
-  const {id} = req.params;
-  console.log(id);
-
-  try {
-    const docRef = db.collection("inventory-ideas").doc(id);
-
-    await docRef.update({status: "refused"});
-
-    res.status(200).send("Idée refusée avec succès");
-  } catch (err) {
-    res.status(500).send("Une erreur est survenue");
-    console.log(err);
-  }
-};
-
-const deleteIdea = async (req, res) => {
-  const {id} = req.params;
-
-  try {
-    await db.collection("inventory-ideas").doc(id).delete();
-
-    res.status(200).send("Idée supprimée avec succès");
-  } catch (err) {
-    res.status(500).send("Une erreur est survenue");
-    console.log(err);
-  }
-};
-
-const getIdeaByUser = async (req, res) => {
-  try {
-    const {userId} = req.params;
-
-    const snapshot = await db
-      .collection("inventory-ideas")
-      .where("createdBy", "==", userId)
-      .get();
-
-    const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
-
-    res.status(200).send(documents);
-  } catch (error) {
-    res.status(500).send("Une erreur est survenue");
-  }
-};
-
-const makeIdeaComment = async (req, res) => {
-  try {
-    const {ideaId} = req.params;
-    const {comment, user} = req.body;
-
-    const docRef = db.collection("inventory-ideas").doc(ideaId);
-
-    await docRef.update({
-      comments: FieldValue.arrayUnion({
-        comment: comment,
-        user: user,
-        createdAt: new Date(),
-      }),
-    });
-
-    res.status(200).send("Commentaire ajouté avec succès");
-  } catch (err) {}
-};
 
 const liveCategories = async (connection) => {
   db.collection("inventoryCategories")
@@ -574,10 +360,12 @@ const liveCategories = async (connection) => {
     });
 };
 
-const pendingRequests = async (connection) => {
+const todayRequests = async (connection) => {
   db.collection("inventory_requests")
+    .where("createdAt", "<=", new Date())
     .where("status", "==", "pending")
     .orderBy("createdAt", "desc")
+    .limit(5)
     .onSnapshot(
       (snapshot) => {
         const request = snapshot.docs.map((doc) => ({
@@ -608,6 +396,7 @@ const pendingRequests = async (connection) => {
 };
 
 const liveInventory = async (connection) => {
+
   db.collection("inventory").onSnapshot((snapshot) => {
     const inventory = snapshot.docs.map((doc) => ({
       id: doc.id,
@@ -617,6 +406,7 @@ const liveInventory = async (connection) => {
     connection.sendUTF(JSON.stringify(inventory));
   });
 };
+
 
 const borrowedList = async (connection) => {
   db.collection("inventory")
@@ -659,18 +449,14 @@ const borrowedList = async (connection) => {
 
 module.exports = {
   inventory,
-  inventoryLength,
   inventoryDeviceId,
   addDevice,
   updateDevice,
   deleteDevice,
   makeRequest,
-  makePreRequest,
-  makeIdeaComment,
   deviceRequests,
   acceptRequest,
   rejectRequest,
-  returnedRequest,
   getRequests,
   updateRequest,
   getCategories,
@@ -678,14 +464,7 @@ module.exports = {
   deleteCategory,
   updateCategory,
   getDeviceRequests,
-  createIdea,
-  getNotTreatedIdeas,
-  getIdeas,
-  acceptIdea,
-  refuseIdea,
-  deleteIdea,
-  getIdeaByUser,
-  pendingRequests,
+  todayRequests,
   liveCategories,
   liveInventory,
   borrowedList,
