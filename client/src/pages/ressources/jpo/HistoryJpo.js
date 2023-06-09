@@ -5,7 +5,7 @@ import axios from "axios";
 
 import { Card, Typography, Grid, Skeleton } from "@mui/material";
 
-import JpoCard from "./JpoCard";
+import JpoCard from "./../../../components/ressources/jpo/JpoCard";
 import "./HistoryJpo.scss";
 
 import SkeletonHistoryJpo from "../../../components/ressources/jpo/SkeletonHistoryJpo";

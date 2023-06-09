@@ -31,8 +31,8 @@ import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
 import SchoolIcon from "@mui/icons-material/School";
 
-import CreateProjectDialog from "./CreateProjectDialog";
-import CreateTechnoModal from "./CreateTechnoModal";
+import CreateProjectDialog from "./../../../components/ressources/students_project/CreateProjectDialog";
+import CreateTechnoModal from "./../../../components/ressources/students_project/CreateTechnoModal";
 import CarouselProjects from "./CarouselProjects";
 import studentProjectsImg from "../../../assets/img/students-projects.jpg";
 

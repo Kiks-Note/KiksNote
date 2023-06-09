@@ -10,14 +10,14 @@ import {
   Typography,
 } from "@mui/material";
 
-import CreateJpoModal from "./CreateJpoModal";
+import CreateJpoModal from "./../../../components/ressources/jpo/CreateJpoModal";
 
 import { makeStyles } from "@mui/styles";
 
 import CreateIcon from "@mui/icons-material/Create";
 import HistoryIcon from "@mui/icons-material/History";
 
-import JpoCard from "./JpoCard";
+import JpoCard from "./../../../components/ressources/jpo/JpoCard";
 import "./Jpo.scss";
 import SkeletonJpo from "../../../components/ressources/jpo/SkeletonJpo";
 

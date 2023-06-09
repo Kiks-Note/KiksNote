@@ -20,8 +20,8 @@ import {
   Divider,
 } from "@mui/material";
 
-import StudentProjectLinkDialog from "./StudentProjectLinkDialog";
-import UpdateJpoPdf from "./UpdateJpoPdf";
+import StudentProjectLinkDialog from "./../../../components/ressources/jpo/StudentProjectLinkDialog";
+import UpdateJpoPdf from "./../../../components/ressources/jpo/UpdateJpoPdf";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -33,8 +33,8 @@ import "./JpoInfo.scss";
 
 import { makeStyles } from "@mui/styles";
 
-import UpdateJpoDialog from "./UpdateJpoDialog";
-import PdfCommercialBrochureViewer from "./PdfCommercialBrochureViewer";
+import UpdateJpoDialog from "./../../../components/ressources/jpo/UpdateJpoDialog";
+import PdfCommercialBrochureViewer from "./../../../components/ressources/jpo/PdfCommercialBrochureViewer";
 import SkeletonJpoInfo from "../../../components/ressources/jpo/SkeletonJpoInfo";
 
 const options = {

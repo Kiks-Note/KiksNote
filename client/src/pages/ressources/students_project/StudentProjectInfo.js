@@ -35,7 +35,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
 import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
 
-import BlogTutosLinkDialog from "./BlogTutosLinkDialog";
+import BlogTutosLinkDialog from "./../../../components/ressources/students_project/BlogTutosLinkDialog";
 import "./StudentsProjectsInfo.scss";
 import SkeletonStudentProjectInfo from "../../../components/ressources/students_project/SkeletonStudentProjectInfo";
 

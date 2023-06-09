@@ -18,8 +18,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
-import Dropzone from "./Dropzone";
-import "./Cours.scss";
+import Dropzone from "./../Dropzone";
+import "./../../../pages/ressources/Cours/Cours.scss";
 import "react-toastify/dist/ReactToastify.css";
 
 const CreateCoursModal = (props) => {

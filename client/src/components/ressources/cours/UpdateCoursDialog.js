@@ -18,7 +18,7 @@ import {
 
 import CloseIcon from "@mui/icons-material/Close";
 
-import Dropzone from "./Dropzone";
+import Dropzone from "./../Dropzone";
 
 const UpdateCoursDialog = (props) => {
   return (

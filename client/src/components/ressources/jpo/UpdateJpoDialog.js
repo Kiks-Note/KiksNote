@@ -6,44 +6,24 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  Autocomplete,
 } from "@mui/material";
 
 import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from "draft-js";
+import {
+  EditorState,
+} from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
-import Dropzone from "../Cours/Dropzone";
+import Dropzone from "./../Dropzone";
 
-import "./Jpo.scss";
-
-const CreateJpoModal = (props) => {
+const UpdateCoursDialog = (props) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [inputEditorState, setInputEditorState] = useState("");
 
-  const handleEditorChange = (e) => {
-    setEditorState(e);
-    setInputEditorState(convertToRaw(e.getCurrentContent()));
-  };
-
-  useEffect(() => {
-    props.setDescriptionJPO(inputEditorState);
-  }, [inputEditorState]);
+  console.log(props.descriptionJPO);
 
   return (
     <>
-      <Dialog
-        open={props.open}
-        onClose={props.handleClose}
-        sx={{
-          "& .MuiDialog-container": {
-            "& .MuiPaper-root": {
-              width: "100%",
-              maxWidth: "1000px",
-            },
-          },
-        }}
-      >
+      <Dialog open={props.open} onClose={props.handleClose}>
         <DialogContent>
           <form onSubmit={props.handleSubmit} className="jpo-form">
             <TextField
@@ -79,42 +59,10 @@ const CreateJpoModal = (props) => {
                 sx={{ width: "90%" }}
               />
             </div>
-            <Autocomplete
-              multiple
-              id="tags-outlined"
-              sx={{
-                width: "100%",
-                marginBottom: "10px",
-              }}
-              options={props.allJpoParticipants}
-              getOptionLabel={(option) =>
-                `${option.lastname ? option.lastname.toUpperCase() : ""} ${
-                  option.firstname
-                }`
-              }
-              defaultValue={props.jpoParticipants}
-              filterSelectedOptions
-              onChange={(event, newValue) => {
-                const selectedJpoParticipant = newValue.map(
-                  (jpomember) => jpomember.id
-                );
-                props.setJpoParticipants(selectedJpoParticipant);
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select a JpoParticipant"
-                  variant="outlined"
-                  inputProps={{
-                    ...params.inputProps,
-                    name: "student",
-                  }}
-                />
-              )}
-            />
+
             <Editor
               placeholder={`Commencer à écrire une petite description de la JPO ${props.nameJPO}`}
-              onEditorStateChange={handleEditorChange}
+              // onEditorStateChange={handleEditorChange}
               editorState={editorState}
               toolbarClassName="toolbarClassName"
               wrapperClassName="wrapperClassName"
@@ -129,7 +77,7 @@ const CreateJpoModal = (props) => {
                 marginBottom: "16px",
               }}
             />
-            <div className="jpo-dropzone">
+            <div className="dropzone-coursimg-container">
               <p className="info-dropdown-img">
                 Drag and drop an image file here, or click to select an image
                 file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
@@ -172,12 +120,11 @@ const CreateJpoModal = (props) => {
             Annuler
           </Button>
           <Button onClick={props.handleSubmit} className={props.btnCreateJpo}>
-            Publier
+            Modifier
           </Button>
         </DialogActions>
       </Dialog>
     </>
   );
 };
-
-export default CreateJpoModal;
+export default UpdateCoursDialog;

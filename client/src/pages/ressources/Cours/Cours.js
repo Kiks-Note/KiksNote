@@ -40,7 +40,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 
-import CreateCoursModal from "./CreateCoursModal";
+import CreateCoursModal from "./../../../components/ressources/cours/CreateCoursModal";
 import SkeletonCours from "../../../components/ressources/cours/SkeletonCours";
 
 import "./Cours.scss";

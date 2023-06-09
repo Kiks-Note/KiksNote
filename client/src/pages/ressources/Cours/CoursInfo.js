@@ -27,8 +27,8 @@ import {
   CardMedia,
 } from "@mui/material";
 
-import UpdateCoursDialog from "./UpdateCoursDialog";
-import CoursLinkDialog from "./CoursLinkDialog";
+import UpdateCoursDialog from "./../../../components/ressources/cours/UpdateCoursDialog";
+import CoursLinkDialog from "./../../../components/ressources/cours/CoursLinkDialog";
 
 import { makeStyles } from "@mui/styles";
 import EditIcon from "@mui/icons-material/Edit";

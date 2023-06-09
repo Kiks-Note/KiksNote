@@ -11,12 +11,12 @@ import {
   DialogTitle,
 } from "@mui/material";
 
-import Dropzone from "../Cours/Dropzone";
+import Dropzone from "../Dropzone";
 
 import CloseIcon from "@mui/icons-material/Close";
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 
-import "../Cours/Cours.scss";
+import "./../../../pages/ressources/Cours/Cours.scss";
 import "react-toastify/dist/ReactToastify.css";
 
 const CreateTechnoModal = (props) => {

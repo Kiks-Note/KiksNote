@@ -17,9 +17,9 @@ import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
 
-import Dropzone from "../Cours/Dropzone";
+import Dropzone from "../Dropzone";
 
-import "./StudentsProjects.scss";
+import "./../../../pages/ressources/students_project/StudentsProjects";
 
 const CreateProjectDialog = (props) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
