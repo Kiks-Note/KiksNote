@@ -46,7 +46,15 @@ const {
 const { callRoutesWsNeeded, callRoutesWsNotNeeded } = require("./callRoutes");
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://10.160.33.226:3000",
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+    ],
+  })
+);
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static("uploads"));

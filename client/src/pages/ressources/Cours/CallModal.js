@@ -33,7 +33,7 @@ const CallModal = ({
   const qrcode = useRef("");
 
   const createWebSocket = useCallback(() => {
-    const websocket = new w3cwebsocket(`ws://localhost:5050/call`);
+    const websocket = new w3cwebsocket(`ws://localhost:5050/callws`);
     return websocket;
   }, []);
 
@@ -96,7 +96,7 @@ const CallModal = ({
   const GenerateQrcode = (callId) => {
     console.log(ip);
     QRCode.toDataURL(
-      `http://${ip}:3000/Presence/${callId}`,
+      `http://localhost:3000/Presence/${callId}`,
       {
         width: 800,
         margin: 2,

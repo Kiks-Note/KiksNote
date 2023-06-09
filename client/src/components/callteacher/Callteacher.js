@@ -21,7 +21,7 @@ function AppelProf(callId) {
   const [inRoom, setInRoom] = useState(false);
   const generated = useRef(false);
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://${ip}:5050/call`);
+    return new w3cwebsocket(`ws://localhost:5050/callws`);
   }, []);
 
   const LogToExistingRoom = useCallback(async () => {
@@ -66,6 +66,7 @@ function AppelProf(callId) {
 
           switch (messageReceive.type) {
             case "updateRoom":
+              console.log(messageReceive);
               const keys = Object.keys(
                 messageReceive.data.currentRoom.appel
               )[0];
@@ -82,6 +83,7 @@ function AppelProf(callId) {
     };
 
     if (ws.readyState === WebSocket.OPEN) {
+      console.log("test");
       handleOpen();
     } else {
       ws.onopen = handleOpen;

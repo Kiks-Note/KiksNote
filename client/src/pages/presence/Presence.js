@@ -1,16 +1,21 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useParams } from "react-router";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { w3cwebsocket } from "websocket";
+import useFirebase from "../../hooks/useFirebase";
+import { idID } from "@mui/material/locale";
 
 function Presence() {
   const { id } = useParams();
   const ip = process.env.REACT_APP_IP;
   const dataFetchedRef = useRef(false);
   const tempCall = useRef();
-  const userID = localStorage.getItem("user_uid");
   const navigate = useNavigate();
-
+  const { user } = useFirebase();
+  const ws = useMemo(() => {
+    return new w3cwebsocket(`ws://localhost:5050/call`);
+  }, []);
   useEffect(() => {
     if (dataFetchedRef.current) {
       return;
@@ -20,48 +25,57 @@ function Presence() {
   });
 
   const updateCall = async () => {
-    const res = await axios
-      .post(`http://${ip}:5050/updatecall`, {
+    await axios
+      .put(`http://localhost:5050/call/updatecall`, {
         id: id,
         object: tempCall.current,
       })
       .then((res) => {
-        console.log(res);
+        const message = {
+          type: "updateCall",
+          data: {
+            appel: tempCall.current,
+          },
+        };
+        ws.send(JSON.stringify(message));
       });
-    navigate("/appel");
+    navigate(`/appel/${tempCall.current.id}`);
   };
 
   const getCall = () => {
-    console.log(id);
-    axios
-      .get(`http://${ip}:5050/getcall`, { params: { id: id } })
-      .then((res) => {
-        console.log(res.data);
-        tempCall.current = res.data;
-        getUsers();
-      });
+    axios.get(`http://localhost:5050/call/getcall/${id}`).then((res) => {
+      console.log(res.data);
+      tempCall.current = res.data;
+      getUsers();
+    });
   };
   const getUsers = () => {
-    console.log(userID);
     axios
-      .get(`http://${ip}:5050/user`, { params: { id: userID } })
+      .get(
+        `http://localhost:5050/ressources/cours/${tempCall.current.id_lesson}`
+      )
       .then((res) => {
-        const scanEleveCopy = [...tempCall.current.student_scan];
-        const userItem = {
-          firstname: res.data.firstname,
-          id: res.data.id,
-        };
-        if (
-          scanEleveCopy.some(
-            (element) => element.firstname === userItem.firstname
-          )
-        ) {
-          navigate("/appel");
-        } else {
-          scanEleveCopy.push(userItem);
+        console.log(res.data.data.courseClass.id);
+        if (user.class.id === res.data.data.courseClass.id) {
+          const scanEleveCopy = [...tempCall.current.students_scan];
+          const userItem = {
+            firstname: user.firstname,
+            id: user.id,
+          };
+          if (
+            scanEleveCopy.some(
+              (element) => element.firstname === userItem.firstname
+            )
+          ) {
+            navigate(`/appel/${tempCall.current.id}`);
+          } else {
+            scanEleveCopy.push(userItem);
+          }
+          console.log(scanEleveCopy);
+          tempCall.current.students_scan = scanEleveCopy;
+          console.log(tempCall.current);
+          updateCall();
         }
-        tempCall.current.student_scan = scanEleveCopy;
-        updateCall();
       });
   };
 }

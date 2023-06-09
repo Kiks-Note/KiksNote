@@ -22,16 +22,16 @@ function callRoutesWsNotNeeded() {
   router.get("/getRoomPo/:id", getRoomPo);
   router.post("/callAdd", addCall);
   router.get("/getUsersFromClassiId/:idCours", getClassUsers);
+  router.put("/updatecall", updateCall);
+
   return router;
 }
 
 function callRoutesWsNeeded(connection, pathname) {
   const router = express.Router();
 
-  router.put("/updatecall", updateCall);
-
   switch (pathname) {
-    case "/call":
+    case "/callws":
       room(connection);
       console.log("call");
       break;

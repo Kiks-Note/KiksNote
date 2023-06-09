@@ -24,14 +24,15 @@ function AppelEleve({ callId }) {
 
   const id = useRef();
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://${ip}:5050/call`);
+    return new w3cwebsocket(`ws://localhost:5050/callws`);
   }, []);
 
   const LogToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/call/getRoom/${user?.class}`)
+        .get(`http://localhost:5050/call/getRoom/${user?.class.name}`)
         .then((res) => {
+          console.log(res);
           if (res.data.length > 0) {
             const message = {
               type: "joinRoom",
@@ -42,7 +43,8 @@ function AppelEleve({ callId }) {
                 type: "call",
               },
             };
-            //ws.send(JSON.stringify(message));
+            console.log("sending");
+            ws.send(JSON.stringify(message));
             setInRoom(true);
             setCall(res.data);
           }
@@ -66,7 +68,11 @@ function AppelEleve({ callId }) {
 
           switch (messageReceive.type) {
             case "updateRoom":
-              setCall(messageReceive.appel);
+              const keys = Object.keys(
+                messageReceive.data.currentRoom.appel
+              )[0];
+              const appel = messageReceive.data.currentRoom.appel[keys].appel;
+              setCall(appel);
               break;
             default:
               break;
@@ -74,7 +80,7 @@ function AppelEleve({ callId }) {
         };
       }
     };
-
+    console.log(ws);
     if (ws.readyState === WebSocket.OPEN) {
       handleOpen();
     } else {

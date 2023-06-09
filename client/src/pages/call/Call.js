@@ -10,7 +10,6 @@ function Appel() {
   const [generated, setGenerated] = useState(false);
 
   useEffect(() => {
-    console.log(callId.id);
     if (!generated) {
       setGenerated(true);
     }

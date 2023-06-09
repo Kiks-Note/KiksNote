@@ -1,17 +1,17 @@
 import axios from "axios";
-import {useContext, useEffect, useState} from "react";
-import {createContext} from "react";
+import { useContext, useEffect, useState } from "react";
+import { createContext } from "react";
 
 export const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
-export const AuthProvider = ({children}) => {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     axios
-      .get("http://localhost:5050/auth/user")
+      .get("http://10.160.33.226:5050/auth/user")
       .then((res) => {
         setUser(res.data);
         setLoading(false);
@@ -22,7 +22,7 @@ export const AuthProvider = ({children}) => {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{user}}>
+    <AuthContext.Provider value={{ user }}>
       {!loading && children}
     </AuthContext.Provider>
   );
