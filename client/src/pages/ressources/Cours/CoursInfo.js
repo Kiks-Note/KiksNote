@@ -152,7 +152,7 @@ const CoursInfo = () => {
     }
   };
 
-    /*
+  /*
     get an Array of all classes then put it in allclass
  */
 
@@ -320,7 +320,7 @@ const CoursInfo = () => {
     delete the backlog pdf using courseClass, title, fileName, pdfLinkBackLog and courseId
  */
 
-  const deleteBackLogPdf = (
+  const deleteBackLogPdf = async (
     courseClass,
     title,
     fileName,
@@ -329,20 +329,21 @@ const CoursInfo = () => {
   ) => {
     const data = { courseClass, title, fileName, pdfLinkBackLog, courseId };
 
-    return axios
-      .delete("http://localhost:5050/ressources/backlog/delete-pdf", { data })
-      .then((res) => {
-        if (res.status === 200) {
-          toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
-          getCoursId(id);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toastFail(
-          `Le fichier ${fileName} que vous essayez de supprimer rencontre un problème.`
-        );
-      });
+    try {
+      const res = await axios.delete(
+        "http://localhost:5050/ressources/backlog/delete-pdf",
+        { data }
+      );
+      if (res.status === 200) {
+        toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
+        getCoursId(id);
+      }
+    } catch (err) {
+      console.log(err);
+      toastFail(
+        `Le fichier ${fileName} que vous essayez de supprimer rencontre un problème.`
+      );
+    }
   };
 
   /*
@@ -1057,13 +1058,13 @@ const CoursInfo = () => {
                           <>
                             <div style={{ display: "flex" }}>
                               {coursData?.courseClass?.name && (
-                                  <>
-                                    <Typography>
-                                      {coursData.courseClass.name}
-                                    </Typography>
-                                    <SchoolIcon />
-                                  </>
-                                )}
+                                <>
+                                  <Typography>
+                                    {coursData.courseClass.name}
+                                  </Typography>
+                                  <SchoolIcon />
+                                </>
+                              )}
                             </div>
                           </>
                         }

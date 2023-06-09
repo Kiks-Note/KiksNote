@@ -475,9 +475,9 @@ const StudentsProjects = () => {
     <>
       {loading ? (
         <>
-          <SkeletonStudentProject 
-            loading = {loading}
-            filteredProjects = {filteredProjects}
+          <SkeletonStudentProject
+            loading={loading}
+            filteredProjects={filteredProjects}
           />
         </>
       ) : (

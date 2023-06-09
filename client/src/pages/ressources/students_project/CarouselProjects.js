@@ -213,22 +213,23 @@ const CarouselProjects = (props) => {
                       <div></div>
                     )}
                     <div className="type-promo-project-container">
-                      {project.promoProject.map((promo) => (
-                        <Chip
-                          sx={{
-                            display: "flex",
-                            padding: "10px",
-                          }}
-                          label={
-                            <>
-                              <div style={{ display: "flex" }}>
-                                <Typography>{promo.name}</Typography>
-                                <SchoolIcon />
-                              </div>
-                            </>
-                          }
-                        ></Chip>
-                      ))}
+                      {project.promoProject.map &&
+                        project.promoProject.map((promo) => (
+                          <Chip
+                            sx={{
+                              display: "flex",
+                              padding: "10px",
+                            }}
+                            label={
+                              <>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>{promo.name}</Typography>
+                                  <SchoolIcon />
+                                </div>
+                              </>
+                            }
+                          ></Chip>
+                        ))}
                     </div>
                   </div>
                   <div className="type-promo-project-container">
