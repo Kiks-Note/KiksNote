@@ -2,22 +2,32 @@ import React, { useState } from 'react';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import { toast } from 'react-hot-toast';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { InputLabel } from '@mui/material';
 
-export default function ElevatorPitch({ index, isClicked, clicked }) {
+export default function ElevatorPitch({ index}) {
 
-    // const [isClicked, setIsClicked] = useState(false);
     const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+    const [forWho, setForWho] = useState("");
+    const [needed, setNeeded] = useState("");
+    const [type, setType] = useState("");
+    const [who, setWho] = useState("");
+    const [différence, setDifférence] = useState("");
 
     const handleChange = (e) => {
-        if (!name || !description) {
+        if (!name || !forWho || !needed || !type || !who || !différence) {
             toast.error("Veuillez remplir tous les champs!");
         }
         const formValues = {
             name,
-            description,
+            forWho,
+            needed,
+            type,
+            who,
+            différence,
         }
         console.log(formValues);
     }
@@ -35,8 +45,8 @@ export default function ElevatorPitch({ index, isClicked, clicked }) {
             }}
             >
                 <div className='clickable_div' style={{
-                    width: isClicked ? '70%' : '50%',
-                    height: isClicked ? '70%' : '50%',
+                    width: '70%',
+                    height:  '70%',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
@@ -44,62 +54,118 @@ export default function ElevatorPitch({ index, isClicked, clicked }) {
                     borderRadius: '20px',
                     transition: 'width 0.3s, height 0.3s',
                 }}
-                onClick={clicked}
                 >
+
+                    {/* Tu dois faire tout ton code ici selon l'index et pas creer plusieurs component */}
+                    {/* Ok Louis-kun */}
+
                     {index === 0 && (
-                        <form>
+                        <div className='clickable_div'>
                             <div>
-                                {!isClicked && (
-                                    <div>
-                                        <Typography variant='h2'>Salut 👋 ! Clique ici pour remplir ton Élévator pitch</Typography>
-                                        <Typography variant='body1'>Remplir chaque champs</Typography>
-                                    </div>
-                                )}
-                                {isClicked && (
-                                    <div>
-                                        <h2>Le nom de ton projet ? 📚</h2>
-                                        <TextField
-                                            id="outlined-basic"
-                                            label="Prénom"
-                                            variant="outlined"
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                        />
-                                    </div>
-                                )}
+                                <h2>Pour ?</h2>
+                                <p>Type visé*</p>
+                                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                                    <InputLabel id="demo-select-small-label">Pour</InputLabel>
+                                    <Select
+                                        labelId="demo-select-small-label"
+                                        id="demo-select-small"
+                                        label="pour"
+                                        value={forWho}
+                                        onChange={(e) => setForWho(e.target.value)}
+                                    >
+                                        <MenuItem value="Client">Client</MenuItem>
+                                        <MenuItem value="Utilisateur">Utilisateur</MenuItem>
+                                        <MenuItem value="Marché">Marché</MenuItem>
+                                    </Select>
+                                </FormControl>
                             </div>
-                            <div>
-                                {isClicked && (
-                                    <div>
-                                        <Typography variant='h2'>La description de ton projet ? 💻</Typography>
-                                        <Typography variant='body1'>
-                                            <em>appuyez sur entré pour avoir un saut de ligne*</em>
-                                        </Typography>
-                                        <TextField
-                                            id="outlined-multiline-flexible"
-                                            multiline
-                                            maxRows={4}
-                                            label="Description"
-                                            value={description}
-                                            onChange={(e) => setDescription(e.target.value)}
-                                        />
-                                    </div>
-                                )}
-                            </div>
-                        </form>
+                        </div>
                     )}
                     {index === 1 && (
                         <div className='clickable_div'>
-                            <form>
-                                <div>
-                                    <h2>La description de ton projet ? 📚</h2>
-
-                                </div>
-                            </form>
+                            <div>
+                                <h2>Qui a besoin de</h2>
+                                <p>Services à rendre, problèmes à régler*</p>
+                                <form>
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Besoin de"
+                                        variant="outlined"
+                                        multiline
+                                        maxRows={4}
+                                        value={needed}
+                                        onChange={(e) => setNeeded(e.target.value)}
+                                    />
+                                </form>
+                            </div>
                         </div>
                     )}
-
-                    {/* Tu dois faire tout ton code ici selon l'index et pas creer plusieurs component */}
+                    {index === 2 && (
+                        <div className='clickable_div'>
+                            <div>
+                                <h2>Le produit</h2>
+                                <p>Nom*</p>
+                                <form>
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Prénom"
+                                        variant="outlined"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                    />
+                                    <h2>Type du produit 💻</h2>
+                                    <p>Application, site web, etc*</p>
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Type"
+                                        variant="outlined"
+                                        multiline
+                                        maxRows={4}
+                                        value={type}
+                                        onChange={(e) => setType(e.target.value)}
+                                    />
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                    {index === 3 && (
+                        <div className='clickable_div'>
+                            <div>
+                                <h2>Qui ?</h2>
+                                <p>bénéfices, utilité, raisons pour acheter*</p>
+                                <form>
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Qui"
+                                        variant="outlined"
+                                        multiline
+                                        maxRows={4}
+                                        value={who}
+                                        onChange={(e) => setWho(e.target.value)}
+                                    />
+                                </form>
+                            </div>
+                        </div>
+                    )}
+                    {index === 4 && (
+                        <div className='clickable_div'>
+                            <div>
+                                <h2>A la différence de</h2>
+                                <p>alternative de la concurrence*</p>
+                                <form>
+                                    <TextField
+                                        id="outlined-basic"
+                                        label="Différence"
+                                        variant="outlined"
+                                        multiline
+                                        maxRows={4}
+                                        value={différence}
+                                        onChange={(e) => setDifférence(e.target.value)}
+                                    />
+                                </form>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </Box>
         </div>

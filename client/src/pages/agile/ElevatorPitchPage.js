@@ -14,86 +14,30 @@ export default function ElevatorPitchPage() {
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});
-  const [isClicked, setIsClicked] = React.useState(false);
   const handleNext = () => {
     setActiveStep((prevStep) => prevStep + 1);
+    if(activeStep + 1 === 5){
+      setActiveStep(4);
+    }
   };
-  const clicked = () =>{
-    setIsClicked(true);
-  }
   const handleBack = () => {
     setActiveStep((prevStep) => prevStep - 1);
-    if(activeStep - 1 === 0){
-      setIsClicked(false);
-    }
   };
   const handleStep = (step) => () => {
     setActiveStep(step);
   };
 
   const steps = [
-    'Nom et Description du projet',
-    'Create an ad group',
-    'Create an ad',
+    'Pour',
+    'Qui a besoin de',
+    'Le produit',
+    'Qui',
+    'A la différence de',
   ];
 
   return (
-    // <div style={{
-    //   textAlign: 'center',
-    //   color: '#000',
-    // }} onClick={() => checkIsClicked()}>
-    //   <h1>Elevator Pitch</h1>
-
-    //   <div>
-
-    //     {isClicked && (
-    //       <Stepper activeStep={activeStep} >
-    //         <div style={{
-    //           position: 'absolute',
-    //           bottom: '0',
-    //           right: '0',
-    //           left: '70px',
-    //           padding: '50px',
-    //         }} >
-    //           <div>
-    //             <Button
-    //               variant="contained"
-    //               onClick={handleBack}
-    //               disabled={activeStep === 0}
-    //               style={{
-    //                 marginTop: '10%',
-    //               }}
-    //               type='button'
-    //             >
-    //               Back
-    //             </Button>
-    //             <Button
-    //               variant="contained"
-    //               onClick={handleNext}
-    //               disabled={activeStep === steps.length - 1}
-    //               style={{
-    //                 marginTop: '10%',
-    //                 marginLeft: '20%',
-    //               }}
-    //               type='button'
-    //             >
-    //               Suivant
-    //             </Button>
-    //           </div>
-    //         </div>
-    //       </Stepper>
-
-    //     )}
-
-    //     {activeStep === 0 && <EPName />}
-    //     {activeStep === 1 && <EPDesc />}
-    //     {activeStep === 2 && <EPName />}
-
-    //   </div>
-
-    // </div>
     <Box sx={{ width: '100%', paddingLeft: 10, paddingRight: 10}}>
-      <ElevatorPitch index={activeStep} isClicked={isClicked} clicked={clicked}/>
+      <ElevatorPitch index={activeStep} />
       <Stepper nonLinear activeStep={activeStep}>
         {steps.map((label, index) => (
           <Step key={label} completed={completed[index]}>
