@@ -428,6 +428,22 @@ export default function Board() {
 
   const joinRoom = (room) => {
     console.log(room);
+    setInRoom(true);
+    const message = {
+      type: "joinRoom",
+      data: {
+        userID: user?.id,
+        class: room.class,
+      },
+    };
+
+    /*     if (room.columns) {
+      setColumns(room.columns);
+    } else {
+      setColumns();
+    } */
+
+    ws.send(JSON.stringify(message));
   };
 
   const setRightPostItCategorie = (obj, i) => {
@@ -474,11 +490,11 @@ export default function Board() {
     return (
       <div>
         <h1>Voici les rooms disponible: </h1>
-        // TODO:fix here
-        {roomAvailables.map(([room, index]) => {
+        {roomAvailables.map((room) => {
+          console.log(room);
           return (
-            <div key={index}>
-              <h2>{room}</h2>
+            <div key={room.id}>
+              <h2>{room.class}</h2>
               <button onClick={() => joinRoom(room)}>Rejoindre la room</button>
             </div>
           );
@@ -497,7 +513,7 @@ export default function Board() {
             variant="filled"
             id="input-class"
             sx={{ color: "text.primary" }}
-            value={classStudents}
+            renderValue={() => "Classe"}
             onChange={(e) => setClassStudents(e.target.value)}
           >
             <MenuItem value="L1-paris">L1-Paris</MenuItem>
