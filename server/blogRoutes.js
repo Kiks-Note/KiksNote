@@ -20,6 +20,7 @@ const {
   blogDetailRequests,
   deleteBlogComment,
   getRepartition,
+  getUserBlog,
 } = require("./controllers/blog");
 
 module.exports = function (connection, pathname, upload) {
@@ -33,6 +34,7 @@ module.exports = function (connection, pathname, upload) {
   router.delete("/:id", deleteBlog);
   router.delete("/:blogId/comments/:commentId", deleteBlogComment);
   router.get("/:id", getDescriptions);
+  router.get("/user/:userId", getUserBlog);
   router.put("/:id/participant", addParticipant);
   router.post("/participant", getParticipant);
   router.put("/:id/like", addLike);

@@ -19,10 +19,7 @@ const storage = multer.diskStorage({
     cb(null, DIR);
   },
   filename: function (req, file, cb) {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
+    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
   },
 });
 
@@ -40,10 +37,7 @@ const upload = multer({
 const getAllJpo = async (req, res) => {
   try {
     const currentDate = new Date();
-    const snapshot = await db
-      .collection("jpo")
-      .where("jpoDayEnd", ">=", currentDate)
-      .get();
+    const snapshot = await db.collection("jpo").where("jpoDayEnd", ">=", currentDate).get();
 
     const jpoList = [];
     snapshot.forEach((doc) => {
@@ -62,10 +56,7 @@ const getAllJpo = async (req, res) => {
 const getPastJpo = async (req, res) => {
   try {
     const currentDate = new Date();
-    const snapshot = await db
-      .collection("jpo")
-      .where("jpoDayEnd", "<", currentDate)
-      .get();
+    const snapshot = await db.collection("jpo").where("jpoDayEnd", "<", currentDate).get();
 
     const jpoList = [];
     snapshot.forEach((doc) => {
@@ -103,6 +94,50 @@ const getJpoById = async (req, res) => {
   }
 };
 
+const getAllJpoParticipants = async (req, res) => {
+  try {
+    const snapshot = await db.collection("users").where("status", "in", ["etudiant", "pedago"]).get();
+    const users = snapshot.docs.map((doc) => {
+      return { id: doc.id, ...doc.data() };
+    });
+    res.status(200).json(users);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération des utilisateurs.");
+  }
+};
+
+const getAllJpoByParticipant = async (req, res) => {
+  try {
+    const participantId = req.params.id;
+    console.log(participantId);
+    const currentDate = new Date();
+
+    const snapshot = await db.collection("jpo").where("jpoDayEnd", ">=", currentDate).get();
+
+    const jpoList = [];
+    snapshot.forEach((doc) => {
+      if (
+        doc.data().jpoParticipants.some((participant) => {
+          if (participant.id === participantId) {
+            return true;
+          } else return false;
+        })
+      ) {
+        jpoList.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      }
+    });
+
+    res.status(200).json(jpoList);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération des JPO par participant.");
+  }
+};
+
 const createJpo = async (req, res) => {
   try {
     await upload(req, res, async (err) => {
@@ -114,17 +149,13 @@ const createJpo = async (req, res) => {
         return;
       }
 
-      const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd } =
-        req.body;
+      const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd, jpoParticipants = [] } = req.body;
 
       const mimeType = "image/png";
       const fileExtension = mime.extension(mimeType);
       const fileName = `${jpoTitle}.${fileExtension}`;
 
-      const buffer = Buffer.from(
-        (jpoThumbnail || "").replace(/^data:image\/\w+;base64,/, ""),
-        "base64"
-      );
+      const buffer = Buffer.from((jpoThumbnail || "").replace(/^data:image\/\w+;base64,/, ""), "base64");
       const file = bucket.file(`jpo/${jpoTitle}/${fileName}`);
 
       const options = {
@@ -147,76 +178,38 @@ const createJpo = async (req, res) => {
         jpoThumbnail: urlImageJpo,
         jpoDayStart: new Date(jpoDayStart),
         jpoDayEnd: new Date(jpoDayEnd),
-        linkCommercialBrochure: null,
       };
 
-      if (req.file) {
-        const pdfFilePath = req.file.path;
-        const pdfFileType = mime.lookup(pdfFilePath);
-        const pdfFileSize = req.file.size;
+      const jpoParticipantsData = [];
+      for (const participantId of jpoParticipants) {
+        const jpoParticipantRef = await db.collection("users").doc(participantId).get();
+        if (jpoParticipantRef.exists) {
+          const participantsData = {
+            id: jpoParticipantRef.id,
+            firstname: jpoParticipantRef.data().firstname,
+            lastname: jpoParticipantRef.data().lastname,
+            status: jpoParticipantRef.data().status,
+          };
 
-        const pdfFolderPath = `jpo/${jpoTitle}`;
-        const pdfFileName = req.file.originalname;
+          if (jpoParticipantRef.data().image) {
+            memberData.image = memberRef.data().image;
+          }
 
-        const pdfFileRef = bucket.file(`jpo/${jpoTitle}/${pdfFileName}`);
-
-        pdfFileRef
-          .createWriteStream({
-            metadata: {
-              contentType: pdfFileType || "application/pdf",
-              cacheControl: "public, max-age=31536000",
-            },
-          })
-          .on("error", (error) => {
-            console.error(error);
-            res.status(400).json({ error: error.message });
-          })
-          .on("finish", async () => {
-            try {
-              const pdfUrl = await pdfFileRef.getSignedUrl({
-                action: "read",
-                expires: "03-17-2025",
-              });
-
-              const pdfBuffer = fs.readFileSync(pdfFilePath);
-              const pdfBase64 = pdfBuffer.toString("base64");
-
-              jpoData.linkCommercialBrochure = {
-                url: pdfUrl.toString(),
-                name: pdfFileName,
-                type: pdfFileType,
-                size: pdfFileSize,
-                pdfBase64: pdfBase64,
-              };
-
-              const jpoRef = await db.collection("jpo").add(jpoData);
-              const newJPO = await jpoRef.get();
-
-              res.status(200).json({
-                message: "JPO créée avec succès.",
-                jpoData: {
-                  id: newJPO.id,
-                  ...newJPO.data(),
-                },
-              });
-            } catch (error) {
-              console.error(error);
-              res.status(500).send("Erreur lors de la création de la JPO.");
-            }
-          })
-          .end(fs.readFileSync(pdfFilePath));
-      } else {
-        const jpoRef = await db.collection("jpo").add(jpoData);
-        const newJPO = await jpoRef.get();
-
-        res.status(200).json({
-          message: "JPO créée avec succès.",
-          jpoData: {
-            id: newJPO.id,
-            ...newJPO.data(),
-          },
-        });
+          jpoParticipantsData.push(participantsData);
+        }
       }
+      jpoData.jpoParticipants = jpoParticipantsData;
+
+      const jpoRef = await db.collection("jpo").add(jpoData);
+      const newJPO = await jpoRef.get();
+
+      res.status(200).json({
+        message: "JPO créée avec succès.",
+        jpoData: {
+          id: newJPO.id,
+          ...newJPO.data(),
+        },
+      });
     });
   } catch (err) {
     console.error(err);
@@ -230,17 +223,13 @@ const linkProjectStudents = async (req, res) => {
 
   try {
     const jpoRef = db.collection("jpo").doc(jpoId);
-    const studentProjectRef = db
-      .collection("students_projects")
-      .doc(studentProjectId);
+    const studentProjectRef = db.collection("students_projects").doc(studentProjectId);
 
     const jpoDoc = await jpoRef.get();
     const studentProjectDoc = await studentProjectRef.get();
 
     if (!jpoDoc.exists || !studentProjectDoc.exists) {
-      return res
-        .status(404)
-        .send("La jpo ou le projet étudiant n'a pas été trouvé.");
+      return res.status(404).send("La jpo ou le projet étudiant n'a pas été trouvé.");
     }
 
     const linkedStudentProject = {
@@ -249,8 +238,7 @@ const linkProjectStudents = async (req, res) => {
       imgProject: studentProjectDoc.data().imgProject,
     };
 
-    const existingLinkedStudentProjects =
-      jpoDoc.data().linkedStudentProjects || [];
+    const existingLinkedStudentProjects = jpoDoc.data().linkedStudentProjects || [];
 
     existingLinkedStudentProjects.push(linkedStudentProject);
 
@@ -259,24 +247,19 @@ const linkProjectStudents = async (req, res) => {
     });
 
     return res.status(200).json({
-      message: `Le projet étudiant ${
-        studentProjectDoc.data().nameProject
-      } a bien été lié à la jpo`,
+      message: `Le projet étudiant ${studentProjectDoc.data().nameProject} a bien été lié à la jpo`,
       linkedStudentProjects: existingLinkedStudentProjects,
     });
   } catch (err) {
     console.error(err);
-    throw new Error(
-      "Erreur lors de la création du lien entre le blog tutoriel et le projet."
-    );
+    throw new Error("Erreur lors de la création du lien entre le blog tutoriel et le projet.");
   }
 };
 
 const updateJpoById = async (req, res) => {
   try {
     const jpoId = req.params.jpoId;
-    const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd } =
-      req.body;
+    const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd, jpoParticipants } = req.body;
 
     const jpoRef = db.collection("jpo").doc(jpoId);
 
@@ -302,6 +285,27 @@ const updateJpoById = async (req, res) => {
     }
     if (jpoDayEnd) {
       jpoData.jpoDayEnd = new Date(jpoDayEnd);
+    }
+    if (jpoParticipants) {
+      const jpoParticipantsData = [];
+      for (const participantId of jpoParticipants) {
+        const jpoParticipantRef = await db.collection("users").doc(participantId).get();
+        if (jpoParticipantRef.exists) {
+          const participantsData = {
+            id: jpoParticipantRef.id,
+            firstname: jpoParticipantRef.data().firstname,
+            lastname: jpoParticipantRef.data().lastname,
+            status: jpoParticipantRef.data().status,
+          };
+
+          if (jpoParticipantRef.data().image) {
+            participantsData.image = jpoParticipantRef.data().image;
+          }
+
+          jpoParticipantsData.push(participantsData);
+        }
+      }
+      jpoData.jpoParticipants = jpoParticipantsData;
     }
 
     await jpoRef.update(jpoData);
@@ -335,9 +339,7 @@ const updateJpoPDF = async (req, res) => {
 
     await upload(req, res, async (err) => {
       if (err instanceof multer.MulterError) {
-        res
-          .status(400)
-          .json({ error: "Erreur lors du téléchargement du fichier." });
+        res.status(400).json({ error: "Erreur lors du téléchargement du fichier." });
         return;
       } else if (err) {
         res.status(400).json({ error: err.message });
@@ -350,9 +352,7 @@ const updateJpoPDF = async (req, res) => {
         const pdfFileSize = req.file.size;
 
         const pdfFileName = req.file.originalname;
-        const pdfFileRef = bucket.file(
-          `jpo/${jpoDoc.data().jpoTitle}/${pdfFileName}`
-        );
+        const pdfFileRef = bucket.file(`jpo/${jpoDoc.data().jpoTitle}/${pdfFileName}`);
 
         await pdfFileRef
           .createWriteStream({
@@ -390,7 +390,7 @@ const updateJpoPDF = async (req, res) => {
               const updatedJpo = await jpoRef.get();
 
               return res.status(200).json({
-                message: "JPO modifiée avec succès.",
+                message: "Votre plaquette commercial a été ajouté avec succès.",
                 jpoData: {
                   id: updatedJpo.id,
                   ...updatedJpo.data(),
@@ -402,75 +402,8 @@ const updateJpoPDF = async (req, res) => {
             }
           })
           .end(fs.readFileSync(pdfFilePath));
-      } else if (jpoDoc.data().linkCommercialBrochure === null) {
-        const mimeType = "application/pdf";
-        const fileExtension = mime.extension(mimeType);
-        const fileName = `${jpoDoc.data().jpoTitle}.${fileExtension}`;
-
-        const pdfFilePath = req.file.path;
-        const pdfFileType = mime.lookup(pdfFilePath);
-        const pdfFileSize = req.file.size;
-
-        const pdfFileName = req.file.originalname;
-        const pdfFileRef = bucket.file(
-          `jpo/${jpoDoc.data().jpoTitle}/${pdfFileName}`
-        );
-        const pdfBuffer = fs.readFileSync(pdfFilePath);
-        const pdfBase64 = pdfBuffer.toString("base64");
-
-        const file = bucket.file(`jpo/${jpoDoc.data().jpoTitle}/${fileName}`);
-
-        const options = {
-          metadata: {
-            contentType: mimeType || "application/pdf",
-            cacheControl: "public, max-age=31536000",
-          },
-        };
-
-        await file.save(buffer, options);
-
-        const [url] = await file.getSignedUrl({
-          action: "read",
-          expires: "03-17-2025",
-        });
-
-        const updatedData = {
-          linkCommercialBrochure: {
-            url: url.toString(),
-            name: fileName,
-            type: mimeType,
-            size: buffer.length,
-            pdfBase64: buffer.toString("base64"),
-          },
-        };
-
-        await jpoRef.update(updatedData);
-
-        const updatedJpo = await jpoRef.get();
-
-        return res.status(200).json({
-          message: "JPO modifiée avec succès.",
-          jpoData: {
-            id: updatedJpo.id,
-            ...updatedJpo.data(),
-          },
-        });
       } else {
-        const updatedData = {
-          linkCommercialBrochure: null,
-        };
-
-        await jpoRef.update(updatedData);
-
-        const updatedJpo = await jpoRef.get();
-
-        return res.status(200).json({
-          message: "Aucun fichier PDF fourni. La JPO reste inchangée.",
-          jpoData: {
-            id: updatedJpo.id,
-            ...updatedJpo.data(),
-          },
-        });
+        return res.status(400).json({ error: "Aucun fichier PDF fourni." });
       }
     });
   } catch (err) {
@@ -515,6 +448,8 @@ module.exports = {
   getAllJpo,
   getPastJpo,
   getJpoById,
+  getAllJpoParticipants,
+  getAllJpoByParticipant,
   createJpo,
   linkProjectStudents,
   updateJpoById,
