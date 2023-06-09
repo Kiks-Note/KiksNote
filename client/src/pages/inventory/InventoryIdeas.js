@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Toaster, toast} from "react-hot-toast";
 import {useParams} from "react-router-dom";
 import BasicModal from "../../components/inventory/BasicModal";
@@ -71,11 +71,16 @@ const ChatBox = ({sender, message}) => {
 const CommentModal = ({open, setOpen, ideaId, messages, setComments}) => {
   const [comment, setComment] = useState("");
   const {user} = useFirebase();
+  const bottomRef = useRef();
 
   const handleClose = () => {
     setOpen(false);
     setComments([]);
   };
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({behavior: "smooth"});
+  }, [messages]);
 
   const handleSend = async () => {
     try {
@@ -125,6 +130,7 @@ const CommentModal = ({open, setOpen, ideaId, messages, setComments}) => {
           {messages.map((message) => (
             <ChatBox sender={message.sender} message={message} />
           ))}
+          <div ref={bottomRef} />
         </div>
         <TextField
           autoFocus
