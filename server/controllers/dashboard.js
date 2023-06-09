@@ -128,6 +128,7 @@ const createCard = async (req, res) => {
         labels: [],
         color: color,
         storyId: id,
+        value: 0,
       };
     } else if (
       columnName == "toDo" ||
@@ -363,6 +364,7 @@ const createStory = async (req, res) => {
       labels: [],
       color: color,
       storyId: id,
+      value: 0,
     };
     // Ajouter la nouvelle histoire à la collection "stories" du document "dashboard"
     const storiesRef = dashboardRef.collection("stories");
@@ -395,7 +397,7 @@ const editCard = async (req, res) => {
 
     switch (columnId.toString()) {
       case "0":
-        updatedItems = setColumnItems(columns.requested.items, data, false);
+        updatedItems = setColumnItems(columns.requested.items, data, false, true);
         name = "Stories";
         break;
       case "1":
@@ -425,7 +427,6 @@ const editCard = async (req, res) => {
       default:
         throw new Error("Invalid column ID");
     }
-
     const updateData = {
       [getColumnField(parseInt(columnId))]: {
         items: updatedItems,
@@ -595,11 +596,15 @@ function getColumnField(columnId) {
   }
 }
 //Setter ColumnItems
+<<<<<<< Updated upstream
 function setColumnItems(
   columnItems,
   updatedItem,
   includeEstimationAndAdvancement
 ) {
+=======
+function setColumnItems(columnItems, updatedItem, includeEstimationAndAdvancement, isStory = false) {
+>>>>>>> Stashed changes
   return columnItems.map((item) => {
     if (item.id === updatedItem.id) {
       const newItem = {
@@ -618,8 +623,9 @@ function setColumnItems(
 
         newItem.estimation = updatedItem.estimation;
         newItem.advancement = updatedItem.advancement;
+      } else if (isStory) {
+        newItem.value = updatedItem.value;
       }
-
       return newItem;
     } else {
       return item;

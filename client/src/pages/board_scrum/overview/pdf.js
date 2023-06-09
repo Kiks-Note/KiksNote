@@ -213,7 +213,7 @@ const PDFGenerator = ({ stories, releases }) => {
                               <Text>{story.name}</Text>
                             </View>
                             <View style={[styles.tableCell, { width: "20%" }]}>
-                              <Text>2000</Text>
+                              <Text>{story.value}</Text>
                             </View>
                             <View style={[styles.tableCell, { width: "30%" }]}>
                               <Text>10%</Text>
