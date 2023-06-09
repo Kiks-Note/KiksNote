@@ -12,6 +12,7 @@ const {
   uploadMediaProject,
   refStudentProject,
   createLinkedBlogTuto,
+  removeLinkedBlogTuto,
 } = require("./controllers/studentsProjects");
 
 module.exports = function () {
@@ -26,5 +27,6 @@ module.exports = function () {
   router.post("/upload-media-project", uploadMediaProject);
   router.post("/refprojects", refStudentProject);
   router.post("/linkblogtuto/:projectId", createLinkedBlogTuto);
+  router.delete("/linkblogtuto/:projectId", removeLinkedBlogTuto);
   return router;
 };

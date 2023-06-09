@@ -1,4 +1,4 @@
-const { db, storageFirebase } = require("../firebase");
+const { db, FieldValue, storageFirebase } = require("../firebase");
 const multer = require("multer");
 const fs = require("fs");
 const mime = require("mime-types");
@@ -444,6 +444,38 @@ const createLinkedBlogTuto = async (req, res) => {
   }
 };
 
+const removeLinkedBlogTuto = async (req, res) => {
+  const projectId = req.params.projectId;
+
+  try {
+    const projectRef = db.collection("students_projects").doc(projectId);
+    const projectDoc = await projectRef.get();
+
+    if (!projectDoc.exists) {
+      return res.status(404).send("Le projet spécifié n'a pas été trouvé.");
+    }
+
+    if (!projectDoc.data().linkedBlogTuto) {
+      return res
+        .status(404)
+        .send("Aucun blog tutoriel n'est associé à ce projet.");
+    }
+
+    await projectRef.update({
+      linkedBlogTuto: FieldValue.delete(),
+    });
+
+    return res
+      .status(200)
+      .send("Le lien avec le blog tutoriel a été supprimé avec succès.");
+  } catch (err) {
+    console.error(err);
+    throw new Error(
+      "Erreur lors de la suppression du lien entre le blog tutoriel et le projet."
+    );
+  }
+};
+
 module.exports = {
   getAllStudents,
   getStudentById,
@@ -455,4 +487,5 @@ module.exports = {
   uploadMediaProject,
   refStudentProject,
   createLinkedBlogTuto,
+  removeLinkedBlogTuto,
 };
