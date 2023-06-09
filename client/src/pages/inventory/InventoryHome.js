@@ -42,7 +42,7 @@ const Sujection = ({openSujection, setOpenSujection}) => {
   const handleSendSujection = async () => {
     setLoading(true);
     await axios
-      .post("http://localhost:5050/inventory/createIdea", {
+      .post(`${process.env.REACT_APP_SERVER_API}/inventory/createIdea`, {
         name,
         url,
         price,
@@ -214,7 +214,9 @@ function InventoryHome() {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/liveInventory");
+      const ws = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/liveInventory`
+      );
 
       const inv = (ws.onmessage = (e) => {
         const data = JSON.parse(e.data);

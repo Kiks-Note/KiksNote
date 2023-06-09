@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import ImgMediaCard from "../../components/blog/Card";
 import Box from "@mui/material/Box";
@@ -6,10 +6,10 @@ import Grid from "@mui/material/Grid";
 import TutoSkeleton from "../../components/blog/TutoSkeleton";
 import TagFilter from "../../components/blog/TagFilter";
 import SearchBar from "../../components/blog/SearchBar";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 import Button from "@mui/material/Button";
 import SideBarModify from "../../components/blog/NewBlog.js";
-import { Toaster } from "react-hot-toast";
+import {Toaster} from "react-hot-toast";
 
 function Blog() {
   const [blog, setBlog] = useState([]);
@@ -19,7 +19,9 @@ function Blog() {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/blog");
+      const ws = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/blog`
+      );
       ws.onmessage = (message) => {
         const dataFromServer = JSON.parse(message.data);
         console.log("Got message from server ", dataFromServer);
@@ -44,19 +46,16 @@ function Blog() {
     <>
       <Toaster />
       <Box>
-        <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+        <Grid container rowSpacing={1} columnSpacing={{xs: 1, sm: 2, md: 3}}>
           <Grid item xs={2}>
             <TagFilter />
           </Grid>
-          <Grid
-            item
-            xs={10}
-          >
+          <Grid item xs={10}>
             <Grid
               container
               direction={"column"}
               rowSpacing={1}
-              columnSpacing={{ xs: 1, sm: 2, md: 3 }}
+              columnSpacing={{xs: 1, sm: 2, md: 3}}
             >
               <Grid container item>
                 <Grid item xs={10}>

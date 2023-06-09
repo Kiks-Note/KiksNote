@@ -5,14 +5,14 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import DisplayComment from "./DisplayComment";
 import CreateComment from "./CreateComment";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 import TutoSkeleton from "./TutoSkeleton";
 
-export default function Comment({ tutoId }) {
+export default function Comment({tutoId}) {
   const [open, setOpen] = useState(false);
   const [scroll, setScroll] = useState("paper");
   const [allComments, setAllComments] = useState([]);
@@ -23,7 +23,7 @@ export default function Comment({ tutoId }) {
     open &&
       (async () => {
         const wsComments = new w3cwebsocket(
-          `ws://localhost:5050/tutos/comments`
+          `${process.env.REACT_APP_SERVER_API_WS}/tutos/comments`
         );
 
         wsComments.onopen = function (e) {
@@ -43,7 +43,7 @@ export default function Comment({ tutoId }) {
 
   // const getComments = async () => {
   //   const response = await axios.get(
-  //     `http://localhost:5050/tuto/${tutoId}/comments`
+  //     `http://${process.env.REACT_APP_SERVER_API}/tuto/${tutoId}/comments`
   //   );
   //   setAllComments(response.data);
   //   // console.log(response.data);
@@ -62,7 +62,7 @@ export default function Comment({ tutoId }) {
   useEffect(() => {
     if (open) {
       // getComments();
-      const { current: descriptionElement } = descriptionElementRef;
+      const {current: descriptionElement} = descriptionElementRef;
       if (descriptionElement !== null) {
         descriptionElement.focus();
       }

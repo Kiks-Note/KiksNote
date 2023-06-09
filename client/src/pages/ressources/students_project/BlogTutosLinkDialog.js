@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {useState} from "react";
+import {useParams} from "react-router-dom";
 import axios from "axios";
 import {
   Button,
@@ -14,15 +14,18 @@ import {
 } from "@mui/material";
 
 const BlogTutosLinkDialog = (props) => {
-  const { projectid } = useParams();
+  const {projectid} = useParams();
   const [selectedBlogTutoId, setSelectedBlogTutoId] = useState("");
 
   const publishStudentProject = async () => {
     try {
       await axios
-        .post(`http://localhost:5050/ressources/linkblogtuto/${projectid}`, {
-          blogTutoId: selectedBlogTutoId,
-        })
+        .post(
+          `${process.env.REACT_APP_SERVER_API}/ressources/linkblogtuto/${projectid}`,
+          {
+            blogTutoId: selectedBlogTutoId,
+          }
+        )
         .then((res) => {
           console.log(res.data);
         })
@@ -47,11 +50,11 @@ const BlogTutosLinkDialog = (props) => {
     <Dialog open={props.open} onClose={props.close}>
       <DialogTitle>Lier à un article blog tuto</DialogTitle>
       <DialogContent>
-        <div style={{ height: "600px", overflow: "auto" }}>
+        <div style={{height: "600px", overflow: "auto"}}>
           <Grid container spacing={2}>
             {props.allblogtutos.map((blogTuto) => (
               <Grid item key={blogTuto.id} xs={12} sm={6} md={4}>
-                <div style={{ position: "relative" }}>
+                <div style={{position: "relative"}}>
                   <FormControlLabel
                     value={blogTuto.id}
                     control={
@@ -70,14 +73,14 @@ const BlogTutosLinkDialog = (props) => {
                   />
                   <img
                     src={blogTuto.data.thumbnail}
-                    style={{ width: "100%", cursor: "pointer" }}
+                    style={{width: "100%", cursor: "pointer"}}
                     alt="blog-tuto-linked-img"
                     onClick={() => handleImageClick(blogTuto.id)}
                   />
                 </div>
                 <Typography
                   variant="subtitle1"
-                  sx={{ textAlign: "center", marginBottom: "15px" }}
+                  sx={{textAlign: "center", marginBottom: "15px"}}
                 >
                   {blogTuto.data.title}
                 </Typography>
@@ -89,7 +92,7 @@ const BlogTutosLinkDialog = (props) => {
       <DialogActions>
         <Button
           onClick={publishStudentProject}
-          sx={{ backgroundColor: "#7a52e1", color: "white" }}
+          sx={{backgroundColor: "#7a52e1", color: "white"}}
           disabled={!selectedBlogTutoId}
         >
           Soumettre

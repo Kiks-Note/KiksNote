@@ -71,7 +71,7 @@ const Login = () => {
       const token = await loggedInUser.user.getIdToken();
 
       await axios
-        .post("http://localhost:5050/auth/login", {
+        .post(`${process.env.REACT_APP_SERVER_API}/auth/login`, {
           token,
         })
         .then(() => {

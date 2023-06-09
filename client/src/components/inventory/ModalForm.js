@@ -54,7 +54,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
     } else {
       try {
         await toast.promise(
-          axios.post("http://localhost:5050/inventory", {
+          axios.post(`${process.env.REACT_APP_SERVER_API}/inventory`, {
             label: label,
             price: price,
             acquisitiondate: acquisitiondate,
@@ -100,7 +100,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
     open === true &&
       (async () => {
         await axios
-          .get("http://localhost:5050/inventory/categories")
+          .get(`${process.env.REACT_APP_SERVER_API}/inventory/categories`)
           .then((res) => {
             setCategories(res.data);
             console.log(res.data);

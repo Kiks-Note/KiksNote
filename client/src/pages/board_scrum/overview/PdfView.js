@@ -1,12 +1,12 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import React, {useState, useEffect} from "react";
+import {useForm} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import { useTheme } from "@mui/material/styles";
+import {useTheme} from "@mui/material/styles";
 import {
   InputLabel,
   Input,
@@ -17,7 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import PropTypes from "prop-types";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import {Document, Page} from "react-pdf/dist/esm/entry.webpack";
 import "react-pdf/dist/esm/Page/TextLayer.css";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "./PdfView.scss";
@@ -26,7 +26,7 @@ PdfView.propTypes = {
   linkPdf: PropTypes.string.isRequired,
   dashboardId: PropTypes.string.isRequired,
 };
-function PdfView({ linkPdf, dashboardId }) {
+function PdfView({linkPdf, dashboardId}) {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [link, setLink] = useState(null);
@@ -37,7 +37,7 @@ function PdfView({ linkPdf, dashboardId }) {
       setLink(linkPdf);
     })();
   }, []);
-  const onDocumentLoadSuccess = ({ numPages }) => {
+  const onDocumentLoadSuccess = ({numPages}) => {
     setNumPages(numPages);
   };
   const handleDownload = () => {
@@ -64,7 +64,7 @@ function PdfView({ linkPdf, dashboardId }) {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: {errors, isSubmitting},
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -93,7 +93,9 @@ function PdfView({ linkPdf, dashboardId }) {
     };
     try {
       const response = await axios.post(
-        "http://localhost:5050/dashboard/creation/" + dashboardId + "/stories",
+        `${process.env.REACT_APP_SERVER_API}/dashboard/creation/` +
+          dashboardId +
+          "/stories",
         formData
       );
       reset(); // Efface les champs après la soumission réussie
@@ -104,12 +106,12 @@ function PdfView({ linkPdf, dashboardId }) {
   }
   return (
     <>
-      <Grid container spacing={2} sx={{ m: 2 }}>
-        <Grid item xs={12} md={7} sx={{ ml: 2, mt: 4 }}>
+      <Grid container spacing={2} sx={{m: 2}}>
+        <Grid item xs={12} md={7} sx={{ml: 2, mt: 4}}>
           <div className="container">
             <div
               className="nav"
-              style={{ background: theme.palette.text.secondary }}
+              style={{background: theme.palette.text.secondary}}
             >
               <IconButton
                 variant="contained"
@@ -118,7 +120,7 @@ function PdfView({ linkPdf, dashboardId }) {
                 disabled={pageNumber <= 1}
               >
                 <NavigateBeforeIcon
-                  sx={{ color: theme.palette.custom.iconPdf }}
+                  sx={{color: theme.palette.custom.iconPdf}}
                 />
               </IconButton>
               <Typography variant="body1">
@@ -131,9 +133,7 @@ function PdfView({ linkPdf, dashboardId }) {
                 color="primary"
                 onClick={handleDownload}
               >
-                <FileDownloadIcon
-                  sx={{ color: theme.palette.custom.iconPdf }}
-                />
+                <FileDownloadIcon sx={{color: theme.palette.custom.iconPdf}} />
               </IconButton>
 
               <IconButton
@@ -142,14 +142,12 @@ function PdfView({ linkPdf, dashboardId }) {
                 className="button"
                 disabled={pageNumber >= numPages}
               >
-                <NavigateNextIcon
-                  sx={{ color: theme.palette.custom.iconPdf }}
-                />
+                <NavigateNextIcon sx={{color: theme.palette.custom.iconPdf}} />
               </IconButton>
             </div>
             <Document
               file={link}
-              options={{ workerSrc: "/pdf.worker.js" }}
+              options={{workerSrc: "/pdf.worker.js"}}
               onLoadSuccess={onDocumentLoadSuccess}
             >
               <Page
@@ -162,7 +160,7 @@ function PdfView({ linkPdf, dashboardId }) {
             </Document>
           </div>
         </Grid>
-        <Grid item xs={12} md={4} sx={{ ml: 2, mt: 4 }}>
+        <Grid item xs={12} md={4} sx={{ml: 2, mt: 4}}>
           <Box
             sx={{
               display: "flex",
@@ -219,7 +217,7 @@ function PdfView({ linkPdf, dashboardId }) {
                     variant="contained"
                     type="submit"
                     disabled={isSubmitting}
-                    sx={{ mt: 3, mb: 2 }}
+                    sx={{mt: 3, mb: 2}}
                   >
                     Enregistrer
                   </Button>

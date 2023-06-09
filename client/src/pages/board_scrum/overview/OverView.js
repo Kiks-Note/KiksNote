@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import React, {useState, useEffect} from "react";
+import {useDispatch} from "react-redux";
 import {
   Accordion,
   AccordionSummary,
@@ -15,14 +15,14 @@ import CardSprint from "../../../components/board_scrum/overview/CardSprint";
 import StatTab from "../../../components/board_scrum/overview/StatTab";
 import StoryList from "../../../components/board_scrum/overview/StoryList";
 import Grid from "@mui/material/Grid";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 import PropTypes from "prop-types";
-import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
+import {setActiveTab, addTab} from "../../../redux/slices/tabBoardSlice";
 
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
 };
-function OverView({ id }) {
+function OverView({id}) {
   var [releases, setRelease] = useState({});
   const [stories, setStories] = useState({});
   var [boards, setBoards] = useState({});
@@ -36,7 +36,7 @@ function OverView({ id }) {
       label: "Backlog ",
       closeable: true,
       component: "PdfView",
-      data: { dashboardId: id, pdfLink: pdfLink },
+      data: {dashboardId: id, pdfLink: pdfLink},
     };
     dispatch(addTab(pdfViewTab));
     dispatch(setActiveTab(pdfViewTab.id));
@@ -44,7 +44,9 @@ function OverView({ id }) {
 
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/overview`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/overview`
+      );
 
       wsComments.onopen = function (e) {
         wsComments.send(JSON.stringify(id));
@@ -63,7 +65,7 @@ function OverView({ id }) {
 
   return (
     <>
-      <Grid container spacing={1} sx={{ ml: 1 }}>
+      <Grid container spacing={1} sx={{ml: 1}}>
         <Grid item xs={12} md={5}>
           {display ? (
             <>
@@ -73,7 +75,7 @@ function OverView({ id }) {
                 sprints={releases}
                 dashboardId={id}
               />
-              <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
+              <Typography variant="h4" gutterBottom sx={{flexGrow: 1}}>
                 Release / Sprint
               </Typography>
               <List
@@ -90,8 +92,8 @@ function OverView({ id }) {
                 }}
               >
                 {Object.keys(releases).map((item, i) => (
-                  <ListItem key={i+id}>
-                    <Box sx={{ width: "100%" }}>
+                  <ListItem key={i + id}>
+                    <Box sx={{width: "100%"}}>
                       <Accordion>
                         <AccordionSummary
                           expandIcon={<ExpandMoreIcon />}
@@ -100,8 +102,8 @@ function OverView({ id }) {
                         >
                           <Typography>{item}</Typography>
                         </AccordionSummary>
-                        <AccordionDetails sx={{ width: "100%" }}>
-                          <Box sx={{ width: "100%" }}>
+                        <AccordionDetails sx={{width: "100%"}}>
+                          <Box sx={{width: "100%"}}>
                             <CardSprint
                               key={id}
                               release={releases[item]}
@@ -131,7 +133,7 @@ function OverView({ id }) {
                   <></>
                 )}
               </Box>{" "}
-              <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
+              <Typography variant="h4" gutterBottom sx={{flexGrow: 1}}>
                 Statistiques
               </Typography>
               <StatTab boards={boards} />{" "}

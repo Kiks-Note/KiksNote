@@ -80,7 +80,7 @@ const CommentModal = ({open, setOpen, ideaId, messages, setComments}) => {
   const handleSend = async () => {
     try {
       await axios.post(
-        `http://localhost:5050/inventory/ideas/comment/${ideaId}`,
+        `${process.env.REACT_APP_SERVER_API}/inventory/ideas/comment/${ideaId}`,
         {comment, userId: user.id}
       );
       toast.success("Commentaire envoyé");
@@ -200,7 +200,7 @@ const InventoryIdeas = () => {
       (async () => {
         try {
           const response = await axios.get(
-            `http://localhost:5050/inventory/ideas`
+            `${process.env.REACT_APP_SERVER_API}/inventory/ideas`
           );
 
           if (params.status === "treated") {
@@ -238,7 +238,9 @@ const InventoryIdeas = () => {
 
   const handleAccept = async (id) => {
     try {
-      await axios.put(`http://localhost:5050/inventory/ideas/${id}/accept`);
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/inventory/ideas/${id}/accept`
+      );
       toast.success("Idée acceptée");
       setLoading(true);
     } catch (error) {
@@ -249,7 +251,9 @@ const InventoryIdeas = () => {
 
   const handleRefuse = async (id) => {
     try {
-      await axios.put(`http://localhost:5050/inventory/ideas/${id}/refuse`);
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/inventory/ideas/${id}/refuse`
+      );
       toast.success("Idée refusée");
       setLoading(true);
     } catch (error) {
@@ -259,7 +263,9 @@ const InventoryIdeas = () => {
   };
 
   const loadComments = async (value) => {
-    const ws = new w3cwebsocket("ws://localhost:5050/getIdeaComments");
+    const ws = new w3cwebsocket(
+      `${process.env.REACT_APP_SERVER_API_WS}/getIdeaComments`
+    );
 
     ws.onopen = () => {
       const message = JSON.stringify({value}); // Convert the value to JSON string

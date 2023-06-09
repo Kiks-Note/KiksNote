@@ -1,0 +1,5 @@
+node_modules
+.env
+credentials.json
+.env.login
+/uploads

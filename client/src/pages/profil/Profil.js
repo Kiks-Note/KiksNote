@@ -58,7 +58,7 @@ export default function Profil() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5050/profil/background/${userProfil.id}`,
+        `${process.env.REACT_APP_SERVER_API}/profil/background/${userProfil.id}`,
         formData,
         {
           headers: {
@@ -84,7 +84,9 @@ export default function Profil() {
 
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/profil`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/profil`
+      );
 
       wsComments.onopen = function (e) {
         wsComments.send(JSON.stringify(user?.id));

@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import {useState, useEffect, useCallback} from "react";
+import {useNavigate} from "react-router-dom";
 
-import { useForm } from "react-hook-form";
+import {useForm} from "react-hook-form";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 import useFirebase from "../../../hooks/useFirebase";
 
@@ -56,7 +56,7 @@ export const toastFail = (message) => {
 const StudentsProjects = () => {
   let navigate = useNavigate();
 
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const userStatus = user?.status;
 
   const [open, setOpen] = useState(false);
@@ -102,7 +102,7 @@ const StudentsProjects = () => {
   const getAllProjects = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/students-projects")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/students-projects`)
         .then((res) => {
           setProjects(res.data);
         })
@@ -117,7 +117,7 @@ const StudentsProjects = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/classes")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/classes`)
         .then((res) => {
           setAllclass(res.data);
         })
@@ -132,7 +132,7 @@ const StudentsProjects = () => {
   const getAllStudents = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/students")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/students`)
         .then((res) => {
           setAllStudents(res.data);
         })
@@ -147,17 +147,20 @@ const StudentsProjects = () => {
   const publishStudentProject = async () => {
     try {
       await axios
-        .post("http://localhost:5050/ressources/students-projects", {
-          StudentId: user?.id,
-          nameProject: nameProject,
-          RepoProjectLink: repoProjectLink,
-          promoProject: idSelectedClass,
-          membersProject: membersProject,
-          typeProject: typeProject,
-          descriptionProject: descriptionProject,
-          imgProject: projectImageBase64,
-          counterRef: 0,
-        })
+        .post(
+          `${process.env.REACT_APP_SERVER_API}/ressources/students-projects`,
+          {
+            StudentId: user?.id,
+            nameProject: nameProject,
+            RepoProjectLink: repoProjectLink,
+            promoProject: idSelectedClass,
+            membersProject: membersProject,
+            typeProject: typeProject,
+            descriptionProject: descriptionProject,
+            imgProject: projectImageBase64,
+            counterRef: 0,
+          }
+        )
         .then((res) => {
           console.log(res);
           if (
@@ -183,7 +186,7 @@ const StudentsProjects = () => {
   ) => {
     try {
       const response = await axios.post(
-        "http://localhost:5050/ressources/refprojects",
+        `${process.env.REACT_APP_SERVER_API}/ressources/refprojects`,
         {
           projectId: projectId,
           counterRefToAdd: countRefAdd,
@@ -231,7 +234,7 @@ const StudentsProjects = () => {
     getAllStudents();
   }, []);
 
-  const { control } = useForm({
+  const {control} = useForm({
     mode: "onTouched",
   });
 
@@ -256,7 +259,7 @@ const StudentsProjects = () => {
   return (
     <div className="students-project-container">
       <div className="header-students-projects">
-        <FormControl sx={{ width: "20%" }}>
+        <FormControl sx={{width: "20%"}}>
           <Select
             value={selectedFilterTypeProject}
             onChange={(event) => {
@@ -271,7 +274,7 @@ const StudentsProjects = () => {
             ))}
           </Select>
         </FormControl>
-        <FormControl sx={{ width: "20%" }}>
+        <FormControl sx={{width: "20%"}}>
           <Select
             value={selectedFilterClass}
             onChange={(event) => {
@@ -293,7 +296,7 @@ const StudentsProjects = () => {
         {userStatus === "etudiant" ? (
           <Button
             onClick={handleClickOpen}
-            sx={{ backgroundColor: "#7a52e1", color: "white", width: "15%" }}
+            sx={{backgroundColor: "#7a52e1", color: "white", width: "15%"}}
           >
             Publier mon projet
           </Button>
@@ -302,7 +305,7 @@ const StudentsProjects = () => {
         )}
       </div>
       <Card
-        sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+        sx={{display: "flex", flexDirection: "column", alignItems: "center"}}
       >
         <CreateProjectDialog
           open={open}
@@ -391,13 +394,13 @@ const StudentsProjects = () => {
                       }}
                     />
 
-                    <CardContent sx={{ padding: "10px", height: "120px" }}>
+                    <CardContent sx={{padding: "10px", height: "120px"}}>
                       {project.typeProject === "Web" ? (
                         <div>
                           <h2 variant="h3" component="div">
                             {project.nameProject} - {project.typeProject}
                             <DesktopWindowsRoundedIcon
-                              sx={{ marginLeft: "5px" }}
+                              sx={{marginLeft: "5px"}}
                             />
                           </h2>
                         </div>
@@ -405,7 +408,7 @@ const StudentsProjects = () => {
                         <div>
                           <h2 variant="h3" component="div">
                             {project.nameProject} - {project.typeProject}
-                            <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
+                            <SmartphoneRoundedIcon sx={{marginLeft: "5px"}} />
                           </h2>
                         </div>
                       ) : project.typeProject === "Gaming" ? (
@@ -413,7 +416,7 @@ const StudentsProjects = () => {
                           <h2 variant="h3" component="div">
                             {project.nameProject} - {project.typeProject}
                             <SportsEsportsRoundedIcon
-                              sx={{ marginLeft: "5px" }}
+                              sx={{marginLeft: "5px"}}
                             />
                           </h2>
                         </div>
@@ -421,7 +424,7 @@ const StudentsProjects = () => {
                         <div>
                           <h2 variant="h3" component="div">
                             {project.nameProject} - {project.typeProject}
-                            <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
+                            <SmartToyRoundedIcon sx={{marginLeft: "5px"}} />
                           </h2>
                         </div>
                       ) : project.typeProject === "DevOps" ? (
@@ -436,7 +439,7 @@ const StudentsProjects = () => {
                       )}
 
                       <Chip
-                        sx={{ marginRight: "10px" }}
+                        sx={{marginRight: "10px"}}
                         label={
                           <>
                             <Typography>{project.promoProject.name}</Typography>
@@ -454,10 +457,10 @@ const StudentsProjects = () => {
                               user?.id
                             );
                           }}
-                          sx={{ color: "#7a52e1" }}
+                          sx={{color: "#7a52e1"}}
                         >
                           {project.counterRef}{" "}
-                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                          <BackHandRoundedIcon sx={{marginLeft: "3px"}} />
                         </Button>
                       ) : userStatus === "pedago" ? (
                         <Button
@@ -470,10 +473,10 @@ const StudentsProjects = () => {
                               user?.id
                             );
                           }}
-                          sx={{ color: "#7a52e1" }}
+                          sx={{color: "#7a52e1"}}
                         >
                           {project.counterRef}{" "}
-                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                          <BackHandRoundedIcon sx={{marginLeft: "3px"}} />
                         </Button>
                       ) : (
                         <Button
@@ -486,10 +489,10 @@ const StudentsProjects = () => {
                               user?.id
                             );
                           }}
-                          sx={{ color: "#7a52e1" }}
+                          sx={{color: "#7a52e1"}}
                         >
                           {project.counterRef}{" "}
-                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                          <BackHandRoundedIcon sx={{marginLeft: "3px"}} />
                         </Button>
                       )}
                     </CardContent>

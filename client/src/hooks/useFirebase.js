@@ -42,7 +42,7 @@ export const FirebaseContextProvider = ({children}) => {
     const authUnsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         axios
-          .post("http://localhost:5050/auth/login", {
+          .post(`${process.env.REACT_APP_SERVER_API}/auth/login`, {
             token: user?.accessToken,
           })
           .then((res) => {

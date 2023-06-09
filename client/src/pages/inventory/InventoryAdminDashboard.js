@@ -49,7 +49,7 @@ const CategoryDialog = ({open, setDialogOpen}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await axios
-      .put("http://localhost:5050/inventory/category", {
+      .put(`${process.env.REACT_APP_SERVER_API}/inventory/category`, {
         category,
       })
       .then((res) => {
@@ -94,7 +94,9 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/liveCategories");
+      const ws = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/liveCategories`
+      );
 
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
@@ -107,7 +109,9 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
   const deleteCategory = async (category) => {
     console.log(category);
     await axios
-      .delete(`http://localhost:5050/inventory/category/${category}`)
+      .delete(
+        `${process.env.REACT_APP_SERVER_API}/inventory/category/${category}`
+      )
       .then((res) => {
         toast.success("Catégorie supprimée avec succès");
       })
@@ -121,9 +125,12 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
     const newCategory = document.getElementById(`category-${e}`).textContent;
 
     await axios
-      .put(`http://localhost:5050/inventory/category/${oldCategory}`, {
-        newCategory,
-      })
+      .put(
+        `${process.env.REACT_APP_SERVER_API}/inventory/category/${oldCategory}`,
+        {
+          newCategory,
+        }
+      )
       .then((res) => {
         toast.success("Catégorie modifiée avec succès");
         setEditableIndex(-1);
@@ -372,7 +379,7 @@ const InventoryAdminDashboard = () => {
   useEffect(() => {
     (async () => {
       const _ideas = await axios
-        .get("http://localhost:5050/inventory/ideas")
+        .get(`${process.env.REACT_APP_SERVER_API}/inventory/ideas`)
         .then((res) => {
           setIdeas(res.data);
         })
@@ -380,8 +387,12 @@ const InventoryAdminDashboard = () => {
           console.log(err);
         });
 
-      const ws = new w3cwebsocket("ws://localhost:5050/pendingRequests");
-      const ws2 = new w3cwebsocket("ws://localhost:5050/liveInventory");
+      const ws = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/pendingRequests`
+      );
+      const ws2 = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/liveInventory`
+      );
 
       const wsReqs = (ws.onmessage = (e) => {
         const data = JSON.parse(e.data);

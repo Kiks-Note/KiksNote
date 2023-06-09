@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, {useState, useEffect} from "react";
+import {useParams} from "react-router-dom";
 
 import axios from "axios";
 
@@ -37,9 +37,9 @@ import BlogTutosLinkDialog from "./BlogTutosLinkDialog";
 import "./StudentsProjectsInfo.scss";
 
 const StudentProjectInfo = () => {
-  const { user } = useFirebase();
+  const {user} = useFirebase();
 
-  const { projectid } = useParams();
+  const {projectid} = useParams();
 
   const [allblogtutos, setAllBlogTutos] = useState([]);
   const [blogTutoData, setBlogTutoData] = useState([]);
@@ -57,7 +57,7 @@ const StudentProjectInfo = () => {
   const getBlogTutorials = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/blogstutos")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/blogstutos`)
         .then((res) => {
           setAllBlogTutos(res.data);
         })
@@ -71,7 +71,7 @@ const StudentProjectInfo = () => {
   const getBlogTutoById = async (blogTutoId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5050/ressources/blogstutos/${blogTutoId}`
+        `${process.env.REACT_APP_SERVER_API}/ressources/blogstutos/${blogTutoId}`
       );
       setBlogTutoData(response.data);
       setHasAddedBlog(true);
@@ -83,7 +83,7 @@ const StudentProjectInfo = () => {
   const getStudentProjectById = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5050/ressources/studentsprojects/${projectid}`
+        `${process.env.REACT_APP_SERVER_API}/ressources/studentsprojects/${projectid}`
       );
       setSelectedProjectData(response.data);
     } catch (error) {
@@ -115,41 +115,31 @@ const StudentProjectInfo = () => {
       <div className="left-side-project">
         {selectedProjectData.typeProject === "Web" ? (
           <div className="type-project-info-container">
-            <Typography sx={{ marginRight: "5px" }}>
-              Type du projet :{" "}
-            </Typography>
+            <Typography sx={{marginRight: "5px"}}>Type du projet : </Typography>
             <Typography> {selectedProjectData.typeProject}</Typography>
-            <DesktopWindowsRoundedIcon sx={{ marginLeft: "5px" }} />
+            <DesktopWindowsRoundedIcon sx={{marginLeft: "5px"}} />
           </div>
         ) : selectedProjectData.typeProject === "Mobile" ? (
           <div className="type-project-info-container">
-            <Typography sx={{ marginRight: "5px" }}>
-              Type du projet :{" "}
-            </Typography>
+            <Typography sx={{marginRight: "5px"}}>Type du projet : </Typography>
             <Typography> {selectedProjectData.typeProject}</Typography>
-            <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
+            <SmartphoneRoundedIcon sx={{marginLeft: "5px"}} />
           </div>
         ) : selectedProjectData.typeProject === "Gaming" ? (
           <div className="type-project-info-container">
-            <Typography sx={{ marginRight: "5px" }}>
-              Type du projet :{" "}
-            </Typography>
+            <Typography sx={{marginRight: "5px"}}>Type du projet : </Typography>
             <Typography> {selectedProjectData.typeProject}</Typography>
-            <SportsEsportsRoundedIcon sx={{ marginLeft: "5px" }} />
+            <SportsEsportsRoundedIcon sx={{marginLeft: "5px"}} />
           </div>
         ) : selectedProjectData.typeProject === "IA" ? (
           <div className="type-project-info-container">
-            <Typography sx={{ marginRight: "5px" }}>
-              Type du projet :{" "}
-            </Typography>
+            <Typography sx={{marginRight: "5px"}}>Type du projet : </Typography>
             <Typography> {selectedProjectData.typeProject}</Typography>
-            <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
+            <SmartToyRoundedIcon sx={{marginLeft: "5px"}} />
           </div>
         ) : selectedProjectData.typeProject === "DevOps" ? (
           <div className="type-project-info-container">
-            <Typography sx={{ marginRight: "5px" }}>
-              Type du projet :{" "}
-            </Typography>
+            <Typography sx={{marginRight: "5px"}}>Type du projet : </Typography>
             <Typography> {selectedProjectData.typeProject}</Typography>
             <MediationRoundedIcon />
           </div>
@@ -166,7 +156,7 @@ const StudentProjectInfo = () => {
           Github :{" "}
           <a
             href={selectedProjectData.RepoProjectLink}
-            style={{ color: "#7a52e1", textDecoration: "underline" }}
+            style={{color: "#7a52e1", textDecoration: "underline"}}
           >
             <img
               className="github-logo"
@@ -185,7 +175,7 @@ const StudentProjectInfo = () => {
           }}
           label={
             <>
-              <div style={{ display: "flex" }}>
+              <div style={{display: "flex"}}>
                 <Typography>
                   {selectedProjectData &&
                     selectedProjectData.promoProject &&
@@ -224,7 +214,7 @@ const StudentProjectInfo = () => {
                     }
                     secondary={
                       <Typography
-                        sx={{ display: "inline" }}
+                        sx={{display: "inline"}}
                         component="span"
                         variant="body2"
                         color="text.primary"
@@ -256,7 +246,7 @@ const StudentProjectInfo = () => {
             <ListItem
               key={blogTutoData.id}
               button
-              sx={{ display: "flex", flexDirection: "column" }}
+              sx={{display: "flex", flexDirection: "column"}}
             >
               {blogTutoData.data.thumbnail && (
                 <img
@@ -293,7 +283,7 @@ const StudentProjectInfo = () => {
         </div>
         <div className="list-counter-ref">
           <div className="counter-container">
-            <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
+            <BackHandRoundedIcon sx={{height: "16px"}} />{" "}
             <Typography>
               {selectedProjectData.counterRef} Mis en avant
             </Typography>
@@ -316,7 +306,7 @@ const StudentProjectInfo = () => {
                 <ListItem button onClick={handleClickVoters}>
                   <ListItemText
                     primary={"Afficher"}
-                    style={{ textAlign: "center" }}
+                    style={{textAlign: "center"}}
                   />
                   {openVoters ? <ExpandLess /> : <ExpandMore />}
                 </ListItem>
@@ -340,7 +330,7 @@ const StudentProjectInfo = () => {
                               3
                             </Typography>
                           )}
-                          <BackHandRoundedIcon sx={{ height: "16px" }} />{" "}
+                          <BackHandRoundedIcon sx={{height: "16px"}} />{" "}
                           <ListItemText
                             primary={
                               voter.lastname.toUpperCase() +
@@ -381,10 +371,10 @@ const StudentProjectInfo = () => {
           />
         </div>
         <div className="text-project-box">
-          <Typography sx={{ textAlign: "justify" }}>
+          <Typography sx={{textAlign: "justify"}}>
             {selectedProjectData.descriptionProject}
           </Typography>
-          <Typography sx={{ paddingTop: "20px", textAlign: "right" }}>
+          <Typography sx={{paddingTop: "20px", textAlign: "right"}}>
             Publié par :{" "}
             {selectedProjectData &&
               selectedProjectData.creatorProject &&

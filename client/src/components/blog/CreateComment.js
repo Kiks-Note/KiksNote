@@ -4,10 +4,10 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import { useState } from "react";
+import {useState} from "react";
 import axios from "axios";
 
-export default function CreateComment({ tutoId }) {
+export default function CreateComment({tutoId}) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -21,7 +21,7 @@ export default function CreateComment({ tutoId }) {
 
   const handlePublish = async () => {
     axios
-      .post(`http://localhost:5050/blog/${tutoId}/comments`, {
+      .post(`${process.env.REACT_APP_SERVER_API}/blog/${tutoId}/comments`, {
         message,
       })
       .then(function () {})
@@ -41,7 +41,7 @@ export default function CreateComment({ tutoId }) {
       <Button
         variant="outlined"
         onClick={handleClickOpen}
-        sx={{ marginRight: 1 }}
+        sx={{marginRight: 1}}
       >
         Ajouter un commentaire
       </Button>

@@ -1,9 +1,9 @@
 import QRCode from "qrcode";
-import { useEffect, useState, useRef } from "react";
+import {useEffect, useState, useRef} from "react";
 import axios from "axios";
 import "./Callteacher.scss";
 import Timer from "../timer/Timer";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 
 function AppelProf() {
   const [qrcode, setQrcode] = useState("");
@@ -46,16 +46,18 @@ function AppelProf() {
   }, [call]);
 
   const getCall = () => {
-    axios.get("http://localhost:5050/calls").then((res) => {
+    axios.get(`${process.env.REACT_APP_SERVER_API}/calls`).then((res) => {
       tempCall = res.data.at(-1);
       GenerateQrcode();
       (async () => {
-        const wsComments = new w3cwebsocket(`ws://${ip}:5050/Call`);
+        const wsComments = new w3cwebsocket(
+          `${process.env.REACT_APP_SERVER_API_WS}:5050/Call`
+        );
 
         wsComments.onopen = function (e) {
           console.log("[open] Connection established");
           console.log("Sending to server");
-          wsComments.send(JSON.stringify({ CallId: tempCall.id }));
+          wsComments.send(JSON.stringify({CallId: tempCall.id}));
         };
         wsComments.onmessage = (message) => {
           const data = JSON.parse(message.data);
@@ -67,7 +69,7 @@ function AppelProf() {
   };
 
   const getUsers = () => {
-    axios.get("http://localhost:5050/users").then((res) => {
+    axios.get(`${process.env.REACT_APP_SERVER_API}/users`).then((res) => {
       setUsers(res.data);
     });
   };

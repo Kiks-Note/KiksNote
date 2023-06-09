@@ -1,21 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import "./Board.scss";
 import axios from "axios";
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import {DragDropContext, Draggable, Droppable} from "@hello-pangea/dnd";
 import CardBoard from "../../components/board_scrum/board/CardBoard";
-import { Typography } from "@mui/material";
+import {Typography} from "@mui/material";
 import ButtonAddCard from "../../components/board_scrum/board/ButtonAddCard";
-import { Toaster, toast } from "react-hot-toast";
-import { Switch } from "@mui/material";
-import { w3cwebsocket } from "websocket";
-import { PropTypes } from "prop-types";
-
+import {Toaster, toast} from "react-hot-toast";
+import {Switch} from "@mui/material";
+import {w3cwebsocket} from "websocket";
+import {PropTypes} from "prop-types";
 
 Board.propTypes = {
   dashboardId: PropTypes.string.isRequired,
   boardId: PropTypes.string.isRequired,
 };
-export default function Board({ boardId, dashboardId }) {
+export default function Board({boardId, dashboardId}) {
   const labelChange = () => setLabel(!label);
   const [columns, setColumns] = useState({});
   const [boardName, setBoardName] = useState("");
@@ -24,7 +23,9 @@ export default function Board({ boardId, dashboardId }) {
 
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/board`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/board`
+      );
 
       wsComments.onopen = function (e) {
         wsComments.send(
@@ -47,7 +48,7 @@ export default function Board({ boardId, dashboardId }) {
 
   async function changeCardIndex(newColumns) {
     await axios.put(
-      "http://localhost:5050/dashboard/" +
+      `${process.env.REACT_APP_SERVER_API}/dashboard/` +
         dashboardId +
         "/board/" +
         boardId +
@@ -141,13 +142,13 @@ export default function Board({ boardId, dashboardId }) {
   return (
     <>
       <div>
-        <Typography style={{ textAlign: "center" }} variant="h5">
+        <Typography style={{textAlign: "center"}} variant="h5">
           {boardName}
         </Typography>
         <Switch
           checked={label}
           onChange={labelChange}
-          inputProps={{ "aria-label": "controlled" }}
+          inputProps={{"aria-label": "controlled"}}
         />
         <Toaster />
         <div className="board_container_all grid-container">

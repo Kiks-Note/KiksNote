@@ -1,7 +1,7 @@
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { format } from "date-fns";
+import {format} from "date-fns";
 import {
   InputLabel,
   Input,
@@ -14,10 +14,10 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
 import axios from "axios";
-function ProfilFormUpdate({ onClose, user }) {
+function ProfilFormUpdate({onClose, user}) {
   const [image, setImage] = useState(user.image);
   const [pictureToUpload, setPictureToUpload] = useState(null);
   const [dateBirthday, setDateBirthday] = useState(new Date(user.dateBirthday));
@@ -35,16 +35,16 @@ function ProfilFormUpdate({ onClose, user }) {
   const [discordName, setDiscordName] = useState(user.discord);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
   const mustClass = [
-    { value: "L1-paris", label: "L1-Paris" },
-    { value: "L1-cergy", label: "L1-Cergy" },
-    { value: "L2-paris", label: "L2-Paris" },
-    { value: "L2-cergy", label: "L2-Cergy" },
-    { value: "L3-paris", label: "L3-Paris" },
-    { value: "L3-cergy", label: "L3-Cergy" },
-    { value: "M1-lead", label: "M1-LeadDev" },
-    { value: "M1-gaming", label: "M1-Gaming" },
-    { value: "M2-lead", label: "M2-LeadDev" },
-    { value: "M2-gaming", label: "M2-Gaming" },
+    {value: "L1-paris", label: "L1-Paris"},
+    {value: "L1-cergy", label: "L1-Cergy"},
+    {value: "L2-paris", label: "L2-Paris"},
+    {value: "L2-cergy", label: "L2-Cergy"},
+    {value: "L3-paris", label: "L3-Paris"},
+    {value: "L3-cergy", label: "L3-Cergy"},
+    {value: "M1-lead", label: "M1-LeadDev"},
+    {value: "M1-gaming", label: "M1-Gaming"},
+    {value: "M2-lead", label: "M2-LeadDev"},
+    {value: "M2-gaming", label: "M2-Gaming"},
   ];
 
   /// VALIDATION && REGEX FORM
@@ -57,7 +57,7 @@ function ProfilFormUpdate({ onClose, user }) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    formState: {errors, isSubmitting, isSubmitSuccessful},
   } = useForm({
     mode: "onTouched",
   });
@@ -85,7 +85,7 @@ function ProfilFormUpdate({ onClose, user }) {
 
     try {
       const response = await axios.put(
-        `http://localhost:5050/profil/${user.id}`,
+        `${process.env.REACT_APP_SERVER_API}/profil/${user.id}`,
         formData,
         {
           headers: {
@@ -260,7 +260,7 @@ function ProfilFormUpdate({ onClose, user }) {
               type="date"
               name="dateBirthday"
               onChange={handleDateChange}
-              sx={{ width: 220 }}
+              sx={{width: 220}}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -306,8 +306,8 @@ function ProfilFormUpdate({ onClose, user }) {
                 id="class"
                 onChange={(e) => setClasse(e.target.value)}
                 defaultValue={classe}
-                sx={{ width: 320 }}
-                {...register("class", { value: classe, required: true })}
+                sx={{width: 320}}
+                {...register("class", {value: classe, required: true})}
               >
                 {mustClass.map((option) => (
                   <MenuItem key={option.value} value={option.value}>
@@ -349,7 +349,7 @@ function ProfilFormUpdate({ onClose, user }) {
                   key={language}
                   label={language}
                   onDelete={() => handleDelete(language)}
-                  style={{ margin: "2px" }}
+                  style={{margin: "2px"}}
                 />
               ))}
             </div>
@@ -455,14 +455,14 @@ function ProfilFormUpdate({ onClose, user }) {
                 color="success"
                 type="submit"
                 disabled={isSubmitting}
-                sx={{ mt: 3, mb: 2 }}
+                sx={{mt: 3, mb: 2}}
               >
                 Mettre à jour
               </Button>
               <Button
                 variant="contained"
                 color="error"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{mt: 3, mb: 2}}
                 type="button"
                 onClick={onClose}
               >
