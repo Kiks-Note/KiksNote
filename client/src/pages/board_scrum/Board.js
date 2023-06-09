@@ -106,7 +106,7 @@ export default function Board({ boardId, dashboardId }) {
         // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
         for (const item of removed.advancement) {
           if (new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") == formattedDate) {
-            item.advance = 0;
+            item.advance = removed.estimation;
             break; // Sortir de la boucle une fois l'élément trouvé
           }
         }
@@ -122,7 +122,7 @@ export default function Board({ boardId, dashboardId }) {
         // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
         for (const item of removed.advancement) {
           if (new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") == formattedDate) {
-            item.advance = removed.estimation;
+            item.advance = 0;
             break; // Sortir de la boucle une fois l'élément trouvé
           }
         }

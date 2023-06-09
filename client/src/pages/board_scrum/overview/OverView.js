@@ -48,18 +48,6 @@ function OverView({ id }) {
     dispatch(setActiveTab(agileTab.id));
   };
 
-  // const moveToAgileHome = () => {
-  //   const impactTab = {
-  //     id: "Impact" + id,
-  //     label: "Impact mapping ",
-  //     closeable: true,
-  //     component: "Impact",
-  //     data: { agile: agile, dashboardId: id },
-  //   };
-  //   dispatch(addTab(impactTab));
-  //   dispatch(setActiveTab(impactTab.id));
-  // };
-
   useEffect(() => {
     (async () => {
       const wsComments = new w3cwebsocket(`ws://localhost:5050/overview`);

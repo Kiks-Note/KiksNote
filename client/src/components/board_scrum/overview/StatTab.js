@@ -148,7 +148,6 @@ export default function StatTab({ boards }) {
           { length: totalDays },
           (_, i) => coefficient * i
         );
-
         // Realisation Data
         const realisationData = Array.from({ length: totalDays }, (_, i) => {
           const day = `Jour ${i}`;
@@ -221,7 +220,7 @@ export default function StatTab({ boards }) {
                   datasets: [
                     {
                       label: "Estimation",
-                      data: finalEstimationData, // Remplacez les données d'estimation par les valeurs réelles du sprint
+                      data: finalEstimationData.reverse(), // Remplacez les données d'estimation par les valeurs réelles du sprint
                       fill: true,
                       borderColor: "orange",
                     },

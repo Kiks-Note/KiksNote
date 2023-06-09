@@ -117,7 +117,7 @@ export default function ImpactMapping({ data }) {
       filename: "impact_mapping.pdf",
       image: { type: "jpeg", quality: 0.9 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: "mm", format: "a4", orientation: "paysage" },
+      jsPDF: { unit: "mm", format: [297, 210], orientation: "landscape" },
     };
 
     //html2pdf().set(opt).from(element).save();
@@ -145,17 +145,21 @@ export default function ImpactMapping({ data }) {
         );
       })
       .then((response) => {
-        toast.success("Votre impact Mapping a été ajouté a votre dossier agile", {
-          duration: 5000,
-        });
-      })
-      .catch((error) => {
-        toast.error(
-          "Une erreur s'est produite veuillez réessayer ultérieurement",
+        toast.success(
+          "Votre impact Mapping a été ajouté a votre dossier agile",
           {
             duration: 5000,
           }
         );
+      })
+      .catch((error) => {
+        toast.error(
+          "Une erreur s'est produite veuillez réessayer ultérieurement" + error,
+          {
+            duration: 5000,
+          }
+        );
+        
       });
   };
   return (
