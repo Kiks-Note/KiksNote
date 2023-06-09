@@ -5,8 +5,16 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import { format } from "date-fns";
-import { Avatar, Box, Typography, MenuItem, Menu, Dialog, DialogContent } from "@mui/material";
-import JpoCard from "../ressources/jpo/JpoCard";
+import {
+  Avatar,
+  Box,
+  Typography,
+  MenuItem,
+  Menu,
+  Dialog,
+  DialogContent,
+} from "@mui/material";
+import JpoCard from "../../components/ressources/jpo/JpoCard";
 
 import ProfilFormUpdate from "../../components/profil/ProfilFormUpdate.js";
 import ProfilSkeleton from "../../components/profil/ProfilSkeleton";
@@ -55,11 +63,15 @@ export default function Profil() {
     formData.append("image", pictureToUpload);
 
     try {
-      const response = await axios.put(`http://localhost:5050/profil/background/${userProfil.id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(
+        `http://localhost:5050/profil/background/${userProfil.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
     } catch (error) {
       console.error(error);
     }
@@ -88,7 +100,10 @@ export default function Profil() {
         const data = JSON.parse(message.data);
         console.log(data);
         var userInfo = data;
-        const date = new Date(userInfo.dateofbirth._seconds * 1000 + userInfo.dateofbirth._nanoseconds / 1000000);
+        const date = new Date(
+          userInfo.dateofbirth._seconds * 1000 +
+            userInfo.dateofbirth._nanoseconds / 1000000
+        );
         const formattedDate = format(date, "yyyy-MM-dd");
 
         setUserProfil({
@@ -98,14 +113,18 @@ export default function Profil() {
           description: data.description,
           email: data.email,
           image: data.image,
-          imagebackground: !data.imagebackground ? "https://picsum.photos/600" : data.imagebackground,
+          imagebackground: !data.imagebackground
+            ? "https://picsum.photos/600"
+            : data.imagebackground,
           dateBirthday: formattedDate,
           job: data.job,
           linkedin: data.linkedin,
           git: data.git,
           company: data.company,
           class: data.class,
-          programmationLanguage: data.programmationLanguage ? data.programmationLanguage : [],
+          programmationLanguage: data.programmationLanguage
+            ? data.programmationLanguage
+            : [],
           discord: data.discord,
           phoneNumber: data.phone,
           status: data.status,
@@ -119,7 +138,9 @@ export default function Profil() {
   useEffect(() => {
     const getJpo = async () => {
       try {
-        const response = await axios.get(`http://localhost:5050/ressources/jpo/user/${user.id}`);
+        const response = await axios.get(
+          `http://localhost:5050/ressources/jpo/user/${user.id}`
+        );
         if (response.data != undefined) {
           setRecentJpo(response.data);
         }
@@ -133,8 +154,12 @@ export default function Profil() {
 
   const filterTwoMostRecentBlogs = (blogs) => {
     const sortedBlogs = blogs.sort((a, b) => {
-      const timestampA = new Date(a.created_at.seconds * 1000 + a.created_at.nanoseconds / 1000000);
-      const timestampB = new Date(b.created_at.seconds * 1000 + b.created_at.nanoseconds / 1000000);
+      const timestampA = new Date(
+        a.created_at.seconds * 1000 + a.created_at.nanoseconds / 1000000
+      );
+      const timestampB = new Date(
+        b.created_at.seconds * 1000 + b.created_at.nanoseconds / 1000000
+      );
       return timestampB - timestampA;
     });
 
@@ -146,7 +171,9 @@ export default function Profil() {
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const response = await axios.get("http://localhost:5050/blog/user/ilan.petiot@edu.esiee-it.fr");
+        const response = await axios.get(
+          "http://localhost:5050/blog/user/ilan.petiot@edu.esiee-it.fr"
+        );
         var filtredBlogs = filterTwoMostRecentBlogs(response.data, 2);
         SetRecentBlogs(filtredBlogs);
       } catch (error) {
@@ -172,12 +199,21 @@ export default function Profil() {
             }}
           >
             {user.id == userProfil.id && (
-              <IconButton aria-label="settings" onClick={handleClick} sx={{ position: "absolute", top: 25, right: 25 }}>
+              <IconButton
+                aria-label="settings"
+                onClick={handleClick}
+                sx={{ position: "absolute", top: 25, right: 25 }}
+              >
                 <SettingsIcon />
               </IconButton>
             )}
             {user.id == userProfil.id && (
-              <Menu id="profile-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+              <Menu
+                id="profile-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
                 <MenuItem className="menuItem" onClick={handleOpenDialog}>
                   <EditIcon style={{ color: "orange" }} />
                   Modifier mon profil
@@ -185,7 +221,12 @@ export default function Profil() {
                 <MenuItem className="menuItem" onClick={handleEditBanner}>
                   <EditIcon style={{ color: "orange" }} />
                   Modifier ma bannière
-                  <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleOnChange} />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleOnChange}
+                  />
                 </MenuItem>
               </Menu>
             )}
@@ -199,17 +240,25 @@ export default function Profil() {
               TransitionProps={{ onEntering: handleEntering }}
             >
               <DialogContent>
-                <ProfilFormUpdate onClose={handleCloseDialog} user={userProfil} />
+                <ProfilFormUpdate
+                  onClose={handleCloseDialog}
+                  user={userProfil}
+                />
               </DialogContent>
             </Dialog>
-            <Avatar src={userProfil.image} sx={{ width: "150px", height: "150px", border: "3px solid #fff" }} />
+            <Avatar
+              src={userProfil.image}
+              sx={{ width: "150px", height: "150px", border: "3px solid #fff" }}
+            />
             <Typography variant="h4">
               {userProfil.firstname} {userProfil.lastname}
             </Typography>
             {userProfil && userProfil.status === "etudiant" && (
               <Typography>Classe : {userProfil.class.name}</Typography>
             )}
-            <Typography>{userProfil.job && `${userProfil.job} chez ${userProfil.company}`}</Typography>
+            <Typography>
+              {userProfil.job && `${userProfil.job} chez ${userProfil.company}`}
+            </Typography>
           </Box>
           <div
             style={{
@@ -287,7 +336,11 @@ export default function Profil() {
                         d="M16.9964 7.68584C17.7229 7.68584 18.3923 8.07986 18.745 8.7151L21.1914 13.1219C21.5117 13.6989 21.5268 14.3968 21.2316 14.9871L18.8748 19.7008C18.8748 19.7008 19.5578 23.2122 22.4162 26.0706C25.2747 28.929 28.7743 29.6002 28.7743 29.6002L33.4872 27.2438C34.0779 26.9484 34.7763 26.9637 35.3535 27.2846L39.7728 29.7416C40.4075 30.0945 40.801 30.7635 40.801 31.4896V36.5631C40.801 39.1468 38.4011 41.0129 35.9531 40.1868C30.9251 38.4903 23.1204 35.2601 18.1736 30.3132C13.2268 25.3664 9.99649 17.5617 8.29995 12.5338C7.47393 10.0857 9.34002 7.68584 11.9237 7.68584H16.9964Z"
                       ></path>
                     </svg>
-                    <Typography>{userProfil.phoneNumber ? userProfil.phoneNumber : "Non renseigné"}</Typography>
+                    <Typography>
+                      {userProfil.phoneNumber
+                        ? userProfil.phoneNumber
+                        : "Non renseigné"}
+                    </Typography>
                   </div>
                   <div
                     style={{
@@ -305,7 +358,11 @@ export default function Profil() {
                         d="M216.856 16.597A208.502 208.502 0 0 0 164.042 0c-2.275 4.113-4.933 9.645-6.766 14.046c-19.692-2.961-39.203-2.961-58.533 0c-1.832-4.4-4.55-9.933-6.846-14.046a207.809 207.809 0 0 0-52.855 16.638C5.618 67.147-3.443 116.4 1.087 164.956c22.169 16.555 43.653 26.612 64.775 33.193A161.094 161.094 0 0 0 79.735 175.3a136.413 136.413 0 0 1-21.846-10.632a108.636 108.636 0 0 0 5.356-4.237c42.122 19.702 87.89 19.702 129.51 0a131.66 131.66 0 0 0 5.355 4.237a136.07 136.07 0 0 1-21.886 10.653c4.006 8.02 8.638 15.67 13.873 22.848c21.142-6.58 42.646-16.637 64.815-33.213c5.316-56.288-9.08-105.09-38.056-148.36ZM85.474 135.095c-12.645 0-23.015-11.805-23.015-26.18s10.149-26.2 23.015-26.2c12.867 0 23.236 11.804 23.015 26.2c.02 14.375-10.148 26.18-23.015 26.18Zm85.051 0c-12.645 0-23.014-11.805-23.014-26.18s10.148-26.2 23.014-26.2c12.867 0 23.236 11.804 23.015 26.2c0 14.375-10.148 26.18-23.015 26.18Z"
                       ></path>
                     </svg>{" "}
-                    <Typography>{userProfil.discord ? userProfil.discord : "Non renseigné"}</Typography>
+                    <Typography>
+                      {userProfil.discord
+                        ? userProfil.discord
+                        : "Non renseigné"}
+                    </Typography>
                   </div>
                   <div>
                     <Typography>Langages de programmation : </Typography>
@@ -353,11 +410,22 @@ export default function Profil() {
                       ></path>
                     </svg>
                     {userProfil.linkedin ? (
-                      <a href={userProfil.linkedin} target="_blank" style={{ marginLeft: "5%" }} rel="noreferrer">
-                        {userProfil.linkedin.split("/in/").pop().split("-")[0].replace("/", "")}
+                      <a
+                        href={userProfil.linkedin}
+                        target="_blank"
+                        style={{ marginLeft: "5%" }}
+                        rel="noreferrer"
+                      >
+                        {userProfil.linkedin
+                          .split("/in/")
+                          .pop()
+                          .split("-")[0]
+                          .replace("/", "")}
                       </a>
                     ) : (
-                      <Typography style={{ marginLeft: "5%" }}>Non renseigné</Typography>
+                      <Typography style={{ marginLeft: "5%" }}>
+                        Non renseigné
+                      </Typography>
                     )}
                   </div>
                   <div style={{ display: "flex" }}>
@@ -373,11 +441,18 @@ export default function Profil() {
                       ></path>
                     </svg>
                     {userProfil.git ? (
-                      <a href={userProfil.git} target="_blank" style={{ marginLeft: "5%" }} rel="noreferrer">
+                      <a
+                        href={userProfil.git}
+                        target="_blank"
+                        style={{ marginLeft: "5%" }}
+                        rel="noreferrer"
+                      >
                         {userProfil.git.split("/").pop()}
                       </a>
                     ) : (
-                      <Typography style={{ marginLeft: "5%" }}>Non renseigné</Typography>
+                      <Typography style={{ marginLeft: "5%" }}>
+                        Non renseigné
+                      </Typography>
                     )}
                   </div>
                 </Box>
