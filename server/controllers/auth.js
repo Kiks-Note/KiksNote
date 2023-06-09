@@ -48,15 +48,6 @@ const register = async (req, res) => {
         .send({ message: "L'adresse e-mail est déjà utilisée." });
     }
 
-    const userClassRef = await db.collection("class").doc(userClass).get();
-
-    if (!userClassRef.exists) {
-      return res.status(404).send("Classe non trouvée");
-    }
-
-    const userClassData = userClassRef.data();
-    userClassData.id = userClassRef.id;
-
     await auth.createUser({
       email: userEmail,
       password: userPassword,
@@ -72,6 +63,14 @@ const register = async (req, res) => {
     };
 
     if (userClass !== "") {
+      const userClassRef = await db.collection("class").doc(userClass).get();
+
+      if (!userClassRef.exists) {
+        return res.status(404).send("Classe non trouvée");
+      }
+
+      const userClassData = userClassRef.data();
+      userClassData.id = userClassRef.id;
       userData.class = userClassData;
     }
 
