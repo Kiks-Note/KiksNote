@@ -16,7 +16,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
     const theme = useTheme();
 
     const ws = useMemo(() => {
-        return new w3cwebsocket('ws://localhost:5050/groupes');
+        return new w3cwebsocket('ws://localhost:5050/groupes/creation');
     }, []);
 
     useEffect(() => {
@@ -38,7 +38,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         ws.onopen = () => {
             console.log("WebSocket Client Connected");
         };
-    }, [dataPopUp, user?.id, ws]);
+    }, [dataPopUp, user.id, ws]);
 
     const createRoom = (roomData) => {
         const message = {

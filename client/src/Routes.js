@@ -49,10 +49,10 @@ function RoutesProvider() {
         <Route element={<PrivateRoutes />}>
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groupes" element={<Groups />} />
+          <Route path="/groupes/creation" element={<GroupsCreation />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel" element={<Appel />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
-          <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
 

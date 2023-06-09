@@ -183,7 +183,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 7,
       name: "Groupes",
-      route: "#",
+      route: "/groupes/creation",
       icon: <GroupsIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {

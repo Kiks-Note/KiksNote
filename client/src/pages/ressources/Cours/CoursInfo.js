@@ -161,7 +161,7 @@ const CoursInfo = () => {
     }
   };
 
-  const getCoursId = async () => {
+  const getCoursId = useCallback(async () => {
     try {
       await axios
         .get(`http://localhost:5050/ressources/cours/${id}`)
@@ -176,7 +176,7 @@ const CoursInfo = () => {
     } catch (error) {
       console.error(error);
     }
-  };
+  }, [id]);
 
   const getAllCours = async () => {
     try {
@@ -278,7 +278,7 @@ const CoursInfo = () => {
       });
   };
 
-  const deleteBackLogPdf = (
+  const deleteBackLogPdf = async (
     courseClass,
     title,
     fileName,
@@ -287,20 +287,19 @@ const CoursInfo = () => {
   ) => {
     const data = { courseClass, title, fileName, pdfLinkBackLog, courseId };
 
-    return axios
-      .delete("http://localhost:5050/ressources/backlog/delete-pdf", { data })
-      .then((res) => {
-        if (res.status === 200) {
-          toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
-          getCoursId(id);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toastFail(
-          `Le fichier ${fileName} que vous essayez de supprimer rencontre un problème.`
-        );
-      });
+    try {
+      const res = await axios
+        .delete("http://localhost:5050/ressources/backlog/delete-pdf", { data });
+      if (res.status === 200) {
+        toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
+        getCoursId(id);
+      }
+    } catch (err) {
+      console.log(err);
+      toastFail(
+        `Le fichier ${fileName} que vous essayez de supprimer rencontre un problème.`
+      );
+    }
   };
 
   const updateCours = async (

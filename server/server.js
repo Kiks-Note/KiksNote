@@ -61,17 +61,20 @@ const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
 const studentsProjectsRoutes = require("./studentsProjectsRoutes");
-const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 const agileRoute = require("./agileRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 
+const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
+const groupNoWs = groupNoWsNeeded();
+
 app.use("/home", homeRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
 app.use("/retro", retroRoutesNotNeeded);
+app.use("/groupes", groupNoWs);
 
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
@@ -83,8 +86,8 @@ wsI.on("request", (request) => {
   app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
+  app.use("/groupes", groupWsNeeded(connection, pathname));
   app.use("/agile", agileRoute(connection, pathname, upload));
-  app.use("/groupes", groupsRoute(connection, pathname));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
   require("./web/inventoryWebSocket")(connection, pathname);
 
