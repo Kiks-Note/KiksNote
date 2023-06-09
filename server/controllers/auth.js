@@ -15,12 +15,12 @@ const login = async (req, res) => {
     const decodedToken = await auth.verifyIdToken(token);
     const { email } = decodedToken;
 
-    const user = await auth.getUserByEmail(email);
-    if (!user.emailVerified) {
-      return res
-        .status(401)
-        .json({ message: "Veuillez vérifier votre adresse e-mail" });
-    }
+    // const user = await auth.getUserByEmail(email);
+    // if (!user.emailVerified) {
+    //   return res
+    //     .status(401)
+    //     .json({ message: "Veuillez vérifier votre adresse e-mail" });
+    // }
 
     res.status(200).json({ message: "Success" });
     console.log("Success");
