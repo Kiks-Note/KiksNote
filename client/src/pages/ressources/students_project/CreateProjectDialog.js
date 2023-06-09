@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Button,
@@ -9,15 +9,44 @@ import {
   Select,
   MenuItem,
   Autocomplete,
+  Typography,
 } from "@mui/material";
+
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw } from "draft-js";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+import draftToHtml from "draftjs-to-html";
 
 import Dropzone from "../Cours/Dropzone";
 
 import "./StudentsProjects.scss";
 
 const CreateProjectDialog = (props) => {
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [inputEditorState, setInputEditorState] = useState("");
+
+  const handleEditorChange = (e) => {
+    setEditorState(e);
+    setInputEditorState(draftToHtml(convertToRaw(e.getCurrentContent())));
+  };
+
+  useEffect(() => {
+    props.setDescriptionProject(inputEditorState);
+  }, [inputEditorState]);
+
   return (
-    <Dialog open={props.open} onClose={props.handleClose}>
+    <Dialog
+      open={props.open}
+      onClose={props.handleClose}
+      sx={{
+        "& .MuiDialog-container": {
+          "& .MuiPaper-root": {
+            width: "100%",
+            maxWidth: "1000px",
+          },
+        },
+      }}
+    >
       <DialogContent>
         <form onSubmit={props.handleSubmit} className="student-project-form">
           <TextField
@@ -34,17 +63,24 @@ const CreateProjectDialog = (props) => {
             defaultValue={props.repoProjectLink}
             onChange={(event) => props.setRepoProjectLink(event.target.value)}
           />
-          <TextField
-            sx={{ marginBottom: "10px" }}
-            label="Description du projet"
-            fullWidth
-            multiline
-            rows={4}
-            defaultValue={props.descriptionProject}
-            onChange={(event) =>
-              props.setDescriptionProject(event.target.value)
-            }
+          <Editor
+            placeholder={`Commencer à écrire une petite description de ton projet ${props.nameProject}`}
+            onEditorStateChange={handleEditorChange}
+            editorState={editorState}
+            toolbarClassName="toolbarClassName"
+            wrapperClassName="wrapperClassName"
+            editorClassName="editorClassName"
+            editorStyle={{
+              border: "1px solid black",
+              minHeight: "180px",
+              height: "300px",
+              padding: "10px",
+              borderRadius: "5px",
+              boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+              marginBottom: "16px",
+            }}
           />
+
           <div className="dropzone-coursimg-container">
             <p className="info-dropdown-img">
               Drag and drop an image file here, or click to select an image
@@ -102,26 +138,38 @@ const CreateProjectDialog = (props) => {
               DevOps
             </MenuItem>
           </Select>
-          <Select
-            value={props.selectedClass}
-            sx={{ marginBottom: "10px" }}
-            onChange={(event) => {
-              props.setSelectedClass(event.target.value);
-              const selectedCours = props.allclass.find(
-                (cours) => cours.name === event.target.value
-              );
-              props.setIdSelectedClass(selectedCours ? selectedCours.id : "");
+
+          <Autocomplete
+            multiple
+            id="tags-outlined"
+            sx={{
+              width: "100%",
             }}
-            displayEmpty
-            renderValue={(value) => value || "Choisir la classe"}
-          >
-            <MenuItem value="">Choisir une option</MenuItem>
-            {props.allclass.map((cours) => (
-              <MenuItem key={cours.id} value={cours.name}>
-                {cours.name}
-              </MenuItem>
-            ))}
-          </Select>
+            options={props.allclass}
+            getOptionLabel={(option) => (
+              <>
+                <Typography>{option.name}</Typography>
+              </>
+            )}
+            defaultValue={props.promoProject}
+            filterSelectedOptions
+            onChange={(event, newValue) => {
+              const selectedPromos = newValue.map((promo) => promo.id);
+              props.setPromoProject(selectedPromos);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select a promo"
+                variant="outlined"
+                inputProps={{
+                  ...params.inputProps,
+                  name: "promo",
+                }}
+              />
+            )}
+          />
+
           <Autocomplete
             multiple
             id="tags-outlined"
@@ -148,6 +196,44 @@ const CreateProjectDialog = (props) => {
                 inputProps={{
                   ...params.inputProps,
                   name: "student",
+                }}
+              />
+            )}
+          />
+          <Autocomplete
+            multiple
+            id="tags-outlined"
+            sx={{
+              width: "100%",
+              marginTop: "10px",
+            }}
+            options={props.alltechnos}
+            getOptionLabel={(option) => (
+              <>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <img
+                    src={option.image}
+                    alt={option.name}
+                    style={{ width: "40px", marginRight: "10px" }}
+                  />
+                  {option.name}
+                </div>
+              </>
+            )}
+            defaultValue={props.technosProject}
+            filterSelectedOptions
+            onChange={(event, newValue) => {
+              const selectedTechnos = newValue.map((techno) => techno.id);
+              props.setTechnosProject(selectedTechnos);
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Select technos"
+                variant="outlined"
+                inputProps={{
+                  ...params.inputProps,
+                  name: "technos",
                 }}
               />
             )}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
@@ -60,6 +60,7 @@ export const toastFail = (message) => {
 
 const StudentProjectInfo = () => {
   const { user } = useFirebase();
+  const navigate = useNavigate();
 
   const { projectid } = useParams();
 
@@ -149,8 +150,17 @@ const StudentProjectInfo = () => {
             <div className="left-side-project">
               <div className="type-project-info-container">
                 <Typography sx={{ marginRight: "5px" }}>
+                  <Skeleton width={100} />
+                </Typography>
+              </div>
+              <div className="type-project-info-container">
+                <Typography sx={{ marginRight: "5px" }}>
                   Type du projet :
                 </Typography>
+                <Skeleton width={100} />
+              </div>
+              <div className="type-project-info-container">
+                <Typography sx={{ marginRight: "5px" }}>Technos :</Typography>
                 <Skeleton width={100} />
               </div>
               <Typography
@@ -319,6 +329,9 @@ const StudentProjectInfo = () => {
         <>
           <div className="project-content">
             <div className="left-side-project">
+              <Typography variant="h3" sx={{ fontWeight: "bold" }}>
+                {selectedProjectData.nameProject}
+              </Typography>
               {selectedProjectData.typeProject === "Web" ? (
                 <div className="type-project-info-container">
                   <Typography sx={{ marginRight: "5px" }}>
@@ -362,6 +375,25 @@ const StudentProjectInfo = () => {
               ) : (
                 <div></div>
               )}
+              <div className="type-promo-project-container">
+                <Typography sx={{ marginRight: "5px" }}>Technos :</Typography>{" "}
+                {selectedProjectData.technosProject.map((techno) => (
+                  <Chip
+                    avatar={<Avatar alt={techno.name} src={techno.image} />}
+                    sx={{
+                      display: "flex",
+                      padding: "10px",
+                    }}
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography>{techno.name}</Typography>
+                        </div>
+                      </>
+                    }
+                  ></Chip>
+                ))}
+              </div>
               <Typography
                 sx={{
                   display: "flex",
@@ -381,27 +413,24 @@ const StudentProjectInfo = () => {
                   />
                 </a>
               </Typography>
-              <Chip
-                sx={{
-                  display: "flex",
-                  width: "fit-content",
-                  padding: "10px",
-                  margin: "15px 0px",
-                  alignItems: "center",
-                }}
-                label={
-                  <>
-                    <div style={{ display: "flex" }}>
-                      <Typography>
-                        {selectedProjectData &&
-                          selectedProjectData.promoProject &&
-                          selectedProjectData.promoProject.name}
-                      </Typography>
-                      <SchoolIcon />
-                    </div>
-                  </>
-                }
-              ></Chip>
+              <div className="type-promo-project-container">
+                {selectedProjectData.promoProject.map((promo) => (
+                  <Chip
+                    sx={{
+                      display: "flex",
+                      padding: "10px",
+                    }}
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography>{promo.name}</Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                  ></Chip>
+                ))}
+              </div>
               <List
                 sx={{
                   width: "100%",
@@ -416,9 +445,7 @@ const StudentProjectInfo = () => {
                 <Typography>
                   <ConstructionIcon /> Membres du projet :{" "}
                 </Typography>
-                {selectedProjectData &&
-                  selectedProjectData.membersProject &&
-                  selectedProjectData.membersProject.map((member, index) => (
+                {selectedProjectData?.membersProject?.map((member, index) => (
                     <React.Fragment key={index}>
                       <ListItem alignItems="flex-start">
                         <ListItemAvatar>
@@ -449,9 +476,7 @@ const StudentProjectInfo = () => {
                     </React.Fragment>
                   ))}
               </List>
-              {blogTutoData &&
-                blogTutoData.data &&
-                blogTutoData.data.thumbnail && (
+              {blogTutoData?.data?.thumbnail && (
                   <List
                     sx={{
                       width: "100%",
@@ -468,6 +493,7 @@ const StudentProjectInfo = () => {
                       key={blogTutoData.id}
                       button
                       sx={{ display: "flex", flexDirection: "column" }}
+                      onClick={() => navigate(`/blog/${blogTutoData.id}`)}
                     >
                       {blogTutoData.data.thumbnail && (
                         <img
@@ -482,9 +508,7 @@ const StudentProjectInfo = () => {
                 )}
 
               <div className="btn-link-blog-container">
-                {selectedProjectData &&
-                selectedProjectData.creatorProject &&
-                selectedProjectData.creatorProject.id === user?.id ? (
+                {selectedProjectData?.creatorProject?.id === user?.id ? (
                   !hasAddedBlog && (
                     <Button
                       sx={{
@@ -520,9 +544,7 @@ const StudentProjectInfo = () => {
                   >
                     Liste des personnes qui ont mis en avant le projet
                   </Typography>
-                  {selectedProjectData &&
-                  selectedProjectData.voters &&
-                  selectedProjectData.voters.length > 0 ? (
+                  {selectedProjectData?.voters?.length > 0 ? (
                     <List>
                       <ListItem button onClick={handleClickVoters}>
                         <ListItemText
@@ -593,17 +615,15 @@ const StudentProjectInfo = () => {
                 />
               </div>
               <div className="text-project-box">
-                <Typography sx={{ textAlign: "justify" }}>
-                  {selectedProjectData.descriptionProject}
-                </Typography>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: selectedProjectData.descriptionProject,
+                  }}
+                />
                 <Typography sx={{ paddingTop: "20px", textAlign: "right" }}>
                   Publié par :{" "}
-                  {selectedProjectData &&
-                    selectedProjectData.creatorProject &&
-                    selectedProjectData.creatorProject.lastname.toUpperCase()}{" "}
-                  {selectedProjectData &&
-                    selectedProjectData.creatorProject &&
-                    selectedProjectData.creatorProject.firstname}
+                  {selectedProjectData?.creatorProject?.lastname.toUpperCase()}{" "}
+                  {selectedProjectData?.creatorProject?.firstname}
                 </Typography>
               </div>
             </div>

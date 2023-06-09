@@ -143,16 +143,18 @@ export default function InventoryRequests() {
                         category: request._device.category,
                         campus: request._device.campus,
                         requester: request._request.requester,
-                        createdAt: moment(
-                          timeConverter(request._request.createdAt)
-                        ).format("DD.MM.YYYY"),
+                        createdAt: request._request.createdAt
+                          ? moment(
+                              timeConverter(request._request.createdAt)
+                            ).format("DD.MM.YYYY")
+                          : "",
 
-                        date: request._request
+                        date: request._request.startDate
                           ? moment(
                               timeConverter(request._request.startDate)
                             ).format("DD.MM.YYYY")
                           : "",
-                        fin: request._request
+                        fin: request._request.endDate
                           ? moment(
                               timeConverter(request._request.endDate)
                             ).format("DD.MM.YYYY")

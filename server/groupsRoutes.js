@@ -39,3 +39,5 @@ const groupWsNeeded = (connection, pathname) => {
 
 module.exports = { groupNoWsNeeded, groupWsNeeded };
 
+  return router;
+};

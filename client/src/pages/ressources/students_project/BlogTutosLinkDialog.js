@@ -108,7 +108,7 @@ const BlogTutosLinkDialog = (props) => {
                       }}
                     />
                     <img
-                      src={blogTuto.data.thumbnail}
+                      src={blogTuto?.data?.thumbnail}
                       style={{ width: "100%", cursor: "pointer" }}
                       alt="blog-tuto-linked-img"
                       onClick={() => handleImageClick(blogTuto.id)}
@@ -118,7 +118,7 @@ const BlogTutosLinkDialog = (props) => {
                     variant="subtitle1"
                     sx={{ textAlign: "center", marginBottom: "15px" }}
                   >
-                    {blogTuto.data.title}
+                    {blogTuto?.data?.title}
                   </Typography>
                 </Grid>
               ))}

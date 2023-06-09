@@ -1,0 +1,128 @@
+.board_container_all {
+  display: flex;
+  overflow-x: auto;
+  height: 100%;
+}
+
+.board_container_table {
+  width: 270px;
+  margin-right: 20px;
+  border-radius: 3px;
+  background-color: #ebecf0;
+  height: 100%;
+}
+
+.board_container_table_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background-color: #0079bf;
+  border-radius: 3px 3px 0 0;
+}
+
+.board_container_table_header_label {
+  display: flex;
+  align-items: center;
+}
+
+.board_container_table_header_label h6 {
+  margin: 0;
+  color: white;
+  font-weight: bold;
+}
+
+.board_container_table_header_icon {
+  color: white;
+}
+
+.board_container_table_add_column {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 270px;
+  background-color: #ebecf0;
+  border-radius: 3px;
+}
+
+.board_container_table_add_column button {
+  color: #5e6c84;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.board_container_table_add_column button:hover {
+  text-decoration: underline;
+}
+
+.card_board {
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #ffffff;
+  border-radius: 3px;
+  box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%),
+    0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+}
+
+.card_board:hover {
+  background-color: #f4f5f7;
+}
+
+.card_board_label {
+  display: flex;
+  align-items: center;
+}
+
+.card_board_label h6 {
+  margin: 0;
+  margin-right: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #5e6c84;
+}
+
+.card_board_name {
+  margin: 4px 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.card_board_description {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #5e6c84;
+}
+
+.card_board_assignees {
+  display: flex;
+  align-items: center;
+}
+
+.card_board_assignee {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  margin-right: 4px;
+  background-size: cover;
+}
+
+.card_board_assignee.added {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: white;
+  font-size: 12px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card_board_assignee.added::after {
+  content: "+";
+}
+
+.card_board_assignee_image {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}

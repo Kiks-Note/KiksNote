@@ -4,15 +4,7 @@ import { toast, ToastContainer } from "react-toastify";
 
 import useFirebase from "../../../hooks/useFirebase";
 
-import {
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Chip,
-  Button,
-  Skeleton,
-} from "@mui/material";
+import { Card, CardContent, CardMedia, Typography, Chip, Button, Skeleton, Avatar } from "@mui/material";
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
 import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
 import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
@@ -56,21 +48,13 @@ const CarouselProjects = (props) => {
 
   let navigate = useNavigate();
 
-  const referStudentProject = async (
-    projectId,
-    projectName,
-    countRefAdd,
-    userId
-  ) => {
+  const referStudentProject = async (projectId, projectName, countRefAdd, userId) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5050/ressources/refprojects",
-        {
-          projectId: projectId,
-          counterRefToAdd: countRefAdd,
-          userId: userId,
-        }
-      );
+      const response = await axios.post("http://localhost:5050/ressources/refprojects", {
+        projectId: projectId,
+        counterRefToAdd: countRefAdd,
+        userId: userId,
+      });
 
       if (response.data.message === "Projet étudiant mis à jour avec succès.") {
         toastSuccess(`Vous avez bien mis en avant le projet ${projectName}`);
@@ -101,11 +85,7 @@ const CarouselProjects = (props) => {
       <>
         <div className="no-projects-container">
           <p>Aucun projet étudiant en top 10 publié pour le moment</p>
-          <img
-            className="no-class-img"
-            src={studentTopProjectsImg}
-            alt="no-students-top-projects-uploaded"
-          />
+          <img className="no-class-img" src={studentTopProjectsImg} alt="no-students-top-projects-uploaded" />
         </div>
       </>
     );
@@ -132,117 +112,107 @@ const CarouselProjects = (props) => {
             <SplideSlide key={project.id}>
               <Card onClick={() => navigate(project.id)}>
                 <CardContent>
-                  <CardMedia
-                    component="img"
-                    alt={project.nameProject}
-                    image={project.imgProject}
-                    height="700"
-                  />
+                  <CardMedia component="img" alt={project.nameProject} image={project.imgProject} height="700" />
                   <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                     {project.nameProject}
                   </Typography>
                   <div className="type-promo-project-container">
                     {project.typeProject === "Web" ? (
                       <div className="project-type-typo">
-                        <Typography variant="h5">
-                          {project.typeProject}
-                        </Typography>
+                        <Typography variant="h5">{project.typeProject}</Typography>
                         <DesktopWindowsRoundedIcon sx={{ marginLeft: "5px" }} />
                       </div>
                     ) : project.typeProject === "Mobile" ? (
                       <div className="project-type-typo">
-                        <Typography variant="h5">
-                          {project.typeProject}
-                        </Typography>
+                        <Typography variant="h5">{project.typeProject}</Typography>
                         <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
                       </div>
                     ) : project.typeProject === "Gaming" ? (
                       <div className="project-type-typo">
-                        <Typography variant="h5">
-                          {project.typeProject}
-                        </Typography>
+                        <Typography variant="h5">{project.typeProject}</Typography>
                         <SportsEsportsRoundedIcon sx={{ marginLeft: "5px" }} />
                       </div>
                     ) : project.typeProject === "IA" ? (
                       <div className="project-type-typo">
-                        <Typography variant="h5">
-                          {project.typeProject}
-                        </Typography>
+                        <Typography variant="h5">{project.typeProject}</Typography>
                         <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
                       </div>
                     ) : project.typeProject === "DevOps" ? (
                       <div className="project-type-typo">
-                        <Typography variant="h5">
-                          {project.typeProject}
-                        </Typography>
+                        <Typography variant="h5">{project.typeProject}</Typography>
                         <MediationRoundedIcon sx={{ marginLeft: "5px" }} />
                       </div>
                     ) : (
                       <div></div>
                     )}
-                    <Chip
-                      sx={{
-                        display: "flex",
-                        padding: "10px",
-                      }}
-                      label={
-                        <>
-                          <div style={{ display: "flex" }}>
-                            <Typography>{project.promoProject.name}</Typography>
-                            <SchoolIcon />
-                          </div>
-                        </>
-                      }
-                    ></Chip>
+                    <div className="type-promo-project-container">
+                      {project.promoProject.map &&
+                        project.promoProject.map((promo) => (
+                          <Chip
+                            sx={{
+                              display: "flex",
+                              padding: "10px",
+                            }}
+                            label={
+                              <>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>{promo.name}</Typography>
+                                  <SchoolIcon />
+                                </div>
+                              </>
+                            }
+                          ></Chip>
+                        ))}
+                    </div>
+                  </div>
+                  <div className="type-promo-project-container">
+                    {project?.technosProject?.map((techno) => (
+                      <Chip
+                        avatar={<Avatar alt={techno.name} src={techno.image} />}
+                        sx={{
+                          display: "flex",
+                          padding: "10px",
+                        }}
+                        label={
+                          <>
+                            <div style={{ display: "flex" }}>
+                              <Typography>{techno.name}</Typography>
+                            </div>
+                          </>
+                        }
+                      ></Chip>
+                    ))}
                   </div>
 
                   {userStatus === "po" ? (
                     <Button
                       onClick={(event) => {
                         event.stopPropagation();
-                        referStudentProject(
-                          project.id,
-                          project.nameProject,
-                          votePo,
-                          user?.id
-                        );
+                        referStudentProject(project.id, project.nameProject, votePo, user?.id);
                       }}
                       sx={{ color: "#7a52e1" }}
                     >
-                      {project.counterRef}{" "}
-                      <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                      {project.counterRef} <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                     </Button>
                   ) : userStatus === "pedago" ? (
                     <Button
                       onClick={(event) => {
                         event.stopPropagation();
-                        referStudentProject(
-                          project.id,
-                          project.nameProject,
-                          votePedago,
-                          user?.id
-                        );
+                        referStudentProject(project.id, project.nameProject, votePedago, user?.id);
                       }}
                       sx={{ color: "#7a52e1" }}
                     >
-                      {project.counterRef}{" "}
-                      <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                      {project.counterRef} <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                     </Button>
                   ) : (
                     <Button
                       onClick={(event) => {
                         event.stopPropagation();
-                        referStudentProject(
-                          project.id,
-                          project.nameProject,
-                          voteStudent,
-                          user?.id
-                        );
+                        referStudentProject(project.id, project.nameProject, voteStudent, user?.id);
                       }}
                       sx={{ color: "#7a52e1" }}
                     >
-                      {project.counterRef}{" "}
-                      <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
+                      {project.counterRef} <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                     </Button>
                   )}
                 </CardContent>

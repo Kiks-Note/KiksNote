@@ -125,25 +125,14 @@ const createStudentProject = async (req, res) => {
       StudentId,
       nameProject,
       RepoProjectLink,
-      promoProject,
+      promoProject = [],
       membersProject = [],
+      technosProject = [],
       typeProject,
       descriptionProject,
       imgProject,
       counterRef,
     } = req.body;
-
-    const promoProjectRef = await db
-      .collection("class")
-      .doc(promoProject)
-      .get();
-
-    if (!promoProjectRef.exists) {
-      return res.status(404).send("Classe non trouvée");
-    }
-
-    const projectPromoData = promoProjectRef.data();
-    projectPromoData.id = promoProjectRef.id;
 
     const creatorProjectRef = await db.collection("users").doc(StudentId).get();
 
@@ -169,9 +158,7 @@ const createStudentProject = async (req, res) => {
       imgProject.replace(/^data:image\/\w+;base64,/, ""),
       "base64"
     );
-    const file = bucket.file(
-      `students_projects/${projectPromoData.name}/${nameProject}/${fileName}`
-    );
+    const file = bucket.file(`students_projects/${nameProject}/${fileName}`);
 
     const options = {
       metadata: {
@@ -191,13 +178,29 @@ const createStudentProject = async (req, res) => {
       creatorProject: creatorProjectData,
       nameProject: nameProject,
       RepoProjectLink: RepoProjectLink,
-      promoProject: projectPromoData,
       typeProject: typeProject,
       descriptionProject: descriptionProject,
       imgProject: urlImageProject,
       counterRef: counterRef,
       createdProjectAt: new Date(),
     };
+
+    const promoProjectData = [];
+    for (const promosId of promoProject) {
+      const promoProjectRef = await db.collection("class").doc(promosId).get();
+      if (promoProjectRef.exists) {
+        const promoData = {
+          id: promoProjectRef.id,
+          cursus: promoProjectRef.data().cursus,
+          name: promoProjectRef.data().name,
+          promo: promoProjectRef.data().promo,
+          site: promoProjectRef.data().site,
+        };
+
+        promoProjectData.push(promoData);
+      }
+    }
+    projectData.promoProject = promoProjectData;
 
     const membersData = [];
     for (const memberId of membersProject) {
@@ -217,6 +220,21 @@ const createStudentProject = async (req, res) => {
       }
     }
     projectData.membersProject = membersData;
+
+    const technosData = [];
+
+    for (const technosId of technosProject) {
+      const technosRef = await db.collection("technos").doc(technosId).get();
+      if (technosRef.exists) {
+        const technoData = {
+          id: technosRef.id,
+          name: technosRef.data().name,
+          image: technosRef.data().image,
+        };
+        technosData.push(technoData);
+      }
+    }
+    projectData.technosProject = technosData;
 
     const projectsRef = db.collection("students_projects");
     const newProject = await projectsRef.add(projectData);
