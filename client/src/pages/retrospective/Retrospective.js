@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import Button from "@mui/material/Button";
-
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
@@ -9,20 +8,12 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
-import { TextField, Typography } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import IconButton from "@mui/material/IconButton";
-import PostIt from "../../components/agile/PostIt";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
+import { TextField } from "@mui/material";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import { useNavigate } from "react-router-dom";
 
 import * as React from 'react';
-
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { setDoc } from "firebase/firestore";
 import Board from "../board_retro/board";
 
 import Table from '@mui/material/Table';
@@ -36,7 +27,6 @@ import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers-pro';
 import { AdapterDayjs } from '@mui/x-date-pickers-pro/AdapterDayjs';
 import { DateRangePicker } from '@mui/x-date-pickers-pro/DateRangePicker';
-import { TableVirtuoso, TableComponents } from 'react-virtuoso';
 
 //import "./Retrospective.scss"
 
@@ -45,28 +35,16 @@ function Retrospective() {
 
 
   const [open, setOpen] = useState(false);
-  const [openPostItEdit, setOpenPostItEdit] = useState(false);
-  const [postItText, setPostItText] = useState("");
-  const [categorie, setCategorie] = useState("")
-  const [selectedPostItIndex, setSelectedPostItIndex] = useState();
   const [retroModel, setRetroModel] = useState('Model de retro')
-  const [message, setMessage] = useState("");
-  const [seconds, setSeconds] = useState(0);
   const [columns, setColumns] = useState(null);
   const [allRetro, setAllRetro] = useState([]);
-  const [showTextField, setShowTextField] = useState(false);
-  const [newPostItContent, setNewPostItContent] = useState("");
-  const [selectedColumnId, setSelectedColumnId] = useState(null);
-  const [selectedRetro, setSelectedRetro] = useState('');
-  const [connectedUsers, setConnectedUsers] = useState([]);
-  const [currentRetroIndex, setCurrentRetroIndex] = useState(null)
+
   const [allCourses, setAllCourses] = useState([]);
   const [choosenCourse, setChoosenCourse] = useState(null)
   const [boardTitle, setBoardTitle] = useState("")
   const [listRetros, setListRetros] = useState();
   const [rows, setRows] = useState([]);
   const [datas, setDatas] = useState(null);
-  const [role, setRole] = useState("");
 
   const [filterName, setFilterName] = useState("")
   const [filterDate, setFilterDate] = useState(null)
@@ -75,9 +53,6 @@ function Retrospective() {
 
 
   let navigate = useNavigate();
-
-
-
 
   const columno = [
     {
@@ -261,10 +236,6 @@ function Retrospective() {
     };
   }, []);
 
-
-
-
-
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -273,11 +244,8 @@ function Retrospective() {
     setOpen(false);
   };
 
-
   const getAllRetroByUser = async () => {
     const userId = user.id;
-
-
 
     await axios.get(`http://localhost:5050/retro/getAll`
     ).then((res) => {
@@ -340,10 +308,6 @@ function Retrospective() {
       console.log("champ manquant");
     }
   }
-
-
-
-
 
   function createData(titleRetro, date, name, idRetro) {
     return { titleRetro, date, name, idRetro };
