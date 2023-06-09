@@ -56,9 +56,6 @@ export default function ElevatorPitch({ index}) {
                 }}
                 >
 
-                    {/* Tu dois faire tout ton code ici selon l'index et pas creer plusieurs component */}
-                    {/* Ok Louis-kun */}
-
                     {index === 0 && (
                         <div className='clickable_div'>
                             <div>
