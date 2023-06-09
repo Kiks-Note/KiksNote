@@ -125,7 +125,7 @@ const createStudentProject = async (req, res) => {
       StudentId,
       nameProject,
       RepoProjectLink,
-      promoProject,
+      promoProject = [],
       membersProject = [],
       technosProject = [],
       typeProject,
@@ -133,18 +133,6 @@ const createStudentProject = async (req, res) => {
       imgProject,
       counterRef,
     } = req.body;
-
-    const promoProjectRef = await db
-      .collection("class")
-      .doc(promoProject)
-      .get();
-
-    if (!promoProjectRef.exists) {
-      return res.status(404).send("Classe non trouvée");
-    }
-
-    const projectPromoData = promoProjectRef.data();
-    projectPromoData.id = promoProjectRef.id;
 
     const creatorProjectRef = await db.collection("users").doc(StudentId).get();
 
@@ -170,9 +158,7 @@ const createStudentProject = async (req, res) => {
       imgProject.replace(/^data:image\/\w+;base64,/, ""),
       "base64"
     );
-    const file = bucket.file(
-      `students_projects/${projectPromoData.name}/${nameProject}/${fileName}`
-    );
+    const file = bucket.file(`students_projects/${nameProject}/${fileName}`);
 
     const options = {
       metadata: {
@@ -192,13 +178,29 @@ const createStudentProject = async (req, res) => {
       creatorProject: creatorProjectData,
       nameProject: nameProject,
       RepoProjectLink: RepoProjectLink,
-      promoProject: projectPromoData,
       typeProject: typeProject,
       descriptionProject: descriptionProject,
       imgProject: urlImageProject,
       counterRef: counterRef,
       createdProjectAt: new Date(),
     };
+
+    const promoProjectData = [];
+    for (const promosId of promoProject) {
+      const promoProjectRef = await db.collection("class").doc(promosId).get();
+      if (promoProjectRef.exists) {
+        const promoData = {
+          id: promoProjectRef.id,
+          cursus: promoProjectRef.data().cursus,
+          name: promoProjectRef.data().name,
+          promo: promoProjectRef.data().promo,
+          site: promoProjectRef.data().site,
+        };
+
+        promoProjectData.push(promoData);
+      }
+    }
+    projectData.promoProject = promoProjectData;
 
     const membersData = [];
     for (const memberId of membersProject) {
