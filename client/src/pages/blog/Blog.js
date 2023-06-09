@@ -474,6 +474,23 @@ function Blog() {
             <SplitButtonChoice />
           </Box>
           <Box sx={{ width: "93vw" }}>
+            <Box
+              sx={{
+                display: "flex",
+                height: 500,
+                width: "100%",
+                justifyContent: "space-around",
+                alignItems: "center",
+                bgcolor: "#c6c5c5",
+                my: 2,
+              }}
+            >
+              <TopCreatorsChart />
+              <Box>
+                <MostParticipantsChart />
+              </Box>
+              <BlogRepartition />
+            </Box>
             pending
             <AdvancedCarouselPending />
             tuto
@@ -483,139 +500,6 @@ function Blog() {
             event
             <AdvancedCarouselEvent />
           </Box>
-          {/*
-
-          <Grid item xs={5}>
-            <div className="container_blog">
-              <div className="container_blog">
-                <Typography>En attente de validation</Typography>
-                {!loading &&
-                  blog
-                    .filter((blog) =>
-                      user.status !== "etudiant"
-                        ? blog.visibility === "pending"
-                        : user.email === blog.created_by
-                        ? blog.visibility === "pending"
-                        : undefined
-                    )
-                    .map((filtered) => (
-                      <>
-                        <CardBlog
-                          blog={filtered}
-                          key={filtered.id}
-                          tags={tags}
-                        />
-                        <Typography>{user.email}</Typography>
-                        <Typography>{filtered.created_by}</Typography>
-                        <Typography>{filtered.visibility}</Typography>
-                        <Typography>{!filtered.visibility}</Typography>
-                      </>
-                    ))}
-                <Typography>Fin attente de validation</Typography>
-              </div>
-              {!loading ? (
-                blog
-                  .filter((blog) => blog.type !== "tuto")
-                  .filter((blog) =>
-                    user.status === "etudiant"
-                      ? blog.visibility === "public"
-                      : blog.visibility === "pending" ||
-                        blog.visibility === "public"
-                  )
-                  .map((filtered) => (
-                    <>
-                      <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                      <Typography>{user.email}</Typography>
-                      <Typography>{filtered.created_by}</Typography>
-                      <Typography>{filtered.visibility}</Typography>
-                    </>
-                  ))
-              ) : (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100%",
-                  }}
-                >
-                  <Rings
-                    height="200"
-                    width="200"
-                    color="#00BFFF"
-                    radius="6"
-                    wrapperStyle={{}}
-                    wrapperClass="loader"
-                    visible={true}
-                    ariaLabel="rings-loading"
-                  />
-                </div>
-              )}
-            </div>
-          </Grid>
-*/}
-          {/*
-          {user.status !== "etudiant" && (
-            <Grid item xs={4}>
-              <Paper
-                square
-                elevation={0}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  pl: 2,
-                  bgcolor: "background.default",
-                }}
-              >
-                <Typography variant="h6">{stats[activeStep].label}</Typography>
-              </Paper>
-              <AutoPlaySwipeableViews
-                axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-                index={activeStep}
-                onChangeIndex={handleStepChange}
-                enableMouseEvents
-                interval={20000}
-              >
-                {stats.map((step, index) => (
-                  <div key={step.label}>{step.component}</div>
-                ))}
-              </AutoPlaySwipeableViews>
-              <MobileStepper
-                steps={stats.length}
-                position="static"
-                activeStep={activeStep}
-                nextButton={
-                  <Button
-                    size="small"
-                    onClick={handleNext}
-                    disabled={activeStep === stats.length - 1}
-                  >
-                    Suivant
-                    {theme.direction === "rtl" ? (
-                      <KeyboardArrowLeft />
-                    ) : (
-                      <KeyboardArrowRight />
-                    )}
-                  </Button>
-                }
-                backButton={
-                  <Button
-                    size="small"
-                    onClick={handleBack}
-                    disabled={activeStep === 0}
-                  >
-                    {theme.direction === "rtl" ? (
-                      <KeyboardArrowRight />
-                    ) : (
-                      <KeyboardArrowLeft />
-                    )}
-                    Précédent
-                  </Button>
-                }
-              />
-            </Grid>
-          )}
-          */}
         </Box>
       </Box>
     </>
