@@ -5,7 +5,8 @@ import Blog from "./pages/blog/Blog";
 import DetailBlog from "./pages/blog/DetailBlog";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
-import Groups from "./pages/groups/Groups";
+import GroupsDisplay from "./pages/groups/GroupsDisplay";
+import GroupsCreation from "./pages/groups/Groups";
 import Home from "./pages/home/Home";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
@@ -48,7 +49,7 @@ function RoutesProvider() {
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
           <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groupes" element={<Groups />} />
+          <Route path="/groupes" element={<GroupsDisplay />} />
           <Route path="/groupes/creation" element={<GroupsCreation />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel" element={<Appel />} />
