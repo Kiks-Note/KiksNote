@@ -5,6 +5,7 @@ const {
   getRoom,
   getAllRooms,
   room,
+  getAll
 } = require("./controllers/retro");
 
 const retroRoutesWsNotNeeded = () => {
@@ -19,6 +20,7 @@ const retroRoutesWsNeeded = (connection, pathname) => {
 
   router.get("/getAllRooms", getAllRooms);
   router.get("/getRoom/:class", getRoom);
+  router.get("/getAll", getAll)
 
   switch (pathname) {
     case "/retro":

@@ -15,6 +15,19 @@ let indexColor = 0;
 
 console.log("in retro controller");
 
+const getAll = async (req, res) => {
+  const allRetrosQuery = await db.collection("retro").get()
+
+  let allRetros = []
+  allRetrosQuery.forEach((doc) => {
+    allRetros.push({ ...doc.data() });
+  });
+
+  res.send(allRetros)
+  //console.log(allRetros);
+
+}
+
 const getRoom = async (req, res) => {
   const { classStudent } = req.params;
   const snapshot = await db
@@ -250,4 +263,5 @@ module.exports = {
   getAllRooms,
   getRoom,
   room,
+  getAll
 };

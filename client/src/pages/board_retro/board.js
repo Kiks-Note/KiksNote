@@ -27,6 +27,7 @@ import useFirebase from "../../hooks/useFirebase";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { set } from "date-fns";
+import { useLocation } from 'react-router-dom';
 
 export default function Board() {
   const [openPostItEdit, setOpenPostItEdit] = useState(false);
@@ -47,6 +48,13 @@ export default function Board() {
   const { user } = useFirebase();
   const theme = useTheme();
   const navigate = useNavigate();
+  
+  const location = useLocation();
+  const retroData = location.state && location.state.retroRoom;
+
+  console.log("ééééé");
+  console.log(retroData);
+  console.log("ééééé");
 
   const ws = useMemo(() => {
     return new w3cwebsocket("ws://localhost:5050/retro");
@@ -70,6 +78,10 @@ export default function Board() {
     );
     setColumns(colContent);
   }, [ws, classStudents]);
+
+  useEffect(() => {
+    joinRoom(retroData)
+  }, [])
 
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
@@ -109,6 +121,7 @@ export default function Board() {
   const getRoomsAvailables = useCallback(async () => {
     axios.get("http://localhost:5050/retro/getAllRooms").then((res) => {
       if (res.data.length > 0) {
+        console.log(res.data);
         setRoomAvailables(res.data);
       }
     });
@@ -437,11 +450,11 @@ export default function Board() {
       },
     };
 
-    /*     if (room.columns) {
+    if (room.columns) {
       setColumns(room.columns);
     } else {
-      setColumns();
-    } */
+      setColumns(GMDBoard);
+    } 
 
     ws.send(JSON.stringify(message));
   };
