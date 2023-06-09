@@ -72,6 +72,7 @@ const sendGroups = async (req, res) => {
         .toDate(),
       students: req.body.students,
       po_id: req.body.po_id,
+      courseId: req.body.course_id,
     });
 
     res.status(200).send("Groups successfully added!");

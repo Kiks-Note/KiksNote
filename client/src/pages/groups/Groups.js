@@ -431,7 +431,7 @@ function GroupsCreation() {
     setSettings(data);
     setShowSettings(false);
     setInRoom(true);
-    setCourseChoose(data.courseChoose);
+    setCourseChoose(data.courseChoose.id);
   };
 
   const handleClosePopUp = (showFalse) => {
@@ -446,7 +446,9 @@ function GroupsCreation() {
         data: { class: classStudents, lock: true, status: user.status },
       })
     );
-    var groupsKey = Object.keys(columns).filter((key) => key.startsWith("g"));
+    var groupsKey = Object.keys(columns).filter(
+      (key) => key.startsWith("g") && columns[key].items.length > 0
+    );
     setInRoom(false);
     ws.send(
       JSON.stringify({ type: "closeRoom", data: { class: classStudents } })
@@ -529,7 +531,6 @@ function GroupsCreation() {
   }
 
   function lockGroups() {
-    ///TODO: add a toast here
     if (hasLock) {
       setHasLock(false);
       ws.send(
@@ -538,6 +539,7 @@ function GroupsCreation() {
           data: { class: classStudents, lock: false, status: user.status },
         })
       );
+      toast.success("Les groupes sont verrouillés");
     } else {
       setHasLock(true);
       ws.send(
@@ -546,6 +548,7 @@ function GroupsCreation() {
           data: { class: classStudents, lock: true, status: user.status },
         })
       );
+      toast.success("Les groupes sont déverrouillés");
     }
   }
 
@@ -575,501 +578,502 @@ function GroupsCreation() {
   return (
     <>
       {inRoom ? (
-        <div
-          style={{
-            width: "100%",
-            height: "100%",
-            overflow: "hidden",
-          }}
-        >
-          {showSettings && user?.status === "po" ? (
-            <PopUp
-              onPopupData={handlePopupData}
-              dataPopUp={settings}
-              showPopUp={handleClosePopUp}
-            />
-          ) : null}
-          <nav
-            style={{
-              backgroundColor: theme.palette.background.container,
-            }}
-          >
-            <p
-              style={{
-                backgroundColor: theme.palette.custom.button,
-                height: "40px",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                borderRadius: "10px",
-                padding: "0 10px",
-                marginRight: "10px",
-                color: "white",
-                fontWeight: "bold",
-              }}
-            >
-              <GroupIcon
-                style={{
-                  marginRight: "10px",
-                }}
-              />{" "}
-              {nbUserConnected}/{numberOfStudentsInClass + 1}
-            </p>
-            {user?.status === "po" ? (
-              <div className="groups-inputs">
-                <input
-                  type="text"
-                  list="students-list"
-                  placeholder="Eleves/groupes"
-                  onChange={generateGroupCase}
-                />
-                <datalist id="students-list">
-                  <option value={3}></option>
-                  <option value={4}></option>
-                  <option value={5}></option>
-                </datalist>
-                <Tooltip title="Réinitialiser">
-                  <IconButton className="input-button" onClick={resetButton}>
-                    <CachedIcon
-                      className="icon-svg"
-                      style={{
-                        fill: theme.palette.text.primary,
-                        color: theme.palette.text.primary,
-                      }}
-                    />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Aléatoire">
-                  <IconButton
-                    className="input-button"
-                    onClick={randomGeneration}
-                  >
-                    <CasinoIcon
-                      className="icon-svg"
-                      style={{
-                        fill: theme.palette.text.primary,
-                        color: theme.palette.text.primary,
-                      }}
-                    />
-                  </IconButton>
-                </Tooltip>
-
-                <Tooltip title="Lock">
-                  <IconButton onClick={lockGroups}>
-                    {lock ? (
-                      <LockOpenIcon
-                        className="icon-svg"
-                        style={{
-                          fill: theme.palette.text.primary,
-                          color: theme.palette.text.primary,
-                        }}
-                      />
-                    ) : (
-                      <LockIcon
-                        className="icon-svg"
-                        style={{
-                          fill: theme.palette.text.primary,
-                          color: theme.palette.text.primary,
-                        }}
-                      />
-                    )}
-                  </IconButton>
-                </Tooltip>
-                <input
-                  type="file"
-                  className="input-button"
-                  style={{ display: "none" }}
-                  ref={uploadBacklog}
-                  onChange={handleChangeFile}
-                  encType="multipart/form-data"
-                />
-                <Tooltip title="Upload un backlog">
-                  <IconButton onClick={handleClickBacklog}>
-                    <FileUploadIcon
-                      className="icon-svg"
-                      style={{
-                        fill: theme.palette.text.primary,
-                        color: theme.palette.text.primary,
-                      }}
-                    />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Changer les paramètres">
-                  <IconButton className="input-button" onClick={settingsPopUp}>
-                    <SettingsIcon
-                      className="icon-svg"
-                      style={{
-                        fill: theme.palette.text.primary,
-                        color: theme.palette.text.primary,
-                      }}
-                    />
-                  </IconButton>
-                </Tooltip>
-              </div>
-            ) : (
-              <div>
-                <p
-                  style={{
-                    color: theme.palette.text.primary,
-                    fontWeight: "bold",
-                  }}
-                >
-                  Nombre d'élèves par groupe :{" "}
-                  {nbSPGrp ? nbSPGrp : "En attente.."}
-                </p>
-              </div>
-            )}
-          </nav>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              width: "100%",
-              flexWrap: "wrap",
-            }}
-          >
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-              }}
-            >
-              {userCursors
-                ? Array.from(userCursors.entries()).map(
-                    ([userID, userData]) => {
-                      if (userID !== user?.id) {
-                        return (
-                          <div
-                            key={userID}
-                            style={{
-                              position: "absolute",
-                              left: userData.position?.x,
-                              top: userData.position?.y,
-                              zIndex: 100,
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 50 50"
-                              width="30px"
-                              height="30px"
-                            >
-                              <path
-                                fill={userData.color}
-                                d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
-                              />
-                            </svg>
-
-                            <div
-                              style={{
-                                display: "inline-block",
-                                backgroundColor: userData.color,
-                                padding: "0px 6px",
-                                color: "#fff",
-                                fontSize: "12px",
-                                borderRadius: "4px",
-                                margin: "0px",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  selection: "none",
-                                  fontWeight: "bold",
-                                  textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
-                                  margin: "0px",
-                                }}
-                              >
-                                {userData.name}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      } else {
-                        return null;
-                      }
-                    }
-                  )
-                : null}
-            </div>
-            <DragDropContext onDragEnd={onDragEnd}>
-              {Object.entries(columns).map(([columnId, column], index) => {
-                if (index === 0 && columns.students.items.length > 0) {
+        <>
+          {userCursors
+            ? Array.from(userCursors.entries()).map(([userID, userData]) => {
+                if (userID !== user?.id && userID) {
                   return (
                     <div
+                      key={userID}
                       style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        width: "100%",
-                        marginTop: "50px",
+                        position: "absolute",
+                        left: userData.position?.x,
+                        top: userData.position?.y,
+                        zIndex: 100,
                       }}
-                      key={columnId}
                     >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 50 50"
+                        width="30px"
+                        height="30px"
+                      >
+                        <path
+                          fill={userData.color}
+                          d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
+                        />
+                      </svg>
+
                       <div
                         style={{
-                          margin: 8,
-                          width: "70%",
-                          minHeight: 140,
-                          maxHeight: 500,
+                          display: "inline-block",
+                          backgroundColor: userData.color,
+                          padding: "0px 6px",
+                          color: "#fff",
+                          fontSize: "12px",
+                          borderRadius: "4px",
+                          margin: "0px",
                         }}
-                        className="group-div"
                       >
-                        <Droppable droppableId={columnId} key={columnId}>
-                          {(provided, snapshot) => {
-                            return (
-                              <div
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                style={{
-                                  backgroundColor: snapshot.isDraggingOver
-                                    ? theme.palette.custom.selectBackground
-                                    : "#6b6b6b",
-                                  padding: "0px 50px",
-                                  width: "100%",
-                                  minHeight: 140,
-                                  maxHeight: 500,
-                                  overflow: "auto",
-                                  height: "auto",
-                                  display: "flex",
-                                  justifyContent: "space-around",
-                                  alignItems: "center",
-                                  ...(!lock && {
-                                    backgroundColor: "#999999",
-                                    opacity: 0.5,
-                                    pointerEvents: "none",
-                                  }),
-                                }}
-                                className="group"
-                              >
-                                {column.items.map((item, index) => {
-                                  return (
-                                    <Draggable
-                                      key={item.id}
-                                      draggableId={item.id}
-                                      index={index}
-                                    >
-                                      {(provided, snapshot) => {
-                                        return (
-                                          <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            style={{
-                                              userSelect: "none",
-                                              borderRadius: 3,
-                                              boxShadow:
-                                                "0 0 10px rgba(0, 0, 0, 0.2)",
-                                              backgroundColor:
-                                                snapshot.isDragging
-                                                  ? `red brightness(0.8)`
-                                                  : userCursors
-                                                  ? userCursors.get(item.id)
-                                                      ?.color ||
-                                                    theme.palette.custom.button
-                                                  : theme.palette.custom.button,
-                                              color: "white",
-                                              ...provided.draggableProps.style,
-                                              margin: "10px",
-                                            }}
-                                            className="post-it"
-                                          >
-                                            <p>{item.firstname}</p>
-                                            {!userCursors?.get(item.id) ? (
-                                              <p className="no-connect-label">
-                                                <WifiOffIcon />
-                                              </p>
-                                            ) : null}
-                                            {!userCursors?.get(item.id) &&
-                                            user.status === "po" ? (
-                                              <p
-                                                className="student-cross"
-                                                onClick={() =>
-                                                  deleteStudent(item.id)
-                                                }
-                                              >
-                                                {" "}
-                                                <DeleteIcon />{" "}
-                                              </p>
-                                            ) : null}
-                                          </div>
-                                        );
-                                      }}
-                                    </Draggable>
-                                  );
-                                })}
-                                {provided.placeholder}
-                              </div>
-                            );
-                          }}
-                        </Droppable>
-                      </div>
-                      {!nbSPGrp ? (
                         <p
                           style={{
-                            color: "grey",
-                            fontSize: "70px",
-                            textAlign: "center",
+                            selection: "none",
                             fontWeight: "bold",
+                            textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                            margin: "0px",
                           }}
                         >
-                          Veuillez choisir le nombre d'élèves par groupe
+                          {userData.name}
                         </p>
-                      ) : null}
-                    </div>
-                  );
-                } else if (index !== 0) {
-                  return (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        width: "45 %",
-                      }}
-                      key={columnId}
-                    >
-                      {" "}
-                      <h2>{column.name}</h2>
-                      <div style={{ margin: 8 }}>
-                        <Droppable droppableId={columnId} key={columnId}>
-                          {(provided, snapshot) => {
-                            return (
-                              <div
-                                {...provided.droppableProps}
-                                ref={provided.innerRef}
-                                style={{
-                                  backgroundColor: snapshot.isDraggingOver
-                                    ? theme.palette.custom.selectBackground
-                                    : "#6b6b6b",
-                                  padding: 4,
-                                  width: 250,
-                                  minHeight: 140,
-                                  maxHeight: 500,
-                                  overflow: "auto",
-                                  height: "auto",
-                                  ...(!lock && {
-                                    backgroundColor: "#999999",
-                                    opacity: 0.5,
-                                    pointerEvents: "none",
-                                  }),
-                                }}
-                                className="group"
-                                onClick={() => {
-                                  if (columns.students.items.length > 0) {
-                                    const student =
-                                      columns.students.items.pop();
-                                    moveOnClick(columnId, student, columns);
-                                    setColumns({ ...columns });
-                                    ws.send(
-                                      JSON.stringify({
-                                        type: "updateCol",
-                                        data: {
-                                          columns: { ...columns },
-                                          class: classStudents,
-                                        },
-                                      })
-                                    );
-                                  }
-                                }}
-                              >
-                                {column.items.map((item, index) => {
-                                  return (
-                                    <Draggable
-                                      key={item.id}
-                                      draggableId={item.id}
-                                      index={index}
-                                    >
-                                      {(provided, snapshot) => {
-                                        return (
-                                          <div
-                                            ref={provided.innerRef}
-                                            {...provided.draggableProps}
-                                            {...provided.dragHandleProps}
-                                            style={{
-                                              userSelect: "none",
-                                              borderRadius: 3,
-                                              boxShadow:
-                                                "0 0 10px rgba(0, 0, 0, 0.2)",
-                                              backgroundColor:
-                                                snapshot.isDragging
-                                                  ? "red brightness(0.8)"
-                                                  : userCursors
-                                                  ? userCursors.get(item.id)
-                                                      ?.color ||
-                                                    theme.palette.custom.button
-                                                  : theme.palette.custom.button,
-                                              color: "white",
-                                              margin: "10px",
-                                              ...provided.draggableProps.style,
-                                            }}
-                                            className="post-it"
-                                          >
-                                            <p>{item.firstname}</p>
-                                            {!userCursors?.get(item.id) ? (
-                                              <p className="no-connect-label">
-                                                <WifiOffIcon />
-                                              </p>
-                                            ) : null}
-
-                                            {!userCursors?.get(item.id) &&
-                                            user.status === "po" ? (
-                                              <p
-                                                className="student-cross"
-                                                onClick={() =>
-                                                  deleteStudent(item.id)
-                                                }
-                                              >
-                                                {" "}
-                                                <DeleteIcon />{" "}
-                                              </p>
-                                            ) : null}
-                                          </div>
-                                        );
-                                      }}
-                                    </Draggable>
-                                  );
-                                })}
-                                {provided.placeholder}
-                              </div>
-                            );
-                          }}
-                        </Droppable>
                       </div>
                     </div>
                   );
                 } else {
-                  return <span></span>;
+                  return null;
                 }
-              })}
-            </DragDropContext>
-          </div>
-          {user?.status === "po" ? (
-            <div
+              })
+            : null}
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            {showSettings && user?.status === "po" ? (
+              <PopUp
+                onPopupData={handlePopupData}
+                dataPopUp={settings}
+                showPopUp={handleClosePopUp}
+              />
+            ) : null}
+            <nav
               style={{
-                width: "100%",
-                textAlign: "center",
-                margin: "20px 0px",
+                backgroundColor: theme.palette.background.container,
               }}
             >
-              <Button
-                onClick={saveGroups}
+              <p
                 style={{
                   backgroundColor: theme.palette.custom.button,
+                  height: "40px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
                   borderRadius: "10px",
-                  padding: "5px 10px",
+                  padding: "0 10px",
+                  marginRight: "10px",
                   color: "white",
-                  height: "50px",
-                  width: "100px",
                   fontWeight: "bold",
-                  letterSpacing: "2px",
                 }}
               >
-                Valider
-              </Button>
+                <GroupIcon
+                  style={{
+                    marginRight: "10px",
+                  }}
+                />{" "}
+                {nbUserConnected}/{numberOfStudentsInClass + 1}
+              </p>
+              {user?.status === "po" ? (
+                <div className="groups-inputs">
+                  <input
+                    type="text"
+                    list="students-list"
+                    placeholder="Eleves/groupes"
+                    onChange={generateGroupCase}
+                  />
+                  <datalist id="students-list">
+                    <option value={3}></option>
+                    <option value={4}></option>
+                    <option value={5}></option>
+                  </datalist>
+                  <Tooltip title="Réinitialiser">
+                    <IconButton className="input-button" onClick={resetButton}>
+                      <CachedIcon
+                        className="icon-svg"
+                        style={{
+                          fill: theme.palette.text.primary,
+                          color: theme.palette.text.primary,
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Aléatoire">
+                    <IconButton
+                      className="input-button"
+                      onClick={randomGeneration}
+                    >
+                      <CasinoIcon
+                        className="icon-svg"
+                        style={{
+                          fill: theme.palette.text.primary,
+                          color: theme.palette.text.primary,
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip title="Lock">
+                    <IconButton onClick={lockGroups}>
+                      {hasLock ? (
+                        <LockOpenIcon
+                          className="icon-svg"
+                          style={{
+                            fill: theme.palette.text.primary,
+                            color: theme.palette.text.primary,
+                          }}
+                        />
+                      ) : (
+                        <LockIcon
+                          className="icon-svg"
+                          style={{
+                            fill: theme.palette.text.primary,
+                            color: theme.palette.text.primary,
+                          }}
+                        />
+                      )}
+                    </IconButton>
+                  </Tooltip>
+                  <input
+                    type="file"
+                    className="input-button"
+                    style={{ display: "none" }}
+                    ref={uploadBacklog}
+                    onChange={handleChangeFile}
+                    encType="multipart/form-data"
+                  />
+                  <Tooltip title="Upload un backlog">
+                    <IconButton onClick={handleClickBacklog}>
+                      <FileUploadIcon
+                        className="icon-svg"
+                        style={{
+                          fill: theme.palette.text.primary,
+                          color: theme.palette.text.primary,
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Changer les paramètres">
+                    <IconButton
+                      className="input-button"
+                      onClick={settingsPopUp}
+                    >
+                      <SettingsIcon
+                        className="icon-svg"
+                        style={{
+                          fill: theme.palette.text.primary,
+                          color: theme.palette.text.primary,
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              ) : (
+                <div>
+                  <p
+                    style={{
+                      color: theme.palette.text.primary,
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Nombre d'élèves par groupe :{" "}
+                    {nbSPGrp ? nbSPGrp : "En attente.."}
+                  </p>
+                </div>
+              )}
+            </nav>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                flexWrap: "wrap",
+              }}
+            >
+              <DragDropContext onDragEnd={onDragEnd}>
+                {Object.entries(columns).map(([columnId, column], index) => {
+                  if (index === 0 && columns.students.items.length > 0) {
+                    return (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          width: "100%",
+                          marginTop: "50px",
+                        }}
+                        key={columnId}
+                      >
+                        <div
+                          style={{
+                            margin: 8,
+                            width: "70%",
+                            minHeight: 140,
+                            maxHeight: 500,
+                          }}
+                          className="group-div"
+                        >
+                          <Droppable droppableId={columnId} key={columnId}>
+                            {(provided, snapshot) => {
+                              return (
+                                <div
+                                  {...provided.droppableProps}
+                                  ref={provided.innerRef}
+                                  style={{
+                                    backgroundColor: snapshot.isDraggingOver
+                                      ? theme.palette.custom.selectBackground
+                                      : "#6b6b6b",
+                                    padding: "0px 50px",
+                                    width: "100%",
+                                    minHeight: 140,
+                                    maxHeight: 500,
+                                    overflow: "auto",
+                                    height: "auto",
+                                    display: "flex",
+                                    justifyContent: "space-around",
+                                    alignItems: "center",
+                                    ...(!lock && {
+                                      backgroundColor: "#999999",
+                                      opacity: 0.5,
+                                      pointerEvents: "none",
+                                    }),
+                                  }}
+                                  className="group"
+                                >
+                                  {column.items.map((item, index) => {
+                                    return (
+                                      <Draggable
+                                        key={item.id}
+                                        draggableId={item.id}
+                                        index={index}
+                                      >
+                                        {(provided, snapshot) => {
+                                          return (
+                                            <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              {...provided.dragHandleProps}
+                                              style={{
+                                                userSelect: "none",
+                                                borderRadius: 3,
+                                                boxShadow:
+                                                  "0 0 10px rgba(0, 0, 0, 0.2)",
+                                                backgroundColor:
+                                                  snapshot.isDragging
+                                                    ? `red brightness(0.8)`
+                                                    : userCursors
+                                                    ? userCursors.get(item.id)
+                                                        ?.color ||
+                                                      theme.palette.custom
+                                                        .button
+                                                    : theme.palette.custom
+                                                        .button,
+                                                color: "white",
+                                                ...provided.draggableProps
+                                                  .style,
+                                                margin: "10px",
+                                              }}
+                                              className="post-it"
+                                            >
+                                              <p>{item.firstname}</p>
+                                              {!userCursors?.get(item.id) ? (
+                                                <p className="no-connect-label">
+                                                  <WifiOffIcon />
+                                                </p>
+                                              ) : null}
+                                              {!userCursors?.get(item.id) &&
+                                              user.status === "po" ? (
+                                                <p
+                                                  className="student-cross"
+                                                  onClick={() =>
+                                                    deleteStudent(item.id)
+                                                  }
+                                                >
+                                                  {" "}
+                                                  <DeleteIcon />{" "}
+                                                </p>
+                                              ) : null}
+                                            </div>
+                                          );
+                                        }}
+                                      </Draggable>
+                                    );
+                                  })}
+                                  {provided.placeholder}
+                                </div>
+                              );
+                            }}
+                          </Droppable>
+                        </div>
+                        {!nbSPGrp ? (
+                          <p
+                            style={{
+                              color: "grey",
+                              fontSize: "70px",
+                              textAlign: "center",
+                              fontWeight: "bold",
+                            }}
+                          >
+                            Veuillez choisir le nombre d'élèves par groupe
+                          </p>
+                        ) : null}
+                      </div>
+                    );
+                  } else if (index !== 0) {
+                    return (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          width: "45 %",
+                        }}
+                        key={columnId}
+                      >
+                        {" "}
+                        <h2>{column.name}</h2>
+                        <div style={{ margin: 8 }}>
+                          <Droppable droppableId={columnId} key={columnId}>
+                            {(provided, snapshot) => {
+                              return (
+                                <div
+                                  {...provided.droppableProps}
+                                  ref={provided.innerRef}
+                                  style={{
+                                    backgroundColor: snapshot.isDraggingOver
+                                      ? theme.palette.custom.selectBackground
+                                      : "#6b6b6b",
+                                    padding: 4,
+                                    width: 250,
+                                    minHeight: 140,
+                                    maxHeight: 500,
+                                    overflow: "auto",
+                                    height: "auto",
+                                    ...(!lock && {
+                                      backgroundColor: "#999999",
+                                      opacity: 0.5,
+                                      pointerEvents: "none",
+                                    }),
+                                  }}
+                                  className="group"
+                                  onClick={() => {
+                                    if (columns.students.items.length > 0) {
+                                      const student =
+                                        columns.students.items.pop();
+                                      moveOnClick(columnId, student, columns);
+                                      setColumns({ ...columns });
+                                      ws.send(
+                                        JSON.stringify({
+                                          type: "updateCol",
+                                          data: {
+                                            columns: { ...columns },
+                                            class: classStudents,
+                                          },
+                                        })
+                                      );
+                                    }
+                                  }}
+                                >
+                                  {column.items.map((item, index) => {
+                                    return (
+                                      <Draggable
+                                        key={item.id}
+                                        draggableId={item.id}
+                                        index={index}
+                                      >
+                                        {(provided, snapshot) => {
+                                          return (
+                                            <div
+                                              ref={provided.innerRef}
+                                              {...provided.draggableProps}
+                                              {...provided.dragHandleProps}
+                                              style={{
+                                                userSelect: "none",
+                                                borderRadius: 3,
+                                                boxShadow:
+                                                  "0 0 10px rgba(0, 0, 0, 0.2)",
+                                                backgroundColor:
+                                                  snapshot.isDragging
+                                                    ? "red brightness(0.8)"
+                                                    : userCursors
+                                                    ? userCursors.get(item.id)
+                                                        ?.color ||
+                                                      theme.palette.custom
+                                                        .button
+                                                    : theme.palette.custom
+                                                        .button,
+                                                color: "white",
+                                                margin: "10px",
+                                                ...provided.draggableProps
+                                                  .style,
+                                              }}
+                                              className="post-it"
+                                            >
+                                              <p>{item.firstname}</p>
+                                              {!userCursors?.get(item.id) ? (
+                                                <p className="no-connect-label">
+                                                  <WifiOffIcon />
+                                                </p>
+                                              ) : null}
+
+                                              {!userCursors?.get(item.id) &&
+                                              user.status === "po" ? (
+                                                <p
+                                                  className="student-cross"
+                                                  onClick={() =>
+                                                    deleteStudent(item.id)
+                                                  }
+                                                >
+                                                  {" "}
+                                                  <DeleteIcon />{" "}
+                                                </p>
+                                              ) : null}
+                                            </div>
+                                          );
+                                        }}
+                                      </Draggable>
+                                    );
+                                  })}
+                                  {provided.placeholder}
+                                </div>
+                              );
+                            }}
+                          </Droppable>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    return <span></span>;
+                  }
+                })}
+              </DragDropContext>
             </div>
-          ) : null}
-        </div>
+            {user?.status === "po" ? (
+              <div
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  margin: "20px 0px",
+                }}
+              >
+                <Button
+                  onClick={saveGroups}
+                  style={{
+                    backgroundColor: theme.palette.custom.button,
+                    borderRadius: "10px",
+                    padding: "5px 10px",
+                    color: "white",
+                    height: "50px",
+                    width: "100px",
+                    fontWeight: "bold",
+                    letterSpacing: "2px",
+                  }}
+                >
+                  Valider
+                </Button>
+              </div>
+            ) : null}
+          </div>
+        </>
       ) : (
         <h1>Pas de Room pour le moment</h1>
       )}
