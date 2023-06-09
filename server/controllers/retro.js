@@ -3,6 +3,103 @@ const { v4: uuidv4 } = require("uuid");
 
 console.log("in retro controller");
 
+// const data = {
+//   campus_numerique: false,
+//   courseClass: {
+//     cursus: "Web / Mobile",
+//     id: "28LQglH25avBxIlBMeRw",
+//     name: "L3-Paris",
+//     promo: "2023-2024",
+//     site: "Paris"
+//   },
+//     dateEndSprint: "26 juin 2023 à 02:00:00 UTC+2",
+//     dateStartSprint: "19 juin 2023 à 02:00:00 UTC+2",
+//     description: "",
+//     imageCourseUrl: "",
+//     owner: {
+//       firstname: "Jean",
+//       id: "jean@edu.esiee-it.fr",
+//       lastname: "Jean"
+//     },
+//     private: false,
+//     title: "VueJS"
+//   }
+
+// // Insert the data into the "campus_numerique" collection
+// const docRef =  db.collection('cours').add(data);
+
+// //res.send('Data inserted successfully');
+
+
+// const data = {
+//   campus_numerique: true,
+//   courseClass: {
+//     cursus: "Web / Mobile",
+//     id: "28LQglH25avBxIlBMeRw",
+//     name: "L3-Paris",
+//     promo: "2023-2024",
+//     site: "Paris",
+//     dateEndSprint: {
+//       _nanoseconds: 0,
+//       _seconds: 1687737600
+//     },
+//     dateStartSprint: {
+//       _nanoseconds: 0,
+//       _seconds: 1687132800
+//     },
+//     description: "",
+//     id: "I0yNc3UJ89OkGWuZN8st",
+//     imageCourseUrl: "",
+//     owner: {
+//       firstname: "luc",
+//       id: "luc@edu.esiee-it.fr",
+//       lastname: "luc"
+//     },
+//     private: false,
+//     title: "Algo"
+//   },
+//     creationDate: "2023-06-08T00:47:59.371Z",
+//     dataRetro: {
+//       Glad: {
+//         color: "#ff0000",
+//         items: [
+//           {
+//             content: "f",
+//             id: "postIt-1686217879182",
+//             name: "Glad",
+//             params: "1 / 1 / 3 / 3"
+//           }
+//         ]
+//       },
+//       Mad: {
+//         color: "#0000ff",
+//         items: [
+//           {
+//             name: "Mad",
+//             params: "1 / 3 / 3 / 5"
+//           }
+//         ]
+//       },
+//       Sad: {
+//         color: "#9ACD32",
+//         items: [
+//           {
+//             name: "Sad",
+//             params: "3 / 1 / 5 / 3"
+//           }
+//         ]
+//       }
+//     },
+//     firstname: "luc",
+//     idRetro: "50dfd5ce-040e-4409-b29b-00b4c2c99d87",
+//     idUser: "luc@edu.esiee-it.fr",
+//     lastname: "luc",
+//     titleRetro: "retro pour mes L3 (algo)"
+  
+// }
+// const docRef =  db.collection('retro').add(data);
+
+
 const addRetro = async (req, res) => {
   try {
     // Implementation of adding retro logic
@@ -109,8 +206,9 @@ const getAllRetroByPO = async (req, res) => {
       let allRetros = [];
       snapshotRetro.forEach((doc)=> {
         for(let i = 0; i < filteredClassList.length; i ++) {
-          if (doc.data().courseRetro.courseClass.name == filteredClassList[i]) 
-          allRetros.push(doc.data())
+          if (doc.data().courseRetro.courseClass.name == filteredClassList[i]) {
+            allRetros.push(doc.data())
+          }
         } 
       });
 

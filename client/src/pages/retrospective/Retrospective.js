@@ -394,21 +394,30 @@ function Retrospective() {
     }
   };
 
-  const filter = () => {
+  const filter = (dateRange) => {
     //setSelectedRange(dateRange);
+
+    const startDate = new Date(dateRange[0]["$d"]);
+    const endDate = new Date(dateRange[1]["$d"]);
+    let filteredDates = []
+
     let filterAllRetro = [];
     allRetro.map((el, index) => {
 
       if (filterName !== "") {
         let lowerCaseValue = filterName.toLowerCase();
         let comparedToElement = el.retroName;
-        comparedToElement.includes(lowerCaseValue) ? filterAllRetro.push(el) : null
+        if (comparedToElement.includes(lowerCaseValue)) {
+          filterAllRetro.push(el)
+        }
       }
 
       if (filterOwner !== "") {
         let lowerCaseValue = filterOwner.toLowerCase();
         let comparedToElement = el.firstname.toLowerCase() + " " + el.lastname.toLowerCase()
-        comparedToElement.includes(lowerCaseValue) ? filterAllRetro.push(el) : null
+        if(comparedToElement.includes(lowerCaseValue)) {
+          filterAllRetro.push(el)
+        }  
       }
 
 
@@ -459,7 +468,7 @@ function Retrospective() {
               placeholder="Nom"
 
               fullWidth
-              onChange={(e) => {filter(), filterRetro(e.target.value, "name")}}
+              onChange={(e) => filter(e)}
               wrap="true"
             />
 
@@ -468,7 +477,7 @@ function Retrospective() {
                   <DateRangePicker
                     localeText={{ start: 'Debut', end: 'fin' }}
                     value={selectedRange}
-                    onChange={(e) =>{filter(), handleDateRangeChange(e)}}
+                    //onChange={(e) =>{filter(e), handleDateRangeChange(e)}}
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -481,7 +490,7 @@ function Retrospective() {
               placeholder="Proprietaire"
 
               fullWidth
-              onChange={(e) => {filter(), filterRetro(e.target.value, "owner")}}
+              onChange={(e) => filter(e)}
               wrap="true"
             />
 
