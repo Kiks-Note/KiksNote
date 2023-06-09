@@ -455,8 +455,12 @@ export default function Board() {
     } else {
       setColumns(GMDBoard);
     } 
-
-    ws.send(JSON.stringify(message));
+    
+    ws.onopen= () => {
+      console.log('WebSocket connection opened');
+      ws.send(JSON.stringify(message));
+    };
+  
   };
 
   const setRightPostItCategorie = (obj, i) => {
