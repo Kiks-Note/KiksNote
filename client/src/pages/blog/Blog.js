@@ -148,6 +148,7 @@ function Blog() {
               </div>
               {!loading ? (
                 blog
+                  .filter((blog) => blog.type !== "tuto")
                   .filter((blog) =>
                     user.status === "etudiant"
                       ? blog.visibility === "public"

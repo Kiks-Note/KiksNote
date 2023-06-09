@@ -1,5 +1,35 @@
 const { db, FieldValue } = require("../firebase");
 const { v4: uuidv4 } = require("uuid");
+const nodemailer = require('nodemailer');
+
+async function sendMail(article) {
+  const users = await db.collection("users").where('status', '!=', 'etudiant').get()
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.NODEMAILER_EMAIL,
+      pass: process.env.NODEMAILER_PASSWORD
+    }
+  });
+
+  for (let i = 0; i < users.size; i++) {
+    await new Promise(resolve => setTimeout(resolve, 5000));
+
+    const mailOptions = {
+      from: 'services.kiksnote.noreply@gmail.com',
+      to: /*'users.docs[i].data().email'*/'etienne.renauld@laposte.net',
+      subject: `Kiks Note - Un ${article ? 'nouvel article' : 'nouveau tutoriel'} vient d\'être posté`,
+      html: '<p>Cliquez sur le lien ci-dessous pour accéder aux articles.</p><p><a href="http://localhost:3000/blog">Voir les articles</a></p>'
+    };
+
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      throw error
+    }
+  }
+}
+
 //add new Blog
 const addNewBlog = async (req, res) => {
   const {
@@ -33,13 +63,17 @@ const addNewBlog = async (req, res) => {
       type: type,
       updated_at: "",
       visibility: visibility,
-      created_at: new Date(),
+      created_at: new Date()
     });
+
     res.send("Document successfully written!");
   } catch (err) {
     res.status(500).send(err);
   }
+
+  await sendMail(true)
 };
+
 //add new Tuto
 const addNewTuto = async (req, res) => {
   const {
@@ -87,6 +121,8 @@ const addNewTuto = async (req, res) => {
   } catch (err) {
     res.status(500).send(err);
   }
+
+  await sendMail(false)
 };
 
 //update tutorial visibility
