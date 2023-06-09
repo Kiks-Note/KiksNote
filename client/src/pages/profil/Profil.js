@@ -85,8 +85,8 @@ export default function Profil() {
       };
 
       wsComments.onmessage = (message) => {
-        console.log(message.data);
         const data = JSON.parse(message.data);
+        console.log(data);
         var userInfo = data;
         const date = new Date(userInfo.dateofbirth._seconds * 1000 + userInfo.dateofbirth._nanoseconds / 1000000);
         const formattedDate = format(date, "yyyy-MM-dd");
@@ -111,6 +111,7 @@ export default function Profil() {
           status: data.status,
         });
         setIsLoading(true);
+        console.log(userProfil);
       };
     })();
   }, [id]);
@@ -121,8 +122,6 @@ export default function Profil() {
         const response = await axios.get(`http://localhost:5050/ressources/jpo/user/${user.id}`);
         if (response.data != undefined) {
           setRecentJpo(response.data);
-          console.log(response.data.length);
-          // setRecentJpo(response.data);
         }
       } catch (error) {
         console.error(error);
@@ -207,7 +206,9 @@ export default function Profil() {
             <Typography variant="h4">
               {userProfil.firstname} {userProfil.lastname}
             </Typography>
-            {userProfil && userProfil.status === "etudiant" && <Typography>Classe : {userProfil.class}</Typography>}
+            {userProfil && userProfil.status === "etudiant" && (
+              <Typography>Classe : {userProfil.class.name}</Typography>
+            )}
             <Typography>{userProfil.job && `${userProfil.job} chez ${userProfil.company}`}</Typography>
           </Box>
           <div
