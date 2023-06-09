@@ -39,7 +39,10 @@ var upload = multer({
   },
 });
 
-const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes");
+const {
+  retroRoutesWsNeeded,
+  retroRoutesWsNotNeeded,
+} = require("./retroRoutes");
 
 app.use(express.json());
 app.use(cors());
@@ -69,7 +72,10 @@ const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 
 const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
 const groupNoWs = groupNoWsNeeded();
-
+app.use("/ressources", coursRoutes()); // --> Resssources Cours
+app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
+app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
+app.use("/ressources", technosRoutes()); // --> Resssources Technos
 app.use("/home", homeRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
@@ -95,14 +101,11 @@ wsI.on("request", (request) => {
     console.log(`WebSocket Error: ${error}`);
   });
   connection.on("close", (reasonCode, description) => {
-    console.log(`WebSocket closed with reasonCode ${reasonCode} and description ${description}`);
+    console.log(
+      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
+    );
   });
 });
-
-app.use("/ressources", coursRoutes()); // --> Resssources Cours
-app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
-app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
-app.use("/ressources", technosRoutes()); // --> Resssources Technos
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

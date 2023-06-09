@@ -31,8 +31,10 @@ import JpoInfo from "./pages/ressources/jpo/JpoInfo";
 import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
 import StudentsProjects from "./pages/ressources/students_project/StudentsProjects";
 import Retrospective from "./pages/retrospective/Retrospective";
+import RetrospectiveStudent from "./pages/retrospective/RetrospectiveStudent";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
+import Board from "./pages/board_retro/board";
 
 function RoutesProvider() {
   return (
@@ -72,7 +74,7 @@ function RoutesProvider() {
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
 
           <Route path="/agile" element={<FolderAgile />} />
-          <Route path="/retro" element={<Retrospective />} />
+          <Route path="/retro" element={<Board />} />
 
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
