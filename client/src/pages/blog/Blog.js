@@ -477,7 +477,6 @@ function Blog() {
             <Box
               sx={{
                 display: "flex",
-                height: 500,
                 width: "100%",
                 justifyContent: "space-around",
                 alignItems: "center",
