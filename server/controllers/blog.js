@@ -12,7 +12,9 @@ const addNewBlog = async (req, res) => {
     statut,
     type,
     visibility,
-  } = req.body;
+  } = JSON.parse(req.body.blogData);
+  // console.log("req.body", req.body);
+  // console.log("tag", tag);
   try {
     const url = req.protocol + "://" + req.get("host") + "/";
     let imagebackgroundTmp = req.file ? url + req.file.path : "";

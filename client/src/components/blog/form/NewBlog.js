@@ -104,16 +104,20 @@ export default function NewBlog({ open, toggleDrawerModify }) {
 
     const formData = new FormData();
     formData.append("thumbnail", thumbnail);
-    formData.append("title", title);
-    formData.append("editorState", JSON.stringify(rawContentState));
-    formData.append("inputEditorState", JSON.stringify(inputEditorState));
-    formData.append("created_by", user.id);
-    formData.append("type", "blog");
-    formData.append("tag", selectedTags);
-    formData.append("statut", statut);
-    formData.append("visibility", visibility);
-    formData.append("description", description);
 
+    const blogData = {
+      title: title,
+      description: description,
+      editorState: JSON.stringify(rawContentState),
+      inputEditorState: inputEditorState,
+      created_by: user.id,
+      type: "blog",
+      tag: selectedTags,
+      statut: statut,
+      visibility: visibility,
+    };
+    formData.append("blogData", JSON.stringify(blogData));
+    console.log("tags", selectedTags);
     try {
       const response = await axios.post(
         "http://localhost:5050/blog",
