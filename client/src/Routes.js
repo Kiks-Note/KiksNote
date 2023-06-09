@@ -17,6 +17,7 @@ import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryPendingRequests from "./pages/inventory/InventoryPendingRequests";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
+import AskResetPassword from "./pages/resetpassword/AskResetPassword";
 import NotFound from "./pages/not_found/NotFound";
 import Presence from "./pages/presence/Presence";
 import Profil from "./pages/profil/Profil";
@@ -41,22 +42,23 @@ function RoutesProvider() {
         <Route element={<PublicRoutes />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
+          <Route path="/askresetpassword" element={<AskResetPassword />} />
           <Route path="/arbre" element={<ArbreFonctionnel />} />
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groupes" element={<Groups />} />
+          <Route path="/groupes/creation" element={<GroupsCreation />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel/:id" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groups" element={<Groups />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
-          <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
 
-          <Route path="/profil" element={<Profil />} />
+          <Route path="/profil/:id" element={<Profil />} />
 
           {/* 404 Page */}
           <Route path="/jpo" element={<Jpo />} />

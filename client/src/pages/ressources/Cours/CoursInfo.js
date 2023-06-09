@@ -281,7 +281,7 @@ const CoursInfo = () => {
       });
   };
 
-  const deleteBackLogPdf = (
+  const deleteBackLogPdf = async (
     courseClass,
     title,
     fileName,
@@ -290,20 +290,19 @@ const CoursInfo = () => {
   ) => {
     const data = { courseClass, title, fileName, pdfLinkBackLog, courseId };
 
-    return axios
-      .delete("http://localhost:5050/ressources/backlog/delete-pdf", { data })
-      .then((res) => {
-        if (res.status === 200) {
-          toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
-          getCoursId(id);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toastFail(
-          `Le fichier ${fileName} que vous essayez de supprimer rencontre un problème.`
-        );
-      });
+    try {
+      const res = await axios
+        .delete("http://localhost:5050/ressources/backlog/delete-pdf", { data });
+      if (res.status === 200) {
+        toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
+        getCoursId(id);
+      }
+    } catch (err) {
+      console.log(err);
+      toastFail(
+        `Le fichier ${fileName} que vous essayez de supprimer rencontre un problème.`
+      );
+    }
   };
 
   const updateCours = async (
@@ -1068,21 +1067,23 @@ const CoursInfo = () => {
               ) : (
                 <>
                   <div className="cours-right-side-container">
-                    <img
-                      style={{
-                        borderTopRightRadius: "10px",
-                      }}
-                      src={coursData.imageCourseUrl}
-                      alt="course-img"
-                    />
+                    <div className="cours-img">
+                      <img
+                        style={{
+                          borderTopRightRadius: "10px",
+                          maxWidth: "80%",
+                        }}
+                        src={coursData.imageCourseUrl}
+                        alt="course-img"
+                      />
+                    </div>
                     <div className="display-date">
                       <h4 className="h4-data-cours-info">
                         <CalendarTodayIcon />
                         Date début de Sprint :{" "}
                       </h4>
                       <p className="pl-2">
-                        {coursData?.dateStartSprint &&
-                          coursData.dateStartSprint._seconds &&
+                        {coursData?.dateStartSprint?._seconds &&
                           moment
                             .unix(coursData.dateStartSprint._seconds)
                             .format("DD.MM.YYYY")}
@@ -1094,8 +1095,7 @@ const CoursInfo = () => {
                         Date fin de Sprint :{" "}
                       </h4>
                       <p className="pl-2">
-                        {coursData?.dateEndSprint &&
-                          coursData.dateEndSprint._seconds &&
+                        {coursData?.dateEndSprint?._seconds &&
                           moment
                             .unix(coursData.dateEndSprint._seconds)
                             .format("DD.MM.YYYY")}
@@ -1127,9 +1127,7 @@ const CoursInfo = () => {
                         label={
                           <>
                             <div style={{ display: "flex" }}>
-                              {coursData &&
-                                coursData.courseClass &&
-                                coursData.courseClass.name && (
+                              {coursData?.courseClass?.name && (
                                   <>
                                     <Typography>
                                       {coursData.courseClass.name}
@@ -1303,11 +1301,8 @@ const CoursInfo = () => {
                           >
                             Modifier
                           </Button>
-                          {coursData &&
-                            coursData.courseClass &&
-                            coursData.courseClass.name &&
-                            coursData &&
-                            coursData.owner &&
+                          {coursData?.courseClass?.name &&
+                            coursData?.owner &&
                             coursData.owner.lastname &&
                             coursData.owner.firstname && (
                               <UpdateCoursDialog
@@ -1317,8 +1312,7 @@ const CoursInfo = () => {
                                 handleDrop={handleDrop}
                                 coursTitle={coursData.title}
                                 coursDate={
-                                  coursData?.date &&
-                                  coursData.date._seconds &&
+                                  coursData?.date?._seconds &&
                                   moment
                                     .unix(coursData.date._seconds)
                                     .format("YYYY-MM-DD")

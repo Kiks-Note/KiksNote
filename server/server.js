@@ -46,11 +46,7 @@ const {
 const { callRoutesWsNeeded, callRoutesWsNotNeeded } = require("./callRoutes");
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.use(cors());
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static("uploads"));
@@ -62,43 +58,46 @@ const wsI = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
-
+const homeRoutes = require("./homeRoutes");
 const authRoutes = require("./authRoutes");
-const inventoryRoutes = require("./inventoryRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
 const studentsProjectsRoutes = require("./studentsProjectsRoutes");
-const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 
 const path = require("path");
 
 const agileRoute = require("./agileRoutes");
+const inventoryRoutes = require("./inventoryRoutes");
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 const callRoutesNotNeeded = callRoutesWsNotNeeded();
 
-app.use("/inventory", inventoryRoutes);
+const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
+const groupNoWs = groupNoWsNeeded();
 
-app.use("/groupes", groupsRoute);
+app.use("/home", homeRoutes);
+app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
 app.use("/retro", retroRoutesNotNeeded);
 app.use("/call", callRoutesNotNeeded);
+app.use("/groupes", groupNoWs);
+
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
-  app.use("/call", callRoutesWsNeeded(connection, pathname));
+  app.use("/callws", callRoutesWsNeeded(connection, pathname));
 
-  // app.use("/inventory", inventoryRoutes(connection, pathname));
+  //app.use("/inventory", inventoryRoutes(connection, pathname));
+  app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
+  app.use("/groupes", groupWsNeeded(connection, pathname));
   app.use("/agile", agileRoute(connection, pathname, upload));
-  app.use("/blog", blogRoutes(connection, pathname, upload));
-  app.use("/groupes", groupsRoute(connection, pathname));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
   require("./web/inventoryWebSocket")(connection, pathname);
 
@@ -106,9 +105,7 @@ wsI.on("request", (request) => {
     console.log(`WebSocket Error: ${error}`);
   });
   connection.on("close", (reasonCode, description) => {
-    console.log(
-      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
-    );
+    console.log(`WebSocket closed with reasonCode ${reasonCode} and description ${description}`);
   });
 });
 

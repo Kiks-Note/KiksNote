@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   TextField,
@@ -46,6 +46,10 @@ export const toastFail = (message) => {
 };
 
 const Register = () => {
+  const [allclass, setAllclass] = useState([]);
+  const [selectedStudentClass, setSelectedStudentClass] = useState("");
+  const [selectedStudentClassId, setSelectedStudentClassId] = useState("");
+
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -53,7 +57,6 @@ const Register = () => {
   const [userPassword, setUserPassword] = useState("");
   const [userConfirmPassword, setUserConfirmPassword] = useState("");
   const [userStatus, setUserStatus] = useState("");
-  const [userClass, setUserClass] = useState("");
 
   const [messageFirstName, setMessageFirstName] = useState("");
   const [messageLastName, setMessageLastName] = useState("");
@@ -74,31 +77,72 @@ const Register = () => {
   const [errorClass, setErrorClass] = useState(false);
   const theme = useTheme();
 
-  const regex = /@edu\.esiee-it\.fr/;
+  const getAllClass = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/classes")
+        .then((res) => {
+          setAllclass(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const register = async () => {
     await axios
-      .post("http://10.160.33.226:5050/auth/inscription", {
-        userEmail,
-        userPassword,
-        userFirstName,
-        userLastName,
-        userBirthDate,
-        userStatus,
-        userClass,
+      .post("http://localhost:5050/auth/signup", {
+        userEmail: userEmail,
+        userPassword: userPassword,
+        userFirstName: userFirstName,
+        userLastName: userLastName,
+        userBirthDate: userBirthDate,
+        userStatus: userStatus,
+        userClass: selectedStudentClassId,
       })
       .then((res) => {
         console.log(res.status);
         if (res.status === 200) {
-          toastSuccess("Utilisateur enregistré");
+          toastSuccess(
+            `Utilisateur inscrit ! Vous avez recu un mail de confirmation sur ${userEmail}`
+          );
         } else {
           toastFail("Utilisateur non enregistré");
         }
       })
       .catch((err) => {
-        toastFail("Erreur pendant l'enregistrement");
-        console.log(err);
+        if (
+          err.response.status === 400 &&
+          err.response.data.message === "L'adresse e-mail est déjà utilisée."
+        ) {
+          toastFail("L'adresse email est déjà utilisée");
+        }
       });
+  };
+
+  const validateEmail = (email, userStatus) => {
+    if (userStatus === "etudiant" || userStatus === "pedago") {
+      if (
+        !email.includes("edu.esiee-it.fr") &&
+        !email.includes("edu.itescia.fr") &&
+        !email.includes("cergy.itin.fr")
+      ) {
+        setErrorEmail(true);
+        setMessageEmail(
+          "L'adresse e-mail doit contenir les domaines edu.esiee-it.fr, edu.itescia.fr ou cergy.itin.fr"
+        );
+        toastFail(
+          "L'adresse e-mail doit contenir les domaines edu.esiee-it.fr, edu.itescia.fr ou cergy.itin.fr"
+        );
+        return false;
+      }
+    }
+    setErrorEmail(false);
+    setMessageEmail("");
+    return true;
   };
 
   const verifInputErrors = (
@@ -114,74 +158,96 @@ const Register = () => {
     if (lastname === "") {
       setErrorLastName(true);
       setMessageLastName("Le nom est requis");
+      toastFail("Le nom est un champ obligatoire");
     } else {
       setErrorLastName(false);
       setMessageLastName("");
     }
+
     if (firstname === "") {
       setErrorFirstName(true);
       setMessageFirstName("Le prénom est requis");
+      toastFail("Le prénom est un champ obligatoire");
     } else {
       setErrorFirstName(false);
       setMessageFirstName("");
     }
+
     if (email === "") {
       setErrorEmail(true);
       setMessageEmail("L'adresse email est requis");
-    } else if (regex.test(email)) {
+      toastFail("L'adresse email est un champ obligatoire");
+    } else if (validateEmail(email, status)) {
       setErrorEmail(false);
       setMessageEmail("");
     } else {
       setErrorEmail(true);
       setMessageEmail(
-        "L'adresse mail que vous avez rentrés n'est pas conforme. Celle-ci doit  par @edu.esiee-it.fr"
+        "L'adresse mail que vous avez rentrée n'est pas conforme. Celle-ci doit inclure les domaines edu.esiee-it.fr, edu.itescia.fr ou cergy.itin.fr"
+      );
+      toastFail(
+        "L'adresse email doit contenir les domaines edu.esiee-it.fr, edu.itescia.fr ou cergy.itin.fr"
       );
     }
+
     if (password === "") {
       setErrorPassword(true);
       setMessagePassword("Mot de passe requis");
+      toastFail("Le champ du mot de passe est obligatoire");
     } else if (password.length < 6) {
       setErrorPassword(true);
       setMessagePassword("Le mot de passe doit comporter plus de 6 caractères");
+      toastFail("Le mot de passe doit comporter plus de 6 caractères");
     } else if (password.length > 24) {
       setErrorPassword(true);
-      setMessagePassword(
-        "Le mot de passe ne peut pas dépasser plus de 24 caractères"
-      );
+      setMessagePassword("Le mot de passe ne peut pas dépasser 24 caractères");
+      toastFail("Le mot de passe ne peut pas dépasser 24 caractères");
     } else {
       setErrorPassword(false);
       setMessagePassword("");
     }
+
     if (confirmpassword === "") {
       setErrorConfirmPassword(true);
       setMessageConfirmPassword("Confirmez le mot de passe");
+      toastFail("Le champ de confirmation du mot de passe est obligatoire");
     } else if (password !== confirmpassword) {
       setErrorConfirmPassword(true);
       setMessageConfirmPassword("Le mot de passe ne correspond pas");
+      toastFail(
+        "Le mot de passe ne correspond pas au mot de passe que vous avez saisi"
+      );
     } else {
       setErrorConfirmPassword(false);
       setMessageConfirmPassword("");
     }
+
     if (status === "") {
       setErrorStatus(true);
       setMessageStatus("Choisissez le statut");
-    } else if (student_class === "etudiant" && !regex.test(email)) {
+      toastFail("Veuillez renseigner votre statut au sein de l'école");
+    } else if (student_class === "etudiant" && !validateEmail(email, status)) {
       setErrorStatus(true);
       setMessageEmail("Courriel edu introuvable");
+      toastFail("Courriel edu introuvable");
     } else {
       setErrorStatus(false);
       setMessageStatus("");
     }
+
     if (status === "etudiant" && student_class === "") {
       setErrorClass(true);
       setMessageClass("Indiquez votre classe");
+      toastFail("Choisissez votre classe");
     } else {
       setErrorClass(false);
       setMessageClass("");
     }
+
     if (birthdate === "") {
       setErrorBirthDate(true);
-      setMessageBirthDate("La date de naissance est requis");
+      setMessageBirthDate("La date de naissance est requise");
+      toastFail("Le champ de la date de naissance est obligatoire");
     } else {
       setErrorBirthDate(false);
       setMessageBirthDate("");
@@ -190,7 +256,6 @@ const Register = () => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    await register();
     verifInputErrors(
       userLastName,
       userFirstName,
@@ -198,9 +263,21 @@ const Register = () => {
       userPassword,
       userConfirmPassword,
       userStatus,
-      userClass,
+      selectedStudentClassId,
       userBirthDate
     );
+    if (
+      !errorLastName &&
+      !errorFirstName &&
+      !errorEmail &&
+      !errorPassword &&
+      !errorConfirmPassword &&
+      !errorStatus &&
+      !errorClass &&
+      !errorBirthDate
+    ) {
+      await register();
+    }
   };
 
   const handleDateChange = (event) => {
@@ -217,6 +294,10 @@ const Register = () => {
       setMessageBirthDate("Invalid date");
     }
   };
+
+  useEffect(() => {
+    getAllClass();
+  }, []);
 
   return (
     <div className="register">
@@ -432,9 +513,7 @@ const Register = () => {
               }}
             >
               <FormControl sx={{ m: 1, minWidth: 120 }} error={errorStatus}>
-                <InputLabel id="demo-simple-select-helper-label">
-                  Status
-                </InputLabel>
+                <InputLabel>Status</InputLabel>
                 <Select
                   variant="filled"
                   id="input-status"
@@ -453,26 +532,24 @@ const Register = () => {
               </FormControl>
               {userStatus === "etudiant" ? (
                 <FormControl sx={{ m: 1, minWidth: 120 }} error={errorClass}>
-                  <InputLabel id="demo-simple-select-helper-label">
-                    Classe
-                  </InputLabel>
                   <Select
-                    variant="filled"
-                    id="input-class"
-                    sx={{ color: "text.primary" }}
-                    value={userClass}
-                    onChange={(e) => setUserClass(e.target.value)}
+                    value={selectedStudentClass}
+                    onChange={(event) => {
+                      setSelectedStudentClass(event.target.value);
+                      const selectedClass = allclass.find(
+                        (coursClass) => coursClass.name === event.target.value
+                      );
+                      setSelectedStudentClassId(
+                        selectedClass ? selectedClass.id : ""
+                      );
+                    }}
+                    displayEmpty
+                    renderValue={(value) => value || "Classe"}
                   >
-                    <MenuItem value="L1-paris">L1-Paris</MenuItem>
-                    <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
-                    <MenuItem value="L2-paris">L2-Paris</MenuItem>
-                    <MenuItem value="L2-cergy">L2-Cergy</MenuItem>
-                    <MenuItem value="L3-paris">L3-Paris</MenuItem>
-                    <MenuItem value="L3-cergy">L3-Cergy</MenuItem>
-                    <MenuItem value="M1-lead">M1-LeadDev</MenuItem>
-                    <MenuItem value="M1-gaming">M1-Gaming</MenuItem>
-                    <MenuItem value="M2-lead">M2-LeadDev</MenuItem>
-                    <MenuItem value="M2-gaming">M2-Gaming</MenuItem>
+                    <MenuItem value="">Choissisez votre classe</MenuItem>
+                    {allclass.map((promo) => (
+                      <MenuItem value={promo.name}>{promo.name}</MenuItem>
+                    ))}
                   </Select>
                   {errorClass && (
                     <FormHelperText>{messageClass}</FormHelperText>
@@ -482,11 +559,18 @@ const Register = () => {
                 <div></div>
               )}
             </Container>
-            <div className="flex justify-center">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
               <Button
                 sx={{
                   backgroundColor: "#7a52e1",
                   color: "white",
+                  margin: "15px",
                 }}
                 variant="contained"
                 id="btn-register"
@@ -498,8 +582,12 @@ const Register = () => {
             </div>
           </form>
           <div className="text-xs font-medium text-center m-3">
-            <p
-              style={{ color: theme.palette.text.primary, fontWeight: "bold" }}
+            <Typography
+              style={{
+                color: theme.palette.text.primary,
+                fontWeight: "bold",
+                margin: "10px",
+              }}
             >
               Vous avez déjà un compte ?
               <Link
@@ -514,7 +602,7 @@ const Register = () => {
               >
                 Se connecter
               </Link>
-            </p>
+            </Typography>
           </div>
         </div>
         <div className="image-container">

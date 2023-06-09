@@ -21,9 +21,9 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const { user } = useFirebase();
   const theme = useTheme();
 
-  const ws = useMemo(() => {
-    return new w3cwebsocket("ws://localhost:5050/groupes");
-  }, []);
+    const ws = useMemo(() => {
+        return new w3cwebsocket('ws://localhost:5050/groupes/creation');
+    }, []);
 
   useEffect(() => {
     if (dataPopUp) {
@@ -41,10 +41,10 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
       }
     }
 
-    ws.onopen = () => {
-      console.log("WebSocket Client Connected");
-    };
-  }, [dataPopUp, user?.id, ws]);
+        ws.onopen = () => {
+            console.log("WebSocket Client Connected");
+        };
+    }, [dataPopUp, user.id, ws]);
 
   const createRoom = (roomData) => {
     const message = {
