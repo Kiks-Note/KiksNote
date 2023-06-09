@@ -17,6 +17,7 @@ const {
   getTags,
   getTopCreators,
   getBlogParticipants,
+  getBlogParticipant,
   blogDetailRequests,
   deleteBlogComment,
   getRepartition,
@@ -37,6 +38,7 @@ module.exports = function (connection, pathname, upload) {
   router.get("/user/:userId", getUserBlog);
   router.put("/:id/participant", addParticipant);
   router.post("/participant", getParticipant);
+  router.get("/:id/participant", getBlogParticipant);
   router.put("/:id/like", addLike);
   router.put("/:id/dislike", addDislike);
   router.get("/stats/created_by", getTopCreators);

@@ -31,6 +31,7 @@ function DetailBlog() {
   const { user } = useFirebase();
   const navigate = useNavigate();
   const [visibleComments, setVisibleComments] = useState(5);
+  const [isUserParticipant, setIsUserParticipant] = useState(false);
 
   const handleShowMore = () => {
     setVisibleComments(visibleComments + 5);
@@ -69,7 +70,6 @@ function DetailBlog() {
         var datat = JSON.parse(dataFromServer[0].editorState);
         const contentState = convertFromRaw(datat);
         const text = contentState.getPlainText();
-        console.log(blogDto.participant);
         const blogFront = {
           id: blogDto.id,
           created_at: dateCreation,
@@ -99,11 +99,45 @@ function DetailBlog() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    getBlogParticipant();
+  }, []);
+
   async function handleParticipate() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/participant`, {
-        userId: user.id,
-      });
+      await axios
+        .put(`http://localhost:5050/blog/${data.id}/participant`, {
+          userId: user.id,
+        })
+        .then(async () => {
+          await getBlogParticipant();
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function getBlogParticipant() {
+    try {
+      await axios
+        .get(`http://localhost:5050/blog/${data.id}/participant`)
+        .then((res) => {
+          console.log("res.data : ", res.data);
+          if (res.data.length > 0) {
+            console.log("ya res.data");
+            for (let i = 0; i < res.data.length; i++) {
+              if (res.data[i] === user.id) {
+                setIsUserParticipant(true);
+                break;
+              } else {
+                setIsUserParticipant(false);
+              }
+            }
+          } else {
+            setIsUserParticipant(false);
+          }
+        });
     } catch (err) {
       console.log(err);
     }
@@ -128,6 +162,7 @@ function DetailBlog() {
       console.log(err);
     }
   }
+
   return (
     <>
       <Box
@@ -221,9 +256,9 @@ function DetailBlog() {
                           },
                         }}
                       >
-                        {data.userIsParticipant
-                          ? "Je participe"
-                          : "Ne participe pas"}
+                        {isUserParticipant
+                          ? "Ne participe pas"
+                          : "Je participe"}
                       </Button>
                     )}
                   </div>
