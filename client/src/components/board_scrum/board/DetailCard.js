@@ -39,10 +39,13 @@ export default function DetailCard(props) {
   //DESCRIPTION LISTENER
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [descriptionValue, setDescriptionValue] = useState(info.desc);
+  const [isEditingValue, setIsEditingValue] = useState(false);
   const [storyValue, setStoryValue] = useState(info.value);
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState("");
-  const [isAssigned, setIsAssigned] = useState(info.assignedTo.includes(user.id));
+  const [isAssigned, setIsAssigned] = useState(
+    info.assignedTo.includes(user.id)
+  );
   const allowedColumnIds = ["0", "1", "5", "6"];
   const closeModal = () => {
     setShowModal(false);
@@ -57,12 +60,14 @@ export default function DetailCard(props) {
 
     if (Number.isInteger(intValue) || inputValue === "") {
       setStoryValue(inputValue);
-      await saveValue();
     }
   };
 
   const handleNameClick = () => {
     setIsEditingName(true);
+  };
+  const handleValueClick = () => {
+    setIsEditingValue(true);
   };
 
   const handleNameChange = (event) => {
@@ -77,6 +82,11 @@ export default function DetailCard(props) {
     setNameValue(event.target.value);
     setIsEditingName(false);
   };
+  const handleValueBlur = (event) => {
+    saveValue(event.target.value);
+    setStoryValue(event.target.value);
+    setIsEditingValue(false);
+  };
   const saveName = async (title) => {
     try {
       let cardDto;
@@ -89,6 +99,7 @@ export default function DetailCard(props) {
           color: info.color,
           assignedTo: info.assignedTo,
           labels: info.labels,
+          value: info.value,
         };
       } else {
         cardDto = {
@@ -118,10 +129,9 @@ export default function DetailCard(props) {
     }
   };
 
-  const saveValue = async () => {
+  const saveValue = async (value) => {
     try {
       let cardDto;
-
       cardDto = {
         id: info.id,
         title: info.name,
@@ -130,7 +140,7 @@ export default function DetailCard(props) {
         color: info.color,
         assignedTo: info.assignedTo,
         labels: info.labels,
-        value: storyValue,
+        value: value,
       };
 
       await axios.put(
@@ -161,6 +171,7 @@ export default function DetailCard(props) {
           color: info.color,
           assignedTo: info.assignedTo,
           labels: info.labels,
+          value: info.value,
         };
       } else {
         cardDto = {
@@ -213,7 +224,9 @@ export default function DetailCard(props) {
     if (isAssigned) {
       try {
         // Enlever l'ID de l'utilisateur connecté de la liste assignedTo
-        const updatedAssignedTo = info.assignedTo.filter((userId) => userId !== user.id);
+        const updatedAssignedTo = info.assignedTo.filter(
+          (userId) => userId !== user.id
+        );
         await axios.put(
           "http://localhost:5050/dashboard/" +
             props.dashboardId +
@@ -327,14 +340,24 @@ export default function DetailCard(props) {
         <CardHeader
           title={
             isEditingName ? (
-              <TextField value={nameValue} onChange={handleNameChange} onBlur={handleNameBlur} />
+              <TextField
+                value={nameValue}
+                onChange={handleNameChange}
+                onBlur={handleNameBlur}
+              />
             ) : (
-              <Typography color="text.default" variant="h5" onClick={handleNameClick}>
+              <Typography
+                color="text.default"
+                variant="h5"
+                onClick={handleNameClick}
+              >
                 {nameValue}
               </Typography>
             )
           }
-          subheader={<Typography color="text.default">Dans {props.list_name}</Typography>}
+          subheader={
+            <Typography color="text.default">Dans {props.list_name}</Typography>
+          }
           avatar={
             <BallotIcon
               sx={{
@@ -348,9 +371,27 @@ export default function DetailCard(props) {
           }}
         />
 
-        {storyValue != undefined && (
-          <input type="text" value={storyValue} onChange={handleValueChange} placeholder="Enter an integer" />
-        )}
+        {storyValue != undefined &&
+          (isEditingValue ? (
+            <TextField
+              type="number"
+              value={storyValue}
+              onChange={handleValueChange}
+              onBlur={handleValueBlur}
+            />
+          ) : (
+            <div style={{ width: "-webkit-fill-available" }}>
+              <Typography sx={style_title}>Valeur Métier</Typography>
+              <Typography
+                sx={style_title}
+                color="text.default"
+                variant="h5"
+                onClick={handleValueClick}
+              >
+                {storyValue}
+              </Typography>
+            </div>
+          ))}
         <CardContent className="card-content">
           <div style={{ width: "-webkit-fill-available" }}>
             <div>
@@ -425,7 +466,11 @@ export default function DetailCard(props) {
                   </Box>
                 </Box>
               ) : (
-                <Typography color="text.default" onClick={() => setIsEditingDescription(true)} sx={style_text}>
+                <Typography
+                  color="text.default"
+                  onClick={() => setIsEditingDescription(true)}
+                  sx={style_text}
+                >
                   {descriptionValue || "Ajouter une description…"}
                 </Typography>
               )}
@@ -456,7 +501,10 @@ export default function DetailCard(props) {
                   <ListItemIcon>
                     <FormatListBulletedIcon color="primary" />
                   </ListItemIcon>
-                  <ListItemText primary="Lier Story" primaryTypographyProps={{ color: "text.default" }} />
+                  <ListItemText
+                    primary="Lier Story"
+                    primaryTypographyProps={{ color: "text.default" }}
+                  />
                 </ListItemButton>
               </ListItem>
             )}
@@ -470,7 +518,10 @@ export default function DetailCard(props) {
                 <ListItemIcon>
                   <LabelIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Label(s)" primaryTypographyProps={{ color: "text.default" }} />
+                <ListItemText
+                  primary="Label(s)"
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding sx={style_item_button}>
@@ -478,7 +529,10 @@ export default function DetailCard(props) {
                 <ListItemIcon>
                   <DeleteIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary="Supprimer" primaryTypographyProps={{ color: "text.default" }} />
+                <ListItemText
+                  primary="Supprimer"
+                  primaryTypographyProps={{ color: "text.default" }}
+                />
               </ListItemButton>
             </ListItem>
           </List>
