@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 
 import axios from "axios";
 
@@ -17,7 +17,7 @@ import {
   List,
   ListItem,
   Collapse,
-  Chip
+  Chip,
 } from "@mui/material";
 
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
@@ -31,6 +31,7 @@ import AddLinkIcon from "@mui/icons-material/AddLink";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import SchoolIcon from "@mui/icons-material/School";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
 import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
@@ -134,7 +135,6 @@ const StudentProjectInfo = () => {
     getStudentProjectById()
       .then(() => {
         setLoading(false);
-        console.log(typeof(selectedProjectData));
       })
       .catch((error) => {
         console.error(error);
@@ -272,7 +272,6 @@ const StudentProjectInfo = () => {
               <List
                 sx={{
                   width: "100%",
-                  maxWidth: 360,
                   bgcolor: "background.paper",
                   border: "10px grey",
                   borderRadius: "20px",
@@ -284,66 +283,78 @@ const StudentProjectInfo = () => {
                   <ConstructionIcon /> Membres du projet :{" "}
                 </Typography>
                 {selectedProjectData?.membersProject?.map((member, index) => (
-                    <React.Fragment key={index}>
-                      <ListItem alignItems="flex-start">
-                        <ListItemAvatar>
-                          <Avatar alt={member.firstname} src={member.image} />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={
-                            member.lastname.toUpperCase() +
-                            " " +
-                            member.firstname
-                          }
-                          secondary={
-                            <Typography
-                              sx={{ display: "inline" }}
-                              component="span"
-                              variant="body2"
-                              color="text.primary"
-                            >
-                              {member.status}
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                      {index !==
-                        selectedProjectData.membersProject.length - 1 && (
-                        <Divider variant="inset" component="li" />
-                      )}
-                    </React.Fragment>
-                  ))}
+                  <React.Fragment key={index}>
+                    <ListItem sx={{ display: "flex", alignItems: "center" }}>
+                      <ListItemAvatar>
+                        <Avatar alt={member.firstname} src={member.image} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={
+                          member.lastname.toUpperCase() + " " + member.firstname
+                        }
+                        secondary={
+                          <Typography
+                            sx={{ display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            {member.status}
+                          </Typography>
+                        }
+                      />
+                      <Button
+                        component={Link}
+                        to={`/profil/${member.id}`}
+                        sx={{
+                          backgroundColor: "#7a52e1",
+                          color: "white",
+                          fontWeight: "bold",
+                          "&:hover": {
+                            backgroundColor: "#d40074",
+                          },
+                        }}
+                      >
+                        Voir Profil <VisibilityIcon />
+                      </Button>
+                    </ListItem>
+                    {index !==
+                      selectedProjectData.membersProject.length - 1 && (
+                      <Divider variant="inset" component="li" />
+                    )}
+                  </React.Fragment>
+                ))}
               </List>
               {blogTutoData?.data?.thumbnail && (
-                  <List
-                    sx={{
-                      width: "100%",
-                      maxWidth: 360,
-                      bgcolor: "background.paper",
-                      border: "10px grey",
-                      borderRadius: "20px",
-                      padding: "10px",
-                      margin: "15px 0px",
-                    }}
+                <List
+                  sx={{
+                    width: "100%",
+                    maxWidth: 360,
+                    bgcolor: "background.paper",
+                    border: "10px grey",
+                    borderRadius: "20px",
+                    padding: "10px",
+                    margin: "15px 0px",
+                  }}
+                >
+                  <Typography>Blog Tuto relié</Typography>
+                  <ListItem
+                    key={blogTutoData.id}
+                    button
+                    sx={{ display: "flex", flexDirection: "column" }}
+                    onClick={() => navigate(`/blog/${blogTutoData.id}`)}
                   >
-                    <Typography>Blog Tuto relié</Typography>
-                    <ListItem
-                      key={blogTutoData.id}
-                      button
-                      sx={{ display: "flex", flexDirection: "column" }}
-                      onClick={() => navigate(`/blog/${blogTutoData.id}`)}
-                    >
-                      {blogTutoData.data.thumbnail && (
-                        <img
-                          className="blog-tuto-linked-img"
-                          src={blogTutoData.data.thumbnail}
-                          alt="blog-tuto-img-linked"
-                        />
-                      )}
-                      <ListItemText primary={blogTutoData.data.title} />
-                    </ListItem>
-                  </List>
-                )}
+                    {blogTutoData.data.thumbnail && (
+                      <img
+                        className="blog-tuto-linked-img"
+                        src={blogTutoData.data.thumbnail}
+                        alt="blog-tuto-img-linked"
+                      />
+                    )}
+                    <ListItemText primary={blogTutoData.data.title} />
+                  </ListItem>
+                </List>
+              )}
 
               <div className="btn-link-blog-container">
                 {selectedProjectData?.creatorProject?.id === user?.id ? (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
 
@@ -358,9 +358,7 @@ const JpoInfo = () => {
     <>
       {loading ? (
         <>
-          <SkeletonJpoInfo 
-            classes = {classes}
-          />
+          <SkeletonJpoInfo classes={classes} />
         </>
       ) : (
         <>
@@ -420,6 +418,20 @@ const JpoInfo = () => {
                           primary={`${participant.firstname} ${participant.lastname}`}
                           secondary={participant.status}
                         />
+                        <Button
+                          component={Link}
+                          to={`/profil/${participant.id}`}
+                          sx={{
+                            backgroundColor: "#7a52e1",
+                            color: "white",
+                            fontWeight: "bold",
+                            "&:hover": {
+                              backgroundColor: "#d40074",
+                            },
+                          }}
+                        >
+                          Voir Profil <VisibilityIcon />
+                        </Button>
                       </ListItem>
                       {index < jpoData?.jpoParticipants.length - 1 && (
                         <Divider variant="inset" component="li" />

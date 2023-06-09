@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import moment from "moment";
@@ -25,6 +25,9 @@ import {
   Avatar,
   Skeleton,
   CardMedia,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
 } from "@mui/material";
 
 import UpdateCoursDialog from "./../../../components/ressources/cours/UpdateCoursDialog";
@@ -43,6 +46,7 @@ import LaptopChromebookIcon from "@mui/icons-material/LaptopChromebook";
 import PublicIcon from "@mui/icons-material/Public";
 import LockIcon from "@mui/icons-material/Lock";
 import AddLinkIcon from "@mui/icons-material/AddLink";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
@@ -1086,28 +1090,41 @@ const CoursInfo = () => {
                         alignItems: "center",
                       }}
                     >
-                      <Chip
-                        avatar={
+                      <ListItem sx={{ display: "flex", alignItems: "center" }}>
+                        <ListItemAvatar>
                           <Avatar
                             alt={
                               coursData?.owner?.lastname.toUpperCase() +
-                              "" +
+                              " " +
                               coursData?.owner?.firstname +
-                              "photo-profile"
+                              " photo-profile"
                             }
                             src={coursData?.data?.owner?.image}
                           />
-                        }
-                        variant="outlined"
-                        label={
-                          <>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
                             <Typography>
                               {coursData?.owner?.lastname.toUpperCase()}{" "}
                               {coursData?.owner?.firstname}
                             </Typography>
-                          </>
-                        }
-                      ></Chip>
+                          }
+                        />
+                        <Button
+                          component={Link}
+                          to={`/profil/${coursData?.owner?.id}`}
+                          sx={{
+                            backgroundColor: "#7a52e1",
+                            color: "white",
+                            fontWeight: "bold",
+                            "&:hover": {
+                              backgroundColor: "#d40074",
+                            },
+                          }}
+                        >
+                          Voir Profil <VisibilityIcon />
+                        </Button>
+                      </ListItem>
                     </div>
                     <h2
                       style={{
