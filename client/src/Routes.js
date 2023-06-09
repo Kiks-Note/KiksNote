@@ -32,7 +32,7 @@ import StudentsProjects from "./pages/ressources/students_project/StudentsProjec
 import Retrospective from "./pages/retrospective/Retrospective";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
-
+import GroupsCreation from "./pages/groups/Groups";
 function RoutesProvider() {
   return (
     <BrowserRouter>
