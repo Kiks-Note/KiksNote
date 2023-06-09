@@ -63,6 +63,26 @@ const getAllCours = async (req, res) => {
   }
 };
 
+const getCoursesByOwnerId = async (req, res) => {
+  try {
+    const snapshot = await db.collection("cours").get();
+    const courses = [];
+    snapshot.forEach((doc) => {
+      if (doc.data().owner.id == req.params.ownerid) {
+        courses.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      }
+     
+    });
+    res.status(200).send(courses);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+};
+
 const getAllClasses = async (req, res) => {
   try {
     const snapshot = await db.collection("class").get();
@@ -731,6 +751,7 @@ const getCoursesByPo = async (req, res) => {
 
 module.exports = {
   getAllCours,
+  getCoursesByOwnerId,
   getAllClasses,
   getCoursById,
   getClassById,

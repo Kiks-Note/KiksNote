@@ -46,6 +46,7 @@ function GroupsCreation() {
   const [columns, setColumns] = useState();
   const [nbSPGrp, setNbSPGrp] = useState();
   const [courseChoose, setCourseChoose] = useState();
+  const [hasLock, setHasLock] = useState(true);
 
   const [userCursors, setUserCursors] = useState();
 
@@ -212,6 +213,9 @@ function GroupsCreation() {
             case "closeRoom":
               setInRoom(false);
               navigate("/groupes");
+              break;
+            case "updateCol":
+              setColumns(messageReceive.data.currentRoom.columns);
               break;
             default:
               break;
@@ -470,6 +474,11 @@ function GroupsCreation() {
     } catch (error) {
       console.error(error);
     }
+
+    setInRoom(false);
+    ws.send(
+      JSON.stringify({ type: "closeRoom", data: { class: classStudents } })
+    );
     navigate("/");
   }
 
@@ -520,8 +529,9 @@ function GroupsCreation() {
   }
 
   function lockGroups() {
-    if (lock) {
-      setLock(false);
+    ///TODO: add a toast here
+    if (hasLock) {
+      setHasLock(false);
       ws.send(
         JSON.stringify({
           type: "lock",
@@ -529,7 +539,7 @@ function GroupsCreation() {
         })
       );
     } else {
-      setLock(true);
+      setHasLock(true);
       ws.send(
         JSON.stringify({
           type: "lock",
