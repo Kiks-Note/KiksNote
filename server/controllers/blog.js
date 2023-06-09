@@ -90,7 +90,6 @@ const addNewTuto = async (req, res) => {
 };
 
 const addNewTuto2 = async (req, res) => {
-  console.log("req.body 1 : ", req.body);
   const {
     title,
     description,
@@ -101,13 +100,14 @@ const addNewTuto2 = async (req, res) => {
     visibility,
     statut,
     created_by,
-  } = req.body;
-  console.log("req.body 2 : ", req.body);
+  } = JSON.parse(req.body.tutoData);
   try {
+    const url = req.protocol + "://" + req.get("host") + "/";
+    let imagebackgroundTmp = req.file ? url + req.file.path : "";
     await db.collection("blog").doc().set({
       title: title,
       description: description,
-      // thumbnail: thumbnail,
+      thumbnail: imagebackgroundTmp,
       markdownStepsInfo: markdownStepsInfo,
       titleStep: titleStep,
       statut: statut,

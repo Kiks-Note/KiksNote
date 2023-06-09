@@ -60,6 +60,19 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
       return;
     }
 
+    if (title.trim() === "") {
+      toast.error("Veuillez entrer un titre");
+      return;
+    }
+    if (thumbnail === null) {
+      toast.error("Veuillez sélectionner une miniature globale.");
+      return;
+    }
+    if (description === null) {
+      toast.error("Veuillez entrer une courte description.");
+      return;
+    }
+
     let isFormValid = true;
     const titles = [];
     for (let i = 0; i < numSteps; i++) {
@@ -106,8 +119,8 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     setTitle("");
     setDescription("");
     setTitleStep([]);
-    // setSelectedTags([]);
-    // setThumbnail(null);
+    setSelectedTags([]);
+    setThumbnail(null);
     setMarkdownStepsInfo([]);
     setValueMarkdown("**Hello world!!!**");
   };
@@ -206,12 +219,18 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
       created_by: user.id,
     };
     console.log("data : ", data);
-    // const formData = new FormData();
-    // formData.append("tutoData", JSON.stringify(data));
+    const formData = new FormData();
+    formData.append("thumbnail", thumbnail);
+    formData.append("tutoData", JSON.stringify(data));
     try {
       const response = await axios.post(
         "http://localhost:5050/blog/tuto",
-        data
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
       toast.success("Tuto crée avec succès");
       toggleDrawerModify(e, false);
@@ -313,6 +332,43 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
                   />
                 </Box>
               ))}
+            </Box>
+            <Box marginTop={2}>
+              <TextField
+                sx={{ marginBottom: 2 }}
+                id="outlined-search"
+                type="file"
+                accept="image/png, image/jpeg"
+                onChange={(e) => {
+                  setThumbnail(e.target.files[0]);
+                  setPreviewImage(URL.createObjectURL(e.target.files[0]));
+                }}
+              />
+              {previewImage && (
+                <>
+                  <Typography
+                    variant="subtitle2"
+                    color="text.secondary"
+                    sx={{
+                      alignSelf: "flex-start",
+                      marginBottom: 2,
+                    }}
+                  >
+                    Aperçu de l'image :
+                  </Typography>
+                  <Box
+                    component="img"
+                    sx={{
+                      height: 300,
+                      width: 350,
+                      maxHeight: { xs: 233, md: 167 },
+                      maxWidth: { xs: 350, md: 250 },
+                    }}
+                    alt="preview Miniature"
+                    src={previewImage}
+                  />
+                </>
+              )}
             </Box>
             <Button type="submit" variant="contained" color="primary">
               Commencer le tuto
