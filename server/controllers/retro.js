@@ -95,7 +95,7 @@ console.log("in retro controller");
 //     idUser: "luc@edu.esiee-it.fr",
 //     lastname: "luc",
 //     titleRetro: "retro pour mes L3 (algo)"
-  
+
 // }
 // const docRef =  db.collection('retro').add(data);
 
@@ -104,35 +104,42 @@ const addRetro = async (req, res) => {
   try {
     // Implementation of adding retro logic
 
-    const tabRetro = {
-      idRetro: uuidv4(),
-      titleRetro: req.body.titleRetro,
-      courseRetro: req.body.courseRetro,
-      dataRetro: req.body.dataRetro,
-      idUser: req.body.idUser,
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      creationDate: new Date().toISOString()
-    };
-
-//    await db.collection("retro").doc().set(tabRetro);
+    let tabRetro = {}
+    if (req.body.status == "etudiant") {
+      tabRetro = {
+        idRetro: uuidv4(),
+        titleRetro: req.body.titleRetro,
+        choosenTeamMates: req.body.choosenTeamMates,
+        dataRetro: req.body.dataRetro,
+        idUser: req.body.idUser,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        creationDate: new Date().toISOString()
+      };
+    } else {
+      tabRetro = {
+        idRetro: uuidv4(),
+        titleRetro: req.body.titleRetro,
+        courseRetro: req.body.courseRetro,
+        dataRetro: req.body.dataRetro,
+        idUser: req.body.idUser,
+        firstname: req.body.firstname,
+        lastname: req.body.lastname,
+        creationDate: new Date().toISOString()
+      };
+    }
 
     await db.collection("retro").doc().set(tabRetro)
-    .then(() => {
-     
-      //const message = JSON.stringify({ type: 'retroAdded' });
-      //connection.sendUTF(message);
-      res.json({ success: true });
-    })
-    .catch((error) => {
-      console.log(error);
-      res.status(500).json({ success: false, error: 'Failed to add retro' });
-    });
+      .then(() => {
 
-    
-    //res.status(200).json({ message: "Retro added successfully" });
+        res.json({ success: true });
+      })
+      .catch((error) => {
+        console.log(error);
+        res.status(500).json({ success: false, error: 'Failed to add retro' });
+      });
+
   } catch (error) {
-    
     console.log(error);
     res.status(500).json({ error: "Internal Server Error" });
   }
@@ -174,11 +181,47 @@ const getRetro = async (req, res) => {
   res.json({ message: "getRetro works!" });
 };
 
+const getRetroForStudent = async (req, res) => {
+
+  const snapshot = await db.collection('retro').get()
+
+
+
+  let userInfo = req.params;
+  let name = userInfo["userName"];
+  let studentClass = userInfo["userClass"]
+
+  let allRetros = []
+
+  snapshot.forEach((doc) => {
+    if (doc.data().choosenTeamMates) {
+      doc.data().choosenTeamMates.forEach(
+        el => {
+          if (name == el.data.firstname + " " + el.data.lastname) {
+            allRetros.push(doc.data())
+          }
+        }
+      )
+      // if the student is the owner
+      if (name == doc.data().firstname + " " + doc.data().lastname) {
+        allRetros.push(doc.data())
+      }
+    } else {
+      if (doc.data().courseRetro.courseClass.name.replace(/\s+/g, '').toLowerCase() == studentClass.replace(/\s+/g, '').toLowerCase()) {
+        allRetros.push(doc.data())
+      }
+    }
+  });
+
+  res.send(allRetros)
+
+}
+
 const getRetrosByUser = async (req, res) => {
   let retros = [];
   let colRetro = await db.collection("retro");
   colRetro.onSnapshot((snapshot) => {
-    snapshot.docs.map((doc) =>  {
+    snapshot.docs.map((doc) => {
       if (doc.data().idUser == req.params.idUser) {
         retros.push(doc.data())
       }
@@ -190,35 +233,37 @@ const getRetrosByUser = async (req, res) => {
 
 const getAllRetroByPO = async (req, res) => {
 
-    try {
-      const snapshot = await db.collection("cours").get();
-    
-      const classList = [];
-      snapshot.forEach((doc) => {
-        if (doc.data().owner.id == req.params.idPO) {
-          classList.push(doc.data().courseClass.name);
-        }
-      });
-    
-      const filteredClassList = [...new Set(classList)];
+  try {
+    const snapshot = await db.collection("cours").get();
 
-      const snapshotRetro = await db.collection("retro").get();
-      let allRetros = [];
-      snapshotRetro.forEach((doc)=> {
-        for(let i = 0; i < filteredClassList.length; i ++) {
+    const classList = [];
+    snapshot.forEach((doc) => {
+      if (doc.data().owner.id == req.params.idPO) {
+        classList.push(doc.data().courseClass.name);
+      }
+    });
+
+    const filteredClassList = [...new Set(classList)];
+
+    const snapshotRetro = await db.collection("retro").get();
+    let allRetros = [];
+    snapshotRetro.forEach((doc) => {
+      for (let i = 0; i < filteredClassList.length; i++) {
+        if (!doc.data().choosenTeamMates) {
           if (doc.data().courseRetro.courseClass.name == filteredClassList[i]) {
             allRetros.push(doc.data())
           }
-        } 
-      });
+        }
+      }
+    });
 
-      console.log(filteredClassList);
-      res.send(allRetros)
-      console.log(allRetros);
-    } catch (error) {
-      console.log(error);
-    }
-    
+    console.log(filteredClassList);
+    res.send(allRetros)
+    console.log(allRetros);
+  } catch (error) {
+    console.log(error);
+  }
+
 
 
 
@@ -234,19 +279,40 @@ const editPostit = async (req, res) => {
   const idDoc = snapshot.docs[idRetro].id;
 
   let objetRetro = (await db.collection("retro").doc(idDoc).get()).data()
-  
+
   objetRetro["dataRetro"][req.body.categorie]["items"][req.body.selectedPostItIndex]["content"] = req.body.postItText
-  let dba  = await db.collection("retro").doc(idDoc) 
+  let dba = await db.collection("retro").doc(idDoc)
 
 
   dba.update({ dataRetro: objetRetro["dataRetro"] })
-  .then(() => {
-    console.log("Document updated successfully!");
+    .then(() => {
+      console.log("Document updated successfully!");
+    })
+    .catch((error) => {
+      console.error("Error updating document:", error);
+    });
+
+}
+
+const getTeamMates = async (req, res) => {
+  const snapshot = await db.collection('users').get()
+
+  let listTeamMates = [];
+
+  let currentUserPromo = req.params.studentClass.substring(0, 2)
+  snapshot.forEach((doc) => {
+    if (doc.data().status == "etudiant" && typeof doc.data().class == "string"
+      && currentUserPromo == doc.data().class.substring(0, 2)
+      && req.params.studentId !== doc.id) {
+      listTeamMates.push(doc.data())
+    }
+
+
   })
-  .catch((error) => {
-    console.error("Error updating document:", error);
-  });
-  
+
+  res.send(listTeamMates)
+
+
 }
 
 const addPostIt = async (req, res) => {
@@ -265,7 +331,7 @@ const addPostIt = async (req, res) => {
     items: updatedItems,
   };
 
-  let dba  = await db.collection("retro").doc(idDoc) 
+  let dba = await db.collection("retro").doc(idDoc)
 
   objetRetro["dataRetro"] = {
     ...objetRetro["dataRetro"],
@@ -273,12 +339,12 @@ const addPostIt = async (req, res) => {
   }
 
   dba.update({ dataRetro: objetRetro["dataRetro"] })
-  .then(() => {
-    console.log("Document updated successfully!!!!!!!!");
-  })
-  .catch((error) => {
-    console.error("Error updating document:", error);
-  });
+    .then(() => {
+      console.log("Document updated successfully!!!!!!!!");
+    })
+    .catch((error) => {
+      console.error("Error updating document:", error);
+    });
 
 }
 
@@ -287,14 +353,14 @@ const movePostIt = async (req, res) => {
   const snapshot = await db.collection('retro').get()
   let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
 
-  
+
   const idDoc = snapshot.docs[idRetro].id;
 
   let objetRetro = snapshot.docs[idRetro].data()
 
   let postItContent = objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]];
 
-  if(objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]]) {
+  if (objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]]) {
     const indexToRemove = req.body.source["index"];
     objetRetro["dataRetro"][req.body.source["droppableId"]]["items"].splice(indexToRemove, 1);
   } else {
@@ -304,21 +370,21 @@ const movePostIt = async (req, res) => {
   const lengthItem = objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"].length;
 
   if (lengthItem <= 0) {
-    objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][0] = postItContent;  
+    objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][0] = postItContent;
   } else {
     console.log("plesssssssssss");
-    objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][lengthItem] = postItContent;  
+    objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][lengthItem] = postItContent;
   }
-  
-  let dba  = await db.collection("retro").doc(idDoc) 
+
+  let dba = await db.collection("retro").doc(idDoc)
 
   dba.update({ dataRetro: objetRetro["dataRetro"] })
-  .then(() => {
-    console.log("Document updated successfully!!!!!!!!");
-  })
-  .catch((error) => {
-    console.error("Error updating document:", error);
-  });
+    .then(() => {
+      console.log("Document updated successfully!!!!!!!!");
+    })
+    .catch((error) => {
+      console.error("Error updating document:", error);
+    });
 }
 
 module.exports = {
@@ -330,5 +396,7 @@ module.exports = {
   editPostit,
   addPostIt,
   movePostIt,
-  getAllRetroByPO
+  getTeamMates,
+  getAllRetroByPO,
+  getRetroForStudent
 };

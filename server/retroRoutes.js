@@ -9,8 +9,10 @@ const {
   getAll,
   editPostit,
   addPostIt,
-  getAllRetroByPO,
-  movePostIt
+  movePostIt,
+  getTeamMates,
+  getRetroForStudent,
+  getAllRetroByPO
 } = require("./controllers/retro");
 
 const retroRoutesWsNotNeeded = () => {
@@ -23,14 +25,17 @@ const retroRoutesWsNotNeeded = () => {
   router.put("/editPostit", editPostit)
   router.post("/addPostIt", addPostIt)
   router.put("/movePostIt", movePostIt)
+  router.get("/getTeamMates/:studentClass/:studentId", getTeamMates)
   return router;
 }
 
 const retroRoutesWsNeeded = (connection, pathname) => {
   const router = express.Router(); // Create a new router instance
 
-  router.get("/getRetrosByUser/:idUser", getRetrosByUser)
+  router.get("/getRetrosByUser/:idUser", getRetrosByUser),
+  router.get("/getRetroForStudent/:userName/:userClass", getRetroForStudent)
   router.get("/getAllRetroByPO/:idPO", getAllRetroByPO)
+  
   
   switch (pathname) {
     case "/retro":
