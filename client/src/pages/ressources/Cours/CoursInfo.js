@@ -47,6 +47,8 @@ import AddLinkIcon from "@mui/icons-material/AddLink";
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
 import "react-toastify/dist/ReactToastify.css";
+import SkeletonCoursInfoLeft from "../../../components/ressources/cours/SkeletonCoursInfoLeft";
+import SkeletonCoursInfoRight from "../../../components/ressources/cours/SkeletonCoursInfoRight";
 
 const useStyles = makeStyles({
   updateButton: {
@@ -581,57 +583,7 @@ const CoursInfo = () => {
             <div className="main-cours-container">
               {loading ? (
                 <>
-                  <div className="cours-left-side-container">
-                    <h2>Description</h2>
-                    <Divider />
-                    <p className="p-description-coursinfo">
-                      <Skeleton />
-                    </p>
-                    <h2>Contenu du Cours</h2>
-                    <Divider />
-                    <div className="list-course-pdf">
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                    </div>
-                    <h2>Contenu du BackLog</h2>
-                    <Divider />
-                    <div className="list-course-pdf">
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                    </div>
-                  </div>
+                  <SkeletonCoursInfoLeft />
                 </>
               ) : (
                 <>
@@ -1039,82 +991,7 @@ const CoursInfo = () => {
               )}
               {loading ? (
                 <>
-                  <div className="cours-right-side-container">
-                    <Skeleton
-                      variant="rect"
-                      height={200}
-                      style={{ borderTopRightRadius: "10px" }}
-                    />
-                    <div className="display-date">
-                      <h4 className="h4-data-cours-info">
-                        <Skeleton variant="circle" width={20} height={20} />
-                        Date début de Sprint :
-                      </h4>
-                      <Skeleton width={100} />
-                    </div>
-                    <div className="display-date">
-                      <h4 className="h4-data-cours-info">
-                        <Skeleton variant="circle" width={20} height={20} />
-                        Date fin de Sprint :
-                      </h4>
-                      <Skeleton width={100} />
-                    </div>
-                    <h2 style={{ marginTop: "10px" }} variant="h6">
-                      Classe concernée
-                    </h2>
-                    <Divider />
-                    <div
-                      style={{
-                        display: "flex",
-                        height: "7%",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Skeleton variant="rect" width="40%" height={40} />
-                    </div>
-                    <h2 style={{ marginTop: "0px" }} variant="h6">
-                      Products Owner / Pedago
-                    </h2>
-                    <Divider />
-                    <div
-                      style={{
-                        display: "flex",
-                        height: "7%",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Skeleton variant="circular" width={40} height={40} />
-                      <Skeleton width={100} />
-                    </div>
-                    <h2 style={{ marginTop: "10px" }} variant="h6">
-                      Détails / Actions
-                    </h2>
-                    <Divider />
-                    <div className="details-actions-container">
-                      <div className="display-campus-num">
-                        <h4 className="h4-data-cours-info">
-                          <Skeleton variant="circle" width={20} height={20} />
-                          Campus Numérique :
-                        </h4>
-                        <Skeleton width={100} />
-                      </div>
-                      <div className="display-cours-status">
-                        <h4 className="h4-data-cours-info">
-                          Statut du cours :{" "}
-                        </h4>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            flexDirection: "row",
-                          }}
-                        >
-                          <Skeleton variant="circle" width={20} height={20} />
-                          <Skeleton width={100} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <SkeletonCoursInfoRight />
                 </>
               ) : (
                 <>
