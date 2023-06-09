@@ -285,7 +285,6 @@ const changeIndex = async (req, res) => {
 };
 /// Path to upload pdf on agile Folder
 const updatePdfInAgileFolder = async (req, res) => {
-  console.log("war ");
   try {
     const pdfFile = req.file;
     if (!pdfFile) {
@@ -452,13 +451,15 @@ const agileRequest = async (connection) => {
         } else if (doc.id === "impact_mapping") {
           data.impactMapping = { ...obj, id: doc.id };
         } else if (doc.id === "functional-tree") {
-          data.impactMapping = { ...obj, id: doc.id };
+          data.functionalTree = { ...obj, id: doc.id };
         } else {
+          console.log(obj);
           const impactMappingRef = agileCollectionRef.doc("impact_mapping");
           const impactMappingSnapshot = await impactMappingRef.get();
           if (!impactMappingSnapshot.empty) {
             const impactMappingData = impactMappingSnapshot.data();
             const actors = impactMappingData.actors || [];
+            console.log(actors);
             obj.id = doc.id;
             actors.forEach((actor) => {
               if (actor.id === obj.id) {
@@ -646,6 +647,33 @@ const personaRequest = async (connection) => {
     );
   });
 };
+const threeRequest = async (connection) => {
+  connection.on("message", async (message) => {
+    const dashboardId = JSON.parse(message.utf8Data);
+
+    let impactMappingRef = db
+      .collection("dashboard")
+      .doc(dashboardId)
+      .collection("agile")
+      .doc("functional-tree");
+
+    const documentSnapshot = await impactMappingRef.get();
+
+    if (!documentSnapshot.exists) {
+      return null;
+    }
+
+    impactMappingRef.onSnapshot(
+      (snapshot) => {
+        const data = snapshot.data();
+        connection.sendUTF(JSON.stringify(data));
+      },
+      (err) => {
+        console.log(`Encountered error: ${err}`);
+      }
+    );
+  });
+};
 
 module.exports = {
   addImpactMapping,
@@ -661,4 +689,5 @@ module.exports = {
   impactMappingRequest,
   empathyRequest,
   personaRequest,
+  threeRequest,
 };

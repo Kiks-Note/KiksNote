@@ -15,6 +15,7 @@ const {
   createPostit,
   deletePostit,
   agileRequest,
+  threeRequest,
 } = require("./controllers/agile");
 
 module.exports = function (connection, pathname, upload) {
@@ -54,6 +55,10 @@ module.exports = function (connection, pathname, upload) {
     case "/persona":
       personaRequest(connection);
       console.log("persona");
+      break;
+    case "/three":
+      threeRequest(connection);
+      console.log("three");
       break;
     default:
       break;
