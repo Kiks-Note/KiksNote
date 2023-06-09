@@ -47,6 +47,7 @@ import PublicIcon from "@mui/icons-material/Public";
 import LockIcon from "@mui/icons-material/Lock";
 import AddLinkIcon from "@mui/icons-material/AddLink";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
@@ -598,68 +599,67 @@ const CoursInfo = () => {
                     <p className="p-description-coursinfo">
                       {coursData.description}
                     </p>
-                    {console.log(coursData?.linkedCourse)}
                     {coursData?.linkedCourse !== undefined ? (
                       <>
                         <h2>Cours Liée</h2>
                         <Divider />
-                        <Card
-                          sx={{
-                            width: "100%",
-                            marginBottom: "20px",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <CardMedia
+                        <div style={{ display: "flex", margin: "20px" }}>
+                          <Card
                             sx={{
                               width: "100%",
-                              minHeight: "150px",
                               display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                            component="img"
-                            src={coursData?.linkedCourse.imageCourseUrl}
-                            alt="course image"
-                            style={{
-                              objectFit: "contain",
-                              objectPosition: "center",
-                              width: "100%",
-                              minHeight: "150px",
-                            }}
-                          />
-                          <CardContent
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-around",
-                              width: "100%",
-                              alignItems: "center",
+                              flexDirection: "row",
                             }}
                           >
-                            <h4
+                            <CardMedia
+                              component="img"
+                              src={coursData?.linkedCourse.imageCourseUrl}
+                              alt="course image"
                               style={{
-                                width: "70%",
-                                wordBreak: "break-all",
-                                whiteSpace: "normal",
+                                objectFit: "contain",
+                                objectPosition: "center",
+                                width: "30%",
+                                minHeight: "10%",
+                                padding: "20px",
+                              }}
+                            />
+                            <CardContent
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                alignItems: "center",
                               }}
                             >
-                              {coursData?.linkedCourse.title}
-                            </h4>
-                          </CardContent>
-                          <Button
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              navigate(
-                                `/coursinfo/${coursData?.linkedCourse.id}`
-                              );
-                            }}
-                            sx={{ color: "#7a52e1" }}
-                          >
-                            Voir le cours relié
-                          </Button>
-                        </Card>
+                              <h4
+                                style={{
+                                  width: "60%",
+                                  wordBreak: "break-all",
+                                  whiteSpace: "normal",
+                                }}
+                              >
+                                {coursData?.linkedCourse.title}
+                              </h4>
+                              <Button
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  navigate(
+                                    `/coursinfo/${coursData?.linkedCourse.id}`
+                                  );
+                                }}
+                                sx={{
+                                  bgcolor: "#94258c",
+                                  fontWeight: "bold",
+                                  color: "white",
+                                  mr: 1,
+                                }}
+                                className={classes.updateButton}
+                              >
+                                Voir le cours relié <OpenInNewIcon />
+                              </Button>
+                            </CardContent>
+                          </Card>
+                        </div>
                       </>
                     ) : (
                       <div></div>

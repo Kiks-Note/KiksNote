@@ -27,7 +27,6 @@ import {
   InputAdornment,
   Chip,
   Avatar,
-  Skeleton,
 } from "@mui/material";
 
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -241,11 +240,18 @@ const Cours = () => {
  */
 
   const createNewCours = async () => {
-    if (courseTitle === "" || courseDescription === "" || courseDateStart === "" || courseDateEnd === "" || idSelectedClass === "" || idSelectedOwner === "" || courseImageBase64 === "") {
+    if (
+      courseTitle === "" ||
+      courseDescription === "" ||
+      courseDateStart === "" ||
+      courseDateEnd === "" ||
+      idSelectedClass === "" ||
+      idSelectedOwner === "" ||
+      courseImageBase64 === ""
+    ) {
       toast.error("Veuillez remplir tous les champs !");
       return;
-    }
-    else{
+    } else {
       try {
         await axios
           .post("http://localhost:5050/ressources/cours", {
@@ -305,7 +311,7 @@ const Cours = () => {
   useEffect(() => {
     if (isAllCoursesDataLoaded) {
       if (userClassConnected !== undefined) {
-        getClassId(userClassConnected);
+        getClassId(userClassConnected?.id);
       }
     }
   }, [isAllCoursesDataLoaded]);
@@ -517,7 +523,7 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? userClass.id === course.data.courseClass
+                          ? userClass.id === course.data.courseClass.id
                           : true
                       )
                       .filter((course) =>
@@ -691,7 +697,7 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? userClass.id === course.data.courseClass
+                          ? userClass.id === course.data.courseClass.id
                           : true
                       )
                       .filter((course) =>
@@ -852,7 +858,7 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? userClass.id === course.data.courseClass
+                    ? userClass.id === course.data.courseClass.id
                     : true
                 )
                 .filter((course) =>
@@ -963,7 +969,7 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? userClass.id === course.data.courseClass
+                    ? userClass.id === course.data.courseClass.id
                     : true
                 )
                 .filter((course) =>
