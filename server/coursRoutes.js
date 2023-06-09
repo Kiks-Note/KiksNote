@@ -17,6 +17,8 @@ const {
   deleteCoursPdf,
   deleteBackLogPdf,
   deleteCours,
+  getCoursByClass,
+  getCoursesByPo,
 } = require("./controllers/cours");
 
 module.exports = function () {
@@ -27,6 +29,8 @@ module.exports = function () {
   router.get("/instructor/:id", getInstructorById);
   router.get("/cours/:id", getCoursById);
   router.get("/class/:id", getClassById);
+  router.get("/cours/getCourses/:classId", getCoursByClass);
+  router.get("/getCoursesByPo/:poId", getCoursesByPo);
   router.post("/class", createClass);
   router.post("/cours", createCours);
   router.post("/linkcours/:courseId", createLinkedCours);
