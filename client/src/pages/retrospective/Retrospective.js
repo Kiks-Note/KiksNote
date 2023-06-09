@@ -369,24 +369,24 @@ function Retrospective() {
 
   const handleDateRangeChange = (dateRange) => {
     setSelectedRange(dateRange);
-    
 
-    if (dateRange[0] &&  dateRange[1]) {
+
+    if (dateRange[0] && dateRange[1]) {
       const startDate = new Date(dateRange[0]["$d"]);
       const endDate = new Date(dateRange[1]["$d"]);
 
-  
+
       console.log(allRetro);
       let filteredDates = []
 
       allRetro.map((el) => {
         console.log(new Date(el.creationDate).setHours(23));
-        if(startDate <= new Date(el.creationDate) &&  endDate.setHours(23) >=  new Date(el.creationDate)) {
+        if (startDate <= new Date(el.creationDate) && endDate.setHours(23) >= new Date(el.creationDate)) {
 
           filteredDates.push(el)
         }
       })
-  
+
       console.log(filteredDates);
 
       const updatedRows = filteredDates.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
@@ -394,55 +394,104 @@ function Retrospective() {
     }
   };
 
-  const filter = (dateRange) => {
-    //setSelectedRange(dateRange);
+  const filter = (e) => {
+    let filteredRetro = allRetro;
+  
+     console.log(e);
+    // // Filter by filterName
+    // if (filterName) {
+    //   console.log(filteredRetro, filterName.toLowerCase());
+    //   const lowerCaseValue = filterName.toLowerCase();
+    //   filteredRetro = filteredRetro.filter((retro) =>
+    //     retro.titleRetro.toLowerCase().includes(lowerCaseValue)
+    //   );
+    // }
+  
+    // Filter by filterOwner
+    if (filterOwner && filterOwner !== "") {
+      console.log(filterOwner);
+      console.log(filteredRetro);
+      const lowerCaseValue = filterOwner.toLowerCase();
+      filteredRetro = filteredRetro.filter((retro) =>
+      retro.firstname.toLowerCase() + " " + retro.lastname.toLowerCase().includes(
+          lowerCaseValue
+        )
+      );
+    }
+  
+    // // Filter by selectedRange
+    // if (selectedRange && selectedRange[0] && selectedRange[1]) {
+    //   const startDate = new Date(selectedRange[0]["$d"]);
+    //   const endDate = new Date(selectedRange[1]["$d"]);
+  
+    //   filteredRetro = filteredRetro.filter((retro) => {
+    //     const retroDate = new Date(retro.creationDate);
+    //     return retroDate >= startDate && retroDate <= endDate;
+    //   });
+    // }
+  
+    const updatedRows = filteredRetro.map((retro) =>
+      createData(retro.titleRetro, retro.creationDate, retro.firstname + " " + retro.lastname, retro.idRetro)
+    );
+    setRows(updatedRows);
+  };
+  
 
-    const startDate = new Date(dateRange[0]["$d"]);
-    const endDate = new Date(dateRange[1]["$d"]);
-    let filteredDates = []
+  // const filter = () => {
 
-    let filterAllRetro = [];
-    allRetro.map((el, index) => {
+  //   //setSelectedRange(dateRange);
 
-      if (filterName !== "") {
-        let lowerCaseValue = filterName.toLowerCase();
-        let comparedToElement = el.retroName;
-        if (comparedToElement.includes(lowerCaseValue)) {
-          filterAllRetro.push(el)
-        }
-      }
-
-      if (filterOwner !== "") {
-        let lowerCaseValue = filterOwner.toLowerCase();
-        let comparedToElement = el.firstname.toLowerCase() + " " + el.lastname.toLowerCase()
-        if(comparedToElement.includes(lowerCaseValue)) {
-          filterAllRetro.push(el)
-        }  
-      }
+  //   // const startDate = new Date(dateRange[0]["$d"]);
+  //   // const endDate = new Date(dateRange[1]["$d"]);
+  //   // let filteredDates = []
 
 
-      console.log(new Date(el.creationDate).setHours(23));
-      if(startDate <= new Date(el.creationDate) &&  endDate.setHours(23) >=  new Date(el.creationDate)) {
+  //   let filterAllRetro = [];
+  //   allRetro.map((el, index) => {
 
-        filteredDates.push(el)
-      }
+  //     console.log(filterName);
+  //     if (filterName !== "" || filterName) {
+  //       let lowerCaseValue = filterName.toLowerCase();
+  //       let comparedToElement = el.retroName;
+        
+  //       console.log(lowerCaseValue, comparedToElement);
+  //       if (comparedToElement.includes(lowerCaseValue)) {
+  //         filterAllRetro.push(el)
+  //       }
+  //     }
 
-      if (selectedRange) {
-        if (selectedRange[0] &&  selectedRange[1]) {
-          const startDate = new Date(selectedRange[0]["$d"]);
-          const endDate = new Date(selectedRange[1]["$d"]);    
-        }
-      }
+  //     // if (filterOwner !== "") {
+  //     //   let lowerCaseValue = filterOwner.toLowerCase();
+  //     //   let comparedToElement = el.firstname.toLowerCase() + " " + el.lastname.toLowerCase()
+  //     //   if (comparedToElement.includes(lowerCaseValue)) {
+  //     //     filterAllRetro.push(el)
+  //     //   }
+  //     // }
 
 
-      const updatedRows = filterAllRetro.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
-      setRows(updatedRows);
-    
-    })
+  //     // if (selectedRange) {
+  //     //   console.log(new Date(el.creationDate).setHours(23));
+  //     //   if(startDate <= new Date(el.creationDate) &&  endDate.setHours(23) >=  new Date(el.creationDate)) {
 
-   
-  }
+  //     //     filteredDates.push(el)
+  //     //   }
 
+  //     //   if (selectedRange) {
+  //     //     if (selectedRange[0] &&  selectedRange[1]) {
+  //     //       const startDate = new Date(selectedRange[0]["$d"]);
+  //     //       const endDate = new Date(selectedRange[1]["$d"]);    
+  //     //     }
+  //     //   }
+  //     // }
+
+
+
+  //     const updatedRows = filterAllRetro.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+  //     setRows(updatedRows);
+
+  //   })
+
+  // }
 
 
   return (
@@ -458,7 +507,7 @@ function Retrospective() {
           onClick={handleClickOpen} className="add-retro"> + Ajouter une retro </Button>
         <div className="historic">
           Choix de la retrospective
-          <div className="filter-section">
+          <div className="filter-section" onChange={(e) => filter(e)}>
 
 
             <TextField
@@ -468,19 +517,19 @@ function Retrospective() {
               placeholder="Nom"
 
               fullWidth
-              onChange={(e) => filter(e)}
+              onChange={(e) => setFilterName(e.target.value)}
               wrap="true"
             />
 
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DemoContainer components={['DateRangePicker']}>
-                  <DateRangePicker
-                    localeText={{ start: 'Debut', end: 'fin' }}
-                    value={selectedRange}
-                    //onChange={(e) =>{filter(e), handleDateRangeChange(e)}}
-                  />
-                </DemoContainer>
-              </LocalizationProvider>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DemoContainer components={['DateRangePicker']}>
+                <DateRangePicker
+                  localeText={{ start: 'Debut', end: 'fin' }}
+                  value={selectedRange}
+                  onChange={(e) =>setFilterDate(e)} //, handleDateRangeChange(e)
+                />
+              </DemoContainer>
+            </LocalizationProvider>
 
 
             <TextField
@@ -490,7 +539,7 @@ function Retrospective() {
               placeholder="Proprietaire"
 
               fullWidth
-              onChange={(e) => filter(e)}
+              onChange={(e) => setFilterOwner(e.target.value)}
               wrap="true"
             />
 
