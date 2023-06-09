@@ -301,6 +301,32 @@ const createLinkedCours = async (req, res) => {
   }
 };
 
+const removeLinkedCours = async (req, res) => {
+  const courseId = req.params.courseId;
+
+  try {
+    const courseRef = db.collection("cours").doc(courseId);
+    const courseDoc = await courseRef.get();
+
+    if (!courseDoc.exists) {
+      return res.status(404).send("Le cours spécifié n'a pas été trouvé.");
+    }
+
+    if (!courseDoc.data().linkedCourse) {
+      return res.status(404).send("Aucun cours lié n'est associé à ce cours.");
+    }
+
+    await courseRef.update({
+      linkedCourse: FieldValue.delete(),
+    });
+
+    return res.status(200).send("Le cours lié a été supprimé avec succès.");
+  } catch (err) {
+    console.error(err);
+    throw new Error("Erreur lors de la suppression du lien entre les cours.");
+  }
+};
+
 const updateCours = async (req, res) => {
   try {
     const {
@@ -691,6 +717,7 @@ module.exports = {
   getInstructorById,
   createCours,
   createLinkedCours,
+  removeLinkedCours,
   updateCours,
   uploadCoursPdf,
   uploadBackLogPdf,
