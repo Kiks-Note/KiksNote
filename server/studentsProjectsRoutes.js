@@ -11,6 +11,7 @@ const {
   createStudentProject,
   uploadMediaProject,
   refStudentProject,
+  removeRefStudentProject,
   createLinkedBlogTuto,
   removeLinkedBlogTuto,
 } = require("./controllers/studentsProjects");
@@ -26,6 +27,7 @@ module.exports = function () {
   router.post("/students-projects", createStudentProject);
   router.post("/upload-media-project", uploadMediaProject);
   router.post("/refprojects", refStudentProject);
+  router.post("/removerefprojects", removeRefStudentProject);
   router.post("/linkblogtuto/:projectId", createLinkedBlogTuto);
   router.delete("/linkblogtuto/:projectId", removeLinkedBlogTuto);
   return router;

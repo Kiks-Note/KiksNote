@@ -417,6 +417,48 @@ const refStudentProject = async (req, res) => {
   }
 };
 
+const removeRefStudentProject = async (req, res) => {
+  try {
+    const { projectId, counterRefToRemove, userId } = req.body;
+
+    const projectRef = db.collection("students_projects").doc(projectId);
+
+    const projectSnapshot = await projectRef.get();
+
+    if (!projectSnapshot.exists) {
+      res.status(404).json({ message: "Projet étudiant non trouvé." });
+      return;
+    }
+
+    const currentCounterRef = projectSnapshot.data().counterRef;
+    const updatedCounterRef = currentCounterRef - counterRefToRemove;
+
+    const projectData = projectSnapshot.data();
+    const voters = projectData.voters || [];
+    const updatedVoters = voters.filter((voter) => voter.id !== userId);
+
+    if (!voters.some((voter) => voter.id === userId)) {
+      res
+        .status(403)
+        .json({ message: "Vous n'avez pas encore mis en avant ce projet." });
+      return;
+    }
+
+    await projectRef.update({
+      counterRef: updatedCounterRef,
+      voters: updatedVoters,
+    });
+
+    res.status(200).json({
+      message: "Projet étudiant mis à jour avec succès.",
+      projectId: projectId,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la mise à jour du projet étudiant.");
+  }
+};
+
 const createLinkedBlogTuto = async (req, res) => {
   const projectId = req.params.projectId;
   const blogTutoId = req.body.blogTutoId;
@@ -486,6 +528,7 @@ module.exports = {
   createStudentProject,
   uploadMediaProject,
   refStudentProject,
+  removeRefStudentProject,
   createLinkedBlogTuto,
   removeLinkedBlogTuto,
 };
