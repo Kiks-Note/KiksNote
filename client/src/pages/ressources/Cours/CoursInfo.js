@@ -578,7 +578,7 @@ const CoursInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, [id]);
+  }, []);
 
   return (
     <>

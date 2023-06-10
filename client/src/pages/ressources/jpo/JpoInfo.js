@@ -369,7 +369,7 @@ const JpoInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, [id]);
+  }, []);
 
   // const descriptionJpoConvert = jpoData
   //   ? convertToRaw(jpoData.jpoDescription)

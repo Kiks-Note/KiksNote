@@ -37,8 +37,8 @@ import SchoolIcon from "@mui/icons-material/School";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteIcon from "@mui/icons-material/Delete";
+import GitHubIcon from "@mui/icons-material/GitHub";
 
-import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
 import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
 
 import BlogTutosLinkDialog from "./../../../components/ressources/students_project/BlogTutosLinkDialog";
@@ -175,7 +175,7 @@ const StudentProjectInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, [projectid]);
+  }, []);
 
   useEffect(() => {
     if (selectedProjectData?.linkedBlogTuto) {
@@ -275,16 +275,13 @@ const StudentProjectInfo = () => {
                 }}
               >
                 Code source du projet :{" "}
-                <a
-                  href={selectedProjectData.RepoProjectLink}
-                  style={{ color: "#7a52e1", textDecoration: "underline" }}
+                <Link
+                  to={selectedProjectData.RepoProjectLink}
+                  target="_blank"
+                  style={{ textDecoration: "underline" }}
                 >
-                  <img
-                    className="github-logo"
-                    src={GitHubLogo}
-                    alt="repo-github-link-logo"
-                  />
-                </a>
+                  <GitHubIcon />
+                </Link>
               </Typography>
               <div className="type-promo-project-container">
                 {selectedProjectData.promoProject.map((promo) => (

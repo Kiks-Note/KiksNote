@@ -168,7 +168,8 @@ const CarouselProjects = (props) => {
                     component="img"
                     alt={project.nameProject}
                     image={project.imgProject}
-                    height="700"
+                    height="500"
+                    style={{ objectFit: "contain" }}
                   />
                   <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                     {project.nameProject}

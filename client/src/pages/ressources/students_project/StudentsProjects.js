@@ -369,15 +369,17 @@ const StudentsProjects = () => {
     const filtered = projects.filter((project) => {
       if (selectedIdFilterClass !== "") {
         return (
-          project.promoProject &&
-          project.promoProject.id === selectedIdFilterClass
+          project?.promoProject &&
+          project?.promoProject.some(
+            (promo) => promo.id === selectedIdFilterClass
+          )
         );
       }
       if (selectedFilterTypeProject !== "") {
-        return project.typeProject === selectedFilterTypeProject;
+        return project?.typeProject === selectedFilterTypeProject;
       }
       if (selectedIdFilterTechno !== "") {
-        return project.technosProject.some(
+        return project?.technosProject.some(
           (techno) => techno.id === selectedIdFilterTechno
         );
       }
@@ -398,31 +400,12 @@ const StudentsProjects = () => {
   ]);
 
   useEffect(() => {
-    getAllProjects()
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setLoading(false);
-      });
-    getAllClass()
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setLoading(false);
-      });
-    getAllStudents()
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error(error);
-        setLoading(false);
-      });
-    getAllTechnos()
+    Promise.all([
+      getAllProjects(),
+      getAllClass(),
+      getAllStudents(),
+      getAllTechnos(),
+    ])
       .then(() => {
         setLoading(false);
       })
@@ -434,7 +417,7 @@ const StudentsProjects = () => {
 
   useEffect(() => {
     getAllProjects();
-  }, [projects]);
+  }, []);
 
   const { control } = useForm({
     mode: "onTouched",
@@ -517,7 +500,9 @@ const StudentsProjects = () => {
                   >
                     <MenuItem value="">Filtrer sur la promo</MenuItem>
                     {allclass.map((promo) => (
-                      <MenuItem value={promo.name}>{promo.name}</MenuItem>
+                      <MenuItem key={promo.id} value={promo.name}>
+                        {promo.name}
+                      </MenuItem>
                     ))}
                   </Select>
                 </FormControl>
@@ -640,11 +625,10 @@ const StudentsProjects = () => {
                 topProjects={filteredProjects.slice(0, 10)}
                 loading={loading}
               />
-              <h1 className="h1-project">Projets Étudiants</h1>
               <div
                 style={{
                   width: "90%",
-                  margin: "auto",
+                  padding: "10px",
                 }}
               >
                 <Grid container spacing={2}>
@@ -668,7 +652,7 @@ const StudentsProjects = () => {
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-between",
-                              height: "370px",
+                              height: "320px",
                             }}
                             onClick={() => {
                               navigate(`${project.id}`);
@@ -782,17 +766,6 @@ const StudentsProjects = () => {
                               ) : (
                                 <div></div>
                               )}
-
-                              <Chip
-                                sx={{ marginRight: "10px" }}
-                                label={
-                                  <>
-                                    <Typography>
-                                      {project.promoProject.name}
-                                    </Typography>
-                                  </>
-                                }
-                              ></Chip>
                               <div className="type-promo-project-container">
                                 {project.promoProject.map((promo) => (
                                   <Chip
