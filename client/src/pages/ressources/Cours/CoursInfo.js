@@ -429,6 +429,29 @@ const CoursInfo = () => {
     }
   };
 
+  const deleteLinkedCours = async (cours_id, linkedCourseName, courseName) => {
+    try {
+      await axios
+        .delete(`http://localhost:5050/ressources/linkcours/${cours_id}`)
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data === "Le cours lié a été supprimé avec succès."
+          ) {
+            toastSuccess(
+              `Le cours lié ${linkedCourseName} n'est plus lié avec le cours ${courseName}`
+            );
+          }
+          getCoursId(id);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const handleClickOpenLinkCoursDialog = () => {
     setOpenLink(true);
     getAllCours();
@@ -657,6 +680,35 @@ const CoursInfo = () => {
                               >
                                 Voir le cours relié <OpenInNewIcon />
                               </Button>
+                              {userStatus === "po" ? (
+                                <>
+                                  <Button
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      deleteLinkedCours(
+                                        coursData?.linkedCourse?.id,
+                                        coursData?.linkedCourse?.title,
+                                        coursData?.title
+                                      );
+                                    }}
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    sx={{
+                                      color: "white",
+                                      fontWeight: "bold",
+                                      backgroundColor: "#ff0000",
+                                      "&:hover": {
+                                        backgroundColor: "#a60000",
+                                      },
+                                    }}
+                                  >
+                                    <DeleteIcon />
+                                  </Button>
+                                </>
+                              ) : (
+                                <></>
+                              )}
                             </CardContent>
                           </Card>
                         </div>

@@ -11,7 +11,6 @@ import {
   Typography,
   Button,
   Card,
-  Skeleton,
   List,
   ListItem,
   ListItemAvatar,
@@ -63,6 +62,7 @@ const useStyles = makeStyles({
   btnProject: {
     backgroundColor: "#7a52e1",
     color: "white",
+    fontWeight: "bold",
     "&:hover": {
       backgroundColor: "#7a52e1",
       fontWeight: "bold",
@@ -336,8 +336,32 @@ const JpoInfo = () => {
     }, 4000);
   };
 
+  const deleteLinkedStudentProject = async (studentProjectId) => {
+    try {
+      await axios
+        .delete(`http://localhost:5050/ressources/jpo/${id}`, {
+          data: { studentProjectId },
+        })
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data.message ===
+              "Le lien avec le projet étudiant Project Test a été supprimé avec succès."
+          ) {
+            toastSuccess(res.data.message);
+          }
+          getJpoById(id);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    getJpoById()
+    getJpoById(id)
       .then(() => {
         setLoading(false);
       })
@@ -345,7 +369,7 @@ const JpoInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, []);
+  }, [id]);
 
   // const descriptionJpoConvert = jpoData
   //   ? convertToRaw(jpoData.jpoDescription)
@@ -455,13 +479,13 @@ const JpoInfo = () => {
                         <Card
                           key={project.id}
                           sx={{
-                            padding: "10px 0px",
+                            padding: "10px",
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "center",
                             alignItems: "center",
-                            width: "80%",
-                            marginBottom: "10px",
+                            width: "85%",
+                            margin: "10px",
                           }}
                         >
                           <div className="img-name-project-link-jpo-page">
@@ -487,6 +511,19 @@ const JpoInfo = () => {
                               <Typography>Voir le projet</Typography>
                               <VisibilityIcon />
                             </Button>
+                            {userStatus === "pedago" ? (
+                              <Button
+                                onClick={() => {
+                                  deleteLinkedStudentProject(project.id);
+                                }}
+                                className={classes.btnDeleteJop}
+                              >
+                                <Typography>Supprimer</Typography>
+                                <DeleteIcon />
+                              </Button>
+                            ) : (
+                              <></>
+                            )}
                           </div>
                         </Card>
                       ))}

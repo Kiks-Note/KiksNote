@@ -18,6 +18,9 @@ import {
   ListItem,
   Collapse,
   Chip,
+  Card,
+  CardMedia,
+  CardContent,
 } from "@mui/material";
 
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
@@ -32,6 +35,8 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import SchoolIcon from "@mui/icons-material/School";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
 import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
@@ -131,8 +136,38 @@ const StudentProjectInfo = () => {
     }
   };
 
+  const deleteLinkedBlogTuto = async (
+    project_id,
+    linkedBlogTuto,
+    studentProjectName
+  ) => {
+    try {
+      await axios
+        .delete(`http://localhost:5050/ressources/linkblogtuto/${project_id}`)
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data ===
+              "Le lien avec le blog tutoriel a été supprimé avec succès."
+          ) {
+            toastSuccess(
+              `Le blog tuto lié ${linkedBlogTuto} n'est plus lié avec projet étudiant ${studentProjectName}`
+            );
+          }
+          getStudentProjectById(projectid);
+          setBlogTutoData([]);
+          setHasAddedBlog(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    getStudentProjectById()
+    getStudentProjectById(projectid)
       .then(() => {
         setLoading(false);
       })
@@ -140,7 +175,7 @@ const StudentProjectInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, []);
+  }, [projectid]);
 
   useEffect(() => {
     if (selectedProjectData?.linkedBlogTuto) {
@@ -326,34 +361,92 @@ const StudentProjectInfo = () => {
                 ))}
               </List>
               {blogTutoData?.data?.thumbnail && (
-                <List
-                  sx={{
-                    width: "100%",
-                    maxWidth: 360,
-                    bgcolor: "background.paper",
-                    border: "10px grey",
-                    borderRadius: "20px",
-                    padding: "10px",
-                    margin: "15px 0px",
-                  }}
-                >
-                  <Typography>Blog Tuto relié</Typography>
-                  <ListItem
-                    key={blogTutoData.id}
-                    button
-                    sx={{ display: "flex", flexDirection: "column" }}
-                    onClick={() => navigate(`/blog/${blogTutoData.id}`)}
-                  >
-                    {blogTutoData.data.thumbnail && (
-                      <img
-                        className="blog-tuto-linked-img"
+                <>
+                  <div style={{ display: "flex", margin: "20px" }}>
+                    <Card
+                      sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <CardMedia
+                        component="img"
                         src={blogTutoData.data.thumbnail}
-                        alt="blog-tuto-img-linked"
+                        alt="course image"
+                        style={{
+                          objectFit: "contain",
+                          objectPosition: "center",
+                          width: "30%",
+                          minHeight: "10%",
+                          padding: "20px",
+                        }}
                       />
-                    )}
-                    <ListItemText primary={blogTutoData.data.title} />
-                  </ListItem>
-                </List>
+                      <CardContent
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          alignItems: "center",
+                        }}
+                      >
+                        <h4
+                          style={{
+                            width: "60%",
+                            wordBreak: "break-all",
+                            whiteSpace: "normal",
+                          }}
+                        >
+                          {blogTutoData.data.title}
+                        </h4>
+                        <Button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            navigate(`/blog/${blogTutoData.id}`);
+                          }}
+                          sx={{
+                            bgcolor: "#94258c",
+                            fontWeight: "bold",
+                            color: "white",
+                            mr: 1,
+                          }}
+                        >
+                          Voir le Blog tuto relié <OpenInNewIcon />
+                        </Button>
+                        {selectedProjectData?.creatorProject?.id ===
+                        user?.id ? (
+                          <>
+                            <Button
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                deleteLinkedBlogTuto(
+                                  projectid,
+                                  blogTutoData?.data?.title,
+                                  selectedProjectData?.nameProject
+                                );
+                              }}
+                              variant="contained"
+                              color="primary"
+                              size="small"
+                              sx={{
+                                color: "white",
+                                fontWeight: "bold",
+                                backgroundColor: "#ff0000",
+                                "&:hover": {
+                                  backgroundColor: "#a60000",
+                                },
+                              }}
+                            >
+                              <DeleteIcon />
+                            </Button>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </>
               )}
 
               <div className="btn-link-blog-container">

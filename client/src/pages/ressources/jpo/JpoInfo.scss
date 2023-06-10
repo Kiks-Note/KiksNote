@@ -71,8 +71,9 @@
 .button-project {
     display: flex;
     padding: 10px;
-    justify-content: center;
-    min-width: 200px;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 350px;
 }
 
 //disable button open file in react pdf viewer

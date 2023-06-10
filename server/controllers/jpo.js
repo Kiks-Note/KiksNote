@@ -297,7 +297,7 @@ const linkProjectStudents = async (req, res) => {
 
 const unlinkProjectStudents = async (req, res) => {
   const jpoId = req.params.jpoId;
-  const studentProjectId = req.body.studentProjectId;
+  const { studentProjectId } = req.body;
 
   try {
     const jpoRef = db.collection("jpo").doc(jpoId);
@@ -332,9 +332,11 @@ const unlinkProjectStudents = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    throw new Error(
-      "Erreur lors de la suppression du lien entre le projet étudiant et la JPO."
-    );
+    return res
+      .status(500)
+      .send(
+        "Erreur lors de la suppression du lien entre le projet étudiant et la JPO."
+      );
   }
 };
 
