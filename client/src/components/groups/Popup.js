@@ -68,8 +68,8 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   };
 
   function validate() {
-    if (!courseChoosed) {
-      alert("Veuillez remplir tous les champs");
+    if (courseChoosed.data.title === "Tous les cours") {
+      alert("Veuillez remplir le champs");
     } else {
       onPopupData({
         start_date: courseChoosed.dateStartSprint,
