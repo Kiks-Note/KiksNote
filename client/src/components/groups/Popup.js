@@ -17,9 +17,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const [courseChoosed, setCourseChoosed] = useState({
     data: { title: "Tous les cours" },
   });
-  const start_date = useRef();
-  const end_date = useRef();
-  const nb_release = useRef();
+
   const popUpRef = useRef();
   const [courses, setCourses] = useState([]);
 
@@ -39,20 +37,6 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         });
     };
 
-    if (dataPopUp) {
-      setClassChoose(dataPopUp.classChoose);
-      if (start_date.current) {
-        start_date.current.value = dataPopUp.start_date;
-      }
-
-      if (end_date.current) {
-        end_date.current.value = dataPopUp.end_date;
-      }
-
-      if (nb_release.current) {
-        nb_release.current.value = dataPopUp.nb_release;
-      }
-    }
     getCourse();
     ws.onopen = () => {
       console.log("WebSocket Client Connected");
@@ -72,20 +56,12 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
       alert("Veuillez remplir le champs");
     } else {
       onPopupData({
-        start_date: courseChoosed.dateStartSprint,
-        end_date: courseChoosed.dateEndSprint,
-        classChoose: classChoose,
         courseChoose: courseChoosed,
       });
       createRoom({
         po_id: user.id,
         class: classChoose,
         name: user?.firstname,
-        settings: {
-          start_date: courseChoosed.dateStartSprint,
-          end_date: courseChoosed.dateEndSprint,
-          classChoose: classChoose,
-        },
       });
     }
   }

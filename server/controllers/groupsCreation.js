@@ -64,12 +64,8 @@ const sendGroups = async (req, res) => {
   try {
     const newGroupRef = db.collection("groups").doc();
     await newGroupRef.set({
-      start_date: moment
-        .unix(Math.floor(new Date(req.body.start_date).valueOf() / 1000))
-        .toDate(),
-      end_date: moment
-        .unix(Math.floor(new Date(req.body.end_date).valueOf() / 1000))
-        .toDate(),
+      start_date: new Date(req.body.start_date._seconds),
+      end_date: new Date(req.body.end_date._seconds),
       students: req.body.students,
       po_id: req.body.po_id,
       courseId: req.body.course_id,
@@ -214,7 +210,6 @@ const room = async (connection) => {
         newRoomRef.set({
           po_id: response.data.po_id,
           class: response.data.class,
-          settings: response.data.settings,
           type: "group",
         });
         currentRooms.set(response.data.class, defaultRoom);

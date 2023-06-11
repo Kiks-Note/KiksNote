@@ -41,7 +41,6 @@ function GroupsCreation() {
   const [classStudents, setClassStudents] = useState();
   const [showSettings, setShowSettings] = useState(false);
   const [inRoom, setInRoom] = useState(false);
-  const [settings, setSettings] = useState();
   const [lock, setLock] = useState(true);
   const [columns, setColumns] = useState();
   const [nbSPGrp, setNbSPGrp] = useState();
@@ -119,7 +118,6 @@ function GroupsCreation() {
             ws.send(JSON.stringify(message));
             setClassStudents(user?.class.id);
             setInRoom(true);
-            setSettings(res.data[0].settings);
           }
         });
     } catch (error) {
@@ -145,7 +143,6 @@ function GroupsCreation() {
             ws.send(JSON.stringify(message));
             setClassStudents(res.data[0].class);
             setInRoom(true);
-            setSettings(res.data[0].settings);
           }
         });
     } catch (error) {
@@ -436,11 +433,10 @@ function GroupsCreation() {
   }
 
   const handlePopupData = (data) => {
-    setClassStudents(data.classChoose);
-    setSettings(data);
     setShowSettings(false);
     setInRoom(true);
-    setCourseChoose(data.courseChoose.id);
+    setCourseChoose(data.courseChoose);
+    setClassStudents(data.courseChoose.data.courseClass.id);
   };
 
   const handleClosePopUp = (showFalse) => {
@@ -463,18 +459,17 @@ function GroupsCreation() {
       JSON.stringify({ type: "closeRoom", data: { class: classStudents } })
     );
     ws.close();
-
     groupsKey.forEach((group) => {
       axios.post(`http://localhost:5050/groupes/exportGroups`, {
-        start_date: settings.start_date,
-        end_date: settings.end_date,
+        start_date: courseChoose.data.dateStartSprint,
+        end_date: courseChoose.data.dateEndSprint,
         students: columns[group].items.map((student) => ({
           id: student.id,
           firstname: student.firstname,
           lastname: student.lastname,
         })),
         po_id: user?.id,
-        course_id: courseChoose,
+        course_id: courseChoose.id,
       });
     });
 
@@ -643,7 +638,6 @@ function GroupsCreation() {
             {showSettings && user?.status === "po" ? (
               <PopUp
                 onPopupData={handlePopupData}
-                dataPopUp={settings}
                 showPopUp={handleClosePopUp}
               />
             ) : null}
