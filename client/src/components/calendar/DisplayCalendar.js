@@ -5,45 +5,43 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import momentPlugin from "@fullcalendar/moment";
 import interactionPlugin from "@fullcalendar/interaction";
 import Modal from "@mui/material/Modal";
-import moment from "moment";
-import { Grid, Typography, Box, Button } from "@material-ui/core";
+import { Grid } from "@material-ui/core";
 import frLocale from "@fullcalendar/core/locales/fr";
-import DetailCalendar from "../../components/calendar/DetailCalendar";
-import axios from "axios";
-import { Link } from "react-router-dom";
+import DetailCalendar from "./DetailCalendar";
 import { w3cwebsocket } from "websocket";
-import { useParams } from "react-router-dom";
-import timeConverter from "../../functions/TimeConverter";
+import axios from "axios";
 import useFirebase from "../../hooks/useFirebase";
+import timeConverter from "../../functions/TimeConverter";
+import moment from "moment";
+import "./calendar.scss";
 import { Rings } from "react-loader-spinner";
 
-export default function CalendarPedago() {
-  const { id } = useParams();
-  const { user } = useFirebase();
+export default function DisplayCalendar() {
   const [statesDetail, setStatesDetail] = useState({
     open: false,
     expanded: false,
   });
+  const { user } = useFirebase();
+  const handleCloseDetail = () =>
+    setStatesDetail({ open: false, expanded: false });
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [className, setClassName] = useState("");
 
-  const handleCloseDetail = () =>
-    setStatesDetail({ open: false, expanded: false });
-  const [selectedEvent, setSelectedEvent] = useState(null);
   const handleEventClick = (event) => {
     const eventId = event.event.id; // Récupération de l'id de l'événement cliqué
-
-    const selectedEvent = events.find((event) => event.id === eventId); // Recherche de l'événement correspondant à l'id
-
-    setSelectedEvent(selectedEvent);
-    setStatesDetail({ open: true, expanded: false });
+    if (event.event.constraint != "holiday") {
+      const selectedEvent = events.find((event) => event.id === eventId); // Recherche de l'événement correspondant à l'id
+      setSelectedEvent(selectedEvent);
+      setStatesDetail({ open: true, expanded: false });
+    }
   };
-
   function formatDate(dateString) {
     const momentDate = moment(dateString, "ddd MMM DD YYYY HH:mm:ss [GMT]ZZ");
     return momentDate.format("YYYY-MM-DD");
   }
+
   useEffect(() => {
     const fetchHolidays = async () => {
       const year = new Date().getFullYear();
@@ -64,10 +62,11 @@ export default function CalendarPedago() {
     };
     const fetchSocket = async () => {
       const wsComments = new w3cwebsocket(`ws://localhost:5050/calendar`);
-      wsComments.onopen = function (e) {
+
+      wsComments.onopen = function () {
         wsComments.send(
           JSON.stringify({
-            class: id,
+            class: user.class.id,
             status: user.status,
             id: user.id,
           })
@@ -78,7 +77,7 @@ export default function CalendarPedago() {
         try {
           const data = JSON.parse(message.data);
           const modifiedData = [];
-          let idCounter = 1; 
+          let idCounter = 1;
           data.forEach((item) => {
             const startDate = new Date(timeConverter(item.dateStartSprint));
             const endDate = new Date(timeConverter(item.dateEndSprint));
@@ -116,9 +115,11 @@ export default function CalendarPedago() {
         }
       };
     };
-    fetchSocket();
+
     fetchHolidays();
+    fetchSocket();
   }, []);
+
   return (
     <>
       {loading ? (
@@ -142,58 +143,37 @@ export default function CalendarPedago() {
           />
         </div>
       ) : (
-        <div>
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            style={{ padding: "20px" }}
-          >
-            <Typography variant="h3" align="center">
-              Calendrier de formation {className}
-            </Typography>
-            <Button
-              component={Link}
-              to={"/calendrier"}
-              size="small"
-              variant="contained"
-            >
-              Retour
-            </Button>
-          </Box>
-
-          <Grid container spacing={2} style={{ padding: "20px" }}>
-            <Grid item xs={12} md={7}>
-              <FullCalendar
-                plugins={[
-                  dayGridPlugin,
-                  interactionPlugin,
-                  timeGridPlugin,
-                  momentPlugin,
-                ]}
-                headerToolbar={{
-                  left: "prev,next today",
-                  center: "title",
-                  right: "timeGridWeek,dayGridMonth",
-                }}
-                initialView="dayGridMonth"
-                editable={false}
-                businessHours={true}
-                weekNumbers={true}
-                selectable={false}
-                selectMirror={true}
-                dayMaxEvents={true}
-                nowIndicator={true}
-                locale={frLocale}
-                events={events}
-                eventClick={handleEventClick}
-              />
-            </Grid>
-            <Modal open={statesDetail.open} onClose={handleCloseDetail}>
-              <DetailCalendar event={selectedEvent} />
-            </Modal>
+        <Grid container>
+          <Grid item xs={10}>
+            <FullCalendar
+              plugins={[
+                dayGridPlugin,
+                interactionPlugin,
+                timeGridPlugin,
+                momentPlugin,
+              ]}
+              headerToolbar={{
+                left: "prev,next today",
+                center: "title",
+                right: "timeGridWeek,dayGridMonth",
+              }}
+              initialView="dayGridMonth"
+              editable={false}
+              businessHours={true}
+              weekNumbers={true}
+              selectable={false}
+              selectMirror={true}
+              dayMaxEvents={true}
+              nowIndicator={true}
+              locale={frLocale}
+              events={events}
+              eventClick={handleEventClick}
+            />
           </Grid>
-        </div>
+          <Modal open={statesDetail.open} onClose={handleCloseDetail}>
+            <DetailCalendar event={selectedEvent} />
+          </Modal>
+        </Grid>
       )}
     </>
   );

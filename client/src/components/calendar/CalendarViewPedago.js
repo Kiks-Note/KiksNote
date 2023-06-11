@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Typography, Button, Grid, Box } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { w3cwebsocket } from "websocket";
+import useFirebase from "../../hooks/useFirebase";
 
 export default function CalendarViewPedago() {
+  const { user } = useFirebase();
   const [allClass, setAllClass] = useState([]);
   useEffect(() => {
     const fetchSocket = async () => {
@@ -11,10 +13,13 @@ export default function CalendarViewPedago() {
         `ws://localhost:5050/calendar/pedago`
       );
 
-      wsComments.onopen = function (e) {};
+      wsComments.onopen = function (e) {
+        wsComments.send(JSON.stringify(user.status));
+      };
 
       wsComments.onmessage = (message) => {
         const data = JSON.parse(message.data);
+        console.log(data);
         setAllClass(data);
       };
     };
@@ -51,7 +56,7 @@ export default function CalendarViewPedago() {
                 size="small"
                 variant="contained"
               >
-                Accéder 
+                Accéder
               </Button>
             </Box>
           </Grid>

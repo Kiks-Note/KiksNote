@@ -68,6 +68,8 @@ const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 const agileRoute = require("./agileRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
+const calendarRoutes = require("./calendarRoutes");
+
 const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 
 const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
@@ -95,6 +97,7 @@ wsI.on("request", (request) => {
   app.use("/groupes", groupWsNeeded(connection, pathname));
   app.use("/agile", agileRoute(connection, pathname, upload));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
+  app.use("/calendar", calendarRoutes(connection, pathname));
   require("./web/inventoryWebSocket")(connection, pathname);
 
   connection.on("error", (error) => {

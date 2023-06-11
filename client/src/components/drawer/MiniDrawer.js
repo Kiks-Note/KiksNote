@@ -156,7 +156,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 4,
       name: "Calendrier",
-      route: "#",
+      route: "/calendrier",
       icon: (
         <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
