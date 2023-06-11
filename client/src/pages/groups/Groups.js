@@ -171,7 +171,7 @@ function GroupsCreation() {
           await fetchAndSetData();
         }
 
-        /*         document.addEventListener("mousemove", (event) => {
+        document.addEventListener("mousemove", (event) => {
           const cursorPosition = {
             x: event.clientX,
             y: event.clientY,
@@ -187,7 +187,7 @@ function GroupsCreation() {
             },
           };
           ws.send(JSON.stringify(message));
-        }); */
+        });
 
         ws.onmessage = (message) => {
           const messageReceive = JSON.parse(message.data);
@@ -943,14 +943,16 @@ function GroupsCreation() {
                                         student = columns.students.items.pop();
                                       } else {
                                         student = columns.students.items.find(
-                                          (s) => s.id === user.id
+                                          (s) => s.id === user?.id
                                         );
                                         columns.students.items =
                                           columns.students.items.filter(
                                             (item) => item !== student
                                           );
                                       }
-                                      moveOnClick(columnId, student, columns);
+                                      if (student) {
+                                        moveOnClick(columnId, student, columns);
+                                      }
                                       setColumns({ ...columns });
                                       ws.send(
                                         JSON.stringify({
