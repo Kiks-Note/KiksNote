@@ -169,6 +169,7 @@ function GroupsCreation() {
         }
 
         document.addEventListener("mousemove", (event) => {
+          if (ws.readyState !== WebSocket.OPEN) return;
           const cursorPosition = {
             x: event.clientX,
             y: event.clientY,
