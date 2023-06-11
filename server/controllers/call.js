@@ -101,9 +101,10 @@ const getClassUsers = async (req, res) => {
     .then((response) => {
       idClass = response.data().courseClass.id;
     });
+  console.log(idClass);
   const snapshot = await db
     .collection("users")
-    .where("class", "==", idClass)
+    .where("class.id", "==", idClass)
     .get();
   const documents = snapshot.docs.map((doc) => ({
     id: doc.id,
@@ -181,7 +182,7 @@ const room = async (connection) => {
       client.sendUTF(JSON.stringify(message));
     }
   };
-
+  console.log(currentRooms);
   connection.on("message", (message) => {
     let response = JSON.parse(message.utf8Data);
     console.log("new msg");
@@ -205,7 +206,7 @@ const room = async (connection) => {
 
         const appelsCreate = appels.get(response.data.class) || new Map();
 
-        appelsCreate.set(response.data.userID, {
+        appelsCreate.set(response.data.class, {
           appel: response.data.appel,
         });
 
@@ -270,6 +271,7 @@ const room = async (connection) => {
             class: response.data.class,
           },
         };
+        console.log(currentRooms);
         //updateCurrentRooms();
         sendToAllClients(messageJoin, response.data.class);
 
@@ -314,7 +316,13 @@ const room = async (connection) => {
         sendToAllClients(messageLeave, response.data.class);
 
       case "updateCall":
-        console.log(currentRooms.get(response.data.class));
+        console.log("updateCall");
+        const roomAppel = currentRooms.get(response.data.class);
+        const appelsUpdate = appels.get(response.data.class) || new Map();
+        appelsUpdate.set(response.data.class, { appel: response.data.appel });
+        roomAppel.appel = appelsUpdate;
+        currentRooms.set(response.data.class, roomAppel);
+        //console.log(currentRooms.get(response.data.class).appel);
         const messageUpdate = {
           type: "updateRoom",
           data: {

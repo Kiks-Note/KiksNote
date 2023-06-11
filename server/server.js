@@ -49,7 +49,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://10.160.33.226:3000",
+      "http://localhost:3000",
       "http://localhost:3000",
       "http://127.0.0.1:3000",
     ],
@@ -113,7 +113,9 @@ wsI.on("request", (request) => {
     console.log(`WebSocket Error: ${error}`);
   });
   connection.on("close", (reasonCode, description) => {
-    console.log(`WebSocket closed with reasonCode ${reasonCode} and description ${description}`);
+    console.log(
+      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
+    );
   });
 });
 

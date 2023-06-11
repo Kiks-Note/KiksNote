@@ -10,16 +10,18 @@ function AppelProf(callId) {
   const [call, setCall] = useState({
     id_lesson: "",
     qrcode: "",
-    student_scan: [],
+    students_scan: [],
     chats: [],
   });
   const { user } = useFirebase();
-
+  const tempCall = useRef("");
+  const tempUsers = useRef([]);
   const ip = process.env.REACT_APP_IP;
   const [users, setUsers] = useState([]);
   const [usersPresent, setUsersPresent] = useState([]);
   const [inRoom, setInRoom] = useState(false);
   const generated = useRef(false);
+
   const ws = useMemo(() => {
     return new w3cwebsocket(`ws://localhost:5050/callws`);
   }, []);
@@ -71,9 +73,15 @@ function AppelProf(callId) {
                 messageReceive.data.currentRoom.appel
               )[0];
               const appel = messageReceive.data.currentRoom.appel[keys].appel;
+              tempCall.current = appel;
               setCall(appel);
               setQrcode(appel.qrcode);
-              getUsers(appel.id_lesson);
+              if (!generated.current) {
+                getUsers(appel.id_lesson);
+              }
+              generated.current = true;
+
+              displayUsers();
               break;
             default:
               break;
@@ -83,7 +91,6 @@ function AppelProf(callId) {
     };
 
     if (ws.readyState === WebSocket.OPEN) {
-      console.log("test");
       handleOpen();
     } else {
       ws.onopen = handleOpen;
@@ -105,22 +112,26 @@ function AppelProf(callId) {
     axios
       .get(`http://localhost:5050/call/getUsersFromClassiId/${coursId}`)
       .then((res) => {
+        tempUsers.current = res.data;
+        console.log(tempUsers.current);
         setUsers(res.data);
+        displayUsers();
       });
   };
-  useEffect(() => {
-    if (generated.current) {
-      setUsersPresent(call.student_scan);
-      const usersCopy = [...users];
-      const filteredUsers = usersCopy.filter(
-        (element1) =>
-          !call.student_scan.some(
-            (element2) => element2["firstname"] === element1["firstname"]
-          )
-      );
-      setUsers(filteredUsers);
-    }
-  }, [call, users]);
+
+  const displayUsers = () => {
+    setUsersPresent(tempCall.current.students_scan);
+    const usersCopy = [...tempUsers.current];
+    console.log(usersCopy);
+    const filteredUsers = usersCopy.filter(
+      (element1) =>
+        !tempCall.current.students_scan.some(
+          (element2) => element2["firstname"] === element1["firstname"]
+        )
+    );
+    console.log(filteredUsers);
+    setUsers(filteredUsers);
+  };
 
   return (
     <div className="ContentProf">

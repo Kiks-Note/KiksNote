@@ -11,7 +11,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     axios
-      .get("http://10.160.33.226:5050/auth/user")
+      .get("http://localhost:5050/auth/user")
       .then((res) => {
         setUser(res.data);
         setLoading(false);

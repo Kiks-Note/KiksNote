@@ -8,13 +8,12 @@ import { idID } from "@mui/material/locale";
 
 function Presence() {
   const { id } = useParams();
-  const ip = process.env.REACT_APP_IP;
   const dataFetchedRef = useRef(false);
   const tempCall = useRef();
   const navigate = useNavigate();
   const { user } = useFirebase();
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://localhost:5050/call`);
+    return new w3cwebsocket(`ws://localhost:5050/callws`);
   }, []);
   useEffect(() => {
     if (dataFetchedRef.current) {
@@ -31,17 +30,24 @@ function Presence() {
         object: tempCall.current,
       })
       .then((res) => {
-        const message = {
-          type: "updateCall",
-          data: {
-            appel: tempCall.current,
-          },
-        };
-        ws.send(JSON.stringify(message));
+        if (ws.readyState === WebSocket.OPEN) {
+          websocket();
+        } else {
+          ws.onopen = websocket;
+        }
       });
+  };
+  const websocket = () => {
+    const message = {
+      type: "updateCall",
+      data: {
+        class: user.class.name,
+        appel: tempCall.current,
+      },
+    };
+    ws.send(JSON.stringify(message));
     navigate(`/appel/${tempCall.current.id}`);
   };
-
   const getCall = () => {
     axios.get(`http://localhost:5050/call/getcall/${id}`).then((res) => {
       console.log(res.data);

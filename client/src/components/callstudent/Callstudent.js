@@ -24,7 +24,7 @@ function AppelEleve({ callId }) {
 
   const id = useRef();
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://localhost:5050/callws`);
+    return new w3cwebsocket(`ws://192.168.1.16:5050/callws`);
   }, []);
 
   const LogToExistingRoom = useCallback(async () => {
@@ -47,6 +47,8 @@ function AppelEleve({ callId }) {
             ws.send(JSON.stringify(message));
             setInRoom(true);
             setCall(res.data);
+            callToUpdate.current = res.data;
+            console.log(callToUpdate.current);
           }
         });
     } catch (error) {
@@ -72,6 +74,7 @@ function AppelEleve({ callId }) {
                 messageReceive.data.currentRoom.appel
               )[0];
               const appel = messageReceive.data.currentRoom.appel[keys].appel;
+              id.current = appel.id;
               setCall(appel);
               break;
             default:
@@ -136,12 +139,14 @@ function AppelEleve({ callId }) {
       },
       ...Call.chats,
     ];
+    console.log(chatCopy);
     setCall((prevCall) => ({
       ...prevCall,
       chats: chatCopy,
     }));
-    callToUpdate.current.chats = chatCopy;
-    updateCall();
+    //callToUpdate.current.chats = chatCopy;
+    console.log(callToUpdate.current);
+    // updateCall();
   };
 
   const updateCall = async () => {
