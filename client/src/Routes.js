@@ -35,6 +35,9 @@ import RetrospectiveStudent from "./pages/retrospective/RetrospectiveStudent";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
 import Board from "./pages/board_retro/board";
+import Calendar from "./pages/calendar/Calendar";
+import CalendarPedago from "./pages/calendar/CalendarPedago";
+
 
 function RoutesProvider() {
   return (
@@ -102,6 +105,8 @@ function RoutesProvider() {
             element={<InventoryPendingRequests />}
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
+                    <Route path="/calendrier" element={<Calendar />} />
+          <Route path="/calendrier/:id" element={<CalendarPedago />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
