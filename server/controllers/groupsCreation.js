@@ -82,89 +82,6 @@ const sendGroups = async (req, res) => {
   }
 };
 
-/* const sendGroups = async (req, res) => {
-  const { students, po_id, start_date, end_date } = req.body;
-
-
-
-  console.log(po_id)
-  console.log("nbvg,fkdl")
-
-
-  try {
-    await upload(req, res, async (err) => {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({ error: "Error uploading file." });
-      } else if (err) {
-        return res.status(400).json({ error: err.message });
-      }
-
-      const groupData = {
-        start_date: new Date(start_date),
-        end_date: new Date(end_date),
-        students: students,
-        po_id: po_id,
-        backlog: "",
-      };
-
-      if (req.file) {
-        const filePath = req.file.path;
-        const fileType = mime.lookup(filePath);
-
-        const folderPath = `Groups/${po_id}`;
-        const fileName = req.file.originalname;
-
-        const fileRef = bucket.file(`${folderPath}/${fileName}`);
-
-        try {
-          await fileRef.createWriteStream({
-            metadata: {
-              contentType: fileType || "application/pdf",
-              cacheControl: "public, max-age=31536000",
-            },
-          })
-            .on("error", (error) => {
-              console.error(error);
-              res.status(400).json({ error: error.message });
-            })
-            .on("finish", async () => {
-              try {
-                const url = await fileRef.getSignedUrl({
-                  action: "read",
-                  expires: new Date(end_date),
-                });
-                groupData.backlog = url[0];
-
-              } catch (error) {
-                console.error(error);
-                res.status(400).json({ error: error.message });
-              }
-            })
-            .end(fs.readFileSync(filePath));
-
-        } catch (error) {
-          console.error(error);
-          return res.status(400).json({ error: error.message });
-        }
-      }
-
-      try {
-        const newGroupRef = db.collection("groups").doc();
-        await newGroupRef.set(groupData);
-
-        return res.status(200).send("Groups successfully added!");
-      } catch (error) {
-        console.error(error);
-        return res.status(400).json({ error: error.message });
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send(error);
-  }
-};
- */
-
 const deleteRoom = async (req, res) => {
   const { po_id } = req.params;
 
@@ -430,25 +347,23 @@ const room = async (connection) => {
 
         break;
       case "lock":
-        if (response.data.status === "po") {
-          let roomLock = currentRooms.get(response.data.class) || defaultRoom;
-          roomLock.lock = response.data.lock;
-          currentRooms.set(response.data.class, roomLock);
+        let roomLock = currentRooms.get(response.data.class) || defaultRoom;
+        roomLock.lock = response.data.lock;
+        currentRooms.set(response.data.class, roomLock);
 
-          const messageLock = {
-            type: "updateRoom",
-            data: {
-              currentRoom: {
-                ...currentRooms.get(response.data.class),
-                users: Object.fromEntries(
-                  currentRooms.get(response.data.class).users
-                ),
-              },
-              class: response.data.class,
+        const messageLock = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
             },
-          };
-          sendToAllClients(messageLock, response.data.class);
-        }
+            class: response.data.class,
+          },
+        };
+        sendToAllClients(messageLock, response.data.class);
         break;
       case "nbSPGrp":
         if (response.data.status === "po") {
@@ -476,7 +391,6 @@ const room = async (connection) => {
       case "updateCol":
         let roomCol = currentRooms.get(response.data.class) || defaultRoom;
         roomCol.columns = response.data.columns;
-        roomCol.nbStudents = response.data.nbStudents;
         currentRooms.set(response.data.class, roomCol);
 
         const messageUpdateCol = {

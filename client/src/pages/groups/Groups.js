@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -13,7 +7,6 @@ import CasinoIcon from "@mui/icons-material/Casino";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import SettingsIcon from "@mui/icons-material/Settings";
 import WifiOffIcon from "@mui/icons-material/WifiOff";
-import FileUploadIcon from "@mui/icons-material/FileUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
 import GroupIcon from "@mui/icons-material/Group";
 import { Button, useTheme, Tooltip, IconButton } from "@mui/material";
@@ -28,7 +21,7 @@ import "./Groups.scss";
 const options = {
   autoClose: 2000,
   className: "",
-  position: toast.POSITION.TOP_RIGHT,
+  position: toast.POSITION.BOTTOM_RIGHT,
   theme: "colored",
 };
 
@@ -36,17 +29,25 @@ export const toastSuccess = (message) => {
   toast.success(message, options);
 };
 
+export const toastWarning = (message) => {
+  toast.warning(message, options);
+};
+
+export const toastFail = (message) => {
+  toast.error(message, options);
+};
+
 function GroupsCreation() {
   const [classStudents, setClassStudents] = useState();
   const [showSettings, setShowSettings] = useState(false);
   const [inRoom, setInRoom] = useState(false);
-  const [file, setFile] = useState();
   const [settings, setSettings] = useState();
   const [lock, setLock] = useState(true);
   const [columns, setColumns] = useState();
   const [nbSPGrp, setNbSPGrp] = useState();
   const [courseChoose, setCourseChoose] = useState();
   const [hasLock, setHasLock] = useState(true);
+  const [notAllowed, setNotAllowed] = useState(false);
 
   const [userCursors, setUserCursors] = useState();
 
@@ -57,7 +58,6 @@ function GroupsCreation() {
   const { user } = useFirebase();
 
   const theme = useTheme();
-  const uploadBacklog = useRef();
 
   const ws = useMemo(() => {
     return new w3cwebsocket("ws://localhost:5050/groupes/creation");
@@ -171,7 +171,7 @@ function GroupsCreation() {
           await fetchAndSetData();
         }
 
-        document.addEventListener("mousemove", (event) => {
+        /*         document.addEventListener("mousemove", (event) => {
           const cursorPosition = {
             x: event.clientX,
             y: event.clientY,
@@ -187,7 +187,7 @@ function GroupsCreation() {
             },
           };
           ws.send(JSON.stringify(message));
-        });
+        }); */
 
         ws.onmessage = (message) => {
           const messageReceive = JSON.parse(message.data);
@@ -196,12 +196,10 @@ function GroupsCreation() {
             case "updateRoom":
               displayUserCursorPositions(messageReceive.data.currentRoom.users);
               if (user.status === "etudiant") {
+                console.log(messageReceive.data.currentRoom);
                 let number = parseInt(messageReceive.data.currentRoom.nbSPGrp);
                 setNbSPGrp(number);
                 setLock(messageReceive.data.currentRoom.lock);
-                setNumberOfStudentInclass(
-                  messageReceive.data.currentRoom.nbStudents
-                );
               }
               if (messageReceive.data.currentRoom.columns) {
                 setColumns(messageReceive.data.currentRoom.columns);
@@ -281,6 +279,11 @@ function GroupsCreation() {
   const onDragEnd = (result) => {
     if (!result.destination) return;
     const { source, destination } = result;
+    if (notAllowed) {
+      setNotAllowed(false);
+      toast.error("Vous ne pouvez pas déplacer cet élève");
+      return;
+    }
     if (source.droppableId === destination.droppableId) return;
     if (source.droppableId !== destination.droppableId) {
       const sourceColumn = columns[source.droppableId];
@@ -352,6 +355,13 @@ function GroupsCreation() {
     }
   };
 
+  const onDragStart = (data) => {
+    if (user.status === "etudiant" && data.draggableId !== user.id) {
+      setNotAllowed(true);
+      return;
+    }
+  };
+
   function resetButton() {
     document.querySelector('input[type="text"]').value = "";
     fetchAndSetData();
@@ -401,7 +411,6 @@ function GroupsCreation() {
         })
       );
     } else {
-      //TODO make a toast here
       fetchAndSetData();
     }
   }
@@ -556,15 +565,6 @@ function GroupsCreation() {
     setShowSettings(true);
   }
 
-  function handleChangeFile(event) {
-    setFile(event.target.files[0]);
-    console.log(event.target.files[0]);
-  }
-
-  const handleClickBacklog = (event) => {
-    uploadBacklog.current.click();
-  };
-
   if (!columns && inRoom) {
     return <p>Loading...</p>;
   }
@@ -608,10 +608,10 @@ function GroupsCreation() {
                         style={{
                           display: "inline-block",
                           backgroundColor: userData.color,
-                          padding: "0px 6px",
+                          padding: "2px 8px",
                           color: "#fff",
                           fontSize: "12px",
-                          borderRadius: "4px",
+                          borderRadius: "30px",
                           margin: "0px",
                         }}
                       >
@@ -666,13 +666,13 @@ function GroupsCreation() {
                   fontWeight: "bold",
                 }}
               >
-                <GroupIcon
-                  style={{
-                    marginRight: "10px",
-                  }}
-                />{" "}
-                {nbUserConnected}/{numberOfStudentsInClass + 1}
+                <GroupIcon style={{ marginRight: "10px" }} />
+                {nbUserConnected}
+                {user.status === "po"
+                  ? "/" + (numberOfStudentsInClass + 1)
+                  : ""}
               </p>
+
               {user?.status === "po" ? (
                 <div className="groups-inputs">
                   <input
@@ -733,25 +733,6 @@ function GroupsCreation() {
                       )}
                     </IconButton>
                   </Tooltip>
-                  <input
-                    type="file"
-                    className="input-button"
-                    style={{ display: "none" }}
-                    ref={uploadBacklog}
-                    onChange={handleChangeFile}
-                    encType="multipart/form-data"
-                  />
-                  <Tooltip title="Upload un backlog">
-                    <IconButton onClick={handleClickBacklog}>
-                      <FileUploadIcon
-                        className="icon-svg"
-                        style={{
-                          fill: theme.palette.text.primary,
-                          color: theme.palette.text.primary,
-                        }}
-                      />
-                    </IconButton>
-                  </Tooltip>
                   <Tooltip title="Changer les paramètres">
                     <IconButton
                       className="input-button"
@@ -789,7 +770,7 @@ function GroupsCreation() {
                 flexWrap: "wrap",
               }}
             >
-              <DragDropContext onDragEnd={onDragEnd}>
+              <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
                 {Object.entries(columns).map(([columnId, column], index) => {
                   if (index === 0 && columns.students.items.length > 0) {
                     return (
@@ -957,8 +938,18 @@ function GroupsCreation() {
                                   className="group"
                                   onClick={() => {
                                     if (columns.students.items.length > 0) {
-                                      const student =
-                                        columns.students.items.pop();
+                                      let student;
+                                      if (user.status === "po") {
+                                        student = columns.students.items.pop();
+                                      } else {
+                                        student = columns.students.items.find(
+                                          (s) => s.id === user.id
+                                        );
+                                        columns.students.items =
+                                          columns.students.items.filter(
+                                            (item) => item !== student
+                                          );
+                                      }
                                       moveOnClick(columnId, student, columns);
                                       setColumns({ ...columns });
                                       ws.send(
