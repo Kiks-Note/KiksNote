@@ -1,5 +1,7 @@
 const { auth, db } = require("../firebase");
 const nodemailer = require("nodemailer");
+var hbs = require("nodemailer-express-handlebars");
+const path = require("path");
 
 var transporter = nodemailer.createTransport({
   service: "gmail",
@@ -8,6 +10,18 @@ var transporter = nodemailer.createTransport({
     pass: "njujpddhfbazaifo",
   },
 });
+
+const handlebarOptions = {
+  viewEngine: {
+    extName: ".handlebars",
+    partialsDir: path.resolve(__dirname, "email_templates"),
+    defaultLayout: false,
+  },
+  viewPath: path.resolve(__dirname, "email_templates"),
+  extName: ".handlebars",
+};
+
+transporter.use("compile", hbs(handlebarOptions));
 
 const login = async (req, res) => {
   const { token } = req.body;
@@ -76,29 +90,34 @@ const register = async (req, res) => {
 
     await db.collection("users").doc(userEmail).set(userData);
 
-    await auth
-      .generateEmailVerificationLink(userEmail)
-      .then((link) => {
-        const mailOptions = {
-          from: "services.kiksnote.noreply@gmail.com",
-          to: userEmail,
-          subject: "Vérification de l'email du compte",
-          text: `Bonjour ${userFirstName},\n
-          \t Veuillez cliquer sur le lien suivant pour vérifier votre compte :\n : ${link}`,
-        };
+    const verificationLink = await auth.generateEmailVerificationLink(
+      userEmail
+    );
 
-        transporter.sendMail(mailOptions, (error, info) => {
-          if (error) {
-            console.log(error);
-          } else {
-            console.log("E-mail envoyé : " + info.response);
-          }
-        });
-        res.status(200).send({ message: "Utilisateur créé avec succès." });
-      })
-      .catch((error) => {
+    const mailOptions = {
+      from: "services.kiksnote.noreply@gmail.com",
+      to: userEmail,
+      subject: "Vérification de l'email du compte",
+      template: "confirmation_email",
+      context: {
+        userFirstName: userFirstName,
+        verificationLink: verificationLink,
+      },
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
         console.log(error);
-      });
+        return res.status(500).send({
+          message: "Une erreur s'est produite lors de l'envoi de l'e-mail.",
+        });
+      } else {
+        console.log("E-mail envoyé : " + info.response);
+        return res
+          .status(200)
+          .send({ message: "Utilisateur créé avec succès." });
+      }
+    });
   } catch (error) {
     console.log(error);
 

@@ -65,6 +65,7 @@ const useStyles = makeStyles({
       backgroundColor: "#e70062",
       fontWeight: "bold",
     },
+    margin: "1%",
   },
 });
 
@@ -267,10 +268,14 @@ const Jpo = () => {
                   </ToggleButton>
                 </ToggleButtonGroup>
               </div>
+              <Typography
+                variant="h3"
+                sx={{ fontWeight: "bold", marginLeft: "10%" }}
+              >
+                Jpo
+              </Typography>
             </Box>
-            <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-              Jpo
-            </Typography>
+
             {userStatus === "pedago" ? (
               <div>
                 <Button
