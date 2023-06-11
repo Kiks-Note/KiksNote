@@ -507,8 +507,6 @@ const StudentsProjects = () => {
     ...new Set(Object.values(projects).map((project) => project.typeProject)),
   ];
 
-  console.log(filteredProjects);
-
   return (
     <>
       {loading ? (

@@ -74,7 +74,7 @@ const CreateTechnoModal = (props) => {
           <div className="dropzone-coursimg-container">
             <p className="info-dropdown-img">
               Drag and drop an image file here, or click to select an image
-              file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
+              file. (max. 1.00 MB each) PNG.
             </p>
             <Dropzone
               onDrop={props.handleDrop}

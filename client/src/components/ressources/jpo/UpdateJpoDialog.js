@@ -9,9 +9,7 @@ import {
 } from "@mui/material";
 
 import { Editor } from "react-draft-wysiwyg";
-import {
-  EditorState,
-} from "draft-js";
+import { EditorState } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 
 import Dropzone from "./../Dropzone";
@@ -80,7 +78,7 @@ const UpdateCoursDialog = (props) => {
             <div className="dropzone-coursimg-container">
               <p className="info-dropdown-img">
                 Drag and drop an image file here, or click to select an image
-                file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
+                file. (max. 1.00 MB each) PNG.
               </p>
               <Dropzone
                 onDrop={props.handleDrop}

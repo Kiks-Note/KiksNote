@@ -84,8 +84,7 @@ const Cours = () => {
   const [courseCampusNumerique, setCourseCampusNumerique] = useState(false);
   const [courseOwner, setCourseOwner] = useState("");
   const [idSelectedOwner, setIdSelectedOwner] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [idSelectedClass, setIdSelectedClass] = useState("");
+  const [selectedClass, setSelectedClass] = useState([]);
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
 
@@ -245,7 +244,7 @@ const Cours = () => {
       courseDescription === "" ||
       courseDateStart === "" ||
       courseDateEnd === "" ||
-      idSelectedClass === "" ||
+      !selectedClass ||
       idSelectedOwner === "" ||
       courseImageBase64 === ""
     ) {
@@ -260,7 +259,7 @@ const Cours = () => {
             dateStartSprint: courseDateStart,
             dateEndSprint: courseDateEnd,
             campus_numerique: courseCampusNumerique,
-            courseClass: idSelectedClass,
+            courseClass: selectedClass,
             owner: idSelectedOwner,
             private: coursePrivate,
             imageBase64: courseImageBase64,
@@ -485,7 +484,6 @@ const Cours = () => {
             setCoursePrivate={setCoursePrivate}
             selectedClass={selectedClass}
             setSelectedClass={setSelectedClass}
-            setIdSelectedClass={setIdSelectedClass}
             allclass={allclass}
             control={control}
             allpo={allpo}
@@ -585,18 +583,38 @@ const Cours = () => {
                                     justifyContent: "space-between",
                                   }}
                                 >
-                                  <Chip
-                                    label={
-                                      <>
-                                        <div style={{ display: "flex" }}>
-                                          <Typography>
-                                            {course.data.courseClass.name}
-                                          </Typography>
-                                          <SchoolIcon />
-                                        </div>
-                                      </>
-                                    }
-                                  ></Chip>
+                                  {Array.isArray(course.data.courseClass) ? (
+                                    course.data.courseClass.map((classData) => (
+                                      <Chip
+                                        key={classData.id}
+                                        label={
+                                          <>
+                                            <div style={{ display: "flex" }}>
+                                              <Typography>
+                                                {classData.name}
+                                              </Typography>
+                                              <SchoolIcon />
+                                            </div>
+                                          </>
+                                        }
+                                      />
+                                    ))
+                                  ) : (
+                                    <Chip
+                                      key={course.data.courseClass.id}
+                                      label={
+                                        <>
+                                          <div style={{ display: "flex" }}>
+                                            <Typography>
+                                              {course.data.courseClass.name}
+                                            </Typography>
+                                            <SchoolIcon />
+                                          </div>
+                                        </>
+                                      }
+                                    />
+                                  )}
+
                                   <Chip
                                     avatar={
                                       <Avatar
@@ -754,18 +772,37 @@ const Cours = () => {
                                   justifyContent: "space-between",
                                 }}
                               >
-                                <Chip
-                                  label={
-                                    <>
-                                      <div style={{ display: "flex" }}>
-                                        <Typography>
-                                          {course.data.courseClass.name}
-                                        </Typography>
-                                        <SchoolIcon />
-                                      </div>
-                                    </>
-                                  }
-                                ></Chip>
+                                {Array.isArray(course.data.courseClass) ? (
+                                  course.data.courseClass.map((classData) => (
+                                    <Chip
+                                      key={classData.id}
+                                      label={
+                                        <>
+                                          <div style={{ display: "flex" }}>
+                                            <Typography>
+                                              {classData.name}
+                                            </Typography>
+                                            <SchoolIcon />
+                                          </div>
+                                        </>
+                                      }
+                                    />
+                                  ))
+                                ) : (
+                                  <Chip
+                                    key={course.data.courseClass.id}
+                                    label={
+                                      <>
+                                        <div style={{ display: "flex" }}>
+                                          <Typography>
+                                            {course.data.courseClass.name}
+                                          </Typography>
+                                          <SchoolIcon />
+                                        </div>
+                                      </>
+                                    }
+                                  />
+                                )}
                                 <Chip
                                   avatar={
                                     <Avatar

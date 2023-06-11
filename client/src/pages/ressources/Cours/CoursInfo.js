@@ -1104,28 +1104,35 @@ const CoursInfo = () => {
                         alignItems: "center",
                       }}
                     >
-                      <Chip
-                        sx={{
-                          display: "flex",
-                          padding: "10px",
-                          width: "40%",
-                          alignItems: "center",
-                        }}
-                        label={
-                          <>
-                            <div style={{ display: "flex" }}>
-                              {coursData?.courseClass?.name && (
-                                <>
-                                  <Typography>
-                                    {coursData.courseClass.name}
-                                  </Typography>
+                      {Array.isArray(coursData?.courseClass) ? (
+                        coursData?.courseClass.map((classData) => (
+                          <Chip
+                            key={classData.id}
+                            label={
+                              <>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>{classData.name}</Typography>
                                   <SchoolIcon />
-                                </>
-                              )}
-                            </div>
-                          </>
-                        }
-                      ></Chip>
+                                </div>
+                              </>
+                            }
+                          />
+                        ))
+                      ) : (
+                        <Chip
+                          key={coursData?.courseClass.id}
+                          label={
+                            <>
+                              <div style={{ display: "flex" }}>
+                                <Typography>
+                                  {coursData?.courseClass.name}
+                                </Typography>
+                                <SchoolIcon />
+                              </div>
+                            </>
+                          }
+                        />
+                      )}
                     </div>
                     <h2
                       style={{
