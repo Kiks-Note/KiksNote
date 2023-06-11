@@ -18,7 +18,6 @@ import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import Card from "../../components/agile/Card";
 import {
-  getImpactMapping,
   addImpactMapping,
 } from "../../components/agile/agile";
 import { setImpactMapping } from "../../redux/slices/impactMappingSlice";
@@ -63,7 +62,6 @@ export default function ImpactMapping({ data }) {
   };
   const addDataToImpactMappingDB = async () => {
     if (goals && actors && deliverables && impacts && goals.length !== 0) {
-      console.log(deliverables.length);
       const res = await addImpactMapping({
         dashboardId: data.dashboardId,
         goals: goals,

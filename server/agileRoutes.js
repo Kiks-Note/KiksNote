@@ -13,9 +13,10 @@ const {
   personaRequest,
   changeIndex,
   createPostit,
+  putTree,
   deletePostit,
   agileRequest,
-  threeRequest,
+  treeRequest,
 } = require("./controllers/agile");
 
 module.exports = function (connection, pathname, upload) {
@@ -38,7 +39,7 @@ module.exports = function (connection, pathname, upload) {
     deletePostit
   );
   router.delete("/:dashboardId/actor/:actorId", deleteActor);
-
+  router.put("/:dashboardId/tree", putTree);
   switch (pathname) {
     case "/agile":
       agileRequest(connection);
@@ -57,7 +58,7 @@ module.exports = function (connection, pathname, upload) {
       console.log("persona");
       break;
     case "/three":
-      threeRequest(connection);
+      treeRequest(connection);
       console.log("three");
       break;
     default:

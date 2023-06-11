@@ -21,9 +21,11 @@ const CardPersona = ({ info }) => {
           subheader={`${info.age} ans ${info.city}, ${info.country}`}
           avatar={
             <Avatar
+              crossorigin="*"
               alt="Avatar"
               src={info.avatar}
               sx={{ width: 100, height: 100 }}
+              className="personaImg"
             />
           }
         />

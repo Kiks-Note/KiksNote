@@ -32,39 +32,44 @@ export default function Persona({ dashboardId, actorId }) {
   const exportToPDF = () => {
     const element = document.getElementById("pdf-content");
     const opt = {
-      margin: [0.5, 0.5, 0.5, 0.5],
+      margin: 0,
       filename: "my_persona.pdf",
-      image: { type: "jpeg", quality: 0.9 },
-      html2canvas: { scale: 2 },
+      image: { type: "jpeg", quality: 0.2 },
+      html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
 
-    html2pdf()
-      .set(opt)
-      .from(element)
-      .toPdf()
-      .get("pdf")
-      .then((pdf) => {
-        const avatarElements = element.getElementsByClassName("MuiAvatar-root");
+    const avatarElements = element.getElementsByClassName("personaImg");
 
-        if (avatarElements.length > 0) {
-          const canvasElements = document.createElement("canvas");
-          const context = canvasElements.getContext("2d");
+    if (avatarElements.length > 0) {
+      const canvasElements = document.createElement("canvas");
+      const context = canvasElements.getContext("2d");
+      let pdf;
 
-          for (let i = 0; i < avatarElements.length; i++) {
-            const avatar = avatarElements[i];
-            const image = avatar.getElementsByTagName("img")[0];
-            const imageUrl = image.src;
+      const loadImages = [];
 
-            const x = avatar.offsetLeft;
-            const y = avatar.offsetTop;
-            const width = avatar.offsetWidth;
-            const height = avatar.offsetHeight;
+      for (let i = 0; i < avatarElements.length; i++) {
+        const avatar = avatarElements[i];
+        const image = avatar.getElementsByTagName("img")[0];
+        const imageUrl = image.src;
 
-            const img = new Image();
-            img.src = imageUrl;
-            img.onload = () => {
-              context.drawImage(img, x, y, width, height);
+        const x = avatar.offsetLeft;
+        const y = avatar.offsetTop;
+        const width = avatar.offsetWidth;
+        const height = avatar.offsetHeight;
+
+        const img = new Image();
+
+        const loadImage = new Promise((resolve) => {
+          img.onload = () => {
+            context.clearRect(
+              0,
+              0,
+              canvasElements.width,
+              canvasElements.height
+            );
+            context.drawImage(img, x, y, width, height);
+            if (pdf) {
               pdf.addImage(
                 canvasElements.toDataURL("image/jpeg"),
                 "JPEG",
@@ -73,40 +78,54 @@ export default function Persona({ dashboardId, actorId }) {
                 width,
                 height
               );
-            };
-          }
-        }
-
-        return pdf.output("arraybuffer");
-      })
-      .then((buffer) => {
-        const formData = new FormData();
-        formData.append(
-          "pdfFile",
-          new Blob([buffer], { type: "application/pdf" }),
-          "persona.pdf"
-        );
-        formData.append("fieldName", "personas");
-        formData.append("actorId", actorId);
-
-        return axios.post(
-          "http://localhost:5050/agile/" + dashboardId + "/folder",
-          formData
-        );
-      })
-      .then((response) => {
-        toast.success("Votre persona a été ajouté à votre dossier agile", {
-          duration: 5000,
+            }
+            resolve();
+          };
         });
-      })
-      .catch((error) => {
-        toast.error(
-          "Une erreur s'est produite. Veuillez réessayer ultérieurement.",
-          {
+
+        img.src = imageUrl;
+        loadImages.push(loadImage);
+      }
+
+      html2pdf()
+        .set(opt)
+        .from(element)
+        .toPdf()
+        .get("pdf")
+        .then((generatedPdf) => {
+          pdf = generatedPdf;
+          return Promise.all(loadImages);
+        })
+        .then(() => pdf.output("arraybuffer"))
+        .then((buffer) => {
+          const formData = new FormData();
+          formData.append(
+            "pdfFile",
+            new Blob([buffer], { type: "application/pdf" }),
+            "persona.pdf"
+          );
+          formData.append("fieldName", "personas");
+          formData.append("actorId", actorId);
+
+          return axios.post(
+            "http://localhost:5050/agile/" + dashboardId + "/folder",
+            formData
+          );
+        })
+        .then((response) => {
+          toast.success("Votre persona a été ajouté à votre dossier agile", {
             duration: 5000,
-          }
-        );
-      });
+          });
+        })
+        .catch((error) => {
+          toast.error(
+            "Une erreur s'est produite. Veuillez réessayer ultérieurement.",
+            {
+              duration: 5000,
+            }
+          );
+        });
+    }
   };
 
   return (

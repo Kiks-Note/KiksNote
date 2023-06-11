@@ -58,7 +58,7 @@ const BasicCard = ({
 
   const moveToPersona = () => {
     const personaTab = {
-      id: "Persona" + id,
+      id: "Persona" +  actors[index].id,
       label: "Persona ",
       closeable: true,
       component: "Personas",
@@ -69,7 +69,7 @@ const BasicCard = ({
   };
   const moveToEmpathy = () => {
     const empathyTab = {
-      id: "Empathy" + id,
+      id: "Empathy" + actors[index].id,
       label: "Empathy ",
       closeable: true,
       component: "Empathy",

@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, Typography } from "@mui/material";
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  List,
+  ListItem,
+  Typography,
+} from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -11,7 +18,7 @@ import Grid from "@mui/material/Grid";
 import { w3cwebsocket } from "websocket";
 import PropTypes from "prop-types";
 import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
-import PDFGenerator from "./pdf";
+import Roadmap from "./Roadmap";
 
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
@@ -64,7 +71,6 @@ function OverView({ id }) {
         setStories(data.stories);
         setAgile(data.agile);
         setDisplay(true);
-        console.log(data.agile);
       };
     })();
   }, []);
@@ -76,10 +82,21 @@ function OverView({ id }) {
           {display ? (
             <>
               <Typography variant="h4">Stories</Typography>
-              <StoryList stories={stories} sprints={releases} dashboardId={id} />
+              <StoryList
+                stories={stories}
+                sprints={releases}
+                dashboardId={id}
+              />
               <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
-                Release / Sprint
+                Release / Sprint{" "}
+                <Roadmap
+                  stories={stories}
+                  releases={releases}
+                  boards={boards}
+                  dashboardId={id}
+                />
               </Typography>
+
               <List
                 style={{
                   maxHeight: "40vh",
@@ -106,7 +123,11 @@ function OverView({ id }) {
                         </AccordionSummary>
                         <AccordionDetails sx={{ width: "100%" }}>
                           <Box sx={{ width: "100%" }}>
-                            <CardSprint key={id} release={releases[item]} dashboardId={id} />
+                            <CardSprint
+                              key={id}
+                              release={releases[item]}
+                              dashboardId={id}
+                            />
                           </Box>
                         </AccordionDetails>
                       </Accordion>
@@ -122,18 +143,17 @@ function OverView({ id }) {
         <Grid item xs={12} md={6}>
           {display ? (
             <>
-              <Box>
+              <Box style={{ display: "flex", justifyContent: "space-evenly" }}>
                 {pdfLink.length != 0 ? (
                   <Button variant="contained" onClick={moveToOverView}>
-                    Backlog
+                    Accéder au Backlog
                   </Button>
                 ) : (
                   <></>
                 )}
                 <Button variant="contained" onClick={moveToAgileHome}>
-                  Agile
+                  Accéder à la partie agile
                 </Button>
-                <PDFGenerator stories={stories} releases={releases}></PDFGenerator>
               </Box>
               <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
                 Statistiques

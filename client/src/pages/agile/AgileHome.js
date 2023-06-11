@@ -4,6 +4,7 @@ import { w3cwebsocket } from "websocket";
 import { Grid, Typography } from "@mui/material";
 import useFirebase from "../../hooks/useFirebase";
 import "./agile.css";
+import { Rings } from "react-loader-spinner";
 import { setActiveTab, addTab } from "../../redux/slices/tabBoardSlice";
 export default function AgileHome({ dashboardId, agile }) {
   const { user } = useFirebase();
@@ -22,7 +23,6 @@ export default function AgileHome({ dashboardId, agile }) {
     wsComments.onmessage = (message) => {
       try {
         const data = JSON.parse(message.data);
-        console.log(data);
         setElevator(data.elevator);
         setImpact(data.impactMapping);
         setOthers(data.others);
@@ -78,64 +78,97 @@ export default function AgileHome({ dashboardId, agile }) {
     dispatch(addTab(threeTab));
     dispatch(setActiveTab(threeTab.id));
   };
+   const moveToElevator = () => {
+     const threeTab = {
+       id: "Elevator" + dashboardId,
+       label: "Eelevator ",
+       closeable: true,
+       component: "Elevator",
+       data: { dashboardId: dashboardId },
+     };
+     dispatch(addTab(threeTab));
+     dispatch(setActiveTab(threeTab.id));
+   };
   return (
     <Grid container>
       <p className="title_folder__">Agile</p>
-      <Grid item xs={12}>
+      {loading ? (
         <div
-          className="folder folder_cursor"
-          key={impact.id}
-          onClick={() => moveToImpact()}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+          }}
         >
-          <div className="folder_content">
-            <Typography>ImpactMapping</Typography>
-          </div>
+          <Rings
+            height="200"
+            width="200"
+            color="#00BFFF"
+            radius="6"
+            wrapperStyle={{}}
+            wrapperClass="loader"
+            visible={true}
+            ariaLabel="rings-loading"
+          />
         </div>
-        {others.map((fold, index) => (
-          <div key={fold.id}>
-            {fold.persona && (
-              <div
-                className="folder folder_cursor"
-                key={fold.id + "persona"}
-                onClick={() => moveToPersona(fold.id)}
-              >
-                <div className="folder_content">
-                  <Typography>Persona {fold.text}</Typography>
+      ) : (
+        <Grid item xs={12}>
+          <div
+            className="folder folder_cursor"
+            key={impact.id}
+            onClick={() => moveToImpact()}
+          >
+            <div className="folder_content">
+              <Typography>ImpactMapping</Typography>
+            </div>
+          </div>
+          {others.map((fold, index) => (
+            <div key={fold.id}>
+              {fold.persona && (
+                <div
+                  className="folder folder_cursor"
+                  key={fold.id + "persona"}
+                  onClick={() => moveToPersona(fold.id)}
+                >
+                  <div className="folder_content">
+                    <Typography>Persona {fold.text}</Typography>
+                  </div>
                 </div>
-              </div>
-            )}
-            {fold.empathy_map && (
-              <div
-                className="folder folder_cursor"
-                key={fold.id + "empathy"}
-                onClick={() => moveToEmpathy(fold.id)}
-              >
-                <div className="folder_content">
-                  <Typography>Empathy {fold.text}</Typography>
+              )}
+              {fold.empathy_map && (
+                <div
+                  className="folder folder_cursor"
+                  key={fold.id + "empathy"}
+                  onClick={() => moveToEmpathy(fold.id)}
+                >
+                  <div className="folder_content">
+                    <Typography>Empathy {fold.text}</Typography>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
+          ))}
+          <div
+            className="folder folder_cursor"
+            key={three.id}
+            onClick={() => moveToThree()}
+          >
+            <div className="folder_content">
+              <Typography>Arbre Fonctionnel</Typography>
+            </div>
           </div>
-        ))}
-        <div
-          className="folder folder_cursor"
-          key={three.id}
-          onClick={() => moveToThree()}
-        >
-          <div className="folder_content">
-            <Typography>Arbre Fonctionnel</Typography>
+          <div
+            className="folder folder_cursor"
+            key={elevator.id}
+            //onClick={() => moveToImpact()}
+          >
+            <div className="folder_content">
+              <Typography>Elevator Pitch</Typography>
+            </div>
           </div>
-        </div>
-        <div
-          className="folder folder_cursor"
-          key={elevator.id}
-          //onClick={() => moveToImpact()}
-        >
-          <div className="folder_content">
-            <Typography>Elevator Pitch</Typography>
-          </div>
-        </div>
-      </Grid>
+        </Grid>
+      )}
     </Grid>
   );
 }

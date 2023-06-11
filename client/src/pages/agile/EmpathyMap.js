@@ -165,6 +165,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
           "empathy-map.pdf"
         );
         formData.append("fieldName", "empathy_map");
+        formData.append("actorId", actorId);
 
         return axios.post(
           "http://localhost:5050/agile/" + dashboardId + "/folder",

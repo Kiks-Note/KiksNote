@@ -282,10 +282,11 @@ const createDashboards = async (req, res) => {
     await agileRef.doc("functional-tree").set({});
     await agileRef.doc("agile_folder").set({
       impact_mapping: "",
-      empathy_map: "",
+      empathy_map: [],
       personas: [],
-      three: "",
+      tree: "",
       elevator_pitch: "",
+      roadmap: "",
     });
     await batch.commit();
 
@@ -1037,10 +1038,11 @@ async function addDashboard(groups, db) {
       await agileRef.doc("functional-tree").set({});
       await agileRef.doc("agile_folder").set({
         impact_mapping: "",
-        empathy_map: "",
+        empathy_map: [],
         personas: [],
-        three: "",
+        tree: "",
         elevator_pitch: "",
+        roadmap:"",
       });
     }
   }

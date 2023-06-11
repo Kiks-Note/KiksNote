@@ -2,115 +2,69 @@ import React, { useEffect, useState } from "react";
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { pdf } from "@react-pdf/renderer";
 import { saveAs } from "file-saver";
+import Button from "@material-ui/core/Button";
+import axios from "axios";
+import { Toaster, toast } from "react-hot-toast";
 
-const PDFGenerator = ({ stories, releases }) => {
+const Roadmap = ({ stories, releases, boards, dashboardId }) => {
   const [formatedReleases, setFormatedReleases] = useState([]);
-
   useEffect(() => {
     const formatStories = () => {
-      var formatedReleasesTemp = [];
-      const formatedReleaseTemp = {};
-      formatedReleaseTemp.sprints = [];
+      const formattedReleasesTemp = Object.entries(releases).map(
+        ([releaseId, releaseData]) => {
+          const formattedRelease = {
+            name: releaseId,
+            sprints: [],
+          };
 
-      Object.entries(releases).forEach((release) => {
-        formatedReleaseTemp.name = release[0];
-        release[1].forEach((sprint) => {
-          let sprintData = {};
-          sprintData.name = sprint.name;
-          sprintData.stories = [];
-          stories.forEach((story) => {
-            if (story.boardId == sprint.boardId) {
-              sprintData.stories = sprintData.stories.concat(story);
-            }
+          releaseData.forEach((sprint) => {
+            const sprintData = {
+              name: sprint.name,
+              stories: [],
+            };
+
+            sprintData.stories = stories.filter(
+              (story) => story.boardId === sprint.boardId
+            );
+
+            boards.forEach((board) => {
+              if (board.id === sprint.boardId) {
+                console.log(board.data.toDo);
+
+                const filteredItems = board.data.toDo.items.filter((item) => {
+                  return sprintData.stories.some(
+                    (story) => story.storyId === item.storyId
+                  );
+                });
+
+                const totalAdvance = filteredItems.reduce((sum, item) => {
+                  const subSum = item.advancement.reduce((subSum, obj) => {
+                    return subSum + obj.advance;
+                  }, 0);
+                  return sum + subSum;
+                }, 0);
+
+                const averageAdvance =
+                  filteredItems.length > 0
+                    ? (totalAdvance / (filteredItems.length * 100)) * 100
+                    : 0;
+
+                sprintData.advance = averageAdvance + "%";
+              }
+            });
+
+            formattedRelease.sprints.push(sprintData);
           });
-          formatedReleaseTemp.sprints = formatedReleaseTemp.sprints.concat(sprintData);
-        });
-        formatedReleasesTemp = formatedReleasesTemp.concat(formatedReleaseTemp);
-      });
-      setFormatedReleases(formatedReleasesTemp);
-    };
-    formatStories();
-  }, [releases, stories]);
 
-  const fakeReleases = [
-    {
-      id: 1,
-      name: "Release 1",
-      date: "2023-07-01",
-      sprints: [
-        {
-          id: 4,
-          name: "Sprint 1",
-          stories: [
-            { id: 4, name: "Story 1", status: "Done" },
-            { id: 5, name: "Story 2", status: "In Progress" },
-            { id: 6, name: "Story 3", status: "To Do" },
-          ],
-        },
-        {
-          id: 5,
-          name: "Sprint 2",
-          stories: [
-            { id: 4, name: "Story 4", status: "Done" },
-            { id: 5, name: "Story 5", status: "In Progress" },
-            { id: 6, name: "Story 6", status: "To Do" },
-          ],
-        },
-        {
-          id: 6,
-          name: "Sprint 3",
-          stories: [
-            { id: 4, name: "Story 7", status: "Done" },
-            { id: 5, name: "Story 8", status: "In Progress" },
-            { id: 6, name: "Story 9", status: "To Do" },
-          ],
-        },
-        {
-          id: 4,
-          name: "Sprint 4",
-          stories: [
-            { id: 4, name: "Story 1", status: "Done" },
-            { id: 5, name: "Story 2", status: "In Progress" },
-            { id: 6, name: "Story 3", status: "To Do" },
-          ],
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Release 2",
-      date: "2023-08-01",
-      sprints: [
-        {
-          id: 4,
-          name: "Sprint 1",
-          stories: [
-            { id: 4, name: "Story longue, ceci est la storie 1 qui est très longue", status: "Done" },
-            { id: 5, name: "Story 2", status: "In Progress" },
-            { id: 6, name: "Story 3", status: "To Do" },
-          ],
-        },
-        {
-          id: 5,
-          name: "Sprint 2",
-          stories: [
-            { id: 4, name: "Story 4", status: "Done" },
-            { id: 5, name: "Story 5", status: "In Progress" },
-            { id: 6, name: "Story 6", status: "To Do" },
-          ],
-        },
-        {
-          id: 6,
-          name: "Sprint 3",
-          stories: [
-            { id: 4, name: "Story 7", status: "Done" },
-            { id: 5, name: "Story 8", status: "In Progress" },
-            { id: 6, name: "Story 9", status: "To Do" },
-          ],
-        },
-      ],
-    },
-  ];
+          return formattedRelease;
+        }
+      );
+      console.log(formattedReleasesTemp);
+      setFormatedReleases(formattedReleasesTemp);
+    };
+
+    formatStories();
+  }, [releases, stories, boards]);
 
   const styles = StyleSheet.create({
     page: {
@@ -193,7 +147,9 @@ const PDFGenerator = ({ stories, releases }) => {
                     </View>
                     {release.sprints.map((sprint) => (
                       <View>
-                        <View style={[styles.tableCellLarge, styles.sprintHeader]}>
+                        <View
+                          style={[styles.tableCellLarge, styles.sprintHeader]}
+                        >
                           <Text>{sprint.name}</Text>
                         </View>
                         <View style={styles.tableRow}>
@@ -216,7 +172,7 @@ const PDFGenerator = ({ stories, releases }) => {
                               <Text>{story.value}</Text>
                             </View>
                             <View style={[styles.tableCell, { width: "30%" }]}>
-                              <Text>10%</Text>
+                              <Text>{sprint.advance}</Text>
                             </View>
                           </View>
                         ))}
@@ -236,20 +192,41 @@ const PDFGenerator = ({ stories, releases }) => {
     return blob;
   };
 
-  const downloadPDF = async () => {
+  const uploadPDF = async () => {
     const pdfBlob = await generatePDF();
-    saveAs(pdfBlob, "roadmap.pdf");
+
+    const formData = new FormData();
+    formData.append("pdfFile", pdfBlob, "roadmap.pdf");
+    formData.append("fieldName", "roadmap");
+
+    try {
+      await axios.post(
+        "http://localhost:5050/agile/" + dashboardId + "/folder",
+        formData
+      );
+      toast.success("Votre persona a été ajouté à votre dossier agile", {
+        duration: 5000,
+      });
+    } catch (error) {
+      toast.error(
+        "Une erreur s'est produite. Veuillez réessayer ultérieurement.",
+        {
+          duration: 5000,
+        }
+      );
+    }
   };
 
   return (
-    <div>
-      {formatedReleases.length > 0 ? (
-        <button onClick={downloadPDF}>Download PDF</button>
-      ) : (
-        <button>PDF Not Ready Yet</button>
+    <>
+      <Toaster />
+      {formatedReleases.length > 0 && (
+        <Button variant="contained" onClick={uploadPDF}>
+          Ajouter la roadMap au dossier agile
+        </Button>
       )}
-    </div>
+    </>
   );
 };
 
-export default PDFGenerator;
+export default Roadmap;

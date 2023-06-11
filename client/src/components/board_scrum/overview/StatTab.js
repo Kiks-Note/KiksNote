@@ -98,7 +98,6 @@ export default function StatTab({ boards }) {
                   alignItems: "center",
                   flexDirection: "row",
                   justifyContent: "center",
-                  height: "54vh",
                 }}
               >
                 <Typography variant="h6">
@@ -203,8 +202,6 @@ export default function StatTab({ boards }) {
           // Somme totale des avancements pour le jour `day`
           return toDoSum + inProgressSum + doneSum;
         });
-
-        console.log(realisationData);
 
         return (
           <TabPanel key={index} value={value} index={index}>
