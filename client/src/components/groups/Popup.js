@@ -68,12 +68,12 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   };
 
   function validate() {
-    if (!classChoose || !start_date.current.value || !end_date.current.value) {
+    if (!courseChoosed) {
       alert("Veuillez remplir tous les champs");
     } else {
       onPopupData({
-        start_date: start_date.current.value,
-        end_date: end_date.current.value,
+        start_date: courseChoosed.dateStartSprint,
+        end_date: courseChoosed.dateEndSprint,
         classChoose: classChoose,
         courseChoose: courseChoosed,
       });
@@ -82,8 +82,8 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         class: classChoose,
         name: user?.firstname,
         settings: {
-          start_date: start_date.current.value,
-          end_date: end_date.current.value,
+          start_date: courseChoosed.dateStartSprint,
+          end_date: courseChoosed.dateEndSprint,
           classChoose: classChoose,
         },
       });
@@ -122,30 +122,12 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
               courses.cours.length > 0 &&
               courses.cours.map((course) => (
                 <MenuItem value={course} key={course.id}>
-                  {course.data.title}
+                  {course.data.title + " | " + course.data.courseClass.name}
                 </MenuItem>
               ))}
           </Select>
         </FormControl>
 
-        <div className="date-sprint">
-          <div className="date-input">
-            <label>Date de début de Sprint</label>
-            <input
-              type="date"
-              defaultValue={dataPopUp ? dataPopUp.start_date : ""}
-              ref={start_date}
-            />
-          </div>
-          <div className="date-input">
-            <label>Date de fin de Sprint</label>
-            <input
-              type="date"
-              defaultValue={dataPopUp ? dataPopUp.end_date : ""}
-              ref={end_date}
-            />
-          </div>
-        </div>
         <div
           style={{
             display: "flex",
