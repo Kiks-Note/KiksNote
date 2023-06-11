@@ -347,7 +347,7 @@ const StudentProjectInfo = () => {
                           },
                         }}
                       >
-                        Voir Profil <VisibilityIcon />
+                        Profil <VisibilityIcon />
                       </Button>
                     </ListItem>
                     {index !==
@@ -408,7 +408,8 @@ const StudentProjectInfo = () => {
                             mr: 1,
                           }}
                         >
-                          Voir le Blog tuto relié <OpenInNewIcon />
+                          Blog Tuto
+                          <OpenInNewIcon />
                         </Button>
                         {selectedProjectData?.creatorProject?.id ===
                         user?.id ? (

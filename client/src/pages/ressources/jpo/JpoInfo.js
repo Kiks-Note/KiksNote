@@ -454,7 +454,7 @@ const JpoInfo = () => {
                             },
                           }}
                         >
-                          Voir Profil <VisibilityIcon />
+                          Profil <VisibilityIcon />
                         </Button>
                       </ListItem>
                       {index < jpoData?.jpoParticipants.length - 1 && (
@@ -508,7 +508,7 @@ const JpoInfo = () => {
                               }}
                               className={classes.btnProject}
                             >
-                              <Typography>Voir le projet</Typography>
+                              <Typography>Projet</Typography>
                               <VisibilityIcon />
                             </Button>
                             {userStatus === "pedago" ? (

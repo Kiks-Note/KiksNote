@@ -578,7 +578,7 @@ const CoursInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, []);
+  }, [id]);
 
   return (
     <>
@@ -678,7 +678,8 @@ const CoursInfo = () => {
                                 }}
                                 className={classes.updateButton}
                               >
-                                Voir le cours relié <OpenInNewIcon />
+                                Cours Relié
+                                <OpenInNewIcon />
                               </Button>
                               {userStatus === "po" ? (
                                 <>
@@ -1174,7 +1175,7 @@ const CoursInfo = () => {
                             },
                           }}
                         >
-                          Voir Profil <VisibilityIcon />
+                          Profil <VisibilityIcon />
                         </Button>
                       </ListItem>
                     </div>
