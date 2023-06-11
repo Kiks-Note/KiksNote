@@ -16,6 +16,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
+import DoNotTouchRoundedIcon from "@mui/icons-material/DoNotTouchRounded";
 import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
 import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
 import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
@@ -70,12 +71,6 @@ const CarouselProjects = (props) => {
     userId
   ) => {
     try {
-      if (loading) {
-        return;
-      }
-
-      setLoading(true);
-
       setTimeout(async () => {
         try {
           const response = await axios.post(
@@ -86,15 +81,24 @@ const CarouselProjects = (props) => {
               userId: userId,
             }
           );
+          // const currentUserHighlightedProject = props.topProjects.find(
+          //   (project) => project.voters.some((voter) => voter.id === userId)
+          // );
+
+          // if (currentUserHighlightedProject) {
+          //   toastWarning(
+          //     `Vous avez déjà mis en avant le projet ${projectName}!`
+          //   );
+          // } else {
+          //   toastSuccess(
+          //     `Vous avez bien mis en avant le projet ${projectName}`
+          //   );
+          // }
           if (
             response.data.message === "Projet étudiant mis à jour avec succès."
           ) {
             toastSuccess(
               `Vous avez bien mis en avant le projet ${projectName}`
-            );
-          } else {
-            toastWarning(
-              `Vous avez déjà mis en avant le projet ${projectName}!`
             );
           }
         } catch (error) {
@@ -105,6 +109,49 @@ const CarouselProjects = (props) => {
           ) {
             toastWarning(
               `Vous avez déjà mise en avant le projet ${projectName}`
+            );
+          }
+        } finally {
+          setLoading(false);
+        }
+      }, 1000);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
+  const removeReferStudentProject = async (
+    projectId,
+    projectName,
+    counterRefToRemove,
+    userId
+  ) => {
+    try {
+      setTimeout(async () => {
+        try {
+          const response = await axios.post(
+            "http://localhost:5050/ressources/removerefprojects",
+            {
+              projectId: projectId,
+              counterRefToRemove: counterRefToRemove,
+              userId: userId,
+            }
+          );
+          if (
+            response.data.message === "Projet étudiant mis à jour avec succès."
+          ) {
+            toastSuccess(
+              `Vous avez enlevé votre mise en avant du projet ${projectName}`
+            );
+          }
+        } catch (error) {
+          if (
+            error.response.status === 403 &&
+            error.response.data.message ===
+              "Vous n'avez pas encore mis en avant ce projet."
+          ) {
+            toastWarning(
+              `Vous n'avez pas encore mis en avant le projet ${projectName}`
             );
           }
         } finally {
@@ -253,71 +300,145 @@ const CarouselProjects = (props) => {
                   </div>
 
                   {userStatus === "po" ? (
-                    <Button
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        referStudentProject(
-                          project.id,
-                          project.nameProject,
-                          votePo,
-                          user?.id
-                        );
-                      }}
-                      sx={{ color: "#7a52e1" }}
-                    >
-                      {loading ? (
-                        <CircularProgress sx={{ color: "#7a52e1" }} />
-                      ) : (
-                        <>
-                          {project.counterRef}{" "}
-                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
-                        </>
-                      )}
-                    </Button>
+                    <>
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          referStudentProject(
+                            project.id,
+                            project.nameProject,
+                            votePo,
+                            user?.id
+                          );
+                        }}
+                        sx={{ color: "#df005a" }}
+                      >
+                        {loading ? (
+                          <CircularProgress sx={{ color: "#df005a" }} />
+                        ) : (
+                          <>
+                            {project.counterRef}{" "}
+                            <BackHandRoundedIcon
+                              sx={{ marginLeft: "3px", color: "#df005a" }}
+                            />
+                          </>
+                        )}
+                      </Button>
+
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          removeReferStudentProject(
+                            project.id,
+                            project.nameProject,
+                            votePo,
+                            user?.id
+                          );
+                        }}
+                        sx={{ color: "#7a52e1" }}
+                      >
+                        {loading ? (
+                          <CircularProgress sx={{ color: "#7a52e1" }} />
+                        ) : (
+                          <>
+                            <DoNotTouchRoundedIcon />
+                          </>
+                        )}
+                      </Button>
+                    </>
                   ) : userStatus === "pedago" ? (
-                    <Button
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        referStudentProject(
-                          project.id,
-                          project.nameProject,
-                          votePedago,
-                          user?.id
-                        );
-                      }}
-                      sx={{ color: "#7a52e1" }}
-                    >
-                      {loading ? (
-                        <CircularProgress sx={{ color: "#7a52e1" }} />
-                      ) : (
-                        <>
-                          {project.counterRef}{" "}
-                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
-                        </>
-                      )}
-                    </Button>
+                    <>
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          referStudentProject(
+                            project.id,
+                            project.nameProject,
+                            votePedago,
+                            user?.id
+                          );
+                        }}
+                        sx={{ color: "#df005a" }}
+                      >
+                        {loading ? (
+                          <CircularProgress sx={{ color: "#7a52e1" }} />
+                        ) : (
+                          <>
+                            {project.counterRef}{" "}
+                            <BackHandRoundedIcon
+                              sx={{ marginLeft: "3px", color: "#df005a" }}
+                            />
+                          </>
+                        )}
+                      </Button>
+
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          removeReferStudentProject(
+                            project.id,
+                            project.nameProject,
+                            votePedago,
+                            user?.id
+                          );
+                        }}
+                        sx={{ color: "#7a52e1" }}
+                      >
+                        {loading ? (
+                          <CircularProgress sx={{ color: "#7a52e1" }} />
+                        ) : (
+                          <>
+                            <DoNotTouchRoundedIcon />
+                          </>
+                        )}
+                      </Button>
+                    </>
                   ) : (
-                    <Button
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        referStudentProject(
-                          project.id,
-                          project.nameProject,
-                          voteStudent,
-                          user?.id
-                        );
-                      }}
-                      sx={{ color: "#7a52e1" }}
-                    >
-                      {loading ? (
-                        <CircularProgress sx={{ color: "#7a52e1" }} />
-                      ) : (
-                        <>
-                          {project.counterRef}{" "}
-                          <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
-                        </>
-                      )}
-                    </Button>
+                    <>
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          referStudentProject(
+                            project.id,
+                            project.nameProject,
+                            voteStudent,
+                            user?.id
+                          );
+                        }}
+                        sx={{ color: "#df005a" }}
+                      >
+                        {loading ? (
+                          <CircularProgress sx={{ color: "#df005a" }} />
+                        ) : (
+                          <>
+                            {project.counterRef}{" "}
+                            <BackHandRoundedIcon
+                              sx={{ marginLeft: "3px", color: "#df005a" }}
+                            />
+                          </>
+                        )}
+                      </Button>
+                      <Button
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          removeReferStudentProject(
+                            project.id,
+                            project.nameProject,
+                            voteStudent,
+                            user?.id
+                          );
+                        }}
+                        sx={{ color: "#7a52e1" }}
+                      >
+                        {loading ? (
+                          <CircularProgress sx={{ color: "#7a52e1" }} />
+                        ) : (
+                          <>
+                            <DoNotTouchRoundedIcon />
+                          </>
+                        )}
+                      </Button>
+                    </>
                   )}
                 </CardContent>
               </Card>
