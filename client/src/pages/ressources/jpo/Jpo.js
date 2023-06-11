@@ -73,6 +73,7 @@ const Jpo = () => {
   const { user } = useFirebase();
   const userStatus = user?.status;
 
+  const [allJpoParticipants, setAllJpoParticipants] = useState([]);
   const [allJpo, setAllJpo] = useState([]);
   const [nameJPO, setNameJPO] = useState("");
   const [JPODateStart, setJPODateStart] = useState("");
@@ -82,10 +83,9 @@ const Jpo = () => {
   const [jpoThumbnail, setJpoThumbnail] = useState("");
   const [open, setOpen] = useState(false);
   const rejectedFiles = files.filter((file) => file.errors);
+  const [jpoParticipants, setJpoParticipants] = useState([]);
 
   const [loading, setLoading] = useState(true);
-
-  const [pdfUrl, setPdfUrl] = useState(null);
 
   const handleDrop = useCallback((acceptedFiles) => {
     setFiles((files) => [...files, ...acceptedFiles]);
@@ -101,6 +101,7 @@ const Jpo = () => {
 
   const handleClickOpen = () => {
     setOpen(true);
+    getAllJpoParticipants();
   };
 
   const handleClose = () => {
@@ -122,17 +123,32 @@ const Jpo = () => {
     }
   };
 
+  const getAllJpoParticipants = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/jpoparticipants")
+        .then((res) => {
+          setAllJpoParticipants(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const publishJpo = async () => {
     try {
-      const formData = new FormData();
-      formData.append("jpoTitle", nameJPO);
-      formData.append("jpoDescription", descriptionJPO);
-      formData.append("jpoThumbnail", jpoThumbnail);
-      formData.append("jpoDayStart", JPODateStart);
-      formData.append("jpoDayEnd", JPODateEnd);
-      formData.append("file", pdfUrl);
       await axios
-        .post("http://localhost:5050/ressources/jpo", formData)
+        .post("http://localhost:5050/ressources/jpo", {
+          jpoTitle: nameJPO,
+          jpoDescription: descriptionJPO,
+          jpoThumbnail: jpoThumbnail,
+          jpoDayStart: JPODateStart,
+          jpoDayEnd: JPODateEnd,
+          jpoParticipants: jpoParticipants,
+        })
         .then((res) => {
           if (
             res.status === 200 &&
@@ -307,9 +323,10 @@ const Jpo = () => {
                   handleFileChange={handleFileChange}
                   rejectedFiles={rejectedFiles}
                   handleRemove={handleRemove}
-                  pdfUrl={pdfUrl}
-                  setPdfUrl={setPdfUrl}
                   btnCreateJpo={classes.btnCreateJpo}
+                  allJpoParticipants={allJpoParticipants}
+                  jpoParticipants={jpoParticipants}
+                  setJpoParticipants={setJpoParticipants}
                 />
               </div>
             ) : (
