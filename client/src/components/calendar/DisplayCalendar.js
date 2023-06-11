@@ -163,7 +163,7 @@ export default function DisplayCalendar() {
               weekNumbers={true}
               selectable={false}
               selectMirror={true}
-              dayMaxEvents={true}
+              dayMaxEvents={false}
               nowIndicator={true}
               locale={frLocale}
               events={events}
