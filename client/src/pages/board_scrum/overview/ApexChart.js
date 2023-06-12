@@ -1,38 +1,42 @@
 import React from "react";
 import ReactApexChart from "react-apexcharts";
 
-export default class ApexChart extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      options: {
-        chart: {
-          height: 20,
-          type: "radialBar",
-        },
-        plotOptions: {
-          radialBar: {
-            dataLabels: {
-              name: {
-                fontSize: "22px",
-              },
-              value: {
-                fontSize: "16px",
-              },
-            },
+const ApexChart = ({ selectedBoard }) => {
+  const { data } = selectedBoard;
+
+  const totalTasks = data.done.items.length + data.inProgress.items.length + data.toDo.items.length;
+
+  const series = [
+    (data.toDo.items.length / totalTasks) * 100,
+    (data.inProgress.items.length / totalTasks) * 100,
+    (data.done.items.length / totalTasks) * 100,
+  ];
+
+  const options = {
+    chart: {
+      height: 20,
+      type: "radialBar",
+    },
+    plotOptions: {
+      radialBar: {
+        dataLabels: {
+          name: {
+            fontSize: "22px",
+          },
+          value: {
+            fontSize: "16px",
           },
         },
-        labels: this.props.labels,
       },
-      series: this.props.series,
-    };
-  }
+    },
+    labels: ["To Do", "In Progress", "Done"],
+  };
 
-  render() {
-    return (
-      <div id="chart" className="chart-container">
-        <ReactApexChart options={this.state.options} series={this.state.series} type="radialBar" height={250} />
-      </div>
-    );
-  }
-}
+  return (
+    <div id="chart" className="chart-container">
+      <ReactApexChart options={options} series={series} type="radialBar" height={250} />
+    </div>
+  );
+};
+
+export default ApexChart;

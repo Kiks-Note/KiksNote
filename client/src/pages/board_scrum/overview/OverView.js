@@ -13,21 +13,38 @@ import PropTypes from "prop-types";
 import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
 import ApexChart from "./ApexChart";
 import BurndownChart from "./BurnDown";
+import { CircularProgressbarWithChildren, buildStyles } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+import RadialSeparators from "../../../components/board_scrum/overview/RadialSeparator";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import { daDK } from "@mui/x-data-grid";
 
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
 };
 function OverView({ id }) {
+  const [displayedBoards, setDisplayedBoards] = useState([]);
   var [releases, setRelease] = useState({});
   const [stories, setStories] = useState({});
-  var [boards, setBoards] = useState({});
+  var [boards, setBoards] = useState([]);
   const [display, setDisplay] = useState(false);
   const [pdfLink, setPdfLink] = useState("");
   const [agile, setAgile] = useState([]);
-  const [selectedBoard, setSelectedBoard] = useState(null);
+  const [selectedBoard, setSelectedBoard] = useState({
+    data: {
+      toDo: {
+        items: [],
+      },
+      done: {
+        items: [],
+      },
+      inProgress: {
+        items: [],
+      },
+    },
+  });
   const dispatch = useDispatch();
-  const labels = ["Todo", "In Progress", "Done"];
-  const series = [50, 20, 30];
   const [value, setValue] = useState(0);
 
   const moveToOverView = () => {
@@ -53,6 +70,19 @@ function OverView({ id }) {
     dispatch(setActiveTab(impactTab.id));
   };
 
+  const moveToBoard = (board) => {
+    const boardTab = {
+      id: board.id,
+      label: `Board ${board.name}`,
+      closeable: true,
+      component: "Board",
+      data: { boardId: board.id, dashboardId: id },
+    };
+    dispatch(addTab(boardTab));
+    dispatch(setActiveTab(boardTab.id));
+    console.log("moved ?");
+  };
+
   useEffect(() => {
     (async () => {
       const wsComments = new w3cwebsocket(`ws://localhost:5050/overview`);
@@ -65,14 +95,53 @@ function OverView({ id }) {
         var data = JSON.parse(message.data);
         setPdfLink(data.pdf_link);
         setRelease((releases = data.release));
-        setBoards(data.boards);
         setStories(data.stories);
         setAgile(data.agile);
         setDisplay(true);
         console.log(data.agile);
+        sortBoards(data.boards);
+        if (data.boards.length > 4) {
+          const data = { begin: 0, end: 4 };
+          setDisplayedBoards(data);
+        } else {
+          const data = { begin: 0, end: data.boards.length };
+          setDisplayedBoards(data);
+        }
       };
     })();
   }, []);
+
+  const nextBoards = () => {
+    if (boards.length > displayedBoards.end + 4) {
+      const newData = { begin: displayedBoards.begin + 4, end: displayedBoards.end + 4 };
+      console.log(newData);
+      setDisplayedBoards(newData);
+    }
+  };
+
+  const prevBoards = () => {
+    if (displayedBoards.begin - 4 >= 0) {
+      const newData = { begin: displayedBoards.begin - 4, end: displayedBoards.end - 4 };
+      console.log(newData);
+      setDisplayedBoards(newData);
+    }
+  };
+
+  const sortBoards = (boards) => {
+    const sortedItems = boards.sort((a, b) => {
+      const releaseA = parseInt(a.name.split(" / ")[0].split(" ")[1]);
+      const sprintA = parseInt(a.name.split(" / ")[1].split(" ")[1]);
+      const releaseB = parseInt(b.name.split(" / ")[0].split(" ")[1]);
+      const sprintB = parseInt(b.name.split(" / ")[1].split(" ")[1]);
+
+      if (releaseA === releaseB) {
+        return sprintA - sprintB;
+      }
+      return releaseA - releaseB;
+    });
+    console.log("sorted");
+    setBoards(sortedItems);
+  };
 
   // Generate fake data for boards
   const generateFakeData = () => {
@@ -141,6 +210,10 @@ function OverView({ id }) {
 
   // Generate fake data for boards
   const fakeBoardsData = generateFakeData();
+
+  useEffect(() => {
+    console.log(selectedBoard);
+  }, [selectedBoard]);
 
   return (
     <>
@@ -211,7 +284,7 @@ function OverView({ id }) {
                 <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
                   Statistiques
                 </Typography>
-                <StatTab boards={boards} />{" "}
+                <StatTab boards={boards} />
               </>
             ) : (
               <></>
@@ -220,109 +293,196 @@ function OverView({ id }) {
         </Grid>
       ) : (
         <div>
-          <Box style={{ display: "flex", justifyContent: "space-between", margin: "5vh" }}>
-            <Box
-              style={{
-                backgroundColor: "#c7c7c7",
-                width: "25%",
-                height: "30vh",
-                borderRadius: "5px",
-              }}
-            >
-              <Typography variant="h6" style={{ textAlign: "center" }}>
-                Choisissez un sprint
-              </Typography>
-              <List>
-                {Object.keys(releases).map((item, i) => (
-                  <ListItem key={i + id}>
-                    <Box sx={{ width: "100%" }}>
-                      <Accordion>
-                        <AccordionSummary
-                          expandIcon={<ExpandMoreIcon />}
-                          aria-controls="panel1a-content"
-                          id="panel1a-header"
-                        >
-                          <Typography>{item}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails sx={{ width: "100%" }}>
-                          <Box sx={{ width: "100%" }}></Box>
-                        </AccordionDetails>
-                      </Accordion>
-                    </Box>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-
-            <Box
-              style={{
-                backgroundColor: "#c7c7c7",
-                width: "30%",
-                height: "30vh",
-                borderRadius: "5px",
-              }}
-            >
-              <Typography varian="h6" style={{ textAlign: "center" }}>
-                Avancement
-              </Typography>
+          <Box>
+            <Typography>Statistiques</Typography>
+            <Box style={{ display: "flex", justifyContent: "space-between", margin: "5vh" }}>
               <Box
                 style={{
-                  display: "flex",
+                  backgroundColor: "#c7c7c7",
+                  width: "25%",
+                  height: "35vh",
+                  borderRadius: "5px",
                 }}
               >
-                <ApexChart labels={labels} series={series} />
-                <Box style={{ marginTop: "5vh" }}>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <div
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        borderRadius: "5px",
-                        backgroundColor: "rgba(0, 143, 251, 0.85)",
-                        marginRight: "10px",
-                      }}
-                    ></div>
-                    <span style={{ fontSize: "medium" }}>Todo</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <div
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        borderRadius: "5px",
-                        backgroundColor: "rgba(0, 227, 150, 0.85)",
-                        marginRight: "10px",
-                      }}
-                    ></div>
-                    <span style={{ fontSize: "medium" }}>In Progress</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <div
-                      style={{
-                        width: "20px",
-                        height: "20px",
-                        borderRadius: "5px",
-                        backgroundColor: "rgba(254, 176, 25, 0.85)",
-                        marginRight: "10px",
-                      }}
-                    ></div>
-                    <span style={{ fontSize: "medium" }}>Done</span>
-                  </div>
+                <Typography variant="h6" style={{ textAlign: "center" }}>
+                  Choisissez un sprint
+                </Typography>
+                <List>
+                  {releases &&
+                    Object.keys(releases).map((item, i) => (
+                      <ListItem key={i + id}>
+                        <Box sx={{ width: "100%" }}>
+                          <Accordion>
+                            <AccordionSummary
+                              expandIcon={<ExpandMoreIcon />}
+                              aria-controls="panel1a-content"
+                              id="panel1a-header"
+                            >
+                              <Typography>{item}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails sx={{ width: "100%" }}>
+                              <Box sx={{ width: "100%" }}></Box>
+                            </AccordionDetails>
+                          </Accordion>
+                        </Box>
+                      </ListItem>
+                    ))}
+                </List>
+              </Box>
+
+              <Box
+                style={{
+                  backgroundColor: "#c7c7c7",
+                  width: "30%",
+                  height: "35vh",
+                  borderRadius: "5px",
+                }}
+              >
+                <Typography varian="h6" style={{ textAlign: "center" }}>
+                  Avancement
+                </Typography>
+                <Box
+                  style={{
+                    display: "flex",
+                  }}
+                >
+                  <ApexChart selectedBoard={selectedBoard} />
+
+                  <Box style={{ marginTop: "5vh" }}>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "5px",
+                          backgroundColor: "rgba(0, 143, 251, 0.85)",
+                          marginRight: "10px",
+                        }}
+                      ></div>
+                      <span style={{ fontSize: "medium" }}>Todo</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "5px",
+                          backgroundColor: "rgba(0, 227, 150, 0.85)",
+                          marginRight: "10px",
+                        }}
+                      ></div>
+                      <span style={{ fontSize: "medium" }}>In Progress</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <div
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          borderRadius: "5px",
+                          backgroundColor: "rgba(254, 176, 25, 0.85)",
+                          marginRight: "10px",
+                        }}
+                      ></div>
+                      <span style={{ fontSize: "medium" }}>Done</span>
+                    </div>
+                  </Box>
                 </Box>
               </Box>
-            </Box>
-            <Box
-              style={{
-                backgroundColor: "#c7c7c7",
-                width: "40%",
-                height: "30vh",
-                borderRadius: "5px",
-              }}
-            >
-              {selectedBoard && <BurndownChart board={selectedBoard} value={value} />}
+              <Box
+                style={{
+                  backgroundColor: "#c7c7c7",
+                  width: "40%",
+                  height: "35vh",
+                  borderRadius: "5px",
+                }}
+              >
+                {fakeBoardsData && <BurndownChart board={fakeBoardsData[0]} value={value} />}
+              </Box>
             </Box>
           </Box>
-          <Box></Box>
+          <Box>
+            <Typography>Boards</Typography>
+            <Box style={{ display: "flex", justifyContent: "space-around" }}>
+              <Button onClick={prevBoards}>
+                <NavigateBeforeIcon></NavigateBeforeIcon>
+              </Button>
+              {boards.slice(displayedBoards.begin, displayedBoards.end).map((board) => {
+                const startingDate = new Date(board.starting_date).getTime();
+                const endingDate = new Date(board.ending_date).getTime();
+                const now = new Date().getTime();
+                const totalDuration = endingDate - startingDate;
+                var timeLeft = 0;
+                if (now < startingDate) {
+                  timeLeft = Math.max(0, endingDate - startingDate);
+                } else {
+                  timeLeft = Math.max(0, endingDate - now);
+                }
+                const percentage = Math.floor((timeLeft / totalDuration) * 100);
+                const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+
+                const totalTask =
+                  board.data.done.items.length + board.data.toDo.items.length + board.data.inProgress.items.length;
+
+                const advancement =
+                  (board.data.done.items.length / totalTask) * 100 +
+                  (board.data.inProgress.items.length / totalTask) * 50;
+
+                return (
+                  <Box
+                    style={{ width: "20%", backgroundColor: "#c7c7c7", borderRadius: "5px", boxShadow: "5" }}
+                    onMouseEnter={() => {
+                      setSelectedBoard(board);
+                      console.log(board);
+                    }}
+                    onClick={() => {
+                      moveToBoard(board);
+                    }}
+                  >
+                    <Typography variant="h6" style={{ textAlign: "center" }}>
+                      {board.name}
+                    </Typography>
+                    <Box style={{ display: "flex" }}>
+                      <Box
+                        style={{
+                          width: "40%",
+                          margin: "2%",
+                        }}
+                      >
+                        <CircularProgressbarWithChildren
+                          value={percentage}
+                          text={daysLeft > 0 ? `${daysLeft}j ${hoursLeft}h` : `${hoursLeft}h ${minutesLeft}m`}
+                          strokeWidth={10}
+                          counterClockwise
+                          styles={buildStyles({
+                            strokeLinecap: "butt",
+                            textSize: "14px",
+                          })}
+                        >
+                          <RadialSeparators
+                            count={12}
+                            style={{
+                              background: "#fff",
+                              width: "2px",
+                              height: `${10}%`,
+                            }}
+                          />
+                        </CircularProgressbarWithChildren>
+                      </Box>
+                      <Box>
+                        <Typography style={{ textAlign: "center" }}>Avancement </Typography>
+                        <Typography style={{ textAlign: "center" }}> {advancement ? advancement : 0} %</Typography>
+                      </Box>
+                    </Box>
+                  </Box>
+                );
+              })}
+              <Button onClick={nextBoards}>
+                <NavigateNextIcon></NavigateNextIcon>
+              </Button>
+            </Box>
+          </Box>
           <Box></Box>
         </div>
       )}

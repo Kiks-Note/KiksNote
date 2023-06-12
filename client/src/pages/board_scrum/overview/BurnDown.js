@@ -49,8 +49,8 @@ function BurndownChart({ board, value }) {
   });
 
   return (
-    <TabPanel value={value}>
-      <Typography variant="h4">Burndown {board.name}</Typography>
+    <Box>
+      <Typography variant="h5">Burndown {board.name}</Typography>
       <Box>
         <Line
           data={{
@@ -83,7 +83,7 @@ function BurndownChart({ board, value }) {
           }}
         />
       </Box>
-    </TabPanel>
+    </Box>
   );
 }
 
