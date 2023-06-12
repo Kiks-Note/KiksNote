@@ -209,6 +209,7 @@ function GroupsCreation() {
             case "closeRoom":
               setInRoom(false);
               navigate("/groupes");
+              ws.close();
               break;
             case "updateCol":
               setColumns(messageReceive.data.currentRoom.columns);
@@ -577,7 +578,7 @@ function GroupsCreation() {
         <>
           {userCursors
             ? Array.from(userCursors.entries()).map(([userID, userData]) => {
-                if (userID !== user?.id && userID) {
+                if (userID !== user?.id && userID && userID !== "undefined") {
                   return (
                     <div
                       key={userID}
