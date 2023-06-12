@@ -31,6 +31,7 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import PhoneRequestDevice from "./pages/inventory/PhoneRequestDevice";
 import InventoryPendingRequests from "./pages/inventory/InventoryPendingRequests";
+import IdeaInfos from "./pages/inventory/IdeaInfos";
 
 function RoutesProvider() {
   return (
@@ -96,6 +97,7 @@ function RoutesProvider() {
             element={<InventoryPendingRequests />}
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
+          <Route path="/idea/:ideaId" element={<IdeaInfos />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

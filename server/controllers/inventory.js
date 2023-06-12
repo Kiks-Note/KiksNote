@@ -416,20 +416,20 @@ const getDeviceRequests = async (req, res) => {
 };
 
 const createIdea = async (req, res) => {
-  const {name, url, price, description, reason, createdBy} = req.body;
+  const {name, url, imageURL, price, description, reason, createdBy} = req.body;
 
-  if (!name || !url || !price || !reason || !createdBy) {
+  if (!name || !url || !imageURL || !price || !reason || !createdBy) {
     return res.status(400).send("Veuillez remplir tous les champs");
   }
 
   // verify url
-  const regex = new RegExp(
-    "^(https?://)?(www.)?([a-z0-9]+(-[a-z0-9]+)*.)+[a-z]{2,}$"
-  );
+  // const regex = new RegExp(
+  //   "^(https?://)?(www.)?([a-z0-9]+(-[a-z0-9]+)*.)+[a-z]{2,}$"
+  // );
 
-  if (!regex.test(url)) {
-    return res.status(400).send("Veuillez entrer une url valide");
-  }
+  // if (!regex.test(url)) {
+  //   return res.status(400).send("Veuillez entrer une url valide");
+  // }
 
   // verify price
   if (isNaN(price)) {
@@ -443,6 +443,7 @@ const createIdea = async (req, res) => {
 
     await docRef.set({
       url: url,
+      imageURL: imageURL,
       name: name,
       price: parseFloat(price.replace(",", ".")),
       description: description,
@@ -569,6 +570,22 @@ const makeIdeaComment = async (req, res) => {
   }
 };
 
+const getIdea = async (req, res) => {
+  try {
+    const {ideaId} = req.params;
+
+    if (!ideaId) {
+      return res.status(400).send("Veuillez entrer un id");
+    }
+
+    const snapshot = await db.collection("inventory-ideas").doc(ideaId).get();
+
+    res.status(200).send(snapshot.data());
+  } catch (error) {
+    res.status(500).send("Une erreur est survenue");
+  }
+};
+
 const liveCategories = async (connection) => {
   db.collection("inventoryCategories")
     .doc("7UKjabIg2uFyz1504U2K")
@@ -660,7 +677,7 @@ const borrowedList = async (connection) => {
     );
 };
 
-const getIdeaComments = async (connection, request) => {
+const getIdeaComments = async (connection) => {
   connection.on("message", (message) => {
     const value = JSON.parse(message.utf8Data).value; // Parse the received message
 
@@ -705,6 +722,7 @@ module.exports = {
   refuseIdea,
   deleteIdea,
   getIdeaByUser,
+  getIdea,
   pendingRequests,
   liveCategories,
   liveInventory,

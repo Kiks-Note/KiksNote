@@ -128,7 +128,7 @@ const CommentModal = ({open, setOpen, ideaId, messages, setComments}) => {
           }}
         >
           {messages.map((message) => (
-            <ChatBox sender={message.sender} message={message} />
+            <ChatBox sender={message.sender} message={message.comment} />
           ))}
           <div ref={bottomRef} />
         </div>

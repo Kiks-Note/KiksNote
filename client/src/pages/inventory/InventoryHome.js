@@ -30,8 +30,9 @@ import SideBarRequest from "../../components/inventory/SideBarRequest";
 import useFirebase from "../../hooks/useFirebase";
 import "../../styles/inventoryGlobal.css";
 
-const Sujection = ({openSujection, setOpenSujection}) => {
+const Sujection = ({open, setOpen}) => {
   const [url, setUrl] = useState("");
+  const [imageURL, setImageURL] = useState("");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -45,6 +46,7 @@ const Sujection = ({openSujection, setOpenSujection}) => {
       .post(`${process.env.REACT_APP_SERVER_API}/inventory/createIdea`, {
         name,
         url,
+        imageURL,
         price,
         description,
         reason,
@@ -52,7 +54,7 @@ const Sujection = ({openSujection, setOpenSujection}) => {
       })
       .then((res) => {
         toast.success(res.data);
-        setOpenSujection(false);
+        setOpen(false);
         setLoading(false);
       })
       .catch((err) => {
@@ -63,7 +65,7 @@ const Sujection = ({openSujection, setOpenSujection}) => {
 
   return (
     <div>
-      <Dialog open={openSujection} onClose={() => setOpenSujection(false)}>
+      <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Idée d'achat</DialogTitle>
         <DialogContent sx={{minWidth: "500px"}}>
           {/* <DialogContentText> */}
@@ -73,12 +75,24 @@ const Sujection = ({openSujection, setOpenSujection}) => {
             autoFocus
             margin="dense"
             id="url"
-            label="URL du produit"
+            label="Page du produit (URL)"
             type="url"
             fullWidth
             variant="outlined"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+          />
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="url"
+            label="Image du produit (URL)"
+            type="url"
+            fullWidth
+            variant="outlined"
+            value={imageURL}
+            onChange={(e) => setImageURL(e.target.value)}
           />
           <TextField
             required
@@ -132,7 +146,7 @@ const Sujection = ({openSujection, setOpenSujection}) => {
         <DialogActions>
           {!loading && (
             <>
-              <Button onClick={() => setOpenSujection(false)}>Annuler</Button>
+              <Button onClick={() => setOpen(false)}>Annuler</Button>
               <Button onClick={() => handleSendSujection()}>Envoyer</Button>
             </>
           )}
@@ -297,6 +311,8 @@ function InventoryHome() {
       />
 
       <Toaster position="bottom-left" />
+      <Sujection open={openSujection} setOpen={setOpenSujection} />
+
       {user?.status !== "etudiant" && (
         <Button
           variant="contained"
