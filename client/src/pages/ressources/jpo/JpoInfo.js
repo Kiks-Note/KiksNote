@@ -238,12 +238,12 @@ const JpoInfo = () => {
     delete the jpo using the jpo id and title
   */
 
-  const DeleteJpoById = async (jpoTitle) => {
-    const data = { jpoTitle };
+  const DeleteJpoById = async (jpoTitle, jpoId) => {
+    const data = { jpoTitle, jpoId };
 
     try {
       await axios
-        .delete(`http://localhost:5050/ressources/jpo/${id}`, { data })
+        .delete(`http://localhost:5050/ressources/jpo`, { data })
         .then((res) => {
           console.log(res.data);
         })
@@ -331,7 +331,7 @@ const JpoInfo = () => {
   };
 
   const deleteJpo = async () => {
-    DeleteJpoById(jpoData?.jpoTitle);
+    DeleteJpoById(jpoData?.jpoTitle, id);
     toastSuccess(`Votre jpo ${jpoData?.jpoTitle} a bien été supprimé !`);
     setTimeout(() => {
       navigate("/jpo");

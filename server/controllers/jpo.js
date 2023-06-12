@@ -512,8 +512,7 @@ const updateJpoPDF = async (req, res) => {
 
 const deleteJpoById = async (req, res) => {
   try {
-    const jpoId = req.params.jpoId;
-    const { jpoTitle } = req.body;
+    const { jpoTitle, jpoId } = req.body;
 
     const jpoRef = db.collection("jpo").doc(jpoId);
 

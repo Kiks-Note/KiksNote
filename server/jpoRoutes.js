@@ -28,6 +28,6 @@ module.exports = function () {
   router.delete("/jpo/:jpoId", unlinkProjectStudents);
   router.put("/jpo/:jpoId", updateJpoById);
   router.put("/jpopdf/:jpoId", updateJpoPDF);
-  router.delete("/jpo/:jpoId", deleteJpoById);
+  router.delete("/jpo", deleteJpoById);
   return router;
 };
