@@ -14,6 +14,8 @@ const {
   removeRefStudentProject,
   createLinkedBlogTuto,
   removeLinkedBlogTuto,
+  updateStudentProject,
+  deleteStudentProject,
 } = require("./controllers/studentsProjects");
 
 module.exports = function () {
@@ -29,6 +31,8 @@ module.exports = function () {
   router.post("/refprojects", refStudentProject);
   router.post("/removerefprojects", removeRefStudentProject);
   router.post("/linkblogtuto/:projectId", createLinkedBlogTuto);
+  router.put("/student-project/:projectId", updateStudentProject);
+  router.delete("/student-project", deleteStudentProject);
   router.delete("/linkblogtuto/:projectId", removeLinkedBlogTuto);
   return router;
 };
