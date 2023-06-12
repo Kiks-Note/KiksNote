@@ -61,14 +61,17 @@ const getStudents = async (req, res) => {
 };
 
 const sendGroups = async (req, res) => {
+  const { courseId } = req.body;
+
+  const courseRef = await db.collection("cours").doc(courseId).get();
   try {
     const newGroupRef = db.collection("groups").doc();
     await newGroupRef.set({
-      start_date: new Date(req.body.start_date._seconds),
-      end_date: new Date(req.body.end_date._seconds),
+      start_date: courseRef.data().dateStartSprint,
+      end_date: courseRef.data().dateEndSprint,
       students: req.body.students,
       po_id: req.body.po_id,
-      courseId: req.body.course_id,
+      courseId: courseId,
     });
 
     res.status(200).send("Groups successfully added!");

@@ -55,7 +55,6 @@ function GroupsCreation() {
 
   const navigate = useNavigate();
   const { user } = useFirebase();
-
   const theme = useTheme();
 
   const ws = useMemo(() => {
@@ -463,15 +462,13 @@ function GroupsCreation() {
     ws.close();
     groupsKey.forEach((group) => {
       axios.post(`http://localhost:5050/groupes/exportGroups`, {
-        start_date: courseChoose.data.dateStartSprint,
-        end_date: courseChoose.data.dateEndSprint,
         students: columns[group].items.map((student) => ({
           id: student.id,
           firstname: student.firstname,
           lastname: student.lastname,
         })),
         po_id: user?.id,
-        course_id: courseChoose.id,
+        courseId: courseChoose.id,
       });
     });
 
