@@ -54,7 +54,7 @@ const Sujection = ({openSujection, setOpenSujection}) => {
       })
       .then((res) => {
         toast.success(res.data);
-        setOpen(false);
+        setOpenSujection(false);
         setLoading(false);
       })
       .catch((err) => {
@@ -65,7 +65,7 @@ const Sujection = ({openSujection, setOpenSujection}) => {
 
   return (
     <div>
-      <Dialog open={open} onClose={() => setOpen(false)}>
+      <Dialog open={openSujection} onClose={() => setOpenSujection(false)}>
         <DialogTitle>Idée d'achat</DialogTitle>
         <DialogContent sx={{minWidth: "500px"}}>
           {/* <DialogContentText> */}
@@ -146,7 +146,7 @@ const Sujection = ({openSujection, setOpenSujection}) => {
         <DialogActions>
           {!loading && (
             <>
-              <Button onClick={() => setOpen(false)}>Annuler</Button>
+              <Button onClick={() => setOpenSujection(false)}>Annuler</Button>
               <Button onClick={() => handleSendSujection()}>Envoyer</Button>
             </>
           )}
@@ -311,7 +311,10 @@ function InventoryHome() {
       />
 
       <Toaster position="bottom-left" />
-      <Sujection open={openSujection} setOpen={setOpenSujection} />
+      <Sujection
+        openSujection={openSujection}
+        setOpenSujection={setOpenSujection}
+      />
 
       {user?.status !== "etudiant" && (
         <Button
