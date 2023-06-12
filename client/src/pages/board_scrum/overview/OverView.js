@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, Typography } from "@mui/material";
+import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, Typography, Divider } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -18,7 +18,8 @@ import "react-circular-progressbar/dist/styles.css";
 import RadialSeparators from "../../../components/board_scrum/overview/RadialSeparator";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import { daDK } from "@mui/x-data-grid";
+import BarChart from "../../../components/board_scrum/overview/BarChart";
+import { withStyles } from "@material-ui/core/styles";
 
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
@@ -46,6 +47,14 @@ function OverView({ id }) {
   });
   const dispatch = useDispatch();
   const [value, setValue] = useState(0);
+
+  const dividerStyle = {
+    root: {
+      height: "1px",
+      backgroundColor: "gray",
+    },
+  };
+  const CustomDivider = withStyles(dividerStyle)(Divider);
 
   const moveToOverView = () => {
     const pdfViewTab = {
@@ -98,7 +107,7 @@ function OverView({ id }) {
         setStories(data.stories);
         setAgile(data.agile);
         setDisplay(true);
-        console.log(data.agile);
+        console.log(data.boards);
         sortBoards(data.boards);
         if (data.boards.length > 4) {
           const data = { begin: 0, end: 4 };
@@ -127,6 +136,32 @@ function OverView({ id }) {
     }
   };
 
+  const getParticipation = () => {
+    const todoItems = selectedBoard.data.toDo.items;
+    const doneItems = selectedBoard.data.done.items;
+    const inProgressItems = selectedBoard.data.inProgress.items;
+
+    // Combine the three lists into a single array
+    const allItems = [...todoItems, ...doneItems, ...inProgressItems];
+
+    // Extract the assignedTo value from each item
+    const assignedToList = allItems.flatMap((item) => item.assignedTo).filter((assignedTo) => assignedTo.length > 0);
+
+    // Count the participation for each name
+    const participationList = assignedToList.reduce((result, name) => {
+      const existingParticipant = result.find((participant) => participant.name === name);
+      if (existingParticipant) {
+        existingParticipant.participation++;
+      } else {
+        result.push({ name: name, participation: 1 });
+      }
+      return result;
+    }, []);
+
+    console.log(participationList);
+    return participationList;
+  };
+
   const sortBoards = (boards) => {
     const sortedItems = boards.sort((a, b) => {
       const releaseA = parseInt(a.name.split(" / ")[0].split(" ")[1]);
@@ -143,76 +178,8 @@ function OverView({ id }) {
     setBoards(sortedItems);
   };
 
-  // Generate fake data for boards
-  const generateFakeData = () => {
-    const boards = [];
-
-    // Generate data for each board
-    for (let i = 1; i <= 3; i++) {
-      const board = {
-        name: `Board ${i}`,
-        starting_date: new Date(2023, 0, i),
-        ending_date: new Date(2023, 0, i + 5),
-        data: {
-          toDo: {
-            count: Math.floor(Math.random() * 10),
-            items: generateTasks(),
-          },
-          inProgress: {
-            count: Math.floor(Math.random() * 10),
-            items: generateTasks(),
-          },
-          done: {
-            count: Math.floor(Math.random() * 10),
-            items: generateTasks(),
-          },
-        },
-      };
-
-      boards.push(board);
-    }
-
-    return boards;
-  };
-
-  // Generate fake data for tasks
-  const generateTasks = () => {
-    const tasks = [];
-
-    for (let i = 1; i <= 5; i++) {
-      const task = {
-        id: i,
-        estimation: Math.floor(Math.random() * 10),
-        advancement: generateAdvancements(),
-      };
-
-      tasks.push(task);
-    }
-
-    return tasks;
-  };
-
-  // Generate fake data for task advancements
-  const generateAdvancements = () => {
-    const advancements = [];
-
-    for (let i = 1; i <= 5; i++) {
-      const advancement = {
-        day: `Jour ${i}`,
-        advance: Math.floor(Math.random() * 5),
-      };
-
-      advancements.push(advancement);
-    }
-
-    return advancements;
-  };
-
-  // Generate fake data for boards
-  const fakeBoardsData = generateFakeData();
-
   useEffect(() => {
-    console.log(selectedBoard);
+    getParticipation();
   }, [selectedBoard]);
 
   return (
@@ -302,32 +269,22 @@ function OverView({ id }) {
                   width: "25%",
                   height: "35vh",
                   borderRadius: "5px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
                 }}
               >
-                <Typography variant="h6" style={{ textAlign: "center" }}>
-                  Choisissez un sprint
+                <Typography varian="h5" style={{ textAlign: "center" }}>
+                  Participation
                 </Typography>
-                <List>
-                  {releases &&
-                    Object.keys(releases).map((item, i) => (
-                      <ListItem key={i + id}>
-                        <Box sx={{ width: "100%" }}>
-                          <Accordion>
-                            <AccordionSummary
-                              expandIcon={<ExpandMoreIcon />}
-                              aria-controls="panel1a-content"
-                              id="panel1a-header"
-                            >
-                              <Typography>{item}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails sx={{ width: "100%" }}>
-                              <Box sx={{ width: "100%" }}></Box>
-                            </AccordionDetails>
-                          </Accordion>
-                        </Box>
-                      </ListItem>
-                    ))}
-                </List>
+
+                <Box
+                  style={{
+                    marginTop: "5vh",
+                  }}
+                >
+                  <BarChart participation={getParticipation()} label={"Nombre de taches"} />
+                </Box>
               </Box>
 
               <Box
@@ -336,9 +293,12 @@ function OverView({ id }) {
                   width: "30%",
                   height: "35vh",
                   borderRadius: "5px",
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
                 }}
               >
-                <Typography varian="h6" style={{ textAlign: "center" }}>
+                <Typography varian="h5" style={{ textAlign: "center" }}>
                   Avancement
                 </Typography>
                 <Box
@@ -396,7 +356,7 @@ function OverView({ id }) {
                   borderRadius: "5px",
                 }}
               >
-                {fakeBoardsData && <BurndownChart board={fakeBoardsData[0]} value={value} />}
+                <BurndownChart board={selectedBoard} value={value} />
               </Box>
             </Box>
           </Box>
@@ -443,6 +403,8 @@ function OverView({ id }) {
                     <Typography variant="h6" style={{ textAlign: "center" }}>
                       {board.name}
                     </Typography>
+                    <CustomDivider />
+
                     <Box style={{ display: "flex" }}>
                       <Box
                         style={{
@@ -470,6 +432,8 @@ function OverView({ id }) {
                           />
                         </CircularProgressbarWithChildren>
                       </Box>
+                      <CustomDivider variant="middle" />
+
                       <Box>
                         <Typography style={{ textAlign: "center" }}>Avancement </Typography>
                         <Typography style={{ textAlign: "center" }}> {advancement ? advancement : 0} %</Typography>
