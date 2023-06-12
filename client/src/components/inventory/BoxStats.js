@@ -1,12 +1,14 @@
 import {Box, Divider, IconButton, Typography} from "@mui/material";
+import {useTheme} from "@mui/material/styles";
 import React from "react";
 import {IoIosEye} from "react-icons/io";
 
 const BoxStats = ({label, value, onClick, loading}) => {
+  const theme = useTheme();
   return (
     <Box
       sx={{
-        backgroundColor: "#1A2027",
+        backgroundColor: theme.palette.background.paper,
         borderRadius: 5,
         px: 2,
         py: 3,
@@ -22,9 +24,9 @@ const BoxStats = ({label, value, onClick, loading}) => {
       }}
     >
       <Typography
-        sx={{
+        style={{
           fontFamily: "poppins-bold",
-          color: "#fff",
+          color: theme.palette.text.primary,
           fontSize: 18,
           textAlign: "center",
         }}
@@ -34,16 +36,17 @@ const BoxStats = ({label, value, onClick, loading}) => {
       <Divider
         sx={{
           width: "100%",
-          height: "1px",
-          backgroundColor: "#fff",
-          opacity: 0.2,
+          height: "2px",
+          borderRadius: 1,
+          backgroundColor: theme.palette.text.secondary,
+          opacity: 0.4,
           my: "10px",
         }}
       />
       <Typography
-        sx={{
+        style={{
           fontFamily: "poppins-semiBold",
-          color: "#fff",
+          color: theme.palette.text.primary,
           fontSize: 30,
         }}
       >
@@ -58,7 +61,13 @@ const BoxStats = ({label, value, onClick, loading}) => {
           opacity: 0.8,
         }}
       >
-        <IoIosEye style={{fontSize: 30, color: "#fff", opacity: 0.6}} />
+        <IoIosEye
+          style={{
+            fontSize: 30,
+            color: theme.palette.text.primary,
+            opacity: 0.6,
+          }}
+        />
       </IconButton>
     </Box>
   );

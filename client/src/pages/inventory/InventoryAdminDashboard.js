@@ -37,6 +37,7 @@ import {UserListDialog} from "../../components/inventory/UserListDialog";
 import useFirebase from "../../hooks/useFirebase";
 import theme from "../../theme";
 import "./inventory.css";
+import {useTheme} from "@mui/material/styles";
 
 const Item = styled(Paper)(({theme}) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -370,6 +371,7 @@ const InventoryAdminDashboard = () => {
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const {user} = useFirebase();
+  const theme = useTheme();
 
   const handleClick = (event) => {
     setOpen((prev) => !prev);
@@ -468,7 +470,26 @@ const InventoryAdminDashboard = () => {
         <Typography
           variant="h5"
           className="inventory-admin-dashboard-title"
-          sx={{color: "white", fontFamily: "poppins-semibold", mb: 2.5}}
+          style={{
+            color: theme.palette.text.primary,
+            fontFamily: "poppins-semibold",
+            marginBottom: 20,
+            marginTop: 20,
+
+            backgroundColor: theme.palette.background.paper,
+            borderTopLeftRadius: "20px",
+            borderBottomRightRadius: "20px",
+            borderTopRightRadius: "5px",
+            borderBottomLeftRadius: "5px",
+            boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            display: "flex",
+            textAlign: "center",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "25%",
+
+            padding: 20,
+          }}
         >
           Inventaire Admin Dashboard
         </Typography>
@@ -718,10 +739,11 @@ const InventoryAdminDashboard = () => {
           <div
             style={{
               display: "flex",
-              justifyContent: "center",
+              justifyContent: "space-between",
               alignItems: "flex-start",
               gap: 50,
               flexWrap: "wrap",
+              paddingRight: "2rem",
             }}
           >
             <InventoryStatistics />

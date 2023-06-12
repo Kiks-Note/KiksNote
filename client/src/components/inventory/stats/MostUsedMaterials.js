@@ -14,11 +14,14 @@ import "chartjs-adapter-moment";
 import "chartjs-plugin-datalabels";
 import moment from "moment";
 import React, {useEffect, useRef, useState} from "react";
+import {Typography} from "@material-ui/core";
 
 export default function MostUsedMaterials() {
   const chartRef = useRef(null);
   const [data, setData] = useState([]);
   const [chartInstance, setChartInstance] = useState(null);
+  const [chartData, setChartData] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Chart.register(
@@ -46,6 +49,7 @@ export default function MostUsedMaterials() {
           count: moment(document.deviceId),
         }));
         setData(formattedData);
+        setLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -86,7 +90,7 @@ export default function MostUsedMaterials() {
         labels.push(document.deviceId);
         values.push(document.count);
       });
-      console.log("labels:", labels);
+      // console.log("labels:", labels);
 
       const chartData = {
         labels: labels,
@@ -107,6 +111,7 @@ export default function MostUsedMaterials() {
       };
 
       console.log("chartData:", chartData);
+      setChartData(chartData);
 
       const options = {
         type: "doughnut",
@@ -145,6 +150,7 @@ export default function MostUsedMaterials() {
           data: chartData,
           options: options,
         });
+
         setChartInstance(newChartInstance);
       }
     }
@@ -152,7 +158,30 @@ export default function MostUsedMaterials() {
 
   return (
     <div style={{width: "600px", height: "330px"}}>
-      <canvas ref={chartRef}></canvas>
+      {!loading && chartData.labels < 0 ? (
+        <canvas ref={chartRef}></canvas>
+      ) : (
+        <div>
+          <Typography
+            variant="h6"
+            align="center"
+            style={{
+              fontFamily: "poppins-semiBold",
+              color: "grey",
+              fontSize: "18px",
+            }}
+          >
+            Matériels les plus utilisés
+          </Typography>
+          <Typography
+            variant="body1"
+            align="center"
+            style={{marginTop: "40px", fontFamily: "poppins-regular"}}
+          >
+            Aucune donnée disponible
+          </Typography>
+        </div>
+      )}
     </div>
   );
 }
