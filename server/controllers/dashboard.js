@@ -279,7 +279,7 @@ const createDashboards = async (req, res) => {
       name: "",
       description: "",
     });
-    await agileRef.doc("functional-tree").set({});
+    await agileRef.doc("functional_tree").set({});
     await agileRef.doc("agile_folder").set({
       impact_mapping: "",
       empathy_map: [],
