@@ -8,17 +8,9 @@ import {
   DialogContent,
 } from "@mui/material";
 
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-
 import Dropzone from "./../Dropzone";
 
 const UpdateCoursDialog = (props) => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-
-  console.log(props.descriptionJPO);
-
   return (
     <>
       <Dialog open={props.open} onClose={props.handleClose}>
@@ -58,22 +50,12 @@ const UpdateCoursDialog = (props) => {
               />
             </div>
 
-            <Editor
-              placeholder={`Commencer à écrire une petite description de la JPO ${props.nameJPO}`}
-              // onEditorStateChange={handleEditorChange}
-              editorState={editorState}
-              toolbarClassName="toolbarClassName"
-              wrapperClassName="wrapperClassName"
-              editorClassName="editorClassName"
-              editorStyle={{
-                border: "1px solid black",
-                minHeight: "180px",
-                height: "300px",
-                padding: "10px",
-                borderRadius: "5px",
-                boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
-                marginBottom: "16px",
-              }}
+            <TextField
+              fullWidth
+              multiline
+              rows={6}
+              value={props.descriptionJPO}
+              onChange={(e) => props.setDescriptionJPO(e.target.value)}
             />
             <div className="dropzone-coursimg-container">
               <p className="info-dropdown-img">

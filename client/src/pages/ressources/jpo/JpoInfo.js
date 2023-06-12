@@ -17,6 +17,7 @@ import {
   Avatar,
   ListItemText,
   Divider,
+  Container,
 } from "@mui/material";
 
 import StudentProjectLinkDialog from "./../../../components/ressources/jpo/StudentProjectLinkDialog";
@@ -287,6 +288,7 @@ const JpoInfo = () => {
     setJPODateStart(
       moment.unix(jpoData?.jpoDayStart._seconds).format("yyyy-MM-DD")
     );
+    setDescriptionJPO(jpoData?.jpoDescription);
     setJPODateEnd(
       moment.unix(jpoData?.jpoDayEnd._seconds).format("yyyy-MM-DD")
     );
@@ -421,11 +423,13 @@ const JpoInfo = () => {
             </div>
             <div className="jpoinfo-sections">
               <section className="jpo-left-side-section">
-                {/* <div
-                  dangerouslySetInnerHTML={{
-                    __html: htmlDescriptionJpo,
-                  }}
-                /> */}
+                <Container sx={{ paddingBottom: "24px" }}>
+                  <Typography variant="h5">Description JPO</Typography>
+                  <Divider />
+                  <Typography sx={{ fontWeight: "bold" }}>
+                    {jpoData?.jpoDescription}
+                  </Typography>
+                </Container>
                 <Typography sx={{ fontWeight: "bold" }}>
                   Liste des participants lors de cette JPO
                 </Typography>
@@ -591,7 +595,7 @@ const JpoInfo = () => {
                         setJPODateStart={setJPODateStart}
                         JPODateEnd={JPODateEnd}
                         setJPODateEnd={setJPODateEnd}
-                        descriptionJPO={jpoData?.jpoDescription}
+                        descriptionJPO={descriptionJPO}
                         setDescriptionJPO={setDescriptionJPO}
                         handleDrop={handleDrop}
                         handleFileChange={handleFileChange}
