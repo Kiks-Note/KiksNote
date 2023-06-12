@@ -1,6 +1,8 @@
 const {db, FieldValue} = require("../firebase");
 const {parse} = require("url");
 const moment = require("moment");
+const generatePDF = require("./pdfGenerator");
+const path = require("path");
 
 const inventory = async (req, res) => {
   const docRef = db.collection("inventory");
@@ -11,6 +13,82 @@ const inventory = async (req, res) => {
     res.status(200).send(documents);
   } catch (err) {
     res.status(500).send(err);
+  }
+};
+
+const getInventoryStatistics = async (req, res) => {
+  const docRef = db.collection("inventory");
+  const snapshot = await docRef.orderBy("createdAt").limit(5).get();
+  const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+  try {
+    res.status(200).json(documents);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send("Une erreur est survenue lors de la récupération des données.");
+  }
+};
+
+const getInventoryRequestsStatistics = async (req, res) => {
+  const docRef = db.collection("inventory_requests");
+  const snapshot = await docRef.orderBy("deviceId").get();
+  const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+  try {
+    res.status(200).json(documents);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send("Une erreur est survenue lors de la récupération des données.");
+  }
+};
+
+const getPdfGenerator = async (req, res) => {
+  const docRef = db.collection("inventory");
+  const snapshot = await docRef.orderBy("createdAt").get();
+  console.log("Snapshot:", snapshot);
+
+  const inventoryData = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  console.log("Inventory Data:", inventoryData);
+
+  try {
+    // if (inventoryData.length === 0) {
+    //   return res.status(400).send("Aucun matériel n'a été trouvé");
+    // } else {
+    generatePDF(inventoryData, res);
+    // }
+  } catch (err) {
+    console.error("Erreur lors de la génération du PDF:", err);
+    res.status(500).send("Erreur lors de la génération du PDF");
+  }
+};
+
+const getPdfGeneratorCampus = async (req, res) => {
+  const {campus} = req.params;
+
+  const docRef = db.collection("inventory").where("campus", "==", campus);
+  const snapshot = await docRef.orderBy("createdAt").get();
+
+  const inventoryData = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  try {
+    if (inventoryData.length === 0) {
+      return res.status(400).send("Aucun matériel n'a été trouvé");
+    } else {
+      generatePDF(inventoryData, res);
+    }
+  } catch (err) {
+    console.error("Erreur lors de la génération du PDF:", err);
+    res.status(500).send("Erreur lors de la génération du PDF");
   }
 };
 
@@ -706,8 +784,12 @@ module.exports = {
   deleteIdea,
   getIdeaByUser,
   pendingRequests,
+  getIdeaComments,
+  getInventoryStatistics,
+  getInventoryRequestsStatistics,
+  getPdfGenerator,
+  getPdfGeneratorCampus,
   liveCategories,
   liveInventory,
   borrowedList,
-  getIdeaComments,
 };

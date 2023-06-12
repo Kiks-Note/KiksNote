@@ -1,5 +1,7 @@
+import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import FaInfoCircle from "@mui/icons-material/Info";
 import {
   Box,
   Button,
@@ -11,6 +13,7 @@ import {
   Divider,
   IconButton,
   List,
+  Popper,
   Skeleton,
   styled,
   TextField,
@@ -19,21 +22,21 @@ import {
 } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import axios from "axios";
+import moment from "moment";
 import React, {useEffect, useState} from "react";
 import {toast, Toaster} from "react-hot-toast";
+import {IoIosEye} from "react-icons/io";
 import {useNavigate} from "react-router";
 import {w3cwebsocket} from "websocket";
-import CustomSnackbar from "../../components/inventory/CustomSnackBar";
+import BoxStats from "../../components/inventory/BoxStats";
 import ModalForm from "../../components/inventory/ModalForm";
-import SideBarModify from "../../components/inventory/SideBarModify";
+import InventoryStatistics from "../../components/inventory/stats/InventoryStatistics";
+import MostUsedMaterials from "../../components/inventory/stats/MostUsedMaterials";
+import TotalMacCount from "../../components/inventory/stats/TotalMacCount";
 import {UserListDialog} from "../../components/inventory/UserListDialog";
+import useFirebase from "../../hooks/useFirebase";
 import theme from "../../theme";
 import "./inventory.css";
-import CloseIcon from "@mui/icons-material/Close";
-import FaInfoCircle from "@mui/icons-material/Info";
-import {IoIosEye} from "react-icons/io";
-import useFirebase from "../../hooks/useFirebase";
-import BoxStats from "../../components/inventory/BoxStats";
 
 const Item = styled(Paper)(({theme}) => ({
   // backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -358,12 +361,22 @@ const InventoryAdminDashboard = () => {
   const [emailsDialogOpen, setEmailsDialogOpen] = useState(false);
   const [emails, setEmails] = useState([]);
   const [ideas, setIdeas] = useState([]);
-
+  const [downloadLink, setDownloadLink] = useState("");
+  const [anchorEl, setAnchorEl] = React.useState(null);
   const [inventory, setInventory] = useState([]);
-
   const [loading, setLoading] = useState(true);
+  const [pdfLoading, setPdfLoading] = useState("none");
+  const [pdfCampus, setPdfCampus] = useState(null);
+  const [open, setOpen] = useState(false);
   const navigate = useNavigate();
   const {user} = useFirebase();
+
+  const handleClick = (event) => {
+    setOpen((prev) => !prev);
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const id = open ? "simple-popper" : undefined;
 
   const toggleDrawerAdd = (event, open) => {
     if (
@@ -409,6 +422,32 @@ const InventoryAdminDashboard = () => {
       });
     })();
   }, []);
+
+  const generatePdf = async (value) => {
+    try {
+      setPdfLoading("loading");
+      setPdfCampus(value);
+      let response;
+
+      if (value === "all") {
+        response = await fetch("http://localhost:5050/inventory/pdfGenerator");
+      } else {
+        response = await fetch(
+          `http://localhost:5050/inventory/generatePdf/${value}`
+        );
+      }
+
+      console.log("Réponse du serveur :", response);
+
+      const blob = await response.blob();
+      const downloadUrl = URL.createObjectURL(blob);
+      setDownloadLink(downloadUrl);
+      setPdfLoading("done");
+    } catch (error) {
+      console.error("Erreur lors de la génération du PDF :", error);
+      setPdfLoading("error");
+    }
+  };
 
   return (
     <>
@@ -480,6 +519,127 @@ const InventoryAdminDashboard = () => {
           >
             Liste des categories
           </Button>
+          {/* <Button
+            variant="contained"
+            onClick={() => navigate("/inventory/statistics")}
+            sx={{
+              backgroundColor: "#ffffff",
+              color: "#1A2027",
+              fontFamily: "poppins-semibold",
+              boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            }}
+          >
+            Voir les statistiques
+          </Button> */}
+
+          <Button
+            variant="contained"
+            aria-describedby={id}
+            onClick={(event) => handleClick(event)}
+            sx={{
+              backgroundColor: "#ffffff",
+              color: "#1A2027",
+              fontFamily: "poppins-semibold",
+              boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+            }}
+          >
+            Télécharger un pdf de l'inventaire
+          </Button>
+          <Popper id={id} open={open} anchorEl={anchorEl}>
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: "background.paper",
+                justifyContent: "center",
+                alignItems: "center",
+                display: "flex",
+                flexDirection: "column",
+                minWidth: 200,
+                borderBottomLeftRadius: 5,
+                borderBottomRightRadius: 5,
+
+                boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+              }}
+            >
+              <Typography sx={{pb: 2, fontFamily: "poppins-semibold"}}>
+                Campus
+              </Typography>
+              {pdfLoading == "none" ? (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#ffffff",
+                      color: "#1A2027",
+                      fontFamily: "poppins-semibold",
+                      boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                    }}
+                    onClick={() => generatePdf("Cergy")}
+                  >
+                    Cergy
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#ffffff",
+                      color: "#1A2027",
+                      fontFamily: "poppins-semibold",
+                      boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                    }}
+                    onClick={() => generatePdf("Paris")}
+                  >
+                    Paris
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#ffffff",
+                      color: "#1A2027",
+                      fontFamily: "poppins-semibold",
+                      boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                    }}
+                    onClick={() => generatePdf("all")}
+                  >
+                    Les deux
+                  </Button>
+                </div>
+              ) : pdfLoading == "loading" ? (
+                <Typography sx={{p: 2, fontFamily: "poppins-semibold"}}>
+                  Chargement...
+                </Typography>
+              ) : pdfLoading == "done" ? (
+                <Button
+                  href={downloadLink}
+                  download={
+                    "inventaire_" +
+                    moment().format("DD-MM-YYYY") +
+                    "_" +
+                    (pdfCampus === "all" ? "cergy_paris" : pdfCampus) +
+                    ".pdf"
+                  }
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "#ffffff",
+                    color: "#1A2027",
+                    fontFamily: "poppins-semibold",
+                    boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                  }}
+                  onClick={() => {
+                    handleClick();
+                    setPdfLoading("none");
+                    setPdfCampus(null);
+                  }}
+                >
+                  Télécharger
+                </Button>
+              ) : null}
+            </Box>
+          </Popper>
         </div>
 
         {loading ? (
@@ -533,6 +693,42 @@ const InventoryAdminDashboard = () => {
             </div>
           </>
         )}
+
+        <div
+          style={{
+            // display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 50,
+          }}
+        >
+          {/* Increase the gridGap value as desired */}
+          <h1
+            style={{
+              fontSize: "40px",
+              fontWeight: "bold",
+              textAlign: "center",
+              marginBottom: "20px",
+              fontFamily: "poppins-semibold",
+              textTransform: "uppercase",
+            }}
+          >
+            Statistiques
+          </h1>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "flex-start",
+              gap: 50,
+              flexWrap: "wrap",
+            }}
+          >
+            <InventoryStatistics />
+            <MostUsedMaterials />
+            <TotalMacCount />
+          </div>
+        </div>
       </Container>
     </>
   );
