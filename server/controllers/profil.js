@@ -1,8 +1,8 @@
-const { db, FieldValue } = require("../firebase");
+const {db, FieldValue} = require("../firebase");
 const fs = require("fs");
 const path = require("path");
 const updateProfil = async (req, res) => {
-  const { userId } = req.params;
+  const {userId} = req.params;
   // Vérifier que `userId` est une chaîne non vide
   if (!userId) {
     throw new Error("Invalid userId" + userId);
@@ -107,7 +107,7 @@ const updateBackgroundImage = async (req, res) => {
     });
 };
 const getStudent = async (req, res) => {
-  const { userId } = req.params;
+  const {userId} = req.params;
   if (!userId) {
     res.status(401).send("Unauthorized");
     return;
@@ -137,7 +137,6 @@ const getStudent = async (req, res) => {
       res.send("Error fetching users.");
     });
 };
-
 
 function createProgrammingLanguageArray(programmingLanguageString) {
   return programmingLanguageString.split(",");

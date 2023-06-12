@@ -1,4 +1,4 @@
-import { makeStyles } from "@material-ui/core";
+import {makeStyles} from "@material-ui/core";
 import AddIcon from "@mui/icons-material/Add";
 import {
   Card,
@@ -21,23 +21,24 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { Toaster, toast } from "react-hot-toast";
-import { w3cwebsocket } from "websocket";
+import React, {useEffect, useState} from "react";
+import {Toaster, toast} from "react-hot-toast";
+import {w3cwebsocket} from "websocket";
 import InvBox from "../../components/inventory/InvBox";
 import LoanRequestForm from "../../components/inventory/LoanRequestForm";
 import SideBarRequest from "../../components/inventory/SideBarRequest";
 import useFirebase from "../../hooks/useFirebase";
 import "../../styles/inventoryGlobal.css";
 
-const Sujection = ({ openSujection, setOpenSujection }) => {
+const Sujection = ({openSujection, setOpenSujection}) => {
   const [url, setUrl] = useState("");
+  const [imageURL, setImageURL] = useState("");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(false);
-  const { user } = useFirebase();
+  const {user} = useFirebase();
 
   const handleSendSujection = async () => {
     setLoading(true);
@@ -45,6 +46,7 @@ const Sujection = ({ openSujection, setOpenSujection }) => {
       .post(`${process.env.REACT_APP_SERVER_API}/inventory/createIdea`, {
         name,
         url,
+        imageURL,
         price,
         description,
         reason,
@@ -52,7 +54,7 @@ const Sujection = ({ openSujection, setOpenSujection }) => {
       })
       .then((res) => {
         toast.success(res.data);
-        setOpenSujection(false);
+        setOpen(false);
         setLoading(false);
       })
       .catch((err) => {
@@ -63,9 +65,9 @@ const Sujection = ({ openSujection, setOpenSujection }) => {
 
   return (
     <div>
-      <Dialog open={openSujection} onClose={() => setOpenSujection(false)}>
+      <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>Idée d'achat</DialogTitle>
-        <DialogContent sx={{ minWidth: "500px" }}>
+        <DialogContent sx={{minWidth: "500px"}}>
           {/* <DialogContentText> */}
           {/* </DialogContentText> */}
           <TextField
@@ -73,12 +75,24 @@ const Sujection = ({ openSujection, setOpenSujection }) => {
             autoFocus
             margin="dense"
             id="url"
-            label="URL du produit"
+            label="Page du produit (URL)"
             type="url"
             fullWidth
             variant="outlined"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+          />
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="url"
+            label="Image du produit (URL)"
+            type="url"
+            fullWidth
+            variant="outlined"
+            value={imageURL}
+            onChange={(e) => setImageURL(e.target.value)}
           />
           <TextField
             required
@@ -132,7 +146,7 @@ const Sujection = ({ openSujection, setOpenSujection }) => {
         <DialogActions>
           {!loading && (
             <>
-              <Button onClick={() => setOpenSujection(false)}>Annuler</Button>
+              <Button onClick={() => setOpen(false)}>Annuler</Button>
               <Button onClick={() => handleSendSujection()}>Envoyer</Button>
             </>
           )}
@@ -152,7 +166,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const BootstrapInput = styled(InputBase)(({ theme }) => ({
+const BootstrapInput = styled(InputBase)(({theme}) => ({
   "label + &": {
     marginTop: theme.spacing(3),
     fontFamily: "poppins-regular",
@@ -188,7 +202,7 @@ function InventoryHome() {
   const [anchorEl, setAnchorEl] = useState(null);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
   const [openSujection, setOpenSujection] = useState(false);
-  const { user } = useFirebase();
+  const {user} = useFirebase();
 
   const toggleDrawerDemand = (event, open) => {
     if (
@@ -248,10 +262,10 @@ function InventoryHome() {
               <Skeleton
                 variant="rectangular"
                 height={0}
-                style={{ paddingTop: "56.25%" }}
+                style={{paddingTop: "56.25%"}}
               />
 
-              <CardContent style={{ textAlign: "left", flexDirection: "column" }}>
+              <CardContent style={{textAlign: "left", flexDirection: "column"}}>
                 <Typography variant="h6" gutterBottom paragraph>
                   <Skeleton variant="text" />
                 </Typography>
@@ -276,7 +290,7 @@ function InventoryHome() {
                     variant="circular"
                     width={40}
                     height={40}
-                    style={{ marginRight: 10 }}
+                    style={{marginRight: 10}}
                   />
                 </div>
               </CardContent>
@@ -297,12 +311,14 @@ function InventoryHome() {
       />
 
       <Toaster position="bottom-left" />
+      <Sujection open={openSujection} setOpen={setOpenSujection} />
+
       {user?.status !== "etudiant" && (
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={() => setOpenSujection(true)}
-          style={{ marginTop: "20px" }}
+          style={{marginTop: "20px"}}
           sx={{
             backgroundColor: "#3f51b5",
             color: "#fff",
@@ -338,19 +354,19 @@ function InventoryHome() {
             input={<BootstrapInput />}
           >
             <MenuItem
-              style={{ fontFamily: "poppins-regular", fontSize: "16px" }}
+              style={{fontFamily: "poppins-regular", fontSize: "16px"}}
               value={null}
             >
               <em>Vider</em>
             </MenuItem>
             <MenuItem
-              style={{ fontFamily: "poppins-regular", fontSize: "16px" }}
+              style={{fontFamily: "poppins-regular", fontSize: "16px"}}
               value={"Cergy"}
             >
               Cergy
             </MenuItem>
             <MenuItem
-              style={{ fontFamily: "poppins-regular", fontSize: "16px" }}
+              style={{fontFamily: "poppins-regular", fontSize: "16px"}}
               value={"Paris"}
             >
               Paris
@@ -361,7 +377,7 @@ function InventoryHome() {
       {loading ? (
         loadingSkeleton()
       ) : (
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{flexGrow: 1}}>
           <Grid container spacing={4}>
             {!loading &&
               inventory
@@ -377,7 +393,7 @@ function InventoryHome() {
                   } else {
                     return (
                       item.campus.charAt(0).toUpperCase() +
-                      item.campus.slice(1) ===
+                        item.campus.slice(1) ===
                       campusFilter
                     );
                   }
