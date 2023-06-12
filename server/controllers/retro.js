@@ -64,8 +64,8 @@ const room = async (connection) => {
 
     console.log(roomClients.entries());
     for (const [UserID, client] of roomClients.entries()) {
-      console.log(UserID);
-      console.log(message);
+     // console.log(UserID);
+     // console.log(message.data.currentRoom.columns);
       client.sendUTF(JSON.stringify(message));
     }
   };
@@ -258,8 +258,12 @@ const room = async (connection) => {
             class: response.data.class,
           },
         };
-       // console.log(messageUpdateCol);
-       // console.log(messageUpdateCol.data.currentRoom["columns"]);
+        console.log("in update col");
+        console.log(messageUpdateCol);
+        console.log(response.data.class);
+        
+      //  console.log(messageUpdateCol);
+      //  console.log(messageUpdateCol.data.currentRoom["columns"]);
         sendToAllClients(messageUpdateCol, response.data.class);
     }
   });

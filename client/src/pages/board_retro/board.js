@@ -81,10 +81,6 @@ export default function Board() {
     setColumns(colContent);
   }, [ws, classStudents]);
 
-  // useEffect(() => {
-  //   joinRoom(retroData)
-  // }, [])
-
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
       axios
@@ -229,9 +225,9 @@ export default function Board() {
   useEffect(() => {
     ws.onmessage = (message) => {
       
-      console.log(typeof message.data);      
 
      let jsonData = JSON.parse(message.data);
+     console.log(jsonData);
       
       if (jsonData.type == "updateRoom" && jsonData.data.currentRoom.columns) {
         setColumns(jsonData.data.currentRoom.columns)
@@ -333,9 +329,10 @@ export default function Board() {
       type: "updateCol",
       data: {
         columns: selectedColumn,
-        class: classStudents,
+        class: roomData["class"], //classStudents
       },
     };
+    console.log("changing update col ");
     ws.send(JSON.stringify(message));
     handleCloseEditPostIt();
   };
@@ -503,9 +500,6 @@ export default function Board() {
     setSelectedPostItIndex(i);
   };
 
-  useEffect(() => {
-    console.log("ws change");
-  }, [ws])
 
   const createRoom = () => {
     console.log("create room");
