@@ -13,35 +13,15 @@ var transporter = nodemailer.createTransport({
 
 const handlebarOptions = {
   viewEngine: {
-    extName: ".handlebars",
+    extName: ".html",
     partialsDir: path.resolve(__dirname, "email_templates"),
     defaultLayout: false,
   },
   viewPath: path.resolve(__dirname, "email_templates"),
-  extName: ".handlebars",
+  extName: ".html",
 };
 
 transporter.use("compile", hbs(handlebarOptions));
-
-const login = async (req, res) => {
-  const { token } = req.body;
-  try {
-    const decodedToken = await auth.verifyIdToken(token);
-    const { email } = decodedToken;
-
-    const user = await auth.getUserByEmail(email);
-    if (!user.emailVerified) {
-      return res
-        .status(401)
-        .json({ message: "Veuillez vérifier votre adresse e-mail" });
-    }
-
-    res.status(200).json({ message: "Success" });
-    console.log("Success");
-  } catch (error) {
-    res.status(401).json({ message: "Connexion non autorisée" });
-  }
-};
 
 const register = async (req, res) => {
   const {
@@ -94,6 +74,12 @@ const register = async (req, res) => {
       userEmail
     );
 
+    const logoFilePath = path.resolve(__dirname, "../assets/logo.png");
+    const confirmEmailFilePath = path.resolve(
+      __dirname,
+      "../assets/confirm_email.png"
+    );
+
     const mailOptions = {
       from: "services.kiksnote.noreply@gmail.com",
       to: userEmail,
@@ -103,6 +89,18 @@ const register = async (req, res) => {
         userFirstName: userFirstName,
         verificationLink: verificationLink,
       },
+      attachments: [
+        {
+          filename: "logo.png",
+          path: logoFilePath,
+          cid: "logo",
+        },
+        {
+          filename: "confirm_email.png",
+          path: confirmEmailFilePath,
+          cid: "confirmEmailArt",
+        },
+      ],
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -131,6 +129,26 @@ const register = async (req, res) => {
           "Une erreur s'est produite lors de la création de l'utilisateur.",
       });
     }
+  }
+};
+
+const login = async (req, res) => {
+  const { token } = req.body;
+  try {
+    const decodedToken = await auth.verifyIdToken(token);
+    const { email } = decodedToken;
+
+    const user = await auth.getUserByEmail(email);
+    if (!user.emailVerified) {
+      return res
+        .status(401)
+        .json({ message: "Veuillez vérifier votre adresse e-mail" });
+    }
+
+    res.status(200).json({ message: "Success" });
+    console.log("Success");
+  } catch (error) {
+    res.status(401).json({ message: "Connexion non autorisée" });
   }
 };
 

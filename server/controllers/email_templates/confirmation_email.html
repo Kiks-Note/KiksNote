@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Confirmation de compte</title>
+</head>
+
+<body style="font-family: Arial, sans-serif;">
+    <div style="display: flex; width: 100%; justify-content: center; align-items: center; flex-direction: column;">
+        <img style="display: flex; width: 100%; height: 40px; padding: 30px;" src="cid:logo" alt="codenote-logo">
+        <div
+            style="display: flex; width: 50%; justify-content: center; background-color: #efefef; border-radius: 15px; box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px; flex-direction: column; align-items: center;">
+            <img style="width: 50%; padding: 30px;" src="cid:confirmEmailArt" alt="codenote-logo">
+            <div
+                style="display: flex; flex-direction: column; width: 80%; margin-bottom: 2%; padding: 5% 5% 1% 5%; background-color: white; border-radius: 15px; box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;">
+                <h1 style="margin: 0;">Confirmation de compte</h1>
+                <h2>Bonjour {{userFirstName}},</h2>
+                <p style="color: #939498; margin: 0;">Vous avez reçu ce message parce que vous avez récemment créé un
+                    compte sur Code Note.</p>
+                <p style="color: #939498;">Confirmez votre adresse e-mail en cliquant sur le bouton ci-dessous. Cette
+                    étape ajoute une sécurité supplémentaire à notre application en vérifiant que vous êtes bien le
+                    propriétaire de cette adresse électronique.</p>
+            </div>
+            <div style="display: flex; width: 100%;">
+                <a style="background-color: #c2207e; color: white; padding: 20px; text-decoration: none; width: 100%; display: flex; justify-content: center; margin-left: 10%; margin-right: 10%; border-radius: 15px; font-weight: bold; transition: background-color 0.3s ease;"
+                    href={{verificationLink}}>
+                    Activer mon compte
+                </a>
+            </div>
+            <div style="display: flex; flex-direction: column; width: 90%; font-weight: bold;">
+                <p style="margin-bottom: 0;">Merci</p>
+                <p>L'équipe de CodeNote</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
