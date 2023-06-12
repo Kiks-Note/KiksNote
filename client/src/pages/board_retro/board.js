@@ -304,7 +304,35 @@ export default function Board() {
   };
 
   const deletePostit = async (item) => {
+    let columnBis = { ... columns}
+
     console.log(item);
+
+
+    for (const el in columnBis) {
+
+      for (let index = 0; index < columnBis[el].items.length; index++) {
+        const element = columnBis[el].items[index];
+        console.log(element);
+         if (element["id"] == item["id"]) {
+          console.log("yes");
+          columnBis[el].items.splice(index, 1)
+         }
+        
+      }
+    
+    }
+
+    setColumns(columnBis)
+ 
+    const message = {
+      type: "updateCol",
+      data: {
+        columns: columns,
+        class: roomData["class"], //classStudents
+      },
+    };
+    ws.send(JSON.stringify(message));
   };
 
   const handleClickOpenEditPostIt = () => {
