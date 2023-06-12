@@ -177,7 +177,6 @@ export default function Board() {
                 setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
                 break;
               case "updateCol":
-                console.log("update colll");
                 setColumns(messageReceive.data.currentRoom.columns);
                 setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
                 break;
@@ -332,7 +331,6 @@ export default function Board() {
         class: roomData["class"], //classStudents
       },
     };
-    console.log("changing update col ");
     ws.send(JSON.stringify(message));
     handleCloseEditPostIt();
   };
@@ -415,7 +413,7 @@ export default function Board() {
               items: destItems,
             },
           },
-          class: classStudents,
+          class: roomData["class"], //classStudents
         },
       };
       ws.send(JSON.stringify(message));
