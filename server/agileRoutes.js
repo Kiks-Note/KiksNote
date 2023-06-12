@@ -9,14 +9,17 @@ const {
   updatePdfInAgileFolder,
   addPersona,
   deleteActor,
-  empathyRequest,
-  personaRequest,
+  updateElevatorPitch,
+  resetElevatorPitch,
   changeIndex,
   createPostit,
   putTree,
   deletePostit,
+  empathyRequest,
+  personaRequest,
   agileRequest,
   treeRequest,
+  elevatorPitchRequest
 } = require("./controllers/agile");
 
 module.exports = function (connection, pathname, upload) {
@@ -40,6 +43,10 @@ module.exports = function (connection, pathname, upload) {
   );
   router.delete("/:dashboardId/actor/:actorId", deleteActor);
   router.put("/:dashboardId/tree", putTree);
+  router.put("/:dashboardId/updateElevator", updateElevatorPitch);
+  router.put("/:dashboardId/resetElevator", resetElevatorPitch)
+
+
   switch (pathname) {
     case "/agile":
       agileRequest(connection);
@@ -60,7 +67,10 @@ module.exports = function (connection, pathname, upload) {
     case "/three":
       treeRequest(connection);
       console.log("three");
-      break;
+      break
+    case "/elevator":
+      elevatorPitchRequest(connection);
+      console.log("elevator");
     default:
       break;
   }
