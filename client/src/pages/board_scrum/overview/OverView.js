@@ -20,6 +20,7 @@ import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import BarChart from "../../../components/board_scrum/overview/BarChart";
 import { withStyles } from "@material-ui/core/styles";
+import Timer from "../../../components/board_scrum/overview/Timer";
 
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
@@ -184,272 +185,214 @@ function OverView({ id }) {
 
   return (
     <>
-      {false ? (
-        <Grid container spacing={1} sx={{ ml: 1 }}>
-          <Grid item xs={12} md={5}>
-            {display ? (
-              <>
-                <Typography variant="h4">Stories</Typography>
-                <StoryList stories={stories} sprints={releases} dashboardId={id} />
-                <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
-                  Release / Sprint
-                </Typography>
-                <List
-                  style={{
-                    maxHeight: "40vh",
-                    display: "flex",
-                    borderStyle: "solid",
-                    borderColor: "white",
-                    borderWidth: "1px",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    overflow: "auto",
-                    borderRadius: "7%",
-                  }}
-                >
-                  {Object.keys(releases).map((item, i) => (
-                    <ListItem key={i + id}>
-                      <Box sx={{ width: "100%" }}>
-                        <Accordion>
-                          <AccordionSummary
-                            expandIcon={<ExpandMoreIcon />}
-                            aria-controls="panel1a-content"
-                            id="panel1a-header"
-                          >
-                            <Typography>{item}</Typography>
-                          </AccordionSummary>
-                          <AccordionDetails sx={{ width: "100%" }}>
-                            <Box sx={{ width: "100%" }}>
-                              <CardSprint key={id} release={releases[item]} dashboardId={id} />
-                            </Box>
-                          </AccordionDetails>
-                        </Accordion>
-                      </Box>
-                    </ListItem>
-                  ))}
-                </List>
-              </>
-            ) : (
-              <></>
-            )}
-          </Grid>
-          <Grid item xs={12} md={6}>
-            {display ? (
-              <>
-                <Box>
-                  {pdfLink.length != 0 ? (
-                    <Button variant="contained" onClick={moveToOverView}>
-                      Backlog
-                    </Button>
-                  ) : (
-                    <></>
-                  )}
-                  <Button variant="contained" onClick={moveToImpact}>
-                    Agile
-                  </Button>
-                </Box>{" "}
-                <Typography variant="h4" gutterBottom sx={{ flexGrow: 1 }}>
-                  Statistiques
-                </Typography>
-                <StatTab boards={boards} />
-              </>
-            ) : (
-              <></>
-            )}
-          </Grid>
-        </Grid>
-      ) : (
-        <div>
-          <Box>
-            <Typography>Statistiques</Typography>
-            <Box style={{ display: "flex", justifyContent: "space-between", margin: "5vh" }}>
-              <Box
-                style={{
-                  backgroundColor: "#c7c7c7",
-                  width: "25%",
-                  height: "35vh",
-                  borderRadius: "5px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                }}
-              >
-                <Typography varian="h5" style={{ textAlign: "center" }}>
-                  Participation
-                </Typography>
-
-                <Box
-                  style={{
-                    marginTop: "5vh",
-                  }}
-                >
-                  <BarChart participation={getParticipation()} label={"Nombre de taches"} />
-                </Box>
-              </Box>
+      <div>
+        <Box>
+          <Typography>Statistiques</Typography>
+          <Box style={{ display: "flex", justifyContent: "space-between", margin: "5vh" }}>
+            <Box
+              style={{
+                backgroundColor: "#424242",
+                width: "25%",
+                height: "35vh",
+                borderRadius: "5px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <Typography varian="h5" style={{ textAlign: "center" }}>
+                Participation
+              </Typography>
 
               <Box
                 style={{
-                  backgroundColor: "#c7c7c7",
-                  width: "30%",
-                  height: "35vh",
-                  borderRadius: "5px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
+                  marginTop: "5vh",
                 }}
               >
-                <Typography varian="h5" style={{ textAlign: "center" }}>
-                  Avancement
-                </Typography>
-                <Box
-                  style={{
-                    display: "flex",
-                  }}
-                >
-                  <ApexChart selectedBoard={selectedBoard} />
-
-                  <Box style={{ marginTop: "5vh" }}>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <div
-                        style={{
-                          width: "20px",
-                          height: "20px",
-                          borderRadius: "5px",
-                          backgroundColor: "rgba(0, 143, 251, 0.85)",
-                          marginRight: "10px",
-                        }}
-                      ></div>
-                      <span style={{ fontSize: "medium" }}>Todo</span>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <div
-                        style={{
-                          width: "20px",
-                          height: "20px",
-                          borderRadius: "5px",
-                          backgroundColor: "rgba(0, 227, 150, 0.85)",
-                          marginRight: "10px",
-                        }}
-                      ></div>
-                      <span style={{ fontSize: "medium" }}>In Progress</span>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center" }}>
-                      <div
-                        style={{
-                          width: "20px",
-                          height: "20px",
-                          borderRadius: "5px",
-                          backgroundColor: "rgba(254, 176, 25, 0.85)",
-                          marginRight: "10px",
-                        }}
-                      ></div>
-                      <span style={{ fontSize: "medium" }}>Done</span>
-                    </div>
-                  </Box>
-                </Box>
-              </Box>
-              <Box
-                style={{
-                  backgroundColor: "#c7c7c7",
-                  width: "40%",
-                  height: "35vh",
-                  borderRadius: "5px",
-                }}
-              >
-                <BurndownChart board={selectedBoard} value={value} />
+                <BarChart participation={getParticipation()} label={"Nombre de taches"} />
               </Box>
             </Box>
+
+            <Box
+              style={{
+                backgroundColor: "#424242",
+                width: "30%",
+                height: "35vh",
+                borderRadius: "5px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <Typography varian="h5" style={{ textAlign: "center" }}>
+                Avancement
+              </Typography>
+              <Box
+                style={{
+                  display: "flex",
+                }}
+              >
+                <ApexChart selectedBoard={selectedBoard} />
+
+                <Box style={{ marginTop: "5vh" }}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <div
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "5px",
+                        backgroundColor: "rgba(0, 143, 251, 0.85)",
+                        marginRight: "10px",
+                      }}
+                    ></div>
+                    <span style={{ fontSize: "medium" }}>Todo</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <div
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "5px",
+                        backgroundColor: "rgba(0, 227, 150, 0.85)",
+                        marginRight: "10px",
+                      }}
+                    ></div>
+                    <span style={{ fontSize: "medium" }}>In Progress</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <div
+                      style={{
+                        width: "20px",
+                        height: "20px",
+                        borderRadius: "5px",
+                        backgroundColor: "rgba(254, 176, 25, 0.85)",
+                        marginRight: "10px",
+                      }}
+                    ></div>
+                    <span style={{ fontSize: "medium" }}>Done</span>
+                  </div>
+                </Box>
+              </Box>
+            </Box>
+            <Box
+              style={{
+                backgroundColor: "#424242",
+                width: "40%",
+                height: "35vh",
+                borderRadius: "5px",
+              }}
+            >
+              <BurndownChart board={selectedBoard} value={value} />
+            </Box>
           </Box>
-          <Box>
-            <Typography>Boards</Typography>
-            <Box style={{ display: "flex", justifyContent: "space-around" }}>
-              <Button onClick={prevBoards}>
-                <NavigateBeforeIcon></NavigateBeforeIcon>
-              </Button>
-              {boards.slice(displayedBoards.begin, displayedBoards.end).map((board) => {
-                const startingDate = new Date(board.starting_date).getTime();
-                const endingDate = new Date(board.ending_date).getTime();
-                const now = new Date().getTime();
-                const totalDuration = endingDate - startingDate;
-                var timeLeft = 0;
-                if (now < startingDate) {
-                  timeLeft = Math.max(0, endingDate - startingDate);
-                } else {
-                  timeLeft = Math.max(0, endingDate - now);
-                }
-                const percentage = Math.floor((timeLeft / totalDuration) * 100);
-                const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        </Box>
+        <Box>
+          <Typography>Boards</Typography>
+          <Box style={{ display: "flex", justifyContent: "space-around" }}>
+            <Button onClick={prevBoards}>
+              <NavigateBeforeIcon></NavigateBeforeIcon>
+            </Button>
+            {boards.slice(displayedBoards.begin, displayedBoards.end).map((board) => {
+              const startingDate = new Date(board.starting_date).getTime();
+              const endingDate = new Date(board.ending_date).getTime();
+              const now = new Date().getTime();
+              const totalDuration = endingDate - startingDate;
+              var timeLeft = 0;
+              if (now < startingDate) {
+                timeLeft = Math.max(0, endingDate - startingDate);
+              } else {
+                timeLeft = Math.max(0, endingDate - now);
+              }
+              const percentage = Math.floor((timeLeft / totalDuration) * 100);
+              const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+              const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
 
-                const totalTask =
-                  board.data.done.items.length + board.data.toDo.items.length + board.data.inProgress.items.length;
+              const totalTask =
+                board.data.done.items.length + board.data.toDo.items.length + board.data.inProgress.items.length;
 
-                const advancement =
-                  (board.data.done.items.length / totalTask) * 100 +
-                  (board.data.inProgress.items.length / totalTask) * 50;
+              const advancement =
+                (board.data.done.items.length / totalTask) * 100 +
+                (board.data.inProgress.items.length / totalTask) * 50;
 
-                return (
-                  <Box
-                    style={{ width: "20%", backgroundColor: "#c7c7c7", borderRadius: "5px", boxShadow: "5" }}
-                    onMouseEnter={() => {
-                      setSelectedBoard(board);
-                      console.log(board);
-                    }}
-                    onClick={() => {
-                      moveToBoard(board);
-                    }}
-                  >
-                    <Typography variant="h6" style={{ textAlign: "center" }}>
-                      {board.name}
-                    </Typography>
-                    <CustomDivider />
+              return (
+                <Box
+                  style={{ width: "20%", backgroundColor: "#c7c7c7", borderRadius: "5px", boxShadow: "5" }}
+                  onMouseEnter={() => {
+                    setSelectedBoard(board);
+                    console.log(board);
+                  }}
+                  onClick={() => {
+                    moveToBoard(board);
+                  }}
+                >
+                  <Typography variant="h6" style={{ textAlign: "center" }}>
+                    {board.name}
+                  </Typography>
+                  <CustomDivider />
 
-                    <Box style={{ display: "flex" }}>
-                      <Box
-                        style={{
-                          width: "40%",
-                          margin: "2%",
-                        }}
+                  <Box style={{ display: "flex" }}>
+                    <Box
+                      style={{
+                        width: "45%",
+                        margin: "2%",
+                      }}
+                    >
+                      <CircularProgressbarWithChildren
+                        value={percentage}
+                        text={daysLeft > 0 ? `${daysLeft}j ${hoursLeft}h` : `${hoursLeft}h ${minutesLeft}m`}
+                        strokeWidth={10}
+                        counterClockwise
+                        styles={buildStyles({
+                          strokeLinecap: "butt",
+                          textSize: "14px",
+                        })}
                       >
-                        <CircularProgressbarWithChildren
-                          value={percentage}
-                          text={daysLeft > 0 ? `${daysLeft}j ${hoursLeft}h` : `${hoursLeft}h ${minutesLeft}m`}
-                          strokeWidth={10}
-                          counterClockwise
-                          styles={buildStyles({
-                            strokeLinecap: "butt",
-                            textSize: "14px",
-                          })}
-                        >
-                          <RadialSeparators
-                            count={12}
-                            style={{
-                              background: "#fff",
-                              width: "2px",
-                              height: `${10}%`,
-                            }}
-                          />
-                        </CircularProgressbarWithChildren>
-                      </Box>
-                      <CustomDivider variant="middle" />
+                        <RadialSeparators
+                          count={12}
+                          style={{
+                            background: "#fff",
+                            width: "2px",
+                            height: `${10}%`,
+                          }}
+                        />
+                      </CircularProgressbarWithChildren>
+                    </Box>
 
-                      <Box>
-                        <Typography style={{ textAlign: "center" }}>Avancement </Typography>
-                        <Typography style={{ textAlign: "center" }}> {advancement ? advancement : 0} %</Typography>
-                      </Box>
+                    <Box>
+                      <Typography style={{ textAlign: "center" }}>Avancement </Typography>
+                      <Typography style={{ textAlign: "center" }}> {advancement ? advancement : 0} %</Typography>
+                      {now > endingDate ? (
+                        <div>
+                          <Typography style={{ textAlign: "center" }}>Finis Depuis </Typography>
+                          <Timer startingDate={startingDate} endingDate={endingDate} countdown={false} />
+                        </div>
+                      ) : now < startingDate ? (
+                        <div>
+                          <Typography style={{ textAlign: "center" }}>Commence dans</Typography>
+                          <Timer startingDate={startingDate} endingDate={endingDate} countdown={true} />
+                        </div>
+                      ) : (
+                        <div>
+                          <Typography style={{ textAlign: "center" }}>En cours </Typography>
+                          <Timer startingDate={startingDate} endingDate={endingDate} countdown={true} />
+                        </div>
+                      )}
                     </Box>
                   </Box>
-                );
-              })}
-              <Button onClick={nextBoards}>
-                <NavigateNextIcon></NavigateNextIcon>
-              </Button>
-            </Box>
+                </Box>
+              );
+            })}
+            <Button onClick={nextBoards}>
+              <NavigateNextIcon></NavigateNextIcon>
+            </Button>
           </Box>
-          <Box></Box>
-        </div>
-      )}
+        </Box>
+        <Box sx={{ height: "50vh" }}>
+          <Typography variant="h4">Stories</Typography>
+          {display && <StoryList stories={stories} sprints={releases} dashboardId={id} />}
+        </Box>
+      </div>
     </>
   );
 }
