@@ -606,7 +606,7 @@ const Register = () => {
             >
               Vous avez déjà un compte ?
               <Link
-                to="/login"
+                href="/login"
                 sx={{
                   color: "#7a52e1",
                   textDecoration: "none",

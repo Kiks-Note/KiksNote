@@ -152,8 +152,7 @@ const login = async (req, res) => {
   }
 };
 
-// email for reset password
-const sendemail = async (req, res) => {
+const resetPassword = async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -165,33 +164,51 @@ const sendemail = async (req, res) => {
         .json({ message: "L'adresse email rentré n'existe pas." });
     }
 
-    console.log(email);
-    auth.generatePasswordResetLink(email).then((link) => {
-      console.log(link);
-      var mailOptions = {
-        from: "services.kiksnote.noreply@gmail.com",
-        to: email,
-        subject: "Récupération du mot de passe",
-        text: `Bonjour,\n\n
-                    \t Vous avez demandé la réinitialisation de votre mot de passe pour le compte ${email}.\n
-                    \t Voici le lien pour réinitialiser votre mot de passe :\n
-                    ${link}\n`,
-      };
+    const resetPasswordLink = await auth.generatePasswordResetLink(email);
 
-      transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-          console.log(error);
-        } else {
-          console.log("Email sent: " + info.response);
-        }
-      });
-      res.send({
-        message: "Le lien à été généré avec succès et l'email envoyé.",
-      });
+    const logoFilePath = path.resolve(__dirname, "../assets/logo.png");
+    const resetPasswordEmailFilePath = path.resolve(
+      __dirname,
+      "../assets/reset_password.png"
+    );
+
+    const mailOptions = {
+      from: "services.kiksnote.noreply@gmail.com",
+      to: email,
+      subject: "Réinitialisation du mot de passe",
+      template: "reset_password",
+      context: {
+        resetPasswordLink: resetPasswordLink,
+      },
+      attachments: [
+        {
+          filename: "logo.png",
+          path: logoFilePath,
+          cid: "logo",
+        },
+        {
+          filename: "reset_password.png",
+          path: resetPasswordEmailFilePath,
+          cid: "resetPasswordArt",
+        },
+      ],
+    };
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.log(error);
+        return res.status(500).send({
+          message: "Une erreur s'est produite lors de l'envoi de l'e-mail.",
+        });
+      } else {
+        console.log("E-mail envoyé : " + info.response);
+        return res
+          .status(200)
+          .send({ message: "E-mail de réinitialisation envoyé avec succès." });
+      }
     });
   } catch (error) {
     res.status(401).json({ message: "Connexion non autorisée" });
   }
 };
 
-module.exports = { login, register, sendemail };
+module.exports = { login, register, resetPassword };
