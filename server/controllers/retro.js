@@ -62,7 +62,10 @@ const room = async (connection) => {
   const sendToAllClients = (message, classStudent) => {
     const roomClients = clients.get(classStudent) || new Map();
 
+    console.log(roomClients.entries());
     for (const [UserID, client] of roomClients.entries()) {
+      console.log(UserID);
+      console.log(message);
       client.sendUTF(JSON.stringify(message));
     }
   };
@@ -190,6 +193,7 @@ const room = async (connection) => {
           },
         };
 
+        console.log(messageJoin);
         sendToAllClients(messageJoin, response.data.class);
 
         break;
@@ -254,6 +258,8 @@ const room = async (connection) => {
             class: response.data.class,
           },
         };
+       // console.log(messageUpdateCol);
+       // console.log(messageUpdateCol.data.currentRoom["columns"]);
         sendToAllClients(messageUpdateCol, response.data.class);
     }
   });

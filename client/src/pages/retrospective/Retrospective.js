@@ -339,6 +339,10 @@ function Retrospective() {
     })
   }
 
+  const goToOnGoingBoard = () => {
+    navigate('/board')
+  }
+
 
   const validateBoard = async () => {
     if (boardTitle && choosenCourse && retroModel) {
@@ -388,19 +392,7 @@ function Retrospective() {
 
       {onGoingRetro.length !== 0 ? (
       <div>
-        Retros en cours : 
-
-        {onGoingRetro.map(retroRoom => {
-          console.log(retroRoom.class);
-          return  (
-            console.log(datas),
-            <>
-              <button onClick={() => navigate('/board', { state: { retroRoom } }) // datas
-                      } style={{marginLeft: "20px"}}>{retroRoom.class}</button>
-              
-            </>
-          )
-        })}
+        <Button onClick={goToOnGoingBoard}>Rejoindre une retro en cours</Button>
 
       </div>) : (<></>)}
 

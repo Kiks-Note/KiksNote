@@ -24,7 +24,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PostIt from "../../components/retro/PostIt";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
-import { useNavigate } from "react-router-dom";
+import { json, useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { set } from "date-fns";
 import { useLocation } from 'react-router-dom';
@@ -44,17 +44,18 @@ export default function Board() {
   const [inRoom, setInRoom] = useState(false);
   const [classStudents, setClassStudents] = useState();
   const [roomAvailables, setRoomAvailables] = useState();
+  const [roomData, setRoomData] = useState();
 
   const { user } = useFirebase();
   const theme = useTheme();
   const navigate = useNavigate();
   
-  const location = useLocation();
-  const retroData = location.state && location.state.retroRoom;
+  // const location = useLocation();
+  // const retroData = location.state && location.state.retroRoom;
 
-  console.log("ééééé");
-  console.log(retroData);
-  console.log("ééééé");
+  // console.log("ééééé");
+  // console.log(retroData);
+  // console.log("ééééé");
 
   const ws = useMemo(() => {
     return new w3cwebsocket("ws://localhost:5050/retro");
@@ -76,12 +77,13 @@ export default function Board() {
         },
       })
     );
+    console.log(colContent);
     setColumns(colContent);
   }, [ws, classStudents]);
 
-  useEffect(() => {
-    joinRoom(retroData)
-  }, [])
+  // useEffect(() => {
+  //   joinRoom(retroData)
+  // }, [])
 
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
@@ -128,6 +130,7 @@ export default function Board() {
   }, []);
 
   useEffect(() => {
+    console.log("wsss");
     if (user?.class && user?.status === "etudiant") {
       setClassStudents(user.class);
     }
@@ -140,6 +143,8 @@ export default function Board() {
       if (user?.status === "etudiant" && classStudents) {
         await LogToExistingRoomStudent();
       }
+      console.log("wssssss  open"); 
+
       if (classStudents) {
         document.addEventListener("mousemove", (event) => {
           const cursorPosition = {
@@ -167,6 +172,7 @@ export default function Board() {
                 displayUserCursorPositions(
                   messageReceive.data.currentRoom.users
                 );
+                console.log("updateCol in room");
                 if (messageReceive.data.currentRoom.columns) {
                   setColumns(messageReceive.data.currentRoom.columns);
                 } else {
@@ -175,6 +181,7 @@ export default function Board() {
                 setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
                 break;
               case "updateCol":
+                console.log("update colll");
                 setColumns(messageReceive.data.currentRoom.columns);
                 setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
                 break;
@@ -218,6 +225,19 @@ export default function Board() {
     user?.status,
     ws,
   ]);
+
+  useEffect(() => {
+    ws.onmessage = (message) => {
+      
+      console.log(typeof message.data);      
+
+     let jsonData = JSON.parse(message.data);
+      
+      if (jsonData.type == "updateRoom" && jsonData.data.currentRoom.columns) {
+        setColumns(jsonData.data.currentRoom.columns)
+      }
+    }
+  })
 
   const GMDBoard = {
     Glad: {
@@ -344,9 +364,10 @@ export default function Board() {
           ...columns,
           [columnId]: updatedColumn,
         },
-        class: classStudents,
+        class: roomData["class"],
       },
     };
+    console.log(message);
     ws.send(JSON.stringify(message));
 
     console.log(columnId);
@@ -439,9 +460,24 @@ export default function Board() {
     setShowTextField(false);
   };
 
+  const updateCol = () => {
+    const message = {
+      type: "updateCol",
+      data: {
+        userID: user?.id,
+        columns: columns,
+        class: roomData["class"]
+      },      
+    }
+
+    ws.send(JSON.stringify(message));
+
+  } 
+
   const joinRoom = (room) => {
     console.log(room);
     setInRoom(true);
+    setRoomData(room)
     const message = {
       type: "joinRoom",
       data: {
@@ -455,12 +491,8 @@ export default function Board() {
     } else {
       setColumns(GMDBoard);
     } 
-    
-    ws.onopen= () => {
-      console.log('WebSocket connection opened');
-      ws.send(JSON.stringify(message));
-    };
-  
+
+    ws.send(JSON.stringify(message));
   };
 
   const setRightPostItCategorie = (obj, i) => {
@@ -470,6 +502,10 @@ export default function Board() {
     handleClickOpenEditPostIt();
     setSelectedPostItIndex(i);
   };
+
+  useEffect(() => {
+    console.log("ws change");
+  }, [ws])
 
   const createRoom = () => {
     console.log("create room");
