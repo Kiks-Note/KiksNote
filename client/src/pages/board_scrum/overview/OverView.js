@@ -348,6 +348,7 @@ function OverView({ id }) {
             sx={{
               display: "flex",
               justifyContent: "space-between",
+              padding: "5vh",
             }}
           >
             <Box
@@ -608,9 +609,21 @@ function OverView({ id }) {
           >
             Stories
           </Typography>
-          {display && (
-            <StoryList stories={stories} sprints={releases} dashboardId={id} />
-          )}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              padding: "5vh",
+            }}
+          >
+            {display && (
+              <StoryList
+                stories={stories}
+                sprints={releases}
+                dashboardId={id}
+              />
+            )}
+          </Box>
         </Box>
       </div>
     </>

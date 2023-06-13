@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import List from "@mui/material/List";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
@@ -21,16 +21,18 @@ export default function ModalCreateSprint(props) {
     }
   };
   return (
-    <Box>
+    <Box sx={{ margin: "1%" }}>
       <List component="div" role="group">
-        <IconButton
-          aria-label="delete"
+        <Button
           onClick={handleClickListItem}
-          size="large"
-          color="primary"
+          style={{
+            backgroundColor: "#dd006b",
+            padding: "10px",
+            borderRadius: "5px",
+          }}
         >
-          <AddIcon />
-        </IconButton>
+          <AddIcon /> Dashboard
+        </Button>
         <SimpleDashboardForm
           id="ringtone-menu"
           keepMounted
