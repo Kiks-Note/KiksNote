@@ -106,7 +106,7 @@ function Blog() {
         };
         allBlogs.push(blogFront);
       });
-
+      console.log(allBlogs);
       setBlog(allBlogs);
       fetchTags();
       setLoading(false);
@@ -142,7 +142,6 @@ function Blog() {
           }}
         >
           {blog
-            // .filter((blog) => blog.type !== "tuto")
             .filter((blog) =>
               user.status !== "etudiant"
                 ? blog.visibility === "pending"
@@ -167,9 +166,6 @@ function Blog() {
                 }}
               >
                 <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                {/*<Typography>{user.email}</Typography>*/}
-                {/*<Typography>{filtered.created_by}</Typography>*/}
-                {/*<Typography>{filtered.visibility}</Typography>*/}
               </Box>
             ))}
         </ul>
@@ -474,30 +470,33 @@ function Blog() {
             <SplitButtonChoice />
           </Box>
           <Box sx={{ width: "93vw" }}>
-            <Box
-              sx={{
-                display: "flex",
-                width: "100%",
-                justifyContent: "space-around",
-                alignItems: "center",
-                bgcolor: "#c6c5c5",
-                my: 2,
-              }}
-            >
-              <TopCreatorsChart />
-              <Box>
-                <MostParticipantsChart />
+            {user.status !== "etudiant" && (
+              <Box
+                sx={{
+                  display: "flex",
+                  width: "100%",
+                  justifyContent: "space-around",
+                  alignItems: "center",
+                  bgcolor: "#c6c5c5",
+                  my: 2,
+                }}
+              >
+                <TopCreatorsChart />
+                <Box>
+                  <MostParticipantsChart />
+                </Box>
+                <BlogRepartition />
               </Box>
-              <BlogRepartition />
+            )}
+            <Box sx={{ marginTop: 2 }}>
+              {user.status !== "etudiant" && <AdvancedCarouselPending />}
+              <Typography variant="h3">Tutoriel</Typography>
+              <AdvancedCarouselTuto />
+              <Typography variant="h3">Articles de blog</Typography>
+              <AdvancedCarouselBlog />
+              <Typography variant="h3">Evenement</Typography>
+              <AdvancedCarouselEvent />
             </Box>
-            pending
-            <AdvancedCarouselPending />
-            tuto
-            <AdvancedCarouselTuto />
-            blog
-            <AdvancedCarouselBlog />
-            event
-            <AdvancedCarouselEvent />
           </Box>
         </Box>
       </Box>
