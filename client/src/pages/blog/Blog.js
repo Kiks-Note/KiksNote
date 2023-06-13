@@ -126,6 +126,7 @@ function Blog() {
   // test for sort by date
   // console.log("blog : ", blog);
   blog.sort((a, b) => b.created_at.localeCompare(a.created_at)); // sort by date
+
   // console.log("blogSorted : ", blogSorted);
 
   const AdvancedCarouselPending = () => {

@@ -19,6 +19,22 @@ export default function CardBlog({ blog, tags }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const { user } = useFirebase();
 
+  const updateVisibility = async function () {
+    const weekDelay = new Date();
+    weekDelay.setDate(weekDelay.getDate() - 14)
+
+    console.log(new Date(blog.created_at).getTime());
+    console.log(weekDelay.getTime());
+    console.log('');
+
+    if (weekDelay > new Date(blog.created_at) && blog.visibility == 'pending') {
+      axios
+        .put(`http://localhost:5050/blog/${blog.id}/visibility`, {
+          visibility: true,
+        })
+    }
+  }
+
   const deleteBlog = function () {
     axios
       .delete(`http://localhost:5050/blog/${blog.id}`)
@@ -48,6 +64,10 @@ export default function CardBlog({ blog, tags }) {
         console.log(err);
       });
   };
+
+  if (blog) {
+    updateVisibility()
+  }
 
   const navigate = useNavigate();
 
