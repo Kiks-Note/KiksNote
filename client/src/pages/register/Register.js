@@ -93,6 +93,15 @@ const Register = () => {
   };
 
   const register = async () => {
+    if (userStatus === "etudiant" || userStatus === "pedago") {
+      if (
+        !userEmail.includes("edu.esiee-it.fr") &&
+        !userEmail.includes("edu.itescia.fr") &&
+        !userEmail.includes("cergy.itin.fr")
+      ) {
+        return;
+      }
+    }
     await axios
       .post("http://localhost:5050/auth/signup", {
         userEmail: userEmail,

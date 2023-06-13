@@ -100,6 +100,14 @@ export default function MiniDrawer({ element }) {
   const colorMode = React.useContext(ColorModeContext);
   const theme = useTheme();
   const navigate = useNavigate();
+  let userStatusForRetro = "/retro";
+
+  if (user?.status == "po") {
+    userStatusForRetro = "/retro";
+  } else if (user?.status == "etudiant") {
+    userStatusForRetro = "/retroStudent";
+  }
+
   // List of page for the drawer
   const [listPage, setListPage] = React.useState([
     {
@@ -117,7 +125,11 @@ export default function MiniDrawer({ element }) {
           id: 10,
           name: "Blog",
           route: "/blog",
-          icon: <AlternateEmailIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
+          icon: (
+            <AlternateEmailIcon
+              sx={{ color: theme.palette.custom.iconDrawer }}
+            />
+          ),
         },
         {
           id: 11,
@@ -137,38 +149,56 @@ export default function MiniDrawer({ element }) {
       id: 3,
       name: "Cours",
       route: "/cours",
-      icon: <LibraryBooksIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
+      icon: (
+        <LibraryBooksIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+      ),
     },
     {
       id: 4,
       name: "Calendrier",
-      route: "#",
-      icon: <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
+      route: "/calendrier",
+      icon: (
+        <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+      ),
     },
     ...(user && user?.status !== "Pédago"
       ? [
           {
             id: 5,
             name: "Agile",
-            icon: <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
+            icon: (
+              <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+            ),
             children: [
               {
                 id: 12,
                 name: "Coding Board",
                 route: "/tableau-de-bord",
-                icon: <DashboardIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
+                icon: (
+                  <DashboardIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
               },
               {
                 id: 13,
                 name: "Coding Retro",
                 route: "#",
-                icon: <WbIridescentIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
+                icon: (
+                  <WbIridescentIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
               },
               {
                 id: 14,
                 name: "Coding Agile",
                 route: "/agile",
-                icon: <TimelineIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
+                icon: (
+                  <TimelineIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
               },
             ],
           },
@@ -251,12 +281,18 @@ export default function MiniDrawer({ element }) {
                 }}
               />
               <IconButton onClick={handleDrawerClose}>
-                <ChevronLeftIcon sx={{ color: theme.palette.custom.iconDrawer }} fontSize="small" />
+                <ChevronLeftIcon
+                  sx={{ color: theme.palette.custom.iconDrawer }}
+                  fontSize="small"
+                />
               </IconButton>
             </>
           ) : (
             <IconButton onClick={handleDrawerOpen}>
-              <ChevronRightIcon sx={{ color: theme.palette.custom.iconDrawer }} fontSize="large" />
+              <ChevronRightIcon
+                sx={{ color: theme.palette.custom.iconDrawer }}
+                fontSize="large"
+              />
             </IconButton>
           )}
         </DrawerHeader>
@@ -289,16 +325,28 @@ export default function MiniDrawer({ element }) {
                   >
                     {page.icon}
                   </ListItemIcon>
-                  <ListItemText sx={{ display: open ? "block" : "none" }} primary={page.name} />
-                  {page.children && (page.open ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
+                  <ListItemText
+                    sx={{ display: open ? "block" : "none" }}
+                    primary={page.name}
+                  />
+                  {page.children &&
+                    (page.open ? <ExpandLessIcon /> : <ExpandMoreIcon />)}
                 </ListItemButton>
               </ListItem>
               {page.children && (
                 <Collapse in={page.open} timeout="auto" unmountOnExit>
-                  <List component="div" disablePadding sx={{ marginLeft: open ? 5 : 0 }}>
+                  <List
+                    component="div"
+                    disablePadding
+                    sx={{ marginLeft: open ? 5 : 0 }}
+                  >
                     {page.children &&
                       page.children.map((child) => (
-                        <ListItem key={child.id} disablePadding selected={isPageActive(child)}>
+                        <ListItem
+                          key={child.id}
+                          disablePadding
+                          selected={isPageActive(child)}
+                        >
                           <ListItemButton
                             sx={{
                               minHeight: 48,
@@ -322,7 +370,10 @@ export default function MiniDrawer({ element }) {
                             >
                               {child.icon}
                             </ListItemIcon>
-                            <ListItemText primary={child.name} sx={{ opacity: open ? 1 : 0 }} />
+                            <ListItemText
+                              primary={child.name}
+                              sx={{ opacity: open ? 1 : 0 }}
+                            />
                           </ListItemButton>
                         </ListItem>
                       ))}
@@ -339,7 +390,11 @@ export default function MiniDrawer({ element }) {
             {
               id: 1,
               name: "Déconnexion",
-              icon: <LogoutOutlinedIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
+              icon: (
+                <LogoutOutlinedIcon
+                  sx={{ color: theme.palette.custom.iconDrawer }}
+                />
+              ),
             },
           ].map((page) => (
             <ListItem key={page.id} disablePadding sx={{ display: "block" }}>
@@ -360,16 +415,27 @@ export default function MiniDrawer({ element }) {
                 >
                   {page.icon}
                 </ListItemIcon>
-                <ListItemText primary={page.name} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText
+                  primary={page.name}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
           {theme.mode === "dark" ? (
-            <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
               <Brightness7Icon />
             </IconButton>
           ) : (
-            <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
+            <IconButton
+              sx={{ ml: 1 }}
+              onClick={colorMode.toggleColorMode}
+              color="inherit"
+            >
               <Brightness4Icon />
             </IconButton>
           )}
