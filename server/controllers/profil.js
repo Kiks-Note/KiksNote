@@ -37,6 +37,7 @@ const updateProfil = async (req, res) => {
       discord: req.body.discord,
       linkedin: req.body.linkedin,
       company: req.body.company,
+      job: req.body.job,
       image: image ? url + image : userData.image,
     })
     .then(() => {

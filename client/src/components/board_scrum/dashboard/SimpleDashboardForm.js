@@ -108,7 +108,7 @@ export default function SimpleDashboardForm(props) {
       favorite: "false",
       group_name: data.group_name,
       sprint_name: data.sprint_name,
-      image: "https://picsum.photos/600",
+      image: "https://picsum.photos/1920/900",
       pdf_link: "",
       groupId: "",
       created_by: user.id,

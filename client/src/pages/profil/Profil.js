@@ -6,7 +6,15 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import { format } from "date-fns";
-import { Avatar, Box, Typography, MenuItem, Menu, Dialog, DialogContent } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Typography,
+  MenuItem,
+  Menu,
+  Dialog,
+  DialogContent,
+} from "@mui/material";
 import JpoCard from "../ressources/jpo/JpoCard";
 import { useTheme } from "@mui/material/styles";
 import { Icon, InlineIcon } from "@iconify/react";
@@ -38,7 +46,6 @@ export default function Profil() {
   const { id } = useParams();
   const [userProfil, setUserProfil] = useState({});
   const fileInputRef = useRef(null);
-  const theme = useTheme();
   const notify = () =>
     toast.success("Utilisateur Discord copié.", {
       position: "top-right",
@@ -56,7 +63,6 @@ export default function Profil() {
       .writeText(text)
       .then(() => {
         notify();
-        console.log("Text copied to clipboard");
       })
       .catch((error) => {
         console.error("Failed to copy text:", error);
@@ -95,11 +101,15 @@ export default function Profil() {
     formData.append("image", pictureToUpload);
 
     try {
-      const response = await axios.put(`http://localhost:5050/profil/background/${userProfil.id}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.put(
+        `http://localhost:5050/profil/background/${userProfil.id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
     } catch (error) {
       console.error(error);
     }
@@ -115,7 +125,31 @@ export default function Profil() {
       }));
     }
   };
-
+  const getJpo = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5050/ressources/jpo/user/${user.id}`
+      );
+      if (response.data != undefined) {
+        setRecentJpo(response.data);
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchBlogs = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5050/blog/user/${user.id}`
+      );
+      var filtredBlogs = filterTwoMostRecentBlogs(response.data, 2);
+      console.log(filtredBlogs);
+      SetRecentBlogs(filtredBlogs);
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+    }
+  };
   useEffect(() => {
     (async () => {
       const wsComments = new w3cwebsocket(`ws://localhost:5050/profil`);
@@ -126,8 +160,6 @@ export default function Profil() {
 
       wsComments.onmessage = (message) => {
         const data = JSON.parse(message.data);
-        console.log(data);
-        var userInfo = data;
         setUserProfil({
           id: id,
           firstname: data.firstname,
@@ -135,43 +167,36 @@ export default function Profil() {
           description: data.description,
           email: data.email,
           image: data.image,
-          imagebackground: !data.imagebackground ? "https://picsum.photos/1920/900" : data.imagebackground,
+          imagebackground: !data.imagebackground
+            ? "https://picsum.photos/1920/900"
+            : data.imagebackground,
           job: data.job,
           linkedin: data.linkedin,
           git: data.git,
           company: data.company,
           class: data.class,
-          programmationLanguage: data.programmationLanguage ? data.programmationLanguage : [],
+          programmationLanguage: data.programmationLanguage
+            ? data.programmationLanguage
+            : [],
           discord: data.discord,
           phoneNumber: data.phone,
           status: data.status,
         });
+        getJpo();
+        fetchBlogs();
         setIsLoading(false);
-        console.log(userProfil);
       };
     })();
-  }, [id]);
-
-  useEffect(() => {
-    const getJpo = async () => {
-      try {
-        const response = await axios.get(`http://localhost:5050/ressources/jpo/user/${user.id}`);
-        if (response.data != undefined) {
-          setRecentJpo(response.data);
-          console.log(response.data);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    getJpo();
   }, []);
 
   const filterTwoMostRecentBlogs = (blogs) => {
     const sortedBlogs = blogs.sort((a, b) => {
-      const timestampA = new Date(a.created_at.seconds * 1000 + a.created_at.nanoseconds / 1000000);
-      const timestampB = new Date(b.created_at.seconds * 1000 + b.created_at.nanoseconds / 1000000);
+      const timestampA = new Date(
+        a.created_at.seconds * 1000 + a.created_at.nanoseconds / 1000000
+      );
+      const timestampB = new Date(
+        b.created_at.seconds * 1000 + b.created_at.nanoseconds / 1000000
+      );
       return timestampB - timestampA;
     });
 
@@ -179,20 +204,6 @@ export default function Profil() {
 
     return twoMostRecentBlogs;
   };
-
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const response = await axios.get("http://localhost:5050/blog/user/ilan.petiot@edu.esiee-it.fr");
-        var filtredBlogs = filterTwoMostRecentBlogs(response.data, 2);
-        SetRecentBlogs(filtredBlogs);
-      } catch (error) {
-        console.error("Error fetching blogs:", error);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
 
   return (
     <div>
@@ -207,7 +218,15 @@ export default function Profil() {
               "--url": `url(${userProfil.imagebackground})`,
             }}
           ></Box>
-          <Box sx={{ display: "flex", height: "75vh", marginLeft: "5%", marginRight: "5%", boxShadow: "3" }}>
+          <Box
+            sx={{
+              display: "flex",
+              height: "75vh",
+              marginLeft: "5%",
+              marginRight: "5%",
+              boxShadow: "3",
+            }}
+          >
             <Box
               sx={{
                 width: "30%",
@@ -227,17 +246,26 @@ export default function Profil() {
                 <Box sx={{ marginTop: "-30%" }}>
                   <Avatar
                     src={userProfil.image}
-                    sx={{ width: "200px", height: "200px", border: "1px solid #0001", boxShadow: "2" }}
+                    sx={{
+                      width: "200px",
+                      height: "200px",
+                      border: "1px solid #0001",
+                      boxShadow: "2",
+                    }}
                   />
                   <Typography variant="h6" sx={{ textAlign: "center" }}>
                     {userProfil.firstname} {userProfil.lastname}
                   </Typography>
                   {userProfil && userProfil.status === "etudiant" && (
-                    <Typography sx={{ textAlign: "center", fontSize: "medium" }}>{userProfil.class.name}</Typography>
+                    <Typography
+                      sx={{ textAlign: "center", fontSize: "medium" }}
+                    >
+                      {userProfil.class.name}
+                    </Typography>
                   )}
                   <Typography sx={{ textAlign: "center", fontSize: "medium" }}>
                     {userProfil.job && `${userProfil.job}`}
-                    {userProfil.company && userProfil.job ? " chez " : " Chez "}
+                    {userProfil.company && userProfil.job ? " Chez " : ""}
                     {userProfil.company && userProfil.company}
                   </Typography>
                   <Box>
@@ -251,10 +279,16 @@ export default function Profil() {
                         marginBottom: "5%",
                       }}
                     >
-                      Mes languages
+                      Mes langages
                     </Typography>
 
-                    <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around" }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "row",
+                        justifyContent: "space-around",
+                      }}
+                    >
                       {userProfil.programmationLanguage &&
                         userProfil.programmationLanguage.map((language) => (
                           <Tooltip title={language}>
@@ -266,13 +300,26 @@ export default function Profil() {
                               alt={language}
                             >
                               <Tooltip title={language}>
-                                <div style={{ display: "flex", flexDirection: "column" }}>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                  }}
+                                >
                                   <img
                                     width={24}
                                     height={24}
-                                    src={"https://api.iconify.design/flat-color-icons:cancel.svg"}
+                                    src={
+                                      "https://api.iconify.design/flat-color-icons:cancel.svg"
+                                    }
                                   ></img>
-                                  <span style={{ fontSize: "60%", marginTop: "-35%", textAlign: "center" }}>
+                                  <span
+                                    style={{
+                                      fontSize: "60%",
+                                      marginTop: "-35%",
+                                      textAlign: "center",
+                                    }}
+                                  >
                                     {language}
                                   </span>
                                 </div>
@@ -297,31 +344,46 @@ export default function Profil() {
                   onClick={() => handleCopy(userProfil.discord)}
                 />
                 <a href={userProfil.git} target="_blank">
-                  <img style={{ width: 25, height: 25 }} src={"https://api.iconify.design/logos:github-icon.svg"} />
+                  <img
+                    style={{ width: 25, height: 25 }}
+                    src={"https://api.iconify.design/logos:github-icon.svg"}
+                  />
                 </a>
                 <a href={userProfil.linkedin} target="_blank">
-                  <img style={{ width: 25, height: 25 }} src={"https://api.iconify.design/logos:linkedin-icon.svg"} />
+                  <img
+                    style={{ width: 25, height: 25 }}
+                    src={"https://api.iconify.design/logos:linkedin-icon.svg"}
+                  />
                 </a>
               </Box>
             </Box>
 
             <Box sx={{ width: "70%" }}>
-              <Box sx={{ typography: "body1", marginTop: "2%", marginLeft: "2%" }}>
+              <Box
+                sx={{ typography: "body1", marginTop: "2%", marginLeft: "2%" }}
+              >
                 <TabContext value={tabValue}>
                   <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-                    <TabList onChange={handleTabChange} aria-label="lab API tabs example">
+                    <TabList
+                      onChange={handleTabChange}
+                      aria-label="lab API tabs example"
+                    >
                       <Tab label="About Me" value="1" />
                       <Tab label="Derniers Blogs" value="2" />
                       <Tab label="Dernières JPO" value="3" />
                     </TabList>
                   </Box>
                   <TabPanel value="1" sx={{ lineHeight: "2" }}>
-                    {userProfil.description ? userProfil.description : "Aucune description"}
+                    {userProfil.description
+                      ? userProfil.description
+                      : "Aucune description"}
                   </TabPanel>
                   <TabPanel value="2">Derniers Blogs</TabPanel>
                   <TabPanel value="3">
                     {recentJpo ? (
-                      recentJpo.map((jpo, index) => <JpoCard key={index} jpoData={jpo}></JpoCard>)
+                      recentJpo.map((jpo, index) => (
+                        <JpoCard key={index} jpoData={jpo}></JpoCard>
+                      ))
                     ) : (
                       <p>Aucune journée porte ouverte prévue</p>
                     )}
@@ -333,12 +395,21 @@ export default function Profil() {
 
           <Box>
             {user.id == userProfil.id && (
-              <IconButton aria-label="settings" onClick={handleClick} sx={{ position: "absolute", top: 25, right: 65 }}>
+              <IconButton
+                aria-label="settings"
+                onClick={handleClick}
+                sx={{ position: "absolute", top: 25, right: 65 }}
+              >
                 <SettingsIcon />
               </IconButton>
             )}
             {user.id == userProfil.id && (
-              <Menu id="profile-menu" anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+              <Menu
+                id="profile-menu"
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
                 <MenuItem className="menuItem" onClick={handleOpenDialog}>
                   <EditIcon style={{ color: "orange" }} />
                   Modifier mon profil
@@ -346,7 +417,12 @@ export default function Profil() {
                 <MenuItem className="menuItem" onClick={handleEditBanner}>
                   <EditIcon style={{ color: "orange" }} />
                   Modifier ma bannière
-                  <input type="file" ref={fileInputRef} style={{ display: "none" }} onChange={handleOnChange} />
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    style={{ display: "none" }}
+                    onChange={handleOnChange}
+                  />
                 </MenuItem>
               </Menu>
             )}
@@ -360,7 +436,10 @@ export default function Profil() {
               TransitionProps={{ onEntering: handleEntering }}
             >
               <DialogContent>
-                <ProfilFormUpdate onClose={handleCloseDialog} user={userProfil} />
+                <ProfilFormUpdate
+                  onClose={handleCloseDialog}
+                  user={userProfil}
+                />
               </DialogContent>
             </Dialog>
           </Box>
