@@ -1,10 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import {
-  Checkbox,
-  IconButton,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Checkbox, IconButton, TextField, Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
