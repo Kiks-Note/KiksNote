@@ -6,7 +6,8 @@ import { toast } from 'react-hot-toast';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { InputLabel } from '@mui/material';
+import { Button, InputLabel } from '@mui/material';
+import { set } from 'date-fns';
 
 export default function ElevatorPitch({ index}) {
 
@@ -16,6 +17,7 @@ export default function ElevatorPitch({ index}) {
     const [type, setType] = useState("");
     const [who, setWho] = useState("");
     const [différence, setDifférence] = useState("");
+    const [invis, setInvis] = useState(false);
 
     const handleChange = (e) => {
         if (!name || !forWho || !needed || !type || !who || !différence) {
@@ -29,6 +31,9 @@ export default function ElevatorPitch({ index}) {
             who,
             différence,
         }
+
+        setInvis(true);
+
         console.log(formValues);
     }
 
@@ -69,6 +74,7 @@ export default function ElevatorPitch({ index}) {
                                         label="pour"
                                         value={forWho}
                                         onChange={(e) => setForWho(e.target.value)}
+                                        required
                                     >
                                         <MenuItem value="Client">Client</MenuItem>
                                         <MenuItem value="Utilisateur">Utilisateur</MenuItem>
@@ -160,11 +166,18 @@ export default function ElevatorPitch({ index}) {
                                         onChange={(e) => setDifférence(e.target.value)}
                                     />
                                 </form>
+                                <Button variant="outlined" onClick={handleChange} >Outlined</Button>
                             </div>
                         </div>
                     )}
                 </div>
             </Box>
+            {invis && (
+                <div>
+                    <h2>Voici votre pitch:</h2>
+                    <p>Pour: {forWho}, Qui a besoin de: {needed}, Le produit: {name} - {type}, Qui: {who}, À la différence de: {différence}. </p>
+                </div>
+            )}
         </div>
     )
 }

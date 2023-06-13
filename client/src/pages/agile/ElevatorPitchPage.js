@@ -37,6 +37,7 @@ export default function ElevatorPitchPage() {
 
   return (
     <Box sx={{ width: '100%', paddingLeft: 10, paddingRight: 10}}>
+      <h1>Elevator Pitch</h1>
       <ElevatorPitch index={activeStep} />
       <Stepper nonLinear activeStep={activeStep}>
         {steps.map((label, index) => (
