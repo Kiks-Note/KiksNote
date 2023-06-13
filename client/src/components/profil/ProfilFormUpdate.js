@@ -217,7 +217,7 @@ function ProfilFormUpdate({ onClose, user }) {
           </Grid>
           <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Box sx={{ display: "flex" }}>
-              <Box sx={{ miWwidth: "50%" }}>
+              <Box sx={{ minWidth: "50%" }}>
                 <Grid item xs={12}>
                   <InputLabel id="description">Description *</InputLabel>
                   <TextareaAutosize
