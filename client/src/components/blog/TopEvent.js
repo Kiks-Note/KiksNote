@@ -31,7 +31,7 @@ function MostParticipantsChart() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5050/blog/stats/participant"
+        "http://localhost:5050/blog/stats/participant2"
       );
       const blogs = response.data;
       const sortedBlogs = blogs.sort((a, b) => b.count - a.count);

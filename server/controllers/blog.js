@@ -188,7 +188,7 @@ const deleteBlogComment = async (req, res) => {
   const commentId = req.params.commentId;
   console.log(blogId);
   console.log(commentId);
-  console.log("je suis dedans");
+  console.log("je suis dedans deleteBlogComment");
   try {
     const blogRef = db.collection("blog").doc(blogId);
 
@@ -291,7 +291,7 @@ const getParticipant = async (req, res) => {
     for (const user of userIds) {
       const userSnapshot = await usersRef.doc(user).get();
       if (userSnapshot.exists) {
-        console.log("je suis dedans");
+        console.log("je suis dedans userSnapshot");
         const userData = userSnapshot.data();
         const { firstname, lastname, image } = userData;
         userDetails.push({ id: user, firstname, lastname, image });
