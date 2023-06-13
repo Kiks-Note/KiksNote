@@ -466,7 +466,9 @@ const InventoryAdminDashboard = () => {
         toogleDialog={setEmailsDialogOpen}
         emails={emails}
       />
-      <Container style={{padding: 0, margin: 0, minWidth: "100%"}}>
+      <Container
+        style={{padding: 0, paddingBottom: 40, margin: 0, minWidth: "100%"}}
+      >
         <Typography
           variant="h5"
           className="inventory-admin-dashboard-title"
