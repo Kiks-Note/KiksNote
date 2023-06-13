@@ -23,6 +23,7 @@ import NotFound from "./pages/not_found/NotFound";
 import Presence from "./pages/presence/Presence";
 import Profil from "./pages/profil/Profil";
 import Register from "./pages/register/Register";
+import DetailTuto from "./pages/blog/DetailTuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
 import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
@@ -61,6 +62,7 @@ function RoutesProvider() {
           <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
+          <Route path="/tuto/:id" element={<DetailTuto />} />
 
           <Route path="/profil/:id" element={<Profil />} />
 
