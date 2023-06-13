@@ -24,7 +24,7 @@ function AppelEleve({ callId }) {
 
   const id = useRef();
   const ws = useMemo(() => {
-    return new w3cwebsocket(`ws://192.168.1.16:5050/callws`);
+    return new w3cwebsocket(`ws://localhost:5050/callws`);
   }, []);
 
   const LogToExistingRoom = useCallback(async () => {
@@ -84,6 +84,7 @@ function AppelEleve({ callId }) {
       }
     };
     console.log(ws);
+
     if (ws.readyState === WebSocket.OPEN) {
       handleOpen();
     } else {
@@ -105,6 +106,7 @@ function AppelEleve({ callId }) {
   const addGif = (gif) => {
     const date = new Date();
     const chatCopy = [
+      ...Call.chats,
       {
         id: Call.chats.length + 1,
         date:
@@ -113,7 +115,6 @@ function AppelEleve({ callId }) {
         content: gif.images.fixed_height_small.url,
         isGif: true,
       },
-      ...Call.chats,
     ];
 
     setCall((prevCall) => ({
@@ -121,14 +122,18 @@ function AppelEleve({ callId }) {
       chats: chatCopy,
     }));
     open.current.close();
-    callToUpdate.current.chats = chatCopy;
+    // callToUpdate.current.chats = chatCopy;
 
-    updateCall();
+    // updateCall();
   };
 
   const addMsg = () => {
+    if (msg.current == "") {
+      return;
+    }
     const date = new Date();
     const chatCopy = [
+      ...Call.chats,
       {
         id: Call.chats.length + 1,
         date:
@@ -137,9 +142,7 @@ function AppelEleve({ callId }) {
         content: msg.current.value,
         isGif: false,
       },
-      ...Call.chats,
     ];
-    console.log(chatCopy);
     setCall((prevCall) => ({
       ...prevCall,
       chats: chatCopy,
@@ -167,59 +170,103 @@ function AppelEleve({ callId }) {
       console.error("Error updating call:", error);
     }
   };
-
   return (
-    <div className="ContentEleve">
-      <div className="DivChatEleve">
-        <h1>Chat</h1>
-        <div className="ChatEleve">
-          {Call.chats.map((chat) => {
-            return (
-              <div className="ChatContentEleve" key={chat.id}>
-                <div className="ChatContentHeaderEleve">
-                  <span>{chat.username}</span>
-                  <span>{chat.date}</span>
-                </div>
-                <div>
-                  {chat.isGif ? (
-                    <img src={chat.content} alt="gif" />
-                  ) : (
-                    <span>{chat.content}</span>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+    <div className="container clearfix">
+      <div className="people-list" id="people-list">
+        <ul className="list">
+          <li className="clearfix">
+            <img
+              src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
+              alt="avatar"
+            />
+            <div className="about">
+              <div className="name">Vincent Porter</div>
+            </div>
+          </li>
+        </ul>
       </div>
 
-      <div className="DivInputChat">
-        <Popup
-          ref={open}
-          trigger={
-            <button className="ButtonAddMsg">
-              <GifBoxIcon></GifBoxIcon>
-            </button>
-          }
-          position="top left"
-        >
-          <div className="PopupGif">
-            <ReactGiphySearchbox
-              apiKey="CHO3gHhn8JI87jBJ8zFewMT7jT8uRGJe"
-              onSelect={(item) => addGif(item)}
-            />
-          </div>
-        </Popup>
-        <input
-          ref={msg}
-          type="text"
-          name="comment"
-          id=""
-          className="InputChat"
-        />
-        <button onClick={addMsg} className="ButtonAddMsg">
-          <SendIcon></SendIcon>
-        </button>
+      <div className="chat">
+        <div className="chat-history">
+          <ul>
+            {Call.chats.map((chat) => {
+              return (
+                <li className="clearfix" key={chat.id}>
+                  {chat.username == user.firstname ? (
+                    <>
+                      <div className="message-data">
+                        <span className="message-data-name">
+                          <i className="fa fa-circle online"></i>{" "}
+                          {chat.username}
+                        </span>
+                        <span className="message-data-time">{chat.date}</span>
+                      </div>
+                      <div className="message my-message">
+                        {chat.isGif ? (
+                          <img src={chat.content} alt="gif" />
+                        ) : (
+                          <span>{chat.content}</span>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="message-data align-right">
+                        <span className="message-data-time">{chat.date}</span>{" "}
+                        &nbsp; &nbsp;
+                        <span className="message-data-name">
+                          {chat.username}
+                        </span>{" "}
+                        <i className="fa fa-circle me"></i>
+                      </div>
+                      <div className="message other-message float-right">
+                        {chat.isGif ? (
+                          <img src={chat.content} alt="gif" />
+                        ) : (
+                          <span>{chat.content}</span>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        <div className="chat-message clearfix">
+          <textarea
+            ref={msg}
+            name="message-to-send"
+            id="message-to-send"
+            placeholder="Entrer vôtre message"
+            rows="3"
+          ></textarea>
+          <Popup
+            ref={open}
+            trigger={
+              <button className="ButtonAddMsg">
+                <GifBoxIcon></GifBoxIcon>
+              </button>
+            }
+            position="top right"
+          >
+            <div
+              className="PopupGif"
+              style={{
+                backgroundColor: "lightgray",
+                padding: "0.25em",
+                borderRadius: "5px",
+              }}
+            >
+              <ReactGiphySearchbox
+                apiKey="CHO3gHhn8JI87jBJ8zFewMT7jT8uRGJe"
+                onSelect={(item) => addGif(item)}
+              />
+            </div>
+          </Popup>
+          <button onClick={addMsg}>Envoyer</button>
+        </div>
       </div>
     </div>
   );
