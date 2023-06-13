@@ -21,19 +21,21 @@ export default function CardBlog({ blog, tags }) {
 
   const updateVisibility = async function () {
     const weekDelay = new Date();
-    weekDelay.setDate(weekDelay.getDate() - 14)
+    weekDelay.setDate(weekDelay.getDate() - 14);
 
     console.log(new Date(blog.created_at).getTime());
     console.log(weekDelay.getTime());
-    console.log('');
+    console.log("");
 
-    if (weekDelay > new Date(blog.created_at) && blog.visibility == 'pending') {
-      axios
-        .put(`http://localhost:5050/blog/${blog.id}/visibility`, {
-          visibility: true,
-        })
+    if (
+      weekDelay > new Date(blog.created_at) &&
+      blog.visibility === "pending"
+    ) {
+      await axios.put(`http://localhost:5050/blog/${blog.id}/visibility`, {
+        visibility: true,
+      });
     }
-  }
+  };
 
   const deleteBlog = function () {
     axios
@@ -66,7 +68,7 @@ export default function CardBlog({ blog, tags }) {
   };
 
   if (blog) {
-    updateVisibility()
+    updateVisibility();
   }
 
   const navigate = useNavigate();
