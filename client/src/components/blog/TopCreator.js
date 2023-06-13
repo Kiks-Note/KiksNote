@@ -121,6 +121,7 @@ function TopCreatorsChart() {
 
   return (
     <div>
+      <h2>Top 10 des créateur d'article </h2>
       {topCreatorsData.labels && topCreatorsData.labels.length > 0 ? (
         <Doughnut
           data={topCreatorsData}

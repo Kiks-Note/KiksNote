@@ -313,7 +313,7 @@ const Cours = () => {
         getClassId(userClassConnected?.id);
       }
     }
-  }, [isAllCoursesDataLoaded]);
+  }, [isAllCoursesDataLoaded, userClassConnected]);
 
   /*
     Submit the data from the CreateCours form to the function createNewCours() 
