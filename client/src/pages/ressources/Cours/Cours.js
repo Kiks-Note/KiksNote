@@ -269,7 +269,7 @@ const Cours = () => {
         getClassId(userClassConnected);
       }
     }
-  }, [isAllCoursesDataLoaded]);
+  }, [isAllCoursesDataLoaded, userClassConnected]);
 
   const onSubmit = async () => {
     await createNewCours();

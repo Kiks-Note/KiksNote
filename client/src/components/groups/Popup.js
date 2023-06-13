@@ -17,9 +17,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const [courseChoosed, setCourseChoosed] = useState({
     data: { title: "Tous les cours" },
   });
-  const start_date = useRef();
-  const end_date = useRef();
-  const nb_release = useRef();
+
   const popUpRef = useRef();
   const [courses, setCourses] = useState([]);
 
@@ -39,20 +37,6 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         });
     };
 
-    if (dataPopUp) {
-      setClassChoose(dataPopUp.classChoose);
-      if (start_date.current) {
-        start_date.current.value = dataPopUp.start_date;
-      }
-
-      if (end_date.current) {
-        end_date.current.value = dataPopUp.end_date;
-      }
-
-      if (nb_release.current) {
-        nb_release.current.value = dataPopUp.nb_release;
-      }
-    }
     getCourse();
     ws.onopen = () => {
       console.log("WebSocket Client Connected");
@@ -68,24 +52,16 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   };
 
   function validate() {
-    if (!classChoose || !start_date.current.value || !end_date.current.value) {
-      alert("Veuillez remplir tous les champs");
+    if (courseChoosed.data.title === "Tous les cours") {
+      alert("Veuillez remplir le champs");
     } else {
       onPopupData({
-        start_date: start_date.current.value,
-        end_date: end_date.current.value,
-        classChoose: classChoose,
         courseChoose: courseChoosed,
       });
       createRoom({
         po_id: user.id,
         class: classChoose,
         name: user?.firstname,
-        settings: {
-          start_date: start_date.current.value,
-          end_date: end_date.current.value,
-          classChoose: classChoose,
-        },
       });
     }
   }
@@ -122,30 +98,12 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
               courses.cours.length > 0 &&
               courses.cours.map((course) => (
                 <MenuItem value={course} key={course.id}>
-                  {course.data.title}
+                  {course.data.title + " | " + course.data.courseClass.name}
                 </MenuItem>
               ))}
           </Select>
         </FormControl>
 
-        <div className="date-sprint">
-          <div className="date-input">
-            <label>Date de début de Sprint</label>
-            <input
-              type="date"
-              defaultValue={dataPopUp ? dataPopUp.start_date : ""}
-              ref={start_date}
-            />
-          </div>
-          <div className="date-input">
-            <label>Date de fin de Sprint</label>
-            <input
-              type="date"
-              defaultValue={dataPopUp ? dataPopUp.end_date : ""}
-              ref={end_date}
-            />
-          </div>
-        </div>
         <div
           style={{
             display: "flex",
