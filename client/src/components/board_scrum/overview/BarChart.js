@@ -67,7 +67,7 @@ const BarChart = ({ participation, label }) => {
     };
   }, [labels, data]);
 
-  return <canvas ref={chartRef} id="myChart" />;
+  return <canvas ref={chartRef} id="myChart" height="235" />;
 };
 
 export default BarChart;
