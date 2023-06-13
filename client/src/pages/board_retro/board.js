@@ -15,6 +15,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  selectClasses,
 } from "@mui/material";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import AddIcon from "@mui/icons-material/Add";
@@ -44,12 +45,12 @@ export default function Board() {
   const [inRoom, setInRoom] = useState(false);
   const [classStudents, setClassStudents] = useState();
   const [roomAvailables, setRoomAvailables] = useState();
-  const [roomData, setRoomData] = useState();
+  const [roomData, setRoomData] = useState({});
 
   const { user } = useFirebase();
   const theme = useTheme();
   const navigate = useNavigate();
-  
+
   // const location = useLocation();
   // const retroData = location.state && location.state.retroRoom;
 
@@ -73,13 +74,13 @@ export default function Board() {
         type: "updateCol",
         data: {
           columns: colContent,
-          class: classStudents,
+          class: roomData["class"],
         },
       })
     );
     console.log(colContent);
     setColumns(colContent);
-  }, [ws, classStudents]);
+  }, [ws, selectClasses]);// , roomData["class"]
 
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
@@ -92,7 +93,7 @@ export default function Board() {
               data: {
                 userID: user?.id,
                 name: user?.firstname,
-                class: classStudents,
+                class: roomData["class"],
               },
             };
             ws.send(JSON.stringify(message));
@@ -103,7 +104,7 @@ export default function Board() {
               data: {
                 userID: user?.id,
                 name: user?.firstname,
-                class: classStudents,
+                class: roomData["class"],
               },
             };
             ws.send(JSON.stringify(message));
@@ -114,7 +115,7 @@ export default function Board() {
       console.error(error);
       throw error;
     }
-  }, [classStudents, user?.id, user?.firstname, ws]);
+  }, [ user?.id, user?.firstname, ws]); // roomData["class"],
 
   const getRoomsAvailables = useCallback(async () => {
     axios.get("http://localhost:5050/retro/getAllRooms").then((res) => {
@@ -136,12 +137,12 @@ export default function Board() {
     }
 
     async function handleOpen() {
-      if (user?.status === "etudiant" && classStudents) {
+      if (user?.status === "etudiant" && roomData["class"]) {
         await LogToExistingRoomStudent();
       }
-      console.log("wssssss  open"); 
+      console.log("wssssss  open");
 
-      if (classStudents) {
+      if (roomData["class"]) {
         document.addEventListener("mousemove", (event) => {
           const cursorPosition = {
             x: event.clientX,
@@ -153,13 +154,14 @@ export default function Board() {
             data: {
               position: cursorPosition,
               userID: user?.id,
-              class: classStudents,
+              class: roomData["class"],
             },
           };
           ws.send(JSON.stringify(message));
         });
 
         if (inRoom) {
+          console.log();("in rooooom")
           ws.onmessage = (message) => {
             const messageReceive = JSON.parse(message.data);
 
@@ -197,20 +199,21 @@ export default function Board() {
       ws.onopen = handleOpen;
     }
 
-    return () => {
-      document.removeEventListener("mousemove", () => {});
-      if (ws.readyState === WebSocket.OPEN) {
-        ws.send(
-          JSON.stringify({
-            type: "leaveRoom",
-            data: { userID: user?.id, class: classStudents },
-          })
-        );
-      }
-    };
+    // return () => {
+    //   document.removeEventListener("mousemove", () => { });
+    //   if (ws.readyState === WebSocket.OPEN) {
+    //     console.log(roomData);
+    //     ws.send(
+    //       JSON.stringify({
+    //         type: "leaveRoom",
+    //         data: { userID: user?.id, class: roomData["class"] },
+    //       })
+    //     );
+    //   }
+    // };
   }, [
     LogToExistingRoomStudent,
-    classStudents,
+    // roomData["class"],
     fetchAndSetData,
     getRoomsAvailables,
     inRoom,
@@ -223,11 +226,9 @@ export default function Board() {
 
   useEffect(() => {
     ws.onmessage = (message) => {
-      
+      let jsonData = JSON.parse(message.data);
+      console.log(jsonData);
 
-     let jsonData = JSON.parse(message.data);
-     console.log(jsonData);
-      
       if (jsonData.type == "updateRoom" && jsonData.data.currentRoom.columns) {
         setColumns(jsonData.data.currentRoom.columns)
       }
@@ -304,7 +305,7 @@ export default function Board() {
   };
 
   const deletePostit = async (item) => {
-    let columnBis = { ... columns}
+    let columnBis = { ...columns }
 
     console.log(item);
 
@@ -314,17 +315,17 @@ export default function Board() {
       for (let index = 0; index < columnBis[el].items.length; index++) {
         const element = columnBis[el].items[index];
         console.log(element);
-         if (element["id"] == item["id"]) {
+        if (element["id"] == item["id"]) {
           console.log("yes");
           columnBis[el].items.splice(index, 1)
-         }
-        
+        }
+
       }
-    
+
     }
 
     setColumns(columnBis)
- 
+
     const message = {
       type: "updateCol",
       data: {
@@ -467,7 +468,7 @@ export default function Board() {
               items: copiedItems,
             },
           },
-          class: classStudents,
+          class: roomData["class"],
         },
       };
       ws.send(JSON.stringify(message));
@@ -490,12 +491,12 @@ export default function Board() {
         userID: user?.id,
         columns: columns,
         class: roomData["class"]
-      },      
+      },
     }
 
     ws.send(JSON.stringify(message));
 
-  } 
+  }
 
   const joinRoom = (room) => {
     console.log(room);
@@ -513,7 +514,7 @@ export default function Board() {
       setColumns(room.columns);
     } else {
       setColumns(GMDBoard);
-    } 
+    }
 
     ws.send(JSON.stringify(message));
   };
@@ -530,6 +531,7 @@ export default function Board() {
   const createRoom = () => {
     console.log("create room");
 
+    console.log(classStudents);
     if (!classStudents) {
       alert("Veuillez renseigner une classe");
       return;
@@ -548,13 +550,16 @@ export default function Board() {
   };
 
   const saveRetro = async () => {
+    console.log(roomData);
     const message = {
       type: "closeRoom",
       data: {
         userID: user?.id,
-        class: classStudents,
+        class: roomData["class"], //classStudents
       },
     };
+
+    console.log(message);
     ws.send(JSON.stringify(message));
   };
 
@@ -562,6 +567,30 @@ export default function Board() {
     console.log(roomAvailables);
     return (
       <div>
+        <div> Créer une rétro </div>
+        <FormControl sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-helper-label">Classe</InputLabel>
+          <Select
+            variant="filled"
+            id="input-class"
+            sx={{ color: "text.primary" }}
+            renderValue={() => "Classe"}
+            onChange={(e) => setClassStudents(e.target.value)}
+          >
+            <MenuItem value="L1-paris">L1-Paris</MenuItem>
+            <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
+            <MenuItem value="L2-paris">L2-Paris</MenuItem>
+            <MenuItem value="L2-cergy">L2-Cergy</MenuItem>
+            <MenuItem value="L3-paris">L3-Paris</MenuItem>
+            <MenuItem value="L3-cergy">L3-Cergy</MenuItem>
+            <MenuItem value="M1-lead">M1-LeadDev</MenuItem>
+            <MenuItem value="M1-gaming">M1-Gaming</MenuItem>
+            <MenuItem value="M2-lead">M2-LeadDev</MenuItem>
+            <MenuItem value="M2-gaming">M2-Gaming</MenuItem>
+          </Select>
+        </FormControl>
+        <button onClick={() => createRoom()}>Créer une room</button>
+
         <h1>Voici les rooms disponible: </h1>
         {roomAvailables.map((room) => {
           console.log(room);
@@ -653,59 +682,59 @@ export default function Board() {
             >
               {userCursors
                 ? Array.from(userCursors.entries()).map(
-                    ([userID, userData]) => {
-                      if (userID !== user?.id) {
-                        return (
+                  ([userID, userData]) => {
+                    if (userID !== user?.id) {
+                      return (
+                        <div
+                          key={userID}
+                          style={{
+                            position: "absolute",
+                            left: userData.position?.x,
+                            top: userData.position?.y,
+                            zIndex: 100,
+                          }}
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 50 50"
+                            width="30px"
+                            height="30px"
+                          >
+                            <path
+                              fill={userData.color}
+                              d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
+                            />
+                          </svg>
+
                           <div
-                            key={userID}
                             style={{
-                              position: "absolute",
-                              left: userData.position?.x,
-                              top: userData.position?.y,
-                              zIndex: 100,
+                              display: "inline-block",
+                              backgroundColor: userData.color,
+                              padding: "0px 6px",
+                              color: "#fff",
+                              fontSize: "12px",
+                              borderRadius: "4px",
+                              margin: "0px",
                             }}
                           >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 50 50"
-                              width="30px"
-                              height="30px"
-                            >
-                              <path
-                                fill={userData.color}
-                                d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
-                              />
-                            </svg>
-
-                            <div
+                            <p
                               style={{
-                                display: "inline-block",
-                                backgroundColor: userData.color,
-                                padding: "0px 6px",
-                                color: "#fff",
-                                fontSize: "12px",
-                                borderRadius: "4px",
+                                selection: "none",
+                                fontWeight: "bold",
+                                textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
                                 margin: "0px",
                               }}
                             >
-                              <p
-                                style={{
-                                  selection: "none",
-                                  fontWeight: "bold",
-                                  textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
-                                  margin: "0px",
-                                }}
-                              >
-                                {userData.name}
-                              </p>
-                            </div>
+                              {userData.name}
+                            </p>
                           </div>
-                        );
-                      } else {
-                        return null;
-                      }
+                        </div>
+                      );
+                    } else {
+                      return null;
                     }
-                  )
+                  }
+                )
                 : null}
             </div>
             {connectedUsers ? (

@@ -343,7 +343,6 @@ function Retrospective() {
     navigate('/board')
   }
 
-
   const validateBoard = async () => {
     if (boardTitle && choosenCourse && retroModel) {
 

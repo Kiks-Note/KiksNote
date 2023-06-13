@@ -52,6 +52,7 @@ const currentRooms = new Map();
 
 const clients = new Map();
 
+
 const room = async (connection) => {
   const defaultRoom = {
     users: new Map(),
@@ -60,14 +61,19 @@ const room = async (connection) => {
   };
 
   const sendToAllClients = (message, classStudent) => {
+
+
+
     const roomClients = clients.get(classStudent) || new Map();
 
-    console.log(roomClients.entries());
+    console.log(clients.get(classStudent));
+
+    //console.log(roomClients);
+
     for (const [UserID, client] of roomClients.entries()) {
-     // console.log(UserID);
-     // console.log(message.data.currentRoom.columns);
       client.sendUTF(JSON.stringify(message));
     }
+
   };
 
   connection.on("message", (message) => {
@@ -200,11 +206,13 @@ const room = async (connection) => {
       case "closeRoom":
         currentRooms.delete(response.data.class);
         clients.delete(response.data.class);
-
+        
         const messageClose = {
           type: "closeRoom",
+          // class: response.data.class
         };
 
+        console.log("******************** close ********************");
         sendToAllClients(messageClose, response.data.class);
 
         break;
@@ -240,6 +248,8 @@ const room = async (connection) => {
 
         sendToAllClients(messageLeave, response.data.class);
 
+
+
         break;
       case "updateCol":
         let roomCol = currentRooms.get(response.data.class) || defaultRoom;
@@ -259,11 +269,9 @@ const room = async (connection) => {
           },
         };
         console.log("in update col");
-        console.log(messageUpdateCol);
-        console.log(response.data.class);
-        
-      //  console.log(messageUpdateCol);
-      //  console.log(messageUpdateCol.data.currentRoom["columns"]);
+
+        //  console.log(messageUpdateCol);
+        //  console.log(messageUpdateCol.data.currentRoom["columns"]);
         sendToAllClients(messageUpdateCol, response.data.class);
     }
   });
