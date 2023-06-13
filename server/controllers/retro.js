@@ -44,9 +44,42 @@ const getAllRooms = async (req, res) => {
     .collection("rooms")
     .where("type", "==", "retro")
     .get();
+
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.status(200).send(documents);
 };
+
+
+const getAllRoomsForPO = async (req,res) => {
+  const poID = req.params.poID
+  const snapshot = await db
+    .collection("rooms")
+    .where("type", "==", "retro")
+    .where("userID", "==", poID)
+    .get();
+
+
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+
+    console.log("*********");
+    console.log(documents);
+    console.log("*********");
+
+    res.status(200).send(documents);
+}
+
+const getAllRoomsForStudent = async (req,res) => {
+  const studentClass = req.params.classStudent
+  const snapshot = await db
+    .collection("rooms")
+    .where("type", "==", "retro")
+    .where("class", "==", studentClass)
+    .get();
+
+    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+    res.status(200).send(documents);
+}
+
 
 const currentRooms = new Map();
 
@@ -66,7 +99,8 @@ const room = async (connection) => {
 
     const roomClients = clients.get(classStudent) || new Map();
 
-    console.log(clients.get(classStudent));
+
+    //console.log(clients);
 
     //console.log(roomClients);
 
@@ -196,24 +230,43 @@ const room = async (connection) => {
               ),
             },
             class: response.data.class,
+            wsh: response.data.wsh
           },
         };
 
-        console.log(messageJoin);
+
+        console.log(currentRooms.get(response.data.class));
+        console.log("*************************************");
         sendToAllClients(messageJoin, response.data.class);
 
         break;
       case "closeRoom":
-        currentRooms.delete(response.data.class);
-        clients.delete(response.data.class);
-        
-        const messageClose = {
-          type: "closeRoom",
-          // class: response.data.class
+      // currentRooms.delete(response.data.class);
+      // clients.delete(response.data.class);
+
+      // const messageClose = {
+      //   type: "closeRoom",
+      //   // class: response.data.class
+      // };
+
+      // console.log("******************** close ********************");
+      // sendToAllClients(messageClose, response.data.class);
+
+      case "deleteRoom":
+        console.log("deleteRoom");
+        const classToDelete = response.data.class;
+        console.log(currentRooms);
+        console.log(clients);
+
+        const messageDelete = {
+          type: "deleteRoom",
         };
 
-        console.log("******************** close ********************");
-        sendToAllClients(messageClose, response.data.class);
+        sendToAllClients(messageDelete, classToDelete);
+
+        clients.delete(classToDelete);
+        currentRooms.delete(classToDelete);
+        
 
         break;
       case "leaveRoom":
@@ -279,6 +332,8 @@ const room = async (connection) => {
 
 module.exports = {
   getAllRooms,
+  getAllRoomsForPO,
+  getAllRoomsForStudent,
   getRoom,
   room,
   getAll

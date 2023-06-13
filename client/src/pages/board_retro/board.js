@@ -39,6 +39,8 @@ export default function Board() {
   const [newPostItContent, setNewPostItContent] = useState("");
   const [selectedColumnId, setSelectedColumnId] = useState(null);
   const [connectedUsers, setConnectedUsers] = useState([]);
+  const [connectedUsersList, setConnectedUsersList] = useState({});
+
   const [userCursors, setUserCursors] = useState();
 
   const [columns, setColumns] = useState();
@@ -115,15 +117,20 @@ export default function Board() {
       console.error(error);
       throw error;
     }
-  }, [ user?.id, user?.firstname, ws]); // roomData["class"],
+  }, [user?.id, user?.firstname, ws]); // roomData["class"],
 
   const getRoomsAvailables = useCallback(async () => {
-    axios.get("http://localhost:5050/retro/getAllRooms").then((res) => {
+ 
+    console.log(user?.id);
+    axios.get(`http://localhost:5050/retro/getPORoom/${user?.id}`).then((res) => {
+      console.log(res.data);
       if (res.data.length > 0) {
         console.log(res.data);
         setRoomAvailables(res.data);
       }
     });
+
+
   }, []);
 
   useEffect(() => {
@@ -161,26 +168,29 @@ export default function Board() {
         });
 
         if (inRoom) {
-          console.log();("in rooooom")
+          console.log("in rooooom");
           ws.onmessage = (message) => {
             const messageReceive = JSON.parse(message.data);
-
+            console.log("wsss rooom");
             switch (messageReceive.type) {
               case "updateRoom":
                 displayUserCursorPositions(
                   messageReceive.data.currentRoom.users
                 );
-                console.log("updateCol in room");
                 if (messageReceive.data.currentRoom.columns) {
                   setColumns(messageReceive.data.currentRoom.columns);
                 } else {
                   fetchAndSetData();
                 }
-                setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
+                console.log("updateCo user in room, room update");
+                //setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
+                setConnectedUsersList(messageReceive.data.currentRoom.users);
                 break;
               case "updateCol":
+                console.log("updateCo user in room when col update");
                 setColumns(messageReceive.data.currentRoom.columns);
-                setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
+                //setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
+                setConnectedUsersList(messageReceive.data.currentRoom.users);
                 break;
               case "closeRoom":
                 setInRoom(false);
@@ -199,18 +209,18 @@ export default function Board() {
       ws.onopen = handleOpen;
     }
 
-    // return () => {
-    //   document.removeEventListener("mousemove", () => { });
-    //   if (ws.readyState === WebSocket.OPEN) {
-    //     console.log(roomData);
-    //     ws.send(
-    //       JSON.stringify({
-    //         type: "leaveRoom",
-    //         data: { userID: user?.id, class: roomData["class"] },
-    //       })
-    //     );
-    //   }
-    // };
+    return () => {
+      document.removeEventListener("mousemove", () => { });
+      if (ws.readyState === WebSocket.OPEN) {
+        console.log(roomData);
+        ws.send(
+          JSON.stringify({
+            type: "leaveRoom",
+            data: { userID: user?.id, class: roomData["class"] },
+          })
+        );
+      }
+    };
   }, [
     LogToExistingRoomStudent,
     // roomData["class"],
@@ -232,8 +242,29 @@ export default function Board() {
       if (jsonData.type == "updateRoom" && jsonData.data.currentRoom.columns) {
         setColumns(jsonData.data.currentRoom.columns)
       }
+
+      // console.log(jsonData.data);
+      // setConnectedUsersList(jsonData.data.currentRoom.users)
+      // console.log(connectedUsersList);
+
     }
   })
+
+  useEffect(() => {
+    ws.onmessage = (message) => {
+      let jsonData = JSON.parse(message.data);
+      console.log(jsonData);
+
+      if (jsonData.type == "updateRoom" && jsonData.data.currentRoom.columns) {
+        setColumns(jsonData.data.currentRoom.columns)
+      }
+
+      console.log(jsonData.data);
+      setConnectedUsersList(jsonData.data.currentRoom.users)
+      console.log(connectedUsersList);
+
+    }
+  }, [])
 
   const GMDBoard = {
     Glad: {
@@ -507,6 +538,7 @@ export default function Board() {
       data: {
         userID: user?.id,
         class: room.class,
+        name: user?.firstname + " " + user?.lastname
       },
     };
 
@@ -548,6 +580,19 @@ export default function Board() {
 
     setInRoom(true);
   };
+
+  const handleDeleteRoom = () => {
+    const message = {
+      type: "deleteRoom",
+      data: {
+        class: roomData["class"], // Pass the class name of the room to delete
+      },
+    };
+
+    // Send the message to the server
+    ws.send(JSON.stringify(message));
+  };
+
 
   const saveRetro = async () => {
     console.log(roomData);
@@ -737,9 +782,23 @@ export default function Board() {
                 )
                 : null}
             </div>
-            {connectedUsers ? (
+            {connectedUsersList ? (
               <div>
-                <p>Connectés: {connectedUsers}</p>
+                <h4> Présents :</h4>
+                
+                {Object.entries(connectedUsersList).map(([email, userInfo]) => (
+                  console.log("**********************"),
+                  console.log(email),
+                  console.log("**********************"),
+                  console.log(userInfo),
+                  console.log("$$$$$$$$$$$$$$$$$$$$$$$"),
+
+                  <p key={email}>
+                    {email["name"]}/
+                    {userInfo["name"]}
+
+                  </p>
+                ))}
               </div>
             ) : null}
             <DragDropContext onDragEnd={(result) => onDragEnd(result, columns)}>
@@ -904,7 +963,11 @@ export default function Board() {
             </DragDropContext>
           </div>
           {user.status === "po" ? (
-            <button onClick={saveRetro}>Terminer la Retro</button>
+            // <button onClick={saveRetro}>Terminer la Retro</button>
+            <Button variant="contained" onClick={handleDeleteRoom}>
+              Delete Room
+            </Button>
+
           ) : null}
         </div>
       ) : null}
