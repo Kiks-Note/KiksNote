@@ -128,9 +128,6 @@ export default function Profil() {
         const data = JSON.parse(message.data);
         console.log(data);
         var userInfo = data;
-        const date = new Date(userInfo.dateofbirth._seconds * 1000 + userInfo.dateofbirth._nanoseconds / 1000000);
-        const formattedDate = format(date, "yyyy-MM-dd");
-
         setUserProfil({
           id: id,
           firstname: data.firstname,
@@ -139,7 +136,6 @@ export default function Profil() {
           email: data.email,
           image: data.image,
           imagebackground: !data.imagebackground ? "https://picsum.photos/1920/900" : data.imagebackground,
-          dateBirthday: formattedDate,
           job: data.job,
           linkedin: data.linkedin,
           git: data.git,

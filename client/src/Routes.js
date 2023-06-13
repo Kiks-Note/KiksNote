@@ -1,5 +1,4 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import ArbreFonctionnel from "./pages/agile/ArbreFonctionnel";
 import FolderAgile from "./pages/agile/FolderAgile";
 import Blog from "./pages/blog/Blog";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";
@@ -49,7 +48,7 @@ function RoutesProvider() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/askresetpassword" element={<AskResetPassword />} />
-          <Route path="/arbre" element={<ArbreFonctionnel />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
