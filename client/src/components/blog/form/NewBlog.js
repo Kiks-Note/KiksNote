@@ -1,5 +1,10 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton, TextField, Typography } from "@mui/material";
+import {
+  Checkbox,
+  IconButton,
+  TextField,
+  Typography,
+} from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
@@ -89,6 +94,8 @@ export default function NewBlog({ open, toggleDrawerModify }) {
   const newBlog = async (e) => {
     e.preventDefault();
 
+    let blogType = "blog";
+
     if (!validateForm()) {
       return;
     }
@@ -98,6 +105,10 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     if (user.status === "etudiant") {
       statut = "pending";
       visibility = "pending";
+    }
+
+    if (checked) {
+      blogType = "event";
     }
 
     const rawContentState = convertToRaw(editorState.getCurrentContent());
@@ -111,7 +122,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
       editorState: JSON.stringify(rawContentState),
       inputEditorState: inputEditorState,
       created_by: user.id,
-      type: "blog",
+      type: blogType,
       tag: selectedTags,
       statut: statut,
       visibility: visibility,
@@ -139,18 +150,24 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     }
   };
 
+  const [checked, setChecked] = React.useState(false);
+
+  const handleChange = (event) => {
+    setChecked(event.target.checked);
+    console.log(checked);
+  };
+
   const list = () => (
     <>
       <Box
         sx={{
-          width: 1450,
-          p: 2,
+          display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          display: "flex",
           flexDirection: "column",
+          height: "100%",
+          padding: 5,
         }}
-        role="presentation"
       >
         <Typography
           variant="h6"
@@ -204,8 +221,9 @@ export default function NewBlog({ open, toggleDrawerModify }) {
             error={errors.description ? true : false}
             helperText={errors.description}
           />
-          <div>
+          <Box sx={{ display: "flex", width: "100%", mb: 2 }}>
             <Autocomplete
+              sx={{ width: "50%" }}
               multiple
               id="tags"
               options={tags}
@@ -225,7 +243,18 @@ export default function NewBlog({ open, toggleDrawerModify }) {
                 />
               )}
             />
-          </div>
+
+            <Box sx={{ ml: 5 }}>
+              <Checkbox
+                checked={checked}
+                onChange={handleChange}
+                inputProps={{ "aria-label": "controlled" }}
+              />
+              <Typography variant="caption" color="textSecondary">
+                Évenement
+              </Typography>
+            </Box>
+          </Box>
           <div>
             <Editor
               placeholder="Faites chauffer le clavier"

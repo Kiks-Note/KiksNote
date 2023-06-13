@@ -239,7 +239,7 @@ function DetailBlog() {
                     >
                       J'aime pas ({data.dislike.length})
                     </Button>
-                    {data.type === "blog" && (
+                    {data.type === "event" && (
                       <Button
                         variant="contained"
                         size="small"

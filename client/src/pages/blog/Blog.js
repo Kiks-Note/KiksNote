@@ -402,29 +402,34 @@ function Blog() {
           }}
         >
           {blog
-            .filter((blog) => blog.visibility === "public")
-            .map((filtered) => (
-              <Box
-                sx={{
-                  // backgroundColor: "aqua",
-                  fontSize: "50px",
-                  width: 450,
-                  height: "auto",
-                  flexShrink: 0,
-                  color: "#fff",
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  py: 2,
-                  mx: 1,
-                }}
-              >
-                <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                {/*<Typography>{user.email}</Typography>*/}
-                {/*<Typography>{filtered.created_by}</Typography>*/}
-                {/*<Typography>{filtered.visibility}</Typography>*/}
-              </Box>
-            ))}
+            .filter((blog) => blog.type === "event")
+            .filter((blog) => blog.visibility === "public").length > 0
+            ? blog
+                .filter((blog) => blog.type === "event")
+                .filter((blog) => blog.visibility === "public")
+                .map((filtered) => (
+                  <Box
+                    sx={{
+                      // backgroundColor: "aqua",
+                      fontSize: "50px",
+                      width: 450,
+                      height: "auto",
+                      flexShrink: 0,
+                      color: "#fff",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      py: 2,
+                      mx: 1,
+                    }}
+                  >
+                    <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                    {/*<Typography>{user.email}</Typography>*/}
+                    {/*<Typography>{filtered.created_by}</Typography>*/}
+                    {/*<Typography>{filtered.visibility}</Typography>*/}
+                  </Box>
+                ))
+            : "Pas d'évènement disponible"}
         </ul>
         <Box
           sx={{
