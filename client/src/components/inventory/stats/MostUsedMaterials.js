@@ -46,7 +46,7 @@ export default function MostUsedMaterials() {
         console.log("data:", data);
         const formattedData = data.map((document) => ({
           ...document,
-          count: moment(document.deviceId),
+          count: moment(document.deviceCategory),
         }));
         setData(formattedData);
         setLoading(false);
@@ -63,20 +63,20 @@ export default function MostUsedMaterials() {
       const labels = [];
       const values = [];
       // Filtrer les données pour n'inclure que les matériels "accepted"
-      const acceptedMaterials = data.filter(
-        (document) => document.status === "accepted"
+      const acceptedMaterials = data.filter((document) =>
+        ["accepted", "returned"].includes(document.status)
       );
 
       // Traiter les données pour obtenir le top 5 des matériels les plus utilisés
       const topMaterials = acceptedMaterials.reduce((acc, curr) => {
-        const materialId = curr.deviceId;
+        const materialId = curr.deviceCategory;
         acc[materialId] = (acc[materialId] || 0) + 1;
         return acc;
       }, {});
 
       // Convertir le topMaterials en tableau pour le tri
       const topMaterialsArray = Object.entries(topMaterials).map(
-        ([deviceId, count]) => ({deviceId, count})
+        ([deviceCategory, count]) => ({deviceCategory, count})
       );
 
       // Trier le tableau en fonction du nombre d'utilisations (count) de manière décroissante
@@ -87,7 +87,7 @@ export default function MostUsedMaterials() {
 
       // Extraire les labels et les valeurs pour le graphique
       top5Materials.forEach((document) => {
-        labels.push(document.deviceId);
+        labels.push(document.deviceCategory);
         values.push(document.count);
       });
       // console.log("labels:", labels);
@@ -158,30 +158,31 @@ export default function MostUsedMaterials() {
 
   return (
     <div style={{width: "600px", height: "330px"}}>
-      {!loading && chartData.labels < 0 ? (
-        <canvas ref={chartRef}></canvas>
-      ) : (
-        <div>
-          <Typography
-            variant="h6"
-            align="center"
-            style={{
-              fontFamily: "poppins-semiBold",
-              color: "grey",
-              fontSize: "18px",
-            }}
-          >
-            Matériels les plus utilisés
-          </Typography>
-          <Typography
-            variant="body1"
-            align="center"
-            style={{marginTop: "40px", fontFamily: "poppins-regular"}}
-          >
-            Aucune donnée disponible
-          </Typography>
-        </div>
-      )}
+      {
+        !loading && <canvas ref={chartRef}></canvas>
+        // : (
+        //   <div>
+        //     <Typography
+        //       variant="h6"
+        //       align="center"
+        //       style={{
+        //         fontFamily: "poppins-semiBold",
+        //         color: "grey",
+        //         fontSize: "18px",
+        //       }}
+        //     >
+        //       Matériels les plus utilisés
+        //     </Typography>
+        //     <Typography
+        //       variant="body1"
+        //       align="center"
+        //       style={{marginTop: "40px", fontFamily: "poppins-regular"}}
+        //     >
+        //       Aucune donnée disponible
+        //     </Typography>
+        //   </div>
+        // )
+      }
     </div>
   );
 }
