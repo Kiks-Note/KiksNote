@@ -2,7 +2,19 @@ const { db, FieldValue } = require("../firebase");
 const { v4: uuidv4 } = require("uuid");
 //add new Blog
 const addNewBlog = async (req, res) => {
-  const { title, description, editorState, inputEditorState, created_by, tag, statut, type, visibility } = req.body;
+  const {
+    title,
+    description,
+    editorState,
+    inputEditorState,
+    created_by,
+    tag,
+    statut,
+    type,
+    visibility,
+  } = JSON.parse(req.body.blogData);
+  // console.log("req.body", req.body);
+  // console.log("tag", tag);
   try {
     const url = req.protocol + "://" + req.get("host") + "/";
     let imagebackgroundTmp = req.file ? url + req.file.path : "";
@@ -57,7 +69,9 @@ const addNewTuto = async (req, res) => {
         thumbnail: imagebackgroundTmp,
         editorState: editorState,
         inputEditorState: inputEditorState,
-        inputEditorStateTitle: inputEditorStateTitle ? inputEditorStateTitle : [],
+        inputEditorStateTitle: inputEditorStateTitle
+          ? inputEditorStateTitle
+          : [],
         statut: statut,
         created_by: created_by,
         participant: [],
@@ -77,6 +91,45 @@ const addNewTuto = async (req, res) => {
   }
 };
 
+const addNewTuto2 = async (req, res) => {
+  const {
+    title,
+    description,
+    // thumbnail,
+    tags,
+    markdownStepsInfo,
+    titleStep,
+    visibility,
+    statut,
+    created_by,
+  } = JSON.parse(req.body.tutoData);
+  try {
+    const url = req.protocol + "://" + req.get("host") + "/";
+    let imagebackgroundTmp = req.file ? url + req.file.path : "";
+    await db.collection("blog").doc().set({
+      title: title,
+      description: description,
+      thumbnail: imagebackgroundTmp,
+      markdownStepsInfo: markdownStepsInfo,
+      titleStep: titleStep,
+      statut: statut,
+      created_by: created_by,
+      participant: [],
+      comment: [],
+      like: [],
+      dislike: [],
+      tag: tags,
+      type: "tuto",
+      updated_at: "",
+      visibility: visibility,
+      created_at: new Date(),
+    });
+    res.send("Document successfully written!");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+};
 //update tutorial visibility
 const updateBlogVisibility = async (req, res) => {
   console.log(req.body.visibility);
@@ -148,7 +201,9 @@ const deleteBlogComment = async (req, res) => {
       // Vérifier si le champ comment existe dans le document du blog
       if (blogData.comment && Array.isArray(blogData.comment)) {
         // Rechercher l'index du commentaire dans le tableau des commentaires
-        const commentIndex = blogData.comment.findIndex((comment) => comment.id == commentId);
+        const commentIndex = blogData.comment.findIndex(
+          (comment) => comment.id == commentId
+        );
         console.log(commentIndex);
 
         // Vérifier si le commentaire a été trouvé
@@ -184,6 +239,12 @@ const getDescriptions = async (req, res) => {
   const snapshot = await db.collection("blog").doc(req.params.id).get();
   res.send(snapshot.data());
 };
+
+const getBlogParticipant = async (req, res) => {
+  const snapshot = await db.collection("blog").doc(req.params.id).get();
+  res.send(snapshot.data()?.participant);
+};
+
 // add Participant
 const addParticipant = async (req, res) => {
   const blogId = req.params.id;
@@ -341,7 +402,10 @@ const addDislike = async (req, res) => {
 
 const getTopCreators = async (req, res) => {
   try {
-    const creatorsSnapshot = await db.collection("blog").orderBy("created_by").get();
+    const creatorsSnapshot = await db
+      .collection("blog")
+      .orderBy("created_by")
+      .get();
 
     const creatorsMap = new Map();
     creatorsSnapshot.docs.forEach((doc) => {
@@ -360,9 +424,13 @@ const getTopCreators = async (req, res) => {
 
     res.status(200).send(topCreators);
   } catch (error) {
-    console.error("Erreur lors de la récupération des données des créateurs :", error);
+    console.error(
+      "Erreur lors de la récupération des données des créateurs :",
+      error
+    );
     res.status(500).send({
-      error: "Une erreur est survenue lors de la récupération des données des créateurs.",
+      error:
+        "Une erreur est survenue lors de la récupération des données des créateurs.",
     });
   }
 };
@@ -378,14 +446,19 @@ const getBlogParticipants = async (req, res) => {
 
       participants.forEach((participant) => {
         if (participantsCount.has(participant)) {
-          participantsCount.set(participant, participantsCount.get(participant) + 1);
+          participantsCount.set(
+            participant,
+            participantsCount.get(participant) + 1
+          );
         } else {
           participantsCount.set(participant, 1);
         }
       });
     });
 
-    const sortedParticipants = Array.from(participantsCount.entries()).sort((a, b) => b[1] - a[1]);
+    const sortedParticipants = Array.from(participantsCount.entries()).sort(
+      (a, b) => b[1] - a[1]
+    );
 
     const topParticipants = sortedParticipants.slice(0, 10).map((entry) => {
       return { participant: entry[0], count: entry[1] };
@@ -409,7 +482,9 @@ const getTags = async (req, res) => {
     res.send(tags);
   } catch (error) {
     console.error("Erreur lors de la récupération des tags :", error);
-    res.status(500).send("Une erreur s'est produite lors de la récupération des tags.");
+    res
+      .status(500)
+      .send("Une erreur s'est produite lors de la récupération des tags.");
   }
 };
 
@@ -430,7 +505,11 @@ const blogRequests = async (connection) => {
           const userData = userDoc.data();
 
           // Ajouter les informations d'image, de nom et de prénom à l'objet blogData
-          blogData.info_creator = [userData.image, userData.lastname, userData.firstname];
+          blogData.info_creator = [
+            userData.image,
+            userData.lastname,
+            userData.firstname,
+          ];
 
           documents.push({ id: blogId, ...blogData });
         } else {
@@ -463,7 +542,10 @@ const blogDetailRequests = async (connection) => {
               // Parcourir chaque commentaire
               for (const comment of data.comment) {
                 // Récupérer le document de l'utilisateur associé à user_id
-                const userSnapshot = await db.collection("users").doc(comment.user_id).get();
+                const userSnapshot = await db
+                  .collection("users")
+                  .doc(comment.user_id)
+                  .get();
 
                 if (userSnapshot.exists) {
                   const userData = userSnapshot.data();
@@ -484,7 +566,10 @@ const blogDetailRequests = async (connection) => {
               // Parcourir chaque participant
               for (const participantId of data.participant) {
                 // Récupérer le document de l'utilisateur associé à participantId
-                const participantSnapshot = await db.collection("users").doc(participantId).get();
+                const participantSnapshot = await db
+                  .collection("users")
+                  .doc(participantId)
+                  .get();
 
                 if (participantSnapshot.exists) {
                   const participantData = participantSnapshot.data();
@@ -536,15 +621,22 @@ const getRepartition = async (req, res) => {
 
     res.status(200).json({ blogCount, tutorialCount });
   } catch (error) {
-    console.error("Erreur lors de la récupération de la répartition des créations :", error);
+    console.error(
+      "Erreur lors de la récupération de la répartition des créations :",
+      error
+    );
     res.status(500).json({
-      error: "Une erreur est survenue lors de la récupération de la répartition des créations.",
+      error:
+        "Une erreur est survenue lors de la récupération de la répartition des créations.",
     });
   }
 };
 const getUserBlog = async (req, res) => {
   const userId = req.params.userId;
-  const snapshot = await db.collection("blog").where("created_by", "==", userId).get();
+  const snapshot = await db
+    .collection("blog")
+    .where("created_by", "==", userId)
+    .get();
 
   const blogs = [];
   snapshot.forEach((doc) => {
@@ -560,6 +652,7 @@ module.exports = {
   updateBlogVisibility,
   addNewBlog,
   addNewTuto,
+  addNewTuto2,
   blogRequests,
   deleteBlog,
   getDescriptions,
@@ -570,6 +663,7 @@ module.exports = {
   addDislike,
   getTopCreators,
   getBlogParticipants,
+  getBlogParticipant,
   blogDetailRequests,
   deleteBlogComment,
   getRepartition,

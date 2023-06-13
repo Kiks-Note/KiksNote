@@ -23,6 +23,7 @@ import Register from "./pages/register/Register";
 import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import ElevatorPitchPage from "./pages/agile/ElevatorPitchPage";
+import DetailTuto from "./pages/blog/DetailTuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
 import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
@@ -60,6 +61,7 @@ function RoutesProvider() {
           <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
+          <Route path="/tuto/:id" element={<DetailTuto />} />
 
           <Route path="/profil/:id" element={<Profil />} />
 
