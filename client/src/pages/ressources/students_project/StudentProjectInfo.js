@@ -399,7 +399,7 @@ const StudentProjectInfo = () => {
                         <Button
                           onClick={(event) => {
                             event.stopPropagation();
-                            navigate(`/blog/${blogTutoData.id}`);
+                            navigate(`/tuto/${blogTutoData.id}`);
                           }}
                           sx={{
                             bgcolor: "#94258c",

@@ -15,7 +15,7 @@ import {
   Dialog,
   DialogContent,
 } from "@mui/material";
-import JpoCard from "../ressources/jpo/JpoCard";
+import JpoCard from "../../components/ressources/jpo/JpoCard";
 import { useTheme } from "@mui/material/styles";
 import { Icon, InlineIcon } from "@iconify/react";
 import Tooltip from "@mui/material/Tooltip";
