@@ -38,10 +38,12 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteIcon from "@mui/icons-material/Delete";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import VideocamIcon from "@mui/icons-material/Videocam";
 
 import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
 
 import BlogTutosLinkDialog from "./../../../components/ressources/students_project/BlogTutosLinkDialog";
+import UploadVideoPlayerDialog from "./../../../components/ressources/students_project/UploadVideoStudentProject";
 import "./StudentsProjectsInfo.scss";
 import SkeletonStudentProjectInfo from "../../../components/ressources/students_project/SkeletonStudentProjectInfo";
 
@@ -78,6 +80,7 @@ const StudentProjectInfo = () => {
   const [selectedProjectData, setSelectedProjectData] = useState("");
   const [openVoters, setOpenVoters] = useState(false);
   const [openBlogTutos, setOpenBlogTutos] = useState(false);
+  const [openUploadVideo, setOpenUploadVideo] = useState(false);
 
   const [hasAddedBlog, setHasAddedBlog] = useState(false);
 
@@ -190,6 +193,14 @@ const StudentProjectInfo = () => {
 
   const handleCloseBlogTutos = () => {
     setOpenBlogTutos(false);
+  };
+
+  const handleOpenUploadVideoProject = () => {
+    setOpenUploadVideo(true);
+  };
+
+  const handleCloseUploadVideoProject = () => {
+    setOpenUploadVideo(false);
   };
 
   return (
@@ -566,12 +577,36 @@ const StudentProjectInfo = () => {
                   {selectedProjectData?.creatorProject?.firstname}
                 </Typography>
               </div>
+              <div className="btn-link-blog-container">
+                {selectedProjectData?.creatorProject?.id === user?.id ? (
+                  !hasAddedBlog && (
+                    <Button
+                      sx={{
+                        backgroundColor: "#76238b",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                      onClick={handleOpenUploadVideoProject}
+                    >
+                      <VideocamIcon />
+                      Video
+                    </Button>
+                  )
+                ) : (
+                  <div></div>
+                )}
+              </div>
             </div>
             <BlogTutosLinkDialog
               open={openBlogTutos}
               close={handleCloseBlogTutos}
               allblogtutos={allblogtutos}
               getStudentProjectById={getStudentProjectById}
+            />
+            <UploadVideoPlayerDialog
+              open={openUploadVideo}
+              close={handleCloseUploadVideoProject}
+              nameProject={selectedProjectData.nameProject}
             />
           </div>
         </>
