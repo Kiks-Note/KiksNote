@@ -15,6 +15,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Tooltip from "@mui/material/Tooltip";
 
 import GroupsIcon from "@mui/icons-material/Groups";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -117,7 +118,7 @@ export default function MiniDrawer({ element }) {
       children: [
         {
           id: 9,
-          name: "Fil d'actu",
+          name: "JPO",
           route: "/jpo",
           icon: <ListAltIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
         },
@@ -316,15 +317,17 @@ export default function MiniDrawer({ element }) {
                   }}
                   onClick={() => handleToggle(page.id, page.route)}
                 >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {page.icon}
-                  </ListItemIcon>
+                  <Tooltip title={page.name} placement="right">
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {page.icon}
+                    </ListItemIcon>
+                  </Tooltip>
                   <ListItemText
                     sx={{ display: open ? "block" : "none" }}
                     primary={page.name}
@@ -361,15 +364,17 @@ export default function MiniDrawer({ element }) {
                             }}
                             onClick={() => handleToggle(child.id, child.route)}
                           >
-                            <ListItemIcon
-                              sx={{
-                                minWidth: 0,
-                                mr: open ? 3 : "auto",
-                                justifyContent: "center",
-                              }}
-                            >
-                              {child.icon}
-                            </ListItemIcon>
+                            <Tooltip title={child.name} placement="right">
+                              <ListItemIcon
+                                sx={{
+                                  minWidth: 0,
+                                  mr: open ? 3 : "auto",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                {child.icon}
+                              </ListItemIcon>
+                            </Tooltip>
                             <ListItemText
                               primary={child.name}
                               sx={{ opacity: open ? 1 : 0 }}
@@ -406,15 +411,17 @@ export default function MiniDrawer({ element }) {
                 }}
                 onClick={handleLogout}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {page.icon}
-                </ListItemIcon>
+                <Tooltip title={page.name} placement="right">
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {page.icon}
+                  </ListItemIcon>
+                </Tooltip>
                 <ListItemText
                   primary={page.name}
                   sx={{ opacity: open ? 1 : 0 }}
