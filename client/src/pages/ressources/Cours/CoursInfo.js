@@ -48,6 +48,7 @@ import LockIcon from "@mui/icons-material/Lock";
 import AddLinkIcon from "@mui/icons-material/AddLink";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import GroupIcon from "@mui/icons-material/Group";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
@@ -1259,6 +1260,27 @@ const CoursInfo = () => {
                         <div></div>
                       )}
                     </div>
+
+                    {userStatus !== "pedago" ? (
+                      <>
+                        <Button
+                          startIcon={<GroupIcon />}
+                          onClick={() => {
+                            navigate(`/groupes/creation`);
+                          }}
+                          sx={{
+                            bgcolor: "#f9004f",
+                            fontWeight: "bold",
+                            color: "white",
+                            margin: "1vh",
+                          }}
+                        >
+                          Créer un groupe
+                        </Button>
+                      </>
+                    ) : (
+                      <></>
+                    )}
 
                     {userStatus === "etudiant" ? (
                       ""

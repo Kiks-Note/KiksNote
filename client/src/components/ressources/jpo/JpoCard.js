@@ -73,7 +73,7 @@ const JpoCard = ({ jpoData, key }) => {
               component="img"
               src={jpoData.jpoThumbnail}
               alt="img-jpo"
-              className="jpo-image"
+              className="jpo-image-list"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -91,76 +91,79 @@ const JpoCard = ({ jpoData, key }) => {
                   .format("DD.MM.YYYY HH:mm")}
               </Typography>
             </div>
+            <div>
+              {Array.isArray(jpoData.linkedStudentProjects) &&
+              jpoData.linkedStudentProjects.length > 0 ? (
+                <List>
+                  <ListItem button onClick={handleClickProjects}>
+                    <ListItemText
+                      primary={"Afficher les projets"}
+                      style={{ textAlign: "center" }}
+                    />
+                    {openProjects ? <ExpandLess /> : <ExpandMore />}
+                  </ListItem>
+                  <Collapse in={openProjects} timeout="auto" unmountOnExit>
+                    <List disablePadding>
+                      {jpoData.linkedStudentProjects.map((project) => (
+                        <Card
+                          key={project.id}
+                          sx={{
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "100%",
+                            marginBottom: "10px",
+                            padding: "10px 0px",
+                          }}
+                        >
+                          <div className="img-name-project-link-jpo-page">
+                            <img
+                              src={project.imgProject}
+                              className="project-img"
+                              alt="projet truc"
+                            />
+                            <Typography
+                              fontWeight={"bold"}
+                              paddingLeft={"10px"}
+                            >
+                              {project.nameProject}
+                            </Typography>
+                          </div>
+                          <div className="button-project">
+                            <Button
+                              onClick={() => {
+                                navigate(`/studentprojects/${project.id}`);
+                              }}
+                              className={classes.btnProject}
+                            >
+                              <Typography>projet</Typography>
+                              <VisibilityIcon />
+                            </Button>
+                          </div>
+                        </Card>
+                      ))}
+                    </List>
+                  </Collapse>
+                </List>
+              ) : (
+                <p className="no-votes-student-projects-p">
+                  Aucun projet étudiant lié à cette JPO.
+                </p>
+              )}
+              <div className="btn-details-jpo-container">
+                <Button
+                  className={classes.btnDetailJpo}
+                  onClick={() => {
+                    navigate(`/jpo/${jpoData.id}`);
+                  }}
+                >
+                  Détails
+                </Button>
+              </div>
+            </div>
           </Grid>
         </Grid>
-        <div>
-          {Array.isArray(jpoData.linkedStudentProjects) &&
-          jpoData.linkedStudentProjects.length > 0 ? (
-            <List>
-              <ListItem button onClick={handleClickProjects}>
-                <ListItemText
-                  primary={"Afficher les projets"}
-                  style={{ textAlign: "center" }}
-                />
-                {openProjects ? <ExpandLess /> : <ExpandMore />}
-              </ListItem>
-              <Collapse in={openProjects} timeout="auto" unmountOnExit>
-                <List disablePadding>
-                  {jpoData.linkedStudentProjects.map((project) => (
-                    <Card
-                      key={project.id}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "100%",
-                        marginBottom: "10px",
-                        padding: "10px 0px",
-                      }}
-                    >
-                      <div className="img-name-project-link-jpo-page">
-                        <img
-                          src={project.imgProject}
-                          className="project-img"
-                          alt="projet truc"
-                        />
-                        <Typography fontWeight={"bold"} paddingLeft={"10px"}>
-                          {project.nameProject}
-                        </Typography>
-                      </div>
-                      <div className="button-project">
-                        <Button
-                          onClick={() => {
-                            navigate(`/studentprojects/${project.id}`);
-                          }}
-                          className={classes.btnProject}
-                        >
-                          <Typography>projet</Typography>
-                          <VisibilityIcon />
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </List>
-              </Collapse>
-            </List>
-          ) : (
-            <p className="no-votes-student-projects-p">
-              Aucun projet étudiant lié à cette JPO.
-            </p>
-          )}
-          <div className="btn-details-jpo-container">
-            <Button
-              className={classes.btnDetailJpo}
-              onClick={() => {
-                navigate(`/jpo/${jpoData.id}`);
-              }}
-            >
-              Détails
-            </Button>
-          </div>
-        </div>
       </Card>
     </>
   );

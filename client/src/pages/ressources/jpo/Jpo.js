@@ -6,18 +6,7 @@ import useFirebase from "../../../hooks/useFirebase";
 
 import { toast, ToastContainer } from "react-toastify";
 
-import {
-  Typography,
-  Box,
-  ToggleButtonGroup,
-  ToggleButton,
-  Grid,
-  List,
-  ListItem,
-} from "@mui/material";
-
-import ViewListIcon from "@mui/icons-material/ViewList";
-import ViewModule from "@mui/icons-material/ViewModule";
+import { Typography, Box, List, ListItem } from "@mui/material";
 
 import CreateJpoModal from "./../../../components/ressources/jpo/CreateJpoModal";
 
@@ -76,8 +65,6 @@ const Jpo = () => {
   const { user } = useFirebase();
   const userStatus = user?.status;
 
-  const [view, setView] = useState("module");
-
   const [allJpoParticipants, setAllJpoParticipants] = useState([]);
   const [allJpo, setAllJpo] = useState([]);
   const [nameJPO, setNameJPO] = useState("");
@@ -91,12 +78,6 @@ const Jpo = () => {
   const [jpoParticipants, setJpoParticipants] = useState([]);
 
   const [loading, setLoading] = useState(true);
-
-  const viewChange = (event, nextView) => {
-    if (nextView !== null) {
-      setView(nextView);
-    }
-  };
 
   const handleDrop = useCallback((acceptedFiles) => {
     setFiles((files) => [...files, ...acceptedFiles]);
@@ -253,21 +234,6 @@ const Jpo = () => {
                 padding: "20px",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <ToggleButtonGroup
-                  value={view}
-                  exclusive
-                  onChange={viewChange}
-                  sx={{ margin: 1 }}
-                >
-                  <ToggleButton value="module" aria-label="module">
-                    <ViewModule />
-                  </ToggleButton>
-                  <ToggleButton value="list" aria-label="list">
-                    <ViewListIcon />
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              </div>
               <Typography
                 variant="h3"
                 sx={{ fontWeight: "bold", marginLeft: "10%" }}
@@ -330,23 +296,14 @@ const Jpo = () => {
             ) : (
               <div></div>
             )}
-            {view === "module" ? (
-              <Grid container spacing={2}>
-                {allJpo.map((jpoData, index) => (
-                  <Grid item key={index} xs={12} sm={6} md={4}>
-                    <JpoCard jpoData={jpoData} />
-                  </Grid>
-                ))}
-              </Grid>
-            ) : (
-              <List>
-                {allJpo.map((jpoData, index) => (
-                  <ListItem key={index}>
-                    <JpoCard jpoData={jpoData} />
-                  </ListItem>
-                ))}
-              </List>
-            )}
+
+            <List sx={{ width: "85%" }}>
+              {allJpo.map((jpoData, index) => (
+                <ListItem key={index}>
+                  <JpoCard jpoData={jpoData} />
+                </ListItem>
+              ))}
+            </List>
           </div>
         </div>
       )}
