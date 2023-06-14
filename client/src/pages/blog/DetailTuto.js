@@ -342,17 +342,6 @@ function DetailTuto() {
                     </Grid>
                     */
           <>
-            <Box sx={{ width: "100%", mb: 2 }}>
-              <Button
-                variant="contained"
-                onClick={() => {
-                  window.history.back();
-                }}
-                sx={{ marginTop: 2 }}
-              >
-                Retour À la page de blog
-              </Button>
-            </Box>
             <Box
               sx={{
                 width: "100%",

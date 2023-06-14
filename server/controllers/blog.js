@@ -1,55 +1,19 @@
 const { db, FieldValue } = require("../firebase");
 const { v4: uuidv4 } = require("uuid");
-const nodemailer = require("nodemailer");
-
-async function sendMail(article) {
-  const users = await db
-    .collection("users")
-    .where("status", "!=", "etudiant")
-    .get();
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.NODEMAILER_EMAIL,
-      pass: process.env.NODEMAILER_PASSWORD,
-    },
-  });
-
-  for (let i = 0; i < users.size; i++) {
-    await new Promise((resolve) => setTimeout(resolve, 5000));
-
-    const mailOptions = {
-      from: "services.kiksnote.noreply@gmail.com",
-      to: users.docs[i].data().email,
-      subject: `Kiks Note - Un ${
-        article ? "nouvel article" : "nouveau tutoriel"
-      } vient d\'être posté`,
-      html: '<p>Cliquez sur le lien ci-dessous pour accéder aux articles.</p><p><a href="http://localhost:3000/blog">Voir les articles</a></p>',
-    };
-
-    try {
-      await transporter.sendMail(mailOptions);
-    } catch (error) {
-      throw error;
-    }
-  }
-}
-
 //add new Blog
 const addNewBlog = async (req, res) => {
   const {
     title,
     description,
-    // editorState,
-    // inputEditorState,
-    valueMarkdown,
+    editorState,
+    inputEditorState,
     created_by,
     tag,
     statut,
     type,
     visibility,
   } = JSON.parse(req.body.blogData);
-  console.log("req.body", req.body.blogData);
+  // console.log("req.body", req.body);
   // console.log("tag", tag);
   try {
     const url = req.protocol + "://" + req.get("host") + "/";
@@ -59,9 +23,8 @@ const addNewBlog = async (req, res) => {
       title: title,
       description: description,
       thumbnail: imagebackgroundTmp,
-      // editorState: editorState,
-      // inputEditorState: inputEditorState,
-      valueMarkdown: valueMarkdown,
+      editorState: editorState,
+      inputEditorState: inputEditorState,
       statut: statut,
       created_by: created_by,
       participant: [],
@@ -74,15 +37,11 @@ const addNewBlog = async (req, res) => {
       visibility: visibility,
       created_at: new Date(),
     });
-
     res.send("Document successfully written!");
   } catch (err) {
     res.status(500).send(err);
   }
-
-  await sendMail(true);
 };
-
 //add new Tuto
 const addNewTuto = async (req, res) => {
   const {
@@ -130,8 +89,6 @@ const addNewTuto = async (req, res) => {
   } catch (err) {
     res.status(500).send(err);
   }
-
-  await sendMail(false);
 };
 
 const addNewTuto2 = async (req, res) => {
@@ -231,7 +188,7 @@ const deleteBlogComment = async (req, res) => {
   const commentId = req.params.commentId;
   console.log(blogId);
   console.log(commentId);
-  console.log("je suis dedans deleteBlogComment");
+  console.log("je suis dedans");
   try {
     const blogRef = db.collection("blog").doc(blogId);
 
@@ -334,7 +291,7 @@ const getParticipant = async (req, res) => {
     for (const user of userIds) {
       const userSnapshot = await usersRef.doc(user).get();
       if (userSnapshot.exists) {
-        console.log("je suis dedans userSnapshot");
+        console.log("je suis dedans");
         const userData = userSnapshot.data();
         const { firstname, lastname, image } = userData;
         userDetails.push({ id: user, firstname, lastname, image });
