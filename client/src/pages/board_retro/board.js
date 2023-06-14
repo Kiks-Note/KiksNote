@@ -18,6 +18,7 @@ import { w3cwebsocket } from "websocket";
 import { useNavigate } from "react-router-dom";
 
 import "./Retro.scss";
+import { set } from "date-fns";
 
 const options = {
   autoClose: 2000,
@@ -45,11 +46,10 @@ function GroupsCreation() {
   const [columns, setColumns] = useState();
   const [courseChoose, setCourseChoose] = useState();
   const [notAllowed, setNotAllowed] = useState(false);
-
   const [userCursors, setUserCursors] = useState();
-
   const [nbUserConnected, setNbUserConnected] = useState(0);
   const [showEdit, setShowEdit] = useState(false);
+  const [postItId, setPostItId] = useState();
 
   const navigate = useNavigate();
   const { user } = useFirebase();
@@ -232,6 +232,15 @@ function GroupsCreation() {
     user.status,
     ws,
   ]);
+
+  useEffect(() => {
+    document.addEventListener("click", (event) => {
+      if (showEdit) {
+        setShowEdit(false);
+        setPostItId(null);
+      }
+    });
+  });
 
   function deletePostIt(postID) {
     const copiedColContent = { ...columns };
@@ -627,11 +636,11 @@ function GroupsCreation() {
                                             onClick={(event) => {
                                               event.stopPropagation();
                                               setShowEdit(true);
+                                              setPostItId(item.id);
                                             }}
                                           >
-                                            {!showEdit ? (
-                                              <p>{item.content}</p>
-                                            ) : (
+                                            {showEdit &&
+                                            item.id === postItId ? (
                                               <TextField
                                                 defaultValue={item.content}
                                                 onKeyDown={(event) => {
@@ -644,6 +653,8 @@ function GroupsCreation() {
                                                   }
                                                 }}
                                               />
+                                            ) : (
+                                              <p>{item.content}</p>
                                             )}
 
                                             {!userCursors?.get(item.id) &&
