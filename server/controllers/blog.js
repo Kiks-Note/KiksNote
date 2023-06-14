@@ -12,7 +12,9 @@ const addNewBlog = async (req, res) => {
     statut,
     type,
     visibility,
-  } = req.body;
+  } = JSON.parse(req.body.blogData);
+  // console.log("req.body", req.body);
+  // console.log("tag", tag);
   try {
     const url = req.protocol + "://" + req.get("host") + "/";
     let imagebackgroundTmp = req.file ? url + req.file.path : "";
@@ -89,6 +91,45 @@ const addNewTuto = async (req, res) => {
   }
 };
 
+const addNewTuto2 = async (req, res) => {
+  const {
+    title,
+    description,
+    // thumbnail,
+    tags,
+    markdownStepsInfo,
+    titleStep,
+    visibility,
+    statut,
+    created_by,
+  } = JSON.parse(req.body.tutoData);
+  try {
+    const url = req.protocol + "://" + req.get("host") + "/";
+    let imagebackgroundTmp = req.file ? url + req.file.path : "";
+    await db.collection("blog").doc().set({
+      title: title,
+      description: description,
+      thumbnail: imagebackgroundTmp,
+      markdownStepsInfo: markdownStepsInfo,
+      titleStep: titleStep,
+      statut: statut,
+      created_by: created_by,
+      participant: [],
+      comment: [],
+      like: [],
+      dislike: [],
+      tag: tags,
+      type: "tuto",
+      updated_at: "",
+      visibility: visibility,
+      created_at: new Date(),
+    });
+    res.send("Document successfully written!");
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+};
 //update tutorial visibility
 const updateBlogVisibility = async (req, res) => {
   console.log(req.body.visibility);
@@ -198,6 +239,12 @@ const getDescriptions = async (req, res) => {
   const snapshot = await db.collection("blog").doc(req.params.id).get();
   res.send(snapshot.data());
 };
+
+const getBlogParticipant = async (req, res) => {
+  const snapshot = await db.collection("blog").doc(req.params.id).get();
+  res.send(snapshot.data()?.participant);
+};
+
 // add Participant
 const addParticipant = async (req, res) => {
   const blogId = req.params.id;
@@ -584,13 +631,28 @@ const getRepartition = async (req, res) => {
     });
   }
 };
+const getUserBlog = async (req, res) => {
+  const userId = req.params.userId;
+  const snapshot = await db
+    .collection("blog")
+    .where("created_by", "==", userId)
+    .get();
 
+  const blogs = [];
+  snapshot.forEach((doc) => {
+    const blog = doc.data();
+    blogs.push(blog);
+  });
+
+  res.send(blogs);
+};
 
 module.exports = {
   addBlogComment,
   updateBlogVisibility,
   addNewBlog,
   addNewTuto,
+  addNewTuto2,
   blogRequests,
   deleteBlog,
   getDescriptions,
@@ -601,7 +663,9 @@ module.exports = {
   addDislike,
   getTopCreators,
   getBlogParticipants,
+  getBlogParticipant,
   blogDetailRequests,
   deleteBlogComment,
   getRepartition,
+  getUserBlog,
 };

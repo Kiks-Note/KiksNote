@@ -29,6 +29,7 @@ import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded
 import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
+import SchoolIcon from "@mui/icons-material/School";
 
 import CreateProjectDialog from "./CreateProjectDialog";
 import CreateTechnoModal from "./CreateTechnoModal";
@@ -72,18 +73,15 @@ const StudentsProjects = () => {
 
   const [nameProject, setNameProject] = useState("");
   const [repoProjectLink, setRepoProjectLink] = useState("");
+  const [promoProject, setPromoProject] = useState([]);
   const [membersProject, setMembersProject] = useState([]);
   const [technosProject, setTechnosProject] = useState([]);
   const [typeProject, setTypeProject] = useState("");
   const [descriptionProject, setDescriptionProject] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [idSelectedClass, setIdSelectedClass] = useState("");
 
   const [loading, setLoading] = useState(true);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-  const [selectedFilterTypeProject, setSelectedFilterTypeProject] =
-    useState("");
+  const [selectedFilterTypeProject, setSelectedFilterTypeProject] = useState("");
   const [selectedFilterClass, setSelectedFilterClass] = useState("");
   const [selectedIdFilterClass, setSelectedIdFilterClass] = useState("");
   const [selectedIdFilterTechno, setSelectedIdFilterTechno] = useState("");
@@ -134,9 +132,7 @@ const StudentsProjects = () => {
         })
         .then((res) => {
           if (res.status === 200) {
-            toastSuccess(
-              `La nouvelle technologie ${technoName} a bien été ajouté`
-            );
+            toastSuccess(`La nouvelle technologie ${technoName} a bien été ajouté`);
             handleCloseTechno();
             getAllTechnos();
           }
@@ -221,7 +217,7 @@ const StudentsProjects = () => {
           StudentId: user?.id,
           nameProject: nameProject,
           RepoProjectLink: repoProjectLink,
-          promoProject: idSelectedClass,
+          promoProject: promoProject,
           membersProject: membersProject,
           technosProject: technosProject,
           typeProject: typeProject,
@@ -231,10 +227,7 @@ const StudentsProjects = () => {
         })
         .then((res) => {
           console.log(res);
-          if (
-            res.status === 200 &&
-            res.data?.message === "Projet étudiant créé avec succès."
-          ) {
+          if (res.status === 200 && res.data?.message === "Projet étudiant créé avec succès.") {
             toastSuccess(`Votre project ${nameProject} a bien été uploadé !`);
           }
         })
@@ -247,14 +240,8 @@ const StudentsProjects = () => {
     }
   };
 
-  const referStudentProject = async (
-    projectId,
-    projectName,
-    countRefAdd,
-    userId
-  ) => {
+  const referStudentProject = async (projectId, projectName, countRefAdd, userId) => {
     try {
-      setIsButtonDisabled(true);
       await axios
         .post("http://localhost:5050/ressources/refprojects", {
           projectId: projectId,
@@ -262,31 +249,20 @@ const StudentsProjects = () => {
           userId: userId,
         })
         .then((res) => {
-          if (
-            res.data.message === "Projet étudiant mis à jour avec succès." &&
-            res.status === 200
-          ) {
-            toastSuccess(
-              `Vous avez bien mis en avant le projet ${projectName}`
-            );
+          if (res.data.message === "Projet étudiant mis à jour avec succès." && res.status === 200) {
+            toastSuccess(`Vous avez bien mis en avant le projet ${projectName}`);
           } else {
-            toastWarning(
-              `Vous avez déjà mis en avant le projet ${projectName}!`
-            );
+            toastWarning(`Vous avez déjà mis en avant le projet ${projectName}!`);
           }
         })
         .catch((err) => {
           toastFail(`Vous avez déjà mis en avant le projet ${projectName}`);
           console.log(err);
-        })
-        .finally(() => {
-          setIsButtonDisabled(false);
         });
     } catch (error) {
       console.log(error.response.status);
       console.log(error.response.data.message);
       toastWarning(`Erreur lors de la mise en avant du projet ${projectName}`);
-      setIsButtonDisabled(false);
     }
   };
 
@@ -297,18 +273,13 @@ const StudentsProjects = () => {
   const filterProjects = () => {
     const filtered = projects.filter((project) => {
       if (selectedIdFilterClass !== "") {
-        return (
-          project.promoProject &&
-          project.promoProject.id === selectedIdFilterClass
-        );
+        return project.promoProject && project.promoProject.id === selectedIdFilterClass;
       }
       if (selectedFilterTypeProject !== "") {
         return project.typeProject === selectedFilterTypeProject;
       }
       if (selectedIdFilterTechno !== "") {
-        return project.technosProject.some(
-          (techno) => techno.id === selectedIdFilterTechno
-        );
+        return project.technosProject.some((techno) => techno.id === selectedIdFilterTechno);
       }
       return true;
     });
@@ -319,12 +290,7 @@ const StudentsProjects = () => {
 
   useEffect(() => {
     filterProjects();
-  }, [
-    selectedFilterTypeProject,
-    selectedIdFilterClass,
-    selectedIdFilterTechno,
-    projects,
-  ]);
+  }, [selectedFilterTypeProject, selectedIdFilterClass, selectedIdFilterTechno, projects]);
 
   useEffect(() => {
     getAllProjects()
@@ -380,9 +346,7 @@ const StudentsProjects = () => {
     getAllProjects();
   };
 
-  const allTypesProject = [
-    ...new Set(Object.values(projects).map((project) => project.typeProject)),
-  ];
+  const allTypesProject = [...new Set(Object.values(projects).map((project) => project.typeProject))];
 
   return (
     <>
@@ -391,24 +355,14 @@ const StudentsProjects = () => {
           <div className="students-project-container">
             <div className="header-students-projects">
               <FormControl sx={{ width: "20%" }}>
-                <Select
-                  value=""
-                  displayEmpty
-                  renderValue={() => "Type"}
-                  disabled
-                >
+                <Select value="" displayEmpty renderValue={() => "Type"} disabled>
                   <MenuItem value="">Filtrer sur le type de projet</MenuItem>
                   <MenuItem value={1}>Type 1</MenuItem>
                   <MenuItem value={2}>Type 2</MenuItem>
                 </Select>
               </FormControl>
               <FormControl sx={{ width: "20%" }}>
-                <Select
-                  value=""
-                  displayEmpty
-                  renderValue={() => "Promo"}
-                  disabled
-                >
+                <Select value="" displayEmpty renderValue={() => "Promo"} disabled>
                   <MenuItem value="">Filtrer sur la promo</MenuItem>
                   <MenuItem value={1}>Promo 1</MenuItem>
                   <MenuItem value={2}>Promo 2</MenuItem>
@@ -417,10 +371,7 @@ const StudentsProjects = () => {
               <div></div>
             </div>
             <h1 className="h1-project">Top10 Projets Étudiants</h1>
-            <CarouselProjects
-              topProjects={filteredProjects.slice(0, 10)}
-              loading={loading}
-            />
+            <CarouselProjects topProjects={filteredProjects.slice(0, 10)} loading={loading} />
             <h1 className="h1-project">Projets Étudiants</h1>
             <Grid container spacing={2}>
               {Array.from({ length: 4 }).map((_, index) => (
@@ -482,12 +433,8 @@ const StudentsProjects = () => {
                   value={selectedFilterClass}
                   onChange={(event) => {
                     setSelectedFilterClass(event.target.value);
-                    const selectedClass = allclass.find(
-                      (coursClass) => coursClass.name === event.target.value
-                    );
-                    setSelectedIdFilterClass(
-                      selectedClass ? selectedClass.id : ""
-                    );
+                    const selectedClass = allclass.find((coursClass) => coursClass.name === event.target.value);
+                    setSelectedIdFilterClass(selectedClass ? selectedClass.id : "");
                   }}
                   displayEmpty
                   renderValue={(value) => value || "Promo"}
@@ -508,9 +455,7 @@ const StudentsProjects = () => {
                   }}
                   displayEmpty
                   renderValue={(value) => {
-                    const selectedTechno = technos.find(
-                      (techno) => techno.id === value
-                    );
+                    const selectedTechno = technos.find((techno) => techno.id === value);
                     return selectedTechno ? selectedTechno.name : "Techno";
                   }}
                 >
@@ -518,11 +463,7 @@ const StudentsProjects = () => {
                   {technos.map((techno) => (
                     <MenuItem key={techno.id} value={techno.id}>
                       <div style={{ display: "flex", alignItems: "center" }}>
-                        <img
-                          src={techno.image}
-                          alt={techno.name}
-                          style={{ width: "40px", marginRight: "10px" }}
-                        />
+                        <img src={techno.image} alt={techno.name} style={{ width: "40px", marginRight: "10px" }} />
                         {techno.name}
                       </div>
                     </MenuItem>
@@ -543,7 +484,7 @@ const StudentsProjects = () => {
               ) : (
                 <div></div>
               )}
-              {userStatus !== "pedago" ? (
+              {userStatus === "po" ? (
                 <>
                   <Button
                     sx={{
@@ -596,8 +537,8 @@ const StudentsProjects = () => {
                 setNameProject={setNameProject}
                 repoProjectLink={repoProjectLink}
                 setRepoProjectLink={setRepoProjectLink}
-                selectedClass={selectedClass}
-                setSelectedClass={setSelectedClass}
+                promoProject={promoProject}
+                setPromoProject={setPromoProject}
                 membersProject={membersProject}
                 setMembersProject={setMembersProject}
                 technosProject={technosProject}
@@ -606,7 +547,6 @@ const StudentsProjects = () => {
                 setTypeProject={setTypeProject}
                 descriptionProject={descriptionProject}
                 setDescriptionProject={setDescriptionProject}
-                setIdSelectedClass={setIdSelectedClass}
                 control={control}
                 allstudents={allstudents}
                 allclass={allclass}
@@ -614,10 +554,7 @@ const StudentsProjects = () => {
               />
             </Card>
             <h1 className="h1-project">Top10 Projets Étudiants</h1>
-            <CarouselProjects
-              topProjects={filteredProjects.slice(0, 10)}
-              loading={loading}
-            />
+            <CarouselProjects topProjects={filteredProjects.slice(0, 10)} loading={loading} />
             <h1 className="h1-project">Projets Étudiants</h1>
             <div
               style={{
@@ -630,11 +567,7 @@ const StudentsProjects = () => {
                   <>
                     <div className="no-projects-container">
                       <p>Aucun projet étudiant publié pour le moment</p>
-                      <img
-                        className="no-class-img"
-                        src={studentProjectsImg}
-                        alt="no-projects-students-uploaded"
-                      />
+                      <img className="no-class-img" src={studentProjectsImg} alt="no-projects-students-uploaded" />
                     </div>
                   </>
                 ) : (
@@ -671,9 +604,7 @@ const StudentsProjects = () => {
                             }}
                           />
 
-                          <CardContent
-                            sx={{ padding: "10px", height: "350px" }}
-                          >
+                          <CardContent sx={{ padding: "10px", height: "350px" }}>
                             {project.typeProject === "Web" ? (
                               <div>
                                 <h2
@@ -685,9 +616,7 @@ const StudentsProjects = () => {
                                   }}
                                 >
                                   {project.nameProject} - {project.typeProject}
-                                  <DesktopWindowsRoundedIcon
-                                    sx={{ marginLeft: "5px" }}
-                                  />
+                                  <DesktopWindowsRoundedIcon sx={{ marginLeft: "5px" }} />
                                 </h2>
                               </div>
                             ) : project.typeProject === "Mobile" ? (
@@ -701,9 +630,7 @@ const StudentsProjects = () => {
                                   }}
                                 >
                                   {project.nameProject} - {project.typeProject}
-                                  <SmartphoneRoundedIcon
-                                    sx={{ marginLeft: "5px" }}
-                                  />
+                                  <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
                                 </h2>
                               </div>
                             ) : project.typeProject === "Gaming" ? (
@@ -717,9 +644,7 @@ const StudentsProjects = () => {
                                   }}
                                 >
                                   {project.nameProject} - {project.typeProject}
-                                  <SportsEsportsRoundedIcon
-                                    sx={{ marginLeft: "5px" }}
-                                  />
+                                  <SportsEsportsRoundedIcon sx={{ marginLeft: "5px" }} />
                                 </h2>
                               </div>
                             ) : project.typeProject === "IA" ? (
@@ -733,9 +658,7 @@ const StudentsProjects = () => {
                                   }}
                                 >
                                   {project.nameProject} - {project.typeProject}
-                                  <SmartToyRoundedIcon
-                                    sx={{ marginLeft: "5px" }}
-                                  />
+                                  <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
                                 </h2>
                               </div>
                             ) : project.typeProject === "DevOps" ? (
@@ -760,21 +683,33 @@ const StudentsProjects = () => {
                               sx={{ marginRight: "10px" }}
                               label={
                                 <>
-                                  <Typography>
-                                    {project.promoProject.name}
-                                  </Typography>
+                                  <Typography>{project.promoProject.name}</Typography>
                                 </>
                               }
                             ></Chip>
                             <div className="type-promo-project-container">
+                              {project.promoProject.map &&
+                                project.promoProject.map((promo) => (
+                                  <Chip
+                                    sx={{
+                                      display: "flex",
+                                      padding: "10px",
+                                    }}
+                                    label={
+                                      <>
+                                        <div style={{ display: "flex" }}>
+                                          <Typography>{promo.name}</Typography>
+                                          <SchoolIcon />
+                                        </div>
+                                      </>
+                                    }
+                                  ></Chip>
+                                ))}
+                            </div>
+                            <div className="type-promo-project-container">
                               {project.technosProject.map((techno) => (
                                 <Chip
-                                  avatar={
-                                    <Avatar
-                                      alt={techno.name}
-                                      src={techno.image}
-                                    />
-                                  }
+                                  avatar={<Avatar alt={techno.name} src={techno.image} />}
                                   sx={{
                                     display: "flex",
                                     padding: "10px",
@@ -791,60 +726,33 @@ const StudentsProjects = () => {
                             </div>
                             {userStatus === "po" ? (
                               <Button
-                                disabled={isButtonDisabled}
                                 onClick={(event) => {
                                   event.stopPropagation();
-                                  referStudentProject(
-                                    project.id,
-                                    project.nameProject,
-                                    votePo,
-                                    user?.id
-                                  );
+                                  referStudentProject(project.id, project.nameProject, votePo, user?.id);
                                 }}
                                 sx={{ color: "#7a52e1" }}
                               >
-                                {project.counterRef}{" "}
-                                <BackHandRoundedIcon
-                                  sx={{ marginLeft: "3px" }}
-                                />
+                                {project.counterRef} <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                               </Button>
                             ) : userStatus === "pedago" ? (
                               <Button
-                                disabled={isButtonDisabled}
                                 onClick={(event) => {
                                   event.stopPropagation();
-                                  referStudentProject(
-                                    project.id,
-                                    project.nameProject,
-                                    votePedago,
-                                    user?.id
-                                  );
+                                  referStudentProject(project.id, project.nameProject, votePedago, user?.id);
                                 }}
                                 sx={{ color: "#7a52e1" }}
                               >
-                                {project.counterRef}{" "}
-                                <BackHandRoundedIcon
-                                  sx={{ marginLeft: "3px" }}
-                                />
+                                {project.counterRef} <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                               </Button>
                             ) : (
                               <Button
-                                disabled={isButtonDisabled}
                                 onClick={(event) => {
                                   event.stopPropagation();
-                                  referStudentProject(
-                                    project.id,
-                                    project.nameProject,
-                                    voteStudent,
-                                    user?.id
-                                  );
+                                  referStudentProject(project.id, project.nameProject, voteStudent, user?.id);
                                 }}
                                 sx={{ color: "#7a52e1" }}
                               >
-                                {project.counterRef}{" "}
-                                <BackHandRoundedIcon
-                                  sx={{ marginLeft: "3px" }}
-                                />
+                                {project.counterRef} <BackHandRoundedIcon sx={{ marginLeft: "3px" }} />
                               </Button>
                             )}
                           </CardContent>

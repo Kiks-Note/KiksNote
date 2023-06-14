@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   Button,
@@ -6,17 +6,44 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
+  Autocomplete,
 } from "@mui/material";
 
+import { Editor } from "react-draft-wysiwyg";
+import { EditorState, convertToRaw } from "draft-js";
+import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
+
 import Dropzone from "../Cours/Dropzone";
-import PdfViewer from "./PdfViewer";
 
 import "./Jpo.scss";
 
 const CreateJpoModal = (props) => {
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [inputEditorState, setInputEditorState] = useState("");
+
+  const handleEditorChange = (e) => {
+    setEditorState(e);
+    setInputEditorState(convertToRaw(e.getCurrentContent()));
+  };
+
+  useEffect(() => {
+    props.setDescriptionJPO(inputEditorState);
+  }, [inputEditorState]);
+
   return (
     <>
-      <Dialog open={props.open} onClose={props.handleClose}>
+      <Dialog
+        open={props.open}
+        onClose={props.handleClose}
+        sx={{
+          "& .MuiDialog-container": {
+            "& .MuiPaper-root": {
+              width: "100%",
+              maxWidth: "1000px",
+            },
+          },
+        }}
+      >
         <DialogContent>
           <form onSubmit={props.handleSubmit} className="jpo-form">
             <TextField
@@ -52,16 +79,57 @@ const CreateJpoModal = (props) => {
                 sx={{ width: "90%" }}
               />
             </div>
-            <TextField
-              sx={{ marginBottom: "10px" }}
-              label="Description de la JPO"
-              fullWidth
-              multiline
-              rows={4}
-              defaultValue={props.descriptionJPO}
-              onChange={(event) => props.setDescriptionJPO(event.target.value)}
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              sx={{
+                width: "100%",
+                marginBottom: "10px",
+              }}
+              options={props.allJpoParticipants}
+              getOptionLabel={(option) =>
+                `${option.lastname ? option.lastname.toUpperCase() : ""} ${
+                  option.firstname
+                }`
+              }
+              defaultValue={props.jpoParticipants}
+              filterSelectedOptions
+              onChange={(event, newValue) => {
+                const selectedJpoParticipant = newValue.map(
+                  (jpomember) => jpomember.id
+                );
+                props.setJpoParticipants(selectedJpoParticipant);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select a JpoParticipant"
+                  variant="outlined"
+                  inputProps={{
+                    ...params.inputProps,
+                    name: "student",
+                  }}
+                />
+              )}
             />
-            <div className="dropzone-coursimg-container">
+            <Editor
+              placeholder={`Commencer à écrire une petite description de la JPO ${props.nameJPO}`}
+              onEditorStateChange={handleEditorChange}
+              editorState={editorState}
+              toolbarClassName="toolbarClassName"
+              wrapperClassName="wrapperClassName"
+              editorClassName="editorClassName"
+              editorStyle={{
+                border: "1px solid black",
+                minHeight: "180px",
+                height: "300px",
+                padding: "10px",
+                borderRadius: "5px",
+                boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
+                marginBottom: "16px",
+              }}
+            />
+            <div className="jpo-dropzone">
               <p className="info-dropdown-img">
                 Drag and drop an image file here, or click to select an image
                 file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
@@ -98,7 +166,6 @@ const CreateJpoModal = (props) => {
               )}
             </div>
           </form>
-          <PdfViewer pdfUrl={props.pdfUrl} setPdfUrl={props.setPdfUrl} />
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose} className={props.btnCreateJpo}>

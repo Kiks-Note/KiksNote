@@ -7,7 +7,18 @@ import { toast, ToastContainer } from "react-toastify";
 
 import moment from "moment";
 
-import { Typography, Button, Card, Skeleton } from "@mui/material";
+import {
+  Typography,
+  Button,
+  Card,
+  Skeleton,
+  List,
+  ListItem,
+  ListItemAvatar,
+  Avatar,
+  ListItemText,
+  Divider,
+} from "@mui/material";
 
 import StudentProjectLinkDialog from "./StudentProjectLinkDialog";
 import UpdateJpoPdf from "./UpdateJpoPdf";
@@ -45,6 +56,9 @@ export const toastFail = (message) => {
 };
 
 const useStyles = makeStyles({
+  avatar: {
+    marginRight: "20px",
+  },
   btnProject: {
     backgroundColor: "#7a52e1",
     color: "white",
@@ -118,6 +132,8 @@ const JpoInfo = () => {
 
   const [loading, setLoading] = useState(true);
 
+  console.log(jpoData?.jpoDescription);
+
   const getJpoById = async () => {
     try {
       await axios
@@ -177,7 +193,8 @@ const JpoInfo = () => {
         .then((res) => {
           if (
             res.status === 200 &&
-            res.data.message === "JPO modifiée avec succès."
+            res.data.message ===
+              "Votre plaquette commercial a été ajouté avec succès."
           ) {
             toastSuccess(
               `La nouvelle plaquette commerciale a été bien mise à jour !`
@@ -303,6 +320,13 @@ const JpoInfo = () => {
       });
   }, []);
 
+  // const descriptionJpoConvert = jpoData
+  //   ? convertToRaw(jpoData.jpoDescription)
+  //   : null;
+  // const htmlDescriptionJpo = descriptionJpoConvert
+  //   ? stateToHTML(descriptionJpoConvert)
+  //   : "";
+
   return (
     <>
       {loading ? (
@@ -426,13 +450,37 @@ const JpoInfo = () => {
             </div>
             <div className="jpoinfo-sections">
               <section className="jpo-left-side-section">
-                <Typography variant="body1" sx={{ color: "lightgray" }}>
-                  {jpoData?.jpoDescription}
+                {/* <div
+                  dangerouslySetInnerHTML={{
+                    __html: htmlDescriptionJpo,
+                  }}
+                /> */}
+                <Typography sx={{ fontWeight: "bold" }}>
+                  Liste des participants lors de cette JPO
                 </Typography>
+                <List>
+                  {jpoData?.jpoParticipants.map((participant, index) => (
+                    <React.Fragment key={participant.id}>
+                      <ListItem alignItems="flex-start">
+                        <ListItemAvatar>
+                          <Avatar className={classes.avatar}>
+                            {participant.firstname.charAt(0)}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={`${participant.firstname} ${participant.lastname}`}
+                          secondary={participant.status}
+                        />
+                      </ListItem>
+                      {index < jpoData?.jpoParticipants.length - 1 && (
+                        <Divider variant="inset" component="li" />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </List>
                 <div className="list-students-project-linked">
                   <Typography
                     sx={{
-                      fontWeight: "bold",
                       padding: "10px",
                     }}
                   >

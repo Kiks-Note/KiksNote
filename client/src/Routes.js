@@ -5,7 +5,8 @@ import Blog from "./pages/blog/Blog";
 import DetailBlog from "./pages/blog/DetailBlog";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
-import Groups from "./pages/groups/Groups";
+import GroupsDisplay from "./pages/groups/GroupsDisplay";
+import GroupsCreation from "./pages/groups/Groups";
 import Home from "./pages/home/Home";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
@@ -17,10 +18,12 @@ import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
 import InventoryPendingRequests from "./pages/inventory/InventoryPendingRequests";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
+import AskResetPassword from "./pages/resetpassword/AskResetPassword";
 import NotFound from "./pages/not_found/NotFound";
 import Presence from "./pages/presence/Presence";
 import Profil from "./pages/profil/Profil";
 import Register from "./pages/register/Register";
+import DetailTuto from "./pages/blog/DetailTuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
 import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
@@ -34,6 +37,8 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
 import Board from "./pages/board_retro/board";
 import BoardReview from "./pages/board_retro/boardReview";
+import Calendar from "./pages/calendar/Calendar";
+import CalendarPedago from "./pages/calendar/CalendarPedago";
 
 function RoutesProvider() {
   return (
@@ -44,22 +49,22 @@ function RoutesProvider() {
         <Route element={<PublicRoutes />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
+          <Route path="/askresetpassword" element={<AskResetPassword />} />
           <Route path="/arbre" element={<ArbreFonctionnel />} />
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
           <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groupes" element={<Groups />} />
+          <Route path="/groupes" element={<GroupsDisplay />} />
+          <Route path="/groupes/creation" element={<GroupsCreation />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel" element={<Appel />} />
-          <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groups" element={<Groups />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
-          <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
+          <Route path="/tuto/:id" element={<DetailTuto />} />
 
-          <Route path="/profil" element={<Profil />} />
+          <Route path="/profil/:id" element={<Profil />} />
 
           {/* 404 Page */}
           <Route path="/jpo" element={<Jpo />} />
@@ -104,6 +109,8 @@ function RoutesProvider() {
             element={<InventoryPendingRequests />}
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
+          <Route path="/calendrier" element={<Calendar />} />
+          <Route path="/calendrier/:id" element={<CalendarPedago />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
