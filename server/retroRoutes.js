@@ -21,7 +21,7 @@ const retroRoutesWsNeeded = (connection, pathname) => {
   const router = express.Router(); // Create a new router instance
 
   router.get("/getAllRooms", getAllRooms);
-  router.get("/getRoom/:class", getRoom);
+  router.get("/getRoom/:classStudents", getRoom);
   router.get("/getRoomPo/:po_id", getRoomPo);
   router.get("/getAll", getAll);
   router.get("/getPORoom/:poID", getAllRoomsForPO);
