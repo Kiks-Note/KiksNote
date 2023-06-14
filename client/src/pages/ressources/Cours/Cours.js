@@ -521,13 +521,17 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? userClass.id === course.data.courseClass.id
+                          ? course.data.courseClass.some(
+                              (classItem) => classItem.id === userClass.id
+                            )
                           : true
                       )
                       .filter((course) =>
                         selectedIdFilterClass !== ""
-                          ? course?.data?.courseClass.id ===
-                            selectedIdFilterClass
+                          ? course.data.courseClass.some(
+                              (classItem) =>
+                                classItem.id === selectedIdFilterClass
+                            )
                           : true
                       )
                       .map((course) => {
@@ -715,13 +719,17 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? userClass.id === course.data.courseClass.id
+                          ? course.data.courseClass.some(
+                              (classItem) => classItem.id === userClass.id
+                            )
                           : true
                       )
                       .filter((course) =>
                         selectedIdFilterClass !== ""
-                          ? course?.data?.courseClass.id ===
-                            selectedIdFilterClass
+                          ? course.data.courseClass.some(
+                              (classItem) =>
+                                classItem.id === selectedIdFilterClass
+                            )
                           : true
                       )
                       .map((course) => (
@@ -895,12 +903,16 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? userClass.id === course.data.courseClass.id
+                    ? course.data.courseClass.some(
+                        (classItem) => classItem.id === userClass.id
+                      )
                     : true
                 )
                 .filter((course) =>
                   selectedIdFilterClass !== ""
-                    ? course?.data?.courseClass.id === selectedIdFilterClass
+                    ? course.data.courseClass.some(
+                        (classItem) => classItem.id === selectedIdFilterClass
+                      )
                     : true
                 )
                 .map((course) => (
@@ -1006,12 +1018,16 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? userClass.id === course.data.courseClass.id
+                    ? course.data.courseClass.some(
+                        (classItem) => classItem.id === userClass.id
+                      )
                     : true
                 )
                 .filter((course) =>
                   selectedIdFilterClass !== ""
-                    ? course?.data?.courseClass.id === selectedIdFilterClass
+                    ? course.data.courseClass.some(
+                        (classItem) => classItem.id === selectedIdFilterClass
+                      )
                     : true
                 )
                 .map((course) => (
