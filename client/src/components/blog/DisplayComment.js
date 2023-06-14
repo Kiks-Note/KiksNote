@@ -9,9 +9,10 @@ import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
+import useFirebase from "../../hooks/useFirebase";
 
 export default function DisplayComment({ comment, tutoId }) {
-  console.log(comment.id);
+  const { user } = useFirebase();
   const handleDeleteComment = function () {
     axios
       .delete(`http://localhost:5050/blog/${tutoId}/comments/${comment.id}`)
@@ -23,7 +24,7 @@ export default function DisplayComment({ comment, tutoId }) {
       });
     console.log("Supprimer le commentaire :", comment.id);
   };
-  const deleteBlog = function () {};
+
   return (
     <List sx={{ width: "100%", bgcolor: "background.paper" }}>
       <ListItem alignItems="flex-start">
@@ -52,13 +53,17 @@ export default function DisplayComment({ comment, tutoId }) {
             </>
           }
         />
-        <IconButton
-          edge="end"
-          aria-label="delete"
-          onClick={handleDeleteComment}
-        >
-          <DeleteIcon />
-        </IconButton>
+        {user.id === comment.user.user_id || user.status !== "etudiant" ? (
+          <IconButton
+            edge="end"
+            aria-label="delete"
+            onClick={handleDeleteComment}
+          >
+            <DeleteIcon />
+          </IconButton>
+        ) : (
+          <></>
+        )}
       </ListItem>
       <Divider variant="inset" component="li" />
     </List>
