@@ -23,6 +23,7 @@ import NotFound from "./pages/not_found/NotFound";
 import Presence from "./pages/presence/Presence";
 import Profil from "./pages/profil/Profil";
 import Register from "./pages/register/Register";
+import DetailTuto from "./pages/blog/DetailTuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
 import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
@@ -31,8 +32,13 @@ import JpoInfo from "./pages/ressources/jpo/JpoInfo";
 import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
 import StudentsProjects from "./pages/ressources/students_project/StudentsProjects";
 import Retrospective from "./pages/retrospective/Retrospective";
+import RetrospectiveStudent from "./pages/retrospective/RetrospectiveStudent";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
+import Board from "./pages/board_retro/board";
+import Calendar from "./pages/calendar/Calendar";
+import CalendarPedago from "./pages/calendar/CalendarPedago";
+
 
 function RoutesProvider() {
   return (
@@ -56,6 +62,7 @@ function RoutesProvider() {
           <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
+          <Route path="/tuto/:id" element={<DetailTuto />} />
 
           <Route path="/profil/:id" element={<Profil />} />
 
@@ -72,7 +79,7 @@ function RoutesProvider() {
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
 
           <Route path="/agile" element={<FolderAgile />} />
-          <Route path="/retro" element={<Retrospective />} />
+          <Route path="/retro" element={<Board />} />
 
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
@@ -100,6 +107,8 @@ function RoutesProvider() {
             element={<InventoryPendingRequests />}
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
+                    <Route path="/calendrier" element={<Calendar />} />
+          <Route path="/calendrier/:id" element={<CalendarPedago />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
