@@ -18,7 +18,6 @@ import { w3cwebsocket } from "websocket";
 import { useNavigate } from "react-router-dom";
 
 import "./Retro.scss";
-import { set } from "date-fns";
 
 const options = {
   autoClose: 2000,
@@ -291,6 +290,7 @@ function GroupsCreation() {
     updatedItems.push({
       id: Date.now().toString(),
       content: "Entrez votre texte ici..",
+      color: userCursors.get(user?.id).color,
     });
     group.items = updatedItems;
     setColumns(copiedColContent);
@@ -603,6 +603,7 @@ function GroupsCreation() {
                                 }}
                               >
                                 {column.items.map((item, index) => {
+                                  console.log("item", item);
                                   return (
                                     <Draggable
                                       key={item.id}
@@ -623,11 +624,7 @@ function GroupsCreation() {
                                               backgroundColor:
                                                 snapshot.isDragging
                                                   ? "red brightness(0.8)"
-                                                  : userCursors
-                                                  ? userCursors.get(user.id)
-                                                      ?.color ||
-                                                    theme.palette.custom.button
-                                                  : theme.palette.custom.button,
+                                                  : item.color,
                                               color: "white",
                                               margin: "10px",
                                               ...provided.draggableProps.style,
