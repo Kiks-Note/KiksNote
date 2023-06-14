@@ -14,6 +14,7 @@ import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
 import Autocomplete from "@mui/material/Autocomplete";
+import MDEditor, { commands } from "@uiw/react-md-editor";
 
 export default function NewBlog({ open, toggleDrawerModify }) {
   const [title, setTitle] = useState("");
@@ -26,6 +27,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
   const [selectedTags, setSelectedTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
+  const [valueMarkdown, setValueMarkdown] = useState("**Hello world!!!**");
 
   const { user } = useFirebase();
   const handleEditorChange = (e) => {
@@ -77,10 +79,10 @@ export default function NewBlog({ open, toggleDrawerModify }) {
       formIsValid = false;
     }
 
-    if (!inputEditorState) {
-      errors.editorState = "Veuillez écrire un contenu";
-      formIsValid = false;
-    }
+    // if (!inputEditorState) {
+    //   errors.editorState = "Veuillez écrire un contenu";
+    //   formIsValid = false;
+    // }
 
     setErrors(errors);
     return formIsValid;
@@ -114,8 +116,9 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     const blogData = {
       title: title,
       description: description,
-      editorState: JSON.stringify(rawContentState),
-      inputEditorState: inputEditorState,
+      // editorState: JSON.stringify(rawContentState),
+      // inputEditorState: inputEditorState,
+      valueMarkdown: valueMarkdown,
       created_by: user.id,
       type: blogType,
       tag: selectedTags,
@@ -152,6 +155,27 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     console.log(checked);
   };
 
+  const handleCancel = () => {
+    setValueMarkdown("**Hello world!!!**");
+  };
+
+  const help = {
+    name: "help",
+    keyCommand: "help",
+    buttonProps: { "aria-label": "Insert help" },
+    icon: (
+      <svg viewBox="0 0 16 16" width="12px" height="12px">
+        <path
+          d="M8 0C3.6 0 0 3.6 0 8s3.6 8 8 8 8-3.6 8-8-3.6-8-8-8Zm.9 13H7v-1.8h1.9V13Zm-.1-3.6v.5H7.1v-.6c.2-2.1 2-1.9 1.9-3.2.1-.7-.3-1.1-1-1.1-.8 0-1.2.7-1.2 1.6H5c0-1.7 1.2-3 2.9-3 2.3 0 3 1.4 3 2.3.1 2.3-1.9 2-2.1 3.5Z"
+          fill="currentColor"
+        />
+      </svg>
+    ),
+    execute: (state, api) => {
+      window.open("https://www.markdownguide.org/basic-syntax/", "_blank");
+    },
+  };
+
   const list = () => (
     <>
       <Box
@@ -181,6 +205,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
           }}
           onClick={(e) => {
             toggleDrawerModify(e, false);
+            handleCancel();
             reset();
           }}
         >
@@ -250,34 +275,14 @@ export default function NewBlog({ open, toggleDrawerModify }) {
               </Typography>
             </Box>
           </Box>
-          <div>
-            <Editor
-              placeholder="Faites chauffer le clavier"
-              editorState={editorState}
-              toolbarClassName="toolbarClassName"
-              wrapperClassName="wrapperClassName"
-              editorClassName="editorClassName"
-              onEditorStateChange={handleEditorChange}
-              localization={{
-                locale: "fr",
-              }}
-              editorStyle={{
-                border: "1px solid black",
-                minHeight: "180px",
-                height: "300px",
-                padding: "10px",
-                borderRadius: "5px",
-                boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
-                marginBottom: "16px",
-              }}
-              error={errors.editorState ? true : false}
+          <Box sx={{ width: "100%", mb: 2 }}>
+            <MDEditor
+              value={valueMarkdown}
+              // preview="split"
+              commands={[...commands.getCommands(), help]}
+              onChange={(val) => setValueMarkdown(val)}
             />
-            {errors.editorState && (
-              <Typography variant="caption" color="error">
-                {errors.editorState}
-              </Typography>
-            )}
-          </div>
+          </Box>
           <TextField
             sx={{ marginBottom: 2 }}
             id="outlined-search"
@@ -348,6 +353,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
               open={open}
               onClose={(e) => toggleDrawerModify(e, false)}
               onOpen={(e) => toggleDrawerModify(e, true)}
+              {...{ PaperProps: { style: { width: "90%" } } }}
             >
               {list("right")}
             </SwipeableDrawer>

@@ -23,9 +23,9 @@ export default function CardBlog({ blog, tags }) {
     const weekDelay = new Date();
     weekDelay.setDate(weekDelay.getDate() - 14);
 
-    console.log(new Date(blog.created_at).getTime());
-    console.log(weekDelay.getTime());
-    console.log("");
+    // console.log(new Date(blog.created_at).getTime());
+    // console.log(weekDelay.getTime());
+    // console.log("");
 
     if (
       weekDelay > new Date(blog.created_at) &&

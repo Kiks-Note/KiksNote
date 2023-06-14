@@ -40,15 +40,16 @@ const addNewBlog = async (req, res) => {
   const {
     title,
     description,
-    editorState,
-    inputEditorState,
+    // editorState,
+    // inputEditorState,
+    valueMarkdown,
     created_by,
     tag,
     statut,
     type,
     visibility,
   } = JSON.parse(req.body.blogData);
-  // console.log("req.body", req.body);
+  console.log("req.body", req.body.blogData);
   // console.log("tag", tag);
   try {
     const url = req.protocol + "://" + req.get("host") + "/";
@@ -58,8 +59,9 @@ const addNewBlog = async (req, res) => {
       title: title,
       description: description,
       thumbnail: imagebackgroundTmp,
-      editorState: editorState,
-      inputEditorState: inputEditorState,
+      // editorState: editorState,
+      // inputEditorState: inputEditorState,
+      valueMarkdown: valueMarkdown,
       statut: statut,
       created_by: created_by,
       participant: [],
