@@ -1,15 +1,7 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Box,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
@@ -21,7 +13,6 @@ import useFirebase from "../../hooks/useFirebase";
 import { Rings } from "react-loader-spinner";
 import ListParticipants from "../../components/blog/ListParticipants";
 import "./Blog.css";
-import { Grid } from "@mui/material";
 import { useTheme } from "@mui/material";
 import MDEditor from "@uiw/react-md-editor";
 
@@ -33,7 +24,11 @@ function DetailBlog() {
   const navigate = useNavigate();
   const [visibleComments, setVisibleComments] = useState(5);
   const [isUserParticipant, setIsUserParticipant] = useState(false);
-  const [rawContentState, setRawContentState] = useState(null);
+
+  const theme = useTheme();
+  const [height, setHeight] = useState(0);
+  const ref = useRef(null);
+  const [showParticipants, setShowParticipants] = useState(false);
 
   const handleShowMore = () => {
     setVisibleComments(visibleComments + 5);
@@ -99,9 +94,12 @@ function DetailBlog() {
   }, []);
 
   useEffect(() => {
-    getBlogParticipant();
-  }, []);
+    if (data) {
+      getBlogParticipant();
+    }
+  }, [data]);
 
+  console.log("loading : ", loading);
   async function handleParticipate() {
     try {
       await axios
@@ -117,9 +115,10 @@ function DetailBlog() {
   }
 
   async function getBlogParticipant() {
+    console.log("getBlogParticipant");
     try {
       await axios
-        .get(`http://localhost:5050/blog/${data.id}/participant`)
+        .get(`http://localhost:5050/blog/${data?.id}/participant`)
         .then((res) => {
           console.log("res.data : ", res.data);
           if (res.data.length > 0) {
@@ -161,161 +160,28 @@ function DetailBlog() {
     }
   }
 
-  const theme = useTheme();
+  const handleShowParticipants = () => {
+    setShowParticipants(!showParticipants);
+  };
 
+  useEffect(() => {
+    if (ref.current) {
+      setHeight(ref.current.clientHeight);
+    }
+  }, [showParticipants]);
+  console.log(theme.palette.background.paper);
   return (
     <>
       <Box
         sx={{
-          // margin: 2,
           width: "100%",
-          // borderRadius: "10px",
-          // boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
           backgroundColor: theme.palette.background.paper,
-          // backgroundColor: "red",
-          // padding: 2,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
         }}
       >
         {!loading ? (
-          /*
-          <Grid container spacing={2} sx={{ backgroundColor: "blue" }}>
-            <Grid item xs={12} sm={8}>
-              <div className="container_detail_blog">
-                <div className="detail_blog_content">
-                  <Card>
-                    <CardHeader title={data.title} />
-                    <CardMedia
-                      component="img"
-                      src={data.thumbnail}
-                      alt={data.title}
-                      sx={{ width: 300, height: 200 }}
-                    />
-                    <CardContent>
-                      <Typography>{data.editorState}</Typography>
-                    </CardContent>
-                  </Card>
-                  <div className="options">
-                    <Button
-                      variant="contained"
-                      startIcon={
-                        data.userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />
-                      }
-                      onClick={handleLike}
-                      sx={{
-                        backgroundColor: data.userLiked ? "#00BFFF" : "#F5F5F5",
-                        color: data.userLiked ? "#FFFFFF" : "#000000",
-                        ":hover": {
-                          backgroundColor: data.userLiked
-                            ? "#0080FF"
-                            : "#EEEEEE",
-                        },
-                      }}
-                    >
-                      J'aime ({data.like.length})
-                    </Button>
-                    <Button
-                      variant="contained"
-                      startIcon={
-                        data.userDisliked ? (
-                          <ThumbDownAltIcon />
-                        ) : (
-                          <ThumbDownOffAltIcon />
-                        )
-                      }
-                      onClick={handleDislike}
-                      sx={{
-                        backgroundColor: data.userDisliked
-                          ? "#FF0000"
-                          : "#F5F5F5",
-                        color: data.userDisliked ? "#FFFFFF" : "#000000",
-                        ":hover": {
-                          backgroundColor: data.userDisliked
-                            ? "#CC0000"
-                            : "#EEEEEE",
-                        },
-                        marginRight: 50,
-                      }}
-                    >
-                      J'aime pas ({data.dislike.length})
-                    </Button>
-                    {data.type === "event" && (
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={handleParticipate}
-                        sx={{
-                          backgroundColor: data.userIsParticipant
-                            ? "#008000"
-                            : "#F5F5F5",
-                          color: data.userIsParticipant ? "#FFFFFF" : "#000000",
-                          ":hover": {
-                            backgroundColor: data.userIsParticipant
-                              ? "#006400"
-                              : "#EEEEEE",
-                          },
-                        }}
-                      >
-                        {isUserParticipant
-                          ? "Ne participe pas"
-                          : "Je participe"}
-                      </Button>
-                    )}
-                  </div>
-                  <br />
-                  <CreateComment tutoId={id} />
-                  {data &&
-                    data.comment &&
-                    Array.isArray(data.comment) &&
-                    data.comment
-                      .slice(0, visibleComments)
-                      .map((comment, index) => (
-                        <DisplayComment
-                          key={index}
-                          comment={comment}
-                          tutoId={id}
-                        />
-                      ))}
-                  {visibleComments < data.comment.length ? (
-                    <>
-                      <button onClick={handleShowMore}>Voir plus</button>
-                      {visibleComments > 5 && (
-                        <button onClick={handleShowLess}>Voir moins</button>
-                      )}
-                    </>
-                  ) : (
-                    visibleComments > 5 && (
-                      <button onClick={handleShowLess}>Voir moins</button>
-                    )
-                  )}
-                </div>
-              </div>
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <div className="detail_blog_content_list">
-                {data.participant.length !== 0 && (
-                  <>
-                    <Typography variant="h5">Liste des participants</Typography>
-                    <ListParticipants participants={data.participant} />
-                  </>
-                )}
-              </div>
-            </Grid>
-            <Grid item xs={12}>
-              <Button
-                variant="contained"
-                onClick={() => {
-                  window.history.back();
-                }}
-                sx={{ marginTop: 2 }}
-              >
-                Retour Ã la page de blog
-              </Button>
-            </Grid>
-          </Grid>
-            */
           <>
             <Box sx={{ width: "100%", mb: 2, ml: 2 }}>
               <Button
@@ -338,23 +204,48 @@ function DetailBlog() {
               }}
             >
               <Typography variant="h3">{data?.title}</Typography>
-              {/*
-            <Box
-              component="img"
-              src={data.thumbnail}
-              alt={data.title}
-              sx={{ width: 300, height: 200 }}
-            />
-            <Typography>{data?.valueMarkdown}</Typography>
-            */}
-              <Box sx={{ p: 1, width: "100%" }}>
-                {/*<div data-color-mode="light">*/}
+              <Box
+                sx={{ p: 1, width: "100%", display: "flex", height: "100%" }}
+                ref={ref}
+              >
+                {/*<div data-color-mode="dark">*/}
                 {/*  <div className="wmde-markdown-var"> </div>*/}
                 <MDEditor.Markdown
                   source={data?.valueMarkdown}
-                  style={{ padding: 10 }}
+                  style={{
+                    padding: 10,
+                    // ...{
+                    //   backgroundColor: theme.palette.background.paper,
+                    //   color: theme.palette.text.primary,
+                    // },
+                  }}
+                  // data-color-mode="dark"
                 />
                 {/*</div>*/}
+                {showParticipants && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      overflowY: "auto",
+                      height: height,
+                      width: { lg: "30%", md: "60%", xs: "100%" },
+                    }}
+                  >
+                    {data?.participant?.length !== 0 ? (
+                      <Box sx={{ ml: 1 }}>
+                        <Typography variant="h5">
+                          Liste des participants
+                        </Typography>
+                        <ListParticipants participants={data?.participant} />
+                      </Box>
+                    ) : (
+                      <Typography variant="h5" sx={{ ml: 1 }}>
+                        Aucun participant
+                      </Typography>
+                    )}
+                  </Box>
+                )}
               </Box>
               <Box
                 sx={{
@@ -369,24 +260,26 @@ function DetailBlog() {
                   <Button
                     variant="contained"
                     startIcon={
-                      data.userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />
+                      data?.userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />
                     }
                     onClick={handleLike}
                     sx={{
-                      backgroundColor: data.userLiked ? "#00BFFF" : "#F5F5F5",
-                      color: data.userLiked ? "#FFFFFF" : "#000000",
+                      backgroundColor: data?.userLiked ? "#00BFFF" : "#F5F5F5",
+                      color: data?.userLiked ? "#FFFFFF" : "#000000",
                       ":hover": {
-                        backgroundColor: data.userLiked ? "#0080FF" : "#EEEEEE",
+                        backgroundColor: data?.userLiked
+                          ? "#0080FF"
+                          : "#EEEEEE",
                       },
                       mr: 3,
                     }}
                   >
-                    J'aime ({data.like.length})
+                    J'aime ({data?.like?.length})
                   </Button>
                   <Button
                     variant="contained"
                     startIcon={
-                      data.userDisliked ? (
+                      data?.userDisliked ? (
                         <ThumbDownAltIcon />
                       ) : (
                         <ThumbDownOffAltIcon />
@@ -394,27 +287,61 @@ function DetailBlog() {
                     }
                     onClick={handleDislike}
                     sx={{
-                      backgroundColor: data.userDisliked
+                      backgroundColor: data?.userDisliked
                         ? "#FF0000"
                         : "#F5F5F5",
-                      color: data.userDisliked ? "#FFFFFF" : "#000000",
+                      color: data?.userDisliked ? "#FFFFFF" : "#000000",
                       ":hover": {
-                        backgroundColor: data.userDisliked
+                        backgroundColor: data?.userDisliked
                           ? "#CC0000"
                           : "#EEEEEE",
                       },
                     }}
                   >
-                    J'aime pas ({data.dislike.length})
+                    J'aime pas ({data?.dislike.length})
                   </Button>
+                  {data?.type === "event" && (
+                    <>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleParticipate}
+                        sx={{
+                          backgroundColor: data?.userIsParticipant
+                            ? "#008000"
+                            : "#F5F5F5",
+                          color: data?.userIsParticipant
+                            ? "#FFFFFF"
+                            : "#000000",
+                          ":hover": {
+                            backgroundColor: data?.userIsParticipant
+                              ? "#006400"
+                              : "#EEEEEE",
+                          },
+                          mx: 3,
+                        }}
+                      >
+                        {isUserParticipant
+                          ? "Ne pas participé "
+                          : "Je participe"}
+                      </Button>
+                      <Button
+                        onClick={handleShowParticipants}
+                        variant="contained"
+                        size="small"
+                      >
+                        Participants
+                      </Button>
+                    </>
+                  )}
                 </Box>
                 <CreateComment tutoId={id} />
               </Box>
               <Box sx={{ width: "100%" }}>
                 {data &&
-                  data.comment &&
-                  Array.isArray(data.comment) &&
-                  data.comment
+                  data?.comment &&
+                  Array.isArray(data?.comment) &&
+                  data?.comment
                     .slice(0, visibleComments)
                     .map((comment, index) => (
                       <DisplayComment
@@ -423,7 +350,7 @@ function DetailBlog() {
                         tutoId={id}
                       />
                     ))}
-                {visibleComments < data.comment.length ? (
+                {visibleComments < data?.comment.length ? (
                   <Box
                     sx={{
                       width: "100%",
