@@ -11,12 +11,12 @@ import {
   DialogTitle,
 } from "@mui/material";
 
-import Dropzone from "../Cours/Dropzone";
+import Dropzone from "../Dropzone";
 
 import CloseIcon from "@mui/icons-material/Close";
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
 
-import "../Cours/Cours.scss";
+import "./../../../pages/ressources/Cours/Cours.scss";
 import "react-toastify/dist/ReactToastify.css";
 
 const CreateTechnoModal = (props) => {
@@ -74,7 +74,7 @@ const CreateTechnoModal = (props) => {
           <div className="dropzone-coursimg-container">
             <p className="info-dropdown-img">
               Drag and drop an image file here, or click to select an image
-              file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
+              file. (max. 1.00 MB each) PNG.
             </p>
             <Dropzone
               onDrop={props.handleDrop}

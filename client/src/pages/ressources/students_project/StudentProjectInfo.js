@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 
 import axios from "axios";
 
@@ -18,7 +18,9 @@ import {
   ListItem,
   Collapse,
   Chip,
-  Skeleton,
+  Card,
+  CardMedia,
+  CardContent,
 } from "@mui/material";
 
 import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
@@ -32,12 +34,18 @@ import AddLinkIcon from "@mui/icons-material/AddLink";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import SchoolIcon from "@mui/icons-material/School";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import DeleteIcon from "@mui/icons-material/Delete";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import VideocamIcon from "@mui/icons-material/Videocam";
 
-import GitHubLogo from "../../../assets/logo/GitHub-Logo.png";
 import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
 
-import BlogTutosLinkDialog from "./BlogTutosLinkDialog";
+import BlogTutosLinkDialog from "./../../../components/ressources/students_project/BlogTutosLinkDialog";
+import UploadVideoPlayerDialog from "./../../../components/ressources/students_project/UploadVideoStudentProject";
 import "./StudentsProjectsInfo.scss";
+import SkeletonStudentProjectInfo from "../../../components/ressources/students_project/SkeletonStudentProjectInfo";
 
 const options = {
   autoClose: 2000,
@@ -72,12 +80,17 @@ const StudentProjectInfo = () => {
   const [selectedProjectData, setSelectedProjectData] = useState("");
   const [openVoters, setOpenVoters] = useState(false);
   const [openBlogTutos, setOpenBlogTutos] = useState(false);
+  const [openUploadVideo, setOpenUploadVideo] = useState(false);
 
   const [hasAddedBlog, setHasAddedBlog] = useState(false);
 
   const handleClickVoters = () => {
     setOpenVoters(!openVoters);
   };
+
+  /*
+    Get an Array that contains every blog tuto and set it into allBlogTuto 
+  */
 
   const getBlogTutorials = async () => {
     try {
@@ -93,6 +106,12 @@ const StudentProjectInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    Get an Array that contains every blog tuto data 
+    and set it into blogTutoData using the blogTutoId (String) 
+  */
+
   const getBlogTutoById = async (blogTutoId) => {
     try {
       const response = await axios.get(
@@ -105,6 +124,10 @@ const StudentProjectInfo = () => {
     }
   };
 
+  /*
+    Get an Array that contains every blog tuto and set it into allBlogTuto 
+  */
+
   const getStudentProjectById = async () => {
     try {
       const response = await axios.get(
@@ -116,8 +139,38 @@ const StudentProjectInfo = () => {
     }
   };
 
+  const deleteLinkedBlogTuto = async (
+    project_id,
+    linkedBlogTuto,
+    studentProjectName
+  ) => {
+    try {
+      await axios
+        .delete(`http://localhost:5050/ressources/linkblogtuto/${project_id}`)
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data ===
+              "Le lien avec le blog tutoriel a été supprimé avec succès."
+          ) {
+            toastSuccess(
+              `Le blog tuto lié ${linkedBlogTuto} n'est plus lié avec projet étudiant ${studentProjectName}`
+            );
+          }
+          getStudentProjectById(projectid);
+          setBlogTutoData([]);
+          setHasAddedBlog(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    getStudentProjectById()
+    getStudentProjectById(projectid)
       .then(() => {
         setLoading(false);
       })
@@ -142,188 +195,19 @@ const StudentProjectInfo = () => {
     setOpenBlogTutos(false);
   };
 
+  const handleOpenUploadVideoProject = () => {
+    setOpenUploadVideo(true);
+  };
+
+  const handleCloseUploadVideoProject = () => {
+    setOpenUploadVideo(false);
+  };
+
   return (
     <>
       {loading ? (
         <>
-          <div className="project-content">
-            <div className="left-side-project">
-              <div className="type-project-info-container">
-                <Typography sx={{ marginRight: "5px" }}>
-                  <Skeleton width={100} />
-                </Typography>
-              </div>
-              <div className="type-project-info-container">
-                <Typography sx={{ marginRight: "5px" }}>
-                  Type du projet :
-                </Typography>
-                <Skeleton width={100} />
-              </div>
-              <div className="type-project-info-container">
-                <Typography sx={{ marginRight: "5px" }}>Technos :</Typography>
-                <Skeleton width={100} />
-              </div>
-              <Typography
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  margin: "15px 0px",
-                }}
-              >
-                Code source du projet : <Skeleton width={50} />
-              </Typography>
-              <Chip
-                sx={{
-                  display: "flex",
-                  width: "fit-content",
-                  padding: "10px",
-                  margin: "15px 0px",
-                  alignItems: "center",
-                }}
-                label={
-                  <>
-                    <div style={{ display: "flex" }}>
-                      <Typography>
-                        <Skeleton width={50} />
-                      </Typography>
-                    </div>
-                  </>
-                }
-              ></Chip>
-              <List
-                sx={{
-                  width: "100%",
-                  maxWidth: 360,
-                  bgcolor: "background.paper",
-                  border: "10px grey",
-                  borderRadius: "20px",
-                  padding: "10px",
-                  margin: "15px 0px",
-                }}
-              >
-                <Typography>
-                  <Skeleton width={150} />
-                </Typography>
-                <ListItem alignItems="flex-start">
-                  <ListItemAvatar>
-                    <Skeleton variant="circular" width={40} height={40} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={<Skeleton width={100} />}
-                    secondary={
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        <Skeleton width={50} />
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem alignItems="flex-start">
-                  <ListItemAvatar>
-                    <Skeleton variant="circular" width={40} height={40} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={<Skeleton width={100} />}
-                    secondary={
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        <Skeleton width={50} />
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-                <Divider variant="inset" component="li" />
-                <ListItem alignItems="flex-start">
-                  <ListItemAvatar>
-                    <Skeleton variant="circular" width={40} height={40} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={<Skeleton width={100} />}
-                    secondary={
-                      <Typography
-                        sx={{ display: "inline" }}
-                        component="span"
-                        variant="body2"
-                        color="text.primary"
-                      >
-                        <Skeleton width={50} />
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              </List>
-              <List
-                sx={{
-                  width: "100%",
-                  maxWidth: 360,
-                  bgcolor: "background.paper",
-                  border: "10px grey",
-                  borderRadius: "20px",
-                  padding: "10px",
-                  margin: "15px 0px",
-                }}
-              >
-                <Typography>
-                  <Skeleton width={100} />
-                </Typography>
-                <ListItem
-                  button
-                  sx={{ display: "flex", flexDirection: "column" }}
-                >
-                  <Skeleton variant="rectangular" width={250} height={150} />
-                  <ListItemText primary={<Skeleton width={200} />} />
-                </ListItem>
-              </List>
-              <div className="btn-link-blog-container">
-                <div></div>
-              </div>
-              <div className="list-counter-ref">
-                <div className="counter-container">
-                  <Skeleton width={100} />
-                </div>
-                <Divider />
-                <div className="voters-container">
-                  <Typography
-                    sx={{
-                      fontWeight: "bold",
-                      textAlign: "center",
-                      padding: "10px",
-                    }}
-                  >
-                    Liste des personnes qui ont mis en avant le projet
-                  </Typography>
-                  <div className="no-votes-student-projects-container">
-                    <p className="no-votes-student-projects-p">
-                      Personne n'a encore mis en avant votre projet
-                    </p>
-                    <Skeleton variant="rectangular" width={200} height={150} />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="right-side-project">
-              <div className="img-project-box">
-                <Skeleton variant="rectangular" width={400} height={300} />
-              </div>
-              <div className="text-project-box">
-                <Typography sx={{ textAlign: "justify" }}>
-                  <Skeleton count={6} />
-                </Typography>
-                <Typography sx={{ paddingTop: "20px", textAlign: "right" }}>
-                  Publié par : <Skeleton width={50} />
-                </Typography>
-              </div>
-            </div>
-          </div>
+          <SkeletonStudentProjectInfo />
         </>
       ) : (
         <>
@@ -402,16 +286,13 @@ const StudentProjectInfo = () => {
                 }}
               >
                 Code source du projet :{" "}
-                <a
-                  href={selectedProjectData.RepoProjectLink}
-                  style={{ color: "#7a52e1", textDecoration: "underline" }}
+                <Link
+                  to={selectedProjectData.RepoProjectLink}
+                  target="_blank"
+                  style={{ textDecoration: "underline" }}
                 >
-                  <img
-                    className="github-logo"
-                    src={GitHubLogo}
-                    alt="repo-github-link-logo"
-                  />
-                </a>
+                  <GitHubIcon />
+                </Link>
               </Typography>
               <div className="type-promo-project-container">
                 {selectedProjectData.promoProject.map((promo) => (
@@ -434,7 +315,6 @@ const StudentProjectInfo = () => {
               <List
                 sx={{
                   width: "100%",
-                  maxWidth: 360,
                   bgcolor: "background.paper",
                   border: "10px grey",
                   borderRadius: "20px",
@@ -446,66 +326,137 @@ const StudentProjectInfo = () => {
                   <ConstructionIcon /> Membres du projet :{" "}
                 </Typography>
                 {selectedProjectData?.membersProject?.map((member, index) => (
-                    <React.Fragment key={index}>
-                      <ListItem alignItems="flex-start">
-                        <ListItemAvatar>
-                          <Avatar alt={member.firstname} src={member.image} />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={
-                            member.lastname.toUpperCase() +
-                            " " +
-                            member.firstname
-                          }
-                          secondary={
-                            <Typography
-                              sx={{ display: "inline" }}
-                              component="span"
-                              variant="body2"
-                              color="text.primary"
-                            >
-                              {member.status}
-                            </Typography>
-                          }
-                        />
-                      </ListItem>
-                      {index !==
-                        selectedProjectData.membersProject.length - 1 && (
-                        <Divider variant="inset" component="li" />
-                      )}
-                    </React.Fragment>
-                  ))}
+                  <React.Fragment key={index}>
+                    <ListItem sx={{ display: "flex", alignItems: "center" }}>
+                      <ListItemAvatar>
+                        <Avatar alt={member.firstname} src={member.image} />
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={
+                          member.lastname.toUpperCase() + " " + member.firstname
+                        }
+                        secondary={
+                          <Typography
+                            sx={{ display: "inline" }}
+                            component="span"
+                            variant="body2"
+                            color="text.primary"
+                          >
+                            {member.status}
+                          </Typography>
+                        }
+                      />
+                      <Button
+                        component={Link}
+                        to={`/profil/${member.id}`}
+                        sx={{
+                          backgroundColor: "#7a52e1",
+                          color: "white",
+                          fontWeight: "bold",
+                          "&:hover": {
+                            backgroundColor: "#d40074",
+                          },
+                        }}
+                      >
+                        Profil <VisibilityIcon />
+                      </Button>
+                    </ListItem>
+                    {index !==
+                      selectedProjectData.membersProject.length - 1 && (
+                      <Divider variant="inset" component="li" />
+                    )}
+                  </React.Fragment>
+                ))}
               </List>
               {blogTutoData?.data?.thumbnail && (
-                  <List
-                    sx={{
-                      width: "100%",
-                      maxWidth: 360,
-                      bgcolor: "background.paper",
-                      border: "10px grey",
-                      borderRadius: "20px",
-                      padding: "10px",
-                      margin: "15px 0px",
-                    }}
-                  >
-                    <Typography>Blog Tuto relié</Typography>
-                    <ListItem
-                      key={blogTutoData.id}
-                      button
-                      sx={{ display: "flex", flexDirection: "column" }}
-                      onClick={() => navigate(`/blog/${blogTutoData.id}`)}
+                <>
+                  <div style={{ display: "flex", margin: "20px" }}>
+                    <Card
+                      sx={{
+                        width: "100%",
+                        display: "flex",
+                        flexDirection: "row",
+                      }}
                     >
-                      {blogTutoData.data.thumbnail && (
-                        <img
-                          className="blog-tuto-linked-img"
-                          src={blogTutoData.data.thumbnail}
-                          alt="blog-tuto-img-linked"
-                        />
-                      )}
-                      <ListItemText primary={blogTutoData.data.title} />
-                    </ListItem>
-                  </List>
-                )}
+                      <CardMedia
+                        component="img"
+                        src={blogTutoData.data.thumbnail}
+                        alt="course image"
+                        style={{
+                          objectFit: "contain",
+                          objectPosition: "center",
+                          width: "30%",
+                          minHeight: "10%",
+                          padding: "20px",
+                        }}
+                      />
+                      <CardContent
+                        sx={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          alignItems: "center",
+                        }}
+                      >
+                        <h4
+                          style={{
+                            width: "60%",
+                            wordBreak: "break-all",
+                            whiteSpace: "normal",
+                          }}
+                        >
+                          {blogTutoData.data.title}
+                        </h4>
+                        <Button
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            navigate(`/tuto/${blogTutoData.id}`);
+                          }}
+                          sx={{
+                            bgcolor: "#94258c",
+                            fontWeight: "bold",
+                            color: "white",
+                            mr: 1,
+                          }}
+                        >
+                          Blog Tuto
+                          <OpenInNewIcon />
+                        </Button>
+                        {selectedProjectData?.creatorProject?.id ===
+                        user?.id ? (
+                          <>
+                            <Button
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                deleteLinkedBlogTuto(
+                                  projectid,
+                                  blogTutoData?.data?.title,
+                                  selectedProjectData?.nameProject
+                                );
+                              }}
+                              variant="contained"
+                              color="primary"
+                              size="small"
+                              sx={{
+                                color: "white",
+                                fontWeight: "bold",
+                                backgroundColor: "#ff0000",
+                                "&:hover": {
+                                  backgroundColor: "#a60000",
+                                },
+                              }}
+                            >
+                              <DeleteIcon />
+                            </Button>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </div>
+                </>
+              )}
 
               <div className="btn-link-blog-container">
                 {selectedProjectData?.creatorProject?.id === user?.id ? (
@@ -626,12 +577,36 @@ const StudentProjectInfo = () => {
                   {selectedProjectData?.creatorProject?.firstname}
                 </Typography>
               </div>
+              <div className="btn-link-blog-container">
+                {selectedProjectData?.creatorProject?.id === user?.id ? (
+                  !hasAddedBlog && (
+                    <Button
+                      sx={{
+                        backgroundColor: "#76238b",
+                        color: "white",
+                        fontWeight: "bold",
+                      }}
+                      onClick={handleOpenUploadVideoProject}
+                    >
+                      <VideocamIcon />
+                      Video
+                    </Button>
+                  )
+                ) : (
+                  <div></div>
+                )}
+              </div>
             </div>
             <BlogTutosLinkDialog
               open={openBlogTutos}
               close={handleCloseBlogTutos}
               allblogtutos={allblogtutos}
               getStudentProjectById={getStudentProjectById}
+            />
+            <UploadVideoPlayerDialog
+              open={openUploadVideo}
+              close={handleCloseUploadVideoProject}
+              nameProject={selectedProjectData.nameProject}
             />
           </div>
         </>

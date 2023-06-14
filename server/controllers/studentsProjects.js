@@ -1,6 +1,38 @@
-const { db, storageFirebase } = require("../firebase");
-const bucket = storageFirebase.bucket();
+const { db, FieldValue, storageFirebase } = require("../firebase");
+const multer = require("multer");
+const fs = require("fs");
 const mime = require("mime-types");
+const bucket = storageFirebase.bucket();
+const path = require("path");
+
+const DIR = "./uploads";
+
+// Vérifier et créer le dossier "uploads" s'il n'existe pas
+if (!fs.existsSync(DIR)) {
+  fs.mkdirSync(DIR);
+}
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, DIR);
+  },
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  fileFilter: function (req, file, cb) {
+    if (file.mimetype !== "application/pdf" && file.mimetype !== "video/mp4") {
+      return cb(new Error("Le fichier doit être un PDF ou un MP4."));
+    }
+    cb(null, true);
+  },
+}).single("media");
 
 const getAllStudents = async (req, res) => {
   try {
@@ -252,6 +284,82 @@ const createStudentProject = async (req, res) => {
   }
 };
 
+const uploadMediaProject = async (req, res) => {
+  try {
+    await upload(req, res, async (err) => {
+      if (err instanceof multer.MulterError) {
+        res.status(400).json({ error: "Error uploading file." });
+      } else if (err) {
+        res.status(400).json({ error: err.message });
+      } else {
+        if (!req.file) {
+          res.status(400).json({ error: "No file uploaded." });
+          return;
+        }
+
+        const { projectId, nameProject } = req.body;
+        const file = req.file;
+        const filePath = req.file.path;
+
+        const fileName = req.file.originalname;
+        const fileSize = req.file.size;
+        const fileType = mime.lookup(filePath);
+
+        if (!file) {
+          return res.status(400).send("Aucun fichier n'a été téléchargé.");
+        }
+
+        const projectRef = db.collection("students_projects").doc(projectId);
+        const projectSnapshot = await projectRef.get();
+
+        if (!projectSnapshot.exists) {
+          return res.status(404).send("Projet étudiant non trouvé.");
+        }
+
+        const fileRef = bucket.file(
+          `students_projects/${nameProject}/${fileName}`
+        );
+
+        const options = {
+          metadata: {
+            contentType: file.mimetype || "video/mp4",
+            cacheControl: "public, max-age=31536000",
+          },
+        };
+
+        await fileRef.save(file.buffer, options);
+
+        const [url] = await fileRef.getSignedUrl({
+          action: "read",
+          expires: "03-17-2025",
+        });
+
+        const mediaData = {
+          url: url,
+          name: fileName,
+          type: fileType,
+          size: fileSize,
+        };
+
+        await projectRef.update({
+          mediaProject: mediaData,
+        });
+
+        res.status(200).json({
+          message: "Fichier vidéo uploadé avec succès.",
+          mediaData: mediaData,
+        });
+      }
+    });
+  } catch (err) {
+    if (err instanceof multer.MulterError) {
+      res.status(400).json({ error: "Error uploading file." });
+    } else {
+      res.status(400).json({ error: err.message });
+    }
+  }
+};
+
 const refStudentProject = async (req, res) => {
   try {
     const { projectId, counterRefToAdd, userId } = req.body;
@@ -309,6 +417,48 @@ const refStudentProject = async (req, res) => {
   }
 };
 
+const removeRefStudentProject = async (req, res) => {
+  try {
+    const { projectId, counterRefToRemove, userId } = req.body;
+
+    const projectRef = db.collection("students_projects").doc(projectId);
+
+    const projectSnapshot = await projectRef.get();
+
+    if (!projectSnapshot.exists) {
+      res.status(404).json({ message: "Projet étudiant non trouvé." });
+      return;
+    }
+
+    const currentCounterRef = projectSnapshot.data().counterRef;
+    const updatedCounterRef = currentCounterRef - counterRefToRemove;
+
+    const projectData = projectSnapshot.data();
+    const voters = projectData.voters || [];
+    const updatedVoters = voters.filter((voter) => voter.id !== userId);
+
+    if (!voters.some((voter) => voter.id === userId)) {
+      res
+        .status(403)
+        .json({ message: "Vous n'avez pas encore mis en avant ce projet." });
+      return;
+    }
+
+    await projectRef.update({
+      counterRef: updatedCounterRef,
+      voters: updatedVoters,
+    });
+
+    res.status(200).json({
+      message: "Projet étudiant mis à jour avec succès.",
+      projectId: projectId,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la mise à jour du projet étudiant.");
+  }
+};
+
 const createLinkedBlogTuto = async (req, res) => {
   const projectId = req.params.projectId;
   const blogTutoId = req.body.blogTutoId;
@@ -336,6 +486,163 @@ const createLinkedBlogTuto = async (req, res) => {
   }
 };
 
+const removeLinkedBlogTuto = async (req, res) => {
+  const projectId = req.params.projectId;
+
+  try {
+    const projectRef = db.collection("students_projects").doc(projectId);
+    const projectDoc = await projectRef.get();
+
+    if (!projectDoc.exists) {
+      return res.status(404).send("Le projet spécifié n'a pas été trouvé.");
+    }
+
+    if (!projectDoc.data().linkedBlogTuto) {
+      return res
+        .status(404)
+        .send("Aucun blog tutoriel n'est associé à ce projet.");
+    }
+
+    await projectRef.update({
+      linkedBlogTuto: FieldValue.delete(),
+    });
+
+    return res
+      .status(200)
+      .send("Le lien avec le blog tutoriel a été supprimé avec succès.");
+  } catch (err) {
+    console.error(err);
+    throw new Error(
+      "Erreur lors de la suppression du lien entre le blog tutoriel et le projet."
+    );
+  }
+};
+
+const updateStudentProject = async (req, res) => {
+  try {
+    const projectId = req.params.projectId;
+    const {
+      nameProject,
+      RepoProjectLink,
+      promoProject = [],
+      membersProject = [],
+      technosProject = [],
+      typeProject,
+      descriptionProject,
+      imgProject,
+      counterRef,
+    } = req.body;
+
+    const projectRef = db.collection("students_projects").doc(projectId);
+    const projectSnapshot = await projectRef.get();
+
+    if (!projectSnapshot.exists) {
+      return res.status(404).send("Projet étudiant non trouvé");
+    }
+
+    const projectData = {
+      nameProject: nameProject,
+      RepoProjectLink: RepoProjectLink,
+      typeProject: typeProject,
+      descriptionProject: descriptionProject,
+      imgProject: imgProject,
+      counterRef: counterRef,
+    };
+
+    const promoProjectData = [];
+    for (const promosId of promoProject) {
+      const promoProjectRef = await db.collection("class").doc(promosId).get();
+      if (promoProjectRef.exists) {
+        const promoData = {
+          id: promoProjectRef.id,
+          cursus: promoProjectRef.data().cursus,
+          name: promoProjectRef.data().name,
+          promo: promoProjectRef.data().promo,
+          site: promoProjectRef.data().site,
+        };
+
+        promoProjectData.push(promoData);
+      }
+    }
+    projectData.promoProject = promoProjectData;
+
+    const membersData = [];
+    for (const memberId of membersProject) {
+      const memberRef = await db.collection("users").doc(memberId).get();
+      if (memberRef.exists) {
+        const memberData = {
+          id: memberRef.id,
+          firstname: memberRef.data().firstname,
+          lastname: memberRef.data().lastname,
+        };
+
+        if (memberRef.data().image) {
+          memberData.image = memberRef.data().image;
+        }
+
+        membersData.push(memberData);
+      }
+    }
+    projectData.membersProject = membersData;
+
+    const technosData = [];
+    for (const technosId of technosProject) {
+      const technosRef = await db.collection("technos").doc(technosId).get();
+      if (technosRef.exists) {
+        const technoData = {
+          id: technosRef.id,
+          name: technosRef.data().name,
+          image: technosRef.data().image,
+        };
+        technosData.push(technoData);
+      }
+    }
+    projectData.technosProject = technosData;
+
+    await projectRef.update(projectData);
+
+    res.status(200).json({
+      message: "Projet étudiant modifié avec succès.",
+      projectId: projectId,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la modification du projet étudiant.");
+  }
+};
+
+const deleteStudentProject = async (req, res) => {
+  try {
+    const { nameProject, projectId } = req.body;
+
+    const projectRef = db.collection("students_projects").doc(projectId);
+    const projectDoc = await projectRef.get();
+
+    if (!projectDoc.exists) {
+      return res.status(404).send("Projet étudiant non trouvé");
+    }
+
+    await projectRef.delete();
+
+    const folderPath = `students_projects/${nameProject}`;
+
+    const [files] = await bucket.getFiles({
+      prefix: `${folderPath}/`,
+    });
+
+    for (const file of files) {
+      await file.delete();
+    }
+
+    res.status(200).json({
+      message: "Projet étudiant supprimé avec succès.",
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la suppression du projet étudiant.");
+  }
+};
+
 module.exports = {
   getAllStudents,
   getStudentById,
@@ -344,6 +651,11 @@ module.exports = {
   getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,
+  uploadMediaProject,
   refStudentProject,
+  removeRefStudentProject,
   createLinkedBlogTuto,
+  removeLinkedBlogTuto,
+  updateStudentProject,
+  deleteStudentProject,
 };

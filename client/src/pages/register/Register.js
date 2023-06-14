@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   TextField,
@@ -46,6 +47,8 @@ export const toastFail = (message) => {
 };
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [allclass, setAllclass] = useState([]);
   const [selectedStudentClass, setSelectedStudentClass] = useState("");
   const [selectedStudentClassId, setSelectedStudentClassId] = useState("");
@@ -118,6 +121,9 @@ const Register = () => {
           toastSuccess(
             `Utilisateur inscrit ! Vous avez recu un mail de confirmation sur ${userEmail}`
           );
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
         } else {
           toastFail("Utilisateur non enregistré");
         }

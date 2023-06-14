@@ -35,69 +35,84 @@ export const toastFail = (message) => {
   toast.error(message, options);
 };
 
-const BlogTutosLinkDialog = (props) => {
-  const { projectid } = useParams();
-  const [selectedBlogTutoId, setSelectedBlogTutoId] = useState("");
+const StudentProjectLinkDialog = (props) => {
+  const { id } = useParams();
+  const [selectedStudentProjectId, setSelectedStudentProjectId] = useState("");
 
-  const selectedBlogTuto = props.allblogtutos.find(
-    (blogtuto) => blogtuto.id === selectedBlogTutoId
+  const selectedProject = props.allprojects.find(
+    (project) => project.id === selectedStudentProjectId
   );
-  const selectedBlogTutoName = selectedBlogTuto
-    ? selectedBlogTuto.data.title
+  const selectedProjectName = selectedProject
+    ? selectedProject.nameProject
     : "";
 
-  const publishStudentProject = async () => {
+  /*
+    Update the jpo using 
+    id (String), 
+    selectedStudentProjectId (String),
+    selectedStudentProjectName (String)
+  */
+
+  const linkStudentProjectToJpo = async () => {
     try {
       await axios
-        .post(`http://localhost:5050/ressources/linkblogtuto/${projectid}`, {
-          blogTutoId: selectedBlogTutoId,
+        .post(`http://localhost:5050/ressources/jpo/${id}`, {
+          studentProjectId: selectedStudentProjectId,
         })
         .then((res) => {
-          console.log(res.data);
           if (
-            res.status === 200 &&
-            res.data === "Le blog tutoriel a été lié au projet avec succès."
+            res.data.message ===
+            `Le projet étudiant ${selectedProjectName} a bien été lié à la jpo`
           ) {
             toastSuccess(
-              `Le blog tutoriel ${selectedBlogTutoName} a bien été lié à votre projet étudiant`
+              `Le projet étudiant ${selectedProjectName} a bien été lié à votre jpo ${props.jpoData?.jpoTitle}`
             );
+            props.close();
+            props.getJpoById();
           }
-          props.close();
-          props.getStudentProjectById();
         })
         .catch((error) => {
           console.log(error);
+          toastFail(
+            "Il semble avoir un problème avec le projet étudiant selectionner pour la liaison"
+          );
         });
     } catch (error) {
       throw error;
     }
   };
 
-  const handleBlogTutoSelect = (event) => {
-    setSelectedBlogTutoId(event.target.value || "");
+  const handleStudentProjectSelect = (event) => {
+    setSelectedStudentProjectId(event.target.value || "");
   };
 
-  const handleImageClick = (blogTutoId) => {
-    setSelectedBlogTutoId(blogTutoId);
+  const handleImageClick = (studentProjectId) => {
+    setSelectedStudentProjectId(studentProjectId);
   };
 
   return (
     <>
       <Dialog open={props.open} onClose={props.close}>
-        <DialogTitle>Lier à un article blog tuto</DialogTitle>
+        <DialogTitle>Lier à un projet étudiant</DialogTitle>
         <DialogContent>
           <div style={{ height: "600px", overflow: "auto" }}>
             <Grid container spacing={2}>
-              {props.allblogtutos.map((blogTuto) => (
-                <Grid item key={blogTuto.id} xs={12} sm={6} md={4}>
+              {props.allprojects.map((project) => (
+                <Grid item key={project.id} xs={12} sm={6} md={4}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{ textAlign: "center", marginBottom: "15px" }}
+                  >
+                    {project.nameProject}
+                  </Typography>
                   <div style={{ position: "relative" }}>
                     <FormControlLabel
-                      value={blogTuto.id}
+                      value={project.id}
                       control={
                         <Radio
                           color="primary"
-                          checked={selectedBlogTutoId === blogTuto.id}
-                          onChange={handleBlogTutoSelect}
+                          checked={selectedStudentProjectId === project.id}
+                          onChange={handleStudentProjectSelect}
                         />
                       }
                       style={{
@@ -108,18 +123,12 @@ const BlogTutosLinkDialog = (props) => {
                       }}
                     />
                     <img
-                      src={blogTuto?.data?.thumbnail}
+                      src={project.imgProject}
                       style={{ width: "100%", cursor: "pointer" }}
                       alt="blog-tuto-linked-img"
-                      onClick={() => handleImageClick(blogTuto.id)}
+                      onClick={() => handleImageClick(project.id)}
                     />
                   </div>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ textAlign: "center", marginBottom: "15px" }}
-                  >
-                    {blogTuto?.data?.title}
-                  </Typography>
                 </Grid>
               ))}
             </Grid>
@@ -127,11 +136,11 @@ const BlogTutosLinkDialog = (props) => {
         </DialogContent>
         <DialogActions>
           <Button
-            onClick={publishStudentProject}
+            onClick={linkStudentProjectToJpo}
             sx={{ backgroundColor: "#7a52e1", color: "white" }}
-            disabled={!selectedBlogTutoId}
+            disabled={!selectedStudentProjectId}
           >
-            Soumettre
+            Valider
           </Button>
         </DialogActions>
       </Dialog>
@@ -140,4 +149,4 @@ const BlogTutosLinkDialog = (props) => {
   );
 };
 
-export default BlogTutosLinkDialog;
+export default StudentProjectLinkDialog;
