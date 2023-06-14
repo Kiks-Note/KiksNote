@@ -23,12 +23,13 @@ import IconButton from "@mui/material/IconButton";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import PostIt from "../../components/retro/PostIt";
+import { PopUp } from "../../components/retro/Popup";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import { json, useNavigate } from "react-router-dom";
 import { useTheme } from "@mui/material";
 import { set } from "date-fns";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
 export default function Board() {
   const [openPostItEdit, setOpenPostItEdit] = useState(false);
@@ -46,19 +47,13 @@ export default function Board() {
   const [columns, setColumns] = useState();
   const [inRoom, setInRoom] = useState(false);
   const [classStudents, setClassStudents] = useState();
-  const [roomAvailables, setRoomAvailables] = useState();
   const [roomData, setRoomData] = useState({});
+  const [showSettings, setShowSettings] = useState(false);
+  const [courseChoose, setCourseChoose] = useState();
 
   const { user } = useFirebase();
   const theme = useTheme();
   const navigate = useNavigate();
-
-  // const location = useLocation();
-  // const retroData = location.state && location.state.retroRoom;
-
-  // console.log("ééééé");
-  // console.log(retroData);
-  // console.log("ééééé");
 
   const ws = useMemo(() => {
     return new w3cwebsocket("ws://localhost:5050/retro");
@@ -69,25 +64,10 @@ export default function Board() {
     setUserCursors(map);
   }
 
-  const fetchAndSetData = useCallback(async () => {
-    const colContent = await axios.get();
-    ws.send(
-      JSON.stringify({
-        type: "updateCol",
-        data: {
-          columns: colContent,
-          class: roomData["class"],
-        },
-      })
-    );
-    console.log(colContent);
-    setColumns(colContent);
-  }, [ws, selectClasses]);// , roomData["class"]
-
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/retro/getRoom/${classStudents}`)
+        .get(`http://localhost:5050/retro/getRoom/${user?.class.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -95,21 +75,11 @@ export default function Board() {
               data: {
                 userID: user?.id,
                 name: user?.firstname,
-                class: roomData["class"],
+                class: user?.class.id,
               },
             };
             ws.send(JSON.stringify(message));
-            setInRoom(true);
-          } else {
-            const message = {
-              type: "createRoom",
-              data: {
-                userID: user?.id,
-                name: user?.firstname,
-                class: roomData["class"],
-              },
-            };
-            ws.send(JSON.stringify(message));
+            setClassStudents(user?.class.id);
             setInRoom(true);
           }
         });
@@ -117,40 +87,65 @@ export default function Board() {
       console.error(error);
       throw error;
     }
-  }, [user?.id, user?.firstname, ws]); // roomData["class"],
+  }, [user?.class, user?.id, user?.firstname, ws]);
 
-  const getRoomsAvailables = useCallback(async () => {
- 
-    console.log(user?.id);
-    axios.get(`http://localhost:5050/retro/getPORoom/${user?.id}`).then((res) => {
-      console.log(res.data);
-      if (res.data.length > 0) {
-        console.log(res.data);
-        setRoomAvailables(res.data);
-      }
-    });
-
-
-  }, []);
+  const logToExistingRoom = useCallback(async () => {
+    try {
+      axios
+        .get(`http://localhost:5050/retro/getRoomPo/${user?.id}`)
+        .then((res) => {
+          if (res.data.length > 0) {
+            const message = {
+              type: "joinRoom",
+              data: {
+                userID: user?.id,
+                name: user?.firstname,
+                class: res.data[0].class,
+              },
+            };
+            ws.send(JSON.stringify(message));
+            setClassStudents(res.data[0].class);
+            setInRoom(true);
+          }
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  }, [user?.id, user?.firstname, ws]);
 
   useEffect(() => {
-    console.log("wsss");
-    if (user?.class && user?.status === "etudiant") {
-      setClassStudents(user.class);
-    }
+    const GMDBoard = {
+      Glad: {
+        name: "Glad",
+        color: "#ff0000",
+        params: "1 / 1 / 3 / 3",
+        items: [],
+      },
+      Mad: {
+        name: "Mad",
+        color: "#0000ff",
+        params: "1 / 3 / 3 / 5",
+        items: [],
+      },
+      Sad: {
+        name: "Sad",
+        color: "#9ACD32",
+        params: "3 / 1 / 5 / 3",
+        items: [],
+      },
+    };
 
-    if (user?.status === "po") {
-      getRoomsAvailables();
-    }
-
-    async function handleOpen() {
-      if (user?.status === "etudiant" && roomData["class"]) {
+    setColumns(GMDBoard);
+    const handleOpen = async () => {
+      if (user?.status === "etudiant") {
         await LogToExistingRoomStudent();
+      } else if (user?.status === "po") {
+        await logToExistingRoom();
       }
-      console.log("wssssss  open");
 
-      if (roomData["class"]) {
+      if (inRoom) {
         document.addEventListener("mousemove", (event) => {
+          if (ws.readyState !== WebSocket.OPEN) return;
           const cursorPosition = {
             x: event.clientX,
             y: event.clientY,
@@ -161,48 +156,41 @@ export default function Board() {
             data: {
               position: cursorPosition,
               userID: user?.id,
-              class: roomData["class"],
+              class: classStudents,
             },
           };
           ws.send(JSON.stringify(message));
         });
 
-        if (inRoom) {
-          console.log("in rooooom");
-          ws.onmessage = (message) => {
-            const messageReceive = JSON.parse(message.data);
-            console.log("wsss rooom");
-            switch (messageReceive.type) {
-              case "updateRoom":
-                displayUserCursorPositions(
-                  messageReceive.data.currentRoom.users
-                );
-                if (messageReceive.data.currentRoom.columns) {
-                  setColumns(messageReceive.data.currentRoom.columns);
-                } else {
-                  fetchAndSetData();
-                }
-                console.log("updateCo user in room, room update");
-                //setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
-                setConnectedUsersList(messageReceive.data.currentRoom.users);
-                break;
-              case "updateCol":
-                console.log("updateCo user in room when col update");
+        ws.onmessage = (message) => {
+          const messageReceive = JSON.parse(message.data);
+
+          switch (messageReceive.type) {
+            case "updateRoom":
+              displayUserCursorPositions(messageReceive.data.currentRoom.users);
+              if (user.status === "etudiant") {
+                console.log(messageReceive.data.currentRoom);
+              }
+              if (messageReceive.data.currentRoom.columns) {
                 setColumns(messageReceive.data.currentRoom.columns);
-                //setConnectedUsers(messageReceive.data.currentRoom.nbUsers);
-                setConnectedUsersList(messageReceive.data.currentRoom.users);
-                break;
-              case "closeRoom":
-                setInRoom(false);
-                navigate("/");
-                break;
-              default:
-                break;
-            }
-          };
-        }
+              }
+              setConnectedUsers(messageReceive.data.currentRoom.users);
+              break;
+            case "closeRoom":
+              setInRoom(false);
+              navigate("/");
+              ws.close();
+              break;
+            case "updateCol":
+              setColumns(messageReceive.data.currentRoom.columns);
+              break;
+            default:
+              break;
+          }
+        };
       }
-    }
+    };
+
     if (ws.readyState === WebSocket.OPEN) {
       handleOpen();
     } else {
@@ -210,82 +198,24 @@ export default function Board() {
     }
 
     return () => {
-      document.removeEventListener("mousemove", () => { });
-      if (ws.readyState === WebSocket.OPEN) {
-        console.log(roomData);
-        ws.send(
-          JSON.stringify({
-            type: "leaveRoom",
-            data: { userID: user?.id, class: roomData["class"] },
-          })
-        );
-      }
+      document.removeEventListener("mousemove", () => {});
+      ws.send(
+        JSON.stringify({
+          type: "leaveRoom",
+          data: { userID: user?.id, class: classStudents },
+        })
+      );
     };
   }, [
     LogToExistingRoomStudent,
-    // roomData["class"],
-    fetchAndSetData,
-    getRoomsAvailables,
+    classStudents,
     inRoom,
+    logToExistingRoom,
     navigate,
-    user.class,
     user?.id,
-    user?.status,
+    user.status,
     ws,
   ]);
-
-  useEffect(() => {
-    ws.onmessage = (message) => {
-      let jsonData = JSON.parse(message.data);
-      console.log(jsonData);
-
-      if (jsonData.type == "updateRoom" && jsonData.data.currentRoom.columns) {
-        setColumns(jsonData.data.currentRoom.columns)
-      }
-
-      // console.log(jsonData.data);
-      // setConnectedUsersList(jsonData.data.currentRoom.users)
-      // console.log(connectedUsersList);
-
-    }
-  })
-
-  useEffect(() => {
-    ws.onmessage = (message) => {
-      let jsonData = JSON.parse(message.data);
-      console.log(jsonData);
-
-      if (jsonData.type == "updateRoom" && jsonData.data.currentRoom.columns) {
-        setColumns(jsonData.data.currentRoom.columns)
-      }
-
-      console.log(jsonData.data);
-      setConnectedUsersList(jsonData.data.currentRoom.users)
-      console.log(connectedUsersList);
-
-    }
-  }, [])
-
-  const GMDBoard = {
-    Glad: {
-      name: "Glad",
-      color: "#ff0000",
-      params: "1 / 1 / 3 / 3",
-      items: [],
-    },
-    Mad: {
-      name: "Mad",
-      color: "#0000ff",
-      params: "1 / 3 / 3 / 5",
-      items: [],
-    },
-    Sad: {
-      name: "Sad",
-      color: "#9ACD32",
-      params: "3 / 1 / 5 / 3",
-      items: [],
-    },
-  };
 
   const PNABoard = {
     Positif: {
@@ -336,35 +266,23 @@ export default function Board() {
   };
 
   const deletePostit = async (item) => {
-    let columnBis = { ...columns }
+    const copiedColContent = { ...columns };
 
-    console.log(item);
+    Object.keys(copiedColContent).forEach((key) => {
+      const group = copiedColContent[key];
+      const updatedItems = group.items.filter(
+        (student) => student.id !== item.id
+      );
+      group.items = updatedItems;
+    });
 
-
-    for (const el in columnBis) {
-
-      for (let index = 0; index < columnBis[el].items.length; index++) {
-        const element = columnBis[el].items[index];
-        console.log(element);
-        if (element["id"] == item["id"]) {
-          console.log("yes");
-          columnBis[el].items.splice(index, 1)
-        }
-
-      }
-
-    }
-
-    setColumns(columnBis)
-
-    const message = {
-      type: "updateCol",
-      data: {
-        columns: columns,
-        class: roomData["class"], //classStudents
-      },
-    };
-    ws.send(JSON.stringify(message));
+    setColumns(copiedColContent);
+    ws.send(
+      JSON.stringify({
+        type: "updateCol",
+        data: { columns: copiedColContent, class: classStudents },
+      })
+    );
   };
 
   const handleClickOpenEditPostIt = () => {
@@ -521,32 +439,9 @@ export default function Board() {
       data: {
         userID: user?.id,
         columns: columns,
-        class: roomData["class"]
-      },
-    }
-
-    ws.send(JSON.stringify(message));
-
-  }
-
-  const joinRoom = (room) => {
-    console.log(room);
-    setInRoom(true);
-    setRoomData(room)
-    const message = {
-      type: "joinRoom",
-      data: {
-        userID: user?.id,
-        class: room.class,
-        name: user?.firstname + " " + user?.lastname
+        class: roomData["class"],
       },
     };
-
-    if (room.columns) {
-      setColumns(room.columns);
-    } else {
-      setColumns(GMDBoard);
-    }
 
     ws.send(JSON.stringify(message));
   };
@@ -559,124 +454,37 @@ export default function Board() {
     setSelectedPostItIndex(i);
   };
 
-
-  const createRoom = () => {
-    console.log("create room");
-
-    console.log(classStudents);
-    if (!classStudents) {
-      alert("Veuillez renseigner une classe");
-      return;
-    }
-
-    const message = {
-      type: "createRoom",
-      data: {
-        userID: user?.id,
-        class: classStudents,
-      },
-    };
-    ws.send(JSON.stringify(message));
-
-    setInRoom(true);
-  };
-
-  const handleDeleteRoom = () => {
-    const message = {
-      type: "deleteRoom",
-      data: {
-        class: roomData["class"], // Pass the class name of the room to delete
-      },
-    };
-
-    // Send the message to the server
-    ws.send(JSON.stringify(message));
-  };
-
-
-  const saveRetro = async () => {
-    console.log(roomData);
+  const handleDeleteRoom = async () => {
     const message = {
       type: "closeRoom",
       data: {
-        userID: user?.id,
-        class: roomData["class"], //classStudents
+        class: classStudents, // Pass the class name of the room to delete
       },
     };
-
-    console.log(message);
     ws.send(JSON.stringify(message));
+    ws.close();
+
+    // Save retro here
+    try {
+      await axios.delete(`http://localhost:5050/retro/deleteRoom/${user?.id}`);
+    } catch (error) {
+      console.error(error);
+    }
+
+    navigate("/ ");
   };
 
-  if (!inRoom && user?.status === "po" && roomAvailables) {
-    console.log(roomAvailables);
-    return (
-      <div>
-        <div> Créer une rétro </div>
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id="demo-simple-select-helper-label">Classe</InputLabel>
-          <Select
-            variant="filled"
-            id="input-class"
-            sx={{ color: "text.primary" }}
-            renderValue={() => "Classe"}
-            onChange={(e) => setClassStudents(e.target.value)}
-          >
-            <MenuItem value="L1-paris">L1-Paris</MenuItem>
-            <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
-            <MenuItem value="L2-paris">L2-Paris</MenuItem>
-            <MenuItem value="L2-cergy">L2-Cergy</MenuItem>
-            <MenuItem value="L3-paris">L3-Paris</MenuItem>
-            <MenuItem value="L3-cergy">L3-Cergy</MenuItem>
-            <MenuItem value="M1-lead">M1-LeadDev</MenuItem>
-            <MenuItem value="M1-gaming">M1-Gaming</MenuItem>
-            <MenuItem value="M2-lead">M2-LeadDev</MenuItem>
-            <MenuItem value="M2-gaming">M2-Gaming</MenuItem>
-          </Select>
-        </FormControl>
-        <button onClick={() => createRoom()}>Créer une room</button>
+  const handlePopupData = (data) => {
+    setShowSettings(false);
+    setInRoom(true);
+    console.log("He ?");
+    setCourseChoose(data.courseChoose);
+    setClassStudents(data.courseChoose.data.courseClass.id);
+  };
 
-        <h1>Voici les rooms disponible: </h1>
-        {roomAvailables.map((room) => {
-          console.log(room);
-          return (
-            <div key={room.id}>
-              <h2>{room.class}</h2>
-              <button onClick={() => joinRoom(room)}>Rejoindre la room</button>
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  if (!inRoom && user?.status === "po" && !roomAvailables) {
+  if (user?.status === "po" && !inRoom) {
     return (
-      <div>
-        <h1>Il n'y a pas de room disponible</h1>
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id="demo-simple-select-helper-label">Classe</InputLabel>
-          <Select
-            variant="filled"
-            id="input-class"
-            sx={{ color: "text.primary" }}
-            renderValue={() => "Classe"}
-            onChange={(e) => setClassStudents(e.target.value)}
-          >
-            <MenuItem value="L1-paris">L1-Paris</MenuItem>
-            <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
-            <MenuItem value="L2-paris">L2-Paris</MenuItem>
-            <MenuItem value="L2-cergy">L2-Cergy</MenuItem>
-            <MenuItem value="L3-paris">L3-Paris</MenuItem>
-            <MenuItem value="L3-cergy">L3-Cergy</MenuItem>
-            <MenuItem value="M1-lead">M1-LeadDev</MenuItem>
-            <MenuItem value="M1-gaming">M1-Gaming</MenuItem>
-            <MenuItem value="M2-lead">M2-LeadDev</MenuItem>
-            <MenuItem value="M2-gaming">M2-Gaming</MenuItem>
-          </Select>
-        </FormControl>
-        <button onClick={() => createRoom()}>Créer une room</button>
-      </div>
+      <PopUp onPopupData={handlePopupData} dataPopUp={null} showPopUp={null} />
     );
   }
 
@@ -727,78 +535,79 @@ export default function Board() {
             >
               {userCursors
                 ? Array.from(userCursors.entries()).map(
-                  ([userID, userData]) => {
-                    if (userID !== user?.id) {
-                      return (
-                        <div
-                          key={userID}
-                          style={{
-                            position: "absolute",
-                            left: userData.position?.x,
-                            top: userData.position?.y,
-                            zIndex: 100,
-                          }}
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 50 50"
-                            width="30px"
-                            height="30px"
-                          >
-                            <path
-                              fill={userData.color}
-                              d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
-                            />
-                          </svg>
-
+                    ([userID, userData]) => {
+                      if (userID !== user?.id) {
+                        return (
                           <div
+                            key={userID}
                             style={{
-                              display: "inline-block",
-                              backgroundColor: userData.color,
-                              padding: "0px 6px",
-                              color: "#fff",
-                              fontSize: "12px",
-                              borderRadius: "4px",
-                              margin: "0px",
+                              position: "absolute",
+                              left: userData.position?.x,
+                              top: userData.position?.y,
+                              zIndex: 100,
                             }}
                           >
-                            <p
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              viewBox="0 0 50 50"
+                              width="30px"
+                              height="30px"
+                            >
+                              <path
+                                fill={userData.color}
+                                d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
+                              />
+                            </svg>
+
+                            <div
                               style={{
-                                selection: "none",
-                                fontWeight: "bold",
-                                textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                                display: "inline-block",
+                                backgroundColor: userData.color,
+                                padding: "0px 6px",
+                                color: "#fff",
+                                fontSize: "12px",
+                                borderRadius: "4px",
                                 margin: "0px",
                               }}
                             >
-                              {userData.name}
-                            </p>
+                              <p
+                                style={{
+                                  selection: "none",
+                                  fontWeight: "bold",
+                                  textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                                  margin: "0px",
+                                }}
+                              >
+                                {userData.name}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    } else {
-                      return null;
+                        );
+                      } else {
+                        return null;
+                      }
                     }
-                  }
-                )
+                  )
                 : null}
             </div>
             {connectedUsersList ? (
               <div>
                 <h4> Présents :</h4>
-                
-                {Object.entries(connectedUsersList).map(([email, userInfo]) => (
-                  console.log("**********************"),
-                  console.log(email),
-                  console.log("**********************"),
-                  console.log(userInfo),
-                  console.log("$$$$$$$$$$$$$$$$$$$$$$$"),
 
-                  <p key={email}>
-                    {email["name"]}/
-                    {userInfo["name"]}
-
-                  </p>
-                ))}
+                {Object.entries(connectedUsersList).map(
+                  ([email, userInfo]) => (
+                    console.log("**********************"),
+                    console.log(email),
+                    console.log("**********************"),
+                    console.log(userInfo),
+                    console.log("$$$$$$$$$$$$$$$$$$$$$$$"),
+                    (
+                      <p key={email}>
+                        {email["name"]}/{userInfo["name"]}
+                      </p>
+                    )
+                  )
+                )}
               </div>
             ) : null}
             <DragDropContext onDragEnd={(result) => onDragEnd(result, columns)}>
@@ -963,11 +772,9 @@ export default function Board() {
             </DragDropContext>
           </div>
           {user.status === "po" ? (
-            // <button onClick={saveRetro}>Terminer la Retro</button>
             <Button variant="contained" onClick={handleDeleteRoom}>
-              Delete Room
+              Terminer la Retro & Sauvegarder
             </Button>
-
           ) : null}
         </div>
       ) : null}

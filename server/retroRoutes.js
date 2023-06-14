@@ -2,11 +2,12 @@ const express = require("express");
 
 const {
   getRoom,
+  getRoomPo,
   getAllRooms,
   room,
   getAll,
   getAllRoomsForPO,
-  getAllRoomsForStudent,
+  deleteRoom,
 } = require("./controllers/retro");
 
 const retroRoutesWsNotNeeded = () => {
@@ -21,9 +22,10 @@ const retroRoutesWsNeeded = (connection, pathname) => {
 
   router.get("/getAllRooms", getAllRooms);
   router.get("/getRoom/:class", getRoom);
+  router.get("/getRoomPo/:po_id", getRoomPo);
   router.get("/getAll", getAll);
   router.get("/getPORoom/:poID", getAllRoomsForPO);
-  router.get("/getStudentRoom/:studentClass", getAllRoomsForStudent);
+  router.delete("/deleteRoom/:po_id", deleteRoom);
 
   switch (pathname) {
     case "/retro":

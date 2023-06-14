@@ -16,17 +16,16 @@ let indexColor = 0;
 console.log("in retro controller");
 
 const getAll = async (req, res) => {
-  const allRetrosQuery = await db.collection("retro").get()
+  const allRetrosQuery = await db.collection("retro").get();
 
-  let allRetros = []
+  let allRetros = [];
   allRetrosQuery.forEach((doc) => {
     allRetros.push({ ...doc.data() });
   });
 
-  res.send(allRetros)
+  res.send(allRetros);
   //console.log(allRetros);
-
-}
+};
 
 const getRoom = async (req, res) => {
   const { classStudent } = req.params;
@@ -49,42 +48,68 @@ const getAllRooms = async (req, res) => {
   res.status(200).send(documents);
 };
 
-
-const getAllRoomsForPO = async (req,res) => {
-  const poID = req.params.poID
+const getAllRoomsForPO = async (req, res) => {
+  const poID = req.params.poID;
   const snapshot = await db
     .collection("rooms")
     .where("type", "==", "retro")
     .where("userID", "==", poID)
     .get();
 
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  console.log("*********");
+  console.log(documents);
+  console.log("*********");
 
-    console.log("*********");
-    console.log(documents);
-    console.log("*********");
+  res.status(200).send(documents);
+};
 
-    res.status(200).send(documents);
-}
+const getRoomPo = async (req, res) => {
+  const { po_id } = req.params;
+  const snapshot = await db
+    .collection("rooms")
+    .where("po_id", "==", po_id)
+    .where("type", "==", "retro")
+    .get();
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  res.status(200).send(documents);
+};
 
-const getAllRoomsForStudent = async (req,res) => {
-  const studentClass = req.params.classStudent
+const getAllRoomsForStudent = async (req, res) => {
+  const studentClass = req.params.classStudent;
   const snapshot = await db
     .collection("rooms")
     .where("type", "==", "retro")
     .where("class", "==", studentClass)
     .get();
 
-    const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    res.status(200).send(documents);
-}
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  res.status(200).send(documents);
+};
 
+const deleteRoom = async (req, res) => {
+  const { po_id } = req.params;
+
+  try {
+    const snapshot = await db
+      .collection("rooms")
+      .where("po_id", "==", po_id)
+      .where("type", "==", "retro")
+      .get();
+    const deletePromises = snapshot.docs.map((doc) => doc.ref.delete());
+    await Promise.all(deletePromises);
+
+    res.status(200).send("Rooms successfully deleted!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting rooms.");
+  }
+};
 
 const currentRooms = new Map();
 
 const clients = new Map();
-
 
 const room = async (connection) => {
   const defaultRoom = {
@@ -94,20 +119,11 @@ const room = async (connection) => {
   };
 
   const sendToAllClients = (message, classStudent) => {
-
-
-
     const roomClients = clients.get(classStudent) || new Map();
-
-
-    //console.log(clients);
-
-    //console.log(roomClients);
 
     for (const [UserID, client] of roomClients.entries()) {
       client.sendUTF(JSON.stringify(message));
     }
-
   };
 
   connection.on("message", (message) => {
@@ -148,7 +164,7 @@ const room = async (connection) => {
         console.log("createRoom");
         const newRoomRef = db.collection("rooms").doc();
         newRoomRef.set({
-          userID: response.data.userID,
+          po_id: response.data.po_id,
           class: response.data.class,
           type: "retro",
         });
@@ -195,7 +211,7 @@ const room = async (connection) => {
 
         break;
       case "joinRoom":
-        console.log("joinRoom");
+        console.log("joinRoom :", response.data.userID);
         const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
 
         if (indexColor >= pastelColors.length) {
@@ -230,50 +246,29 @@ const room = async (connection) => {
               ),
             },
             class: response.data.class,
-            wsh: response.data.wsh
           },
         };
 
-
-        console.log(currentRooms.get(response.data.class));
-        console.log("*************************************");
         sendToAllClients(messageJoin, response.data.class);
 
         break;
       case "closeRoom":
-      // currentRooms.delete(response.data.class);
-      // clients.delete(response.data.class);
+        currentRooms.delete(response.data.class);
+        clients.delete(response.data.class);
+        console.log("Room closed");
 
-      // const messageClose = {
-      //   type: "closeRoom",
-      //   // class: response.data.class
-      // };
-
-      // console.log("******************** close ********************");
-      // sendToAllClients(messageClose, response.data.class);
-
-      case "deleteRoom":
-        console.log("deleteRoom");
-        const classToDelete = response.data.class;
-        console.log(currentRooms);
-        console.log(clients);
-
-        const messageDelete = {
-          type: "deleteRoom",
+        const messageClose = {
+          type: "closeRoom",
         };
 
-        sendToAllClients(messageDelete, classToDelete);
-
-        clients.delete(classToDelete);
-        currentRooms.delete(classToDelete);
-        
+        sendToAllClients(messageClose, response.data.class);
 
         break;
       case "leaveRoom":
         const userRoom = currentRooms.get(response.data.class) || defaultRoom;
         userRoom.users.delete(response.data.userID);
 
-        console.log("User left room");
+        console.log("User left room", response.data.userID);
 
         currentRooms.set(response.data.class, userRoom);
 
@@ -301,8 +296,6 @@ const room = async (connection) => {
 
         sendToAllClients(messageLeave, response.data.class);
 
-
-
         break;
       case "updateCol":
         let roomCol = currentRooms.get(response.data.class) || defaultRoom;
@@ -321,10 +314,6 @@ const room = async (connection) => {
             class: response.data.class,
           },
         };
-        console.log("in update col");
-
-        //  console.log(messageUpdateCol);
-        //  console.log(messageUpdateCol.data.currentRoom["columns"]);
         sendToAllClients(messageUpdateCol, response.data.class);
     }
   });
@@ -333,8 +322,9 @@ const room = async (connection) => {
 module.exports = {
   getAllRooms,
   getAllRoomsForPO,
-  getAllRoomsForStudent,
   getRoom,
+  getRoomPo,
+  deleteRoom,
   room,
-  getAll
+  getAll,
 };
