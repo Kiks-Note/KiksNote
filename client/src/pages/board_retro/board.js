@@ -1,73 +1,104 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
-import Button from "@mui/material/Button";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
-
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import CreateIcon from "@mui/icons-material/Create";
-import DialogTitle from "@mui/material/DialogTitle";
+import GroupIcon from "@mui/icons-material/Group";
 import {
+  Button,
+  useTheme,
+  Tooltip,
+  IconButton,
   TextField,
-  Typography,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  selectClasses,
 } from "@mui/material";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import AddIcon from "@mui/icons-material/Add";
-import IconButton from "@mui/material/IconButton";
-import CancelIcon from "@mui/icons-material/Cancel";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import PostIt from "../../components/retro/PostIt";
 import { PopUp } from "../../components/retro/Popup";
-import { w3cwebsocket } from "websocket";
+import { toast, ToastContainer } from "react-toastify";
 import useFirebase from "../../hooks/useFirebase";
-import { json, useNavigate } from "react-router-dom";
-import { useTheme } from "@mui/material";
-import { set } from "date-fns";
-import { useLocation } from "react-router-dom";
+import { w3cwebsocket } from "websocket";
+import { useNavigate } from "react-router-dom";
 
-export default function Board() {
-  const [openPostItEdit, setOpenPostItEdit] = useState(false);
-  const [postItText, setPostItText] = useState("");
-  const [categorie, setCategorie] = useState("");
-  const [selectedPostItIndex, setSelectedPostItIndex] = useState();
-  const [showTextField, setShowTextField] = useState(false);
-  const [newPostItContent, setNewPostItContent] = useState("");
-  const [selectedColumnId, setSelectedColumnId] = useState(null);
-  const [connectedUsers, setConnectedUsers] = useState([]);
-  const [connectedUsersList, setConnectedUsersList] = useState({});
+import "./Retro.scss";
+
+const options = {
+  autoClose: 2000,
+  className: "",
+  position: toast.POSITION.BOTTOM_RIGHT,
+  theme: "colored",
+};
+
+export const toastSuccess = (message) => {
+  toast.success(message, options);
+};
+
+export const toastWarning = (message) => {
+  toast.warning(message, options);
+};
+
+export const toastFail = (message) => {
+  toast.error(message, options);
+};
+
+function GroupsCreation() {
+  const [classStudents, setClassStudents] = useState();
+  const [showSettings, setShowSettings] = useState(false);
+  const [inRoom, setInRoom] = useState(false);
+  const [columns, setColumns] = useState();
+  const [courseChoose, setCourseChoose] = useState();
+  const [notAllowed, setNotAllowed] = useState(false);
 
   const [userCursors, setUserCursors] = useState();
 
-  const [columns, setColumns] = useState();
-  const [inRoom, setInRoom] = useState(false);
-  const [classStudents, setClassStudents] = useState();
-  const [roomData, setRoomData] = useState({});
-  const [showSettings, setShowSettings] = useState(false);
-  const [courseChoose, setCourseChoose] = useState();
+  const [nbUserConnected, setNbUserConnected] = useState(0);
+  const [showEdit, setShowEdit] = useState(false);
 
+  const navigate = useNavigate();
   const { user } = useFirebase();
   const theme = useTheme();
-  const navigate = useNavigate();
 
   const ws = useMemo(() => {
     return new w3cwebsocket("ws://localhost:5050/retro");
   }, []);
 
-  function displayUserCursorPositions(users) {
-    const map = new Map(Object.entries(users));
-    setUserCursors(map);
-  }
+  const fetchData = useCallback(async () => {
+    const colContent = {
+      positive: {
+        name: "Positif",
+        items: [],
+      },
+      negative: {
+        name: "Négatif",
+        items: [],
+      },
+      improve: {
+        name: "Amélioration",
+        items: [],
+      },
+      miss: {
+        name: "Manqué",
+        items: [],
+      },
+    };
+    return colContent;
+  }, []);
+
+  const fetchAndSetData = useCallback(async () => {
+    const colContent = await fetchData();
+    ws.send(
+      JSON.stringify({
+        type: "updateCol",
+        data: {
+          columns: colContent,
+          class: classStudents,
+        },
+      })
+    );
+    setColumns(colContent);
+  }, [classStudents, fetchData, ws]);
 
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/retro/getRoom/${user?.class.id}`)
+        .get(`http://localhost:5050/groupes/getRoom/${user?.class.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -92,7 +123,7 @@ export default function Board() {
   const logToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/retro/getRoomPo/${user?.id}`)
+        .get(`http://localhost:5050/groupes/getRoomPo/${user?.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -113,29 +144,12 @@ export default function Board() {
     }
   }, [user?.id, user?.firstname, ws]);
 
-  useEffect(() => {
-    const GMDBoard = {
-      Glad: {
-        name: "Glad",
-        color: "#ff0000",
-        params: "1 / 1 / 3 / 3",
-        items: [],
-      },
-      Mad: {
-        name: "Mad",
-        color: "#0000ff",
-        params: "1 / 3 / 3 / 5",
-        items: [],
-      },
-      Sad: {
-        name: "Sad",
-        color: "#9ACD32",
-        params: "3 / 1 / 5 / 3",
-        items: [],
-      },
-    };
+  function displayUserCursorPositions(users) {
+    const map = new Map(Object.entries(users));
+    setUserCursors(map);
+  }
 
-    setColumns(GMDBoard);
+  useEffect(() => {
     const handleOpen = async () => {
       if (user?.status === "etudiant") {
         await LogToExistingRoomStudent();
@@ -144,6 +158,10 @@ export default function Board() {
       }
 
       if (inRoom) {
+        if (user?.status === "po") {
+          await fetchAndSetData();
+        }
+
         document.addEventListener("mousemove", (event) => {
           if (ws.readyState !== WebSocket.OPEN) return;
           const cursorPosition = {
@@ -168,17 +186,14 @@ export default function Board() {
           switch (messageReceive.type) {
             case "updateRoom":
               displayUserCursorPositions(messageReceive.data.currentRoom.users);
-              if (user.status === "etudiant") {
-                console.log(messageReceive.data.currentRoom);
-              }
               if (messageReceive.data.currentRoom.columns) {
                 setColumns(messageReceive.data.currentRoom.columns);
               }
-              setConnectedUsers(messageReceive.data.currentRoom.users);
+              setNbUserConnected(messageReceive.data.currentRoom.nbUsers);
               break;
             case "closeRoom":
               setInRoom(false);
-              navigate("/");
+              navigate("/groupes");
               ws.close();
               break;
             case "updateCol":
@@ -209,6 +224,7 @@ export default function Board() {
   }, [
     LogToExistingRoomStudent,
     classStudents,
+    fetchAndSetData,
     inRoom,
     logToExistingRoom,
     navigate,
@@ -217,61 +233,13 @@ export default function Board() {
     ws,
   ]);
 
-  const PNABoard = {
-    Positif: {
-      name: "Positif",
-      color: "#ff0000",
-      params: "1 / 1 / 3 / 3",
-      items: [],
-    },
-    Negatif: {
-      name: "Négatif",
-      color: "#0000ff",
-      params: "1 / 3 / 3 / 5",
-      items: [],
-    },
-    Axe: {
-      name: "Axe d'amélioration",
-      color: "#9ACD32",
-      params: "3 / 1 / 5 / 3",
-      items: [],
-    },
-  };
-
-  const FourLBoard = {
-    Liked: {
-      name: "Liked",
-      color: "#ff0000",
-      params: "1 / 1 / 3 / 3",
-      items: [],
-    },
-    Learned: {
-      name: "Learned",
-      color: "#0000ff",
-      params: "1 / 3 / 3 / 5",
-      items: [],
-    },
-    Lacked: {
-      name: "Lacked",
-      color: "#9ACD32",
-      params: "3 / 1 / 5 / 3",
-      items: [],
-    },
-    Longed: {
-      name: "Longed",
-      color: "#FFFF00",
-      params: "3 / 3 / 5 / 5",
-      items: [],
-    },
-  };
-
-  const deletePostit = async (item) => {
+  function deletePostIt(postID) {
     const copiedColContent = { ...columns };
 
     Object.keys(copiedColContent).forEach((key) => {
       const group = copiedColContent[key];
       const updatedItems = group.items.filter(
-        (student) => student.id !== item.id
+        (student) => student.id !== postID
       );
       group.items = updatedItems;
     });
@@ -283,88 +251,65 @@ export default function Board() {
         data: { columns: copiedColContent, class: classStudents },
       })
     );
-  };
+  }
 
-  const handleClickOpenEditPostIt = () => {
-    setOpenPostItEdit(true);
-  };
-
-  const handleChange = (event) => {
-    setNewPostItContent(event.target.value);
-  };
-
-  const handleCloseEditPostIt = () => {
-    setOpenPostItEdit(false);
-  };
-
-  const changePostiTText = () => {
-    let selectedColumn = { ...columns };
-    selectedColumn[categorie]["items"][selectedPostItIndex]["content"] =
-      postItText;
-    setColumns(selectedColumn);
-    const message = {
-      type: "updateCol",
-      data: {
-        columns: selectedColumn,
-        class: roomData["class"], //classStudents
-      },
-    };
-    ws.send(JSON.stringify(message));
-    handleCloseEditPostIt();
-  };
-
-  const addPostIt = (columnId) => {
-    const newPostIt = {
-      id: `postIt-${Date.now()}`,
-      content: newPostItContent,
-    };
-
-    // Add the new PostIt to the specific column
-    const updatedItems = [...columns[columnId].items, newPostIt];
-    const updatedColumn = {
-      ...columns[columnId],
-      items: updatedItems,
-    };
-
-    setColumns({
-      ...columns,
-      [columnId]: updatedColumn,
+  function updatePostIt(postID, content) {
+    const copiedColContent = { ...columns };
+    Object.keys(copiedColContent).forEach((key) => {
+      const group = copiedColContent[key];
+      const updatedItems = group.items.map((item) => {
+        if (item.id === postID) {
+          return { ...item, content };
+        }
+        return item;
+      });
+      group.items = updatedItems;
     });
+    setColumns(copiedColContent);
+    ws.send(
+      JSON.stringify({
+        type: "updateCol",
+        data: { columns: copiedColContent, class: classStudents },
+      })
+    );
+    setShowEdit(false);
+  }
+
+  function addPostIt(columnId, columns) {
+    const copiedColContent = { ...columns };
+    const group = copiedColContent[columnId];
+    const updatedItems = group.items;
+    updatedItems.push({
+      id: Date.now().toString(),
+      content: "Entrez votre texte ici..",
+    });
+    group.items = updatedItems;
+    setColumns(copiedColContent);
+
     const message = {
       type: "updateCol",
-      data: {
-        columns: {
-          ...columns,
-          [columnId]: updatedColumn,
-        },
-        class: roomData["class"],
-      },
+      data: { columns: copiedColContent, class: classStudents },
     };
-    console.log(message);
     ws.send(JSON.stringify(message));
+  }
 
-    console.log(columnId);
-
-    setShowTextField(false); // Hide the TextField and button after adding the post-it
-    setNewPostItContent(""); // Reset the new post-it content
-  };
-
-  const onDragEnd = (result, columns) => {
+  const onDragEnd = (result) => {
     if (!result.destination) return;
-
-    const source = result.source;
-    const destination = result.destination;
-    const sourceColumn = columns[source.droppableId];
-    const destColumn = columns[destination.droppableId];
-
-    console.log(source);
-    console.log(destination);
-
+    const { source, destination } = result;
+    if (notAllowed) {
+      setNotAllowed(false);
+      toast.error("Vous ne pouvez pas déplacer cet élève");
+      return;
+    }
+    if (source.droppableId === destination.droppableId) return;
     if (source.droppableId !== destination.droppableId) {
+      const sourceColumn = columns[source.droppableId];
+      const destColumn = columns[destination.droppableId];
       const sourceItems = [...sourceColumn.items];
       const destItems = [...destColumn.items];
       const [removed] = sourceItems.splice(source.index, 1);
       destItems.splice(destination.index, 0, removed);
+
       setColumns({
         ...columns,
         [source.droppableId]: {
@@ -377,110 +322,112 @@ export default function Board() {
         },
       });
 
-      const message = {
-        type: "updateCol",
-        data: {
-          columns: {
-            ...columns,
-            [source.droppableId]: {
-              ...sourceColumn,
-              items: sourceItems,
+      ws.send(
+        JSON.stringify({
+          type: "updateCol",
+          data: {
+            columns: {
+              ...columns,
+              [source.droppableId]: { ...sourceColumn, items: sourceItems },
+              [destination.droppableId]: { ...destColumn, items: destItems },
             },
-            [destination.droppableId]: {
-              ...destColumn,
-              items: destItems,
-            },
+            class: classStudents,
           },
-          class: roomData["class"], //classStudents
-        },
-      };
-      ws.send(JSON.stringify(message));
-    } else {
-      const copiedItems = [...sourceColumn.items];
+        })
+      );
+    } else if (source.index !== destination.index) {
+      const column = columns[source.droppableId];
+      const copiedItems = [...column.items];
       const [removed] = copiedItems.splice(source.index, 1);
       copiedItems.splice(destination.index, 0, removed);
+
       setColumns({
         ...columns,
         [source.droppableId]: {
-          ...sourceColumn,
+          ...column,
           items: copiedItems,
         },
       });
 
-      const message = {
-        type: "updateCol",
-        data: {
-          columns: {
-            ...columns,
-            [source.droppableId]: {
-              ...sourceColumn,
-              items: copiedItems,
+      ws.send(
+        JSON.stringify({
+          type: "updateCol",
+          data: {
+            columns: {
+              ...columns,
+              [source.droppableId]: {
+                ...column,
+                items: copiedItems,
+              },
             },
+            class: classStudents,
           },
-          class: roomData["class"],
-        },
-      };
-      ws.send(JSON.stringify(message));
+        })
+      );
     }
   };
 
-  const handleClickAddButton = (columnId) => {
-    setSelectedColumnId(columnId);
-    setShowTextField(true);
-  };
-
-  const cancelClick = () => {
-    setShowTextField(false);
-  };
-
-  const updateCol = () => {
-    const message = {
-      type: "updateCol",
-      data: {
-        userID: user?.id,
-        columns: columns,
-        class: roomData["class"],
-      },
-    };
-
-    ws.send(JSON.stringify(message));
-  };
-
-  const setRightPostItCategorie = (obj, i) => {
-    if (obj["name"]) {
-      setCategorie(obj["name"]);
+  const onDragStart = (data) => {
+    if (user.status === "etudiant" && data.draggableId !== user.id) {
+      setNotAllowed(true);
+      return;
     }
-    handleClickOpenEditPostIt();
-    setSelectedPostItIndex(i);
-  };
-
-  const handleDeleteRoom = async () => {
-    const message = {
-      type: "closeRoom",
-      data: {
-        class: classStudents, // Pass the class name of the room to delete
-      },
-    };
-    ws.send(JSON.stringify(message));
-    ws.close();
-
-    // Save retro here
-    try {
-      await axios.delete(`http://localhost:5050/retro/deleteRoom/${user?.id}`);
-    } catch (error) {
-      console.error(error);
-    }
-
-    navigate("/ ");
   };
 
   const handlePopupData = (data) => {
     setShowSettings(false);
     setInRoom(true);
-    console.log("He ?");
     setCourseChoose(data.courseChoose);
     setClassStudents(data.courseChoose.data.courseClass.id);
   };
+
+  const handleClosePopUp = (showFalse) => {
+    setShowSettings(showFalse);
+  };
+
+  async function saveGroups() {
+    var groupsKey = Object.keys(columns).filter(
+      (key) => key.startsWith("g") && columns[key].items.length > 0
+    );
+    setInRoom(false);
+    ws.send(
+      JSON.stringify({ type: "closeRoom", data: { class: classStudents } })
+    );
+    ws.close();
+    groupsKey.forEach((group) => {
+      axios.post(`http://localhost:5050/groupes/exportGroups`, {
+        students: columns[group].items.map((student) => ({
+          id: student.id,
+          firstname: student.firstname,
+          lastname: student.lastname,
+        })),
+        po_id: user?.id,
+        courseId: courseChoose.id,
+      });
+    });
+
+    try {
+      await axios.delete(
+        `http://localhost:5050/groupes/deleteRoom/${user?.id}`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+
+    setInRoom(false);
+    ws.send(
+      JSON.stringify({ type: "closeRoom", data: { class: classStudents } })
+    );
+    navigate("/");
+  }
+
+  function settingsPopUp() {
+    setShowSettings(true);
+  }
+
+  if (!columns && inRoom) {
+    return <p>Loading...</p>;
+  }
 
   if (user?.status === "po" && !inRoom) {
     return (
@@ -491,293 +438,275 @@ export default function Board() {
   return (
     <>
       {inRoom ? (
-        <div>
-          <div>
-            <Dialog
-              open={openPostItEdit}
-              onClose={handleCloseEditPostIt}
-              fullWidth={true}
-              maxWidth={"sm"}
-            >
-              <DialogTitle>Post it</DialogTitle>
-              <DialogContent>
-                <TextField
-                  placeholder="Veuillez écrire votre texte ici"
-                  fullWidth
-                  onChange={(e) => setPostItText(e.target.value)}
-                ></TextField>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={changePostiTText}>Modifier</Button>
-                <Button onClick={handleCloseEditPostIt}>Annuler</Button>
-              </DialogActions>
-            </Dialog>
-          </div>
-
-          <div
-            className="parent"
-            id="pdf-content"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gridTemplateRows: "repeat(4, 1fr)",
-              gridColumnGap: "10px",
-              gridRowGap: "10px",
-              height: "90vh",
-            }}
-          >
-            <div
-              style={{
-                width: "100%",
-                height: "100%",
-                position: "relative",
-              }}
-            >
-              {userCursors
-                ? Array.from(userCursors.entries()).map(
-                    ([userID, userData]) => {
-                      if (userID !== user?.id) {
-                        return (
-                          <div
-                            key={userID}
-                            style={{
-                              position: "absolute",
-                              left: userData.position?.x,
-                              top: userData.position?.y,
-                              zIndex: 100,
-                            }}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 50 50"
-                              width="30px"
-                              height="30px"
-                            >
-                              <path
-                                fill={userData.color}
-                                d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
-                              />
-                            </svg>
-
-                            <div
-                              style={{
-                                display: "inline-block",
-                                backgroundColor: userData.color,
-                                padding: "0px 6px",
-                                color: "#fff",
-                                fontSize: "12px",
-                                borderRadius: "4px",
-                                margin: "0px",
-                              }}
-                            >
-                              <p
-                                style={{
-                                  selection: "none",
-                                  fontWeight: "bold",
-                                  textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
-                                  margin: "0px",
-                                }}
-                              >
-                                {userData.name}
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      } else {
-                        return null;
-                      }
-                    }
-                  )
-                : null}
-            </div>
-            {connectedUsersList ? (
-              <div>
-                <h4> Présents :</h4>
-
-                {Object.entries(connectedUsersList).map(
-                  ([email, userInfo]) => (
-                    console.log("**********************"),
-                    console.log(email),
-                    console.log("**********************"),
-                    console.log(userInfo),
-                    console.log("$$$$$$$$$$$$$$$$$$$$$$$"),
-                    (
-                      <p key={email}>
-                        {email["name"]}/{userInfo["name"]}
-                      </p>
-                    )
-                  )
-                )}
-              </div>
-            ) : null}
-            <DragDropContext onDragEnd={(result) => onDragEnd(result, columns)}>
-              {Object.entries(columns).map(([columnId, column]) => {
-                return (
-                  <div
-                    style={{
-                      backgroundColor: column.color,
-                      height: "100%",
-                      gridArea: column.params,
-                      padding: "10px",
-                      borderRadius: "4%",
-                    }}
-                    key={columnId}
-                  >
+        <>
+          {userCursors
+            ? Array.from(userCursors.entries()).map(([userID, userData]) => {
+                if (userID !== user?.id && userID && userID !== "undefined") {
+                  return (
                     <div
+                      key={userID}
                       style={{
-                        padding: "10px",
-                        boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.2)",
-                        borderRadius: "4%",
-                        display: "flex",
-                        alignItems: "center",
+                        position: "absolute",
+                        left: userData.position?.x,
+                        top: userData.position?.y,
+                        zIndex: 100,
                       }}
                     >
-                      <Typography
-                        variant="h6"
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 50 50"
+                        width="30px"
+                        height="30px"
+                      >
+                        <path
+                          fill={userData.color}
+                          d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
+                        />
+                      </svg>
+
+                      <div
                         style={{
-                          fontWeight: "bold",
-                          color: "black",
-                          marginLeft: "5%",
+                          display: "inline-block",
+                          backgroundColor: userData.color,
+                          padding: "2px 8px",
+                          color: "#fff",
+                          fontSize: "12px",
+                          borderRadius: "30px",
+                          margin: "0px",
                         }}
                       >
-                        {column.name}
-                      </Typography>
-                      <IconButton
-                        aria-label="Add"
-                        color="primary"
-                        size="small"
-                        style={{ marginLeft: "auto" }}
-                        onClick={() => handleClickAddButton(columnId)}
-                      >
-                        <AddIcon />
-                      </IconButton>
+                        <p
+                          style={{
+                            selection: "none",
+                            fontWeight: "bold",
+                            textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
+                            margin: "0px",
+                          }}
+                        >
+                          {userData.name}
+                        </p>
+                      </div>
                     </div>
+                  );
+                } else {
+                  return null;
+                }
+              })
+            : null}
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              overflow: "hidden",
+            }}
+          >
+            {showSettings && user?.status === "po" ? (
+              <PopUp
+                onPopupData={handlePopupData}
+                showPopUp={handleClosePopUp}
+              />
+            ) : null}
+            <nav
+              style={{
+                backgroundColor: theme.palette.background.container,
+              }}
+            >
+              <p
+                style={{
+                  backgroundColor: theme.palette.custom.button,
+                  height: "40px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  borderRadius: "10px",
+                  padding: "0 10px",
+                  marginRight: "10px",
+                  color: "white",
+                  fontWeight: "bold",
+                }}
+              >
+                <GroupIcon style={{ marginRight: "10px" }} />
+                {nbUserConnected}
+              </p>
 
-                    <Droppable droppableId={columnId} key={columnId}>
-                      {(provided, snapshot) => {
-                        return (
-                          <div
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                            style={{
-                              display: "flex",
-                              background: "#00000030",
-                              minHeight: 30,
-                              maxHeight: "90%",
-                              overflow: "auto",
-                              height: "auto",
-                              borderRadius: "4%",
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            {selectedColumnId === columnId && showTextField ? (
-                              <div className="empathy-post-it empathy-post-it--custom">
-                                <TextField
-                                  variant="outlined"
-                                  autoFocus
-                                  value={newPostItContent}
-                                  onChange={handleChange}
-                                  style={{ marginRight: "10px" }}
-                                  InputProps={{
-                                    style: {
-                                      color: "#130d6b",
-                                      fontFamily: "Permanent Marker, cursive",
-                                    },
-                                  }}
-                                  placeholder="Saisissez un titre pour cette carte…"
-                                />
-                                <IconButton
-                                  aria-label="Add"
-                                  color="success"
-                                  size="small"
-                                  disabled={!newPostItContent}
-                                  onClick={() => addPostIt(columnId)}
-                                >
-                                  <CheckCircleIcon />
-                                </IconButton>
-                                <IconButton
-                                  aria-label="Cancel"
-                                  color="error"
-                                  size="small"
-                                  onClick={cancelClick}
-                                >
-                                  <CancelIcon />
-                                </IconButton>
-                              </div>
-                            ) : (
-                              <></>
-                            )}
-                            {column.items.map((item, index) => {
-                              return (
-                                <Draggable
-                                  key={item.id}
-                                  draggableId={item.id}
-                                  index={index}
-                                >
-                                  {(provided, snapshot) => {
-                                    return (
-                                      <div
-                                        ref={provided.innerRef}
-                                        {...provided.draggableProps}
-                                        {...provided.dragHandleProps}
-                                      >
-                                        <div className="empathy-post-it">
-                                          {item.content}
-                                          <IconButton
-                                            style={{
-                                              position: "absolute",
-                                              top: 0,
-                                              right: 0,
-                                              color: "red",
-                                            }}
-                                            aria-label="delete"
-                                            onClick={() => deletePostit(item)}
-                                            size="small"
-                                          >
-                                            <DeleteIcon />
-                                          </IconButton>
-                                          <IconButton
-                                            style={{
-                                              position: "absolute",
-                                              bottom: 0,
-                                              right: 0,
-                                              color: "black",
-                                            }}
-                                            aria-label="Edit"
-                                            onClick={() =>
-                                              setRightPostItCategorie(
-                                                column,
-                                                index
-                                              )
-                                            }
-                                            size="small"
-                                          >
-                                            <CreateIcon />
-                                          </IconButton>
-                                        </div>
-                                      </div>
-                                    );
-                                  }}
-                                </Draggable>
-                              );
-                            })}
-                            {provided.placeholder}
-                          </div>
-                        );
+              {user?.status === "po" ? (
+                <div className="groups-inputs">
+                  <Tooltip title="Changer les paramètres">
+                    <IconButton
+                      className="input-button"
+                      onClick={settingsPopUp}
+                    >
+                      <SettingsIcon
+                        className="icon-svg"
+                        style={{
+                          fill: theme.palette.text.primary,
+                          color: theme.palette.text.primary,
+                        }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                </div>
+              ) : null}
+            </nav>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+                flexWrap: "wrap",
+              }}
+            >
+              <DragDropContext onDragEnd={onDragEnd} onDragStart={onDragStart}>
+                {Object.entries(columns).map(([columnId, column], index) => {
+                  return (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        width: "45 %",
                       }}
-                    </Droppable>
-                  </div>
-                );
-              })}
-            </DragDropContext>
+                      key={columnId}
+                    >
+                      {" "}
+                      <h2>{column.name}</h2>
+                      <div style={{ margin: 8 }}>
+                        <Droppable droppableId={columnId} key={columnId}>
+                          {(provided, snapshot) => {
+                            return (
+                              <div
+                                {...provided.droppableProps}
+                                ref={provided.innerRef}
+                                style={{
+                                  backgroundColor: snapshot.isDraggingOver
+                                    ? theme.palette.custom.selectBackground
+                                    : "#6b6b6b",
+                                  padding: 4,
+                                  width: 250,
+                                  minHeight: 140,
+                                  maxHeight: 500,
+                                  overflow: "auto",
+                                  height: "auto",
+                                }}
+                                className="group"
+                                onClick={() => {
+                                  addPostIt(columnId, columns);
+                                }}
+                              >
+                                {column.items.map((item, index) => {
+                                  return (
+                                    <Draggable
+                                      key={item.id}
+                                      draggableId={item.id}
+                                      index={index}
+                                    >
+                                      {(provided, snapshot) => {
+                                        return (
+                                          <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            {...provided.dragHandleProps}
+                                            style={{
+                                              userSelect: "none",
+                                              borderRadius: 3,
+                                              boxShadow:
+                                                "0 0 10px rgba(0, 0, 0, 0.2)",
+                                              backgroundColor:
+                                                snapshot.isDragging
+                                                  ? "red brightness(0.8)"
+                                                  : userCursors
+                                                  ? userCursors.get(user.id)
+                                                      ?.color ||
+                                                    theme.palette.custom.button
+                                                  : theme.palette.custom.button,
+                                              color: "white",
+                                              margin: "10px",
+                                              ...provided.draggableProps.style,
+                                            }}
+                                            className="post-it"
+                                            onClick={(event) => {
+                                              event.stopPropagation();
+                                              setShowEdit(true);
+                                            }}
+                                          >
+                                            {!showEdit ? (
+                                              <p>{item.content}</p>
+                                            ) : (
+                                              <TextField
+                                                defaultValue={item.content}
+                                                onKeyDown={(event) => {
+                                                  if (event.key === "Enter") {
+                                                    event.preventDefault();
+                                                    updatePostIt(
+                                                      item.id,
+                                                      event.target.value
+                                                    );
+                                                  }
+                                                }}
+                                              />
+                                            )}
+
+                                            {!userCursors?.get(item.id) &&
+                                            user.status === "po" ? (
+                                              <p
+                                                className="student-cross"
+                                                onClick={(event) => {
+                                                  event.stopPropagation();
+                                                  deletePostIt(item.id);
+                                                }}
+                                              >
+                                                <DeleteIcon />
+                                              </p>
+                                            ) : null}
+                                          </div>
+                                        );
+                                      }}
+                                    </Draggable>
+                                  );
+                                })}
+                                {provided.placeholder}
+                              </div>
+                            );
+                          }}
+                        </Droppable>
+                      </div>
+                    </div>
+                  );
+                })}
+              </DragDropContext>
+            </div>
+            {user?.status === "po" ? (
+              <div
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  margin: "20px 0px",
+                }}
+              >
+                <Button
+                  onClick={saveGroups}
+                  style={{
+                    backgroundColor: theme.palette.custom.button,
+                    borderRadius: "10px",
+                    padding: "5px 10px",
+                    color: "white",
+                    height: "50px",
+                    width: "100px",
+                    fontWeight: "bold",
+                    letterSpacing: "2px",
+                  }}
+                >
+                  Valider
+                </Button>
+              </div>
+            ) : null}
           </div>
-          {user.status === "po" ? (
-            <Button variant="contained" onClick={handleDeleteRoom}>
-              Terminer la Retro & Sauvegarder
-            </Button>
-          ) : null}
-        </div>
-      ) : null}
+        </>
+      ) : (
+        <h1>Pas de Room pour le moment</h1>
+      )}
+      <ToastContainer></ToastContainer>
     </>
   );
 }
+export default GroupsCreation;
