@@ -471,7 +471,11 @@ const updateElevatorPitch = async (req, res) => {
   if (
     !req.body ||
     !req.body.name ||
-    !req.body.description
+    !req.body.forWho ||
+    !req.body.needed ||
+    !req.body.type ||
+    !req.body.who ||
+    !req.body.difference
   ) {
     res.status(400).send({ message: "Missing required fields" });
     return;
@@ -484,7 +488,11 @@ const updateElevatorPitch = async (req, res) => {
       .doc("elevator_pitch")
       .update({
         name: req.body.name,
-        description: req.body.description,
+        forWho: req.body.forWho,
+        needed: req.body.needed,
+        type: req.body.type,
+        who: req.body.who,
+        difference: req.body.difference,
       });
 
       res.send({message: "Elevator Pitch added successfully"})
@@ -502,7 +510,11 @@ const resetElevatorPitch = async (req, res) =>{
       .doc("elevator_pitch")
       .put({
         name: "",
-        description: "",
+        forWho: "",
+        needed: "",
+        type: "",
+        who: "",
+        difference: "",
       });
 
       res.status(204).send({ message: "Elevator Pitch deleted successfully" });

@@ -7,7 +7,8 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Button, InputLabel } from '@mui/material';
-import { set } from 'date-fns';
+import { addElevatorPitch } from './agile';
+
 
 export default function ElevatorPitch({ index}) {
 
@@ -16,11 +17,11 @@ export default function ElevatorPitch({ index}) {
     const [needed, setNeeded] = useState("");
     const [type, setType] = useState("");
     const [who, setWho] = useState("");
-    const [différence, setDifférence] = useState("");
+    const [difference, setDifference] = useState("");
     const [invis, setInvis] = useState(false);
 
     const handleChange = (e) => {
-        if (!name || !forWho || !needed || !type || !who || !différence) {
+        if (!name || !forWho || !needed || !type || !who || !difference) {
             toast.error("Veuillez remplir tous les champs!");
         }
         const formValues = {
@@ -29,9 +30,10 @@ export default function ElevatorPitch({ index}) {
             needed,
             type,
             who,
-            différence,
+            difference,
         }
 
+        addElevatorPitch(formValues);
         setInvis(true);
 
         console.log(formValues);
@@ -162,8 +164,8 @@ export default function ElevatorPitch({ index}) {
                                         variant="outlined"
                                         multiline
                                         maxRows={4}
-                                        value={différence}
-                                        onChange={(e) => setDifférence(e.target.value)}
+                                        value={difference}
+                                        onChange={(e) => setDifference(e.target.value)}
                                     />
                                 </form>
                                 <Button variant="outlined" onClick={handleChange} >Outlined</Button>
@@ -175,7 +177,7 @@ export default function ElevatorPitch({ index}) {
             {invis && (
                 <div>
                     <h2>Voici votre pitch:</h2>
-                    <p>Pour: {forWho}, Qui a besoin de: {needed}, Le produit: {name} - {type}, Qui: {who}, À la différence de: {différence}. </p>
+                    <p>Pour: {forWho}, Qui a besoin de: {needed}, Le produit: {name} - {type}, Qui: {who}, À la différence de: {difference}. </p>
                 </div>
             )}
         </div>

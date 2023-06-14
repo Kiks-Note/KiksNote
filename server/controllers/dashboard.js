@@ -1033,7 +1033,11 @@ async function addDashboard(groups, db) {
       });
       await agileRef.doc("elevator_pitch").set({
         name: "",
-        description: "",
+        forWho: "",
+        needed: "",
+        type: "",
+        who: "",
+        difference: "",
       });
       await agileRef.doc("functional-tree").set({});
       await agileRef.doc("agile_folder").set({

@@ -33,10 +33,14 @@ export const deleteActors = async (dashboardId, actorId) => {
 export const addElevatorPitch = async(dashboardId, elevatorPitch) =>{
   try{
     const res = await axios.put(
-      `http://localhost:5050/agile/${dashboardId}/updateElevator`,
+      `http://localhost:5050/agile/${dashboardId}/elevator/updateElevator`,
       {
-        title: elevatorPitch.title,
-        description: elevatorPitch.description,
+        name: elevatorPitch.name,
+        forWho: elevatorPitch.forWho,
+        needed : elevatorPitch.needed,
+        type: elevatorPitch.type,
+        who: elevatorPitch.who,
+        difference: elevatorPitch.difference,
       }
     );
     return res;

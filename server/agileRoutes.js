@@ -43,7 +43,7 @@ module.exports = function (connection, pathname, upload) {
   );
   router.delete("/:dashboardId/actor/:actorId", deleteActor);
   router.put("/:dashboardId/tree", putTree);
-  router.put("/:dashboardId/updateElevator", updateElevatorPitch);
+  router.put("/:dashboardId/elevator/updateElevator", updateElevatorPitch);
   router.put("/:dashboardId/resetElevator", resetElevatorPitch)
 
 
