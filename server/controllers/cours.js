@@ -6,6 +6,7 @@ const fs = require("fs");
 const mime = require("mime-types");
 const bucket = storageFirebase.bucket();
 const path = require("path");
+const { log } = require("console");
 
 const DIR = "./uploads";
 
@@ -62,6 +63,26 @@ const getAllCours = async (req, res) => {
   }
 };
 
+const getCoursesByOwnerId = async (req, res) => {
+  try {
+    const snapshot = await db.collection("cours").get();
+    const courses = [];
+    snapshot.forEach((doc) => {
+      if (doc.data().owner.id == req.params.ownerid) {
+        courses.push({
+          id: doc.id,
+          ...doc.data()
+        });
+      }
+     
+    });
+    res.status(200).send(courses);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+};
+
 const getAllClasses = async (req, res) => {
   try {
     const snapshot = await db.collection("class").get();
@@ -110,6 +131,29 @@ const getClassById = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Erreur lors de la récupération de la classe.");
+  }
+};
+
+const getCoursByClass = async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    const snapshot = await db
+      .collection("cours")
+      .where("courseClass.id", "==", classId)
+      .get();
+    const resources = [];
+    snapshot.forEach((doc) => {
+      resources.push({
+        id: doc.id,
+        data: doc.data(),
+      });
+    });
+    res.status(200).send({
+      cours: resources,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération des cours.");
   }
 };
 
@@ -681,8 +725,33 @@ const deleteCours = async (req, res) => {
   }
 };
 
+const getCoursesByPo = async (req, res) => {
+  const po = req.params.poId;
+  try {
+    const snapshot = await db
+      .collection("cours")
+      .where("owner.id", "==", po)
+      .get();
+    const resources = [];
+    snapshot.forEach((doc) => {
+      resources.push({
+        id: doc.id,
+        data: doc.data(),
+      });
+    });
+
+    res.status(200).send({
+      cours: resources,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération des cours.");
+  }
+};
+
 module.exports = {
   getAllCours,
+  getCoursesByOwnerId,
   getAllClasses,
   getCoursById,
   getClassById,
@@ -696,5 +765,7 @@ module.exports = {
   uploadBackLogPdf,
   deleteCoursPdf,
   deleteBackLogPdf,
+  getCoursByClass,
   deleteCours,
+  getCoursesByPo,
 };

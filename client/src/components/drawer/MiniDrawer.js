@@ -100,6 +100,14 @@ export default function MiniDrawer({ element }) {
   const colorMode = React.useContext(ColorModeContext);
   const theme = useTheme();
   const navigate = useNavigate();
+  let userStatusForRetro = "/retro";
+
+  if (user?.status == "po") {
+    userStatusForRetro = "/retro";
+  } else if (user?.status == "etudiant") {
+    userStatusForRetro = "/retroStudent";
+  }
+
   // List of page for the drawer
   const [listPage, setListPage] = React.useState([
     {
@@ -134,7 +142,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 2,
       name: "Profil",
-      route: "/profil",
+      route: `/profil/${user?.id}`,
       icon: <Person2Icon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {
@@ -148,42 +156,54 @@ export default function MiniDrawer({ element }) {
     {
       id: 4,
       name: "Calendrier",
-      route: "#",
+      route: "/calendrier",
       icon: (
         <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
     },
-    {
-      id: 5,
-      name: "Agile",
-      icon: <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
-      children: [
-        {
-          id: 12,
-          name: "Coding Board",
-          route: "/tableau-de-bord",
-          icon: (
-            <DashboardIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-          ),
-        },
-        {
-          id: 13,
-          name: "Coding Retro",
-          route: "#",
-          icon: (
-            <WbIridescentIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-          ),
-        },
-        {
-          id: 14,
-          name: "Coding Agile",
-          route: "/agile",
-          icon: (
-            <TimelineIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-          ),
-        },
-      ],
-    },
+    ...(user && user?.status !== "Pédago"
+      ? [
+          {
+            id: 5,
+            name: "Agile",
+            icon: (
+              <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+            ),
+            children: [
+              {
+                id: 12,
+                name: "Coding Board",
+                route: "/tableau-de-bord",
+                icon: (
+                  <DashboardIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
+              },
+              {
+                id: 13,
+                name: "Coding Retro",
+                route: "#",
+                icon: (
+                  <WbIridescentIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
+              },
+              {
+                id: 14,
+                name: "Coding Agile",
+                route: "/agile",
+                icon: (
+                  <TimelineIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
     {
       id: 6,
       name: "Inventaire",
@@ -193,7 +213,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 7,
       name: "Groupes",
-      route: "#",
+      route: "/groupes/creation",
       icon: <GroupsIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {

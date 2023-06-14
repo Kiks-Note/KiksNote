@@ -28,7 +28,7 @@ import {
   editImpactMappingDeliverable,
 } from "../../redux/slices/impactMappingSlice";
 import { setActiveTab, addTab } from "../../redux/slices/tabBoardSlice";
-
+import { deleteActors } from "./agile";
 const BasicCard = ({
   title,
   type,
@@ -58,7 +58,7 @@ const BasicCard = ({
 
   const moveToPersona = () => {
     const personaTab = {
-      id: "Persona" + id,
+      id: "Persona" +  actors[index].id,
       label: "Persona ",
       closeable: true,
       component: "Personas",
@@ -69,7 +69,7 @@ const BasicCard = ({
   };
   const moveToEmpathy = () => {
     const empathyTab = {
-      id: "Empathy" + id,
+      id: "Empathy" + actors[index].id,
       label: "Empathy ",
       closeable: true,
       component: "Empathy",
@@ -121,6 +121,8 @@ const BasicCard = ({
         dispatch(deleteImpactMappingGoals({ index: index }));
         break;
       case 1:
+        deleteActors( id, actors[index].id );
+        console.log('actors', id, actors[index].id)
         dispatch(deleteImpactMappingActors({ index: index }));
         break;
       case 2:
@@ -191,6 +193,7 @@ const BasicCard = ({
       sx={{
         minWidth: 200,
         border: "1px solid black",
+        borderRadius: 3,
         m: 1,
         display: "flex",
         flexDirection: "column",
@@ -341,26 +344,30 @@ const BasicCard = ({
           ) : (
             <>
               <Typography variant="body2">{texte}</Typography>
-              <CardActions sx={{ justifyContent: "flex-end" }}>
+              <CardActions sx={{ justifyContent: "space-between", display: "inline-flex" }}>
                 {column === 1 && (
                   <CardActions>
                     <Button
                       size="small"
                       color="success"
+                      style={{ color: "#9acd32", backgroundColor: "transparent", border: "1px solid #9acd32", borderRadius: "5px", padding: 10 }}
                       onClick={() => moveToEmpathy()}
                     >
                       {" "}
-                      Allez vers Empathy Map{" "}
+                      Empathy Map{" "}
                     </Button>
                     <Button
                       size="small"
                       color="success"
+                      style={{ color: "#bf2020", backgroundColor: "transparent", border: "1px solid #bf2020", borderRadius: "5px", padding: 10 }}
                       onClick={() => moveToPersona()}
                     >
-                      Allez vers Persona
+                      Persona
                     </Button>
                   </CardActions>
                 )}
+              </CardActions>
+              <CardActions sx={{justifyContent: "space-between"}}>
                 <Button
                   size="small"
                   onClick={() => toggleEditForm()}

@@ -1,158 +1,253 @@
 const { db } = require("../firebase");
+const { v4: uuidv4 } = require("uuid");
+
+const pastelColors = [
+  "#FFA07A",
+  "#FF7F50",
+  "#FFEE93",
+  "#A0CED9",
+  "#ADF7B6",
+  "#ffb3c6",
+  "#a9def9",
+  "#eccaff",
+];
+let indexColor = 0;
 
 console.log("in retro controller");
 
-const addRetro = async (req, res) => {
-  // Implementation of adding retro logic
-  res.json({ message: "addRetro works!" });
-
-  const tabRetro = {
-    dataRetro: req.body.dataRetro,
-    idUser: req.body.idUser
-  };
-
-  db.collection("retro").doc().set(tabRetro);
-
+const getRoom = async (req, res) => {
+  const { classStudent } = req.params;
+  const snapshot = await db
+    .collection("rooms")
+    .where("class", "==", classStudent)
+    .where("type", "==", "retro")
+    .get();
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  res.status(200).send(documents);
 };
 
-const getAll = async (req, res) => {
-  const allRetrosQuery = await db.collection("retro").get()
+const getAllRooms = async (req, res) => {
+  const snapshot = await db
+    .collection("rooms")
+    .where("type", "==", "retro")
+    .get();
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  res.status(200).send(documents);
+};
 
-  let allRetros = []
-  allRetrosQuery.forEach((doc) => {
-    allRetros.push({ ...doc.data() });
-  });
+const currentRooms = new Map();
 
-  res.send(allRetros)
-  console.log(allRetros);
+const clients = new Map();
 
-}
+const room = async (connection) => {
+  const defaultRoom = {
+    users: new Map(),
+    nbUsers: 0,
+    columns: undefined,
+  };
 
-const retroRequests = async (connection) => {
-  console.log("in retroRequests");
-  db.collection("retro").onSnapshot(
-    (snapshot) => {
-      const documents = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      connection.sendUTF(JSON.stringify(documents));
-    },
-    (err) => {
-      console.log(err);
+  const sendToAllClients = (message, classStudent) => {
+    const roomClients = clients.get(classStudent) || new Map();
+
+    for (const [UserID, client] of roomClients.entries()) {
+      client.sendUTF(JSON.stringify(message));
     }
-  );
-};
-
-const getRetro = async (req, res) => {
-  console.log("in getRetro");
-  console.log("in get Retro");
-  res.json({ message: "getRetro works!" });
-};
-
-const editPostit = async (req, res) => {
-
-  const snapshot = await db.collection('retro').get()
-
-  console.log(req.body.currentRetroIndex);
-  let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
-
-  const idDoc = snapshot.docs[idRetro].id;
-
-  let objetRetro = (await db.collection("retro").doc(idDoc).get()).data()
-  
-  objetRetro["dataRetro"][req.body.categorie]["items"][req.body.selectedPostItIndex]["content"] = req.body.postItText
-  let dba  = await db.collection("retro").doc(idDoc) 
-
-
-  dba.update({ dataRetro: objetRetro["dataRetro"] })
-  .then(() => {
-    console.log("Document updated successfully!");
-  })
-  .catch((error) => {
-    console.error("Error updating document:", error);
-  });
-  
-}
-
-const addPostIt = async (req, res) => {
-
-  const snapshot = await db.collection('retro').get()
-  let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
-
-  const idDoc = snapshot.docs[idRetro].id;
-
-
-  let objetRetro = (await db.collection("retro").doc(idDoc).get()).data()
-
-  const updatedItems = [...objetRetro["dataRetro"][req.body.columnId].items, req.body.newObjPostIt];
-  const updatedColumn = {
-    ...objetRetro["dataRetro"][req.body.columnId],
-    items: updatedItems,
   };
 
-  let dba  = await db.collection("retro").doc(idDoc) 
+  connection.on("message", (message) => {
+    const response = JSON.parse(message.utf8Data);
 
-  objetRetro["dataRetro"] = {
-    ...objetRetro["dataRetro"],
-    [req.body.columnId]: updatedColumn,
-  }
+    switch (response.type) {
+      case "cursorPosition":
+        const { userID, position } = response.data;
 
-  dba.update({ dataRetro: objetRetro["dataRetro"] })
-  .then(() => {
-    console.log("Document updated successfully!!!!!!!!");
-  })
-  .catch((error) => {
-    console.error("Error updating document:", error);
+        const roomUsersToUpdate =
+          currentRooms.get(response.data.class) || defaultRoom;
+
+        roomUsersToUpdate.users.set(userID, {
+          position: position,
+          color: roomUsersToUpdate.users.get(userID)?.color,
+          name: roomUsersToUpdate.users.get(userID)?.name,
+        });
+
+        currentRooms.set(response.data.class, roomUsersToUpdate);
+
+        const message = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(message, response.data.class);
+
+        break;
+      case "createRoom":
+        console.log("createRoom");
+        const newRoomRef = db.collection("rooms").doc();
+        newRoomRef.set({
+          userID: response.data.userID,
+          class: response.data.class,
+          type: "retro",
+        });
+        currentRooms.set(response.data.class, defaultRoom);
+
+        const roomUsersC = currentRooms.get(response.data.class) || defaultRoom;
+
+        if (indexColor >= pastelColors.length) {
+          indexColor = 0;
+        }
+        let colorC = pastelColors[indexColor];
+        indexColor++;
+
+        roomUsersC.users.set(response.data.userID, {
+          position: null,
+          color: colorC,
+          name: response.data.name,
+        });
+
+        currentRooms.set(response.data.class, roomUsersC);
+
+        const roomClientsC = clients.get(response.data.class) || new Map();
+
+        roomClientsC.set(response.data.userID, connection);
+
+        clients.set(response.data.class, roomClientsC);
+
+        currentRooms.get(response.data.class).nbUsers = roomClientsC.size;
+
+        const messageCreate = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(messageCreate, response.data.class);
+
+        break;
+      case "joinRoom":
+        console.log("joinRoom");
+        const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
+
+        if (indexColor >= pastelColors.length) {
+          indexColor = 0;
+        }
+        let color = pastelColors[indexColor];
+        indexColor++;
+
+        roomUsers.users.set(response.data.userID, {
+          position: null,
+          color: color,
+          name: response.data.name,
+        });
+
+        currentRooms.set(response.data.class, roomUsers);
+
+        const roomClients = clients.get(response.data.class) || new Map();
+
+        roomClients.set(response.data.userID, connection);
+
+        clients.set(response.data.class, roomClients);
+
+        currentRooms.get(response.data.class).nbUsers = roomClients.size;
+
+        const messageJoin = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(messageJoin, response.data.class);
+
+        break;
+      case "closeRoom":
+        currentRooms.delete(response.data.class);
+        clients.delete(response.data.class);
+
+        const messageClose = {
+          type: "closeRoom",
+        };
+
+        sendToAllClients(messageClose, response.data.class);
+
+        break;
+      case "leaveRoom":
+        const userRoom = currentRooms.get(response.data.class) || defaultRoom;
+        userRoom.users.delete(response.data.userID);
+
+        console.log("User left room");
+
+        currentRooms.set(response.data.class, userRoom);
+
+        let allClientsInRoomLeave =
+          clients.get(response.data.class) || new Map();
+        allClientsInRoomLeave.delete(response.data.userID);
+        clients.set(response.data.class, allClientsInRoomLeave);
+
+        currentRooms.get(response.data.class).nbUsers = clients.get(
+          response.data.class
+        ).size;
+
+        const messageLeave = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(messageLeave, response.data.class);
+
+        break;
+      case "updateCol":
+        let roomCol = currentRooms.get(response.data.class) || defaultRoom;
+        roomCol.columns = response.data.columns;
+        currentRooms.set(response.data.class, roomCol);
+
+        const messageUpdateCol = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+        sendToAllClients(messageUpdateCol, response.data.class);
+    }
   });
-
-}
-
-const movePostIt = async (req, res) => {
-
-  const snapshot = await db.collection('retro').get()
-  let idRetro = req.body.currentRetroIndex == null ? 0 : req.body.currentRetroIndex
-
-  
-  const idDoc = snapshot.docs[idRetro].id;
-
-  let objetRetro = snapshot.docs[idRetro].data()
-
-  let postItContent = objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]];
-
-  if(objetRetro["dataRetro"][req.body.source["droppableId"]]["items"][req.body.source["index"]]) {
-    const indexToRemove = req.body.source["index"];
-    objetRetro["dataRetro"][req.body.source["droppableId"]]["items"].splice(indexToRemove, 1);
-  } else {
-    console.log("not defiiined !!!!");
-  }
-
-  const lengthItem = objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"].length;
-
-  if (lengthItem <= 0) {
-    objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][0] = postItContent;  
-  } else {
-    console.log("plesssssssssss");
-    objetRetro["dataRetro"][req.body.destination["droppableId"]]["items"][lengthItem] = postItContent;  
-  }
-  
-  let dba  = await db.collection("retro").doc(idDoc) 
-
-  dba.update({ dataRetro: objetRetro["dataRetro"] })
-  .then(() => {
-    console.log("Document updated successfully!!!!!!!!");
-  })
-  .catch((error) => {
-    console.error("Error updating document:", error);
-  });
-}
+};
 
 module.exports = {
-  addRetro,
-  retroRequests,
-  getRetro,
-  getAll,
-  editPostit,
-  addPostIt,
-  movePostIt
+  getAllRooms,
+  getRoom,
+  room,
 };

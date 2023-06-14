@@ -98,7 +98,6 @@ export default function StatTab({ boards }) {
                   alignItems: "center",
                   flexDirection: "row",
                   justifyContent: "center",
-                  height: "54vh",
                 }}
               >
                 <Typography variant="h6">
@@ -148,7 +147,6 @@ export default function StatTab({ boards }) {
           { length: totalDays },
           (_, i) => coefficient * i
         );
-
         // Realisation Data
         const realisationData = Array.from({ length: totalDays }, (_, i) => {
           const day = `Jour ${i}`;
@@ -205,8 +203,6 @@ export default function StatTab({ boards }) {
           return toDoSum + inProgressSum + doneSum;
         });
 
-        console.log(realisationData);
-
         return (
           <TabPanel key={index} value={value} index={index}>
             <Typography variant="h4">Burndown {board.name}</Typography>
@@ -221,7 +217,7 @@ export default function StatTab({ boards }) {
                   datasets: [
                     {
                       label: "Estimation",
-                      data: finalEstimationData, // Remplacez les données d'estimation par les valeurs réelles du sprint
+                      data: finalEstimationData.reverse(), // Remplacez les données d'estimation par les valeurs réelles du sprint
                       fill: true,
                       borderColor: "orange",
                     },

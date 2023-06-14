@@ -140,11 +140,11 @@ export default function EmpathyMap({ dashboardId, actorId }) {
   const exportToPDF = () => {
     const element = document.getElementById("pdf-content");
     const opt = {
-      margin: [0, 0, 0, 0],
+      margin: [0.5, 0.5, 0.5, 0.5],
       filename: "empathy-map.pdf",
-      image: { type: "jpeg", quality: 0.98 },
+      image: { type: "jpeg", quality: 0.9 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
     };
 
     //html2pdf().set(opt).from(element).save();
@@ -165,6 +165,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
           "empathy-map.pdf"
         );
         formData.append("fieldName", "empathy_map");
+        formData.append("actorId", actorId);
 
         return axios.post(
           "http://localhost:5050/agile/" + dashboardId + "/folder",
@@ -211,7 +212,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
       ) : (
         <div style={{ margin: 2 }}>
           <Button variant="contained" onClick={exportToPDF}>
-            Exporter mon EmpathyMap
+            Ajouter au dossier à Agile
           </Button>
           <Toaster />
           <div

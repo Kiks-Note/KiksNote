@@ -1,6 +1,7 @@
 const { db, FieldValue } = require("../firebase");
 const fs = require("fs");
 const path = require("path");
+
 const updateProfil = async (req, res) => {
   const { userId } = req.params;
   // Vérifier que `userId` est une chaîne non vide
@@ -20,22 +21,25 @@ const updateProfil = async (req, res) => {
       ""
     );
   }
-  console.log(req.body);
+
   // Add the new image URL to userDataToUpdate
-  const userDataToUpdate = {
-    ...req.body,
-    dateofbirth: new Date(req.body.dateofbirth),
-    image: image ? url + image : userData.image,
-    programmationLanguage: createProgrammingLanguageArray(
-      req.body.programmationLanguage
-    ),
-  };
-  console.log(userDataToUpdate);
 
   // Update user data in Firestore
   db.collection("users")
     .doc(userId)
-    .update(userDataToUpdate)
+    .update({
+      description: req.body.description,
+      phone: req.body.phone,
+      programmationLanguage: createProgrammingLanguageArray(
+        req.body.programmationLanguage
+      ),
+      git: req.body.git,
+      discord: req.body.discord,
+      linkedin: req.body.linkedin,
+      company: req.body.company,
+      job: req.body.job,
+      image: image ? url + image : userData.image,
+    })
     .then(() => {
       // If the user had an image and the image was changed, delete the old image from the "uploads" folder
       if (imageUrlToDelete && imageTmp && imageTmp !== userData.image) {
@@ -138,6 +142,24 @@ const getStudent = async (req, res) => {
     });
 };
 
+const getUser = async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const userDoc = await db.collection("users").doc(userId).get();
+
+    if (!userDoc.exists) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const user = userDoc.data();
+    res.json(user);
+  } catch (error) {
+    console.error("Error retrieving user:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 function createProgrammingLanguageArray(programmingLanguageString) {
   return programmingLanguageString.split(",");
