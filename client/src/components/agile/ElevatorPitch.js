@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -8,7 +8,7 @@ import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import { Button, InputLabel } from '@mui/material';
 import { addElevatorPitch } from './agile';
-
+import { w3cwebsocket } from "websocket";
 
 export default function ElevatorPitch({ index}) {
 
@@ -19,7 +19,22 @@ export default function ElevatorPitch({ index}) {
     const [who, setWho] = useState("");
     const [difference, setDifference] = useState("");
     const [invis, setInvis] = useState(false);
+    let dashboardId = "Pvhf4GS91hTHJQ6NDLJh";
+    useEffect(()=>{
+        getElevatorPitch();
+    });
 
+    const getElevatorPitch = async () =>{
+        const wsComments = new w3cwebsocket(`ws://localhost:5050/elevator`);
+        wsComments.onopen = () => {
+            console.log("Connected to server");
+            wsComments.send(JSON.stringify({ dashboardId: dashboardId }));
+          };
+        wsComments.onmessage = (message) => {
+            const data = JSON.parse(message.data);
+            console.log(data);
+        }
+    };
     const handleChange = (e) => {
         if (!name || !forWho || !needed || !type || !who || !difference) {
             toast.error("Veuillez remplir tous les champs!");
@@ -33,7 +48,7 @@ export default function ElevatorPitch({ index}) {
             difference,
         }
 
-        addElevatorPitch(formValues);
+        addElevatorPitch(dashboardId, formValues);
         setInvis(true);
 
         console.log(formValues);
