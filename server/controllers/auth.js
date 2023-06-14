@@ -139,10 +139,17 @@ const login = async (req, res) => {
     const { email } = decodedToken;
 
     const user = await auth.getUserByEmail(email);
+
+    const userSnapshot = await db.collection("users").doc(email).get();
+
+    const userClassData = userSnapshot.data().verified;
+
     if (!user.emailVerified) {
-      return res
-        .status(401)
-        .json({ message: "Veuillez vérifier votre adresse e-mail" });
+      if (userClassData !== true) {
+        return res
+          .status(401)
+          .json({ message: "Veuillez vérifier votre adresse e-mail" });
+      }
     }
 
     res.status(200).json({ message: "Success" });
