@@ -222,8 +222,6 @@ export default function NewBlog({ open, toggleDrawerModify }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             fullWidth
-            InputLabelProps={{ className: "inputLabel" }}
-            InputProps={{ className: "input" }}
             error={errors.title ? true : false}
             helperText={errors.title}
           />
@@ -236,8 +234,6 @@ export default function NewBlog({ open, toggleDrawerModify }) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             fullWidth
-            InputLabelProps={{ className: "inputLabel" }}
-            InputProps={{ className: "input" }}
             error={errors.description ? true : false}
             helperText={errors.description}
           />
@@ -276,17 +272,19 @@ export default function NewBlog({ open, toggleDrawerModify }) {
             </Box>
           </Box>
           <Box sx={{ width: "100%", mb: 2 }}>
-            <MDEditor
-              value={valueMarkdown}
-              // preview="split"
-              commands={[...commands.getCommands(), help]}
-              onChange={(val) => setValueMarkdown(val)}
-            />
+            <div data-color-mode="light">
+              <MDEditor
+                value={valueMarkdown}
+                // preview="split"
+                commands={[...commands.getCommands(), help]}
+                onChange={(val) => setValueMarkdown(val)}
+              />
+            </div>
           </Box>
           <TextField
             sx={{ marginBottom: 2 }}
             id="outlined-search"
-            label="Miniature"
+            // label="Miniature"
             type="file"
             accept="image/png,image/jpeg"
             onChange={(e) => {
@@ -294,8 +292,6 @@ export default function NewBlog({ open, toggleDrawerModify }) {
               setPreviewImage(URL.createObjectURL(e.target.files[0]));
             }}
             fullWidth
-            InputLabelProps={{ className: "inputLabel" }}
-            InputProps={{ className: "input" }}
             error={errors.thumbnail ? true : false}
             helperText={errors.thumbnail}
           />

@@ -376,19 +376,21 @@ function DetailTuto() {
                 {allStepsCompleted() ? (
                   <>
                     <Typography sx={{ mt: 2, mb: 1 }}>
-                      All steps completed - you&apos;re finished
+                      Vous avez terminé le tutoriel !
                     </Typography>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Box sx={{ flex: "1 1 auto" }} />
-                      <Button onClick={handleReset}>Upload</Button>
+                      <Button onClick={handleReset}>Recommencer</Button>
                     </Box>
                   </>
                 ) : (
                   <>
                     <Box sx={{ m: 3 }}>
-                      <MDEditor.Markdown
-                        source={data.markdownStepsInfo[activeStep]}
-                      />
+                      <div data-color-mode="light">
+                        <MDEditor.Markdown
+                          source={data.markdownStepsInfo[activeStep]}
+                        />
+                      </div>
                     </Box>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Button
@@ -397,11 +399,11 @@ function DetailTuto() {
                         onClick={handleBack}
                         sx={{ mr: 1 }}
                       >
-                        Back
+                        Précédent
                       </Button>
                       <Box sx={{ flex: "1 1 auto" }} />
                       <Button onClick={handleNext} sx={{ mr: 1 }}>
-                        Next
+                        Suivant
                       </Button>
                       {activeStep !== steps.length &&
                         (completed[activeStep] ? (
@@ -409,13 +411,13 @@ function DetailTuto() {
                             variant="caption"
                             sx={{ display: "inline-block" }}
                           >
-                            Step {activeStep + 1} already completed
+                            Étape {activeStep + 1} déjà complétée
                           </Typography>
                         ) : (
                           <Button onClick={handleComplete}>
                             {completedSteps() === totalSteps() - 1
-                              ? "Finish"
-                              : "Complete Step"}
+                              ? "Terminer le tutoriel"
+                              : "Terminer l'étape"}
                           </Button>
                         ))}
                     </Box>

@@ -473,7 +473,7 @@ function Blog() {
 
   return (
     <>
-      {/*<Toaster />*/}
+      <Toaster />
       <Box sx={{ margin: 2 }}>
         <Box>
           <Box>
