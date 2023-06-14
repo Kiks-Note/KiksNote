@@ -71,10 +71,9 @@ const getCoursesByOwnerId = async (req, res) => {
       if (doc.data().owner.id == req.params.ownerid) {
         courses.push({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         });
       }
-     
     });
     res.status(200).send(courses);
   } catch (error) {
@@ -785,6 +784,27 @@ const getCoursesByPo = async (req, res) => {
   }
 };
 
+const getAllGroupesByCourseId = async (req, res) => {
+  const { courseId } = req.params;
+
+  try {
+    const snapshot = await db
+      .collection("groups")
+      .where("courseId", "==", courseId)
+      .get();
+
+    const groupes = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).send(groupes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération des groupes.");
+  }
+};
+
 module.exports = {
   getAllCours,
   getCoursesByOwnerId,
@@ -805,4 +825,5 @@ module.exports = {
   getCoursByClass,
   deleteCours,
   getCoursesByPo,
+  getAllGroupesByCourseId,
 };
