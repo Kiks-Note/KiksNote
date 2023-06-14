@@ -551,6 +551,7 @@ function OverView({ id }) {
               display: "flex",
               justifyContent: "space-between",
               padding: "5vh",
+              height: "100vh",
             }}
           >
             {display && <StoryList stories={stories} sprints={releases} dashboardId={id} />}
