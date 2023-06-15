@@ -41,8 +41,15 @@ var upload = multer({
 
 const { retroRoutesWsNeeded } = require("./retroRoutes");
 
+const corsOption = {
+  origin: [
+    "http://212.73.217.176"
+  ],
+  optionsSuccessStatus: 200
+};
+
 app.use(express.json());
-app.use(cors());
+app.use(cors(corsOption));
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static("uploads"));
