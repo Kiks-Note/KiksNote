@@ -162,7 +162,7 @@ const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
                 border: "none",
               }}
             >
-              <CloseIcon style={{ fill: "white" }} />
+              <CloseIcon style={{ fill: theme.palette.text.primary }} />
             </button>
           </div>
         </div>
