@@ -5,7 +5,6 @@ const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 
-
 const addImpactMapping = async (req, res) => {
   if (
     !req.body ||
@@ -475,7 +474,8 @@ const updateElevatorPitch = async (req, res) => {
     !req.body.needed ||
     !req.body.type ||
     !req.body.who ||
-    !req.body.difference
+    !req.body.difference ||
+    !req.body.alternative
   ) {
     res.status(400).send({ message: "Missing required fields" });
     return;
@@ -493,16 +493,17 @@ const updateElevatorPitch = async (req, res) => {
         type: req.body.type,
         who: req.body.who,
         difference: req.body.difference,
+        alternative: req.body.alternative,
       });
 
-      res.send({message: "Elevator Pitch added successfully"})
+    res.send({ message: "Elevator Pitch added successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Server error" });
   }
-}
-const resetElevatorPitch = async (req, res) =>{
-  try{
+};
+const resetElevatorPitch = async (req, res) => {
+  try {
     await db
       .collection("dashboard")
       .doc(req.params.dashboardId)
@@ -517,12 +518,12 @@ const resetElevatorPitch = async (req, res) =>{
         difference: "",
       });
 
-      res.status(204).send({ message: "Elevator Pitch deleted successfully" });
-  }catch(e){
+    res.status(204).send({ message: "Elevator Pitch deleted successfully" });
+  } catch (e) {
     console.error(error);
     res.status(500).send({ message: "Server error" });
   }
-}
+};
 /// Path to update tree
 const putTree = async (req, res) => {
   try {
@@ -640,11 +641,9 @@ const elevatorPitchRequest = async (connection) => {
       (err) => {
         console.log(`Encountered error: ${err}`);
       }
-    )
-
-
-  })
-}
+    );
+  });
+};
 const empathyRequest = async (connection) => {
   connection.on("message", async (message) => {
     const empathy = JSON.parse(message.utf8Data);
@@ -831,5 +830,5 @@ module.exports = {
   empathyRequest,
   personaRequest,
   treeRequest,
-  elevatorPitchRequest
+  elevatorPitchRequest,
 };

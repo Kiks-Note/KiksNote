@@ -214,3 +214,15 @@
 .btn_persona_next span:hover:after {
   width: 100%;
 }
+
+.elevator-paragraphe {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 2%;
+}
+.elevator-info {
+  font-style: oblique;
+  margin-left: 18px !important;
+  color: #76aef1;
+}

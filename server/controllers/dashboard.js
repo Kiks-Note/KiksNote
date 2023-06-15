@@ -277,7 +277,12 @@ const createDashboards = async (req, res) => {
     });
     await agileRef.doc("elevator_pitch").set({
       name: "",
-      description: "",
+      forWho: "",
+      needed: "",
+      type: "",
+      who: "",
+      difference: "",
+      alternative: "",
     });
     await agileRef.doc("functional_tree").set({});
     await agileRef.doc("agile_folder").set({
@@ -1038,6 +1043,7 @@ async function addDashboard(groups, db) {
         type: "",
         who: "",
         difference: "",
+        alternative: "",
       });
       await agileRef.doc("functional-tree").set({});
       await agileRef.doc("agile_folder").set({
@@ -1046,7 +1052,7 @@ async function addDashboard(groups, db) {
         personas: [],
         tree: "",
         elevator_pitch: "",
-        roadmap:"",
+        roadmap: "",
       });
     }
   }

@@ -18,7 +18,6 @@ export const addImpactMapping = async (impactMapping) => {
   }
 };
 
-
 export const deleteActors = async (dashboardId, actorId) => {
   try {
     const res = await axios.delete(
@@ -30,32 +29,33 @@ export const deleteActors = async (dashboardId, actorId) => {
   }
 };
 
-export const addElevatorPitch = async(dashboardId, elevatorPitch) =>{
-  try{
+export const addElevatorPitch = async (dashboardId, elevatorPitch) => {
+  try {
     const res = await axios.put(
       `http://localhost:5050/agile/${dashboardId}/elevator/updateElevator`,
       {
         name: elevatorPitch.name,
         forWho: elevatorPitch.forWho,
-        needed : elevatorPitch.needed,
+        needed: elevatorPitch.needed,
         type: elevatorPitch.type,
         who: elevatorPitch.who,
         difference: elevatorPitch.difference,
+        alternative: elevatorPitch.alternative,
       }
     );
     return res;
-  } catch (e){
+  } catch (e) {
     console.error(e);
   }
 };
 
-export const deleteElevatorPitch = async (dashbardId) =>{
-  try{
+export const deleteElevatorPitch = async (dashbardId) => {
+  try {
     const res = await axios.put(
       `http://localhost:5050/agile/${dashbardId}/resetElevator`
     );
     return res;
-  }catch(e){
+  } catch (e) {
     console.error(e);
   }
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Stepper,
   Step,
@@ -14,14 +14,13 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import * as yup from "yup";
-import { Rings } from "react-loader-spinner";
 import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
 import StepIcon from "./StepIcon";
-import { addElevatorPitch } from './agile';
-import { w3cwebsocket } from "websocket";
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { addElevatorPitch } from "./agile";
+
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 
 const steps = [
   {
@@ -41,18 +40,22 @@ const steps = [
     fields: ["who"],
   },
   {
-    label: "A la différence de",
+    label: " A la différence de",
+    fields: ["alternative"],
+  },
+  {
+    label: "Le produit permet",
     fields: ["difference"],
   },
 ];
 
 const schema = yup.object().shape({
-    name: yup.string().required("Veuillez remplir ce champ"),
-    forWho: yup.string().required("Veuillez remplir ce champ"),
-    needed: yup.string().required("Veuillez remplir ce champ"),
-    type: yup.string().required("Veuillez remplir ce champ"),
-    who: yup.string().required("Veuillez remplir ce champ"),
-    difference: yup.string().required("Veuillez remplir ce champ"),
+  name: yup.string().required("Veuillez remplir ce champ"),
+  forWho: yup.string().required("Veuillez remplir ce champ"),
+  needed: yup.string().required("Veuillez remplir ce champ"),
+  type: yup.string().required("Veuillez remplir ce champ"),
+  who: yup.string().required("Veuillez remplir ce champ"),
+  difference: yup.string().required("Veuillez remplir ce champ"),
 });
 
 const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
@@ -78,13 +81,13 @@ const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
     borderRadius: 1,
   },
 }));
-export default function ElevatorPitch({dashboardId}) {
+export default function ElevatorPitch({ dashboardId }) {
   const [activeStep, setActiveStep] = useState(0);
   const [errors, setErrors] = useState({});
-  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({});
 
   const savePersona = () => {
+    console.log(formData);
     addElevatorPitch(dashboardId, formData);
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
   };
@@ -111,23 +114,6 @@ export default function ElevatorPitch({dashboardId}) {
     }
   };
 
-  const getElevatorPitch = async () =>{
-    const wsComments = new w3cwebsocket(`ws://localhost:5050/elevator`);
-        wsComments.onopen = () => {
-            console.log("Connected to server");
-            console.log(dashboardId);
-            wsComments.send(JSON.stringify({ dashboardId: dashboardId }));
-        };
-        wsComments.onmessage = (message) => {
-            const data = JSON.parse(message.data);
-            console.log(data);
-            setLoading(false);
-        }
-    };
-
-    useEffect(()=>{
-        getElevatorPitch();
-    },[]);
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
@@ -149,29 +135,23 @@ export default function ElevatorPitch({dashboardId}) {
                 "& > :not(style)": { m: 1, width: "25ch" },
               }}
             >
-                
-              <div className='clickable_div'>
-                <div>
-                    <h2>Pour ?</h2>
-                    <p>Type visé*</p>
-                    <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
-                        <InputLabel id="demo-select-small-label">Pour</InputLabel>
-                        <Select
-                            labelId="demo-select-small-label"
-                            id="demo-select-small"
-                            label="pour"
-                            onChange={(e) => handleFieldChange("forWho", e.target.value)}
-                            value={formData.forWho || ""}
-                            error={Boolean(errors?.forWho)}
-                            required
-                        >
-                            <MenuItem value="Client">Client</MenuItem>
-                            <MenuItem value="Utilisateur">Utilisateur</MenuItem>
-                            <MenuItem value="Marché">Marché</MenuItem>
-                        </Select>
-                    </FormControl>
-                </div>
-            </div>
+              <div>
+                <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+                  <InputLabel id="demo-select-small-label">Pour</InputLabel>
+                  <Select
+                    label="Type visé"
+                    onChange={(e) =>
+                      handleFieldChange("forWho", e.target.value)
+                    }
+                    value={formData.forWho || ""}
+                    error={Boolean(errors?.forWho)}
+                  >
+                    <MenuItem value="Client">Client</MenuItem>
+                    <MenuItem value="Utilisateur">Utilisateur</MenuItem>
+                    <MenuItem value="Marché">Marché</MenuItem>
+                  </Select>
+                </FormControl>
+              </div>
             </Box>
           </div>
         );
@@ -182,24 +162,21 @@ export default function ElevatorPitch({dashboardId}) {
               "& > :not(style)": { m: 1, width: "25ch" },
             }}
           >
-            <div className='clickable_div'>
-                <div>
-                    <h2>Qui a besoin de</h2>
-                    <p>Services à rendre, problèmes à régler*</p>
-                    <form>
-                        <TextField
-                            id="outlined-basic"
-                            label="Besoin de"
-                            variant="outlined"
-                            multiline
-                            required
-                            maxRows={4}
-                            onChange={(e) => handleFieldChange("needed", e.target.value)}
-                            value={formData.needed || ""}
-                            error={Boolean(errors?.needed)}
-                        />
-                    </form>
-                </div>
+            <div>
+              <form>
+                <TextField
+                  id="outlined-basic"
+                  label="Qui a besoin de"
+                  variant="outlined"
+                  placeholder="Services à rendre, problèmes à régler"
+                  multiline
+                  required
+                  maxRows={4}
+                  onChange={(e) => handleFieldChange("needed", e.target.value)}
+                  value={formData.needed || ""}
+                  error={Boolean(errors?.needed)}
+                />
+              </form>
             </div>
           </Box>
         );
@@ -210,32 +187,29 @@ export default function ElevatorPitch({dashboardId}) {
               "& > :not(style)": { m: 1, width: "25ch" },
             }}
           >
-            <div className='clickable_div'>
-                <div>
-                    <h2>Le produit</h2>
-                    <p>Nom*</p>
-                    <form>
-                        <TextField
-                            id="outlined-basic"
-                            label="Prénom"
-                            variant="outlined"
-                            value={formData.name || ""}
-                            onChange={(e) => handleFieldChange("name", e.target.value)}
-                        />
-                        <h2>Type du produit 💻</h2>
-                        <p>Application, site web, etc*</p>
-                        <TextField
-                            id="outlined-basic"
-                            label="Type"
-                            variant="outlined"
-                            multiline
-                            maxRows={4}
-                            onChange={(e) => handleFieldChange("type", e.target.value)}
-                            value={formData.type || ""}
-                            error={Boolean(errors?.type)}
-                        />
-                    </form>
-                </div>
+            <div>
+              <form>
+                <h2>Nom du produit 💻</h2>
+                <TextField
+                  id="outlined-basic"
+                  label="Nom du produit"
+                  variant="outlined"
+                  value={formData.name || ""}
+                  onChange={(e) => handleFieldChange("name", e.target.value)}
+                />
+                <h2>Type du produit 💻</h2>
+                <TextField
+                  id="outlined-basic"
+                  label="Type"
+                  variant="outlined"
+                  placeholder="Application, site web, etc"
+                  multiline
+                  maxRows={4}
+                  onChange={(e) => handleFieldChange("type", e.target.value)}
+                  value={formData.type || ""}
+                  error={Boolean(errors?.type)}
+                />
+              </form>
             </div>
           </Box>
         );
@@ -246,23 +220,20 @@ export default function ElevatorPitch({dashboardId}) {
               "& > :not(style)": { m: 1, width: "25ch" },
             }}
           >
-            <div className='clickable_div'>
-                <div>
-                    <h2>Qui ?</h2>
-                    <p>bénéfices, utilité, raisons pour acheter*</p>
-                    <form>
-                        <TextField
-                            id="outlined-basic"
-                            label="Qui"
-                            variant="outlined"
-                            multiline
-                            maxRows={4}
-                            onChange={(e) => handleFieldChange("who", e.target.value)}
-                            value={formData.who || ""}
-                            error={Boolean(errors?.setWho)}
-                        />
-                    </form>
-                </div>
+            <div>
+              <h2>Bénéfices, utilité, raisons pour acheter</h2>
+              <form>
+                <TextField
+                  id="outlined-basic"
+                  label="Qui"
+                  variant="outlined"
+                  multiline
+                  maxRows={4}
+                  onChange={(e) => handleFieldChange("who", e.target.value)}
+                  value={formData.who || ""}
+                  error={Boolean(errors?.setWho)}
+                />
+              </form>
             </div>
           </Box>
         );
@@ -273,23 +244,47 @@ export default function ElevatorPitch({dashboardId}) {
               "& > :not(style)": { m: 1, width: "25ch" },
             }}
           >
-            <div className='clickable_div'>
-                <div>
-                    <h2>A la différence de</h2>
-                    <p>alternative de la concurrence*</p>
-                    <form>
-                        <TextField
-                            id="outlined-basic"
-                            label="Différence"
-                            variant="outlined"
-                            multiline
-                            maxRows={4}
-                            onChange={(e) => handleFieldChange("difference", e.target.value)}
-                            value={formData.difference || ""}
-                            error={Boolean(errors?.difference)}
-                        />
-                    </form>
-                </div>
+            <div>
+              <form>
+                <TextField
+                  id="outlined-basic"
+                  label="La difference"
+                  variant="outlined"
+                  multiline
+                  maxRows={4}
+                  onChange={(e) =>
+                    handleFieldChange("alternative", e.target.value)
+                  }
+                  value={formData.alternative || ""}
+                  error={Boolean(errors?.alternative)}
+                />
+              </form>
+            </div>
+          </Box>
+        );
+      case 5:
+        return (
+          <Box
+            sx={{
+              "& > :not(style)": { m: 1, width: "25ch" },
+            }}
+          >
+            <div>
+              <h2>Le produit permet</h2>
+              <form>
+                <TextField
+                  id="outlined-basic"
+                  label="Différence"
+                  variant="outlined"
+                  multiline
+                  maxRows={4}
+                  onChange={(e) =>
+                    handleFieldChange("difference", e.target.value)
+                  }
+                  value={formData.difference || ""}
+                  error={Boolean(errors?.difference)}
+                />
+              </form>
             </div>
           </Box>
         );
@@ -300,72 +295,49 @@ export default function ElevatorPitch({dashboardId}) {
 
   return (
     <div className="container-all">
-      {loading ? (
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-          }}
+      <div className="container-step-form">
+        <Stepper
+          activeStep={activeStep}
+          alternativeLabel
+          connector={<ColorlibConnector />}
         >
-          <Rings
-            height="200"
-            width="200"
-            color="#00BFFF"
-            radius="6"
-            wrapperStyle={{}}
-            wrapperClass="loader"
-            visible={true}
-            ariaLabel="rings-loading"
-          />
-        </div>
-      ) : (
-        <div className="container-step-form">
-          <Stepper
-            activeStep={activeStep}
-            alternativeLabel
-            connector={<ColorlibConnector />}
-          >
-            {steps.map((step, index) => (
-              <Step key={step.label}>
-                <StepLabel StepIconComponent={StepIcon}>{step.label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-          <div className="container_form_persona">
-            <div className="form_persona">
-              {renderStepContent(activeStep)}
-              <div className="form_persona_button">
-                {activeStep !== 0 && (
-                  <button
-                    onClick={handleBack}
-                    className="btn_persona_cancel custom-btn"
-                  >
-                    Retour
-                  </button>
-                )}
-                {activeStep === steps.length - 1 ? (
-                  <Button
-                    className="btn_persona_next custom-btn"
-                    onClick={savePersona}
-                  >
-                    Terminer
-                  </Button>
-                ) : (
-                  <button
-                    onClick={handleNext}
-                    className="btn_persona_next custom-btn"
-                  >
-                    Suivant
-                  </button>
-                )}
-              </div>
+          {steps.map((step, index) => (
+            <Step key={step.label}>
+              <StepLabel StepIconComponent={StepIcon}>{step.label}</StepLabel>
+            </Step>
+          ))}
+        </Stepper>
+        <div className="container_form_persona">
+          <div className="form_persona">
+            {renderStepContent(activeStep)}
+            <div className="form_persona_button">
+              {activeStep !== 0 && (
+                <button
+                  onClick={handleBack}
+                  className="btn_persona_cancel custom-btn"
+                >
+                  Retour
+                </button>
+              )}
+              {activeStep === steps.length - 1 ? (
+                <Button
+                  className="btn_persona_next custom-btn"
+                  onClick={savePersona}
+                >
+                  Terminer
+                </Button>
+              ) : (
+                <button
+                  onClick={handleNext}
+                  className="btn_persona_next custom-btn"
+                >
+                  Suivant
+                </button>
+              )}
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
-
