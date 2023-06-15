@@ -187,7 +187,7 @@ function DetailBlog() {
               <Button
                 variant="contained"
                 onClick={() => {
-                  window.history.back();
+                  navigate(-1);
                 }}
                 sx={{ marginTop: 2 }}
               >

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import CardBlog from "../../components/blog/CardBlog";
 import { Box, Grid, Button } from "@mui/material";
 import { w3cwebsocket } from "websocket";
@@ -529,50 +529,74 @@ function Blog() {
 
   return (
     <>
-      <Toaster />
-      <Box sx={{ margin: 2 }}>
-        <Box>
-          <Box>
-            <SplitButtonChoice />
-          </Box>
-          <Box sx={{ width: "93vw" }}>
-            {user.status !== "etudiant" && (
-              <Box
-                sx={{
-                  display: "flex",
-                  width: "100%",
-                  justifyContent: "space-around",
-                  alignItems: "center",
-                  bgcolor: "#c6c5c5",
-                  my: 2,
-                }}
-              >
-                <TopCreatorsChart />
-                <Box>
-                  <MostParticipantsChart />
-                </Box>
-                <BlogRepartition />
+      {!loading ? (
+        <>
+          <Toaster />
+          <Box sx={{ margin: 2 }}>
+            <Box>
+              <Box>
+                <SplitButtonChoice />
               </Box>
-            )}
-            {blog
-              // .filter((blog) => blog.type !== "tuto")
-              .filter((blog) =>
-                user.status !== "etudiant"
-                  ? blog.visibility === "pending"
-                  : user.email === blog.created_by
-                  ? blog.visibility === "pending"
-                  : undefined
-              ).length > 0 ? (
-              <AdvancedCarouselPending />
-            ) : (
-              <> </>
-            )}
-            <AdvancedCarouselTuto />
-            <AdvancedCarouselBlog />
-            <AdvancedCarouselEvent />
+              <Box sx={{ width: "93vw" }}>
+                {user.status !== "etudiant" && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      justifyContent: "space-around",
+                      alignItems: "center",
+                      bgcolor: "#c6c5c5",
+                      my: 2,
+                    }}
+                  >
+                    <TopCreatorsChart />
+                    <Box>
+                      <MostParticipantsChart />
+                    </Box>
+                    <BlogRepartition />
+                  </Box>
+                )}
+                {blog
+                  // .filter((blog) => blog.type !== "tuto")
+                  .filter((blog) =>
+                    user.status !== "etudiant"
+                      ? blog.visibility === "pending"
+                      : user.email === blog.created_by
+                      ? blog.visibility === "pending"
+                      : undefined
+                  ).length > 0 ? (
+                  <AdvancedCarouselPending />
+                ) : (
+                  <> </>
+                )}
+                <AdvancedCarouselTuto />
+                <AdvancedCarouselBlog />
+                <AdvancedCarouselEvent />
+              </Box>
+            </Box>
           </Box>
-        </Box>
-      </Box>
+        </>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "70%",
+          }}
+        >
+          <Rings
+            height="200"
+            width="200"
+            color="#00BFFF"
+            radius="6"
+            wrapperStyle={{}}
+            wrapperClass="loader"
+            visible={true}
+            ariaLabel="rings-loading"
+          />
+        </div>
+      )}
     </>
   );
 }
