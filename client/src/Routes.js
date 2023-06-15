@@ -38,6 +38,7 @@ import PublicRoutes from "./utils/PublicRoutes";
 import Board from "./pages/board_retro/board";
 import Calendar from "./pages/calendar/Calendar";
 import CalendarPedago from "./pages/calendar/CalendarPedago";
+import ElevatorPitch from "./components/agile/ElevatorPitch";
 
 function RoutesProvider() {
   return (
