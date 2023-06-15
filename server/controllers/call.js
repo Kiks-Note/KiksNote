@@ -69,10 +69,10 @@ const updateCall = async (req, res) => {
 
 const getRoom = async (req, res) => {
   const { classStudent } = req.params;
-  console.log(classStudent);
   const snapshot = await db
     .collection("rooms")
     .where("class", "==", classStudent)
+    .where("callId", "==", req.query.callId)
     .where("type", "==", "call")
     .get();
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
@@ -81,6 +81,7 @@ const getRoom = async (req, res) => {
 
 const getRoomPo = async (req, res) => {
   const { id } = req.params;
+  console.log(req.query.callId.callId);
   const snapshot = await db
     .collection("rooms")
     .where("po_id", "==", id)
@@ -179,6 +180,7 @@ const room = async (connection) => {
     const roomClients = clients.get(classStudent) || new Map();
 
     for (const [UserID, client] of roomClients.entries()) {
+      console.log(UserID);
       client.sendUTF(JSON.stringify(message));
     }
   };
@@ -235,7 +237,6 @@ const room = async (connection) => {
             class: response.data.class,
           },
         };
-        console.log(currentRooms);
         //createCurrentRooms();
         sendToAllClients(messageCreate, response.data.class);
 
@@ -248,14 +249,24 @@ const room = async (connection) => {
           name: response.data.name,
         });
 
-        roomUsers.appel = appels.get(response.data.class);
-
+        if (response.data.appel != undefined) {
+          const appelJoin = appels.get(response.data.class);
+          appelJoin.set(response.data.class, { appel: response.data.appel });
+          appels.set(response.data.class, appelJoin);
+          roomUsers.appel = appels.get(response.data.class);
+          console.log(roomUsers.appel);
+        } else {
+          console.log(response.data.class);
+          roomUsers.appel = appels.get(response.data.class);
+        }
         currentRooms.set(response.data.class, roomUsers);
 
         const roomClients = clients.get(response.data.class) || new Map();
 
         roomClients.set(response.data.userID, connection);
-
+        console.log("appel");
+        console.log(appels);
+        console.log(currentRooms.get(response.data.class).appel);
         const messageJoin = {
           type: "updateRoom",
           data: {
@@ -271,7 +282,6 @@ const room = async (connection) => {
             class: response.data.class,
           },
         };
-        console.log(currentRooms);
         //updateCurrentRooms();
         sendToAllClients(messageJoin, response.data.class);
 
@@ -322,7 +332,6 @@ const room = async (connection) => {
         appelsUpdate.set(response.data.class, { appel: response.data.appel });
         roomAppel.appel = appelsUpdate;
         currentRooms.set(response.data.class, roomAppel);
-        //console.log(currentRooms.get(response.data.class).appel);
         const messageUpdate = {
           type: "updateRoom",
           data: {

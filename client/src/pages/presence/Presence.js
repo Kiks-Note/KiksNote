@@ -39,10 +39,12 @@ function Presence() {
   };
   const websocket = () => {
     const message = {
-      type: "updateCall",
+      type: "joinRoom",
       data: {
         class: user.class.name,
         appel: tempCall.current,
+        userID: user.email,
+        name: user.firstname,
       },
     };
     ws.send(JSON.stringify(message));
@@ -66,6 +68,9 @@ function Presence() {
           const scanEleveCopy = [...tempCall.current.students_scan];
           const userItem = {
             firstname: user.firstname,
+            image: user?.image
+              ? "https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
+              : user.image,
             id: user.id,
           };
           if (

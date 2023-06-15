@@ -1,9 +1,10 @@
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import axios from "axios";
 import "./Callteacher.scss";
-import Timer from "../timer/Timer";
+//import Timer from "../timer/Timer";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
+import { Timer } from "react-digital-timer";
 
 function AppelProf(callId) {
   const [qrcode, setQrcode] = useState("");
@@ -17,11 +18,18 @@ function AppelProf(callId) {
   const tempCall = useRef("");
   const tempUsers = useRef([]);
   const ip = process.env.REACT_APP_IP;
+  const divRef = useRef("");
+
+  const [isQrCodeVisible, setIsQrCodeVisible] = useState(true);
   const [users, setUsers] = useState([]);
   const [usersPresent, setUsersPresent] = useState([]);
   const [inRoom, setInRoom] = useState(false);
   const generated = useRef(false);
-
+  const INIT_TIME = {
+    hour: 0,
+    minute: 0,
+    second: 15 * 60,
+  };
   const ws = useMemo(() => {
     return new w3cwebsocket(`ws://localhost:5050/callws`);
   }, []);
@@ -73,6 +81,7 @@ function AppelProf(callId) {
                 messageReceive.data.currentRoom.appel
               )[0];
               const appel = messageReceive.data.currentRoom.appel[keys].appel;
+              console.log(appel);
               tempCall.current = appel;
               setCall(appel);
               setQrcode(appel.qrcode);
@@ -80,7 +89,10 @@ function AppelProf(callId) {
                 getUsers(appel.id_lesson);
               }
               generated.current = true;
-
+              divRef.current.scrollIntoView({
+                behavior: "instant",
+                block: "end",
+              });
               displayUsers();
               break;
             default:
@@ -89,7 +101,7 @@ function AppelProf(callId) {
         };
       }
     };
-
+    console.log(ws);
     if (ws.readyState === WebSocket.OPEN) {
       handleOpen();
     } else {
@@ -135,55 +147,92 @@ function AppelProf(callId) {
 
   return (
     <div className="ContentProf">
-      <div className="Timer">{/* <Timer /> */}</div>
       <div className="ContentInfo">
-        <div className="DivQr">
-          <img src={qrcode} className="Qrcode" alt="" />
-        </div>
-        <div className="DivList">
-          <div>
-            <div className="ListUser">
-              {users.map((user) => {
+        <div className="container clearfix">
+          <div className="people-list-bis" id="people-list">
+            <ul className="list">
+              {call.students_scan.map((user) => {
                 return (
-                  <span key={user.id} className="UserItem">
-                    {user.firstname}
-                  </span>
+                  <li className="clearfix">
+                    <img src={user.image} alt="avatar" />
+                    <div className="about">
+                      <div className="name">{user.firstname}</div>
+                    </div>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           </div>
-          <div>
-            <div className="ListUser">
-              {usersPresent.map((user) => {
-                return (
-                  <span key={user.id} className="UserItemPresent">
-                    {user.firstname}
-                  </span>
-                );
-              })}
-            </div>
+          <div className="DivQr">
+            {isQrCodeVisible ? (
+              <>
+                <img
+                  src={qrcode}
+                  className="Qrcode"
+                  alt=""
+                  style={{ display: isQrCodeVisible ? "hidden" : "" }}
+                />
+                <Timer
+                  countDownTime={INIT_TIME}
+                  onComplete={() => setIsQrCodeVisible(false)}
+                />
+              </>
+            ) : (
+              ""
+            )}
           </div>
-        </div>
-        <div className="DivChat">
-          <h1>Chat</h1>
-          <div className="Chat">
-            {/* {call.chats.map((chat) => {
-              return (
-                <div className="ChatContent">
-                  <div className="ChatContentHeader">
-                    <span>{chat.username}</span>
-                    <span>{chat.date}</span>
-                  </div>
-                  <div>
-                    {chat.isGif ? (
-                      <img src={chat.content} alt="" />
-                    ) : (
-                      <span>{chat.content}</span>
-                    )}
-                  </div>
-                </div>
-              );
-            })} */}
+
+          <div className="chat-bis">
+            <div className="chat-history-bis">
+              <ul ref={divRef}>
+                {call.chats.map((chat) => {
+                  return (
+                    <li className="clearfix" key={chat.id}>
+                      {chat.username == user.firstname ? (
+                        <>
+                          <div className="message-data">
+                            <span className="message-data-name">
+                              <i className="fa fa-circle online"></i>{" "}
+                              {chat.username}
+                            </span>
+                            <span className="message-data-time">
+                              {chat.date}
+                            </span>
+                          </div>
+                          <div className="message my-message">
+                            {chat.isGif ? (
+                              <img src={chat.content} alt="gif" />
+                            ) : (
+                              <span>{chat.content}</span>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div className="message-data align-right">
+                            <span className="message-data-time">
+                              {chat.date}
+                            </span>{" "}
+                            &nbsp; &nbsp;
+                            <span className="message-data-name">
+                              {chat.username}
+                            </span>{" "}
+                            <i className="fa fa-circle me"></i>
+                          </div>
+                          <div className="message other-message float-right">
+                            {chat.isGif ? (
+                              <img src={chat.content} alt="gif" />
+                            ) : (
+                              <span>{chat.content}</span>
+                            )}
+                          </div>
+                        </>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         </div>
       </div>

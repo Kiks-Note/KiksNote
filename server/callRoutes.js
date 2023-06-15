@@ -18,7 +18,7 @@ function callRoutesWsNotNeeded() {
   router.get("/calls", getCalls);
   router.get("/getcall/:id", getCall);
   router.get("/getCallsByLessonId/:id_lesson", getCallsByLessonId);
-  router.get("/getRoom/:class", getRoom);
+  router.get("/getRoom/:classStudent", getRoom);
   router.get("/getRoomPo/:id", getRoomPo);
   router.post("/callAdd", addCall);
   router.get("/getUsersFromClassiId/:idCours", getClassUsers);
