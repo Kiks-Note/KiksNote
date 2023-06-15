@@ -28,6 +28,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 
 export const FirebaseContext = createContext();
 
@@ -73,7 +74,7 @@ export const FirebaseContextProvider = ({children}) => {
   };
 
   return (
-    <FirebaseContext.Provider value={{auth, db, user, logout}}>
+    <FirebaseContext.Provider value={{auth, db, user, logout, storage}}>
       {children}
     </FirebaseContext.Provider>
   );
