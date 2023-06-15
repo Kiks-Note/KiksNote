@@ -65,6 +65,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         class: classChoose,
         name: user?.firstname,
         course: courseChoosed,
+        modele: modeleChoose,
       });
     }
   }
@@ -120,7 +121,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
               Bien/Moins Bien/Amélioration
             </MenuItem>
             <MenuItem value={"m1"} key={1}>
-              Bien/Moins Bien/Amélioration/Action/Questions
+              Bien/Moins Bien/Amélioration/Manqué/Questions
             </MenuItem>
             <MenuItem value={"m2"} key={2}>
               Bien/Moins Bien/Amélioration/Action

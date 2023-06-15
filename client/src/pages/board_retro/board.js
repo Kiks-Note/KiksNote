@@ -18,6 +18,7 @@ import { w3cwebsocket } from "websocket";
 import { useNavigate } from "react-router-dom";
 
 import "./Retro.scss";
+import { set } from "date-fns";
 
 const options = {
   autoClose: 2000,
@@ -49,6 +50,7 @@ function GroupsCreation() {
   const [nbUserConnected, setNbUserConnected] = useState(0);
   const [showEdit, setShowEdit] = useState(false);
   const [postItId, setPostItId] = useState();
+  const [modeleChoose, setModeleChoose] = useState();
 
   const navigate = useNavigate();
   const { user } = useFirebase();
@@ -59,26 +61,90 @@ function GroupsCreation() {
   }, []);
 
   const fetchData = useCallback(async () => {
-    const colContent = {
-      positive: {
-        name: "Positif",
-        items: [],
-      },
-      negative: {
-        name: "Négatif",
-        items: [],
-      },
-      improve: {
-        name: "Amélioration",
-        items: [],
-      },
-      miss: {
-        name: "Manqué",
-        items: [],
-      },
-    };
+    let colContent;
+    switch (modeleChoose) {
+      case "m1":
+        colContent = {
+          positive: {
+            name: "Positif",
+            items: [],
+          },
+          negative: {
+            name: "Négatif",
+            items: [],
+          },
+          improve: {
+            name: "Amélioration",
+            items: [],
+          },
+          question: {
+            name: "Questions",
+            items: [],
+          },
+          miss: {
+            name: "Manqué",
+            items: [],
+          },
+        };
+        break;
+      case "m0":
+        colContent = {
+          positive: {
+            name: "Positif",
+            items: [],
+          },
+          negative: {
+            name: "Négatif",
+            items: [],
+          },
+          improve: {
+            name: "Amélioration",
+            items: [],
+          },
+        };
+        break;
+      case "m2":
+        colContent = {
+          positive: {
+            name: "Positif",
+            items: [],
+          },
+          negative: {
+            name: "Négatif",
+            items: [],
+          },
+          improve: {
+            name: "Améliorations",
+            items: [],
+          },
+          action: {
+            name: "Actions",
+            items: [],
+          },
+        };
+        break;
+      default:
+        colContent = {
+          positive: {
+            name: "Positif",
+            items: [],
+          },
+          negative: {
+            name: "Négatif",
+            items: [],
+          },
+          improve: {
+            name: "Amélioration",
+            items: [],
+          },
+          miss: {
+            name: "Manqué",
+            items: [],
+          },
+        };
+    }
     return colContent;
-  }, []);
+  }, [modeleChoose]);
 
   const fetchAndSetData = useCallback(async () => {
     const colContent = await fetchData();
@@ -112,6 +178,7 @@ function GroupsCreation() {
             setClassStudents(user?.class.id);
             setInRoom(true);
             setCourseChoose(res.data[0].course);
+            setModeleChoose(res.data[0].modele);
           }
         });
     } catch (error) {
@@ -138,6 +205,7 @@ function GroupsCreation() {
             setClassStudents(res.data[0].class);
             setInRoom(true);
             setCourseChoose(res.data[0].course);
+            setModeleChoose(res.data[0].modele);
           }
         });
     } catch (error) {
@@ -404,6 +472,7 @@ function GroupsCreation() {
     setInRoom(true);
     setCourseChoose(data.courseChoose);
     setClassStudents(data.courseChoose.data.courseClass.id);
+    setModeleChoose(data.modeleChoose);
   };
 
   const handleClosePopUp = (showFalse) => {
@@ -419,9 +488,7 @@ function GroupsCreation() {
     });
 
     try {
-      await axios.delete(
-        `http://localhost:5050/groupes/deleteRoom/${user?.id}`
-      );
+      await axios.delete(`http://localhost:5050/retro/deleteRoom/${user?.id}`);
     } catch (error) {
       console.error(error);
     }

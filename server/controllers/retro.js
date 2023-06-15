@@ -152,6 +152,7 @@ const room = async (connection) => {
           class: response.data.class,
           type: "retro",
           course: response.data.course,
+          modele: response.data.modele,
         });
         currentRooms.set(response.data.class, defaultRoom);
 
