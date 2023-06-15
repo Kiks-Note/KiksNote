@@ -575,7 +575,12 @@ function GroupsCreation() {
         <>
           {userCursors
             ? Array.from(userCursors.entries()).map(([userID, userData]) => {
-                if (userID !== user?.id && userID && userID !== "undefined") {
+                if (
+                  userID !== user?.id &&
+                  userID &&
+                  userID !== "undefined" &&
+                  userData.color
+                ) {
                   return (
                     <div
                       key={userID}
