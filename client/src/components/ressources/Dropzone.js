@@ -2,8 +2,8 @@ import React, { useState, useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Alert } from "@mui/material";
 
-import DropZoneImg from "../../../assets/img/dropzone-img.svg";
-import ErrorDropzone from "../../../assets/img/warning-dropzone.svg";
+import DropZoneImg from "./../../assets/img/dropzone-img.svg";
+import ErrorDropzone from "../../assets/img/warning-dropzone.svg";
 
 const validTypes = [
   "image/jpeg",

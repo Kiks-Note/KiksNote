@@ -54,20 +54,24 @@ const getStudents = async (req, res) => {
   const { classStudents } = req.params;
   const snapshot = await db
     .collection("users")
-    .where("class", "==", classStudents)
+    .where("class.id", "==", classStudents)
     .get();
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.status(200).send(documents);
 };
 
 const sendGroups = async (req, res) => {
+  const { courseId } = req.body;
+
+  const courseRef = await db.collection("cours").doc(courseId).get();
   try {
     const newGroupRef = db.collection("groups").doc();
     await newGroupRef.set({
-      start_date: moment.unix(Math.floor(new Date(req.body.start_date).valueOf() / 1000)).toDate(),
-      end_date: moment.unix(Math.floor(new Date(req.body.end_date).valueOf() / 1000)).toDate(),
+      start_date: courseRef.data().dateStartSprint,
+      end_date: courseRef.data().dateEndSprint,
       students: req.body.students,
       po_id: req.body.po_id,
+      courseId: courseId,
     });
 
     res.status(200).send("Groups successfully added!");
@@ -75,90 +79,7 @@ const sendGroups = async (req, res) => {
     res.status(500).send(error);
     console.log(error);
   }
-}
-
-/* const sendGroups = async (req, res) => {
-  const { students, po_id, start_date, end_date } = req.body;
-
-
-
-  console.log(po_id)
-  console.log("nbvg,fkdl")
-
-
-  try {
-    await upload(req, res, async (err) => {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({ error: "Error uploading file." });
-      } else if (err) {
-        return res.status(400).json({ error: err.message });
-      }
-
-      const groupData = {
-        start_date: new Date(start_date),
-        end_date: new Date(end_date),
-        students: students,
-        po_id: po_id,
-        backlog: "",
-      };
-
-      if (req.file) {
-        const filePath = req.file.path;
-        const fileType = mime.lookup(filePath);
-
-        const folderPath = `Groups/${po_id}`;
-        const fileName = req.file.originalname;
-
-        const fileRef = bucket.file(`${folderPath}/${fileName}`);
-
-        try {
-          await fileRef.createWriteStream({
-            metadata: {
-              contentType: fileType || "application/pdf",
-              cacheControl: "public, max-age=31536000",
-            },
-          })
-            .on("error", (error) => {
-              console.error(error);
-              res.status(400).json({ error: error.message });
-            })
-            .on("finish", async () => {
-              try {
-                const url = await fileRef.getSignedUrl({
-                  action: "read",
-                  expires: new Date(end_date),
-                });
-                groupData.backlog = url[0];
-
-              } catch (error) {
-                console.error(error);
-                res.status(400).json({ error: error.message });
-              }
-            })
-            .end(fs.readFileSync(filePath));
-
-        } catch (error) {
-          console.error(error);
-          return res.status(400).json({ error: error.message });
-        }
-      }
-
-      try {
-        const newGroupRef = db.collection("groups").doc();
-        await newGroupRef.set(groupData);
-
-        return res.status(200).send("Groups successfully added!");
-      } catch (error) {
-        console.error(error);
-        return res.status(400).json({ error: error.message });
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send(error);
-  }
 };
- */
 
 const deleteRoom = async (req, res) => {
   const { po_id } = req.params;
@@ -167,6 +88,7 @@ const deleteRoom = async (req, res) => {
     const snapshot = await db
       .collection("rooms")
       .where("po_id", "==", po_id)
+      .where("type", "==", "group")
       .get();
     const deletePromises = snapshot.docs.map((doc) => doc.ref.delete());
     await Promise.all(deletePromises);
@@ -213,8 +135,7 @@ const getGroupsPo = async (req, res) => {
   console.log(documents);
 
   res.status(200).send(documents);
-}
-
+};
 
 const getGroups = async (req, res) => {
   const { student_id } = req.params;
@@ -229,8 +150,7 @@ const getGroups = async (req, res) => {
 
   console.log(documents);
   res.status(200).send(documents);
-}
-
+};
 
 const currentRooms = new Map();
 
@@ -294,7 +214,6 @@ const room = async (connection) => {
         newRoomRef.set({
           po_id: response.data.po_id,
           class: response.data.class,
-          settings: response.data.settings,
           type: "group",
         });
         currentRooms.set(response.data.class, defaultRoom);
@@ -340,7 +259,7 @@ const room = async (connection) => {
 
         break;
       case "joinRoom":
-        console.log("joinRoom");
+        console.log("joinRoom :", response.data.userID);
         const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
 
         if (indexColor >= pastelColors.length) {
@@ -384,6 +303,7 @@ const room = async (connection) => {
       case "closeRoom":
         currentRooms.delete(response.data.class);
         clients.delete(response.data.class);
+        console.log("Room closed");
 
         const messageClose = {
           type: "closeRoom",
@@ -396,7 +316,7 @@ const room = async (connection) => {
         const userRoom = currentRooms.get(response.data.class) || defaultRoom;
         userRoom.users.delete(response.data.userID);
 
-        console.log("User left room");
+        console.log("User left room", response.data.userID);
 
         currentRooms.set(response.data.class, userRoom);
 
@@ -426,25 +346,23 @@ const room = async (connection) => {
 
         break;
       case "lock":
-        if (response.data.status === "po") {
-          let roomLock = currentRooms.get(response.data.class) || defaultRoom;
-          roomLock.lock = response.data.lock;
-          currentRooms.set(response.data.class, roomLock);
+        let roomLock = currentRooms.get(response.data.class) || defaultRoom;
+        roomLock.lock = response.data.lock;
+        currentRooms.set(response.data.class, roomLock);
 
-          const messageLock = {
-            type: "updateRoom",
-            data: {
-              currentRoom: {
-                ...currentRooms.get(response.data.class),
-                users: Object.fromEntries(
-                  currentRooms.get(response.data.class).users
-                ),
-              },
-              class: response.data.class,
+        const messageLock = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
             },
-          };
-          sendToAllClients(messageLock, response.data.class);
-        }
+            class: response.data.class,
+          },
+        };
+        sendToAllClients(messageLock, response.data.class);
         break;
       case "nbSPGrp":
         if (response.data.status === "po") {
@@ -472,7 +390,6 @@ const room = async (connection) => {
       case "updateCol":
         let roomCol = currentRooms.get(response.data.class) || defaultRoom;
         roomCol.columns = response.data.columns;
-        roomCol.nbStudents = response.data.nbStudents;
         currentRooms.set(response.data.class, roomCol);
 
         const messageUpdateCol = {

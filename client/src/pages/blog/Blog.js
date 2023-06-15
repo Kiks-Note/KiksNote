@@ -76,7 +76,7 @@ function Blog() {
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
-            blog.created_at._nanoseconds / 100000
+          blog.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
@@ -126,7 +126,6 @@ function Blog() {
   // test for sort by date
   // console.log("blog : ", blog);
   blog.sort((a, b) => b.created_at.localeCompare(a.created_at)); // sort by date
-
   // console.log("blogSorted : ", blogSorted);
 
   const AdvancedCarouselPending = () => {
@@ -153,8 +152,8 @@ function Blog() {
               user.status !== "etudiant"
                 ? blog.visibility === "pending"
                 : user.email === blog.created_by
-                ? blog.visibility === "pending"
-                : undefined
+                  ? blog.visibility === "pending"
+                  : undefined
             )
             .map((filtered) => (
               <Box

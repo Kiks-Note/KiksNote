@@ -19,7 +19,10 @@ const storage = multer.diskStorage({
     cb(null, DIR);
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
   },
 });
 
@@ -37,7 +40,10 @@ const upload = multer({
 const getAllJpo = async (req, res) => {
   try {
     const currentDate = new Date();
-    const snapshot = await db.collection("jpo").where("jpoDayEnd", ">=", currentDate).get();
+    const snapshot = await db
+      .collection("jpo")
+      .where("jpoDayEnd", ">=", currentDate)
+      .get();
 
     const jpoList = [];
     snapshot.forEach((doc) => {
@@ -56,7 +62,10 @@ const getAllJpo = async (req, res) => {
 const getPastJpo = async (req, res) => {
   try {
     const currentDate = new Date();
-    const snapshot = await db.collection("jpo").where("jpoDayEnd", "<", currentDate).get();
+    const snapshot = await db
+      .collection("jpo")
+      .where("jpoDayEnd", "<", currentDate)
+      .get();
 
     const jpoList = [];
     snapshot.forEach((doc) => {
@@ -96,7 +105,10 @@ const getJpoById = async (req, res) => {
 
 const getAllJpoParticipants = async (req, res) => {
   try {
-    const snapshot = await db.collection("users").where("status", "in", ["etudiant", "pedago"]).get();
+    const snapshot = await db
+      .collection("users")
+      .where("status", "in", ["etudiant", "pedago"])
+      .get();
     const users = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
     });
@@ -113,7 +125,10 @@ const getAllJpoByParticipant = async (req, res) => {
     console.log(participantId);
     const currentDate = new Date();
 
-    const snapshot = await db.collection("jpo").where("jpoDayEnd", ">=", currentDate).get();
+    const snapshot = await db
+      .collection("jpo")
+      .where("jpoDayEnd", ">=", currentDate)
+      .get();
 
     const jpoList = [];
     snapshot.forEach((doc) => {
@@ -134,7 +149,9 @@ const getAllJpoByParticipant = async (req, res) => {
     res.status(200).json(jpoList);
   } catch (err) {
     console.error(err);
-    res.status(500).send("Erreur lors de la récupération des JPO par participant.");
+    res
+      .status(500)
+      .send("Erreur lors de la récupération des JPO par participant.");
   }
 };
 
@@ -149,13 +166,23 @@ const createJpo = async (req, res) => {
         return;
       }
 
-      const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd, jpoParticipants = [] } = req.body;
+      const {
+        jpoTitle,
+        jpoDescription,
+        jpoThumbnail,
+        jpoDayStart,
+        jpoDayEnd,
+        jpoParticipants = [],
+      } = req.body;
 
       const mimeType = "image/png";
       const fileExtension = mime.extension(mimeType);
       const fileName = `${jpoTitle}.${fileExtension}`;
 
-      const buffer = Buffer.from((jpoThumbnail || "").replace(/^data:image\/\w+;base64,/, ""), "base64");
+      const buffer = Buffer.from(
+        (jpoThumbnail || "").replace(/^data:image\/\w+;base64,/, ""),
+        "base64"
+      );
       const file = bucket.file(`jpo/${jpoTitle}/${fileName}`);
 
       const options = {
@@ -182,7 +209,10 @@ const createJpo = async (req, res) => {
 
       const jpoParticipantsData = [];
       for (const participantId of jpoParticipants) {
-        const jpoParticipantRef = await db.collection("users").doc(participantId).get();
+        const jpoParticipantRef = await db
+          .collection("users")
+          .doc(participantId)
+          .get();
         if (jpoParticipantRef.exists) {
           const participantsData = {
             id: jpoParticipantRef.id,
@@ -223,13 +253,17 @@ const linkProjectStudents = async (req, res) => {
 
   try {
     const jpoRef = db.collection("jpo").doc(jpoId);
-    const studentProjectRef = db.collection("students_projects").doc(studentProjectId);
+    const studentProjectRef = db
+      .collection("students_projects")
+      .doc(studentProjectId);
 
     const jpoDoc = await jpoRef.get();
     const studentProjectDoc = await studentProjectRef.get();
 
     if (!jpoDoc.exists || !studentProjectDoc.exists) {
-      return res.status(404).send("La jpo ou le projet étudiant n'a pas été trouvé.");
+      return res
+        .status(404)
+        .send("La jpo ou le projet étudiant n'a pas été trouvé.");
     }
 
     const linkedStudentProject = {
@@ -238,7 +272,8 @@ const linkProjectStudents = async (req, res) => {
       imgProject: studentProjectDoc.data().imgProject,
     };
 
-    const existingLinkedStudentProjects = jpoDoc.data().linkedStudentProjects || [];
+    const existingLinkedStudentProjects =
+      jpoDoc.data().linkedStudentProjects || [];
 
     existingLinkedStudentProjects.push(linkedStudentProject);
 
@@ -247,19 +282,75 @@ const linkProjectStudents = async (req, res) => {
     });
 
     return res.status(200).json({
-      message: `Le projet étudiant ${studentProjectDoc.data().nameProject} a bien été lié à la jpo`,
+      message: `Le projet étudiant ${
+        studentProjectDoc.data().nameProject
+      } a bien été lié à la jpo`,
       linkedStudentProjects: existingLinkedStudentProjects,
     });
   } catch (err) {
     console.error(err);
-    throw new Error("Erreur lors de la création du lien entre le blog tutoriel et le projet.");
+    throw new Error(
+      "Erreur lors de la création du lien entre le blog tutoriel et le projet."
+    );
+  }
+};
+
+const unlinkProjectStudents = async (req, res) => {
+  const jpoId = req.params.jpoId;
+  const { studentProjectId } = req.body;
+
+  try {
+    const jpoRef = db.collection("jpo").doc(jpoId);
+    const studentProjectRef = db
+      .collection("students_projects")
+      .doc(studentProjectId);
+
+    const jpoDoc = await jpoRef.get();
+    const studentProjectDoc = await studentProjectRef.get();
+
+    if (!jpoDoc.exists || !studentProjectDoc.exists) {
+      return res
+        .status(404)
+        .send("La JPO ou le projet étudiant n'a pas été trouvé.");
+    }
+
+    const existingLinkedStudentProjects =
+      jpoDoc.data().linkedStudentProjects || [];
+    const updatedLinkedStudentProjects = existingLinkedStudentProjects.filter(
+      (project) => project.id !== studentProjectId
+    );
+
+    await jpoRef.update({
+      linkedStudentProjects: updatedLinkedStudentProjects,
+    });
+
+    return res.status(200).json({
+      message: `Le lien avec le projet étudiant ${
+        studentProjectDoc.data().nameProject
+      } a été supprimé avec succès.`,
+      linkedStudentProjects: updatedLinkedStudentProjects,
+    });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .send(
+        "Erreur lors de la suppression du lien entre le projet étudiant et la JPO."
+      );
   }
 };
 
 const updateJpoById = async (req, res) => {
   try {
     const jpoId = req.params.jpoId;
-    const { jpoTitle, jpoDescription, jpoThumbnail, jpoDayStart, jpoDayEnd, jpoParticipants } = req.body;
+    const {
+      jpoTitle,
+      jpoDescription,
+      jpoThumbnail,
+      jpoDayStart,
+      jpoDayEnd,
+      jpoParticipants,
+    } = req.body;
 
     const jpoRef = db.collection("jpo").doc(jpoId);
 
@@ -289,7 +380,10 @@ const updateJpoById = async (req, res) => {
     if (jpoParticipants) {
       const jpoParticipantsData = [];
       for (const participantId of jpoParticipants) {
-        const jpoParticipantRef = await db.collection("users").doc(participantId).get();
+        const jpoParticipantRef = await db
+          .collection("users")
+          .doc(participantId)
+          .get();
         if (jpoParticipantRef.exists) {
           const participantsData = {
             id: jpoParticipantRef.id,
@@ -339,7 +433,9 @@ const updateJpoPDF = async (req, res) => {
 
     await upload(req, res, async (err) => {
       if (err instanceof multer.MulterError) {
-        res.status(400).json({ error: "Erreur lors du téléchargement du fichier." });
+        res
+          .status(400)
+          .json({ error: "Erreur lors du téléchargement du fichier." });
         return;
       } else if (err) {
         res.status(400).json({ error: err.message });
@@ -352,7 +448,9 @@ const updateJpoPDF = async (req, res) => {
         const pdfFileSize = req.file.size;
 
         const pdfFileName = req.file.originalname;
-        const pdfFileRef = bucket.file(`jpo/${jpoDoc.data().jpoTitle}/${pdfFileName}`);
+        const pdfFileRef = bucket.file(
+          `jpo/${jpoDoc.data().jpoTitle}/${pdfFileName}`
+        );
 
         await pdfFileRef
           .createWriteStream({
@@ -414,8 +512,7 @@ const updateJpoPDF = async (req, res) => {
 
 const deleteJpoById = async (req, res) => {
   try {
-    const jpoId = req.params.jpoId;
-    const { jpoTitle } = req.body;
+    const { jpoTitle, jpoId } = req.body;
 
     const jpoRef = db.collection("jpo").doc(jpoId);
 
@@ -452,6 +549,7 @@ module.exports = {
   getAllJpoByParticipant,
   createJpo,
   linkProjectStudents,
+  unlinkProjectStudents,
   updateJpoById,
   updateJpoPDF,
   deleteJpoById,

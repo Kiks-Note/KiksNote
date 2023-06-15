@@ -39,7 +39,7 @@ var upload = multer({
   },
 });
 
-const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes");
+const { retroRoutesWsNeeded } = require("./retroRoutes");
 
 app.use(express.json());
 app.use(cors());
@@ -65,15 +65,17 @@ const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
 const agileRoute = require("./agileRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
-const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
+const calendarRoutes = require("./calendarRoutes");
 
 const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
 const groupNoWs = groupNoWsNeeded();
-
+app.use("/ressources", coursRoutes()); // --> Resssources Cours
+app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
+app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
+app.use("/ressources", technosRoutes()); // --> Resssources Technos
 app.use("/home", homeRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
-app.use("/retro", retroRoutesNotNeeded);
 app.use("/groupes", groupNoWs);
 
 wsI.on("request", (request) => {
@@ -89,20 +91,18 @@ wsI.on("request", (request) => {
   app.use("/groupes", groupWsNeeded(connection, pathname));
   app.use("/agile", agileRoute(connection, pathname, upload));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
+  app.use("/calendar", calendarRoutes(connection, pathname));
   require("./web/inventoryWebSocket")(connection, pathname);
 
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
   connection.on("close", (reasonCode, description) => {
-    console.log(`WebSocket closed with reasonCode ${reasonCode} and description ${description}`);
+    console.log(
+      `WebSocket closed with reasonCode ${reasonCode} and description ${description}`
+    );
   });
 });
-
-app.use("/ressources", coursRoutes()); // --> Resssources Cours
-app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
-app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
-app.use("/ressources", technosRoutes()); // --> Resssources Technos
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);

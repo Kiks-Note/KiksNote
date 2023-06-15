@@ -15,17 +15,24 @@ import {
   DialogTitle,
   InputLabel,
   Divider,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import AddCircleRoundedIcon from "@mui/icons-material/AddCircleRounded";
-import Dropzone from "./Dropzone";
-import "./Cours.scss";
+import Dropzone from "./../Dropzone";
+import "./../../../pages/ressources/Cours/Cours.scss";
 import "react-toastify/dist/ReactToastify.css";
 
 const CreateCoursModal = (props) => {
   const isSelectOptionChosen = !!props.selectedTechno;
   const [displayContainer, setDisplayContainer] = useState(true);
   const [displaySelect, setDisplaySelect] = useState(true);
+
+  /*
+    If a selectedTechno.name equals selectedValue, 
+    set the cours name and the image with selectedTechno.name and selectedTechno.image.
+    Else, display the left side of the form where you can choose the name and the image.
+  */
 
   const handleChange = (event) => {
     const selectedValue = event.target.value;
@@ -49,6 +56,10 @@ const CreateCoursModal = (props) => {
       setDisplaySelect(true);
     }
   };
+
+  /*
+    If the name is not null, remove the right side of the form 
+  */
 
   const handleTextFieldChange = (event) => {
     if (event.target.value.trim().length === 0) {
@@ -121,7 +132,7 @@ const CreateCoursModal = (props) => {
               <div className="dropzone-coursimg-container">
                 <p className="info-dropdown-img">
                   Drag and drop an image file here, or click to select an image
-                  file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
+                  file. (max. 1.00 MB each) PNG.
                 </p>
                 <Dropzone
                   onDrop={props.handleDrop}
@@ -268,25 +279,38 @@ const CreateCoursModal = (props) => {
           </div>
 
           <div className="select-class-allpo-container">
-            <Select
-              value={props.selectedClass}
-              onChange={(event) => {
-                props.setSelectedClass(event.target.value);
-                const selectedCours = props.allclass.find(
-                  (cours) => cours.name === event.target.value
-                );
-                props.setIdSelectedClass(selectedCours ? selectedCours.id : "");
+            <Autocomplete
+              multiple
+              id="tags-outlined"
+              sx={{
+                width: "100%",
               }}
-              displayEmpty
-              renderValue={(value) => value || "Choisir la classe"}
-            >
-              <MenuItem value="">Choisir une option</MenuItem>
-              {props.allclass.map((cours) => (
-                <MenuItem key={cours.id} value={cours.name}>
-                  {cours.name}
-                </MenuItem>
-              ))}
-            </Select>
+              options={props.allclass}
+              getOptionLabel={(option) => (
+                <>
+                  <Typography>{option.name}</Typography>
+                </>
+              )}
+              defaultValue={props.selectedClass}
+              filterSelectedOptions
+              onChange={(event, newValue) => {
+                const selectedClass = newValue.map(
+                  (courseClass) => courseClass.id
+                );
+                props.setSelectedClass(selectedClass);
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Select a class"
+                  variant="outlined"
+                  inputProps={{
+                    ...params.inputProps,
+                    name: "class",
+                  }}
+                />
+              )}
+            />
 
             <Controller
               name="po"

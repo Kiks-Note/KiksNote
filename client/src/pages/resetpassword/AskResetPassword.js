@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./AskResetPassword.scss";
 import axios from "axios";
-import { Box, TextField, Button, Container, Typography } from "@mui/material";
+import { Box, TextField, Button, Typography } from "@mui/material";
 
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -32,7 +32,7 @@ const AskResetPassword = () => {
   const sendEmailFromFront = async () => {
     try {
       await axios
-        .post("http://localhost:5050/auth/sendemail", {
+        .post("http://localhost:5050/auth/reset-password", {
           email: mail,
         })
         .then((res) => {

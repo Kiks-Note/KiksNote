@@ -6,27 +6,18 @@ import useFirebase from "../../../hooks/useFirebase";
 
 import { toast, ToastContainer } from "react-toastify";
 
-import {
-  Card,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  Collapse,
-  Grid,
-  Skeleton,
-} from "@mui/material";
+import { Typography, Box, List, ListItem } from "@mui/material";
 
-import CreateJpoModal from "./CreateJpoModal";
+import CreateJpoModal from "./../../../components/ressources/jpo/CreateJpoModal";
 
 import { makeStyles } from "@mui/styles";
 
-import ExpandMore from "@mui/icons-material/ExpandMore";
 import CreateIcon from "@mui/icons-material/Create";
 import HistoryIcon from "@mui/icons-material/History";
 
-import JpoCard from "./JpoCard";
+import JpoCard from "./../../../components/ressources/jpo/JpoCard";
 import "./Jpo.scss";
+import SkeletonJpo from "../../../components/ressources/jpo/SkeletonJpo";
 
 const options = {
   autoClose: 2000,
@@ -63,6 +54,7 @@ const useStyles = makeStyles({
       backgroundColor: "#e70062",
       fontWeight: "bold",
     },
+    margin: "1%",
   },
 });
 
@@ -108,6 +100,10 @@ const Jpo = () => {
     setOpen(false);
   };
 
+  /*
+    get an Array of all jpo then put it in allJpo
+  */
+
   const getAllJpo = async () => {
     try {
       await axios
@@ -122,6 +118,10 @@ const Jpo = () => {
       console.error(error);
     }
   };
+
+  /*
+    get an Array of all jpo participants then put it in allJpoParticipants
+  */
 
   const getAllJpoParticipants = async () => {
     try {
@@ -138,41 +138,73 @@ const Jpo = () => {
     }
   };
 
+  /*
+    Create a JPO if values in the form aren't null
+    nameJPO (String)
+    descriptionJPO (String)
+    jpoThumbnail (String)
+    JPODateStart (String)
+    JPODateEnd (String)
+    jpoParticipants (Object)
+  */
+
   const publishJpo = async () => {
-    try {
-      await axios
-        .post("http://localhost:5050/ressources/jpo", {
-          jpoTitle: nameJPO,
-          jpoDescription: descriptionJPO,
-          jpoThumbnail: jpoThumbnail,
-          jpoDayStart: JPODateStart,
-          jpoDayEnd: JPODateEnd,
-          jpoParticipants: jpoParticipants,
-        })
-        .then((res) => {
-          if (
-            res.status === 200 &&
-            res.data.message === "JPO créée avec succès."
-          ) {
-            toastSuccess(
-              `La JPO ${nameJPO} que vous avez créer a été publié avec succès !`
-            );
-          }
-        })
-        .catch((err) => {
-          toastFail("Erreur lors de la création de la JPO");
-          console.log(err);
-        });
-    } catch (error) {
-      console.error(error);
+    if (
+      nameJPO === "" ||
+      descriptionJPO === "" ||
+      jpoThumbnail === "" ||
+      JPODateStart === "" ||
+      JPODateEnd === "" ||
+      !jpoParticipants
+    ) {
+      toast.error("Veuillez remplir tous les champs !");
+      return;
+    } else {
+      try {
+        await axios
+          .post("http://localhost:5050/ressources/jpo", {
+            jpoTitle: nameJPO,
+            jpoDescription: descriptionJPO,
+            jpoThumbnail: jpoThumbnail,
+            jpoDayStart: JPODateStart,
+            jpoDayEnd: JPODateEnd,
+            jpoParticipants: jpoParticipants,
+          })
+          .then((res) => {
+            if (
+              res.status === 200 &&
+              res.data.message === "JPO créée avec succès."
+            ) {
+              toastSuccess(
+                `La JPO ${nameJPO} que vous avez créer a été publié avec succès !`
+              );
+            }
+          })
+          .catch((err) => {
+            toastFail("Erreur lors de la création de la JPO");
+            console.log(err);
+          });
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
   const handleSubmit = async (event) => {
     await publishJpo();
     event.preventDefault();
-    setOpen(false);
-    getAllJpo();
+    if (
+      nameJPO === "" ||
+      descriptionJPO === "" ||
+      jpoThumbnail === "" ||
+      JPODateStart === "" ||
+      JPODateEnd === "" ||
+      !jpoParticipants
+    ) {
+    } else {
+      setOpen(false);
+      getAllJpo();
+    }
   };
 
   useEffect(() => {
@@ -190,113 +222,26 @@ const Jpo = () => {
     <>
       {loading ? (
         <>
-          <div className="jpo-page">
-            <div className="header-jpo">
-              <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-                Fil d'actualités - Jpo
-              </Typography>
-              <div>
-                <Button
-                  variant="contained"
-                  className={classes.btnCreateJpo}
-                  disableElevation
-                >
-                  Créer une JPO <CreateIcon />
-                </Button>
-              </div>
-            </div>
-
-            <div className="jpo-list-container">
-              <div className="btn-history-container">
-                <Button
-                  variant="contained"
-                  disableElevation
-                  className={classes.btnHistory}
-                >
-                  Historique <HistoryIcon />
-                </Button>
-              </div>
-              {Array.from({ length: 4 }).map((_, index) => (
-                <Card
-                  key={index}
-                  className="jpo-card"
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
-                    width: "70%",
-                    margin: "30px",
-                  }}
-                >
-                  <Grid container>
-                    <Grid item xs={12} sm={6}>
-                      <Skeleton width={400} height={400} />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                      <div className="jpo-text">
-                        <Typography
-                          sx={{ paddingBottom: "10px", fontSize: "24px" }}
-                        >
-                          <Skeleton width={200} />
-                        </Typography>
-                        <Typography sx={{ paddingBottom: "10px" }}>
-                          <Skeleton count={4} />
-                        </Typography>
-                        <Typography sx={{ textAlign: "center" }}>
-                          <Skeleton width={150} />
-                        </Typography>
-                        <List>
-                          <ListItem button>
-                            <ListItemText
-                              primary={<Skeleton width={150} />}
-                              style={{ textAlign: "center" }}
-                            />
-                            <ExpandMore />
-                          </ListItem>
-                          <Collapse timeout="auto" unmountOnExit>
-                            <List disablePadding>
-                              {Array.from({ length: 5 }).map((_, index) => (
-                                <ListItem
-                                  key={index}
-                                  sx={{
-                                    padding: "10px 0px",
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-evenly",
-                                    borderTop: "1px solid grey",
-                                  }}
-                                >
-                                  <Typography>
-                                    <Skeleton width={100} />
-                                  </Typography>
-                                  <Button>
-                                    <Skeleton width={100} />
-                                  </Button>
-                                </ListItem>
-                              ))}
-                            </List>
-                          </Collapse>
-                        </List>
-                        <div className="btn-details-jpo-container">
-                          <Button className={classes.btnDetailJpo}>
-                            <Skeleton width={100} />
-                          </Button>
-                        </div>
-                      </div>
-                    </Grid>
-                  </Grid>
-                </Card>
-              ))}
-            </div>
-          </div>
+          <SkeletonJpo classes={classes} />
         </>
       ) : (
         <div className="jpo-page">
           <div className="header-jpo">
-            <Typography variant="h3" sx={{ fontWeight: "bold" }}>
-              Fil d'actualités - Jpo
-            </Typography>
+            <Box
+              sx={{
+                width: "20%",
+                display: "flex",
+                padding: "20px",
+              }}
+            >
+              <Typography
+                variant="h3"
+                sx={{ fontWeight: "bold", marginLeft: "10%" }}
+              >
+                Jpo
+              </Typography>
+            </Box>
+
             {userStatus === "pedago" ? (
               <div>
                 <Button
@@ -335,21 +280,30 @@ const Jpo = () => {
           </div>
 
           <div className="jpo-list-container">
-            <div className="btn-history-container">
-              <Button
-                variant="contained"
-                disableElevation
-                className={classes.btnHistory}
-                onClick={() => {
-                  navigate(`/jpo/history`);
-                }}
-              >
-                Historique <HistoryIcon />
-              </Button>
-            </div>
-            {allJpo.map((jpoData, index) => (
-              <JpoCard key={index} jpoData={jpoData} />
-            ))}
+            {userStatus === "pedago" ? (
+              <div className="btn-history-container">
+                <Button
+                  variant="contained"
+                  disableElevation
+                  className={classes.btnHistory}
+                  onClick={() => {
+                    navigate(`/jpo/history`);
+                  }}
+                >
+                  Historique <HistoryIcon />
+                </Button>
+              </div>
+            ) : (
+              <div></div>
+            )}
+
+            <List sx={{ width: "85%" }}>
+              {allJpo.map((jpoData, index) => (
+                <ListItem key={index}>
+                  <JpoCard jpoData={jpoData} />
+                </ListItem>
+              ))}
+            </List>
           </div>
         </div>
       )}

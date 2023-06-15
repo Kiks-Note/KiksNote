@@ -1,7 +1,15 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Button } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardHeader,
+  CardMedia,
+  CardContent,
+  Typography,
+  Button,
+} from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
@@ -11,10 +19,10 @@ import CreateComment from "../../components/blog/CreateComment";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import { Rings } from "react-loader-spinner";
+import { convertFromRaw } from "draft-js";
 import ListParticipants from "../../components/blog/ListParticipants";
 import "./Blog.css";
-import { useTheme } from "@mui/material";
-import MDEditor from "@uiw/react-md-editor";
+import { Grid } from "@mui/material";
 
 function DetailBlog() {
   const [data, setData] = useState(null);
@@ -24,11 +32,6 @@ function DetailBlog() {
   const navigate = useNavigate();
   const [visibleComments, setVisibleComments] = useState(5);
   const [isUserParticipant, setIsUserParticipant] = useState(false);
-
-  const theme = useTheme();
-  const [height, setHeight] = useState(0);
-  const ref = useRef(null);
-  const [showParticipants, setShowParticipants] = useState(false);
 
   const handleShowMore = () => {
     setVisibleComments(visibleComments + 5);
@@ -64,11 +67,15 @@ function DetailBlog() {
         const userDisliked = blogDto.dislike.includes(user.id);
         const userIsParticipant = blogDto.participant.includes(user.id);
 
+        var datat = JSON.parse(dataFromServer[0].editorState);
+        const contentState = convertFromRaw(datat);
+        const text = contentState.getPlainText();
         const blogFront = {
           id: blogDto.id,
           created_at: dateCreation,
           created_by: blogDto.created_by,
-          valueMarkdown: blogDto?.valueMarkdown,
+          editorState: text,
+          inputEditorState: blogDto.inputEditorState,
           participant: blogDto.participant,
           comment: blogDto.comment,
           statut: blogDto.statut,
@@ -94,12 +101,9 @@ function DetailBlog() {
   }, []);
 
   useEffect(() => {
-    if (data) {
-      getBlogParticipant();
-    }
-  }, [data]);
+    getBlogParticipant();
+  }, []);
 
-  console.log("loading : ", loading);
   async function handleParticipate() {
     try {
       await axios
@@ -115,10 +119,9 @@ function DetailBlog() {
   }
 
   async function getBlogParticipant() {
-    console.log("getBlogParticipant");
     try {
       await axios
-        .get(`http://localhost:5050/blog/${data?.id}/participant`)
+        .get(`http://localhost:5050/blog/${data.id}/participant`)
         .then((res) => {
           console.log("res.data : ", res.data);
           if (res.data.length > 0) {
@@ -160,30 +163,145 @@ function DetailBlog() {
     }
   }
 
-  const handleShowParticipants = () => {
-    setShowParticipants(!showParticipants);
-  };
-
-  useEffect(() => {
-    if (ref.current) {
-      setHeight(ref.current.clientHeight);
-    }
-  }, [showParticipants]);
-  console.log(theme.palette.background.paper);
   return (
     <>
       <Box
         sx={{
+          margin: 2,
           width: "100%",
-          backgroundColor: theme.palette.background.paper,
+          borderRadius: "10px",
+          boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#FFFFFF",
+          padding: 2,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
         }}
       >
         {!loading ? (
-          <>
-            <Box sx={{ width: "100%", mb: 2, ml: 2 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={8}>
+              <div className="container_detail_blog">
+                <div className="detail_blog_content">
+                  <Card>
+                    <CardHeader title={data.title} />
+                    <CardMedia
+                      component="img"
+                      src={data.thumbnail}
+                      alt={data.title}
+                      sx={{ width: 300, height: 200 }}
+                    />
+                    <CardContent>
+                      <Typography>{data.editorState}</Typography>
+                    </CardContent>
+                  </Card>
+                  <div className="options">
+                    <Button
+                      variant="contained"
+                      startIcon={
+                        data.userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />
+                      }
+                      onClick={handleLike}
+                      sx={{
+                        backgroundColor: data.userLiked ? "#00BFFF" : "#F5F5F5",
+                        color: data.userLiked ? "#FFFFFF" : "#000000",
+                        ":hover": {
+                          backgroundColor: data.userLiked
+                            ? "#0080FF"
+                            : "#EEEEEE",
+                        },
+                      }}
+                    >
+                      J'aime ({data.like.length})
+                    </Button>
+                    <Button
+                      variant="contained"
+                      startIcon={
+                        data.userDisliked ? (
+                          <ThumbDownAltIcon />
+                        ) : (
+                          <ThumbDownOffAltIcon />
+                        )
+                      }
+                      onClick={handleDislike}
+                      sx={{
+                        backgroundColor: data.userDisliked
+                          ? "#FF0000"
+                          : "#F5F5F5",
+                        color: data.userDisliked ? "#FFFFFF" : "#000000",
+                        ":hover": {
+                          backgroundColor: data.userDisliked
+                            ? "#CC0000"
+                            : "#EEEEEE",
+                        },
+                        marginRight: 50,
+                      }}
+                    >
+                      J'aime pas ({data.dislike.length})
+                    </Button>
+                    {data.type === "blog" && (
+                      <Button
+                        variant="contained"
+                        size="small"
+                        onClick={handleParticipate}
+                        sx={{
+                          backgroundColor: data.userIsParticipant
+                            ? "#008000"
+                            : "#F5F5F5",
+                          color: data.userIsParticipant ? "#FFFFFF" : "#000000",
+                          ":hover": {
+                            backgroundColor: data.userIsParticipant
+                              ? "#006400"
+                              : "#EEEEEE",
+                          },
+                        }}
+                      >
+                        {isUserParticipant
+                          ? "Ne participe pas"
+                          : "Je participe"}
+                      </Button>
+                    )}
+                  </div>
+                  <br />
+                  <CreateComment tutoId={id} />
+                  {data &&
+                    data.comment &&
+                    Array.isArray(data.comment) &&
+                    data.comment
+                      .slice(0, visibleComments)
+                      .map((comment, index) => (
+                        <DisplayComment
+                          key={index}
+                          comment={comment}
+                          tutoId={id}
+                        />
+                      ))}
+                  {visibleComments < data.comment.length ? (
+                    <>
+                      <button onClick={handleShowMore}>Voir plus</button>
+                      {visibleComments > 5 && (
+                        <button onClick={handleShowLess}>Voir moins</button>
+                      )}
+                    </>
+                  ) : (
+                    visibleComments > 5 && (
+                      <button onClick={handleShowLess}>Voir moins</button>
+                    )
+                  )}
+                </div>
+              </div>
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <div className="detail_blog_content_list">
+                {data.participant.length !== 0 && (
+                  <>
+                    <Typography variant="h5">Liste des participants</Typography>
+                    <ListParticipants participants={data.participant} />
+                  </>
+                )}
+              </div>
+            </Grid>
+            <Grid item xs={12}>
               <Button
                 variant="contained"
                 onClick={() => {
@@ -191,198 +309,10 @@ function DetailBlog() {
                 }}
                 sx={{ marginTop: 2 }}
               >
-                Retour À la page de blog
+                Retour Ã la page de blog
               </Button>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-              }}
-            >
-              <Typography variant="h3">{data?.title}</Typography>
-              <Box
-                sx={{ p: 1, width: "100%", display: "flex", height: "100%" }}
-                ref={ref}
-              >
-                {/*<div data-color-mode="dark">*/}
-                {/*  <div className="wmde-markdown-var"> </div>*/}
-                <MDEditor.Markdown
-                  source={data?.valueMarkdown}
-                  style={{
-                    padding: 10,
-                    // ...{
-                    //   backgroundColor: theme.palette.background.paper,
-                    //   color: theme.palette.text.primary,
-                    // },
-                  }}
-                  // data-color-mode="dark"
-                />
-                {/*</div>*/}
-                {showParticipants && (
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      overflowY: "auto",
-                      height: height,
-                      width: { lg: "30%", md: "60%", xs: "100%" },
-                    }}
-                  >
-                    {data?.participant?.length !== 0 ? (
-                      <Box sx={{ ml: 1 }}>
-                        <Typography variant="h5">
-                          Liste des participants
-                        </Typography>
-                        <ListParticipants participants={data?.participant} />
-                      </Box>
-                    ) : (
-                      <Typography variant="h5" sx={{ ml: 1 }}>
-                        Aucun participant
-                      </Typography>
-                    )}
-                  </Box>
-                )}
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  width: "100%",
-                  px: 2,
-                  my: 2,
-                }}
-              >
-                <Box sx={{ display: "flex" }}>
-                  <Button
-                    variant="contained"
-                    startIcon={
-                      data?.userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />
-                    }
-                    onClick={handleLike}
-                    sx={{
-                      backgroundColor: data?.userLiked ? "#00BFFF" : "#F5F5F5",
-                      color: data?.userLiked ? "#FFFFFF" : "#000000",
-                      ":hover": {
-                        backgroundColor: data?.userLiked
-                          ? "#0080FF"
-                          : "#EEEEEE",
-                      },
-                      mr: 3,
-                    }}
-                  >
-                    J'aime ({data?.like?.length})
-                  </Button>
-                  <Button
-                    variant="contained"
-                    startIcon={
-                      data?.userDisliked ? (
-                        <ThumbDownAltIcon />
-                      ) : (
-                        <ThumbDownOffAltIcon />
-                      )
-                    }
-                    onClick={handleDislike}
-                    sx={{
-                      backgroundColor: data?.userDisliked
-                        ? "#FF0000"
-                        : "#F5F5F5",
-                      color: data?.userDisliked ? "#FFFFFF" : "#000000",
-                      ":hover": {
-                        backgroundColor: data?.userDisliked
-                          ? "#CC0000"
-                          : "#EEEEEE",
-                      },
-                    }}
-                  >
-                    J'aime pas ({data?.dislike.length})
-                  </Button>
-                  {data?.type === "event" && (
-                    <>
-                      <Button
-                        variant="contained"
-                        size="small"
-                        onClick={handleParticipate}
-                        sx={{
-                          backgroundColor: data?.userIsParticipant
-                            ? "#008000"
-                            : "#F5F5F5",
-                          color: data?.userIsParticipant
-                            ? "#FFFFFF"
-                            : "#000000",
-                          ":hover": {
-                            backgroundColor: data?.userIsParticipant
-                              ? "#006400"
-                              : "#EEEEEE",
-                          },
-                          mx: 3,
-                        }}
-                      >
-                        {isUserParticipant
-                          ? "Ne pas participé "
-                          : "Je participe"}
-                      </Button>
-                      <Button
-                        onClick={handleShowParticipants}
-                        variant="contained"
-                        size="small"
-                      >
-                        Participants
-                      </Button>
-                    </>
-                  )}
-                </Box>
-                <CreateComment tutoId={id} />
-              </Box>
-              <Box sx={{ width: "100%" }}>
-                {data &&
-                  data?.comment &&
-                  Array.isArray(data?.comment) &&
-                  data?.comment
-                    .slice(0, visibleComments)
-                    .map((comment, index) => (
-                      <DisplayComment
-                        key={index}
-                        comment={comment}
-                        tutoId={id}
-                      />
-                    ))}
-                {visibleComments < data?.comment.length ? (
-                  <Box
-                    sx={{
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "center",
-                      my: 3,
-                    }}
-                  >
-                    <Button onClick={handleShowMore} sx={{ mr: 4 }}>
-                      Voir plus
-                    </Button>
-                    {visibleComments > 5 && (
-                      <Button onClick={handleShowLess}>Voir moins</Button>
-                    )}
-                  </Box>
-                ) : (
-                  visibleComments > 5 && (
-                    <Box
-                      sx={{
-                        width: "100%",
-                        display: "flex",
-                        justifyContent: "center",
-                        my: 3,
-                      }}
-                    >
-                      <Button onClick={handleShowLess}>Voir moins</Button>
-                    </Box>
-                  )
-                )}
-              </Box>
-            </Box>
-          </>
+            </Grid>
+          </Grid>
         ) : (
           <div
             style={{
