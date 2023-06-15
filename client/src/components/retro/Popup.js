@@ -62,6 +62,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         po_id: user.id,
         class: classChoose,
         name: user?.firstname,
+        course: courseChoosed,
       });
     }
   }

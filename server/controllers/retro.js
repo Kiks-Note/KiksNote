@@ -1,5 +1,4 @@
 const { db } = require("../firebase");
-const { v4: uuidv4 } = require("uuid");
 
 const pastelColors = [
   "#FFA07A",
@@ -24,7 +23,6 @@ const getAll = async (req, res) => {
   });
 
   res.send(allRetros);
-  //console.log(allRetros);
 };
 
 const getRoom = async (req, res) => {
@@ -48,23 +46,6 @@ const getAllRooms = async (req, res) => {
   res.status(200).send(documents);
 };
 
-const getAllRoomsForPO = async (req, res) => {
-  const poID = req.params.poID;
-  const snapshot = await db
-    .collection("rooms")
-    .where("type", "==", "retro")
-    .where("userID", "==", poID)
-    .get();
-
-  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-
-  console.log("*********");
-  console.log(documents);
-  console.log("*********");
-
-  res.status(200).send(documents);
-};
-
 const getRoomPo = async (req, res) => {
   const { po_id } = req.params;
   const snapshot = await db
@@ -72,18 +53,6 @@ const getRoomPo = async (req, res) => {
     .where("po_id", "==", po_id)
     .where("type", "==", "retro")
     .get();
-  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  res.status(200).send(documents);
-};
-
-const getAllRoomsForStudent = async (req, res) => {
-  const studentClass = req.params.classStudent;
-  const snapshot = await db
-    .collection("rooms")
-    .where("type", "==", "retro")
-    .where("class", "==", studentClass)
-    .get();
-
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.status(200).send(documents);
 };
@@ -104,6 +73,22 @@ const deleteRoom = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send("Error deleting rooms.");
+  }
+};
+
+const saveRetro = async (req, res) => {
+  const { retro, classRetro, course, po_id } = req.body;
+  try {
+    await db.collection("retro").doc().set({
+      class: classRetro,
+      course: course,
+      po_id: po_id,
+      retro: retro,
+    });
+    res.status(200).send("Retro successfully saved!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error saving retro.");
   }
 };
 
@@ -167,6 +152,7 @@ const room = async (connection) => {
           po_id: response.data.po_id,
           class: response.data.class,
           type: "retro",
+          course: response.data.course,
         });
         currentRooms.set(response.data.class, defaultRoom);
 
@@ -321,10 +307,10 @@ const room = async (connection) => {
 
 module.exports = {
   getAllRooms,
-  getAllRoomsForPO,
   getRoom,
   getRoomPo,
   deleteRoom,
   room,
   getAll,
+  saveRetro,
 };

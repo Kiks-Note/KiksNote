@@ -97,7 +97,7 @@ function GroupsCreation() {
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/groupes/getRoom/${user?.class.id}`)
+        .get(`http://localhost:5050/retro/getRoom/${user?.class.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -111,6 +111,7 @@ function GroupsCreation() {
             ws.send(JSON.stringify(message));
             setClassStudents(user?.class.id);
             setInRoom(true);
+            setCourseChoose(res.data[0].course);
           }
         });
     } catch (error) {
@@ -122,7 +123,7 @@ function GroupsCreation() {
   const logToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/groupes/getRoomPo/${user?.id}`)
+        .get(`http://localhost:5050/retro/getRoomPo/${user?.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -136,6 +137,7 @@ function GroupsCreation() {
             ws.send(JSON.stringify(message));
             setClassStudents(res.data[0].class);
             setInRoom(true);
+            setCourseChoose(res.data[0].course);
           }
         });
     } catch (error) {
@@ -290,7 +292,8 @@ function GroupsCreation() {
     updatedItems.push({
       id: Date.now().toString(),
       content: "Entrez votre texte ici..",
-      color: userCursors.get(user?.id).color,
+      color: userCursors?.get(user?.id).color,
+      user: user?.id,
     });
     group.items = updatedItems;
     setColumns(copiedColContent);
@@ -377,7 +380,7 @@ function GroupsCreation() {
   };
 
   const onDragStart = (data) => {
-    if (user.status === "etudiant" && data.draggableId !== user.id) {
+    if (user.status === "etudiant" && data.user !== user.id) {
       setNotAllowed(true);
       return;
     }
@@ -394,25 +397,12 @@ function GroupsCreation() {
     setShowSettings(showFalse);
   };
 
-  async function saveGroups() {
-    var groupsKey = Object.keys(columns).filter(
-      (key) => key.startsWith("g") && columns[key].items.length > 0
-    );
-    setInRoom(false);
-    ws.send(
-      JSON.stringify({ type: "closeRoom", data: { class: classStudents } })
-    );
-    ws.close();
-    groupsKey.forEach((group) => {
-      axios.post(`http://localhost:5050/groupes/exportGroups`, {
-        students: columns[group].items.map((student) => ({
-          id: student.id,
-          firstname: student.firstname,
-          lastname: student.lastname,
-        })),
-        po_id: user?.id,
-        courseId: courseChoose.id,
-      });
+  async function saveRetro() {
+    axios.post("http://localhost:5050/retro/saveRetro", {
+      retro: columns,
+      classRetro: classStudents,
+      course: courseChoose.id,
+      po_id: user.id,
     });
 
     try {
@@ -603,7 +593,6 @@ function GroupsCreation() {
                                 }}
                               >
                                 {column.items.map((item, index) => {
-                                  console.log("item", item);
                                   return (
                                     <Draggable
                                       key={item.id}
@@ -632,8 +621,10 @@ function GroupsCreation() {
                                             className="post-it"
                                             onClick={(event) => {
                                               event.stopPropagation();
-                                              setShowEdit(true);
-                                              setPostItId(item.id);
+                                              if (item.user === user.id) {
+                                                setShowEdit(true);
+                                                setPostItId(item.id);
+                                              }
                                             }}
                                           >
                                             {showEdit &&
@@ -692,7 +683,7 @@ function GroupsCreation() {
                 }}
               >
                 <Button
-                  onClick={saveGroups}
+                  onClick={saveRetro}
                   style={{
                     backgroundColor: theme.palette.custom.button,
                     borderRadius: "10px",
