@@ -180,7 +180,7 @@ const getInstructors = async (req, res) => {
   try {
     const snapshot = await db
       .collection("users")
-      .where("status", "in", ["po", "pedago"])
+      .where("status", "in", ["po"])
       .get();
     const users = snapshot.docs.map((doc) => {
       return { id: doc.id, ...doc.data() };
