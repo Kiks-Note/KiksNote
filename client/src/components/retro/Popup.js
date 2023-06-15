@@ -118,13 +118,13 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
             }}
           >
             <MenuItem value={"m0"} key={0}>
-              Bien/Moins Bien/Amélioration
+              Glad/Mad/Sad
             </MenuItem>
             <MenuItem value={"m1"} key={1}>
-              Bien/Moins Bien/Amélioration/Manqué/Questions
+              4L
             </MenuItem>
             <MenuItem value={"m2"} key={2}>
-              Bien/Moins Bien/Amélioration/Action
+              Positif/Negatif/Axe d'amelioration
             </MenuItem>
           </Select>
         </FormControl>

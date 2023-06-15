@@ -20,7 +20,7 @@ const login = async (req, res) => {
       return res
         .status(401)
         .json({ message: "Veuillez vérifier votre adresse e-mail" });
-    }
+    }t
 
     res.status(200).json({ message: "Success" });
     console.log("Success");

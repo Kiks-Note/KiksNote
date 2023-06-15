@@ -63,42 +63,38 @@ function GroupsCreation() {
   const fetchData = useCallback(async () => {
     let colContent;
     switch (modeleChoose) {
-      case "m1":
-        colContent = {
-          positive: {
-            name: "Positif",
-            items: [],
-          },
-          negative: {
-            name: "Négatif",
-            items: [],
-          },
-          improve: {
-            name: "Amélioration",
-            items: [],
-          },
-          question: {
-            name: "Questions",
-            items: [],
-          },
-          miss: {
-            name: "Manqué",
-            items: [],
-          },
-        };
-        break;
       case "m0":
         colContent = {
-          positive: {
-            name: "Positif",
+          glad: {
+            name: "Glad",
             items: [],
           },
-          negative: {
-            name: "Négatif",
+          mad: {
+            name: "Mad",
             items: [],
           },
-          improve: {
-            name: "Amélioration",
+          sad: {
+            name: "Sad",
+            items: [],
+          }
+        };
+        break;
+      case "m1":
+        colContent = {
+          liked: {
+            name: "Liked",
+            items: [],
+          },
+          learned: {
+            name: "Learned",
+            items: [],
+          },
+          lacked: {
+            name: "Lacked",
+            items: [],
+          },
+          longed: {
+            name: "Longed",
             items: [],
           },
         };
@@ -114,33 +110,25 @@ function GroupsCreation() {
             items: [],
           },
           improve: {
-            name: "Améliorations",
+            name: "Axe d'amelioration",
             items: [],
-          },
-          action: {
-            name: "Actions",
-            items: [],
-          },
+          }
         };
         break;
       default:
         colContent = {
-          positive: {
-            name: "Positif",
+          glad: {
+            name: "Glad",
             items: [],
           },
-          negative: {
-            name: "Négatif",
+          mad: {
+            name: "Mad",
             items: [],
           },
-          improve: {
-            name: "Amélioration",
+          sad: {
+            name: "Sad",
             items: [],
-          },
-          miss: {
-            name: "Manqué",
-            items: [],
-          },
+          }
         };
     }
     return colContent;
@@ -281,7 +269,7 @@ function GroupsCreation() {
     }
 
     return () => {
-      document.removeEventListener("mousemove", () => {});
+      document.removeEventListener("mousemove", () => { });
       ws.send(
         JSON.stringify({
           type: "leaveRoom",
@@ -520,65 +508,65 @@ function GroupsCreation() {
         <>
           {userCursors
             ? Array.from(userCursors.entries()).map(([userID, userData]) => {
-                if (
-                  userID !== user?.id &&
-                  userID &&
-                  userID !== "undefined" &&
-                  userData.color
-                ) {
-                  return (
+              if (
+                userID !== user?.id &&
+                userID &&
+                userID !== "undefined" &&
+                userData.color
+              ) {
+                return (
+                  <div
+                    key={userID}
+                    style={{
+                      position: "absolute",
+                      left: userData.position?.x,
+                      top: userData.position?.y,
+                      zIndex: 100,
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 50 50"
+                      width="30px"
+                      height="30px"
+                      style={{ stroke: "#3d3d3d" }}
+                    >
+                      <path
+                        fill={userData.color}
+                        d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
+                      />
+                    </svg>
+
                     <div
-                      key={userID}
                       style={{
-                        position: "absolute",
-                        left: userData.position?.x,
-                        top: userData.position?.y,
-                        zIndex: 100,
+                        display: "inline-block",
+                        backgroundColor: userData.color,
+                        padding: "2px 8px",
+                        color: "#fff",
+                        fontSize: "12px",
+                        borderRadius: "30px",
+                        margin: "0px",
+                        border: "1px solid transparent",
+                        boxShadow: "0px 0px 5px #3d3d3d",
                       }}
                     >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 50 50"
-                        width="30px"
-                        height="30px"
-                        style={{ stroke: "#3d3d3d" }}
-                      >
-                        <path
-                          fill={userData.color}
-                          d="M 29.699219 47 C 29.578125 47 29.457031 46.976563 29.339844 46.933594 C 29.089844 46.835938 28.890625 46.644531 28.78125 46.398438 L 22.945313 32.90625 L 15.683594 39.730469 C 15.394531 40.003906 14.96875 40.074219 14.601563 39.917969 C 14.238281 39.761719 14 39.398438 14 39 L 14 6 C 14 5.601563 14.234375 5.242188 14.601563 5.082031 C 14.964844 4.925781 15.390625 4.996094 15.683594 5.269531 L 39.683594 27.667969 C 39.972656 27.9375 40.074219 28.355469 39.945313 28.726563 C 39.816406 29.101563 39.480469 29.363281 39.085938 29.398438 L 28.902344 30.273438 L 35.007813 43.585938 C 35.117188 43.824219 35.128906 44.101563 35.035156 44.351563 C 34.941406 44.601563 34.757813 44.800781 34.515625 44.910156 L 30.113281 46.910156 C 29.980469 46.96875 29.84375 47 29.699219 47 Z"
-                        />
-                      </svg>
-
-                      <div
+                      <p
                         style={{
-                          display: "inline-block",
-                          backgroundColor: userData.color,
-                          padding: "2px 8px",
-                          color: "#fff",
-                          fontSize: "12px",
-                          borderRadius: "30px",
+                          selection: "none",
+                          fontWeight: "bold",
+                          textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
                           margin: "0px",
-                          border: "1px solid transparent",
-                          boxShadow: "0px 0px 5px #3d3d3d",
                         }}
                       >
-                        <p
-                          style={{
-                            selection: "none",
-                            fontWeight: "bold",
-                            textShadow: "1px 1px 1px rgba(0,0,0,0.5)",
-                            margin: "0px",
-                          }}
-                        >
-                          {userData.name}
-                        </p>
-                      </div>
+                        {userData.name}
+                      </p>
                     </div>
-                  );
-                } else {
-                  return null;
-                }
-              })
+                  </div>
+                );
+              } else {
+                return null;
+              }
+            })
             : null}
           <div
             style={{
@@ -709,14 +697,14 @@ function GroupsCreation() {
                                                 item.user !== user?.id &&
                                                 userCursors?.get(item.user)
                                                   ?.itemID === item.id && {
-                                                  position: "absolute",
-                                                  left: userCursors?.get(
-                                                    item.user
-                                                  ).position?.x,
-                                                  top: userCursors?.get(
-                                                    item.user
-                                                  ).position?.y,
-                                                }),
+                                                position: "absolute",
+                                                left: userCursors?.get(
+                                                  item.user
+                                                ).position?.x,
+                                                top: userCursors?.get(
+                                                  item.user
+                                                ).position?.y,
+                                              }),
                                               ...provided.draggableProps.style,
                                             }}
                                             className="post-it"
@@ -729,7 +717,7 @@ function GroupsCreation() {
                                             }}
                                           >
                                             {showEdit &&
-                                            item.id === postItId ? (
+                                              item.id === postItId ? (
                                               <TextField
                                                 defaultValue={item.content}
                                                 onKeyDown={(event) => {
@@ -747,7 +735,7 @@ function GroupsCreation() {
                                             )}
 
                                             {!userCursors?.get(item.id) &&
-                                            user.status === "po" ? (
+                                              user.status === "po" ? (
                                               <p
                                                 className="student-cross"
                                                 onClick={(event) => {
