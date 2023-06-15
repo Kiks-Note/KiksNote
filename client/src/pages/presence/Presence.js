@@ -52,12 +52,12 @@ function Presence() {
   };
   const getCall = () => {
     axios.get(`http://localhost:5050/call/getcall/${id}`).then((res) => {
-      console.log(res.data);
       tempCall.current = res.data;
       getUsers();
     });
   };
   const getUsers = () => {
+    console.log("test");
     axios
       .get(
         `http://localhost:5050/ressources/cours/${tempCall.current.id_lesson}`
@@ -69,10 +69,11 @@ function Presence() {
           const userItem = {
             firstname: user.firstname,
             image: user?.image
-              ? "https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
-              : user.image,
+              ? user.image
+              : "https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg",
             id: user.id,
           };
+          console.log(userItem);
           if (
             scanEleveCopy.some(
               (element) => element.firstname === userItem.firstname
@@ -84,7 +85,6 @@ function Presence() {
           }
           console.log(scanEleveCopy);
           tempCall.current.students_scan = scanEleveCopy;
-          console.log(tempCall.current);
           updateCall();
         }
       });

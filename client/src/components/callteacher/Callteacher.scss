@@ -83,7 +83,12 @@ $gray: #92959e;
     margin: 0;
     overflow-y: scroll;
     list-style-type: none;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
     li {
+      width: 45%;
+      margin: 5px;
       padding-bottom: 20px;
     }
   }

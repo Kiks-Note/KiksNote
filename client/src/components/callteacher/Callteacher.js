@@ -16,13 +16,10 @@ function AppelProf(callId) {
   });
   const { user } = useFirebase();
   const tempCall = useRef("");
-  const tempUsers = useRef([]);
-  const ip = process.env.REACT_APP_IP;
   const divRef = useRef("");
 
   const [isQrCodeVisible, setIsQrCodeVisible] = useState(true);
-  const [users, setUsers] = useState([]);
-  const [usersPresent, setUsersPresent] = useState([]);
+
   const [inRoom, setInRoom] = useState(false);
   const generated = useRef(false);
   const INIT_TIME = {
@@ -85,15 +82,12 @@ function AppelProf(callId) {
               tempCall.current = appel;
               setCall(appel);
               setQrcode(appel.qrcode);
-              if (!generated.current) {
-                getUsers(appel.id_lesson);
-              }
+
               generated.current = true;
               divRef.current.scrollIntoView({
                 behavior: "instant",
                 block: "end",
               });
-              displayUsers();
               break;
             default:
               break;
@@ -120,31 +114,6 @@ function AppelProf(callId) {
     };
   }, [LogToExistingRoom, call, inRoom, user.class, user.id, user.status, ws]);
 
-  const getUsers = (coursId) => {
-    axios
-      .get(`http://localhost:5050/call/getUsersFromClassiId/${coursId}`)
-      .then((res) => {
-        tempUsers.current = res.data;
-        console.log(tempUsers.current);
-        setUsers(res.data);
-        displayUsers();
-      });
-  };
-
-  const displayUsers = () => {
-    setUsersPresent(tempCall.current.students_scan);
-    const usersCopy = [...tempUsers.current];
-    console.log(usersCopy);
-    const filteredUsers = usersCopy.filter(
-      (element1) =>
-        !tempCall.current.students_scan.some(
-          (element2) => element2["firstname"] === element1["firstname"]
-        )
-    );
-    console.log(filteredUsers);
-    setUsers(filteredUsers);
-  };
-
   return (
     <div className="ContentProf">
       <div className="ContentInfo">
@@ -153,7 +122,7 @@ function AppelProf(callId) {
             <ul className="list">
               {call.students_scan.map((user) => {
                 return (
-                  <li className="clearfix">
+                  <li className="clearfix" key={user.firstname}>
                     <img src={user.image} alt="avatar" />
                     <div className="about">
                       <div className="name">{user.firstname}</div>
@@ -161,6 +130,42 @@ function AppelProf(callId) {
                   </li>
                 );
               })}
+              <li className="clearfix">
+                <img
+                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
+                  alt="avatar"
+                />
+                <div className="about">
+                  <div className="name">Test</div>
+                </div>
+              </li>
+              <li className="clearfix">
+                <img
+                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
+                  alt="avatar"
+                />
+                <div className="about">
+                  <div className="name">Test</div>
+                </div>
+              </li>
+              <li className="clearfix">
+                <img
+                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
+                  alt="avatar"
+                />
+                <div className="about">
+                  <div className="name">Test</div>
+                </div>
+              </li>
+              <li className="clearfix">
+                <img
+                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
+                  alt="avatar"
+                />
+                <div className="about">
+                  <div className="name">Test</div>
+                </div>
+              </li>
             </ul>
           </div>
           <div className="DivQr">
