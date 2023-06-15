@@ -88,6 +88,7 @@ const deleteRoom = async (req, res) => {
     const snapshot = await db
       .collection("rooms")
       .where("po_id", "==", po_id)
+      .where("type", "==", "group")
       .get();
     const deletePromises = snapshot.docs.map((doc) => doc.ref.delete());
     await Promise.all(deletePromises);
