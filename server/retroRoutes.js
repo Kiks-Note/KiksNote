@@ -8,6 +8,8 @@ const {
   getAll,
   deleteRoom,
   saveRetro,
+  getAllRetrosForPO,
+  getAllRetrosForStudent
 } = require("./controllers/retro");
 
 const retroRoutesWsNeeded = (connection, pathname) => {
@@ -19,6 +21,9 @@ const retroRoutesWsNeeded = (connection, pathname) => {
   router.get("/getAll", getAll);
   router.delete("/deleteRoom/:po_id", deleteRoom);
   router.post("/saveRetro", saveRetro);
+
+  router.get("/getAllRetrosForPO", getAllRetrosForPO)
+  router.get("/getAllRetrosForStudent", getAllRetrosForStudent)
 
   switch (pathname) {
     case "/retro":

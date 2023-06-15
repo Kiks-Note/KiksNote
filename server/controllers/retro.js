@@ -23,6 +23,31 @@ const getAll = async (req, res) => {
   res.send(allRetros);
 };
 
+const getAllRetrosForPO = async (req, res) => {
+  const allRetrosQuery = await db.collection("retro").get();
+
+  let allRetros = [];
+  allRetrosQuery.forEach((doc) => {
+    if (doc.data().class) {
+      allRetros.push({ ...doc.data() });
+    }
+  });
+
+  res.send(allRetros);
+};
+
+const getAllRetrosForStudent = async (req, res) => {
+  const allRetrosQuery = await db.collection("retro").get();
+
+  let allRetros = [];
+  allRetrosQuery.forEach((doc) => {
+    allRetros.push({ ...doc.data() });
+  });
+
+  res.send(allRetros);
+};
+
+
 const getRoom = async (req, res) => {
   const { classStudent } = req.params;
   const snapshot = await db
@@ -359,5 +384,7 @@ module.exports = {
   deleteRoom,
   room,
   getAll,
+  getAllRetrosForPO,
+  getAllRetrosForStudent,
   saveRetro,
 };

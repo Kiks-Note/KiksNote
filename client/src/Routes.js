@@ -80,6 +80,7 @@ function RoutesProvider() {
 
           <Route path="/agile" element={<FolderAgile />} />
           <Route path="/retro" element={<Retrospective />} />
+          <Route path="/retroStudent" element={<RetrospectiveStudent/>} />
           <Route path="/board" element={<Board />} />
           <Route path="/boardReview" element={<BoardReview />} />
 

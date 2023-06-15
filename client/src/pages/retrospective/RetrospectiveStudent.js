@@ -231,7 +231,7 @@ function Retrospective() {
     ws.onmessage = async (message) => {
       console.log("wsss");
       let allRetros = [];
-      await axios.get("http://localhost:5050/retro/getAll").then((res) => {
+      await axios.get("http://localhost:5050/retro/getAllRetrosForStudent").then((res) => {
         console.log(res.data);
         let responseRetros = res.data;
         responseRetros.forEach(retro => {
@@ -262,7 +262,7 @@ function Retrospective() {
 
   useEffect(() => {
     let allRetros = [];
-    axios.get("http://localhost:5050/retro/getAll").then((res) => {
+    axios.get("http://localhost:5050/retro/getAllRetrosForStudent").then((res) => {
       let responseRetros = res.data;
       setAllRetrosAtbeginning(res.data);
 
@@ -296,20 +296,9 @@ function Retrospective() {
   const getAllRetroByUser = async () => {
     const userId = user.id;
 
-    if (user.status == "po") {
-      console.log("im a po");
-      await axios.get(`http://localhost:5050/retro/getAll`
-      ).then((res) => {
-        console.log("************");
-        console.log(res.data)
-        console.log("************");
-        setListRetros(res.data)
-      }).catch((err) => {
-        console.log(err)
-      })
-    } else if (user.status == "etudiant") {
+  
       console.log("im a student ");
-      await axios.get(`http://localhost:5050/retro/getAll`
+      await axios.get(`http://localhost:5050/retro/getAllRetrosForStudent`
       ).then((res) => {
         console.log("************");
         console.log(res.data)
@@ -319,7 +308,6 @@ function Retrospective() {
         console.log(err)
       })
 
-    }
   }
 
 
@@ -393,8 +381,8 @@ function Retrospective() {
 
 
       <div className="container-in-retro">
-        <Button variant="outlined"
-          onClick={handleClickOpen} className="add-retro"> + Ajouter une retro </Button>
+        {/* <Button variant="outlined"
+          onClick={handleClickOpen} className="add-retro"> + Ajouter une retro </Button> */}
         <div className="historic">
           Choix de la retrospective
           <TableContainer component={Paper} style={{ maxHeight: '500px', overflowY: 'auto' }}>
