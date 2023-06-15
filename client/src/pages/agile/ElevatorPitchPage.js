@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 
 import ElevatorPitch from '../../components/agile/ElevatorPitch';
 
-export default function ElevatorPitchPage() {
+export default function ElevatorPitchPage({dashboardId}) {
 
   const [activeStep, setActiveStep] = React.useState(0);
   const [completed, setCompleted] = React.useState({});

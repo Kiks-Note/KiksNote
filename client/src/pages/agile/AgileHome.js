@@ -79,15 +79,15 @@ export default function AgileHome({ dashboardId, agile }) {
     dispatch(setActiveTab(threeTab.id));
   };
    const moveToElevator = () => {
-     const threeTab = {
+     const elevatorTab = {
        id: "Elevator" + dashboardId,
-       label: "Eelevator ",
+       label: "Elevator Pitch ",
        closeable: true,
        component: "Elevator",
        data: { dashboardId: dashboardId },
      };
-     dispatch(addTab(threeTab));
-     dispatch(setActiveTab(threeTab.id));
+     dispatch(addTab(elevatorTab));
+     dispatch(setActiveTab(elevatorTab.id));
    };
   return (
     <Grid container>
@@ -161,7 +161,7 @@ export default function AgileHome({ dashboardId, agile }) {
           <div
             className="folder folder_cursor"
             key={elevator.id}
-            //onClick={() => moveToImpact()}
+            onClick={() => moveToElevator()}
           >
             <div className="folder_content">
               <Typography>Elevator Pitch</Typography>

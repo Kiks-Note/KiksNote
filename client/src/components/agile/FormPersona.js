@@ -17,7 +17,6 @@ import StepConnector, {
   stepConnectorClasses,
 } from "@mui/material/StepConnector";
 import StepIcon from "./StepIcon";
-import CardPersona from "./CardPersona";
 import "./personas.css";
 
 const steps = [
@@ -126,7 +125,6 @@ export default function FormPersona({ dashboardId, actorId}) {
       formData
     );
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
-    console.log("Persona à sauvegarder :", formData);
   };
   const generateRandomAvatars = async () => {
     try {

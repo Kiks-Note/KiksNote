@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setActiveTab } from "../../../redux/slices/tabBoardSlice";
 import AgileHome from "../../agile/AgileHome";
 import ArbreFonctionnel from "../../agile/ArbreFonctionnel";
+import ElevatorPitchPage from "../../agile/ElevatorPitchPage";
 
 TabDemo.propTypes = {
   actualTabs: PropTypes.arrayOf(
@@ -128,6 +129,9 @@ export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
             )}
             {tab.component === "Arbre" && (
               <ArbreFonctionnel dashboardId={tab.data.dashboardId} />
+            )}
+           {tab.component === "Elevator" && (
+              <ElevatorPitchPage dashboardId={tab.data.dashboardId}/>
             )}
           </TabContainer>
         ) : null

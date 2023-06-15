@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Accordion, AccordionSummary, AccordionDetails, List, ListItem, Typography, Divider } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Typography, Divider } from "@mui/material";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import CardSprint from "../../../components/board_scrum/overview/CardSprint";
@@ -14,7 +13,10 @@ import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
 import Roadmap from "./Roadmap";
 import ApexChart from "./ApexChart";
 import BurndownChart from "./BurnDown";
-import { CircularProgressbarWithChildren, buildStyles } from "react-circular-progressbar";
+import {
+  CircularProgressbarWithChildren,
+  buildStyles,
+} from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 import RadialSeparators from "../../../components/board_scrum/overview/RadialSeparator";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
@@ -22,7 +24,11 @@ import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import BarChart from "../../../components/board_scrum/overview/BarChart";
 import { withStyles } from "@material-ui/core/styles";
 import Timer from "../../../components/board_scrum/overview/Timer";
-
+import SettingsIcon from "@mui/icons-material/Settings";
+import IconButton from "@mui/material/IconButton";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
 };
@@ -34,6 +40,7 @@ function OverView({ id }) {
   const [display, setDisplay] = useState(false);
   const [pdfLink, setPdfLink] = useState("");
   const [agile, setAgile] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [selectedBoard, setSelectedBoard] = useState({
     data: {
       toDo: {
@@ -58,7 +65,7 @@ function OverView({ id }) {
   };
   const CustomDivider = withStyles(dividerStyle)(Divider);
 
-  const moveToOverView = () => {
+  const moveToBacklog = () => {
     const pdfViewTab = {
       id: "Backlog" + id,
       label: "Backlog ",
@@ -68,6 +75,7 @@ function OverView({ id }) {
     };
     dispatch(addTab(pdfViewTab));
     dispatch(setActiveTab(pdfViewTab.id));
+    handleClose();
   };
   const moveToAgileHome = () => {
     const agileTab = {
@@ -79,17 +87,7 @@ function OverView({ id }) {
     };
     dispatch(addTab(agileTab));
     dispatch(setActiveTab(agileTab.id));
-  };
-  const moveToImpact = () => {
-    const impactTab = {
-      id: "Impact" + id,
-      label: "Impact mapping ",
-      closeable: true,
-      component: "Impact",
-      data: { agile: agile, dashboardId: id },
-    };
-    dispatch(addTab(impactTab));
-    dispatch(setActiveTab(impactTab.id));
+    handleClose();
   };
 
   const moveToBoard = (board) => {
@@ -103,6 +101,13 @@ function OverView({ id }) {
     dispatch(addTab(boardTab));
     dispatch(setActiveTab(boardTab.id));
     console.log("moved ?");
+  };
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   useEffect(() => {
@@ -136,7 +141,10 @@ function OverView({ id }) {
 
   const nextBoards = () => {
     if (boards.length > displayedBoards.end + 4) {
-      const newData = { begin: displayedBoards.begin + 4, end: displayedBoards.end + 4 };
+      const newData = {
+        begin: displayedBoards.begin + 4,
+        end: displayedBoards.end + 4,
+      };
       console.log(newData);
       setDisplayedBoards(newData);
     }
@@ -144,7 +152,10 @@ function OverView({ id }) {
 
   const prevBoards = () => {
     if (displayedBoards.begin - 4 >= 0) {
-      const newData = { begin: displayedBoards.begin - 4, end: displayedBoards.end - 4 };
+      const newData = {
+        begin: displayedBoards.begin - 4,
+        end: displayedBoards.end - 4,
+      };
       console.log(newData);
       setDisplayedBoards(newData);
     }
@@ -159,11 +170,15 @@ function OverView({ id }) {
     const allItems = [...todoItems, ...doneItems, ...inProgressItems];
 
     // Extract the assignedTo value from each item
-    const assignedToList = allItems.flatMap((item) => item.assignedTo).filter((assignedTo) => assignedTo.length > 0);
+    const assignedToList = allItems
+      .flatMap((item) => item.assignedTo)
+      .filter((assignedTo) => assignedTo.length > 0);
 
     // Count the participation for each name
     const participationList = assignedToList.reduce((result, name) => {
-      const existingParticipant = result.find((participant) => participant.name === name);
+      const existingParticipant = result.find(
+        (participant) => participant.name === name
+      );
       if (existingParticipant) {
         existingParticipant.participation++;
       } else {
@@ -199,9 +214,40 @@ function OverView({ id }) {
   return (
     <>
       <div>
+        <Box style={{ display: "flex", justifyContent: " flex-end" }}>
+          <IconButton onClick={handleClick}>
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={moveToAgileHome}>
+              Accéder à la partie Agile
+            </MenuItem>
+            {pdfLink.length != 0 && (
+              <MenuItem onClick={moveToBacklog}>Accéder au Backlog</MenuItem>
+            )}
+            <MenuItem>
+              <Roadmap
+                stories={stories}
+                releases={releases}
+                boards={boards}
+                dashboardId={id}
+              />
+            </MenuItem>
+          </Menu>
+        </Box>
         <Box>
           <Typography>Statistiques</Typography>
-          <Box style={{ display: "flex", justifyContent: "space-between", margin: "5vh" }}>
+          <Box
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              margin: "5vh",
+            }}
+          >
             <Box
               style={{
                 backgroundColor: "#424242",
@@ -222,7 +268,10 @@ function OverView({ id }) {
                   marginTop: "5vh",
                 }}
               >
-                <BarChart participation={getParticipation()} label={"Nombre de taches"} />
+                <BarChart
+                  participation={getParticipation()}
+                  label={"Nombre de taches"}
+                />
               </Box>
             </Box>
 
@@ -305,97 +354,137 @@ function OverView({ id }) {
             <Button onClick={prevBoards}>
               <NavigateBeforeIcon></NavigateBeforeIcon>
             </Button>
-            {boards.slice(displayedBoards.begin, displayedBoards.end).map((board) => {
-              const startingDate = new Date(board.starting_date).getTime();
-              const endingDate = new Date(board.ending_date).getTime();
-              const now = new Date().getTime();
-              const totalDuration = endingDate - startingDate;
-              var timeLeft = 0;
-              if (now < startingDate) {
-                timeLeft = Math.max(0, endingDate - startingDate);
-              } else {
-                timeLeft = Math.max(0, endingDate - now);
-              }
-              const percentage = Math.floor((timeLeft / totalDuration) * 100);
-              const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-              const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-              const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            {boards
+              .slice(displayedBoards.begin, displayedBoards.end)
+              .map((board) => {
+                const startingDate = new Date(board.starting_date).getTime();
+                const endingDate = new Date(board.ending_date).getTime();
+                const now = new Date().getTime();
+                const totalDuration = endingDate - startingDate;
+                var timeLeft = 0;
+                if (now < startingDate) {
+                  timeLeft = Math.max(0, endingDate - startingDate);
+                } else {
+                  timeLeft = Math.max(0, endingDate - now);
+                }
+                const percentage = Math.floor((timeLeft / totalDuration) * 100);
+                const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hoursLeft = Math.floor(
+                  (timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+                );
+                const minutesLeft = Math.floor(
+                  (timeLeft % (1000 * 60 * 60)) / (1000 * 60)
+                );
 
-              const totalTask =
-                board.data.done.items.length + board.data.toDo.items.length + board.data.inProgress.items.length;
+                const totalTask =
+                  board.data.done.items.length +
+                  board.data.toDo.items.length +
+                  board.data.inProgress.items.length;
 
-              const advancement =
-                (board.data.done.items.length / totalTask) * 100 +
-                (board.data.inProgress.items.length / totalTask) * 50;
+                const advancement =
+                  (board.data.done.items.length / totalTask) * 100 +
+                  (board.data.inProgress.items.length / totalTask) * 50;
 
-              return (
-                <Box
-                  style={{ width: "20%", backgroundColor: "#c7c7c7", borderRadius: "5px", boxShadow: "5" }}
-                  onMouseEnter={() => {
-                    setSelectedBoard(board);
-                    console.log(board);
-                  }}
-                  onClick={() => {
-                    moveToBoard(board);
-                  }}
-                >
-                  <Typography variant="h6" style={{ textAlign: "center" }}>
-                    {board.name}
-                  </Typography>
-                  <CustomDivider />
+                return (
+                  <Box
+                    style={{
+                      width: "20%",
+                      backgroundColor: "#c7c7c7",
+                      borderRadius: "5px",
+                      boxShadow: "5",
+                    }}
+                    onMouseEnter={() => {
+                      setSelectedBoard(board);
+                      console.log(board);
+                    }}
+                    onClick={() => {
+                      moveToBoard(board);
+                    }}
+                  >
+                    <Typography variant="h6" style={{ textAlign: "center" }}>
+                      {board.name}
+                    </Typography>
+                    <CustomDivider />
 
-                  <Box style={{ display: "flex" }}>
-                    <Box
-                      style={{
-                        width: "45%",
-                        margin: "2%",
-                      }}
-                    >
-                      <CircularProgressbarWithChildren
-                        value={percentage}
-                        text={daysLeft > 0 ? `${daysLeft}j ${hoursLeft}h` : `${hoursLeft}h ${minutesLeft}m`}
-                        strokeWidth={10}
-                        counterClockwise
-                        styles={buildStyles({
-                          strokeLinecap: "butt",
-                          textSize: "14px",
-                        })}
+                    <Box style={{ display: "flex" }}>
+                      <Box
+                        style={{
+                          width: "45%",
+                          margin: "2%",
+                        }}
                       >
-                        <RadialSeparators
-                          count={12}
-                          style={{
-                            background: "#fff",
-                            width: "2px",
-                            height: `${10}%`,
-                          }}
-                        />
-                      </CircularProgressbarWithChildren>
-                    </Box>
+                        <CircularProgressbarWithChildren
+                          value={percentage}
+                          text={
+                            daysLeft > 0
+                              ? `${daysLeft}j ${hoursLeft}h`
+                              : `${hoursLeft}h ${minutesLeft}m`
+                          }
+                          strokeWidth={10}
+                          counterClockwise
+                          styles={buildStyles({
+                            strokeLinecap: "butt",
+                            textSize: "14px",
+                          })}
+                        >
+                          <RadialSeparators
+                            count={12}
+                            style={{
+                              background: "#fff",
+                              width: "2px",
+                              height: `${10}%`,
+                            }}
+                          />
+                        </CircularProgressbarWithChildren>
+                      </Box>
 
-                    <Box>
-                      <Typography style={{ textAlign: "center" }}>Avancement </Typography>
-                      <Typography style={{ textAlign: "center" }}> {advancement ? advancement : 0} %</Typography>
-                      {now > endingDate ? (
-                        <div>
-                          <Typography style={{ textAlign: "center" }}>Finis Depuis </Typography>
-                          <Timer startingDate={startingDate} endingDate={endingDate} countdown={false} />
-                        </div>
-                      ) : now < startingDate ? (
-                        <div>
-                          <Typography style={{ textAlign: "center" }}>Commence dans</Typography>
-                          <Timer startingDate={startingDate} endingDate={endingDate} countdown={true} />
-                        </div>
-                      ) : (
-                        <div>
-                          <Typography style={{ textAlign: "center" }}>En cours </Typography>
-                          <Timer startingDate={startingDate} endingDate={endingDate} countdown={true} />
-                        </div>
-                      )}
+                      <Box>
+                        <Typography style={{ textAlign: "center" }}>
+                          Avancement{" "}
+                        </Typography>
+                        <Typography style={{ textAlign: "center" }}>
+                          {" "}
+                          {advancement ? advancement : 0} %
+                        </Typography>
+                        {now > endingDate ? (
+                          <div>
+                            <Typography style={{ textAlign: "center" }}>
+                              Finis Depuis{" "}
+                            </Typography>
+                            <Timer
+                              startingDate={startingDate}
+                              endingDate={endingDate}
+                              countdown={false}
+                            />
+                          </div>
+                        ) : now < startingDate ? (
+                          <div>
+                            <Typography style={{ textAlign: "center" }}>
+                              Commence dans
+                            </Typography>
+                            <Timer
+                              startingDate={startingDate}
+                              endingDate={endingDate}
+                              countdown={true}
+                            />
+                          </div>
+                        ) : (
+                          <div>
+                            <Typography style={{ textAlign: "center" }}>
+                              En cours{" "}
+                            </Typography>
+                            <Timer
+                              startingDate={startingDate}
+                              endingDate={endingDate}
+                              countdown={true}
+                            />
+                          </div>
+                        )}
+                      </Box>
                     </Box>
                   </Box>
-                </Box>
-              );
-            })}
+                );
+              })}
             <Button onClick={nextBoards}>
               <NavigateNextIcon></NavigateNextIcon>
             </Button>
@@ -403,7 +492,9 @@ function OverView({ id }) {
         </Box>
         <Box sx={{ height: "50vh" }}>
           <Typography variant="h4">Stories</Typography>
-          {display && <StoryList stories={stories} sprints={releases} dashboardId={id} />}
+          {display && (
+            <StoryList stories={stories} sprints={releases} dashboardId={id} />
+          )}
         </Box>
       </div>
     </>

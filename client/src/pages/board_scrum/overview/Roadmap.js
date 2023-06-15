@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
 import { pdf } from "@react-pdf/renderer";
-import { saveAs } from "file-saver";
-import Button from "@material-ui/core/Button";
+import MenuItem from "@mui/material/MenuItem";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 
@@ -221,9 +220,9 @@ const Roadmap = ({ stories, releases, boards, dashboardId }) => {
     <>
       <Toaster />
       {formatedReleases.length > 0 && (
-        <Button variant="contained" onClick={uploadPDF}>
+        <MenuItem variant="contained" onClick={uploadPDF}>
           Ajouter la roadMap au dossier agile
-        </Button>
+        </MenuItem>
       )}
     </>
   );
