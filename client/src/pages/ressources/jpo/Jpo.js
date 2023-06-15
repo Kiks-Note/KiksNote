@@ -79,16 +79,8 @@ const Jpo = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const handleDrop = useCallback((acceptedFiles) => {
-    setFiles((files) => [...files, ...acceptedFiles]);
-  }, []);
-
   const handleRemove = (file) => () => {
     setFiles((files) => files.filter((f) => f !== file));
-  };
-
-  const handleFileChange = (fileData) => {
-    setJpoThumbnail(fileData);
   };
 
   const handleClickOpen = () => {
@@ -264,8 +256,8 @@ const Jpo = () => {
                   setJPODateEnd={setJPODateEnd}
                   descriptionJPO={descriptionJPO}
                   setDescriptionJPO={setDescriptionJPO}
-                  handleDrop={handleDrop}
-                  handleFileChange={handleFileChange}
+                  jpoThumbnail={jpoThumbnail}
+                  setJpoThumbnail={setJpoThumbnail}
                   rejectedFiles={rejectedFiles}
                   handleRemove={handleRemove}
                   btnCreateJpo={classes.btnCreateJpo}
