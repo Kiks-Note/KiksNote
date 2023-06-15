@@ -44,6 +44,10 @@ const CoursLinkDialog = (props) => {
   );
   const selectedCoursTitle = selectedCours ? selectedCours?.data?.title : "";
 
+  /*
+    Link a selected cours using it selectedCoursId (String)
+  */
+
   const linkCoursinCoursInfo = async () => {
     try {
       await axios
@@ -54,7 +58,7 @@ const CoursLinkDialog = (props) => {
           console.log(res.data);
           if (res.data === `Le cours lié a été ajouté avec succès.`) {
             toastSuccess(
-              `Le cours ${selectedCoursTitle} a bien été lié à votre cours ${props.coursData?.courseTitle}`
+              `Le cours ${selectedCoursTitle} a bien été lié à votre cours ${props.coursData?.title}`
             );
             props.close();
             props.getCoursId();

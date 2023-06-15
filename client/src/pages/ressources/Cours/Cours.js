@@ -27,7 +27,6 @@ import {
   InputAdornment,
   Chip,
   Avatar,
-  Skeleton,
 } from "@mui/material";
 
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -40,7 +39,8 @@ import SchoolIcon from "@mui/icons-material/School";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 
-import CreateCoursModal from "./CreateCoursModal";
+import CreateCoursModal from "./../../../components/ressources/cours/CreateCoursModal";
+import SkeletonCours from "../../../components/ressources/cours/SkeletonCours";
 
 import "./Cours.scss";
 import "react-toastify/dist/ReactToastify.css";
@@ -84,8 +84,7 @@ const Cours = () => {
   const [courseCampusNumerique, setCourseCampusNumerique] = useState(false);
   const [courseOwner, setCourseOwner] = useState("");
   const [idSelectedOwner, setIdSelectedOwner] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [idSelectedClass, setIdSelectedClass] = useState("");
+  const [selectedClass, setSelectedClass] = useState([]);
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
 
@@ -138,6 +137,10 @@ const Cours = () => {
     }
   };
 
+  /*
+    Get an array of technos then set it in the empty array techno
+ */
+
   const getAllTechnos = async () => {
     try {
       await axios
@@ -153,6 +156,10 @@ const Cours = () => {
       console.error(error);
     }
   };
+
+  /*
+    Get an array of cours then set it in the empty array courses
+ */
 
   const getAllCours = async () => {
     try {
@@ -170,6 +177,10 @@ const Cours = () => {
     }
   };
 
+  /*
+    Get an array of all PO then set it in the empty array allPo
+ */
+
   const getAllPo = async () => {
     try {
       await axios
@@ -184,6 +195,10 @@ const Cours = () => {
       console.error(error);
     }
   };
+
+  /*
+    Get an array of all classes data from their class id then set it in the empty array userClass
+ */
 
   const getClassId = async (classId) => {
     try {
@@ -200,6 +215,10 @@ const Cours = () => {
     }
   };
 
+  /*
+    Get an array of all id classes then set it in the empty array allClass
+ */
+
   const getAllClass = async () => {
     try {
       await axios
@@ -215,39 +234,60 @@ const Cours = () => {
     }
   };
 
+  /*
+    create a cours in the database if every data are not null
+ */
+
   const createNewCours = async () => {
-    try {
-      await axios
-        .post("http://localhost:5050/ressources/cours", {
-          title: courseTitle,
-          description: courseDescription,
-          dateStartSprint: courseDateStart,
-          dateEndSprint: courseDateEnd,
-          campus_numerique: courseCampusNumerique,
-          courseClass: idSelectedClass,
-          owner: idSelectedOwner,
-          private: coursePrivate,
-          imageBase64: courseImageBase64,
-        })
-        .then((res) => {
-          if (res.status === 200) {
-            toastSuccess(`Votre cours ${courseTitle} a bien été ajouté`);
-            handleClose();
-            getAllCours();
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    } catch (error) {
-      if (error.response.status === 400) {
-        toastWarning("Veuillez remplir tous les champs.");
+    if (
+      courseTitle === "" ||
+      courseDescription === "" ||
+      courseDateStart === "" ||
+      courseDateEnd === "" ||
+      !selectedClass ||
+      idSelectedOwner === "" ||
+      courseImageBase64 === ""
+    ) {
+      toast.error("Veuillez remplir tous les champs !");
+      return;
+    } else {
+      try {
+        await axios
+          .post("http://localhost:5050/ressources/cours", {
+            title: courseTitle,
+            description: courseDescription,
+            dateStartSprint: courseDateStart,
+            dateEndSprint: courseDateEnd,
+            campus_numerique: courseCampusNumerique,
+            courseClass: selectedClass,
+            owner: idSelectedOwner,
+            private: coursePrivate,
+            imageBase64: courseImageBase64,
+          })
+          .then((res) => {
+            if (res.status === 200) {
+              toastSuccess(`Votre cours ${courseTitle} a bien été ajouté`);
+              handleClose();
+              getAllCours();
+            }
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } catch (error) {
+        if (error.response.status === 400) {
+          toastWarning("Veuillez remplir tous les champs.");
+        }
+        console.error(error);
+        toastFail("Erreur lors de la création de votre cours.");
+        throw error;
       }
-      console.error(error);
-      toastFail("Erreur lors de la création de votre cours.");
-      throw error;
     }
   };
+
+  /*
+    Get all cours, technos, po, class when the page is loading
+ */
 
   useEffect(() => {
     getAllCours()
@@ -263,17 +303,36 @@ const Cours = () => {
     getAllClass();
   }, []);
 
+  /*
+    Get the class of the current user if it's a student by using his class id
+ */
+
   useEffect(() => {
     if (isAllCoursesDataLoaded) {
       if (userClassConnected !== undefined) {
-        getClassId(userClassConnected);
+        getClassId(userClassConnected?.id);
       }
     }
   }, [isAllCoursesDataLoaded, userClassConnected]);
 
+  /*
+    Submit the data from the CreateCours form to the function createNewCours() 
+ */
+
   const onSubmit = async () => {
     await createNewCours();
   };
+
+  /*
+    Set all Dates value we need
+    today = current date
+    currentYear = current year
+    lastYear = last year
+    startCurrentYear = date when the scholar year start (September the 1st)
+    endCurrentYear = date when the scholar year end
+    startLastYear = date when the last scholar year start
+    endLastYear = date when the last scholar year end
+ */
 
   const today = new Date();
   const currentYear =
@@ -284,10 +343,18 @@ const Cours = () => {
   const startLastYear = new Date(lastYear, 8, 1);
   const endLastYear = new Date(lastYear + 1, 7, 31);
 
+  /*
+    Filter the courses and get every cours from the current year
+ */
+
   const filteredCoursesCurrentYear = courses.filter((course) => {
     const courseDate = timeConverter(course.data.dateStartSprint);
     return courseDate >= startCurrentYear && courseDate <= endCurrentYear;
   });
+
+  /*
+    Filter the courses and get every cours from the last year
+ */
 
   const filteredCoursesLastYear = courses.filter((course) => {
     const courseDate = timeConverter(course.data.dateStartSprint);
@@ -417,7 +484,6 @@ const Cours = () => {
             setCoursePrivate={setCoursePrivate}
             selectedClass={selectedClass}
             setSelectedClass={setSelectedClass}
-            setIdSelectedClass={setIdSelectedClass}
             allclass={allclass}
             control={control}
             allpo={allpo}
@@ -439,64 +505,7 @@ const Cours = () => {
               <Grid container spacing={2}>
                 {loading ? (
                   <>
-                    {Array.from({ length: 4 }).map((_, index) => (
-                      <Grid item xs={12} sm={6} md={3} key={index}>
-                        <Card
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "space-evenly",
-                            height: "450px",
-                          }}
-                        >
-                          <h2
-                            style={{ paddingLeft: "10px", margin: "0" }}
-                            variant="h3"
-                            component="div"
-                          >
-                            <Skeleton width={150} />
-                          </h2>
-                          <Skeleton
-                            width={500}
-                            height={200}
-                            variant="rectangular"
-                          />
-
-                          <CardContent
-                            sx={{ padding: "10px", height: "120px" }}
-                          >
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Chip label={<Skeleton width={100} />} />
-                              <Chip
-                                avatar={<Avatar />}
-                                variant="outlined"
-                                label={<Skeleton width={150} />}
-                              />
-                            </div>
-                            <div style={{ padding: "10px" }}>
-                              <Typography
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Skeleton width={100} />
-                              </Typography>
-                            </div>
-
-                            <Tooltip title="Private">
-                              <LockRoundedIcon />
-                            </Tooltip>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
+                    <SkeletonCours />
                   </>
                 ) : (
                   <>
@@ -512,7 +521,7 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? userClass.id === course.data.courseClass
+                          ? userClass.id === course.data.courseClass.id
                           : true
                       )
                       .filter((course) =>
@@ -574,18 +583,38 @@ const Cours = () => {
                                     justifyContent: "space-between",
                                   }}
                                 >
-                                  <Chip
-                                    label={
-                                      <>
-                                        <div style={{ display: "flex" }}>
-                                          <Typography>
-                                            {course.data.courseClass.name}
-                                          </Typography>
-                                          <SchoolIcon />
-                                        </div>
-                                      </>
-                                    }
-                                  ></Chip>
+                                  {Array.isArray(course.data.courseClass) ? (
+                                    course.data.courseClass.map((classData) => (
+                                      <Chip
+                                        key={classData.id}
+                                        label={
+                                          <>
+                                            <div style={{ display: "flex" }}>
+                                              <Typography>
+                                                {classData.name}
+                                              </Typography>
+                                              <SchoolIcon />
+                                            </div>
+                                          </>
+                                        }
+                                      />
+                                    ))
+                                  ) : (
+                                    <Chip
+                                      key={course.data.courseClass.id}
+                                      label={
+                                        <>
+                                          <div style={{ display: "flex" }}>
+                                            <Typography>
+                                              {course.data.courseClass.name}
+                                            </Typography>
+                                            <SchoolIcon />
+                                          </div>
+                                        </>
+                                      }
+                                    />
+                                  )}
+
                                   <Chip
                                     avatar={
                                       <Avatar
@@ -670,64 +699,7 @@ const Cours = () => {
               <Grid container spacing={2}>
                 {loading ? (
                   <>
-                    {Array.from({ length: 4 }).map((_, index) => (
-                      <Grid item xs={12} sm={6} md={3} key={index}>
-                        <Card
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "space-evenly",
-                            height: "450px",
-                          }}
-                        >
-                          <h2
-                            style={{ paddingLeft: "10px", margin: "0" }}
-                            variant="h3"
-                            component="div"
-                          >
-                            <Skeleton width={150} />
-                          </h2>
-                          <Skeleton
-                            width={500}
-                            height={200}
-                            variant="rectangular"
-                          />
-
-                          <CardContent
-                            sx={{ padding: "10px", height: "120px" }}
-                          >
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Chip label={<Skeleton width={100} />} />
-                              <Chip
-                                avatar={<Avatar />}
-                                variant="outlined"
-                                label={<Skeleton width={150} />}
-                              />
-                            </div>
-                            <div style={{ padding: "10px" }}>
-                              <Typography
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <Skeleton width={100} />
-                              </Typography>
-                            </div>
-
-                            <Tooltip title="Private">
-                              <LockRoundedIcon />
-                            </Tooltip>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
+                    <SkeletonCours />
                   </>
                 ) : (
                   <>
@@ -743,7 +715,7 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? userClass.id === course.data.courseClass
+                          ? userClass.id === course.data.courseClass.id
                           : true
                       )
                       .filter((course) =>
@@ -800,18 +772,37 @@ const Cours = () => {
                                   justifyContent: "space-between",
                                 }}
                               >
-                                <Chip
-                                  label={
-                                    <>
-                                      <div style={{ display: "flex" }}>
-                                        <Typography>
-                                          {course.data.courseClass.name}
-                                        </Typography>
-                                        <SchoolIcon />
-                                      </div>
-                                    </>
-                                  }
-                                ></Chip>
+                                {Array.isArray(course.data.courseClass) ? (
+                                  course.data.courseClass.map((classData) => (
+                                    <Chip
+                                      key={classData.id}
+                                      label={
+                                        <>
+                                          <div style={{ display: "flex" }}>
+                                            <Typography>
+                                              {classData.name}
+                                            </Typography>
+                                            <SchoolIcon />
+                                          </div>
+                                        </>
+                                      }
+                                    />
+                                  ))
+                                ) : (
+                                  <Chip
+                                    key={course.data.courseClass.id}
+                                    label={
+                                      <>
+                                        <div style={{ display: "flex" }}>
+                                          <Typography>
+                                            {course.data.courseClass.name}
+                                          </Typography>
+                                          <SchoolIcon />
+                                        </div>
+                                      </>
+                                    }
+                                  />
+                                )}
                                 <Chip
                                   avatar={
                                     <Avatar
@@ -904,7 +895,7 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? userClass.id === course.data.courseClass
+                    ? userClass.id === course.data.courseClass.id
                     : true
                 )
                 .filter((course) =>
@@ -1015,7 +1006,7 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? userClass.id === course.data.courseClass
+                    ? userClass.id === course.data.courseClass.id
                     : true
                 )
                 .filter((course) =>

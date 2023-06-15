@@ -12,6 +12,7 @@ const {
   getInstructorById,
   createCours,
   createLinkedCours,
+  removeLinkedCours,
   updateCours,
   uploadCoursPdf,
   uploadBackLogPdf,
@@ -36,6 +37,7 @@ module.exports = function () {
   router.post("/class", createClass);
   router.post("/cours", createCours);
   router.post("/linkcours/:courseId", createLinkedCours);
+  router.delete("/linkcours/:courseId", removeLinkedCours);
   router.put("/cours/:id", updateCours);
   router.post("/cours/upload-pdf", uploadCoursPdf);
   router.post("/cours/backlog/upload-pdf", uploadBackLogPdf);

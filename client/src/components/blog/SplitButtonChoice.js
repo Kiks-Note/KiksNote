@@ -130,14 +130,9 @@ export default function SplitButtonChoice() {
                       Créer un article de blog
                     </MenuItem>
                     <MenuItem
-                      onClick={(event) => handleMenuItemClick(event, 1)}
-                    >
-                      Créer un tutoriel
-                    </MenuItem>
-                    <MenuItem
                       onClick={(event) => handleMenuItemClick(event, 2)}
                     >
-                      Créer un tutoriel 2
+                      Créer un tutoriel
                     </MenuItem>
                   </MenuList>
                 </ClickAwayListener>
@@ -147,7 +142,6 @@ export default function SplitButtonChoice() {
         </Popper>
       </ButtonGroup>
       <NewBlog open={openBlog} toggleDrawerModify={toggleDrawerBlog} />
-      <NewTuto open={openTuto} toggleDrawerModify={toggleDrawerTuto} />
       <NewTuto2 open={openTuto2} toggleDrawerModify={toggleDrawerTuto2} />
     </>
   );

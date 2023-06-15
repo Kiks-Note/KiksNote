@@ -15,7 +15,7 @@ import {
   Dialog,
   DialogContent,
 } from "@mui/material";
-import JpoCard from "../ressources/jpo/JpoCard";
+import JpoCard from "../../components/ressources/jpo/JpoCard";
 import { useTheme } from "@mui/material/styles";
 import { Icon, InlineIcon } from "@iconify/react";
 import Tooltip from "@mui/material/Tooltip";
@@ -237,6 +237,24 @@ export default function Profil() {
         setIsLoading(false);
       };
     })();
+  }, [id]);
+
+  useEffect(() => {
+    const getJpo = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5050/ressources/jpo/user/${user.id}`
+        );
+        if (response.data != undefined) {
+          setRecentJpo(response.data);
+          console.log(response.data);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getJpo();
   }, []);
 
   const filterTwoMostRecentBlogs = (blogs) => {
@@ -267,7 +285,7 @@ export default function Profil() {
             style={{
               backgroundImage: `url(${userProfil.imagebackground})`,
             }}
-          />
+          ></Box>
           <Box
             sx={{
               display: "flex",

@@ -62,11 +62,9 @@ function Retrospective() {
   const [rows, setRows] = useState([]);
   const [datas, setDatas] = useState(null);
   const [role, setRole] = useState("");
+  const [onGoingRetro, setOnGoingRetro] = useState([])
 
   let navigate = useNavigate();
-
-
-
 
   const columno = [
     {
@@ -243,6 +241,15 @@ function Retrospective() {
         setRows(updatedRows);
         setDatas(res.data)
       })
+
+      axios.get("http://localhost:5050/retro/getAllRooms").then((res) => 
+      {
+        console.log(res.data);
+        if (res.data.length > 0) {
+          setOnGoingRetro(res.data)
+        }
+        
+      })
     };
     return () => {
       ws.close();
@@ -267,8 +274,23 @@ function Retrospective() {
     axios.get("http://localhost:5050/retro/getAll").then((res) => {
       let responseRetros = res.data;
       setAllRetrosAtbeginning(res.data);
+      responseRetros.forEach(retro => {
+        allRetros.push(retro["dataRetro"])
+      });
+      const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+      setRows(updatedRows);
+      setDatas(res.data)
 
     });
+
+    axios.get("http://localhost:5050/retro/getAllRooms").then((res) => 
+    {
+      console.log(res.data);
+      if (res.data.length > 0) {
+        setOnGoingRetro(res.data)
+      }
+      
+    })
   }, []);
 
 
@@ -295,8 +317,6 @@ function Retrospective() {
     
   }
 
-
-
   useEffect(() => {
     getAllRetroByUser();
   }, []);
@@ -310,14 +330,18 @@ function Retrospective() {
   }, [listRetros]);
 
   const goToBoard = (idRetro) => {
+    console.log(datas);
     datas.map(retro => {
       if (retro["idRetro"] == idRetro) {
         console.log(retro);
-        navigate('/boardRetro', { state: { retro } });
+        navigate('/boardReview', { state: { retro } });
       }
     })
   }
 
+  const goToOnGoingBoard = () => {
+    navigate('/board')
+  }
 
   const validateBoard = async () => {
     if (boardTitle && choosenCourse && retroModel) {
@@ -363,6 +387,13 @@ function Retrospective() {
       <h2> Retrospective </h2>
 
       <Button onClick={getAllRetroByUser} > Get retros </Button>
+
+
+      {onGoingRetro.length !== 0 ? (
+      <div>
+        <Button onClick={goToOnGoingBoard}>Rejoindre une retro en cours</Button>
+
+      </div>) : (<></>)}
 
 
       <div className="container-in-retro">

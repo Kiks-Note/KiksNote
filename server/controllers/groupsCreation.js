@@ -88,6 +88,7 @@ const deleteRoom = async (req, res) => {
     const snapshot = await db
       .collection("rooms")
       .where("po_id", "==", po_id)
+      .where("type", "==", "group")
       .get();
     const deletePromises = snapshot.docs.map((doc) => doc.ref.delete());
     await Promise.all(deletePromises);
@@ -131,7 +132,6 @@ const getGroupsPo = async (req, res) => {
     .get();
 
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  console.log(documents);
 
   res.status(200).send(documents);
 };
@@ -147,7 +147,6 @@ const getGroups = async (req, res) => {
 
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-  console.log(documents);
   res.status(200).send(documents);
 };
 
@@ -187,6 +186,7 @@ const room = async (connection) => {
           position: position,
           color: roomUsersToUpdate.users.get(userID)?.color,
           name: roomUsersToUpdate.users.get(userID)?.name,
+          isDragging: roomUsersToUpdate.users.get(userID)?.isDragging,
         });
 
         currentRooms.set(response.data.class, roomUsersToUpdate);
@@ -208,7 +208,6 @@ const room = async (connection) => {
 
         break;
       case "createRoom":
-        console.log("createRoom");
         const newRoomRef = db.collection("rooms").doc();
         newRoomRef.set({
           po_id: response.data.po_id,
@@ -229,13 +228,14 @@ const room = async (connection) => {
           position: null,
           color: colorC,
           name: response.data.name,
+          isDragging: false,
         });
 
         currentRooms.set(response.data.class, roomUsersC);
 
         const roomClientsC = clients.get(response.data.class) || new Map();
 
-        roomClientsC.set(response.data.userID, connection);
+        roomClientsC.set(response.data.po_id, connection);
 
         clients.set(response.data.class, roomClientsC);
 
@@ -258,7 +258,6 @@ const room = async (connection) => {
 
         break;
       case "joinRoom":
-        console.log("joinRoom :", response.data.userID);
         const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
 
         if (indexColor >= pastelColors.length) {
@@ -271,6 +270,7 @@ const room = async (connection) => {
           position: null,
           color: color,
           name: response.data.name,
+          isDragging: false,
         });
 
         currentRooms.set(response.data.class, roomUsers);
@@ -300,22 +300,17 @@ const room = async (connection) => {
 
         break;
       case "closeRoom":
-        currentRooms.delete(response.data.class);
-        clients.delete(response.data.class);
-        console.log("Room closed");
-
         const messageClose = {
           type: "closeRoom",
         };
 
         sendToAllClients(messageClose, response.data.class);
-
+        currentRooms.delete(response.data.class);
+        clients.delete(response.data.class);
         break;
       case "leaveRoom":
         const userRoom = currentRooms.get(response.data.class) || defaultRoom;
         userRoom.users.delete(response.data.userID);
-
-        console.log("User left room", response.data.userID);
 
         currentRooms.set(response.data.class, userRoom);
 
@@ -385,6 +380,47 @@ const room = async (connection) => {
 
           sendToAllClients(messageNbSPGrp, response.data.class);
         }
+        break;
+      case "dragStart":
+        let roomDragStart =
+          currentRooms.get(response.data.class) || defaultRoom;
+        roomDragStart.users.get(response.data.userID).isDragging = true;
+        currentRooms.set(response.data.class, roomDragStart);
+
+        const messageDragStart = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(messageDragStart, response.data.class);
+        break;
+      case "dragEnd":
+        let roomDragEnd = currentRooms.get(response.data.class) || defaultRoom;
+        roomDragEnd.users.get(response.data.userID).isDragging = false;
+        currentRooms.set(response.data.class, roomDragEnd);
+
+        const messageDragEnd = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(messageDragEnd, response.data.class);
         break;
       case "updateCol":
         let roomCol = currentRooms.get(response.data.class) || defaultRoom;

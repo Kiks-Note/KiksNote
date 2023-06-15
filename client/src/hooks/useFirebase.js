@@ -58,6 +58,9 @@ export const FirebaseContextProvider = ({children}) => {
             });
             setUnsubscribe(() => _unsub);
           });
+      } else {
+        console.log("Auth state changed to disconnected");
+        setUser(null);
       }
     });
 
@@ -69,7 +72,6 @@ export const FirebaseContextProvider = ({children}) => {
     cookies.remove("lastConnectionAt");
     unsubscribe();
     await signOut(auth);
-    setUser(null);
   };
 
   return (
