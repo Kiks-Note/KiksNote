@@ -144,13 +144,13 @@ const login = async (req, res) => {
 
     const userClassData = userSnapshot.data().verified;
 
-    if (!user.emailVerified) {
-      if (userClassData !== true) {
-        return res
-          .status(401)
-          .json({ message: "Veuillez vérifier votre adresse e-mail" });
-      }
-    }
+    // if (!user.emailVerified) {
+    //   if (userClassData !== true) {
+    //     return res
+    //       .status(401)
+    //       .json({ message: "Veuillez vérifier votre adresse e-mail" });
+    //   }
+    // }
 
     res.status(200).json({ message: "Success" });
     console.log("Success");

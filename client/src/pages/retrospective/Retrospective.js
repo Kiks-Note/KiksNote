@@ -226,6 +226,31 @@ function Retrospective() {
 
 
 
+  useEffect(async () => {
+
+      console.log("wsss");
+      let allRetros = [];
+      await axios.get("http://localhost:5050/retro/getAll").then((res) => {
+        console.log(res.data);
+        let responseRetros = res.data;
+        responseRetros.forEach(retro => {
+          allRetros.push(retro["dataRetro"])
+        });
+        const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["date"], retro["po_name"], retro["idRetro"]));
+        setRows(updatedRows);
+        setDatas(res.data)
+      })
+
+      axios.get("http://localhost:5050/retro/getAllRooms").then((res) => 
+      {
+        console.log(res.data);
+        if (res.data.length > 0) {
+          setOnGoingRetro(res.data)
+        }
+        
+      })
+  }, []);
+
   useEffect(() => {
     const ws = new w3cwebsocket("ws://localhost:5050/retro");
     ws.onmessage = async (message) => {
@@ -237,7 +262,8 @@ function Retrospective() {
         responseRetros.forEach(retro => {
           allRetros.push(retro["dataRetro"])
         });
-        const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+        const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["date"], retro["po_name"], retro["idRetro"]));
+
         setRows(updatedRows);
         setDatas(res.data)
       })
@@ -254,7 +280,7 @@ function Retrospective() {
     return () => {
       ws.close();
     };
-  }, []);
+  });
 
 
   const setAllRetrosAtbeginning = async (dataResponse) => {
@@ -277,7 +303,7 @@ function Retrospective() {
       responseRetros.forEach(retro => {
         allRetros.push(retro["dataRetro"])
       });
-      const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+      const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["date"], retro["po_name"], retro["idRetro"]));
       setRows(updatedRows);
       setDatas(res.data)
 
@@ -324,7 +350,7 @@ function Retrospective() {
   useEffect(() => {
     console.log(listRetros);
     if (listRetros !== undefined) {
-      const updatedRows = listRetros.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+      const updatedRows = listRetros.map((retro) => createData(retro["titleRetro"], retro["date"], retro["po_name"], retro["idRetro"]));
       setRows(updatedRows);
     }
   }, [listRetros]);
@@ -386,9 +412,6 @@ function Retrospective() {
     <div className="container-retro">
       <h2> Retrospective </h2>
 
-      <Button onClick={getAllRetroByUser} > Get retros </Button>
-
-
       {onGoingRetro.length !== 0 ? (
       <div>
         <Button onClick={goToOnGoingBoard}>Rejoindre une retro en cours</Button>
@@ -413,6 +436,7 @@ function Retrospective() {
               </TableHead>
               <TableBody > {/*style={{cursor: "pointer"}}*/}
                 {rows.map((row) => (
+                  console.log(row),
                   <TableRow key={row.date}>
                     <TableCell component="th" scope="row">
                       {row.titleRetro}

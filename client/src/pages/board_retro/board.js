@@ -41,6 +41,7 @@ export const toastFail = (message) => {
 
 function GroupsCreation() {
   const [classStudents, setClassStudents] = useState();
+  const [titleRetro, setTitleRetro] = useState("") ;
   const [showSettings, setShowSettings] = useState(false);
   const [inRoom, setInRoom] = useState(false);
   const [columns, setColumns] = useState();
@@ -164,6 +165,7 @@ function GroupsCreation() {
             };
             ws.send(JSON.stringify(message));
             setClassStudents(user?.class.id);
+            setTitleRetro(res.data[0].retroTitle)
             setInRoom(true);
             setCourseChoose(res.data[0].course);
             setModeleChoose(res.data[0].modele);
@@ -191,6 +193,8 @@ function GroupsCreation() {
             };
             ws.send(JSON.stringify(message));
             setClassStudents(res.data[0].class);
+            console.log(res.data[0]);
+            setTitleRetro(res.data[0].retroTitle)
             setInRoom(true);
             setCourseChoose(res.data[0].course);
             setModeleChoose(res.data[0].modele);
@@ -455,10 +459,15 @@ function GroupsCreation() {
     ws.send(JSON.stringify(message));
   };
 
+  // ! 
   const handlePopupData = (data) => {
+    console.log("4444444");
+    console.log(data.titleRetro);
+    console.log("4444444");
     setShowSettings(false);
     setInRoom(true);
     setCourseChoose(data.courseChoose);
+    setTitleRetro(data.titleRetro)
     setClassStudents(data.courseChoose.data.courseClass.id);
     setModeleChoose(data.modeleChoose);
   };
@@ -468,11 +477,15 @@ function GroupsCreation() {
   };
 
   async function saveRetro() {
+    console.log(user?.firstname + " " + user?.lastname);
+    console.log(titleRetro);
     axios.post("http://localhost:5050/retro/saveRetro", {
       retro: columns,
+      titleRetro: titleRetro,
       classRetro: classStudents,
       course: courseChoose.id,
       po_id: user.id,
+      po_name: user?.firstname + " " + user?.lastname
     });
 
     try {

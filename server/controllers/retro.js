@@ -75,12 +75,16 @@ const deleteRoom = async (req, res) => {
 };
 
 const saveRetro = async (req, res) => {
-  const { retro, classRetro, course, po_id } = req.body;
+  const { retro, classRetro, course, po_id, po_name, titleRetro } = req.body;
+  console.log(titleRetro);
   try {
     await db.collection("retro").doc().set({
       class: classRetro,
+      titleRetro: titleRetro,
       course: course,
       po_id: po_id,
+      po_name: po_name,
+      date: new Date().toISOString(),
       retro: retro,
     });
     res.status(200).send("Retro successfully saved!");
@@ -151,6 +155,7 @@ const room = async (connection) => {
           po_id: response.data.po_id,
           class: response.data.class,
           type: "retro",
+          retroTitle : response.data.retroTitle,
           course: response.data.course,
           modele: response.data.modele,
         });

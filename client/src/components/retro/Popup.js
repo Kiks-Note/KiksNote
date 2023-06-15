@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   FormControl,
+  TextField,
   InputLabel,
   MenuItem,
   Select,
@@ -11,6 +12,7 @@ import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import "../groups/Popup.scss";
 import axios from "axios";
+import { Label } from "@mui/icons-material";
 
 export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const [classChoose, setClassChoose] = useState(" ");
@@ -18,6 +20,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
     data: { title: "Tous les cours" },
   });
   const [modeleChoose, setModeleChoose] = useState("Choisir un modèle");
+  const [retroTitle, setRetroTitle] = useState("");
 
   const popUpRef = useRef();
   const [courses, setCourses] = useState([]);
@@ -59,10 +62,12 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
       onPopupData({
         courseChoose: courseChoosed,
         modeleChoose: modeleChoose,
+        titleRetro: retroTitle
       });
       createRoom({
         po_id: user.id,
         class: classChoose,
+        retroTitle: retroTitle,
         name: user?.firstname,
         course: courseChoosed,
         modele: modeleChoose,
@@ -84,6 +89,12 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         }}
       >
         <p>Création de Retrospective</p>
+        <FormControl  sx={{ m: 1, minWidth: 120 }}>
+        <InputLabel id="demo-simple-select-helper-label">Titre </InputLabel>
+          <TextField
+            onChange={(e) => setRetroTitle(e.target.value)}
+          />
+        </FormControl>
         <FormControl sx={{ m: 1, minWidth: 120 }}>
           <InputLabel id="demo-simple-select-helper-label">Cours</InputLabel>
           <Select
