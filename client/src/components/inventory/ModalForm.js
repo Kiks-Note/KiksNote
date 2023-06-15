@@ -44,8 +44,16 @@ export default function ModalForm({open, toggleDrawerAdd}) {
 
   const Dropzone = () => {
     const {getRootProps, getInputProps} = useDropzone({
-      accept: "image/*",
+      accept: {
+        "image/jpeg": [],
+        "image/png": [],
+      },
       onDrop: (acceptedFiles) => {
+        if (acceptedFiles[0] === undefined) {
+          toast.error("Veuillez sélectionner un fichier valide");
+          return;
+        }
+
         const url = URL.createObjectURL(acceptedFiles[0]);
         setImage(acceptedFiles[0]);
         setFileUrl(url);
@@ -356,7 +364,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
           <CardMedia
             sx={{marginBottom: 2, borderRadius: 2}}
             component="img"
-            height="140"
+            height="150"
             image={imageType === 1 ? image : fileUrl}
             alt=""
           />
