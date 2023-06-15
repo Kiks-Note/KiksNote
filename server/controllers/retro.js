@@ -12,8 +12,6 @@ const pastelColors = [
 ];
 let indexColor = 0;
 
-console.log("in retro controller");
-
 const getAll = async (req, res) => {
   const allRetrosQuery = await db.collection("retro").get();
 
@@ -148,7 +146,6 @@ const room = async (connection) => {
 
         break;
       case "createRoom":
-        console.log("createRoom");
         const newRoomRef = db.collection("rooms").doc();
         newRoomRef.set({
           po_id: response.data.po_id,
@@ -201,7 +198,6 @@ const room = async (connection) => {
 
         break;
       case "joinRoom":
-        console.log("joinRoom :", response.data.userID);
         const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
 
         if (indexColor >= pastelColors.length) {
@@ -252,13 +248,10 @@ const room = async (connection) => {
         sendToAllClients(messageClose, response.data.class);
         currentRooms.delete(response.data.class);
         clients.delete(response.data.class);
-        console.log("Room closed");
         break;
       case "leaveRoom":
         const userRoom = currentRooms.get(response.data.class) || defaultRoom;
         userRoom.users.delete(response.data.userID);
-
-        console.log("User left room", response.data.userID);
 
         currentRooms.set(response.data.class, userRoom);
 

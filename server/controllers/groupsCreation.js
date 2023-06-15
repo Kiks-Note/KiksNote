@@ -132,7 +132,6 @@ const getGroupsPo = async (req, res) => {
     .get();
 
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  console.log(documents);
 
   res.status(200).send(documents);
 };
@@ -148,7 +147,6 @@ const getGroups = async (req, res) => {
 
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-  console.log(documents);
   res.status(200).send(documents);
 };
 
@@ -210,7 +208,6 @@ const room = async (connection) => {
 
         break;
       case "createRoom":
-        console.log("createRoom");
         const newRoomRef = db.collection("rooms").doc();
         newRoomRef.set({
           po_id: response.data.po_id,
@@ -261,7 +258,6 @@ const room = async (connection) => {
 
         break;
       case "joinRoom":
-        console.log("joinRoom :", response.data.userID);
         const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
 
         if (indexColor >= pastelColors.length) {
@@ -311,13 +307,10 @@ const room = async (connection) => {
         sendToAllClients(messageClose, response.data.class);
         currentRooms.delete(response.data.class);
         clients.delete(response.data.class);
-        console.log("Room closed");
         break;
       case "leaveRoom":
         const userRoom = currentRooms.get(response.data.class) || defaultRoom;
         userRoom.users.delete(response.data.userID);
-
-        console.log("User left room", response.data.userID);
 
         currentRooms.set(response.data.class, userRoom);
 
