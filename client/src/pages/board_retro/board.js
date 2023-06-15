@@ -194,8 +194,7 @@ function GroupsCreation() {
               break;
             case "closeRoom":
               setInRoom(false);
-              navigate("/groupes");
-              ws.close();
+              navigate("/");
               break;
             case "updateCol":
               setColumns(messageReceive.data.currentRoom.columns);

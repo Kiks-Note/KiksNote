@@ -100,13 +100,6 @@ export default function MiniDrawer({ element }) {
   const colorMode = React.useContext(ColorModeContext);
   const theme = useTheme();
   const navigate = useNavigate();
-  let userStatusForRetro = "/retro";
-
-  if (user?.status == "po") {
-    userStatusForRetro = "/retro";
-  } else if (user?.status == "etudiant") {
-    userStatusForRetro = "/retroStudent";
-  }
 
   // List of page for the drawer
   const [listPage, setListPage] = React.useState([
@@ -183,7 +176,7 @@ export default function MiniDrawer({ element }) {
               {
                 id: 13,
                 name: "Coding Retro",
-                route: "#",
+                route: "/board",
                 icon: (
                   <WbIridescentIcon
                     sx={{ color: theme.palette.custom.iconDrawer }}

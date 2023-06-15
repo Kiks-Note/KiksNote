@@ -301,16 +301,14 @@ const room = async (connection) => {
 
         break;
       case "closeRoom":
-        currentRooms.delete(response.data.class);
-        clients.delete(response.data.class);
-        console.log("Room closed");
-
         const messageClose = {
           type: "closeRoom",
         };
 
         sendToAllClients(messageClose, response.data.class);
-
+        currentRooms.delete(response.data.class);
+        clients.delete(response.data.class);
+        console.log("Room closed");
         break;
       case "leaveRoom":
         const userRoom = currentRooms.get(response.data.class) || defaultRoom;
