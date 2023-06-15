@@ -1,34 +1,32 @@
-.profilBox {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  opacity: 0.8;
+//$url: url(https://images.unsplash.com/photo-1544070078-a212eda27b49?ixlib=rb-1.2.1&q=85&fm=jpg&crop=entropy&cs=srgb&ixid=eyJhcHBfaWQiOjE0NTg5fQ);
+$fake-b: 5%; // fake border-width
+$c: rgba(#000, 0.03);
+$blur: blur(12px);
+
+.background {
+  overflow: hidden;
   position: relative;
-}
-.itemBox {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  padding: 1rem;
-}
-.linkBox {
-  display: flex;
-  flex-direction: row;
-  padding: 1rem;
-}
-.menuItem {
-  margin: 2px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding: 10px;
-  width: 100%;
+  padding-left: $fake-b;
+  padding-right: $fake-b;
+  height: 20vh;
+  --img: var(--url) 50% / cover;
+  background: var(--img) padding-box /* background-origin */ content-box /* background-clip */, linear-gradient($c, $c);
+  font-size: 2em;
+
+  &:before {
+    position: absolute;
+    z-index: -1; /* put it *behind* parent */
+    /* zero all offsets */
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: var(--img);
+    /* -webkit-prefixed version
+     * still needed for
+     * some mobile browsers 💔😭 */
+    -webkit-filter: $blur;
+    filter: $blur;
+    content: "";
+  }
 }

@@ -3,6 +3,7 @@
     flex-direction: column;
     width: 55%;
     padding: 30px;
+    padding-top: 0;
 }
 
 .list-students-project-linked {
@@ -71,8 +72,9 @@
 .button-project {
     display: flex;
     padding: 10px;
-    justify-content: center;
-    min-width: 200px;
+    align-items: center;
+    justify-content: space-around;
+    min-width: 350px;
 }
 
 //disable button open file in react pdf viewer

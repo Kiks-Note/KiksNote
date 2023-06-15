@@ -85,6 +85,7 @@ function MostParticipantsChart() {
 
   return (
     <>
+      <h2>Top des élèves avec le plus de participations</h2>
       {mostParticipantsData.labels && mostParticipantsData.labels.length > 0 ? (
         <Radar
           data={mostParticipantsData}

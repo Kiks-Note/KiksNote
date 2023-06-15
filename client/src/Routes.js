@@ -1,35 +1,44 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Blog from "./pages/blog/Blog";
-import Presence from "./pages/presence/Presence";
-import Groups from "./pages/groups/Groups";
-import PrivateRoutes from "./utils/PrivateRoutes";
-import Cours from "./pages/ressources/Cours/Cours";
-import CoursInfo from "./pages/ressources/Cours/CoursInfo";
-import PublicRoutes from "./utils/PublicRoutes";
-import Profil from "./pages/profil/Profil";
-import NotFound from "./pages/not_found/NotFound";
-import TabBoard from "./pages/board_scrum/tabs/TabBoard";
+import ArbreFonctionnel from "./pages/agile/ArbreFonctionnel";
 import FolderAgile from "./pages/agile/FolderAgile";
-import Jpo from "./pages/ressources/jpo/Jpo";
-import JpoInfo from "./pages/ressources/jpo/JpoInfo";
-import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
-import StudentsProjects from "./pages/ressources/students_project/StudentsProjects";
-import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
+import Blog from "./pages/blog/Blog";
+import DetailBlog from "./pages/blog/DetailBlog";
+import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
+import GroupsDisplay from "./pages/groups/GroupsDisplay";
+import GroupsCreation from "./pages/groups/Groups";
 import Home from "./pages/home/Home";
+import DeviceHistory from "./pages/inventory/DeviceHistory";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
 import InventoryDevices from "./pages/inventory/InventoryDevices";
 import InventoryHome from "./pages/inventory/InventoryHome";
+import InventoryIdeas from "./pages/inventory/InventoryIdeas";
 import InventoryList from "./pages/inventory/InventoryList";
 import InventoryListBorrowed from "./pages/inventory/InventoryListBorrowed";
+import InventoryPendingRequests from "./pages/inventory/InventoryPendingRequests";
 import InventoryRequests from "./pages/inventory/InventoryRequests";
 import Login from "./pages/login/Login";
+import AskResetPassword from "./pages/resetpassword/AskResetPassword";
+import NotFound from "./pages/not_found/NotFound";
+import Presence from "./pages/presence/Presence";
+import Profil from "./pages/profil/Profil";
 import Register from "./pages/register/Register";
-import DetailBlog from "./pages/blog/DetailBlog";
-import DeviceHistory from "./pages/inventory/DeviceHistory";
+import DetailTuto from "./pages/blog/DetailTuto";
+import Cours from "./pages/ressources/Cours/Cours";
+import CoursInfo from "./pages/ressources/Cours/CoursInfo";
+import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
+import Jpo from "./pages/ressources/jpo/Jpo";
+import JpoInfo from "./pages/ressources/jpo/JpoInfo";
+import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
+import StudentsProjects from "./pages/ressources/students_project/StudentsProjects";
 import Retrospective from "./pages/retrospective/Retrospective";
-import ArbreFonctionnel from "./pages/agile/ArbreFonctionnel";
-
+import RetrospectiveStudent from "./pages/retrospective/RetrospectiveStudent";
+import PrivateRoutes from "./utils/PrivateRoutes";
+import PublicRoutes from "./utils/PublicRoutes";
+import Board from "./pages/board_retro/board";
+import BoardReview from "./pages/board_retro/boardReview";
+import Calendar from "./pages/calendar/Calendar";
+import CalendarPedago from "./pages/calendar/CalendarPedago";
 
 function RoutesProvider() {
   return (
@@ -40,23 +49,22 @@ function RoutesProvider() {
         <Route element={<PublicRoutes />}>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
+          <Route path="/askresetpassword" element={<AskResetPassword />} />
           <Route path="/arbre" element={<ArbreFonctionnel />} />
-
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
           <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groupes" element={<Groups />} />
+          <Route path="/groupes" element={<GroupsDisplay />} />
+          <Route path="/groupes/creation" element={<GroupsCreation />} />
           <Route path="/" element={<Home />} />
           <Route path="/appel" element={<Appel />} />
-          <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groups" element={<Groups />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
-          <Route path="/" element={<Home />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
+          <Route path="/tuto/:id" element={<DetailTuto />} />
 
-          <Route path="/profil" element={<Profil />} />
+          <Route path="/profil/:id" element={<Profil />} />
 
           {/* 404 Page */}
           <Route path="/jpo" element={<Jpo />} />
@@ -70,27 +78,39 @@ function RoutesProvider() {
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
 
-
-
-
           <Route path="/agile" element={<FolderAgile />} />
           <Route path="/retro" element={<Retrospective />} />
+          <Route path="/board" element={<Board />} />
+          <Route path="/boardReview" element={<BoardReview />} />
 
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
+          <Route path="/inventory/ideas" element={<InventoryIdeas />} />
+          <Route path="/inventory/ideas/:status" element={<InventoryIdeas />} />
+          <Route path="/inventory/ideas/:status" element={<InventoryIdeas />} />
           <Route path="/inventory/requests" element={<InventoryRequests />} />
           <Route path="/inventory/devices" element={<InventoryDevices />} />
           <Route
             path="/inventory/admin/dashboard"
             element={<InventoryAdminDashboard />}
           />
+          {/* <Route
+            path="/inventory/device/:deviceId"
+            element={<PhoneRequestDevice />}
+          /> */}
 
           <Route path="/inventory/admin/list" element={<InventoryList />} />
           <Route
             path="/inventory/admin/borrowed"
             element={<InventoryListBorrowed />}
           />
+          <Route
+            path="/inventory/requests/:status"
+            element={<InventoryPendingRequests />}
+          />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
+          <Route path="/calendrier" element={<Calendar />} />
+          <Route path="/calendrier/:id" element={<CalendarPedago />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

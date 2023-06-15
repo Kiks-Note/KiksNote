@@ -15,6 +15,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Tooltip from "@mui/material/Tooltip";
 
 import GroupsIcon from "@mui/icons-material/Groups";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -100,6 +101,14 @@ export default function MiniDrawer({ element }) {
   const colorMode = React.useContext(ColorModeContext);
   const theme = useTheme();
   const navigate = useNavigate();
+  let userStatusForRetro = "/retro";
+
+  if (user?.status == "po") {
+    userStatusForRetro = "/retro";
+  } else if (user?.status == "etudiant") {
+    userStatusForRetro = "/retroStudent";
+  }
+
   // List of page for the drawer
   const [listPage, setListPage] = React.useState([
     {
@@ -109,7 +118,7 @@ export default function MiniDrawer({ element }) {
       children: [
         {
           id: 9,
-          name: "Fil d'actu",
+          name: "JPO",
           route: "/jpo",
           icon: <ListAltIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
         },
@@ -134,7 +143,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 2,
       name: "Profil",
-      route: "/profil",
+      route: `/profil/${user?.id}`,
       icon: <Person2Icon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {
@@ -148,42 +157,54 @@ export default function MiniDrawer({ element }) {
     {
       id: 4,
       name: "Calendrier",
-      route: "#",
+      route: "/calendrier",
       icon: (
         <CalendarTodayIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),
     },
-    {
-      id: 5,
-      name: "Agile",
-      icon: <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
-      children: [
-        {
-          id: 12,
-          name: "Coding Board",
-          route: "/tableau-de-bord",
-          icon: (
-            <DashboardIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-          ),
-        },
-        {
-          id: 13,
-          name: "Coding Retro",
-          route: "#",
-          icon: (
-            <WbIridescentIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-          ),
-        },
-        {
-          id: 14,
-          name: "Coding Agile",
-          route: "/agile",
-          icon: (
-            <TimelineIcon sx={{ color: theme.palette.custom.iconDrawer }} />
-          ),
-        },
-      ],
-    },
+    ...(user && user?.status !== "Pédago"
+      ? [
+          {
+            id: 5,
+            name: "Agile",
+            icon: (
+              <BallotIcon sx={{ color: theme.palette.custom.iconDrawer }} />
+            ),
+            children: [
+              {
+                id: 12,
+                name: "Coding Board",
+                route: "/tableau-de-bord",
+                icon: (
+                  <DashboardIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
+              },
+              {
+                id: 13,
+                name: "Coding Retro",
+                route: "#",
+                icon: (
+                  <WbIridescentIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
+              },
+              {
+                id: 14,
+                name: "Coding Agile",
+                route: "/agile",
+                icon: (
+                  <TimelineIcon
+                    sx={{ color: theme.palette.custom.iconDrawer }}
+                  />
+                ),
+              },
+            ],
+          },
+        ]
+      : []),
     {
       id: 6,
       name: "Inventaire",
@@ -193,7 +214,7 @@ export default function MiniDrawer({ element }) {
     {
       id: 7,
       name: "Groupes",
-      route: "#",
+      route: "/groupes/creation",
       icon: <GroupsIcon sx={{ color: theme.palette.custom.iconDrawer }} />,
     },
     {
@@ -296,15 +317,17 @@ export default function MiniDrawer({ element }) {
                   }}
                   onClick={() => handleToggle(page.id, page.route)}
                 >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {page.icon}
-                  </ListItemIcon>
+                  <Tooltip title={page.name} placement="right">
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {page.icon}
+                    </ListItemIcon>
+                  </Tooltip>
                   <ListItemText
                     sx={{ display: open ? "block" : "none" }}
                     primary={page.name}
@@ -341,15 +364,17 @@ export default function MiniDrawer({ element }) {
                             }}
                             onClick={() => handleToggle(child.id, child.route)}
                           >
-                            <ListItemIcon
-                              sx={{
-                                minWidth: 0,
-                                mr: open ? 3 : "auto",
-                                justifyContent: "center",
-                              }}
-                            >
-                              {child.icon}
-                            </ListItemIcon>
+                            <Tooltip title={child.name} placement="right">
+                              <ListItemIcon
+                                sx={{
+                                  minWidth: 0,
+                                  mr: open ? 3 : "auto",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                {child.icon}
+                              </ListItemIcon>
+                            </Tooltip>
                             <ListItemText
                               primary={child.name}
                               sx={{ opacity: open ? 1 : 0 }}
@@ -386,15 +411,17 @@ export default function MiniDrawer({ element }) {
                 }}
                 onClick={handleLogout}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {page.icon}
-                </ListItemIcon>
+                <Tooltip title={page.name} placement="right">
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : "auto",
+                      justifyContent: "center",
+                    }}
+                  >
+                    {page.icon}
+                  </ListItemIcon>
+                </Tooltip>
                 <ListItemText
                   primary={page.name}
                   sx={{ opacity: open ? 1 : 0 }}

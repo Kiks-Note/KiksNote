@@ -20,7 +20,7 @@ export default function CustomSnackbar({
         onClick={onClickCheck}
         className="snackbar-button-green"
       >
-        <CheckIcon fontSize="medium" />
+        <CheckIcon fontSize="medium" color="success" />
       </IconButton>
       <IconButton
         size="small"
@@ -28,7 +28,7 @@ export default function CustomSnackbar({
         onClick={onClickClose}
         className="snackbar-button-red"
       >
-        <CloseIcon fontSize="medium" />
+        <CloseIcon fontSize="medium" color="error" />
       </IconButton>
     </React.Fragment>
   );
@@ -40,6 +40,17 @@ export default function CustomSnackbar({
       onClose={onClose}
       message={message}
       action={action}
+      sx={{
+        "& .MuiSnackbarContent-root": {
+          backgroundColor: "#0f0f0f",
+          color: "#fff",
+        },
+
+        "& .MuiSnackbarContent-message": {
+          fontSize: "14px",
+          fontFamily: "poppins-regular",
+        },
+      }}
     />
   );
 }

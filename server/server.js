@@ -39,7 +39,7 @@ var upload = multer({
   },
 });
 
-const { retroRoutesWsNeeded, retroRoutesWsNotNeeded } = require("./retroRoutes");
+const { retroRoutesWsNeeded } = require("./retroRoutes");
 
 app.use(express.json());
 app.use(cors());
@@ -54,38 +54,46 @@ const wsI = new webSocketServer({
   httpServer: server,
   autoAcceptConnections: false,
 });
+const homeRoutes = require("./homeRoutes");
 const authRoutes = require("./authRoutes");
-const inventoryRoutes = require("./inventoryRoutes");
 const dashboardRoutes = require("./dashboardRoutes");
 const profilRoutes = require("./profilRoutes");
 const blogRoutes = require("./blogRoutes");
 const coursRoutes = require("./coursRoutes");
 const studentsProjectsRoutes = require("./studentsProjectsRoutes");
-const groupsRoute = require("./groupsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
-
-const groupsRoute = require("./groupsRoutes");
 const agileRoute = require("./agileRoutes");
-const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
+const inventoryRoutes = require("./inventoryRoutes");
+const calendarRoutes = require("./calendarRoutes");
 
-
-app.use("/groupes", groupsRoute);
+const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
+const groupNoWs = groupNoWsNeeded();
+app.use("/ressources", coursRoutes()); // --> Resssources Cours
+app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
+app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
+app.use("/ressources", technosRoutes()); // --> Resssources Technos
+app.use("/home", homeRoutes);
+app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
-app.use("/retro", retroRoutesNotNeeded);
+app.use("/groupes", groupNoWs);
+
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
 
-  app.use("/inventory", inventoryRoutes(connection, pathname));
+  //app.use("/inventory", inventoryRoutes(connection, pathname));
+  app.use("/blog", blogRoutes(connection, pathname, upload));
   app.use("/dashboard", dashboardRoutes(connection, pathname));
   app.use("/profil", profilRoutes(connection, pathname, upload));
+  app.use("/groupes", groupWsNeeded(connection, pathname));
   app.use("/agile", agileRoute(connection, pathname, upload));
-  app.use("/blog", blogRoutes(connection, pathname, upload));
-  app.use("/groupes", groupsRoute(connection, pathname));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
+  app.use("/calendar", calendarRoutes(connection, pathname));
+  require("./web/inventoryWebSocket")(connection, pathname);
+
   connection.on("error", (error) => {
     console.log(`WebSocket Error: ${error}`);
   });
@@ -95,12 +103,6 @@ wsI.on("request", (request) => {
     );
   });
 });
-
-
-app.use("/ressources", coursRoutes()); // --> Resssources Cours
-app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
-app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
-app.use("/ressources", technosRoutes()); // --> Resssources Technos
 
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
