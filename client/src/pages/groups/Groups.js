@@ -191,7 +191,6 @@ function GroupsCreation() {
 
           switch (messageReceive.type) {
             case "updateRoom":
-              console.log(messageReceive.data.currentRoom.users);
               displayUserCursorPositions(messageReceive.data.currentRoom.users);
               if (user.status === "etudiant") {
                 let number = parseInt(messageReceive.data.currentRoom.nbSPGrp);
@@ -275,6 +274,11 @@ function GroupsCreation() {
   }
 
   const onDragEnd = (result) => {
+    const message = {
+      type: "dragEnd",
+      data: { userID: user?.id, class: classStudents },
+    };
+    ws.send(JSON.stringify(message));
     if (!result.destination) return;
     const { source, destination } = result;
     if (notAllowed) {
@@ -358,6 +362,11 @@ function GroupsCreation() {
       setNotAllowed(true);
       return;
     }
+    const message = {
+      type: "dragStart",
+      data: { userID: user?.id, class: classStudents },
+    };
+    ws.send(JSON.stringify(message));
   };
 
   function resetButton() {
@@ -596,6 +605,7 @@ function GroupsCreation() {
                         viewBox="0 0 50 50"
                         width="30px"
                         height="30px"
+                        style={{ stroke: "#3d3d3d" }}
                       >
                         <path
                           fill={userData.color}
@@ -612,6 +622,8 @@ function GroupsCreation() {
                           fontSize: "12px",
                           borderRadius: "30px",
                           margin: "0px",
+                          border: "1px solid transparent",
+                          boxShadow: "0px 0px 5px #3d3d3d",
                         }}
                       >
                         <p
@@ -850,6 +862,17 @@ function GroupsCreation() {
                                                 ...provided.draggableProps
                                                   .style,
                                                 margin: "10px",
+                                                ...(userCursors?.get(item.id)
+                                                  ?.isDragging &&
+                                                  item.id !== user.id && {
+                                                    position: "absolute",
+                                                    left: userCursors?.get(
+                                                      item.id
+                                                    ).position?.x,
+                                                    top: userCursors?.get(
+                                                      item.id
+                                                    ).position?.y,
+                                                  }),
                                               }}
                                               className="post-it"
                                             >
@@ -994,6 +1017,17 @@ function GroupsCreation() {
                                                         .button,
                                                 color: "white",
                                                 margin: "10px",
+                                                ...(userCursors?.get(item.id)
+                                                  ?.isDragging &&
+                                                  item.id !== user.id && {
+                                                    position: "absolute",
+                                                    left: userCursors?.get(
+                                                      item.id
+                                                    ).position?.x,
+                                                    top: userCursors?.get(
+                                                      item.id
+                                                    ).position?.y,
+                                                  }),
                                                 ...provided.draggableProps
                                                   .style,
                                               }}

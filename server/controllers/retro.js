@@ -125,6 +125,8 @@ const room = async (connection) => {
           position: position,
           color: roomUsersToUpdate.users.get(userID)?.color,
           name: roomUsersToUpdate.users.get(userID)?.name,
+          isDragging: roomUsersToUpdate.users.get(userID)?.isDragging,
+          itemID: roomUsersToUpdate.users.get(userID)?.itemID,
         });
 
         currentRooms.set(response.data.class, roomUsersToUpdate);
@@ -168,6 +170,8 @@ const room = async (connection) => {
           position: null,
           color: colorC,
           name: response.data.name,
+          isDragging: false,
+          itemID: null,
         });
 
         currentRooms.set(response.data.class, roomUsersC);
@@ -210,6 +214,8 @@ const room = async (connection) => {
           position: null,
           color: color,
           name: response.data.name,
+          isDragging: false,
+          itemID: null,
         });
 
         currentRooms.set(response.data.class, roomUsers);
@@ -280,6 +286,50 @@ const room = async (connection) => {
 
         sendToAllClients(messageLeave, response.data.class);
 
+        break;
+      case "dragStart":
+        let roomDragStart =
+          currentRooms.get(response.data.class) || defaultRoom;
+        roomDragStart.users.get(response.data.userID).itemID =
+          response.data.itemID;
+        roomDragStart.users.get(response.data.userID).isDragging = true;
+        currentRooms.set(response.data.class, roomDragStart);
+
+        const messageDragStart = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(messageDragStart, response.data.class);
+        break;
+      case "dragEnd":
+        let roomDragEnd = currentRooms.get(response.data.class) || defaultRoom;
+        roomDragEnd.users.get(response.data.userID).isDragging = false;
+        roomDragEnd.users.get(response.data.userID).itemID = null;
+        currentRooms.set(response.data.class, roomDragEnd);
+
+        const messageDragEnd = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(messageDragEnd, response.data.class);
         break;
       case "updateCol":
         let roomCol = currentRooms.get(response.data.class) || defaultRoom;
