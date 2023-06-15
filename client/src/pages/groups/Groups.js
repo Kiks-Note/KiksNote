@@ -206,7 +206,7 @@ function GroupsCreation() {
               break;
             case "closeRoom":
               setInRoom(false);
-              navigate("/groupes");
+              navigate("/");
               ws.close();
               break;
             case "updateCol":
@@ -813,7 +813,7 @@ function GroupsCreation() {
                                   style={{
                                     backgroundColor: snapshot.isDraggingOver
                                       ? theme.palette.custom.selectBackground
-                                      : "#6b6b6b",
+                                      : theme.palette.background.paper,
                                     padding: "0px 50px",
                                     width: "100%",
                                     minHeight: 140,
@@ -878,9 +878,19 @@ function GroupsCreation() {
                                               }}
                                               className="post-it"
                                             >
-                                              <p>{item.firstname}</p>
+                                              <p
+                                                style={{
+                                                  textShadow:
+                                                    "0px 0px 10px rgba(0, 0, 0, 0.658)",
+                                                }}
+                                              >
+                                                {item.firstname}
+                                              </p>
                                               {!userCursors?.get(item.id) ? (
-                                                <p className="no-connect-label">
+                                                <p
+                                                  className="no-connect-label"
+                                                  style={{ margin: 0 }}
+                                                >
                                                   <WifiOffIcon />
                                                 </p>
                                               ) : null}
@@ -945,7 +955,7 @@ function GroupsCreation() {
                                   style={{
                                     backgroundColor: snapshot.isDraggingOver
                                       ? theme.palette.custom.selectBackground
-                                      : "#6b6b6b",
+                                      : theme.palette.background.paper,
                                     padding: 4,
                                     width: 250,
                                     borderRadius: "10px",
@@ -1036,9 +1046,19 @@ function GroupsCreation() {
                                               }}
                                               className="post-it"
                                             >
-                                              <p>{item.firstname}</p>
+                                              <p
+                                                style={{
+                                                  textShadow:
+                                                    "0px 0px 10px rgba(0, 0, 0, 0.658)",
+                                                }}
+                                              >
+                                                {item.firstname}
+                                              </p>
                                               {!userCursors?.get(item.id) ? (
-                                                <p className="no-connect-label">
+                                                <p
+                                                  className="no-connect-label"
+                                                  style={{ margin: 0 }}
+                                                >
                                                   <WifiOffIcon />
                                                 </p>
                                               ) : null}

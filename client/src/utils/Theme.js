@@ -62,6 +62,10 @@ export default function ToggleColorMode() {
             buttonHover: "#5f3dc4",
             selectBackground: "#a78ee6",
             card: "#341581",
+            modalTransparent:
+              mode === "light"
+                ? "rgba(190, 190, 190, 0.514)"
+                : "rgba(46, 46, 46, 0.514)",
           },
         },
         frFR,

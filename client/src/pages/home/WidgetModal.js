@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTheme } from "@mui/material";
 import "./WidgetModal.scss";
-import Call from "../../assets/img/call.svg";
 import Groups from "../../assets/img/groups.svg";
 import Class from "../../assets/img/class.svg";
 import Blog from "../../assets/img/blog.svg";
@@ -10,16 +9,21 @@ import Boards from "../../assets/img/boards.svg";
 import Retro from "../../assets/img/retro.svg";
 import Calendar from "../../assets/img/calendar.svg";
 import Agile from "../../assets/img/agile.svg";
+import JPO from "../../assets/img/JPO.svg";
+import Inventaire from "../../assets/img/inventory.svg";
+import Profil from "../../assets/img/profil.svg";
 import Widget from "../../components/widget/Widget";
 import WidgetSelection from "./WidgetSelectionModal";
 import SettingsIcon from "@mui/icons-material/Settings";
 import AddIcon from "@mui/icons-material/Add";
+import useFirebase from "../../hooks/useFirebase";
 const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
   const [showModal, setShowModal] = useState(false);
   const [showSelectionModal, setShowSelectionModal] = useState(false);
   const [card, setcard] = useState({});
 
   const theme = useTheme();
+  const user = useFirebase();
 
   const widgetList = {};
 
@@ -50,7 +54,10 @@ const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
   };
   return (
     <div>
-      <AddIcon onClick={handleOpenModal} style={{ marginTop: "45%", fontSize: "30" }}></AddIcon>
+      <AddIcon
+        onClick={handleOpenModal}
+        style={{ marginTop: "45%", fontSize: "30" }}
+      ></AddIcon>
       <SettingsIcon
         onClick={() => {
           handleEdit();
@@ -61,9 +68,10 @@ const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
         <div
           className="modal-overlay"
           style={{
-            backgroundColor: theme.palette.background.paper,
+            backgroundColor: theme.palette.custom.modalTransparent,
             padding: "50px",
-            overflowY: "scroll",
+            overflowY: "hidden",
+            overflowX: "scroll",
           }}
         >
           <div
@@ -74,58 +82,87 @@ const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
               padding: "10px",
               display: "flex",
               alignItems: "center",
-              overflow: "scroll",
             }}
           >
             <Widget
               image={Agile}
               text={"Analyse Agile"}
-              handleOpen={() => handleOpenSelectionModal(Agile, "Analyse Agile")}
-            ></Widget>
-            <Widget
-              image={Call}
-              text={"Appel"}
-              path={"/"}
-              handleOpen={() => handleOpenSelectionModal(Call, "Appel")}
+              path={"/agile"}
+              handleOpen={() =>
+                handleOpenSelectionModal(Agile, "Analyse Agile")
+              }
             ></Widget>
             <Widget
               image={Boards}
               text={"Boards"}
-              path={"/"}
+              path={"/tableau-de-bord"}
               handleOpen={() => handleOpenSelectionModal(Boards, "Boards")}
             ></Widget>
             <Widget
               image={Groups}
               text={"Groupes"}
-              path={"/"}
+              path={"/groupes/creation"}
               handleOpen={() => handleOpenSelectionModal(Groups, "Groupes")}
             ></Widget>
             <Widget
               image={Class}
-              text={"Classe"}
-              path={"/"}
+              text={"Cours"}
+              path={"/cours"}
               handleOpen={() => handleOpenSelectionModal(Class, "Classe")}
             ></Widget>
             <Widget
               image={Blog}
-              text={"blogs"}
-              path={"/"}
+              text={"Blogs"}
+              path={"/blog"}
               handleOpen={() => handleOpenSelectionModal(Blog, "Blogs")}
             ></Widget>{" "}
             <Widget
               image={Retro}
               text={"Rétrospective"}
-              path={"/"}
-              handleOpen={() => handleOpenSelectionModal(Retro, "Rétrospective")}
+              path={"/board"}
+              handleOpen={() =>
+                handleOpenSelectionModal(Retro, "Rétrospective")
+              }
+            ></Widget>{" "}
+            <Widget
+              image={Inventaire}
+              text={"Inventaire"}
+              path={"/inventory"}
+              handleOpen={() =>
+                handleOpenSelectionModal(Inventaire, "Inventaire")
+              }
             ></Widget>{" "}
             <Widget
               image={Calendar}
               text={"Calendrier"}
-              path={"/"}
-              handleOpen={() => handleOpenSelectionModal(Calendar, "Calendrier")}
+              path={"/calendrier"}
+              handleOpen={() =>
+                handleOpenSelectionModal(Calendar, "Calendrier")
+              }
             ></Widget>{" "}
-            <button onClick={handleCloseModal} style={{ position: "absolute", top: "5px", left: "5px" }}>
-              <CloseIcon />
+            <Widget
+              image={JPO}
+              text={"JPO"}
+              path={"/jpo"}
+              handleOpen={() => handleOpenSelectionModal(JPO, "jpo")}
+            ></Widget>{" "}
+            <Widget
+              image={Profil}
+              text={"Profil"}
+              path={`/profil/${user?.id}`}
+              handleOpen={() => handleOpenSelectionModal(Profil, "Profil")}
+            ></Widget>{" "}
+            <button
+              onClick={handleCloseModal}
+              style={{
+                position: "absolute",
+                top: "5px",
+                left: "5px",
+                backgroundColor: "transparent",
+                border: "none",
+              }}
+            >
+              <CloseIcon style={{ fill: "white" }} />
             </button>
           </div>
         </div>

@@ -15,20 +15,36 @@ function Home() {
   const [edition, setEdition] = useState(false);
   const addLayout = (newLayout) => {
     let randNumber = Math.floor(Math.random() * 1000);
-    var updatedLayout = { ...newLayout, i: randNumber + "%" + newLayout.img + " % " + newLayout.text };
+    var updatedLayout = {
+      ...newLayout,
+      i: randNumber + "%" + newLayout.img + " % " + newLayout.text,
+    };
 
-    var isUnique = layouts.every((layout) => layout.i !== updatedLayout.i);
-    while (!isUnique) {
-      let randNumber = Math.floor(Math.random() * 1000);
-      updatedLayout = { ...newLayout, i: randNumber + "%" + newLayout.img + " % " + newLayout.text };
-      isUnique = layouts.every((layout) => layout.i !== updatedLayout.i);
+    console.log(layouts);
+    if (layouts !== undefined && layouts.length >= 1) {
+      var isUnique = layouts.every((layout) => layout.i !== updatedLayout.i);
+      while (!isUnique) {
+        randNumber = Math.floor(Math.random() * 1000);
+        updatedLayout = {
+          ...newLayout,
+          i: randNumber + "%" + newLayout.img + " % " + newLayout.text,
+        };
+        isUnique = layouts.every((layout) => layout.i !== updatedLayout.i);
+        setLayouts((prevLayouts) => [...prevLayouts, updatedLayout]);
+      }
+    } else {
+      var emptyArray = [];
+      console.log(emptyArray.concat(updatedLayout));
+      setLayouts(emptyArray.concat(updatedLayout));
     }
-    setLayouts((prevLayouts) => [...prevLayouts, updatedLayout]);
+
     saveLayout();
   };
 
   const removeLayout = (layoutToRemove) => {
-    setLayouts((prevLayouts) => prevLayouts.filter((layout) => layout.i !== layoutToRemove.i));
+    setLayouts((prevLayouts) =>
+      prevLayouts.filter((layout) => layout.i !== layoutToRemove.i)
+    );
     saveLayout();
   };
 
@@ -70,7 +86,9 @@ function Home() {
   useEffect(() => {
     const getLayout = async () => {
       try {
-        const response = await axios.get(`http://localhost:5050/home/${user.id}`);
+        const response = await axios.get(
+          `http://localhost:5050/home/${user.id}`
+        );
         setLayouts(response.data.widgets);
       } catch (error) {
         console.error(error);
@@ -78,11 +96,14 @@ function Home() {
     };
 
     getLayout();
-  }, []);
+  }, [user.id]);
 
   const saveLayout = async () => {
     try {
-      const response = await axios.post(`http://localhost:5050/home/save/${user.id}/widgets`, layouts);
+      const response = await axios.post(
+        `http://localhost:5050/home/save/${user.id}/widgets`,
+        layouts
+      );
     } catch (error) {
       console.error(error);
     }
@@ -149,7 +170,12 @@ function Home() {
                         onClick={() => {
                           removeLayout(card);
                         }}
-                        style={{ position: "absolute", top: "0", right: "0", color: "red" }}
+                        style={{
+                          position: "absolute",
+                          top: "0",
+                          right: "0",
+                          color: "red",
+                        }}
                       />
                     )}
                     <img

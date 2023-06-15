@@ -19,14 +19,20 @@
     justify-content: center;
     align-items: center;
     font-size: 20px;
+    margin: 0;
     padding: 10px;
     white-space: nowrap;
+    box-shadow: 0 0 5px 10px black;
     .no-connect-label {
       position: absolute;
       bottom: 0;
       left: 0;
       font-size: 9px;
-      margin-left: 5px;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
     }
     .student-cross {
       position: absolute;

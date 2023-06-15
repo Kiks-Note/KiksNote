@@ -46,7 +46,7 @@ function GroupsCreation() {
   const [courseChoose, setCourseChoose] = useState();
   const [notAllowed, setNotAllowed] = useState(false);
   const [userCursors, setUserCursors] = useState();
-  const [nbUserConnected, setNbUserConnected] = useState(0);
+  const [nbUserConnected, setNbUserConnected] = useState(1);
   const [showEdit, setShowEdit] = useState(false);
   const [postItId, setPostItId] = useState();
 
@@ -126,6 +126,7 @@ function GroupsCreation() {
             setClassStudents(user?.class.id);
             setInRoom(true);
             setCourseChoose(res.data[0].course);
+            fetchAndSetData();
           }
         });
     } catch (error) {
@@ -152,6 +153,7 @@ function GroupsCreation() {
             setClassStudents(res.data[0].class);
             setInRoom(true);
             setCourseChoose(res.data[0].course);
+            fetchAndSetData();
           }
         });
     } catch (error) {
@@ -695,7 +697,7 @@ function GroupsCreation() {
                                               >
                                                 <div class="front face">
                                                   <div class="strategy">
-                                                    {item.userName}
+                                                    {item.userNam}
                                                   </div>
                                                 </div>
                                                 <div class="back face center">
