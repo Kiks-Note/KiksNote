@@ -356,14 +356,14 @@ export const TableWithHistory = () => {
   useEffect(() => {
     (async () => {
       await axios
-        .get("http://localhost:5050/inventory")
+        .get("http://212.73.217.176:5050/inventory")
         .then(async (inventoryRes) => {
           const inventoryItems = inventoryRes.data;
           const _data = [];
           for (const item of inventoryItems) {
             try {
               const _history = await axios.get(
-                `http://localhost:5050/inventory/requests/${item.id}`
+                `http://212.73.217.176:5050/inventory/requests/${item.id}`
               );
               const d = {device: item, history: _history.data};
               _data.push(d);

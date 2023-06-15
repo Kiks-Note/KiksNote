@@ -21,7 +21,7 @@ export default function CardBlog({ blog, tags }) {
 
   const deleteBlog = function () {
     axios
-      .delete(`http://localhost:5050/blog/${blog.id}`)
+      .delete(`http://212.73.217.176:5050/blog/${blog.id}`)
       .then((res) => {
         console.log(res);
       })
@@ -38,7 +38,7 @@ export default function CardBlog({ blog, tags }) {
       blog.visibility = "pending";
     }
     axios
-      .put(`http://localhost:5050/blog/${blog.id}/visibility`, {
+      .put(`http://212.73.217.176:5050/blog/${blog.id}/visibility`, {
         visibility: blog.visibility,
       })
       .then((res) => {

@@ -37,7 +37,7 @@ function TopCreatorsChart() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5050/blog/stats/created_by"
+        "http://212.73.217.176:5050/blog/stats/created_by"
       );
       const blogs = response.data;
       console.log(blogs);
@@ -96,7 +96,7 @@ function TopCreatorsChart() {
   const fetchUserDetails = async (userIds) => {
     try {
       const response = await axios.post(
-        "http://localhost:5050/blog/participant",
+        "http://212.73.217.176:5050/blog/participant",
         {
           userIds: userIds,
         }

@@ -24,7 +24,7 @@ function InventoryPendingRequests() {
   useEffect(() => {
     loading &&
       (async () => {
-        const ws = new w3cwebsocket("ws://localhost:5050/pendingRequests");
+        const ws = new w3cwebsocket("ws://212.73.217.176:5050/pendingRequests");
 
         const wsReqs = (ws.onmessage = (e) => {
           const data = JSON.parse(e.data);
@@ -39,7 +39,7 @@ function InventoryPendingRequests() {
   const handleAcceptRequest = async (requestId, deviceId) => {
     await axios
       .put(
-        `http://localhost:5050/inventory/acceptRequest/${deviceId}/${requestId}`,
+        `http://212.73.217.176:5050/inventory/acceptRequest/${deviceId}/${requestId}`,
         {admin: user.id}
       )
       .then(() => {
@@ -54,7 +54,7 @@ function InventoryPendingRequests() {
   const handleRefuseRequest = async (requestId, deviceId) => {
     await axios
       .put(
-        `http://localhost:5050/inventory/refuseRequest/${deviceId}/${requestId}`,
+        `http://212.73.217.176:5050/inventory/refuseRequest/${deviceId}/${requestId}`,
         {admin: user.id}
       )
       .then(() => {

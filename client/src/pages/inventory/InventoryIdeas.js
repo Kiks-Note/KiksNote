@@ -31,7 +31,7 @@ const CommentModal = ({open, setOpen, ideaId}) => {
   const handleSend = async () => {
     try {
       await axios.post(
-        `http://localhost:5050/inventory/ideas/comment${ideaId}`,
+        `http://212.73.217.176:5050/inventory/ideas/comment${ideaId}`,
         {
           comment,
           userId: user.id,
@@ -139,7 +139,7 @@ const InventoryIdeas = () => {
       (async () => {
         try {
           const response = await axios.get(
-            `http://localhost:5050/inventory/ideas`
+            `http://212.73.217.176:5050/inventory/ideas`
           );
 
           if (params.status === "treated") {
@@ -177,7 +177,7 @@ const InventoryIdeas = () => {
 
   const handleAccept = async (id) => {
     try {
-      await axios.put(`http://localhost:5050/inventory/ideas/${id}/accept`);
+      await axios.put(`http://212.73.217.176:5050/inventory/ideas/${id}/accept`);
       toast.success("Idée acceptée");
       setLoading(true);
     } catch (error) {
@@ -188,7 +188,7 @@ const InventoryIdeas = () => {
 
   const handleRefuse = async (id) => {
     try {
-      await axios.put(`http://localhost:5050/inventory/ideas/${id}/refuse`);
+      await axios.put(`http://212.73.217.176:5050/inventory/ideas/${id}/refuse`);
       toast.success("Idée refusée");
       setLoading(true);
     } catch (error) {

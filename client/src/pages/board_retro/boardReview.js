@@ -131,7 +131,7 @@ export default function BoardReview() {
   };
 
   const sendAddedPostIt = async (newObjPostIt, columnId) => {
-    axios.post("http://localhost:5050/retro/addPostIt", {
+    axios.post("http://212.73.217.176:5050/retro/addPostIt", {
       newObjPostIt : newObjPostIt,
       columnId : columnId,
       //currentRetroIndex: currentRetroIndex
@@ -140,7 +140,7 @@ export default function BoardReview() {
 
   const sendEditPostit = async (categorie,selectedPostItIndex,postItText) => {
     console.log(currentRetroIndex);
-    await axios.put("http://localhost:5050/retro/editPostit", {
+    await axios.put("http://212.73.217.176:5050/retro/editPostit", {
       categorie : categorie,
       selectedPostItIndex: selectedPostItIndex,
       postItText: postItText,
@@ -150,7 +150,7 @@ export default function BoardReview() {
 
 
   const sendMovePostIt = async (source, destination) => {
-    axios.put("http://localhost:5050/retro/movePostIt", {
+    axios.put("http://212.73.217.176:5050/retro/movePostIt", {
       source: source,
       destination: destination,
    //  currentRetroIndex: currentRetroIndex

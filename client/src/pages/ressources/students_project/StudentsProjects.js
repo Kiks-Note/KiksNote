@@ -135,7 +135,7 @@ const StudentsProjects = () => {
   const createTechno = async () => {
     try {
       await axios
-        .post("http://localhost:5050/ressources/technos", {
+        .post("http://212.73.217.176:5050/ressources/technos", {
           name: technoName,
           image: technoImageBase64,
         })
@@ -168,7 +168,7 @@ const StudentsProjects = () => {
   const getAllTechnos = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/technos")
+        .get("http://212.73.217.176:5050/ressources/technos")
         .then((res) => {
           setTechnos(res.data);
         })
@@ -187,7 +187,7 @@ const StudentsProjects = () => {
   const getAllProjects = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/students-projects")
+        .get("http://212.73.217.176:5050/ressources/students-projects")
         .then((res) => {
           setProjects(res.data);
         })
@@ -206,7 +206,7 @@ const StudentsProjects = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/classes")
+        .get("http://212.73.217.176:5050/ressources/classes")
         .then((res) => {
           setAllclass(res.data);
         })
@@ -225,7 +225,7 @@ const StudentsProjects = () => {
   const getAllStudents = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/students")
+        .get("http://212.73.217.176:5050/ressources/students")
         .then((res) => {
           setAllStudents(res.data);
         })
@@ -265,7 +265,7 @@ const StudentsProjects = () => {
     } else {
       try {
         await axios
-          .post("http://localhost:5050/ressources/students-projects", {
+          .post("http://212.73.217.176:5050/ressources/students-projects", {
             StudentId: user?.id,
             nameProject: nameProject,
             RepoProjectLink: repoProjectLink,
@@ -313,7 +313,7 @@ const StudentsProjects = () => {
       setTimeout(async () => {
         try {
           const response = await axios.post(
-            "http://localhost:5050/ressources/refprojects",
+            "http://212.73.217.176:5050/ressources/refprojects",
             {
               projectId: projectId,
               counterRefToAdd: countRefAdd,
@@ -369,7 +369,7 @@ const StudentsProjects = () => {
       setTimeout(async () => {
         try {
           const response = await axios.post(
-            "http://localhost:5050/ressources/removerefprojects",
+            "http://212.73.217.176:5050/ressources/removerefprojects",
             {
               projectId: projectId,
               counterRefToRemove: counterRefToRemove,

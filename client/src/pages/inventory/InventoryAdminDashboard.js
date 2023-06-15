@@ -49,7 +49,7 @@ const CategoryDialog = ({open, setDialogOpen}) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await axios
-      .put("http://localhost:5050/inventory/category", {
+      .put("http://212.73.217.176:5050/inventory/category", {
         category,
       })
       .then((res) => {
@@ -94,7 +94,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/liveCategories");
+      const ws = new w3cwebsocket("ws://212.73.217.176:5050/liveCategories");
 
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
@@ -107,7 +107,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
   const deleteCategory = async (category) => {
     console.log(category);
     await axios
-      .delete(`http://localhost:5050/inventory/category/${category}`)
+      .delete(`http://212.73.217.176:5050/inventory/category/${category}`)
       .then((res) => {
         toast.success("Catégorie supprimée avec succès");
       })
@@ -121,7 +121,7 @@ const CategoriesList = ({open, setCategoriesListOpen}) => {
     const newCategory = document.getElementById(`category-${e}`).textContent;
 
     await axios
-      .put(`http://localhost:5050/inventory/category/${oldCategory}`, {
+      .put(`http://212.73.217.176:5050/inventory/category/${oldCategory}`, {
         newCategory,
       })
       .then((res) => {
@@ -372,7 +372,7 @@ const InventoryAdminDashboard = () => {
   useEffect(() => {
     (async () => {
       const _ideas = await axios
-        .get("http://localhost:5050/inventory/ideas")
+        .get("http://212.73.217.176:5050/inventory/ideas")
         .then((res) => {
           setIdeas(res.data);
         })
@@ -380,8 +380,8 @@ const InventoryAdminDashboard = () => {
           console.log(err);
         });
 
-      const ws = new w3cwebsocket("ws://localhost:5050/pendingRequests");
-      const ws2 = new w3cwebsocket("ws://localhost:5050/liveInventory");
+      const ws = new w3cwebsocket("ws://212.73.217.176:5050/pendingRequests");
+      const ws2 = new w3cwebsocket("ws://212.73.217.176:5050/liveInventory");
 
       const wsReqs = (ws.onmessage = (e) => {
         const data = JSON.parse(e.data);

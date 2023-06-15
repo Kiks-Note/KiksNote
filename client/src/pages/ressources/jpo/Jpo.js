@@ -107,7 +107,7 @@ const Jpo = () => {
   const getAllJpo = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/jpo")
+        .get("http://212.73.217.176:5050/ressources/jpo")
         .then((res) => {
           setAllJpo(res.data);
         })
@@ -126,7 +126,7 @@ const Jpo = () => {
   const getAllJpoParticipants = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/jpoparticipants")
+        .get("http://212.73.217.176:5050/ressources/jpoparticipants")
         .then((res) => {
           setAllJpoParticipants(res.data);
         })
@@ -162,7 +162,7 @@ const Jpo = () => {
     } else {
       try {
         await axios
-          .post("http://localhost:5050/ressources/jpo", {
+          .post("http://212.73.217.176:5050/ressources/jpo", {
             jpoTitle: nameJPO,
             jpoDescription: descriptionJPO,
             jpoThumbnail: jpoThumbnail,

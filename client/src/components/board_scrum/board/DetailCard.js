@@ -95,7 +95,7 @@ export default function DetailCard(props) {
         };
       }
       await axios.put(
-        "http://localhost:5050/dashboard/" +
+        "http://212.73.217.176:5050/dashboard/" +
           props.dashboardId +
           "/board/" +
           props.boardId +
@@ -136,7 +136,7 @@ export default function DetailCard(props) {
         };
       }
       await axios.put(
-        "http://localhost:5050/dashboard/" +
+        "http://212.73.217.176:5050/dashboard/" +
           props.dashboardId +
           "/board/" +
           props.boardId +
@@ -154,7 +154,7 @@ export default function DetailCard(props) {
   const deleteCard = async () => {
     try {
       await axios.delete(
-        "http://localhost:5050/dashboard/" +
+        "http://212.73.217.176:5050/dashboard/" +
           props.dashboardId +
           "/board/" +
           props.boardId +
@@ -177,7 +177,7 @@ export default function DetailCard(props) {
           (userId) => userId !== user.id
         );
         await axios.put(
-          "http://localhost:5050/dashboard/" +
+          "http://212.73.217.176:5050/dashboard/" +
             props.dashboardId +
             "/board/" +
             props.boardId +
@@ -206,7 +206,7 @@ export default function DetailCard(props) {
 
     try {
       await axios.post(
-        "http://localhost:5050/dashboard/" +
+        "http://212.73.217.176:5050/dashboard/" +
           props.dashboardId +
           "/board/" +
           props.boardId +

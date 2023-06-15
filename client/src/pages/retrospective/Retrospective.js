@@ -212,7 +212,7 @@ function Retrospective() {
 
   const getCourse = async (idOwner) => {
     console.log(user);
-    await axios.get(`http://localhost:5050/ressources/coursbyowner/${idOwner}`).then(
+    await axios.get(`http://212.73.217.176:5050/ressources/coursbyowner/${idOwner}`).then(
       (res) => {
         console.log(res.data)
         setAllCourses(res.data)
@@ -227,11 +227,11 @@ function Retrospective() {
 
 
   useEffect(() => {
-    const ws = new w3cwebsocket("ws://localhost:5050/retro");
+    const ws = new w3cwebsocket("ws://212.73.217.176:5050/retro");
     ws.onmessage = async (message) => {
       console.log("wsss");
       let allRetros = [];
-      await axios.get("http://localhost:5050/retro/getAll").then((res) => {
+      await axios.get("http://212.73.217.176:5050/retro/getAll").then((res) => {
         console.log(res.data);
         let responseRetros = res.data;
         responseRetros.forEach(retro => {
@@ -242,7 +242,7 @@ function Retrospective() {
         setDatas(res.data)
       })
 
-      axios.get("http://localhost:5050/retro/getAllRooms").then((res) => 
+      axios.get("http://212.73.217.176:5050/retro/getAllRooms").then((res) => 
       {
         console.log(res.data);
         if (res.data.length > 0) {
@@ -271,7 +271,7 @@ function Retrospective() {
 
   useEffect(() => {
     let allRetros = [];
-    axios.get("http://localhost:5050/retro/getAll").then((res) => {
+    axios.get("http://212.73.217.176:5050/retro/getAll").then((res) => {
       let responseRetros = res.data;
       setAllRetrosAtbeginning(res.data);
       responseRetros.forEach(retro => {
@@ -283,7 +283,7 @@ function Retrospective() {
 
     });
 
-    axios.get("http://localhost:5050/retro/getAllRooms").then((res) => 
+    axios.get("http://212.73.217.176:5050/retro/getAllRooms").then((res) => 
     {
       console.log(res.data);
       if (res.data.length > 0) {
@@ -305,7 +305,7 @@ function Retrospective() {
   const getAllRetroByUser = async () => {
     const userId = user.id;
 
-    await axios.get(`http://localhost:5050/retro/getAll`
+    await axios.get(`http://212.73.217.176:5050/retro/getAll`
     ).then((res) => {
       console.log("************");
       console.log(res.data)
@@ -356,7 +356,7 @@ function Retrospective() {
         choosenModel = PNABoard;
       }
 
-      await axios.post("http://localhost:5050/retro/newRetro",
+      await axios.post("http://212.73.217.176:5050/retro/newRetro",
         {
           dataRetro: choosenModel,
           titleRetro: boardTitle,

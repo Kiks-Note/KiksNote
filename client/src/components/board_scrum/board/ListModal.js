@@ -90,7 +90,7 @@ export default function ListModal({
         };
       }
       axios.put(
-        "http://localhost:5050/dashboard/" +
+        "http://212.73.217.176:5050/dashboard/" +
           dashboardId +
           "/board/" +
           boardId +
@@ -138,7 +138,7 @@ export default function ListModal({
       }
 
       await axios.put(
-        "http://localhost:5050/dashboard/" +
+        "http://212.73.217.176:5050/dashboard/" +
           dashboardId +
           "/board/" +
           boardId +

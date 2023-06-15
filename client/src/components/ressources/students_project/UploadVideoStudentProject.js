@@ -59,7 +59,7 @@ const UploadVideoPlayerDialog = (props) => {
       console.log(formData);
 
       await axios
-        .post(`http://localhost:5050/ressources/upload-media-project`, formData)
+        .post(`http://212.73.217.176:5050/ressources/upload-media-project`, formData)
         .then((res) => {
           console.log(res.data);
           if (

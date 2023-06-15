@@ -24,7 +24,7 @@ function BlogRepartition() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5050/blog/stats/distribution"
+        "http://212.73.217.176:5050/blog/stats/distribution"
       );
       const data = response.data;
 

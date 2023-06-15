@@ -70,7 +70,7 @@ function Home() {
   useEffect(() => {
     const getLayout = async () => {
       try {
-        const response = await axios.get(`http://localhost:5050/home/${user.id}`);
+        const response = await axios.get(`http://212.73.217.176:5050/home/${user.id}`);
         setLayouts(response.data.widgets);
       } catch (error) {
         console.error(error);
@@ -82,7 +82,7 @@ function Home() {
 
   const saveLayout = async () => {
     try {
-      const response = await axios.post(`http://localhost:5050/home/save/${user.id}/widgets`, layouts);
+      const response = await axios.post(`http://212.73.217.176:5050/home/save/${user.id}/widgets`, layouts);
     } catch (error) {
       console.error(error);
     }

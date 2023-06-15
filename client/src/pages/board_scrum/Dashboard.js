@@ -38,7 +38,7 @@ export default function Dashboard() {
   // * TO MAKE A BOARD IN FAVORI
   async function favorisTell(dashboardId) {
     try {
-      await axios.put(`http://localhost:5050/dashboard/favorite/${dashboardId}`);
+      await axios.put(`http://212.73.217.176:5050/dashboard/favorite/${dashboardId}`);
     } catch (error) {
       console.error(error);
       // throw new Error('Erreur lors de la mise à jour du document');
@@ -48,14 +48,14 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await axios.get(`http://localhost:5050/profil/student/${user.id}`);
+        const response = await axios.get(`http://212.73.217.176:5050/profil/student/${user.id}`);
         setMembers(response.data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
+    const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/dashboard`);
 
     wsComments.onopen = function (e) {
       wsComments.send(JSON.stringify({ id: user.id, status: user.status }));

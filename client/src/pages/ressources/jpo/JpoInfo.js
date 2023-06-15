@@ -142,7 +142,7 @@ const JpoInfo = () => {
   const getJpoById = async () => {
     try {
       await axios
-        .get(`http://localhost:5050/ressources/jpo/${id}`)
+        .get(`http://212.73.217.176:5050/ressources/jpo/${id}`)
         .then((res) => {
           setJpoData(res.data);
         })
@@ -172,7 +172,7 @@ const JpoInfo = () => {
   ) => {
     try {
       await axios
-        .put(`http://localhost:5050/ressources/jpo/${id}`, {
+        .put(`http://212.73.217.176:5050/ressources/jpo/${id}`, {
           jpoTitle: jpoTitle,
           jpoDescription: jpoDescription,
           jpoThumbnail: jpoThumbnail,
@@ -209,7 +209,7 @@ const JpoInfo = () => {
       const formData = new FormData();
       formData.append("file", pdfUrl);
       await axios
-        .put(`http://localhost:5050/ressources/jpopdf/${id}`, formData)
+        .put(`http://212.73.217.176:5050/ressources/jpopdf/${id}`, formData)
         .then((res) => {
           if (
             res.status === 200 &&
@@ -243,7 +243,7 @@ const JpoInfo = () => {
 
     try {
       await axios
-        .delete(`http://localhost:5050/ressources/jpo`, { data })
+        .delete(`http://212.73.217.176:5050/ressources/jpo`, { data })
         .then((res) => {
           console.log(res.data);
         })
@@ -262,7 +262,7 @@ const JpoInfo = () => {
   const getAllProjects = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/students-projects")
+        .get("http://212.73.217.176:5050/ressources/students-projects")
         .then((res) => {
           setProjects(res.data);
         })
@@ -341,7 +341,7 @@ const JpoInfo = () => {
   const deleteLinkedStudentProject = async (studentProjectId) => {
     try {
       await axios
-        .delete(`http://localhost:5050/ressources/jpo/${id}`, {
+        .delete(`http://212.73.217.176:5050/ressources/jpo/${id}`, {
           data: { studentProjectId },
         })
         .then((res) => {

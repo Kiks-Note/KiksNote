@@ -22,7 +22,7 @@ export default function CreateComment({ tutoId }) {
 
   const handlePublish = async () => {
     try {
-      const response = await axios.put("http://localhost:5050/blog/comments", {
+      const response = await axios.put("http://212.73.217.176:5050/blog/comments", {
         id: tutoId,
         userId: user.id,
         message,

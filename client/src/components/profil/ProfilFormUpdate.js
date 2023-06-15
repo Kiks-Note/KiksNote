@@ -70,7 +70,7 @@ function ProfilFormUpdate({ onClose, user }) {
     formData.append("description", data.description);
 
     try {
-      const response = await axios.put(`http://localhost:5050/profil/${user.id}`, formData, {
+      const response = await axios.put(`http://212.73.217.176:5050/profil/${user.id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

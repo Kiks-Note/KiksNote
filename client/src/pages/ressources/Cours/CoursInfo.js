@@ -146,7 +146,7 @@ const CoursInfo = () => {
   const getAllInstructors = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/instructors")
+        .get("http://212.73.217.176:5050/ressources/instructors")
         .then((res) => {
           setAllPo(res.data);
         })
@@ -165,7 +165,7 @@ const CoursInfo = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/classes")
+        .get("http://212.73.217.176:5050/ressources/classes")
         .then((res) => {
           setAllclass(res.data);
         })
@@ -184,7 +184,7 @@ const CoursInfo = () => {
   const getCoursId = async () => {
     try {
       await axios
-        .get(`http://localhost:5050/ressources/cours/${id}`)
+        .get(`http://212.73.217.176:5050/ressources/cours/${id}`)
         .then((res) => {
           setCoursData(res.data.data);
           setPdfLinksCours(res.data.data.pdfLinkCours);
@@ -205,7 +205,7 @@ const CoursInfo = () => {
   const getAllCours = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/cours")
+        .get("http://212.73.217.176:5050/ressources/cours")
         .then((res) => {
           setCourses(res.data);
         })
@@ -233,7 +233,7 @@ const CoursInfo = () => {
       formData.append("title", coursData.title);
       formData.append("courseId", id);
       await axios
-        .post(`http://localhost:5050/ressources/cours/upload-pdf`, formData)
+        .post(`http://212.73.217.176:5050/ressources/cours/upload-pdf`, formData)
         .then((res) => {
           if (res.status === 200) {
             toastSuccess(`Votre pdf cours a bien été uploadé`);
@@ -271,7 +271,7 @@ const CoursInfo = () => {
 
       await axios
         .post(
-          `http://localhost:5050/ressources/cours/backlog/upload-pdf`,
+          `http://212.73.217.176:5050/ressources/cours/backlog/upload-pdf`,
           formData
         )
         .then((res) => {
@@ -307,7 +307,7 @@ const CoursInfo = () => {
     const data = { courseClass, title, fileName, pdfLinkCours, courseId };
 
     return axios
-      .delete("http://localhost:5050/ressources/cours/delete-pdf", { data })
+      .delete("http://212.73.217.176:5050/ressources/cours/delete-pdf", { data })
       .then((res) => {
         if (res.status === 200) {
           toastSuccess(`Votre fichier cours ${fileName} a bien été supprimé`);
@@ -337,7 +337,7 @@ const CoursInfo = () => {
 
     try {
       const res = await axios.delete(
-        "http://localhost:5050/ressources/backlog/delete-pdf",
+        "http://212.73.217.176:5050/ressources/backlog/delete-pdf",
         { data }
       );
       if (res.status === 200) {
@@ -378,7 +378,7 @@ const CoursInfo = () => {
   ) => {
     try {
       axios
-        .put(`http://localhost:5050/ressources/cours/${id}`, {
+        .put(`http://212.73.217.176:5050/ressources/cours/${id}`, {
           title: title,
           description: description,
           dateStartSprint: dateStartSprint,
@@ -416,7 +416,7 @@ const CoursInfo = () => {
   const deleteCours = async (cours_id, courseClass, title) => {
     try {
       await axios
-        .delete(`http://localhost:5050/ressources/cours/${cours_id}`, {
+        .delete(`http://212.73.217.176:5050/ressources/cours/${cours_id}`, {
           data: { courseClass, title },
         })
         .then((res) => {
@@ -433,7 +433,7 @@ const CoursInfo = () => {
   const deleteLinkedCours = async (cours_id, linkedCourseName, courseName) => {
     try {
       await axios
-        .delete(`http://localhost:5050/ressources/linkcours/${cours_id}`)
+        .delete(`http://212.73.217.176:5050/ressources/linkcours/${cours_id}`)
         .then((res) => {
           if (
             res.status === 200 &&

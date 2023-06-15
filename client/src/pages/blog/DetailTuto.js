@@ -35,7 +35,7 @@ function DetailTuto() {
   };
 
   useEffect(() => {
-    const ws = new w3cwebsocket("ws://localhost:5050/blogDetail");
+    const ws = new w3cwebsocket("ws://212.73.217.176:5050/blogDetail");
     ws.onopen = function (e) {
       ws.send(JSON.stringify(id));
     };
@@ -93,7 +93,7 @@ function DetailTuto() {
   }, []);
   async function handleParticipate() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/participant`, {
+      await axios.put(`http://212.73.217.176:5050/blog/${data.id}/participant`, {
         userId: user.id,
       });
     } catch (err) {
@@ -103,7 +103,7 @@ function DetailTuto() {
 
   async function handleLike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/like`, {
+      await axios.put(`http://212.73.217.176:5050/blog/${data.id}/like`, {
         userId: user.id,
       });
     } catch (err) {
@@ -113,7 +113,7 @@ function DetailTuto() {
 
   async function handleDislike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/dislike`, {
+      await axios.put(`http://212.73.217.176:5050/blog/${data.id}/dislike`, {
         userId: user.id,
       });
     } catch (err) {

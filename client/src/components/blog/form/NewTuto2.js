@@ -41,7 +41,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
 
   const fetchTags = async () => {
     try {
-      const response = await axios.get("http://localhost:5050/blog/tag");
+      const response = await axios.get("http://212.73.217.176:5050/blog/tag");
       const tags = response.data;
       setTags(tags);
     } catch (error) {
@@ -230,7 +230,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     formData.append("tutoData", JSON.stringify(data));
     try {
       const response = await axios.post(
-        "http://localhost:5050/blog/tuto",
+        "http://212.73.217.176:5050/blog/tuto",
         formData,
         {
           headers: {

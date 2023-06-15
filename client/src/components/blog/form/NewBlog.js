@@ -32,7 +32,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
 
   const fetchTags = async () => {
     try {
-      const response = await axios.get("http://localhost:5050/blog/tag");
+      const response = await axios.get("http://212.73.217.176:5050/blog/tag");
       const tags = response.data;
       setTags(tags);
     } catch (error) {
@@ -107,7 +107,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     formData.append("blogData", JSON.stringify(blogData));
     try {
       const response = await axios.post(
-        "http://localhost:5050/blog",
+        "http://212.73.217.176:5050/blog",
         formData,
         {
           headers: {

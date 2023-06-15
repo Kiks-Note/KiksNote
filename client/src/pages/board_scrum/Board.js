@@ -25,7 +25,7 @@ export default function Board({ boardId, dashboardId }) {
 
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/board`);
+      const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/board`);
 
       wsComments.onopen = function (e) {
         wsComments.send(
@@ -48,7 +48,7 @@ export default function Board({ boardId, dashboardId }) {
 
   async function changeCardIndex(newColumns) {
     await axios.put(
-      "http://localhost:5050/dashboard/" +
+      "http://212.73.217.176:5050/dashboard/" +
         dashboardId +
         "/board/" +
         boardId +

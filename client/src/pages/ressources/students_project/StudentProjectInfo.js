@@ -95,7 +95,7 @@ const StudentProjectInfo = () => {
   const getBlogTutorials = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/blogstutos")
+        .get("http://212.73.217.176:5050/ressources/blogstutos")
         .then((res) => {
           setAllBlogTutos(res.data);
         })
@@ -115,7 +115,7 @@ const StudentProjectInfo = () => {
   const getBlogTutoById = async (blogTutoId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5050/ressources/blogstutos/${blogTutoId}`
+        `http://212.73.217.176:5050/ressources/blogstutos/${blogTutoId}`
       );
       setBlogTutoData(response.data);
       setHasAddedBlog(true);
@@ -131,7 +131,7 @@ const StudentProjectInfo = () => {
   const getStudentProjectById = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5050/ressources/studentsprojects/${projectid}`
+        `http://212.73.217.176:5050/ressources/studentsprojects/${projectid}`
       );
       setSelectedProjectData(response.data);
     } catch (error) {
@@ -146,7 +146,7 @@ const StudentProjectInfo = () => {
   ) => {
     try {
       await axios
-        .delete(`http://localhost:5050/ressources/linkblogtuto/${project_id}`)
+        .delete(`http://212.73.217.176:5050/ressources/linkblogtuto/${project_id}`)
         .then((res) => {
           if (
             res.status === 200 &&

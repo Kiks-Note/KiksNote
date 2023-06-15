@@ -10,7 +10,7 @@ export default function CalendarViewPedago() {
   useEffect(() => {
     const fetchSocket = async () => {
       const wsComments = new w3cwebsocket(
-        `ws://localhost:5050/calendar/pedago`
+        `ws://212.73.217.176:5050/calendar/pedago`
       );
 
       wsComments.onopen = function (e) {

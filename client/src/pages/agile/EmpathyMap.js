@@ -41,7 +41,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
   const [selectedColumnId, setSelectedColumnId] = useState(null);
   
   useEffect(()=>{
-    const wsComments = new w3cwebsocket(`ws://localhost:5050/empathy`);
+    const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/empathy`);
     // console.log('ws', wsComments);
     console.log(dashboardId);
     // wsComments.onopen = function (e) {
@@ -114,7 +114,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
 
   //!TODO
   const addPostIt = (columnId) => {
-    // axios.put("http://localhost:5050/agile/" + dashboardId + "/empathy_map", {
+    // axios.put("http://212.73.217.176:5050/agile/" + dashboardId + "/empathy_map", {
     //   content: newPostItContent,
     // });
     const newPostIt = {
@@ -141,7 +141,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
   const deletePostIt = async () => {
     try {
       await axios.delete(
-        "http://localhost:5050/agile/" +
+        "http://212.73.217.176:5050/agile/" +
           dashboardId +
           "/empathy/:id" +
           "/postit/"
@@ -153,7 +153,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
   //!TODO
   async function changeCardIndex(newColumns) {
     await axios.put(
-      "http://localhost:5050/agile/" +
+      "http://212.73.217.176:5050/agile/" +
         dashboardId +
         "/empathy/:id" +
         "/setPostit",
@@ -200,7 +200,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
           "empathy-map.pdf"
         );
 
-        return axios.post("http://localhost:5050/agile/empathy_map", formData);
+        return axios.post("http://212.73.217.176:5050/agile/empathy_map", formData);
       })
       .then((response) => {
         console.log("PDF envoyé avec succès !");

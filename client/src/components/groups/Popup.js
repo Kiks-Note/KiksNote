@@ -25,13 +25,13 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const theme = useTheme();
 
   const ws = useMemo(() => {
-    return new w3cwebsocket("ws://localhost:5050/groupes/creation");
+    return new w3cwebsocket("ws://212.73.217.176:5050/groupes/creation");
   }, []);
 
   useEffect(() => {
     const getCourse = async () => {
       await axios
-        .get(`http://localhost:5050/ressources/getCoursesByPo/${user.id}`)
+        .get(`http://212.73.217.176:5050/ressources/getCoursesByPo/${user.id}`)
         .then((res) => {
           setCourses(res.data);
         });

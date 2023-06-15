@@ -55,7 +55,7 @@ function GroupsCreation() {
   const theme = useTheme();
 
   const ws = useMemo(() => {
-    return new w3cwebsocket("ws://localhost:5050/retro");
+    return new w3cwebsocket("ws://212.73.217.176:5050/retro");
   }, []);
 
   const fetchData = useCallback(async () => {
@@ -97,7 +97,7 @@ function GroupsCreation() {
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/retro/getRoom/${user?.class.id}`)
+        .get(`http://212.73.217.176:5050/retro/getRoom/${user?.class.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -123,7 +123,7 @@ function GroupsCreation() {
   const logToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/retro/getRoomPo/${user?.id}`)
+        .get(`http://212.73.217.176:5050/retro/getRoomPo/${user?.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -411,7 +411,7 @@ function GroupsCreation() {
   };
 
   async function saveRetro() {
-    axios.post("http://localhost:5050/retro/saveRetro", {
+    axios.post("http://212.73.217.176:5050/retro/saveRetro", {
       retro: columns,
       classRetro: classStudents,
       course: courseChoose.id,
@@ -420,7 +420,7 @@ function GroupsCreation() {
 
     try {
       await axios.delete(
-        `http://localhost:5050/groupes/deleteRoom/${user?.id}`
+        `http://212.73.217.176:5050/groupes/deleteRoom/${user?.id}`
       );
     } catch (error) {
       console.error(error);

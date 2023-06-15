@@ -5,7 +5,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 export default function PostIt({ text }) {
   const deletePostit = () => {
     try {
-      axios.delete("http://localhost:5050/agile/");
+      axios.delete("http://212.73.217.176:5050/agile/");
     } catch (error) {}
   };
 

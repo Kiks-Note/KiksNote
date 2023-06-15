@@ -35,7 +35,7 @@ export default function LoanRequestForm({open, toggleDrawerAdd, reloadData}) {
     } else {
       try {
         await toast.promise(
-          axios.post("http://localhost:5050/requestDevice", {
+          axios.post("http://212.73.217.176:5050/requestDevice", {
             startDate: startDate,
             endDate: endDate,
             concernedPeople: concernedPeople,
@@ -68,7 +68,7 @@ export default function LoanRequestForm({open, toggleDrawerAdd, reloadData}) {
   useEffect(() => {
     open === true &&
       (async () => {
-        await axios.get("http://localhost:5050/categories").then((res) => {
+        await axios.get("http://212.73.217.176:5050/categories").then((res) => {
           setLoading(false);
         });
       })();

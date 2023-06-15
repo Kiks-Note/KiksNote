@@ -4,7 +4,7 @@ export async function addImpactMapping(impactMapping) {
   console.log(impactMapping);
   try {
     const res = axios.put(
-      `http://localhost:5050/agile/${impactMapping.dashboardId}/add_impact_mapping`,
+      `http://212.73.217.176:5050/agile/${impactMapping.dashboardId}/add_impact_mapping`,
       {
         actors: impactMapping.actors,
         deliverables: impactMapping.deliverables,
@@ -21,7 +21,7 @@ export async function addImpactMapping(impactMapping) {
 export const getImpactMapping = async (dashboardId) => {
   try {
     const res = await axios.get(
-      `http://localhost:5050/agile/${dashboardId}/get_impact_mapping`
+      `http://212.73.217.176:5050/agile/${dashboardId}/get_impact_mapping`
     );
     return res.data;
   } catch (e) {

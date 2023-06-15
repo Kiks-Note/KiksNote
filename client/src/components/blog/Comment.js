@@ -23,7 +23,7 @@ export default function Comment({ tutoId }) {
     open &&
       (async () => {
         const wsComments = new w3cwebsocket(
-          `ws://localhost:5050/tutos/comments`
+          `ws://212.73.217.176:5050/tutos/comments`
         );
 
         wsComments.onopen = function (e) {

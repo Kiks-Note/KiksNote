@@ -29,7 +29,7 @@ export default function BorrowedList() {
   useEffect(() => {
     loading &&
       (async () => {
-        const ws = new w3cwebsocket("ws://localhost:5050/adminBorrowedList");
+        const ws = new w3cwebsocket("ws://212.73.217.176:5050/adminBorrowedList");
         ws.onmessage = (message) => {
           const data = JSON.parse(message.data);
           setData(data);
@@ -64,7 +64,7 @@ export default function BorrowedList() {
   const handleReturnClick = async (deviceId, requestId) => {
     await axios
       .put(
-        `http://localhost:5050/inventory/returnedRequest/${deviceId}/${requestId}`,
+        `http://212.73.217.176:5050/inventory/returnedRequest/${deviceId}/${requestId}`,
         {admin: user.id}
       )
       .then(() => {

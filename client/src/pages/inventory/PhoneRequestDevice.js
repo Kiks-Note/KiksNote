@@ -10,7 +10,7 @@ function PhoneRequestDevice() {
   useEffect(() => {
     (async () => {
       await axios
-        .post(`http://localhost:5050/inventory/preRequest/${params.deviceId}`)
+        .post(`http://212.73.217.176:5050/inventory/preRequest/${params.deviceId}`)
         .then(() => {
           setRequestDone(true);
         })

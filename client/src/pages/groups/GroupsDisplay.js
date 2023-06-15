@@ -10,14 +10,14 @@ function Groups() {
         const getGroups = async () => {
             if (user?.status === "po") {
                 try {
-                    const response = await axios.get(`http://localhost:5050/groupes/getGroupsPo/${user?.id}`);
+                    const response = await axios.get(`http://212.73.217.176:5050/groupes/getGroupsPo/${user?.id}`);
                     setGroups(response.data);
                 } catch (error) {
                     console.error(error);
                 }
             } else if (user?.status === "etudiant") {
                 try {
-                    const response = await axios.get(`http://localhost:5050/groupes/getGroups/${user?.id}`);
+                    const response = await axios.get(`http://212.73.217.176:5050/groupes/getGroups/${user?.id}`);
                     setGroups(response.data);
                 } catch (error) {
                     console.error(error);

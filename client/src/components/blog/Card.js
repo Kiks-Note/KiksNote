@@ -39,7 +39,7 @@ export default function ImgMediaCard({
       dislike--;
     }
 
-    axios.put(`http://localhost:5050/blog/${id}/likes`, {
+    axios.put(`http://212.73.217.176:5050/blog/${id}/likes`, {
       like: like,
       dislike: dislike,
     });
@@ -55,7 +55,7 @@ export default function ImgMediaCard({
       like--;
     }
 
-    axios.put(`http://localhost:5050/blog/${id}/likes`, {
+    axios.put(`http://212.73.217.176:5050/blog/${id}/likes`, {
       like: like,
       dislike: dislike,
     });
@@ -66,7 +66,7 @@ export default function ImgMediaCard({
   const handleVisilibity = () => {
     visibility = !visibility;
 
-    axios.put(`http://localhost:5050/blog/${id}/visibility`, {
+    axios.put(`http://212.73.217.176:5050/blog/${id}/visibility`, {
       visibility,
     });
   };

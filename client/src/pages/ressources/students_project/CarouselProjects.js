@@ -74,7 +74,7 @@ const CarouselProjects = (props) => {
       setTimeout(async () => {
         try {
           const response = await axios.post(
-            "http://localhost:5050/ressources/refprojects",
+            "http://212.73.217.176:5050/ressources/refprojects",
             {
               projectId: projectId,
               counterRefToAdd: countRefAdd,
@@ -130,7 +130,7 @@ const CarouselProjects = (props) => {
       setTimeout(async () => {
         try {
           const response = await axios.post(
-            "http://localhost:5050/ressources/removerefprojects",
+            "http://212.73.217.176:5050/ressources/removerefprojects",
             {
               projectId: projectId,
               counterRefToRemove: counterRefToRemove,

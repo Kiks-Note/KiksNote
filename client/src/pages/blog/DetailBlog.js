@@ -39,7 +39,7 @@ function DetailBlog() {
   };
 
   useEffect(() => {
-    const ws = new w3cwebsocket("ws://localhost:5050/blogDetail");
+    const ws = new w3cwebsocket("ws://212.73.217.176:5050/blogDetail");
     ws.onopen = function (e) {
       ws.send(JSON.stringify(id));
     };
@@ -103,7 +103,7 @@ function DetailBlog() {
   async function handleParticipate() {
     try {
       await axios
-        .put(`http://localhost:5050/blog/${data.id}/participant`, {
+        .put(`http://212.73.217.176:5050/blog/${data.id}/participant`, {
           userId: user.id,
         })
         .then(async () => {
@@ -117,7 +117,7 @@ function DetailBlog() {
   async function getBlogParticipant() {
     try {
       await axios
-        .get(`http://localhost:5050/blog/${data?.id}/participant`)
+        .get(`http://212.73.217.176:5050/blog/${data?.id}/participant`)
         .then((res) => {
           // console.log("res.data : ", res.data);
           if (res.data.length > 0) {
@@ -141,7 +141,7 @@ function DetailBlog() {
 
   async function handleLike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/like`, {
+      await axios.put(`http://212.73.217.176:5050/blog/${data.id}/like`, {
         userId: user.id,
       });
     } catch (err) {
@@ -151,7 +151,7 @@ function DetailBlog() {
 
   async function handleDislike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/dislike`, {
+      await axios.put(`http://212.73.217.176:5050/blog/${data.id}/dislike`, {
         userId: user.id,
       });
     } catch (err) {

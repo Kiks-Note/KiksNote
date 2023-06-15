@@ -38,7 +38,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
     };
     try {
       const response = await axios.post(
-        `http://localhost:5050/blog/newblog`,
+        `http://212.73.217.176:5050/blog/newblog`,
         blog
       );
 

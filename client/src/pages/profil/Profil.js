@@ -104,7 +104,7 @@ export default function Profil() {
 
     try {
       const response = await axios.put(
-        `http://localhost:5050/profil/background/${userProfil.id}`,
+        `http://212.73.217.176:5050/profil/background/${userProfil.id}`,
         formData,
         {
           headers: {
@@ -130,7 +130,7 @@ export default function Profil() {
 
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/profil`);
+      const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/profil`);
 
       wsComments.onopen = function (e) {
         wsComments.send(JSON.stringify(id));
@@ -179,7 +179,7 @@ export default function Profil() {
     const getJpo = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5050/ressources/jpo/user/${user.id}`
+          `http://212.73.217.176:5050/ressources/jpo/user/${user.id}`
         );
         if (response.data != undefined) {
           setRecentJpo(response.data);
@@ -213,7 +213,7 @@ export default function Profil() {
     const fetchBlogs = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5050/blog/user/ilan.petiot@edu.esiee-it.fr"
+          "http://212.73.217.176:5050/blog/user/ilan.petiot@edu.esiee-it.fr"
         );
         var filtredBlogs = filterTwoMostRecentBlogs(response.data, 2);
         SetRecentBlogs(filtredBlogs);

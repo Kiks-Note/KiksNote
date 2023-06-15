@@ -29,7 +29,7 @@ export default function InventoryDevices() {
 
   const loadData = async () => {
     await axios
-      .get("http://localhost:5050/inventory")
+      .get("http://212.73.217.176:5050/inventory")
       .then(async (inventoryRes) => {
         const inventoryItems = inventoryRes.data;
         const requests = [];
@@ -37,7 +37,7 @@ export default function InventoryDevices() {
           const requestId = item.lastRequestId;
           try {
             const requestRes = await axios.get(
-              `http://localhost:5050/inventory/request/${requestId}`
+              `http://212.73.217.176:5050/inventory/request/${requestId}`
             );
             const request = {device: item, request: requestRes.data};
             requests.push(request);
@@ -81,7 +81,7 @@ export default function InventoryDevices() {
     try {
       // Send PUT request to server with modified cell data
       await axios
-        .put("http://localhost:5050/inventory/edit", modifiedCells)
+        .put("http://212.73.217.176:5050/inventory/edit", modifiedCells)
         .then(() => {
           loadData().then(() => {
             setModifiedCells([]);

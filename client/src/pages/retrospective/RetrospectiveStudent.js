@@ -212,7 +212,7 @@ function Retrospective() {
 
   const getCourse = async (idOwner) => {
     console.log(user);
-    await axios.get(`http://localhost:5050/ressources/coursbyowner/${idOwner}`).then(
+    await axios.get(`http://212.73.217.176:5050/ressources/coursbyowner/${idOwner}`).then(
       (res) => {
         console.log(res.data)
         setAllCourses(res.data)
@@ -227,11 +227,11 @@ function Retrospective() {
 
 
   useEffect(() => {
-    const ws = new w3cwebsocket("ws://localhost:5050/retro");
+    const ws = new w3cwebsocket("ws://212.73.217.176:5050/retro");
     ws.onmessage = async (message) => {
       console.log("wsss");
       let allRetros = [];
-      await axios.get("http://localhost:5050/retro/getAll").then((res) => {
+      await axios.get("http://212.73.217.176:5050/retro/getAll").then((res) => {
         console.log(res.data);
         let responseRetros = res.data;
         responseRetros.forEach(retro => {
@@ -262,7 +262,7 @@ function Retrospective() {
 
   useEffect(() => {
     let allRetros = [];
-    axios.get("http://localhost:5050/retro/getAll").then((res) => {
+    axios.get("http://212.73.217.176:5050/retro/getAll").then((res) => {
       let responseRetros = res.data;
       setAllRetrosAtbeginning(res.data);
 
@@ -298,7 +298,7 @@ function Retrospective() {
 
     if (user.status == "po") {
       console.log("im a po");
-      await axios.get(`http://localhost:5050/retro/getAll`
+      await axios.get(`http://212.73.217.176:5050/retro/getAll`
       ).then((res) => {
         console.log("************");
         console.log(res.data)
@@ -309,7 +309,7 @@ function Retrospective() {
       })
     } else if (user.status == "etudiant") {
       console.log("im a student ");
-      await axios.get(`http://localhost:5050/retro/getAll`
+      await axios.get(`http://212.73.217.176:5050/retro/getAll`
       ).then((res) => {
         console.log("************");
         console.log(res.data)
@@ -359,7 +359,7 @@ function Retrospective() {
         choosenModel = PNABoard;
       }
 
-      await axios.post("http://localhost:5050/retro/newRetro",
+      await axios.post("http://212.73.217.176:5050/retro/newRetro",
         {
           dataRetro: choosenModel,
           titleRetro: boardTitle,

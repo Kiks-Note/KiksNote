@@ -56,7 +56,7 @@ const BlogTutosLinkDialog = (props) => {
   const publishStudentProject = async () => {
     try {
       await axios
-        .post(`http://localhost:5050/ressources/linkblogtuto/${projectid}`, {
+        .post(`http://212.73.217.176:5050/ressources/linkblogtuto/${projectid}`, {
           blogTutoId: selectedBlogTutoId,
         })
         .then((res) => {

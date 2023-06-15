@@ -36,7 +36,7 @@ export default function SideBarRequest({open, toggleDrawerRequest, device}) {
       return;
     } else {
       await axios
-        .post(`http://localhost:5050/inventory/request/${device.id}`, {
+        .post(`http://212.73.217.176:5050/inventory/request/${device.id}`, {
           startDate: new Date(selectDates[0].startDate),
           endDate: new Date(selectDates[0].endDate),
           requestReason: requestReason,

@@ -56,7 +56,7 @@ function OverView({ id }) {
 
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/overview`);
+      const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/overview`);
 
       wsComments.onopen = function (e) {
         wsComments.send(JSON.stringify(id));

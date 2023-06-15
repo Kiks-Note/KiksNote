@@ -31,7 +31,7 @@ function MostParticipantsChart() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5050/blog/stats/participant"
+        "http://212.73.217.176:5050/blog/stats/participant"
       );
       const blogs = response.data;
       const sortedBlogs = blogs.sort((a, b) => b.count - a.count);
@@ -72,7 +72,7 @@ function MostParticipantsChart() {
   const fetchParticipantDetails = async (blogIds) => {
     try {
       const response = await axios.post(
-        "http://localhost:5050/blog/participant",
+        "http://212.73.217.176:5050/blog/participant",
         {
           userIds: blogIds,
         }

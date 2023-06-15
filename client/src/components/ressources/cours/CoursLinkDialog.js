@@ -51,7 +51,7 @@ const CoursLinkDialog = (props) => {
   const linkCoursinCoursInfo = async () => {
     try {
       await axios
-        .post(`http://localhost:5050/ressources/linkcours/${id}`, {
+        .post(`http://212.73.217.176:5050/ressources/linkcours/${id}`, {
           id: selectedCoursId,
         })
         .then((res) => {

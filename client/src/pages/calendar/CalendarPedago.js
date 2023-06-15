@@ -63,7 +63,7 @@ export default function CalendarPedago() {
       setEvents(events);
     };
     const fetchSocket = async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/calendar`);
+      const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/calendar`);
       wsComments.onopen = function (e) {
         wsComments.send(
           JSON.stringify({

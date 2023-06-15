@@ -16,7 +16,7 @@ const HistoryJpo = () => {
   const getAllOldJpo = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/pastjpo")
+        .get("http://212.73.217.176:5050/ressources/pastjpo")
         .then((res) => {
           setAllPastJpo(res.data);
         })

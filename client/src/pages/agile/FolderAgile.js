@@ -14,7 +14,7 @@ const FolderAgile = () => {
     const fetchFolder = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5050/agile/${user.id}/agile_folder`
+          `http://212.73.217.176:5050/agile/${user.id}/agile_folder`
         );
         setFolders(response.data);
         console.log(response.data);
@@ -58,7 +58,7 @@ const FolderAgile = () => {
 
     if (fileLinks.length != 0) {
       // Générer un lien de téléchargement regroupant tous les fichiers
-      const zipLink = `http://localhost:5050/agile/folder?files=${encodeURIComponent(
+      const zipLink = `http://212.73.217.176:5050/agile/folder?files=${encodeURIComponent(
         fileLinks.join(",")
       )}`;
 

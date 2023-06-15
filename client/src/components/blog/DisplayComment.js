@@ -14,7 +14,7 @@ export default function DisplayComment({ comment, tutoId }) {
   console.log(comment.id);
   const handleDeleteComment = function () {
     axios
-      .delete(`http://localhost:5050/blog/${tutoId}/comments/${comment.id}`)
+      .delete(`http://212.73.217.176:5050/blog/${tutoId}/comments/${comment.id}`)
       .then((res) => {
         console.log(res);
       })

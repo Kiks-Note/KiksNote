@@ -93,7 +93,7 @@ function PdfView({ linkPdf, dashboardId }) {
     };
     try {
       const response = await axios.post(
-        "http://localhost:5050/dashboard/creation/" + dashboardId + "/stories",
+        "http://212.73.217.176:5050/dashboard/creation/" + dashboardId + "/stories",
         formData
       );
       reset(); // Efface les champs après la soumission réussie

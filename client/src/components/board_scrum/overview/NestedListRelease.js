@@ -26,7 +26,7 @@ function NestedListRelease({
 
   const chooseBoard = async (sprint) => {
     await axios.post(
-      `http://localhost:5050/dashboard/${dashboardId}/moveStories`,
+      `http://212.73.217.176:5050/dashboard/${dashboardId}/moveStories`,
       {
         boardId: sprint.boardId,
         storiesId: selectedStories,

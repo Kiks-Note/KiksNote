@@ -115,7 +115,7 @@ export default function SimpleDashboardForm(props) {
     };
     try {
       axios
-        .post(`http://localhost:5050/dashboard/creation`, dataForm)
+        .post(`http://212.73.217.176:5050/dashboard/creation`, dataForm)
         .then((res) => {
           handleClose();
         });

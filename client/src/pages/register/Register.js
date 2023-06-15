@@ -83,7 +83,7 @@ const Register = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/classes")
+        .get("http://212.73.217.176:5050/ressources/classes")
         .then((res) => {
           setAllclass(res.data);
         })
@@ -106,7 +106,7 @@ const Register = () => {
       }
     }
     await axios
-      .post("http://localhost:5050/auth/signup", {
+      .post("http://212.73.217.176:5050/auth/signup", {
         userEmail: userEmail,
         userPassword: userPassword,
         userFirstName: userFirstName,

@@ -56,7 +56,7 @@ const StudentProjectLinkDialog = (props) => {
   const linkStudentProjectToJpo = async () => {
     try {
       await axios
-        .post(`http://localhost:5050/ressources/jpo/${id}`, {
+        .post(`http://212.73.217.176:5050/ressources/jpo/${id}`, {
           studentProjectId: selectedStudentProjectId,
         })
         .then((res) => {

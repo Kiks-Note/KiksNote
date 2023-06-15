@@ -14,7 +14,7 @@ export const refreshToken = () => {
 
   if (refreshToken) {
     axios
-      .post("http://localhost:5050/auth/refreshToken", {}, config)
+      .post("http://212.73.217.176:5050/auth/refreshToken", {}, config)
       .then((response) => {
         console.log(response);
         accountAuthService.setToken(response.data.accessToken);

@@ -32,7 +32,7 @@ export default function ButtonAddCard(props) {
   const handleAddCard = () => {
     axios
       .put(
-        "http://localhost:5050/dashboard/" +
+        "http://212.73.217.176:5050/dashboard/" +
           props.dashboardId +
           "/board/" +
           props.boardId +

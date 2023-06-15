@@ -32,7 +32,7 @@ const AskResetPassword = () => {
   const sendEmailFromFront = async () => {
     try {
       await axios
-        .post("http://localhost:5050/auth/reset-password", {
+        .post("http://212.73.217.176:5050/auth/reset-password", {
           email: mail,
         })
         .then((res) => {

@@ -53,7 +53,7 @@ function Blog() {
     setActiveStep(step);
   };
   useEffect(() => {
-    const ws = new w3cwebsocket("ws://localhost:5050/blog");
+    const ws = new w3cwebsocket("ws://212.73.217.176:5050/blog");
 
     ws.onopen = function (e) {
       console.log("[open] Connection established");
@@ -113,7 +113,7 @@ function Blog() {
 
   const fetchTags = async () => {
     try {
-      const response = await axios.get("http://localhost:5050/blog/tag");
+      const response = await axios.get("http://212.73.217.176:5050/blog/tag");
       const tags = response.data;
       setTags(tags);
     } catch (error) {

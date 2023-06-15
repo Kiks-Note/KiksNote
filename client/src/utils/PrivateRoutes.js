@@ -22,7 +22,7 @@ function PrivateRoutes() {
 
     (async () => {
       await axios
-        .post("http://localhost:5050/auth/login", {
+        .post("http://212.73.217.176:5050/auth/login", {
           token,
         })
         .catch((err) => {

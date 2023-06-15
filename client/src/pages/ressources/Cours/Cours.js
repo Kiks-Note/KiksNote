@@ -144,7 +144,7 @@ const Cours = () => {
   const getAllTechnos = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/technos")
+        .get("http://212.73.217.176:5050/ressources/technos")
         .then((res) => {
           setTechnos(res.data);
           setIsAllCoursesDataLoaded(true);
@@ -164,7 +164,7 @@ const Cours = () => {
   const getAllCours = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/cours")
+        .get("http://212.73.217.176:5050/ressources/cours")
         .then((res) => {
           setCourses(res.data.cours);
           setIsAllCoursesDataLoaded(true);
@@ -184,7 +184,7 @@ const Cours = () => {
   const getAllPo = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/instructors")
+        .get("http://212.73.217.176:5050/ressources/instructors")
         .then((res) => {
           setAllPo(res.data);
         })
@@ -203,7 +203,7 @@ const Cours = () => {
   const getClassId = async (classId) => {
     try {
       await axios
-        .get(`http://localhost:5050/ressources/class/${classId}`)
+        .get(`http://212.73.217.176:5050/ressources/class/${classId}`)
         .then((res) => {
           setUserClass(res.data);
         })
@@ -222,7 +222,7 @@ const Cours = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/classes")
+        .get("http://212.73.217.176:5050/ressources/classes")
         .then((res) => {
           setAllclass(res.data);
         })
@@ -253,7 +253,7 @@ const Cours = () => {
     } else {
       try {
         await axios
-          .post("http://localhost:5050/ressources/cours", {
+          .post("http://212.73.217.176:5050/ressources/cours", {
             title: courseTitle,
             description: courseDescription,
             dateStartSprint: courseDateStart,

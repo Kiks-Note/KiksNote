@@ -54,7 +54,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
     } else {
       try {
         await toast.promise(
-          axios.post("http://localhost:5050/inventory", {
+          axios.post("http://212.73.217.176:5050/inventory", {
             label: label,
             price: price,
             acquisitiondate: acquisitiondate,
@@ -100,7 +100,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
     open === true &&
       (async () => {
         await axios
-          .get("http://localhost:5050/inventory/categories")
+          .get("http://212.73.217.176:5050/inventory/categories")
           .then((res) => {
             setCategories(res.data);
             console.log(res.data);

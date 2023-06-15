@@ -46,7 +46,7 @@ function AppelProf() {
   }, [call]);
 
   const getCall = () => {
-    axios.get("http://localhost:5050/calls").then((res) => {
+    axios.get("http://212.73.217.176:5050/calls").then((res) => {
       tempCall = res.data.at(-1);
       GenerateQrcode();
       (async () => {
@@ -67,7 +67,7 @@ function AppelProf() {
   };
 
   const getUsers = () => {
-    axios.get("http://localhost:5050/users").then((res) => {
+    axios.get("http://212.73.217.176:5050/users").then((res) => {
       setUsers(res.data);
     });
   };
