@@ -1,12 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { db } = require("./firebase");
-const { parse } = require("url");
 
-const { login, register, sendemail } = require("./controllers/auth");
+const { login, register, resetPassword } = require("./controllers/auth");
 
 router.post("/login", login);
 router.post("/signup", register);
-router.post("/sendemail", sendemail);
+router.post("/reset-password", resetPassword);
 
 module.exports = router;

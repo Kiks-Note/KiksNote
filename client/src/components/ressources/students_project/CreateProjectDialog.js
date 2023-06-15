@@ -17,9 +17,9 @@ import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import draftToHtml from "draftjs-to-html";
 
-import Dropzone from "../Cours/Dropzone";
+import Dropzone from "../Dropzone";
 
-import "./StudentsProjects.scss";
+import "./../../../pages/ressources/students_project/StudentsProjects";
 
 const CreateProjectDialog = (props) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -84,7 +84,7 @@ const CreateProjectDialog = (props) => {
           <div className="dropzone-coursimg-container">
             <p className="info-dropdown-img">
               Drag and drop an image file here, or click to select an image
-              file. (max. 1.00 MB each) as JPG, PNG, GIF, WebP, SVG or BMP.
+              file. (max. 1.00 MB each) as PNG.
             </p>
             <Dropzone
               onDrop={props.handleDrop}
