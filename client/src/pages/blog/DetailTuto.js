@@ -1,15 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Box,
-  Card,
-  CardHeader,
-  CardMedia,
-  CardContent,
-  Typography,
-  Button,
-} from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
@@ -19,11 +11,8 @@ import CreateComment from "../../components/blog/CreateComment";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import { Rings } from "react-loader-spinner";
-import { convertFromRaw } from "draft-js";
-import ListParticipants from "../../components/blog/ListParticipants";
 import "./Blog.css";
-import { Grid } from "@mui/material";
-import MDEditor, { commands } from "@uiw/react-md-editor";
+import MDEditor from "@uiw/react-md-editor";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepButton from "@mui/material/StepButton";
@@ -71,15 +60,11 @@ function DetailTuto() {
         const userDisliked = blogDto.dislike.includes(user.id);
         const userIsParticipant = blogDto.participant.includes(user.id);
 
-        // var datat = JSON.parse(dataFromServer[0].editorState);
-        // const contentState = convertFromRaw(datat);
-        // const text = contentState.getPlainText();
-        console.log(blogDto.participant);
+        // console.log(blogDto.participant);
         const blogFront = {
           id: blogDto.id,
           created_at: dateCreation,
           created_by: blogDto.created_by,
-          // editorState: text,
           inputEditorState: blogDto.inputEditorState,
           participant: blogDto.participant,
           comment: blogDto.comment,
@@ -193,155 +178,24 @@ function DetailTuto() {
       <Box
         sx={{
           margin: 2,
-          // height: "95vh",
-          // borderRadius: "10px",
-          // boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-          // backgroundColor: "#FFFFFF",
-          // padding: 2,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          // backgroundColor: "green",
         }}
       >
         {!loading ? (
-          /*
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={8}>
-                            <div className="container_detail_blog">
-                                <div className="detail_blog_content">
-                                    <Card>
-                                        <CardHeader title={data.title} />
-                                        <CardMedia
-                                            component="img"
-                                            src={data.thumbnail}
-                                            alt={data.title}
-                                            sx={{ width: 300, height: 200 }}
-                                        />
-                                        <CardContent>
-                                            <Typography>{data.editorState}</Typography>
-                                        </CardContent>
-                                    </Card>
-                                    <div className="options">
-                                        <Button
-                                            variant="contained"
-                                            startIcon={
-                                                data.userLiked ? <ThumbUpIcon /> : <ThumbUpOffAltIcon />
-                                            }
-                                            onClick={handleLike}
-                                            sx={{
-                                                backgroundColor: data.userLiked ? "#00BFFF" : "#F5F5F5",
-                                                color: data.userLiked ? "#FFFFFF" : "#000000",
-                                                ":hover": {
-                                                    backgroundColor: data.userLiked
-                                                        ? "#0080FF"
-                                                        : "#EEEEEE",
-                                                },
-                                            }}
-                                        >
-                                            J'aime ({data.like.length})
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            startIcon={
-                                                data.userDisliked ? (
-                                                    <ThumbDownAltIcon />
-                                                ) : (
-                                                    <ThumbDownOffAltIcon />
-                                                )
-                                            }
-                                            onClick={handleDislike}
-                                            sx={{
-                                                backgroundColor: data.userDisliked
-                                                    ? "#FF0000"
-                                                    : "#F5F5F5",
-                                                color: data.userDisliked ? "#FFFFFF" : "#000000",
-                                                ":hover": {
-                                                    backgroundColor: data.userDisliked
-                                                        ? "#CC0000"
-                                                        : "#EEEEEE",
-                                                },
-                                                marginRight: 50,
-                                            }}
-                                        >
-                                            J'aime pas ({data.dislike.length})
-                                        </Button>
-                                        {data.type === "blog" && (
-                                            <Button
-                                                variant="contained"
-                                                size="small"
-                                                onClick={handleParticipate}
-                                                sx={{
-                                                    backgroundColor: data.userIsParticipant
-                                                        ? "#008000"
-                                                        : "#F5F5F5",
-                                                    color: data.userIsParticipant ? "#FFFFFF" : "#000000",
-                                                    ":hover": {
-                                                        backgroundColor: data.userIsParticipant
-                                                            ? "#006400"
-                                                            : "#EEEEEE",
-                                                    },
-                                                }}
-                                            >
-                                                {data.userIsParticipant
-                                                    ? "Je participe"
-                                                    : "Ne participe pas"}
-                                            </Button>
-                                        )}
-                                    </div>
-                                    <br />
-                                    <CreateComment tutoId={id} />
-                                    {data &&
-                                        data.comment &&
-                                        Array.isArray(data.comment) &&
-                                        data.comment
-                                            .slice(0, visibleComments)
-                                            .map((comment, index) => (
-                                                <DisplayComment
-                                                    key={index}
-                                                    comment={comment}
-                                                    tutoId={id}
-                                                />
-                                            ))}
-                                    {visibleComments < data.comment.length ? (
-                                        <>
-                                            <button onClick={handleShowMore}>Voir plus</button>
-                                            {visibleComments > 5 && (
-                                                <button onClick={handleShowLess}>Voir moins</button>
-                                            )}
-                                        </>
-                                    ) : (
-                                        visibleComments > 5 && (
-                                            <button onClick={handleShowLess}>Voir moins</button>
-                                        )
-                                    )}
-                                </div>
-                            </div>
-                        </Grid>
-                        <Grid item xs={12} sm={4}>
-                            <div className="detail_blog_content_list">
-                                {data.participant.length !== 0 && (
-                                    <>
-                                        <Typography variant="h5">Liste des participants</Typography>
-                                        <ListParticipants participants={data.participant} />
-                                    </>
-                                )}
-                            </div>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Button
-                                variant="contained"
-                                onClick={() => {
-                                    window.history.back();
-                                }}
-                                sx={{ marginTop: 2 }}
-                            >
-                                Retour Ã la page de blog
-                            </Button>
-                        </Grid>
-                    </Grid>
-                    */
           <>
+            <Box sx={{ width: "100%", mb: 2 }}>
+              <Button
+                variant="contained"
+                onClick={() => {
+                  navigate(-1);
+                }}
+                sx={{ marginTop: 2 }}
+              >
+                Retour À la page de blog
+              </Button>
+            </Box>
             <Box
               sx={{
                 width: "100%",
@@ -365,19 +219,21 @@ function DetailTuto() {
                 {allStepsCompleted() ? (
                   <>
                     <Typography sx={{ mt: 2, mb: 1 }}>
-                      All steps completed - you&apos;re finished
+                      Vous avez terminé le tutoriel !
                     </Typography>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Box sx={{ flex: "1 1 auto" }} />
-                      <Button onClick={handleReset}>Upload</Button>
+                      <Button onClick={handleReset}>Recommencer</Button>
                     </Box>
                   </>
                 ) : (
                   <>
                     <Box sx={{ m: 3 }}>
-                      <MDEditor.Markdown
-                        source={data.markdownStepsInfo[activeStep]}
-                      />
+                      <div data-color-mode="light">
+                        <MDEditor.Markdown
+                          source={data.markdownStepsInfo[activeStep]}
+                        />
+                      </div>
                     </Box>
                     <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Button
@@ -386,11 +242,11 @@ function DetailTuto() {
                         onClick={handleBack}
                         sx={{ mr: 1 }}
                       >
-                        Back
+                        Précédent
                       </Button>
                       <Box sx={{ flex: "1 1 auto" }} />
                       <Button onClick={handleNext} sx={{ mr: 1 }}>
-                        Next
+                        Suivant
                       </Button>
                       {activeStep !== steps.length &&
                         (completed[activeStep] ? (
@@ -398,13 +254,13 @@ function DetailTuto() {
                             variant="caption"
                             sx={{ display: "inline-block" }}
                           >
-                            Step {activeStep + 1} already completed
+                            Étape {activeStep + 1} déjà complétée
                           </Typography>
                         ) : (
                           <Button onClick={handleComplete}>
                             {completedSteps() === totalSteps() - 1
-                              ? "Finish"
-                              : "Complete Step"}
+                              ? "Terminer le tutoriel"
+                              : "Terminer l'étape"}
                           </Button>
                         ))}
                     </Box>
@@ -487,11 +343,6 @@ function DetailTuto() {
                 )
               )}
             </Box>
-
-            {/*<h1>detail Tuto</h1>*/}
-            {/*<h1>{data.title}</h1>*/}
-            {/*<h1>{data.markdownStepsInfo}</h1>*/}
-            {/*<MDEditor.Markdown source={data.markdownStepsInfo[1]} />*/}
           </>
         ) : (
           <div
