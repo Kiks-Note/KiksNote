@@ -17,6 +17,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const [courseChoosed, setCourseChoosed] = useState({
     data: { title: "Tous les cours" },
   });
+  const [modeleChoose, setModeleChoose] = useState("Choisir un modèle");
 
   const popUpRef = useRef();
   const [courses, setCourses] = useState([]);
@@ -57,6 +58,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
     } else {
       onPopupData({
         courseChoose: courseChoosed,
+        modeleChoose: modeleChoose,
       });
       createRoom({
         po_id: user.id,
@@ -102,6 +104,27 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
                   {course.data.title + " | " + course.data.courseClass.name}
                 </MenuItem>
               ))}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-helper-label">Modele</InputLabel>
+          <Select
+            variant="filled"
+            id="input-class"
+            sx={{ color: "text.primary" }}
+            onChange={(e) => {
+              setModeleChoose(e.target.value);
+            }}
+          >
+            <MenuItem value={"m0"} key={0}>
+              Bien/Moins Bien/Amélioration
+            </MenuItem>
+            <MenuItem value={"m1"} key={1}>
+              Bien/Moins Bien/Amélioration/Action/Questions
+            </MenuItem>
+            <MenuItem value={"m2"} key={2}>
+              Bien/Moins Bien/Amélioration/Action
+            </MenuItem>
           </Select>
         </FormControl>
 

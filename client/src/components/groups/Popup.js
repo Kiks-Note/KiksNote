@@ -38,9 +38,6 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
     };
 
     getCourse();
-    ws.onopen = () => {
-      console.log("WebSocket Client Connected");
-    };
   }, [dataPopUp, user.id, ws]);
 
   const createRoom = (roomData) => {

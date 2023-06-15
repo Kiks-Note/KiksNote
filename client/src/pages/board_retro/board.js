@@ -194,8 +194,7 @@ function GroupsCreation() {
               break;
             case "closeRoom":
               setInRoom(false);
-              navigate("/groupes");
-              ws.close();
+              navigate("/");
               break;
             case "updateCol":
               setColumns(messageReceive.data.currentRoom.columns);
@@ -306,11 +305,19 @@ function GroupsCreation() {
   }
 
   const onDragEnd = (result) => {
+    const message = {
+      type: "dragEnd",
+      data: {
+        userID: user?.id,
+        class: classStudents,
+      },
+    };
+    ws.send(JSON.stringify(message));
     if (!result.destination) return;
     const { source, destination } = result;
     if (notAllowed) {
       setNotAllowed(false);
-      toast.error("Vous ne pouvez pas déplacer cet élève");
+      toast.error("Vous ne pouvez pas déplacer ce post-it");
       return;
     }
     if (source.droppableId === destination.droppableId) return;
@@ -380,10 +387,16 @@ function GroupsCreation() {
   };
 
   const onDragStart = (data) => {
-    if (user.status === "etudiant" && data.user !== user.id) {
+    const item = columns[data.source.droppableId].items[data.source.index];
+    if (user.status === "etudiant" && item.user !== user.id) {
       setNotAllowed(true);
       return;
     }
+    const message = {
+      type: "dragStart",
+      data: { userID: user?.id, class: classStudents, itemID: item.id },
+    };
+    ws.send(JSON.stringify(message));
   };
 
   const handlePopupData = (data) => {
@@ -440,7 +453,12 @@ function GroupsCreation() {
         <>
           {userCursors
             ? Array.from(userCursors.entries()).map(([userID, userData]) => {
-                if (userID !== user?.id && userID && userID !== "undefined") {
+                if (
+                  userID !== user?.id &&
+                  userID &&
+                  userID !== "undefined" &&
+                  userData.color
+                ) {
                   return (
                     <div
                       key={userID}
@@ -456,6 +474,7 @@ function GroupsCreation() {
                         viewBox="0 0 50 50"
                         width="30px"
                         height="30px"
+                        style={{ stroke: "#3d3d3d" }}
                       >
                         <path
                           fill={userData.color}
@@ -472,6 +491,8 @@ function GroupsCreation() {
                           fontSize: "12px",
                           borderRadius: "30px",
                           margin: "0px",
+                          border: "1px solid transparent",
+                          boxShadow: "0px 0px 5px #3d3d3d",
                         }}
                       >
                         <p
@@ -616,6 +637,19 @@ function GroupsCreation() {
                                                   : item.color,
                                               color: "white",
                                               margin: "10px",
+                                              ...(userCursors?.get(item.user)
+                                                ?.isDragging &&
+                                                item.user !== user?.id &&
+                                                userCursors?.get(item.user)
+                                                  ?.itemID === item.id && {
+                                                  position: "absolute",
+                                                  left: userCursors?.get(
+                                                    item.user
+                                                  ).position?.x,
+                                                  top: userCursors?.get(
+                                                    item.user
+                                                  ).position?.y,
+                                                }),
                                               ...provided.draggableProps.style,
                                             }}
                                             className="post-it"
