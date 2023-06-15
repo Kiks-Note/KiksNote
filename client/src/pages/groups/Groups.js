@@ -191,9 +191,9 @@ function GroupsCreation() {
 
           switch (messageReceive.type) {
             case "updateRoom":
+              console.log(messageReceive.data.currentRoom.users);
               displayUserCursorPositions(messageReceive.data.currentRoom.users);
               if (user.status === "etudiant") {
-                console.log(messageReceive.data.currentRoom);
                 let number = parseInt(messageReceive.data.currentRoom.nbSPGrp);
                 setNbSPGrp(number);
                 setLock(messageReceive.data.currentRoom.lock);

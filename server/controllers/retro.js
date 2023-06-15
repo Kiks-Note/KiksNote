@@ -164,7 +164,7 @@ const room = async (connection) => {
         let colorC = pastelColors[indexColor];
         indexColor++;
 
-        roomUsersC.users.set(response.data.userID, {
+        roomUsersC.users.set(response.data.po_id, {
           position: null,
           color: colorC,
           name: response.data.name,
@@ -174,7 +174,7 @@ const room = async (connection) => {
 
         const roomClientsC = clients.get(response.data.class) || new Map();
 
-        roomClientsC.set(response.data.userID, connection);
+        roomClientsC.set(response.data.po_id, connection);
 
         clients.set(response.data.class, roomClientsC);
 

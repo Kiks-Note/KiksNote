@@ -236,7 +236,7 @@ const room = async (connection) => {
 
         const roomClientsC = clients.get(response.data.class) || new Map();
 
-        roomClientsC.set(response.data.userID, connection);
+        roomClientsC.set(response.data.po_id, connection);
 
         clients.set(response.data.class, roomClientsC);
 
