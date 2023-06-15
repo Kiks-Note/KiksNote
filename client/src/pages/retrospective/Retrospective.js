@@ -414,13 +414,11 @@ function Retrospective() {
     console.log(userInput);
   }
   const filterOwnerRetro = (event) => {
-    const ownerSearch = event.target.value;
-    console.log(ownerSearch);
-  
-    const filteredRows = rows.filter(row => row.name.includes(ownerSearch));
+    setFilterOwner(event.target.value);
+    console.log(filterOwner);
+    const filteredRows = rows.filter(row => row.name.includes(filterOwner));
     const filteredOwner = filteredRows.map(row => row.name);
     console.log(filteredOwner);
-
   }
 
   // const filter = () => {
@@ -545,7 +543,7 @@ function Retrospective() {
               </TableHead>
               <TableBody > {/*style={{cursor: "pointer"}}*/}
                 {rows
-                .filter(row => row.titleRetro.includes(filterName))
+                .filter(row => row.titleRetro.includes(filterName) && row.name.includes(filterOwner))
                 .map((row) => (
                   <TableRow key={row.date}>
                     <TableCell component="th" scope="row">
