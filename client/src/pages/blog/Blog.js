@@ -133,7 +133,12 @@ function Blog() {
     const { scrollRef, pages, activePageIndex, next, prev, goTo } =
       useSnapCarousel();
     return (
-      <>
+      <Box sx={{ mt: 2 }}>
+        <Box>
+          <Typography variant="h4" sx={{ textAlign: "center" }}>
+            En attente de validation
+          </Typography>
+        </Box>
         <ul
           ref={scrollRef}
           style={{
@@ -209,7 +214,7 @@ function Blog() {
             <KeyboardArrowRight />
           </Button>
         </Box>
-      </>
+      </Box>
     );
   };
 
@@ -217,7 +222,12 @@ function Blog() {
     const { scrollRef, pages, activePageIndex, next, prev, goTo } =
       useSnapCarousel();
     return (
-      <>
+      <Box sx={{ mt: 2 }}>
+        <Box>
+          <Typography variant="h4" sx={{ textAlign: "center" }}>
+            Tuto
+          </Typography>
+        </Box>
         <ul
           ref={scrollRef}
           style={{
@@ -228,70 +238,82 @@ function Blog() {
         >
           {blog
             .filter((blog) => blog.type === "tuto")
-            .filter((blog) => blog.visibility === "public").length > 0
-            ? blog
-                .filter((blog) => blog.type === "tuto")
-                .filter((blog) => blog.visibility === "public")
-                .map((filtered) => (
-                  <Box
-                    sx={{
-                      // backgroundColor: "aqua",
-                      fontSize: "50px",
-                      width: 450,
-                      height: "auto",
-                      flexShrink: 0,
-                      color: "#fff",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      py: 2,
-                      mx: 1,
-                    }}
-                  >
-                    <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                    {/*<Typography>{user.email}</Typography>*/}
-                    {/*<Typography>{filtered.created_by}</Typography>*/}
-                    {/*<Typography>{filtered.visibility}</Typography>*/}
-                  </Box>
-                ))
-            : "Pas de tutoriel disponible"}
-        </ul>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Button onClick={() => prev()}>
-            <KeyboardArrowLeft />
-          </Button>
-          <ol style={{ display: "flex", padding: "0px" }}>
-            {pages.map((_, i) => (
-              <li key={i} style={{ listStyle: "none" }}>
-                <button
-                  onClick={() => goTo(i)}
-                  color="red"
-                  style={{
-                    transition: "opacity 100ms ease-out",
-                    opacity: i !== activePageIndex ? 0.5 : 1,
-                    display: "inline-block",
-                    padding: "6px",
-                    margin: "5px",
-                    backgroundColor: "#374151",
-                    borderRadius: "50%",
-                    cursor: "pointer",
-                    border: "none",
+            .filter((blog) => blog.visibility === "public").length > 0 ? (
+            blog
+              .filter((blog) => blog.type === "tuto")
+              .filter((blog) => blog.visibility === "public")
+              .map((filtered) => (
+                <Box
+                  sx={{
+                    // backgroundColor: "aqua",
+                    fontSize: "50px",
+                    width: 450,
+                    height: "auto",
+                    flexShrink: 0,
+                    color: "#fff",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    py: 2,
+                    mx: 1,
                   }}
-                ></button>
-              </li>
-            ))}
-          </ol>
-          <Button onClick={() => next()}>
-            <KeyboardArrowRight />
-          </Button>
-        </Box>
-      </>
+                >
+                  <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                  {/*<Typography>{user.email}</Typography>*/}
+                  {/*<Typography>{filtered.created_by}</Typography>*/}
+                  {/*<Typography>{filtered.visibility}</Typography>*/}
+                </Box>
+              ))
+          ) : (
+            <Box>
+              <Typography variant="h6" sx={{ textAlign: "center" }}>
+                Pas de tuto disponible
+              </Typography>
+            </Box>
+          )}
+        </ul>
+        {blog
+          .filter((blog) => blog.type === "tuto")
+          .filter((blog) => blog.visibility === "public").length > 0 ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Button onClick={() => prev()}>
+              <KeyboardArrowLeft />
+            </Button>
+            <ol style={{ display: "flex", padding: "0px" }}>
+              {pages.map((_, i) => (
+                <li key={i} style={{ listStyle: "none" }}>
+                  <button
+                    onClick={() => goTo(i)}
+                    color="red"
+                    style={{
+                      transition: "opacity 100ms ease-out",
+                      opacity: i !== activePageIndex ? 0.5 : 1,
+                      display: "inline-block",
+                      padding: "6px",
+                      margin: "5px",
+                      backgroundColor: "#374151",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      border: "none",
+                    }}
+                  ></button>
+                </li>
+              ))}
+            </ol>
+            <Button onClick={() => next()}>
+              <KeyboardArrowRight />
+            </Button>
+          </Box>
+        ) : (
+          <></>
+        )}
+      </Box>
     );
   };
 
@@ -299,7 +321,12 @@ function Blog() {
     const { scrollRef, pages, activePageIndex, next, prev, goTo } =
       useSnapCarousel();
     return (
-      <>
+      <Box sx={{ mt: 2 }}>
+        <Box>
+          <Typography variant="h4" sx={{ textAlign: "center" }}>
+            Blog
+          </Typography>
+        </Box>
         <ul
           ref={scrollRef}
           style={{
@@ -310,70 +337,82 @@ function Blog() {
         >
           {blog
             .filter((blog) => blog.type === "blog")
-            .filter((blog) => blog.visibility === "public").length > 0
-            ? blog
-                .filter((blog) => blog.type === "blog")
-                .filter((blog) => blog.visibility === "public")
-                .map((filtered) => (
-                  <Box
-                    sx={{
-                      // backgroundColor: "aqua",
-                      fontSize: "50px",
-                      width: 450,
-                      height: "auto",
-                      flexShrink: 0,
-                      color: "#fff",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      py: 2,
-                      mx: 1,
-                    }}
-                  >
-                    <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                    {/*<Typography>{user.email}</Typography>*/}
-                    {/*<Typography>{filtered.created_by}</Typography>*/}
-                    {/*<Typography>{filtered.visibility}</Typography>*/}
-                  </Box>
-                ))
-            : "Pas de blog disponible"}
-        </ul>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Button onClick={() => prev()}>
-            <KeyboardArrowLeft />
-          </Button>
-          <ol style={{ display: "flex", padding: "0px" }}>
-            {pages.map((_, i) => (
-              <li key={i} style={{ listStyle: "none" }}>
-                <button
-                  onClick={() => goTo(i)}
-                  color="red"
-                  style={{
-                    transition: "opacity 100ms ease-out",
-                    opacity: i !== activePageIndex ? 0.5 : 1,
-                    display: "inline-block",
-                    padding: "6px",
-                    margin: "5px",
-                    backgroundColor: "#374151",
-                    borderRadius: "50%",
-                    cursor: "pointer",
-                    border: "none",
+            .filter((blog) => blog.visibility === "public").length > 0 ? (
+            blog
+              .filter((blog) => blog.type === "blog")
+              .filter((blog) => blog.visibility === "public")
+              .map((filtered) => (
+                <Box
+                  sx={{
+                    // backgroundColor: "aqua",
+                    fontSize: "50px",
+                    width: 450,
+                    height: "auto",
+                    flexShrink: 0,
+                    color: "#fff",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    py: 2,
+                    mx: 1,
                   }}
-                ></button>
-              </li>
-            ))}
-          </ol>
-          <Button onClick={() => next()}>
-            <KeyboardArrowRight />
-          </Button>
-        </Box>
-      </>
+                >
+                  <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                  {/*<Typography>{user.email}</Typography>*/}
+                  {/*<Typography>{filtered.created_by}</Typography>*/}
+                  {/*<Typography>{filtered.visibility}</Typography>*/}
+                </Box>
+              ))
+          ) : (
+            <Box>
+              <Typography variant="h6" sx={{ textAlign: "center" }}>
+                Pas de blog disponible
+              </Typography>
+            </Box>
+          )}
+        </ul>
+        {blog
+          .filter((blog) => blog.type === "blog")
+          .filter((blog) => blog.visibility === "public").length > 0 ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Button onClick={() => prev()}>
+              <KeyboardArrowLeft />
+            </Button>
+            <ol style={{ display: "flex", padding: "0px" }}>
+              {pages.map((_, i) => (
+                <li key={i} style={{ listStyle: "none" }}>
+                  <button
+                    onClick={() => goTo(i)}
+                    color="red"
+                    style={{
+                      transition: "opacity 100ms ease-out",
+                      opacity: i !== activePageIndex ? 0.5 : 1,
+                      display: "inline-block",
+                      padding: "6px",
+                      margin: "5px",
+                      backgroundColor: "#374151",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      border: "none",
+                    }}
+                  ></button>
+                </li>
+              ))}
+            </ol>
+            <Button onClick={() => next()}>
+              <KeyboardArrowRight />
+            </Button>
+          </Box>
+        ) : (
+          <></>
+        )}
+      </Box>
     );
   };
 
@@ -393,7 +432,12 @@ function Blog() {
     // blog.filter((blog) => blog.filter((tag) => tag === "u6OdMq2h22MOR2Qhfw2w"));
     // console.log("456");
     return (
-      <>
+      <Box sx={{ mt: 2 }}>
+        <Box>
+          <Typography variant="h4" sx={{ textAlign: "center" }}>
+            Évenements
+          </Typography>
+        </Box>
         <ul
           ref={scrollRef}
           style={{
@@ -404,70 +448,82 @@ function Blog() {
         >
           {blog
             .filter((blog) => blog.type === "event")
-            .filter((blog) => blog.visibility === "public").length > 0
-            ? blog
-                .filter((blog) => blog.type === "event")
-                .filter((blog) => blog.visibility === "public")
-                .map((filtered) => (
-                  <Box
-                    sx={{
-                      // backgroundColor: "aqua",
-                      fontSize: "50px",
-                      width: 450,
-                      height: "auto",
-                      flexShrink: 0,
-                      color: "#fff",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      py: 2,
-                      mx: 1,
-                    }}
-                  >
-                    <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                    {/*<Typography>{user.email}</Typography>*/}
-                    {/*<Typography>{filtered.created_by}</Typography>*/}
-                    {/*<Typography>{filtered.visibility}</Typography>*/}
-                  </Box>
-                ))
-            : "Pas d'évènement disponible"}
-        </ul>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <Button onClick={() => prev()}>
-            <KeyboardArrowLeft />
-          </Button>
-          <ol style={{ display: "flex", padding: "0px" }}>
-            {pages.map((_, i) => (
-              <li key={i} style={{ listStyle: "none" }}>
-                <button
-                  onClick={() => goTo(i)}
-                  color="red"
-                  style={{
-                    transition: "opacity 100ms ease-out",
-                    opacity: i !== activePageIndex ? 0.5 : 1,
-                    display: "inline-block",
-                    padding: "6px",
-                    margin: "5px",
-                    backgroundColor: "#374151",
-                    borderRadius: "50%",
-                    cursor: "pointer",
-                    border: "none",
+            .filter((blog) => blog.visibility === "public").length > 0 ? (
+            blog
+              .filter((blog) => blog.type === "event")
+              .filter((blog) => blog.visibility === "public")
+              .map((filtered) => (
+                <Box
+                  sx={{
+                    // backgroundColor: "aqua",
+                    fontSize: "50px",
+                    width: 450,
+                    height: "auto",
+                    flexShrink: 0,
+                    color: "#fff",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    py: 2,
+                    mx: 1,
                   }}
-                ></button>
-              </li>
-            ))}
-          </ol>
-          <Button onClick={() => next()}>
-            <KeyboardArrowRight />
-          </Button>
-        </Box>
-      </>
+                >
+                  <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                  {/*<Typography>{user.email}</Typography>*/}
+                  {/*<Typography>{filtered.created_by}</Typography>*/}
+                  {/*<Typography>{filtered.visibility}</Typography>*/}
+                </Box>
+              ))
+          ) : (
+            <Box>
+              <Typography variant="h6" sx={{ textAlign: "center" }}>
+                Pas d'événement disponible
+              </Typography>
+            </Box>
+          )}
+        </ul>
+        {blog
+          .filter((blog) => blog.type === "event")
+          .filter((blog) => blog.visibility === "public").length > 0 ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Button onClick={() => prev()}>
+              <KeyboardArrowLeft />
+            </Button>
+            <ol style={{ display: "flex", padding: "0px" }}>
+              {pages.map((_, i) => (
+                <li key={i} style={{ listStyle: "none" }}>
+                  <button
+                    onClick={() => goTo(i)}
+                    color="red"
+                    style={{
+                      transition: "opacity 100ms ease-out",
+                      opacity: i !== activePageIndex ? 0.5 : 1,
+                      display: "inline-block",
+                      padding: "6px",
+                      margin: "5px",
+                      backgroundColor: "#374151",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      border: "none",
+                    }}
+                  ></button>
+                </li>
+              ))}
+            </ol>
+            <Button onClick={() => next()}>
+              <KeyboardArrowRight />
+            </Button>
+          </Box>
+        ) : (
+          <></>
+        )}
+      </Box>
     );
   };
 
@@ -480,29 +536,39 @@ function Blog() {
             <SplitButtonChoice />
           </Box>
           <Box sx={{ width: "93vw" }}>
-            <Box
-              sx={{
-                display: "flex",
-                width: "100%",
-                justifyContent: "space-around",
-                alignItems: "center",
-                bgcolor: "#c6c5c5",
-                my: 2,
-              }}
-            >
-              <TopCreatorsChart />
-              <Box>
-                <MostParticipantsChart />
+            {user.status !== "etudiant" && (
+              <Box
+                sx={{
+                  display: "flex",
+                  width: "100%",
+                  justifyContent: "space-around",
+                  alignItems: "center",
+                  bgcolor: "#c6c5c5",
+                  my: 2,
+                }}
+              >
+                <TopCreatorsChart />
+                <Box>
+                  <MostParticipantsChart />
+                </Box>
+                <BlogRepartition />
               </Box>
-              <BlogRepartition />
-            </Box>
-            pending
-            <AdvancedCarouselPending />
-            tuto
+            )}
+            {blog
+              // .filter((blog) => blog.type !== "tuto")
+              .filter((blog) =>
+                user.status !== "etudiant"
+                  ? blog.visibility === "pending"
+                  : user.email === blog.created_by
+                  ? blog.visibility === "pending"
+                  : undefined
+              ).length > 0 ? (
+              <AdvancedCarouselPending />
+            ) : (
+              <> </>
+            )}
             <AdvancedCarouselTuto />
-            blog
             <AdvancedCarouselBlog />
-            event
             <AdvancedCarouselEvent />
           </Box>
         </Box>
