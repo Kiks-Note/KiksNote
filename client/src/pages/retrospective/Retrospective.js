@@ -402,23 +402,13 @@ function Retrospective() {
 
   const filterNameRetro = (event) => {
     setFilterName(event.target.value);
-    const nameSearch = event.target.value;
-    console.log(nameSearch);
-  
-    const filteredRows = rows.filter(row => row.titleRetro.includes(nameSearch));
-    const filteredTitles = filteredRows.map(row => row.titleRetro);
-    console.log(filteredTitles);
   }
   const filterDateRetro = (event) => {
     const userInput = event.target.value;
-    console.log(userInput);
+
   }
   const filterOwnerRetro = (event) => {
     setFilterOwner(event.target.value);
-    console.log(filterOwner);
-    const filteredRows = rows.filter(row => row.name.includes(filterOwner));
-    const filteredOwner = filteredRows.map(row => row.name);
-    console.log(filteredOwner);
   }
 
   // const filter = () => {
