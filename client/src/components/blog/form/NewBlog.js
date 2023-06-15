@@ -79,11 +79,6 @@ export default function NewBlog({ open, toggleDrawerModify }) {
       formIsValid = false;
     }
 
-    // if (!inputEditorState) {
-    //   errors.editorState = "Veuillez écrire un contenu";
-    //   formIsValid = false;
-    // }
-
     setErrors(errors);
     return formIsValid;
   };
@@ -108,16 +103,12 @@ export default function NewBlog({ open, toggleDrawerModify }) {
       blogType = "event";
     }
 
-    const rawContentState = convertToRaw(editorState.getCurrentContent());
-
     const formData = new FormData();
     formData.append("thumbnail", thumbnail);
 
     const blogData = {
       title: title,
       description: description,
-      // editorState: JSON.stringify(rawContentState),
-      // inputEditorState: inputEditorState,
       valueMarkdown: valueMarkdown,
       created_by: user.id,
       type: blogType,
