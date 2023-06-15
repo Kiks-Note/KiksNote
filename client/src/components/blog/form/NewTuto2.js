@@ -64,12 +64,19 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
       toast.error("Veuillez entrer un titre");
       return;
     }
-    if (thumbnail === null) {
-      toast.error("Veuillez sélectionner une miniature globale.");
-      return;
-    }
+
     if (description === null) {
       toast.error("Veuillez entrer une courte description.");
+      return;
+    }
+
+    if (description.trim() === "") {
+      toast.error("Veuillez entrer une courte description.");
+      return;
+    }
+
+    if (thumbnail === null) {
+      toast.error("Veuillez sélectionner une miniature globale.");
       return;
     }
 
@@ -122,6 +129,8 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     setSelectedTags([]);
     setThumbnail(null);
     setMarkdownStepsInfo([]);
+    setCompleted({});
+    setPreviewImage("");
     setValueMarkdown("**Hello world!!!**");
   };
 
@@ -168,7 +177,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     const newCompleted = completed;
     newCompleted[activeStep] = true;
     setCompleted(newCompleted);
-    console.log("valueMarkdown : ", valueMarkdown);
+    // console.log("valueMarkdown : ", valueMarkdown);
     setMarkdownStepsInfo(markdownStepsInfo.concat(valueMarkdown));
     setValueMarkdown("");
     handleNext();
@@ -176,8 +185,6 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
 
   // console.log("markdownStepsInfo : ", markdownStepsInfo);
   const handleReset = () => {
-    console.log("envoie");
-    console.log("markdownStepsInfo : ", markdownStepsInfo);
     setActiveStep(0);
     setCompleted({});
     newTuto2();
@@ -211,14 +218,13 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
       title: title,
       description: description,
       tags: selectedTags,
-      // thumbnail: thumbnail,
       markdownStepsInfo: markdownStepsInfo,
       titleStep: titleStep,
       visibility: visibility,
       statut: statut,
       created_by: user.id,
     };
-    console.log("data : ", data);
+    // console.log("data : ", data);
     const formData = new FormData();
     formData.append("thumbnail", thumbnail);
     formData.append("tutoData", JSON.stringify(data));
@@ -235,7 +241,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
       toast.success("Tuto crée avec succès");
       toggleDrawerModify(e, false);
       handleCancel();
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       console.log(error);
     }
@@ -389,23 +395,27 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
               {allStepsCompleted() ? (
                 <>
                   <Typography sx={{ mt: 2, mb: 1 }}>
-                    All steps completed - you&apos;re finished
+                    Vous avez terminé de créer votre tutoriel, cliquez sur
+                    publier pour le mettre en ligne
                   </Typography>
                   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                     <Box sx={{ flex: "1 1 auto" }} />
-                    <Button onClick={handleReset}>Upload</Button>
+                    <Button onClick={handleCancel}>Recommencer</Button>
+                    <Button onClick={handleReset}>Publier</Button>
                   </Box>
                 </>
               ) : (
                 <>
                   <Typography sx={{ mt: 2, mb: 1, py: 1 }}>
-                    Step {activeStep + 1} {titleStep[activeStep]}
-                    <MDEditor
-                      value={valueMarkdown}
-                      // preview="split"
-                      commands={[...commands.getCommands(), help]}
-                      onChange={(val) => setValueMarkdown(val)}
-                    />
+                    Étape {activeStep + 1} {titleStep[activeStep]}
+                    <div data-color-mode="light">
+                      <MDEditor
+                        value={valueMarkdown}
+                        // preview="split"
+                        commands={[...commands.getCommands(), help]}
+                        onChange={(val) => setValueMarkdown(val)}
+                      />
+                    </div>
                   </Typography>
                   <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                     <Button
@@ -414,11 +424,11 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
                       onClick={handleBack}
                       sx={{ mr: 1 }}
                     >
-                      Back
+                      Précédent
                     </Button>
                     <Box sx={{ flex: "1 1 auto" }} />
                     <Button onClick={handleNext} sx={{ mr: 1 }}>
-                      Next
+                      Suivant
                     </Button>
                     {activeStep !== titleStep.length &&
                       (completed[activeStep] ? (
@@ -426,13 +436,13 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
                           variant="caption"
                           sx={{ display: "inline-block" }}
                         >
-                          Step {activeStep + 1} already completed
+                          Étape {activeStep + 1} déjà complétée
                         </Typography>
                       ) : (
                         <Button onClick={handleComplete}>
                           {completedSteps() === totalSteps() - 1
-                            ? "Finish"
-                            : "Complete Step"}
+                            ? "Terminer le tutoriel"
+                            : "Terminer l'étape"}
                         </Button>
                       ))}
                   </Box>

@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
-import "./Popup.scss";
+import "../groups/Popup.scss";
 import axios from "axios";
 
 export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
@@ -17,6 +17,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const [courseChoosed, setCourseChoosed] = useState({
     data: { title: "Tous les cours" },
   });
+  const [modeleChoose, setModeleChoose] = useState("Choisir un modèle");
 
   const popUpRef = useRef();
   const [courses, setCourses] = useState([]);
@@ -25,7 +26,7 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const theme = useTheme();
 
   const ws = useMemo(() => {
-    return new w3cwebsocket("ws://localhost:5050/groupes/creation");
+    return new w3cwebsocket("ws://localhost:5050/retro");
   }, []);
 
   useEffect(() => {
@@ -38,6 +39,9 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
     };
 
     getCourse();
+    ws.onopen = () => {
+      console.log("WebSocket Client Connected");
+    };
   }, [dataPopUp, user.id, ws]);
 
   const createRoom = (roomData) => {
@@ -49,17 +53,18 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   };
 
   function validate() {
-    console.log(courseChoosed);
-    if (courseChoosed.name === "Tous les cours") {
+    if (courseChoosed.data.title === "Tous les cours") {
       alert("Veuillez remplir le champs");
     } else {
       onPopupData({
         courseChoose: courseChoosed,
+        modeleChoose: modeleChoose,
       });
       createRoom({
         po_id: user.id,
         class: classChoose,
         name: user?.firstname,
+        course: courseChoosed,
       });
     }
   }
@@ -77,17 +82,16 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
           backgroundColor: theme.palette.background.container,
         }}
       >
-        <p>Paramétrage de la création de groupes</p>
+        <p>Création de Retrospective</p>
         <FormControl sx={{ m: 1, minWidth: 120 }}>
           <InputLabel id="demo-simple-select-helper-label">Cours</InputLabel>
           <Select
             variant="filled"
             id="input-class"
             sx={{ color: "text.primary" }}
-            defaultValue={""}
-            renderValue={(selected) => `${selected.name}`}
+            renderValue={(selected) => selected.data.title}
             onChange={(e) => {
-              setClassChoose(e.target.value.id);
+              setClassChoose(e.target.value.data.courseClass.id);
               setCourseChoosed(e.target.value);
             }}
             value={courseChoosed}
@@ -95,13 +99,32 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
             {courses &&
               courses.cours &&
               courses.cours.length > 0 &&
-              courses.cours.map((course) =>
-                course.data.courseClass.map((courseClass) => (
-                  <MenuItem value={courseClass} key={courseClass.id}>
-                    {course.data.title + " | " + courseClass.name}
-                  </MenuItem>
-                ))
-              )}
+              courses.cours.map((course) => (
+                <MenuItem value={course} key={course.id}>
+                  {course.data.title + " | " + course.data.courseClass.name}
+                </MenuItem>
+              ))}
+          </Select>
+        </FormControl>
+        <FormControl sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-helper-label">Modele</InputLabel>
+          <Select
+            variant="filled"
+            id="input-class"
+            sx={{ color: "text.primary" }}
+            onChange={(e) => {
+              setModeleChoose(e.target.value);
+            }}
+          >
+            <MenuItem value={"m0"} key={0}>
+              Bien/Moins Bien/Amélioration
+            </MenuItem>
+            <MenuItem value={"m1"} key={1}>
+              Bien/Moins Bien/Amélioration/Action/Questions
+            </MenuItem>
+            <MenuItem value={"m2"} key={2}>
+              Bien/Moins Bien/Amélioration/Action
+            </MenuItem>
           </Select>
         </FormControl>
 

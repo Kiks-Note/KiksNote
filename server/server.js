@@ -39,10 +39,7 @@ var upload = multer({
   },
 });
 
-const {
-  retroRoutesWsNeeded,
-  retroRoutesWsNotNeeded,
-} = require("./retroRoutes");
+const { retroRoutesWsNeeded } = require("./retroRoutes");
 
 app.use(express.json());
 app.use(cors());
@@ -70,8 +67,6 @@ const agileRoute = require("./agileRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
 const calendarRoutes = require("./calendarRoutes");
 
-const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
-
 const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
 const groupNoWs = groupNoWsNeeded();
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
@@ -81,7 +76,6 @@ app.use("/ressources", technosRoutes()); // --> Resssources Technos
 app.use("/home", homeRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
-app.use("/retro", retroRoutesNotNeeded);
 app.use("/groupes", groupNoWs);
 
 wsI.on("request", (request) => {

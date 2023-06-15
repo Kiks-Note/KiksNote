@@ -36,9 +36,9 @@ import RetrospectiveStudent from "./pages/retrospective/RetrospectiveStudent";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
 import Board from "./pages/board_retro/board";
+import BoardReview from "./pages/board_retro/boardReview";
 import Calendar from "./pages/calendar/Calendar";
 import CalendarPedago from "./pages/calendar/CalendarPedago";
-
 
 function RoutesProvider() {
   return (
@@ -79,7 +79,9 @@ function RoutesProvider() {
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
 
           <Route path="/agile" element={<FolderAgile />} />
-          <Route path="/retro" element={<Board />} />
+          <Route path="/retro" element={<Retrospective />} />
+          <Route path="/board" element={<Board />} />
+          <Route path="/boardReview" element={<BoardReview />} />
 
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
@@ -107,7 +109,7 @@ function RoutesProvider() {
             element={<InventoryPendingRequests />}
           />
           <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
-                    <Route path="/calendrier" element={<Calendar />} />
+          <Route path="/calendrier" element={<Calendar />} />
           <Route path="/calendrier/:id" element={<CalendarPedago />} />
           <Route path="*" element={<NotFound />} />
         </Route>

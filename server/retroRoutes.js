@@ -1,19 +1,24 @@
 const express = require("express");
 
-const { getRoom, getAllRooms, room } = require("./controllers/retro");
-
-const retroRoutesWsNotNeeded = () => {
-  const router = express.Router(); // Create a new router instance
-
-  console.log("in route");
-  return router;
-};
+const {
+  getRoom,
+  getRoomPo,
+  getAllRooms,
+  room,
+  getAll,
+  deleteRoom,
+  saveRetro,
+} = require("./controllers/retro");
 
 const retroRoutesWsNeeded = (connection, pathname) => {
   const router = express.Router(); // Create a new router instance
 
   router.get("/getAllRooms", getAllRooms);
-  router.get("/getRoom/:class", getRoom);
+  router.get("/getRoom/:classStudent", getRoom);
+  router.get("/getRoomPo/:po_id", getRoomPo);
+  router.get("/getAll", getAll);
+  router.delete("/deleteRoom/:po_id", deleteRoom);
+  router.post("/saveRetro", saveRetro);
 
   switch (pathname) {
     case "/retro":
@@ -26,4 +31,4 @@ const retroRoutesWsNeeded = (connection, pathname) => {
   return router;
 };
 
-module.exports = { retroRoutesWsNotNeeded, retroRoutesWsNeeded };
+module.exports = { retroRoutesWsNeeded };
