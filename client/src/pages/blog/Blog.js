@@ -76,7 +76,7 @@ function Blog() {
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
-            blog.created_at._nanoseconds / 100000
+          blog.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
@@ -147,8 +147,8 @@ function Blog() {
               user.status !== "etudiant"
                 ? blog.visibility === "pending"
                 : user.email === blog.created_by
-                ? blog.visibility === "pending"
-                : undefined
+                  ? blog.visibility === "pending"
+                  : undefined
             )
             .map((filtered) => (
               <Box
@@ -229,30 +229,30 @@ function Blog() {
             .filter((blog) => blog.type === "tuto")
             .filter((blog) => blog.visibility === "public").length > 0
             ? blog
-                .filter((blog) => blog.type === "tuto")
-                .filter((blog) => blog.visibility === "public")
-                .map((filtered) => (
-                  <Box
-                    sx={{
-                      // backgroundColor: "aqua",
-                      fontSize: "50px",
-                      width: 450,
-                      height: "auto",
-                      flexShrink: 0,
-                      color: "#fff",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      py: 2,
-                      mx: 1,
-                    }}
-                  >
-                    <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                    {/*<Typography>{user.email}</Typography>*/}
-                    {/*<Typography>{filtered.created_by}</Typography>*/}
-                    {/*<Typography>{filtered.visibility}</Typography>*/}
-                  </Box>
-                ))
+              .filter((blog) => blog.type === "tuto")
+              .filter((blog) => blog.visibility === "public")
+              .map((filtered) => (
+                <Box
+                  sx={{
+                    // backgroundColor: "aqua",
+                    fontSize: "50px",
+                    width: 450,
+                    height: "auto",
+                    flexShrink: 0,
+                    color: "#fff",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    py: 2,
+                    mx: 1,
+                  }}
+                >
+                  <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                  {/*<Typography>{user.email}</Typography>*/}
+                  {/*<Typography>{filtered.created_by}</Typography>*/}
+                  {/*<Typography>{filtered.visibility}</Typography>*/}
+                </Box>
+              ))
             : "Pas de tutoriel disponible"}
         </ul>
         <Box
@@ -311,30 +311,30 @@ function Blog() {
             .filter((blog) => blog.type === "blog")
             .filter((blog) => blog.visibility === "public").length > 0
             ? blog
-                .filter((blog) => blog.type === "blog")
-                .filter((blog) => blog.visibility === "public")
-                .map((filtered) => (
-                  <Box
-                    sx={{
-                      // backgroundColor: "aqua",
-                      fontSize: "50px",
-                      width: 450,
-                      height: "auto",
-                      flexShrink: 0,
-                      color: "#fff",
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      py: 2,
-                      mx: 1,
-                    }}
-                  >
-                    <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                    {/*<Typography>{user.email}</Typography>*/}
-                    {/*<Typography>{filtered.created_by}</Typography>*/}
-                    {/*<Typography>{filtered.visibility}</Typography>*/}
-                  </Box>
-                ))
+              .filter((blog) => blog.type === "blog")
+              .filter((blog) => blog.visibility === "public")
+              .map((filtered) => (
+                <Box
+                  sx={{
+                    // backgroundColor: "aqua",
+                    fontSize: "50px",
+                    width: 450,
+                    height: "auto",
+                    flexShrink: 0,
+                    color: "#fff",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    py: 2,
+                    mx: 1,
+                  }}
+                >
+                  <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                  {/*<Typography>{user.email}</Typography>*/}
+                  {/*<Typography>{filtered.created_by}</Typography>*/}
+                  {/*<Typography>{filtered.visibility}</Typography>*/}
+                </Box>
+              ))
             : "Pas de blog disponible"}
         </ul>
         <Box
@@ -490,13 +490,13 @@ function Blog() {
               </Box>
               <BlogRepartition />
             </Box>
-            pending
+            <h2>Pending :</h2>
             <AdvancedCarouselPending />
-            tuto
+            <h2>Tuto :</h2>
             <AdvancedCarouselTuto />
-            blog
+            <h2>Blog :</h2>
             <AdvancedCarouselBlog />
-            event
+            <h2>Event :</h2>
             <AdvancedCarouselEvent />
           </Box>
         </Box>
