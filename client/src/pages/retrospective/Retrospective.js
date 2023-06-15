@@ -361,7 +361,7 @@ function Retrospective() {
   const filter = (e) => {
     let filteredRetro = allRetro;
   
-     console.log(e);
+     //console.log(e);
     // // Filter by filterName
     // if (filterName) {
     //   console.log(filteredRetro, filterName.toLowerCase());
@@ -399,7 +399,29 @@ function Retrospective() {
     );
     setRows(updatedRows);
   };
+
+  const filterNameRetro = (event) => {
+    setFilterName(event.target.value);
+    const nameSearch = event.target.value;
+    console.log(nameSearch);
   
+    const filteredRows = rows.filter(row => row.titleRetro.includes(nameSearch));
+    const filteredTitles = filteredRows.map(row => row.titleRetro);
+    console.log(filteredTitles);
+  }
+  const filterDateRetro = (event) => {
+    const userInput = event.target.value;
+    console.log(userInput);
+  }
+  const filterOwnerRetro = (event) => {
+    const ownerSearch = event.target.value;
+    console.log(ownerSearch);
+  
+    const filteredRows = rows.filter(row => row.name.includes(ownerSearch));
+    const filteredOwner = filteredRows.map(row => row.name);
+    console.log(filteredOwner);
+
+  }
 
   // const filter = () => {
 
@@ -481,7 +503,8 @@ function Retrospective() {
               placeholder="Nom"
 
               fullWidth
-              onChange={(e) => setFilterName(e.target.value)}
+              //onChange={(e) => setFilterName(e.target.value)}
+              onKeyUp={filterNameRetro}
               wrap="true"
             />
 
@@ -491,6 +514,7 @@ function Retrospective() {
                   localeText={{ start: 'Debut', end: 'fin' }}
                   value={selectedRange}
                   onChange={(e) =>setFilterDate(e)} //, handleDateRangeChange(e)
+
                 />
               </DemoContainer>
             </LocalizationProvider>
@@ -503,7 +527,8 @@ function Retrospective() {
               placeholder="Proprietaire"
 
               fullWidth
-              onChange={(e) => setFilterOwner(e.target.value)}
+              //onChange={(e) => filterOwnerRetro(e.target.value)}
+              onKeyUp={filterOwnerRetro}
               wrap="true"
             />
 
@@ -519,7 +544,9 @@ function Retrospective() {
                 </TableRow>
               </TableHead>
               <TableBody > {/*style={{cursor: "pointer"}}*/}
-                {rows.map((row) => (
+                {rows
+                .filter(row => row.titleRetro.includes(filterName))
+                .map((row) => (
                   <TableRow key={row.date}>
                     <TableCell component="th" scope="row">
                       {row.titleRetro}
