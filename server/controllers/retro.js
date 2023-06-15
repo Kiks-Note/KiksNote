@@ -1,5 +1,4 @@
 const { db } = require("../firebase");
-const { v4: uuidv4 } = require("uuid");
 
 const pastelColors = [
   "#FFA07A",
@@ -14,6 +13,17 @@ const pastelColors = [
 let indexColor = 0;
 
 console.log("in retro controller");
+
+const getAll = async (req, res) => {
+  const allRetrosQuery = await db.collection("retro").get();
+
+  let allRetros = [];
+  allRetrosQuery.forEach((doc) => {
+    allRetros.push({ ...doc.data() });
+  });
+
+  res.send(allRetros);
+};
 
 const getRoom = async (req, res) => {
   const { classStudent } = req.params;
@@ -31,8 +41,55 @@ const getAllRooms = async (req, res) => {
     .collection("rooms")
     .where("type", "==", "retro")
     .get();
+
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
   res.status(200).send(documents);
+};
+
+const getRoomPo = async (req, res) => {
+  const { po_id } = req.params;
+  const snapshot = await db
+    .collection("rooms")
+    .where("po_id", "==", po_id)
+    .where("type", "==", "retro")
+    .get();
+  const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  res.status(200).send(documents);
+};
+
+const deleteRoom = async (req, res) => {
+  const { po_id } = req.params;
+
+  try {
+    const snapshot = await db
+      .collection("rooms")
+      .where("po_id", "==", po_id)
+      .where("type", "==", "retro")
+      .get();
+    const deletePromises = snapshot.docs.map((doc) => doc.ref.delete());
+    await Promise.all(deletePromises);
+
+    res.status(200).send("Rooms successfully deleted!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting rooms.");
+  }
+};
+
+const saveRetro = async (req, res) => {
+  const { retro, classRetro, course, po_id } = req.body;
+  try {
+    await db.collection("retro").doc().set({
+      class: classRetro,
+      course: course,
+      po_id: po_id,
+      retro: retro,
+    });
+    res.status(200).send("Retro successfully saved!");
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error saving retro.");
+  }
 };
 
 const currentRooms = new Map();
@@ -92,9 +149,10 @@ const room = async (connection) => {
         console.log("createRoom");
         const newRoomRef = db.collection("rooms").doc();
         newRoomRef.set({
-          userID: response.data.userID,
+          po_id: response.data.po_id,
           class: response.data.class,
           type: "retro",
+          course: response.data.course,
         });
         currentRooms.set(response.data.class, defaultRoom);
 
@@ -139,7 +197,7 @@ const room = async (connection) => {
 
         break;
       case "joinRoom":
-        console.log("joinRoom");
+        console.log("joinRoom :", response.data.userID);
         const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
 
         if (indexColor >= pastelColors.length) {
@@ -183,6 +241,7 @@ const room = async (connection) => {
       case "closeRoom":
         currentRooms.delete(response.data.class);
         clients.delete(response.data.class);
+        console.log("Room closed");
 
         const messageClose = {
           type: "closeRoom",
@@ -195,7 +254,7 @@ const room = async (connection) => {
         const userRoom = currentRooms.get(response.data.class) || defaultRoom;
         userRoom.users.delete(response.data.userID);
 
-        console.log("User left room");
+        console.log("User left room", response.data.userID);
 
         currentRooms.set(response.data.class, userRoom);
 
@@ -249,5 +308,9 @@ const room = async (connection) => {
 module.exports = {
   getAllRooms,
   getRoom,
+  getRoomPo,
+  deleteRoom,
   room,
+  getAll,
+  saveRetro,
 };
