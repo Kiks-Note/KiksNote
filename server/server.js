@@ -45,7 +45,8 @@ const corsOption = {
   origin: [
     "http://212.73.217.176"
   ],
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  methods : ['GET', 'POST', 'PUT', 'DELETE']
 };
 
 app.use(express.json());
