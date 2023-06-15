@@ -177,7 +177,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     const newCompleted = completed;
     newCompleted[activeStep] = true;
     setCompleted(newCompleted);
-    console.log("valueMarkdown : ", valueMarkdown);
+    // console.log("valueMarkdown : ", valueMarkdown);
     setMarkdownStepsInfo(markdownStepsInfo.concat(valueMarkdown));
     setValueMarkdown("");
     handleNext();
@@ -185,8 +185,6 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
 
   // console.log("markdownStepsInfo : ", markdownStepsInfo);
   const handleReset = () => {
-    console.log("envoie");
-    console.log("markdownStepsInfo : ", markdownStepsInfo);
     setActiveStep(0);
     setCompleted({});
     newTuto2();
@@ -220,14 +218,13 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
       title: title,
       description: description,
       tags: selectedTags,
-      // thumbnail: thumbnail,
       markdownStepsInfo: markdownStepsInfo,
       titleStep: titleStep,
       visibility: visibility,
       statut: statut,
       created_by: user.id,
     };
-    console.log("data : ", data);
+    // console.log("data : ", data);
     const formData = new FormData();
     formData.append("thumbnail", thumbnail);
     formData.append("tutoData", JSON.stringify(data));
@@ -244,7 +241,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
       toast.success("Tuto crée avec succès");
       toggleDrawerModify(e, false);
       handleCancel();
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       console.log(error);
     }

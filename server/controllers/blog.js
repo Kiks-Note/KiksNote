@@ -12,8 +12,6 @@ const addNewBlog = async (req, res) => {
     type,
     visibility,
   } = JSON.parse(req.body.blogData);
-  // console.log("req.body", req.body);
-  // console.log("tag", tag);
   try {
     const url = req.protocol + "://" + req.get("host") + "/";
     let imagebackgroundTmp = req.file ? url + req.file.path : "";
@@ -93,7 +91,6 @@ const addNewTuto2 = async (req, res) => {
   const {
     title,
     description,
-    // thumbnail,
     tags,
     markdownStepsInfo,
     titleStep,

@@ -5,8 +5,6 @@ import { w3cwebsocket } from "websocket";
 import { Toaster } from "react-hot-toast";
 import { Rings } from "react-loader-spinner";
 import useFirebase from "../../hooks/useFirebase";
-import MobileStepper from "@mui/material/MobileStepper";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
@@ -124,9 +122,7 @@ function Blog() {
   };
 
   // test for sort by date
-  // console.log("blog : ", blog);
   blog.sort((a, b) => b.created_at.localeCompare(a.created_at)); // sort by date
-  // console.log("blogSorted : ", blogSorted);
 
   const AdvancedCarouselPending = () => {
     const { scrollRef, pages, activePageIndex, next, prev, goTo } =
@@ -147,7 +143,6 @@ function Blog() {
           }}
         >
           {blog
-            // .filter((blog) => blog.type !== "tuto")
             .filter((blog) =>
               user.status !== "etudiant"
                 ? blog.visibility === "pending"
@@ -418,18 +413,6 @@ function Blog() {
   const AdvancedCarouselEvent = () => {
     const { scrollRef, pages, activePageIndex, next, prev, goTo } =
       useSnapCarousel();
-    // console.log("123");
-    // console.log(blog);
-    // for (let i = 0; i < blog?.length; i++) {
-    //   for (let j = 0; j < blog[i]?.tag?.length; j++) {
-    //     if (blog[i]?.tag[j] === "u6OdMq2h22MOR2Qhfw2w") {
-    //       console.log("event", blog[i]?.tag[j]);
-    //       console.log(blog[i]);
-    //     }
-    //   }
-    // }
-    // blog.filter((blog) => blog.filter((tag) => tag === "u6OdMq2h22MOR2Qhfw2w"));
-    // console.log("456");
     return (
       <Box sx={{ mt: 2 }}>
         <Box>

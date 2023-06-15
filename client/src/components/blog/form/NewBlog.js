@@ -9,10 +9,7 @@ import { useEffect, useState } from "react";
 import { Rings } from "react-loader-spinner";
 import toast from "react-hot-toast";
 import useFirebase from "../../../hooks/useFirebase";
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from "draft-js";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from "draftjs-to-html";
 import Autocomplete from "@mui/material/Autocomplete";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 
@@ -21,19 +18,12 @@ export default function NewBlog({ open, toggleDrawerModify }) {
   const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [previewImage, setPreviewImage] = useState("");
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [inputEditorState, setInputEditorState] = useState("");
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [valueMarkdown, setValueMarkdown] = useState("**Hello world!!!**");
-
   const { user } = useFirebase();
-  const handleEditorChange = (e) => {
-    setEditorState(e);
-    setInputEditorState(draftToHtml(convertToRaw(e.getCurrentContent())));
-  };
 
   useEffect(() => {
     fetchTags();
@@ -55,8 +45,6 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     setDescription("");
     setThumbnail(null);
     setPreviewImage("");
-    setEditorState(EditorState.createEmpty());
-    setInputEditorState("");
     setSelectedTags([]);
     setErrors({});
   };
@@ -117,7 +105,6 @@ export default function NewBlog({ open, toggleDrawerModify }) {
       visibility: visibility,
     };
     formData.append("blogData", JSON.stringify(blogData));
-    console.log("tags", selectedTags);
     try {
       const response = await axios.post(
         "http://localhost:5050/blog",
@@ -132,7 +119,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
       toast.success("Blog ajouté avec succès");
       reset();
       toggleDrawerModify(e, false);
-      console.log(response.data);
+      // console.log(response.data);
     } catch (error) {
       toast.error("Une erreur est survenue");
       console.log(error);
@@ -143,7 +130,6 @@ export default function NewBlog({ open, toggleDrawerModify }) {
 
   const handleChange = (event) => {
     setChecked(event.target.checked);
-    console.log(checked);
   };
 
   const handleCancel = () => {

@@ -99,7 +99,7 @@ function DetailBlog() {
     }
   }, [data]);
 
-  console.log("loading : ", loading);
+  // console.log("loading : ", loading);
   async function handleParticipate() {
     try {
       await axios
@@ -115,14 +115,13 @@ function DetailBlog() {
   }
 
   async function getBlogParticipant() {
-    console.log("getBlogParticipant");
     try {
       await axios
         .get(`http://localhost:5050/blog/${data?.id}/participant`)
         .then((res) => {
-          console.log("res.data : ", res.data);
+          // console.log("res.data : ", res.data);
           if (res.data.length > 0) {
-            console.log("ya res.data");
+            // console.log("ya res.data");
             for (let i = 0; i < res.data.length; i++) {
               if (res.data[i] === user.id) {
                 setIsUserParticipant(true);
@@ -169,7 +168,6 @@ function DetailBlog() {
       setHeight(ref.current.clientHeight);
     }
   }, [showParticipants]);
-  console.log(theme.palette.background.paper);
   return (
     <>
       <Box
@@ -208,20 +206,18 @@ function DetailBlog() {
                 sx={{ p: 1, width: "100%", display: "flex", height: "100%" }}
                 ref={ref}
               >
-                {/*<div data-color-mode="dark">*/}
-                {/*  <div className="wmde-markdown-var"> </div>*/}
-                <MDEditor.Markdown
-                  source={data?.valueMarkdown}
-                  style={{
-                    padding: 10,
-                    // ...{
-                    //   backgroundColor: theme.palette.background.paper,
-                    //   color: theme.palette.text.primary,
-                    // },
-                  }}
-                  // data-color-mode="dark"
-                />
-                {/*</div>*/}
+                <div data-color-mode="light">
+                  <MDEditor.Markdown
+                    source={data?.valueMarkdown}
+                    style={{
+                      padding: 10,
+                      // ...{
+                      //   backgroundColor: theme.palette.background.paper,
+                      //   color: theme.palette.text.primary,
+                      // },
+                    }}
+                  />
+                </div>
                 {showParticipants && (
                   <Box
                     sx={{
