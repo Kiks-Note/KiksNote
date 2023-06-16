@@ -1,4 +1,4 @@
-import React, {useState, useRef, useEffect, useMemo} from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import {
   FormControl,
   InputLabel,
@@ -7,21 +7,21 @@ import {
   Button,
   useTheme,
 } from "@mui/material";
-import {w3cwebsocket} from "websocket";
+import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import "./Popup.scss";
 import axios from "axios";
 
-export const PopUp = ({onPopupData, dataPopUp, showPopUp}) => {
+export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const [classChoose, setClassChoose] = useState(" ");
   const [courseChoosed, setCourseChoosed] = useState({
-    data: {title: "Tous les cours"},
+    data: { title: "Tous les cours" },
   });
 
   const popUpRef = useRef();
   const [courses, setCourses] = useState([]);
 
-  const {user} = useFirebase();
+  const { user } = useFirebase();
   const theme = useTheme();
 
   const ws = useMemo(() => {
@@ -53,7 +53,8 @@ export const PopUp = ({onPopupData, dataPopUp, showPopUp}) => {
   };
 
   function validate() {
-    if (courseChoosed.data.title === "Tous les cours") {
+    console.log(courseChoosed);
+    if (courseChoosed.name === "Tous les cours") {
       alert("Veuillez remplir le champs");
     } else {
       onPopupData({
@@ -81,15 +82,16 @@ export const PopUp = ({onPopupData, dataPopUp, showPopUp}) => {
         }}
       >
         <p>Paramétrage de la création de groupes</p>
-        <FormControl sx={{m: 1, minWidth: 120}}>
+        <FormControl sx={{ m: 1, minWidth: 120 }}>
           <InputLabel id="demo-simple-select-helper-label">Cours</InputLabel>
           <Select
             variant="filled"
             id="input-class"
-            sx={{color: "text.primary"}}
-            renderValue={(selected) => selected.data.title}
+            sx={{ color: "text.primary" }}
+            defaultValue={""}
+            renderValue={(selected) => `${selected.name}`}
             onChange={(e) => {
-              setClassChoose(e.target.value.data.courseClass.id);
+              setClassChoose(e.target.value.id);
               setCourseChoosed(e.target.value);
             }}
             value={courseChoosed}
@@ -97,11 +99,13 @@ export const PopUp = ({onPopupData, dataPopUp, showPopUp}) => {
             {courses &&
               courses.cours &&
               courses.cours.length > 0 &&
-              courses.cours.map((course) => (
-                <MenuItem value={course} key={course.id}>
-                  {course.data.title + " | " + course.data.courseClass.name}
-                </MenuItem>
-              ))}
+              courses.cours.map((course) =>
+                course.data.courseClass.map((courseClass) => (
+                  <MenuItem value={courseClass} key={courseClass.id}>
+                    {course.data.title + " | " + courseClass.name}
+                  </MenuItem>
+                ))
+              )}
           </Select>
         </FormControl>
         <div

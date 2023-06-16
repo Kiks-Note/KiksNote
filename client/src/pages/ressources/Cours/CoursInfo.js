@@ -1350,8 +1350,7 @@ const CoursInfo = () => {
                           >
                             Modifier
                           </Button>
-                          {coursData?.courseClass?.name &&
-                            coursData?.owner &&
+                          {coursData?.owner &&
                             coursData.owner.lastname &&
                             coursData.owner.firstname && (
                               <UpdateCoursDialog

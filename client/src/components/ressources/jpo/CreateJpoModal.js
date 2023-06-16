@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import {
   Button,
@@ -9,27 +9,11 @@ import {
   Autocomplete,
 } from "@mui/material";
 
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-
 import Dropzone from "./../Dropzone";
 
 import "./../../../pages/ressources/jpo/JpoInfo.scss";
 
 const CreateJpoModal = (props) => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [inputEditorState, setInputEditorState] = useState("");
-
-  const handleEditorChange = (e) => {
-    setEditorState(e);
-    setInputEditorState(convertToRaw(e.getCurrentContent()));
-  };
-
-  useEffect(() => {
-    props.setDescriptionJPO(inputEditorState);
-  }, [inputEditorState]);
-
   return (
     <>
       <Dialog
@@ -112,60 +96,25 @@ const CreateJpoModal = (props) => {
                 />
               )}
             />
-            <Editor
+            <TextField
               placeholder={`Commencer à écrire une petite description de la JPO ${props.nameJPO}`}
-              onEditorStateChange={handleEditorChange}
-              editorState={editorState}
-              toolbarClassName="toolbarClassName"
-              wrapperClassName="wrapperClassName"
-              editorClassName="editorClassName"
-              editorStyle={{
-                border: "1px solid black",
-                minHeight: "180px",
-                height: "300px",
-                padding: "10px",
-                borderRadius: "5px",
-                boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
-                marginBottom: "16px",
-              }}
+              sx={{ marginBottom: "10px", marginTop: "5px" }}
+              label="Description JPO"
+              fullWidth
+              multiline
+              rows={5}
+              defaultValue={props.descriptionJPO}
+              onChange={(e) => props.setDescriptionJPO(e.target.value)}
             />
-            <div className="jpo-dropzone">
-              <p className="info-dropdown-img">
-                Drag and drop an image file here, or click to select an image
-                file. (max. 1.00 MB each) PNG.
-              </p>
-              <Dropzone
-                onDrop={props.handleDrop}
-                onFileChange={props.handleFileChange}
-              >
-                {({ getRootProps, getInputProps }) => (
-                  <section>
-                    <div {...getRootProps()}>
-                      <input {...getInputProps()} />
-                      <p>
-                        Drag and drop some files here, or click to select files
-                      </p>
-                    </div>
-                  </section>
-                )}
-              </Dropzone>
-              {props.rejectedFiles.length > 0 && (
-                <div>
-                  <h4>Rejected files:</h4>
-                  <ul>
-                    {props.rejectedFiles.map((file) => (
-                      <li key={file.name}>
-                        {file.name} - {file.size} bytes - {file.type}
-                        <button onClick={props.handleRemove(file)}>
-                          Remove
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
           </form>
+          <TextField
+            placeholder="Lien de l'image de votre jpo"
+            sx={{ marginBottom: "10px", marginTop: "5px" }}
+            label="Lien image JPO"
+            fullWidth
+            defaultValue={props.jpoThumbnail}
+            onChange={(e) => props.setJpoThumbnail(e.target.value)}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={props.handleClose} className={props.btnCreateJpo}>

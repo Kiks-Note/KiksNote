@@ -11,7 +11,7 @@ const serviceAccount = require("./credentials.json");
 
 initializeApp({
   credential: cert(serviceAccount),
-  storageBucket: "kiksnote.appspot.com",
+  storageBucket: process.env.REACT_APP_STORAGEBUKET,
 });
 
 const db = getFirestore();

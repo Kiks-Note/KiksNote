@@ -1,4 +1,4 @@
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FolderAgile from "./pages/agile/FolderAgile";
 import Blog from "./pages/blog/Blog";
 import Board from "./pages/board_retro/board";
@@ -32,6 +32,7 @@ import ElevatorPitchPage from "./pages/agile/ElevatorPitchPage";
 import DetailTuto from "./pages/blog/DetailTuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
+import Jpo from "./pages/ressources/jpo/Jpo";
 import HistoryJpo from "./pages/ressources/jpo/HistoryJpo";
 import JpoInfo from "./pages/ressources/jpo/JpoInfo";
 import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
@@ -69,6 +70,7 @@ function RoutesProvider() {
           <Route path="/profil/:id" element={<Profil />} />
 
           {/* 404 Page */}
+          <Route path="/jpo" element={<Jpo />} />
           <Route path="/jpo/:id" element={<JpoInfo />} />
           <Route path="/jpo/history" element={<HistoryJpo />} />
           <Route path="/studentprojects" element={<StudentsProjects />} />
