@@ -39,10 +39,19 @@ var upload = multer({
   },
 });
 
+const { callRoutesWsNeeded, callRoutesWsNotNeeded } = require("./callRoutes");
 const { retroRoutesWsNeeded } = require("./retroRoutes");
 
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+    ],
+  })
+);
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use("/uploads", express.static("uploads"));
@@ -63,8 +72,12 @@ const coursRoutes = require("./coursRoutes");
 const studentsProjectsRoutes = require("./studentsProjectsRoutes");
 const jpoRoutes = require("./jpoRoutes");
 const technosRoutes = require("./technosRoutes");
+
+const path = require("path");
+
 const agileRoute = require("./agileRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
+const callRoutesNotNeeded = callRoutesWsNotNeeded();
 const calendarRoutes = require("./calendarRoutes");
 
 const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
@@ -76,6 +89,7 @@ app.use("/ressources", technosRoutes()); // --> Resssources Technos
 app.use("/home", homeRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
+app.use("/call", callRoutesNotNeeded);
 app.use("/groupes", groupNoWs);
 
 wsI.on("request", (request) => {
@@ -83,6 +97,7 @@ wsI.on("request", (request) => {
   const { pathname } = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
+  app.use("/callws", callRoutesWsNeeded(connection, pathname));
 
   //app.use("/inventory", inventoryRoutes(connection, pathname));
   app.use("/blog", blogRoutes(connection, pathname, upload));

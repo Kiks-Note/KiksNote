@@ -32,7 +32,6 @@ import JpoInfo from "./pages/ressources/jpo/JpoInfo";
 import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
 import StudentsProjects from "./pages/ressources/students_project/StudentsProjects";
 import Retrospective from "./pages/retrospective/Retrospective";
-import RetrospectiveStudent from "./pages/retrospective/RetrospectiveStudent";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
 import Board from "./pages/board_retro/board";
@@ -58,7 +57,9 @@ function RoutesProvider() {
           <Route path="/groupes" element={<GroupsDisplay />} />
           <Route path="/groupes/creation" element={<GroupsCreation />} />
           <Route path="/" element={<Home />} />
-          <Route path="/appel" element={<Appel />} />
+          <Route path="/appel/:id" element={<Appel />} />
+          <Route path="/presence/:id" element={<Presence />} />
+          <Route path="/groups" element={<GroupsCreation />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
@@ -77,12 +78,9 @@ function RoutesProvider() {
           />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
-
-          <Route path="/agile" element={<FolderAgile />} />
           <Route path="/retro" element={<Retrospective />} />
           <Route path="/board" element={<Board />} />
           <Route path="/boardReview" element={<BoardReview />} />
-
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/ideas" element={<InventoryIdeas />} />

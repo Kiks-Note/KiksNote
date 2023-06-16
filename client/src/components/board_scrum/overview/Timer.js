@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Typography } from "@mui/material";
 
 export default function Timer({ startingDate, endingDate, countdown }) {
   const [time, setTime] = useState({
@@ -17,8 +18,14 @@ export default function Timer({ startingDate, endingDate, countdown }) {
 
       if (countdown) {
         const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+
+        const hours = Math.floor(
+          (remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor(
+          (remainingTime % (1000 * 60 * 60)) / (1000 * 60)
+        );
+
         const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
 
         setTime({ days, hours, minutes, seconds });
@@ -28,6 +35,7 @@ export default function Timer({ startingDate, endingDate, countdown }) {
         }
       } else {
         const days = Math.floor(elapsedTime / (1000 * 60 * 60 * 24));
+
         const hours = Math.floor((elapsedTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
@@ -42,10 +50,21 @@ export default function Timer({ startingDate, endingDate, countdown }) {
   }, [startingDate, endingDate, countdown]);
 
   return (
-    <div>
+
+    <Typography
+      variant="body2"
+      sx={{
+        fontWeight: "bold",
+        display: "flex",
+        width: "100%",
+        justifyContent: "center",
+        textAlign: "center",
+      }}
+    >
       {countdown
         ? `${time.days}d ${time.hours}h ${time.minutes}m ${time.seconds}s`
         : `${time.days}d ${time.hours}h ${time.minutes}m ${time.seconds}s`}
-    </div>
+    </Typography>
+
   );
 }

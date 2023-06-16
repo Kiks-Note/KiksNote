@@ -50,7 +50,6 @@ export default function CardDashboard({
       onClick={moveToOverView}
       sx={{
         height: 150,
-        maxWidth: 345,
         backgroundImage: `url(${picture})`,
         backgroundPosition: "center",
         backgroundSize: "cover",
