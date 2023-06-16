@@ -61,18 +61,17 @@ const getStudents = async (req, res) => {
 };
 
 const sendGroups = async (req, res) => {
+  const { courseId } = req.body;
+
+  const courseRef = await db.collection("cours").doc(courseId).get();
   try {
     const newGroupRef = db.collection("groups").doc();
     await newGroupRef.set({
-      start_date: moment
-        .unix(Math.floor(new Date(req.body.start_date).valueOf() / 1000))
-        .toDate(),
-      end_date: moment
-        .unix(Math.floor(new Date(req.body.end_date).valueOf() / 1000))
-        .toDate(),
+      start_date: courseRef.data().dateStartSprint,
+      end_date: courseRef.data().dateEndSprint,
       students: req.body.students,
       po_id: req.body.po_id,
-      courseId: req.body.course_id,
+      courseId: courseId,
     });
 
     res.status(200).send("Groups successfully added!");
@@ -82,89 +81,6 @@ const sendGroups = async (req, res) => {
   }
 };
 
-/* const sendGroups = async (req, res) => {
-  const { students, po_id, start_date, end_date } = req.body;
-
-
-
-  console.log(po_id)
-  console.log("nbvg,fkdl")
-
-
-  try {
-    await upload(req, res, async (err) => {
-      if (err instanceof multer.MulterError) {
-        return res.status(400).json({ error: "Error uploading file." });
-      } else if (err) {
-        return res.status(400).json({ error: err.message });
-      }
-
-      const groupData = {
-        start_date: new Date(start_date),
-        end_date: new Date(end_date),
-        students: students,
-        po_id: po_id,
-        backlog: "",
-      };
-
-      if (req.file) {
-        const filePath = req.file.path;
-        const fileType = mime.lookup(filePath);
-
-        const folderPath = `Groups/${po_id}`;
-        const fileName = req.file.originalname;
-
-        const fileRef = bucket.file(`${folderPath}/${fileName}`);
-
-        try {
-          await fileRef.createWriteStream({
-            metadata: {
-              contentType: fileType || "application/pdf",
-              cacheControl: "public, max-age=31536000",
-            },
-          })
-            .on("error", (error) => {
-              console.error(error);
-              res.status(400).json({ error: error.message });
-            })
-            .on("finish", async () => {
-              try {
-                const url = await fileRef.getSignedUrl({
-                  action: "read",
-                  expires: new Date(end_date),
-                });
-                groupData.backlog = url[0];
-
-              } catch (error) {
-                console.error(error);
-                res.status(400).json({ error: error.message });
-              }
-            })
-            .end(fs.readFileSync(filePath));
-
-        } catch (error) {
-          console.error(error);
-          return res.status(400).json({ error: error.message });
-        }
-      }
-
-      try {
-        const newGroupRef = db.collection("groups").doc();
-        await newGroupRef.set(groupData);
-
-        return res.status(200).send("Groups successfully added!");
-      } catch (error) {
-        console.error(error);
-        return res.status(400).json({ error: error.message });
-      }
-    });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).send(error);
-  }
-};
- */
-
 const deleteRoom = async (req, res) => {
   const { po_id } = req.params;
 
@@ -172,6 +88,7 @@ const deleteRoom = async (req, res) => {
     const snapshot = await db
       .collection("rooms")
       .where("po_id", "==", po_id)
+      .where("type", "==", "group")
       .get();
     const deletePromises = snapshot.docs.map((doc) => doc.ref.delete());
     await Promise.all(deletePromises);
@@ -215,7 +132,6 @@ const getGroupsPo = async (req, res) => {
     .get();
 
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-  console.log(documents);
 
   res.status(200).send(documents);
 };
@@ -231,7 +147,6 @@ const getGroups = async (req, res) => {
 
   const documents = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
-  console.log(documents);
   res.status(200).send(documents);
 };
 
@@ -271,6 +186,7 @@ const room = async (connection) => {
           position: position,
           color: roomUsersToUpdate.users.get(userID)?.color,
           name: roomUsersToUpdate.users.get(userID)?.name,
+          isDragging: roomUsersToUpdate.users.get(userID)?.isDragging,
         });
 
         currentRooms.set(response.data.class, roomUsersToUpdate);
@@ -292,12 +208,10 @@ const room = async (connection) => {
 
         break;
       case "createRoom":
-        console.log("createRoom");
         const newRoomRef = db.collection("rooms").doc();
         newRoomRef.set({
           po_id: response.data.po_id,
           class: response.data.class,
-          settings: response.data.settings,
           type: "group",
         });
         currentRooms.set(response.data.class, defaultRoom);
@@ -314,13 +228,14 @@ const room = async (connection) => {
           position: null,
           color: colorC,
           name: response.data.name,
+          isDragging: false,
         });
 
         currentRooms.set(response.data.class, roomUsersC);
 
         const roomClientsC = clients.get(response.data.class) || new Map();
 
-        roomClientsC.set(response.data.userID, connection);
+        roomClientsC.set(response.data.po_id, connection);
 
         clients.set(response.data.class, roomClientsC);
 
@@ -343,7 +258,6 @@ const room = async (connection) => {
 
         break;
       case "joinRoom":
-        console.log("joinRoom :", response.data.userID);
         const roomUsers = currentRooms.get(response.data.class) || defaultRoom;
 
         if (indexColor >= pastelColors.length) {
@@ -356,6 +270,7 @@ const room = async (connection) => {
           position: null,
           color: color,
           name: response.data.name,
+          isDragging: false,
         });
 
         currentRooms.set(response.data.class, roomUsers);
@@ -385,22 +300,17 @@ const room = async (connection) => {
 
         break;
       case "closeRoom":
-        currentRooms.delete(response.data.class);
-        clients.delete(response.data.class);
-        console.log("Room closed");
-
         const messageClose = {
           type: "closeRoom",
         };
 
         sendToAllClients(messageClose, response.data.class);
-
+        currentRooms.delete(response.data.class);
+        clients.delete(response.data.class);
         break;
       case "leaveRoom":
         const userRoom = currentRooms.get(response.data.class) || defaultRoom;
         userRoom.users.delete(response.data.userID);
-
-        console.log("User left room", response.data.userID);
 
         currentRooms.set(response.data.class, userRoom);
 
@@ -430,25 +340,23 @@ const room = async (connection) => {
 
         break;
       case "lock":
-        if (response.data.status === "po") {
-          let roomLock = currentRooms.get(response.data.class) || defaultRoom;
-          roomLock.lock = response.data.lock;
-          currentRooms.set(response.data.class, roomLock);
+        let roomLock = currentRooms.get(response.data.class) || defaultRoom;
+        roomLock.lock = response.data.lock;
+        currentRooms.set(response.data.class, roomLock);
 
-          const messageLock = {
-            type: "updateRoom",
-            data: {
-              currentRoom: {
-                ...currentRooms.get(response.data.class),
-                users: Object.fromEntries(
-                  currentRooms.get(response.data.class).users
-                ),
-              },
-              class: response.data.class,
+        const messageLock = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
             },
-          };
-          sendToAllClients(messageLock, response.data.class);
-        }
+            class: response.data.class,
+          },
+        };
+        sendToAllClients(messageLock, response.data.class);
         break;
       case "nbSPGrp":
         if (response.data.status === "po") {
@@ -473,10 +381,50 @@ const room = async (connection) => {
           sendToAllClients(messageNbSPGrp, response.data.class);
         }
         break;
+      case "dragStart":
+        let roomDragStart =
+          currentRooms.get(response.data.class) || defaultRoom;
+        roomDragStart.users.get(response.data.userID).isDragging = true;
+        currentRooms.set(response.data.class, roomDragStart);
+
+        const messageDragStart = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(messageDragStart, response.data.class);
+        break;
+      case "dragEnd":
+        let roomDragEnd = currentRooms.get(response.data.class) || defaultRoom;
+        roomDragEnd.users.get(response.data.userID).isDragging = false;
+        currentRooms.set(response.data.class, roomDragEnd);
+
+        const messageDragEnd = {
+          type: "updateRoom",
+          data: {
+            currentRoom: {
+              ...currentRooms.get(response.data.class),
+              users: Object.fromEntries(
+                currentRooms.get(response.data.class).users
+              ),
+            },
+            class: response.data.class,
+          },
+        };
+
+        sendToAllClients(messageDragEnd, response.data.class);
+        break;
       case "updateCol":
         let roomCol = currentRooms.get(response.data.class) || defaultRoom;
         roomCol.columns = response.data.columns;
-        roomCol.nbStudents = response.data.nbStudents;
         currentRooms.set(response.data.class, roomCol);
 
         const messageUpdateCol = {

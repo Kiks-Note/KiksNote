@@ -1,12 +1,10 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import CardBlog from "../../components/blog/CardBlog";
 import { Box, Grid, Button } from "@mui/material";
 import { w3cwebsocket } from "websocket";
 import { Toaster } from "react-hot-toast";
 import { Rings } from "react-loader-spinner";
 import useFirebase from "../../hooks/useFirebase";
-import MobileStepper from "@mui/material/MobileStepper";
-import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
@@ -18,6 +16,8 @@ import MostParticipantsChart from "../../components/blog/TopEvent.js";
 import SplitButtonChoice from "../../components/blog/SplitButtonChoice";
 import "./Blog.css";
 import BlogRepartition from "../../components/blog/Repartition.js";
+import { useSnapCarousel } from "react-snap-carousel";
+import axios from "axios";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -26,6 +26,7 @@ function Blog() {
   const [blog, setBlog] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useFirebase();
+  const [tags, setTags] = useState([]);
 
   const stats = [
     {
@@ -73,7 +74,7 @@ function Blog() {
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
-            blog.created_at._nanoseconds / 100000
+          blog.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
@@ -105,123 +106,479 @@ function Blog() {
       });
 
       setBlog(allBlogs);
+      fetchTags();
       setLoading(false);
     };
   }, []);
 
-  // test for sort by date
-  // console.log("blog : ", blog);
-  blog.sort((a, b) => b.created_at.localeCompare(a.created_at)); // sort by date
-  // console.log("blogSorted : ", blogSorted);
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get("http://localhost:5050/blog/tag");
+      const tags = response.data;
+      setTags(tags);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des tags :", error);
+    }
+  };
 
-  return (
-    <>
-      <Toaster />
-      <Box sx={{ margin: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <SplitButtonChoice />
-          </Grid>
-          <Grid item xs={5}>
-            <div className="container_blog">
-              {!loading ? (
-                blog
-                  .filter((blog) =>
-                    user.status === "etudiant"
-                      ? blog.visibility === true
-                      : blog.visibility === false || blog.visibility === true
-                  )
-                  .map((filtered) => (
-                    <>
-                      <CardBlog blog={filtered} key={filtered.id} />
-                      <Typography>{filtered.created_at}</Typography>
-                    </>
-                  ))
-              ) : (
-                <div
+  // test for sort by date
+  blog.sort((a, b) => b.created_at.localeCompare(a.created_at)); // sort by date
+
+  const AdvancedCarouselPending = () => {
+    const { scrollRef, pages, activePageIndex, next, prev, goTo } =
+      useSnapCarousel();
+    return (
+      <Box sx={{ mt: 2 }}>
+        <Box>
+          <Typography variant="h4" sx={{ textAlign: "center" }}>
+            En attente de validation
+          </Typography>
+        </Box>
+        <ul
+          ref={scrollRef}
+          style={{
+            display: "flex",
+            overflow: "auto",
+            scrollSnapType: "x mandatory",
+          }}
+        >
+          {blog
+            .filter((blog) =>
+              user.status !== "etudiant"
+                ? blog.visibility === "pending"
+                : user.email === blog.created_by
+                  ? blog.visibility === "pending"
+                  : undefined
+            )
+            .map((filtered) => (
+              <Box
+                sx={{
+                  // backgroundColor: "aqua",
+                  fontSize: "50px",
+                  width: 450,
+                  height: "auto",
+                  flexShrink: 0,
+                  color: "#fff",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  py: 2,
+                  mx: 1,
+                }}
+              >
+                <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                {/*<Typography>{user.email}</Typography>*/}
+                {/*<Typography>{filtered.created_by}</Typography>*/}
+                {/*<Typography>{filtered.visibility}</Typography>*/}
+              </Box>
+            ))}
+        </ul>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Button onClick={() => prev()}>
+            <KeyboardArrowLeft />
+          </Button>
+          <ol style={{ display: "flex", padding: "0px" }}>
+            {pages.map((_, i) => (
+              <li key={i} style={{ listStyle: "none" }}>
+                <button
+                  onClick={() => goTo(i)}
+                  color="red"
                   style={{
+                    transition: "opacity 100ms ease-out",
+                    opacity: i !== activePageIndex ? 0.5 : 1,
+                    display: "inline-block",
+                    padding: "6px",
+                    margin: "5px",
+                    backgroundColor: "#374151",
+                    borderRadius: "50%",
+                    cursor: "pointer",
+                    border: "none",
+                  }}
+                ></button>
+              </li>
+            ))}
+          </ol>
+          <Button onClick={() => next()}>
+            <KeyboardArrowRight />
+          </Button>
+        </Box>
+      </Box>
+    );
+  };
+
+  const AdvancedCarouselTuto = () => {
+    const { scrollRef, pages, activePageIndex, next, prev, goTo } =
+      useSnapCarousel();
+    return (
+      <Box sx={{ mt: 2 }}>
+        <Box>
+          <Typography variant="h4" sx={{ textAlign: "center" }}>
+            Tuto
+          </Typography>
+        </Box>
+        <ul
+          ref={scrollRef}
+          style={{
+            display: "flex",
+            overflow: "auto",
+            scrollSnapType: "x mandatory",
+          }}
+        >
+          {blog
+            .filter((blog) => blog.type === "tuto")
+            .filter((blog) => blog.visibility === "public").length > 0 ? (
+            blog
+              .filter((blog) => blog.type === "tuto")
+              .filter((blog) => blog.visibility === "public")
+              .map((filtered) => (
+                <Box
+                  sx={{
+                    // backgroundColor: "aqua",
+                    fontSize: "50px",
+                    width: 450,
+                    height: "auto",
+                    flexShrink: 0,
+                    color: "#fff",
                     display: "flex",
                     justifyContent: "center",
                     alignItems: "center",
-                    height: "100%",
+                    py: 2,
+                    mx: 1,
                   }}
                 >
-                  <Rings
-                    height="200"
-                    width="200"
-                    color="#00BFFF"
-                    radius="6"
-                    wrapperStyle={{}}
-                    wrapperClass="loader"
-                    visible={true}
-                    ariaLabel="rings-loading"
-                  />
-                </div>
-              )}
-            </div>
-          </Grid>
-          {user.status != "etudiant" && (
-            <Grid item xs={4}>
-              <Paper
-                square
-                elevation={0}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  pl: 2,
-                  bgcolor: "background.default",
-                }}
-              >
-                <Typography variant="h6">{stats[activeStep].label}</Typography>
-              </Paper>
-              <AutoPlaySwipeableViews
-                axis={theme.direction === "rtl" ? "x-reverse" : "x"}
-                index={activeStep}
-                onChangeIndex={handleStepChange}
-                enableMouseEvents
-                interval={20000}
-              >
-                {stats.map((step, index) => (
-                  <div key={step.label}>{step.component}</div>
-                ))}
-              </AutoPlaySwipeableViews>
-              <MobileStepper
-                steps={stats.length}
-                position="static"
-                activeStep={activeStep}
-                nextButton={
-                  <Button
-                    size="small"
-                    onClick={handleNext}
-                    disabled={activeStep === stats.length - 1}
-                  >
-                    Suivant
-                    {theme.direction === "rtl" ? (
-                      <KeyboardArrowLeft />
-                    ) : (
-                      <KeyboardArrowRight />
-                    )}
-                  </Button>
-                }
-                backButton={
-                  <Button
-                    size="small"
-                    onClick={handleBack}
-                    disabled={activeStep === 0}
-                  >
-                    {theme.direction === "rtl" ? (
-                      <KeyboardArrowRight />
-                    ) : (
-                      <KeyboardArrowLeft />
-                    )}
-                    Précédent
-                  </Button>
-                }
-              />
-            </Grid>
+                  <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                  {/*<Typography>{user.email}</Typography>*/}
+                  {/*<Typography>{filtered.created_by}</Typography>*/}
+                  {/*<Typography>{filtered.visibility}</Typography>*/}
+                </Box>
+              ))
+          ) : (
+            <Box>
+              <Typography variant="h6" sx={{ textAlign: "center" }}>
+                Pas de tuto disponible
+              </Typography>
+            </Box>
           )}
-        </Grid>
+        </ul>
+        {blog
+          .filter((blog) => blog.type === "tuto")
+          .filter((blog) => blog.visibility === "public").length > 0 ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Button onClick={() => prev()}>
+              <KeyboardArrowLeft />
+            </Button>
+            <ol style={{ display: "flex", padding: "0px" }}>
+              {pages.map((_, i) => (
+                <li key={i} style={{ listStyle: "none" }}>
+                  <button
+                    onClick={() => goTo(i)}
+                    color="red"
+                    style={{
+                      transition: "opacity 100ms ease-out",
+                      opacity: i !== activePageIndex ? 0.5 : 1,
+                      display: "inline-block",
+                      padding: "6px",
+                      margin: "5px",
+                      backgroundColor: "#374151",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      border: "none",
+                    }}
+                  ></button>
+                </li>
+              ))}
+            </ol>
+            <Button onClick={() => next()}>
+              <KeyboardArrowRight />
+            </Button>
+          </Box>
+        ) : (
+          <></>
+        )}
       </Box>
+    );
+  };
+
+  const AdvancedCarouselBlog = () => {
+    const { scrollRef, pages, activePageIndex, next, prev, goTo } =
+      useSnapCarousel();
+    return (
+      <Box sx={{ mt: 2 }}>
+        <Box>
+          <Typography variant="h4" sx={{ textAlign: "center" }}>
+            Blog
+          </Typography>
+        </Box>
+        <ul
+          ref={scrollRef}
+          style={{
+            display: "flex",
+            overflow: "auto",
+            scrollSnapType: "x mandatory",
+          }}
+        >
+          {blog
+            .filter((blog) => blog.type === "blog")
+            .filter((blog) => blog.visibility === "public").length > 0 ? (
+            blog
+              .filter((blog) => blog.type === "blog")
+              .filter((blog) => blog.visibility === "public")
+              .map((filtered) => (
+                <Box
+                  sx={{
+                    // backgroundColor: "aqua",
+                    fontSize: "50px",
+                    width: 450,
+                    height: "auto",
+                    flexShrink: 0,
+                    color: "#fff",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    py: 2,
+                    mx: 1,
+                  }}
+                >
+                  <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                  {/*<Typography>{user.email}</Typography>*/}
+                  {/*<Typography>{filtered.created_by}</Typography>*/}
+                  {/*<Typography>{filtered.visibility}</Typography>*/}
+                </Box>
+              ))
+          ) : (
+            <Box>
+              <Typography variant="h6" sx={{ textAlign: "center" }}>
+                Pas de blog disponible
+              </Typography>
+            </Box>
+          )}
+        </ul>
+        {blog
+          .filter((blog) => blog.type === "blog")
+          .filter((blog) => blog.visibility === "public").length > 0 ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Button onClick={() => prev()}>
+              <KeyboardArrowLeft />
+            </Button>
+            <ol style={{ display: "flex", padding: "0px" }}>
+              {pages.map((_, i) => (
+                <li key={i} style={{ listStyle: "none" }}>
+                  <button
+                    onClick={() => goTo(i)}
+                    color="red"
+                    style={{
+                      transition: "opacity 100ms ease-out",
+                      opacity: i !== activePageIndex ? 0.5 : 1,
+                      display: "inline-block",
+                      padding: "6px",
+                      margin: "5px",
+                      backgroundColor: "#374151",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      border: "none",
+                    }}
+                  ></button>
+                </li>
+              ))}
+            </ol>
+            <Button onClick={() => next()}>
+              <KeyboardArrowRight />
+            </Button>
+          </Box>
+        ) : (
+          <></>
+        )}
+      </Box>
+    );
+  };
+
+  const AdvancedCarouselEvent = () => {
+    const { scrollRef, pages, activePageIndex, next, prev, goTo } =
+      useSnapCarousel();
+    return (
+      <Box sx={{ mt: 2 }}>
+        <Box>
+          <Typography variant="h4" sx={{ textAlign: "center" }}>
+            Évenements
+          </Typography>
+        </Box>
+        <ul
+          ref={scrollRef}
+          style={{
+            display: "flex",
+            overflow: "auto",
+            scrollSnapType: "x mandatory",
+          }}
+        >
+          {blog
+            .filter((blog) => blog.type === "event")
+            .filter((blog) => blog.visibility === "public").length > 0 ? (
+            blog
+              .filter((blog) => blog.type === "event")
+              .filter((blog) => blog.visibility === "public")
+              .map((filtered) => (
+                <Box
+                  sx={{
+                    // backgroundColor: "aqua",
+                    fontSize: "50px",
+                    width: 450,
+                    height: "auto",
+                    flexShrink: 0,
+                    color: "#fff",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    py: 2,
+                    mx: 1,
+                  }}
+                >
+                  <CardBlog blog={filtered} key={filtered.id} tags={tags} />
+                  {/*<Typography>{user.email}</Typography>*/}
+                  {/*<Typography>{filtered.created_by}</Typography>*/}
+                  {/*<Typography>{filtered.visibility}</Typography>*/}
+                </Box>
+              ))
+          ) : (
+            <Box>
+              <Typography variant="h6" sx={{ textAlign: "center" }}>
+                Pas d'événement disponible
+              </Typography>
+            </Box>
+          )}
+        </ul>
+        {blog
+          .filter((blog) => blog.type === "event")
+          .filter((blog) => blog.visibility === "public").length > 0 ? (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Button onClick={() => prev()}>
+              <KeyboardArrowLeft />
+            </Button>
+            <ol style={{ display: "flex", padding: "0px" }}>
+              {pages.map((_, i) => (
+                <li key={i} style={{ listStyle: "none" }}>
+                  <button
+                    onClick={() => goTo(i)}
+                    color="red"
+                    style={{
+                      transition: "opacity 100ms ease-out",
+                      opacity: i !== activePageIndex ? 0.5 : 1,
+                      display: "inline-block",
+                      padding: "6px",
+                      margin: "5px",
+                      backgroundColor: "#374151",
+                      borderRadius: "50%",
+                      cursor: "pointer",
+                      border: "none",
+                    }}
+                  ></button>
+                </li>
+              ))}
+            </ol>
+            <Button onClick={() => next()}>
+              <KeyboardArrowRight />
+            </Button>
+          </Box>
+        ) : (
+          <></>
+        )}
+      </Box>
+    );
+  };
+
+  return (
+    <>
+      {!loading ? (
+        <>
+          <Toaster />
+          <Box sx={{ margin: 2 }}>
+            <Box>
+              <Box>
+                <SplitButtonChoice />
+              </Box>
+              <Box sx={{ width: "93vw" }}>
+                {user.status !== "etudiant" && (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      width: "100%",
+                      justifyContent: "space-around",
+                      alignItems: "center",
+                      bgcolor: "#c6c5c5",
+                      my: 2,
+                    }}
+                  >
+                    <TopCreatorsChart />
+                    <Box>
+                      <MostParticipantsChart />
+                    </Box>
+                    <BlogRepartition />
+                  </Box>
+                )}
+                {blog
+                  // .filter((blog) => blog.type !== "tuto")
+                  .filter((blog) =>
+                    user.status !== "etudiant"
+                      ? blog.visibility === "pending"
+                      : user.email === blog.created_by
+                      ? blog.visibility === "pending"
+                      : undefined
+                  ).length > 0 ? (
+                  <AdvancedCarouselPending />
+                ) : (
+                  <> </>
+                )}
+                <AdvancedCarouselTuto />
+                <AdvancedCarouselBlog />
+                <AdvancedCarouselEvent />
+              </Box>
+            </Box>
+          </Box>
+        </>
+      ) : (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "70%",
+          }}
+        >
+          <Rings
+            height="200"
+            width="200"
+            color="#00BFFF"
+            radius="6"
+            wrapperStyle={{}}
+            wrapperClass="loader"
+            visible={true}
+            ariaLabel="rings-loading"
+          />
+        </div>
+      )}
     </>
   );
 }

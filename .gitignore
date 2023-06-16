@@ -348,3 +348,7 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/jetbrains+all,visualstudiocode,macos,windows,linux,react,firebase,node
 client/yarn.lock
+
+client/build/
+
+client/firebase.json

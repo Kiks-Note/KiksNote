@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
 
@@ -11,17 +11,17 @@ import {
   Typography,
   Button,
   Card,
-  Skeleton,
   List,
   ListItem,
   ListItemAvatar,
   Avatar,
   ListItemText,
   Divider,
+  Container,
 } from "@mui/material";
 
-import StudentProjectLinkDialog from "./StudentProjectLinkDialog";
-import UpdateJpoPdf from "./UpdateJpoPdf";
+import StudentProjectLinkDialog from "./../../../components/ressources/jpo/StudentProjectLinkDialog";
+import UpdateJpoPdf from "./../../../components/ressources/jpo/UpdateJpoPdf";
 
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -33,8 +33,9 @@ import "./JpoInfo.scss";
 
 import { makeStyles } from "@mui/styles";
 
-import UpdateJpoDialog from "./UpdateJpoDialog";
-import PdfCommercialBrochureViewer from "./PdfCommercialBrochureViewer";
+import UpdateJpoDialog from "./../../../components/ressources/jpo/UpdateJpoDialog";
+import PdfCommercialBrochureViewer from "./../../../components/ressources/jpo/PdfCommercialBrochureViewer";
+import SkeletonJpoInfo from "../../../components/ressources/jpo/SkeletonJpoInfo";
 
 const options = {
   autoClose: 2000,
@@ -62,6 +63,7 @@ const useStyles = makeStyles({
   btnProject: {
     backgroundColor: "#7a52e1",
     color: "white",
+    fontWeight: "bold",
     "&:hover": {
       backgroundColor: "#7a52e1",
       fontWeight: "bold",
@@ -131,8 +133,11 @@ const JpoInfo = () => {
   };
 
   const [loading, setLoading] = useState(true);
-
   console.log(jpoData?.jpoDescription);
+
+  /*
+    get an Object of all jpo data using the jpo id then put it in jpoData
+  */
 
   const getJpoById = async () => {
     try {
@@ -148,6 +153,15 @@ const JpoInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    update the curent jpo using
+    jpoTitle (String),
+    jpoDescription (String),
+    jpoThumbnail (String),
+    jpoDayStart (Date),
+    jpoDayEnd (Date)
+  */
 
   const editJpo = async (
     jpoTitle,
@@ -184,6 +198,12 @@ const JpoInfo = () => {
     }
   };
 
+  /*
+    update the jpo pdf using
+    pdfUrl (String)
+    and jpo id
+  */
+
   const editJpoPdf = async () => {
     try {
       const formData = new FormData();
@@ -214,12 +234,16 @@ const JpoInfo = () => {
     }
   };
 
-  const DeleteJpoById = async (jpoTitle) => {
-    const data = { jpoTitle };
+  /*
+    delete the jpo using the jpo id and title
+  */
+
+  const DeleteJpoById = async (jpoTitle, jpoId) => {
+    const data = { jpoTitle, jpoId };
 
     try {
       await axios
-        .delete(`http://localhost:5050/ressources/jpo/${id}`, { data })
+        .delete(`http://localhost:5050/ressources/jpo`, { data })
         .then((res) => {
           console.log(res.data);
         })
@@ -230,6 +254,10 @@ const JpoInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    get an Array of all projects then set it in projects
+  */
 
   const getAllProjects = async () => {
     try {
@@ -260,6 +288,7 @@ const JpoInfo = () => {
     setJPODateStart(
       moment.unix(jpoData?.jpoDayStart._seconds).format("yyyy-MM-DD")
     );
+    setDescriptionJPO(jpoData?.jpoDescription);
     setJPODateEnd(
       moment.unix(jpoData?.jpoDayEnd._seconds).format("yyyy-MM-DD")
     );
@@ -302,15 +331,39 @@ const JpoInfo = () => {
   };
 
   const deleteJpo = async () => {
-    DeleteJpoById(jpoData?.jpoTitle);
+    DeleteJpoById(jpoData?.jpoTitle, id);
     toastSuccess(`Votre jpo ${jpoData?.jpoTitle} a bien été supprimé !`);
     setTimeout(() => {
       navigate("/jpo");
     }, 4000);
   };
 
+  const deleteLinkedStudentProject = async (studentProjectId) => {
+    try {
+      await axios
+        .delete(`http://localhost:5050/ressources/jpo/${id}`, {
+          data: { studentProjectId },
+        })
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data.message ===
+              "Le lien avec le projet étudiant Project Test a été supprimé avec succès."
+          ) {
+            toastSuccess(res.data.message);
+          }
+          getJpoById(id);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    getJpoById()
+    getJpoById(id)
       .then(() => {
         setLoading(false);
       })
@@ -331,87 +384,7 @@ const JpoInfo = () => {
     <>
       {loading ? (
         <>
-          <div className="jpo-details-container">
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <Skeleton width={800} height={500} variant="rectangular" />
-            </div>
-            <div className="head-jpo-container">
-              <Typography
-                variant="h3"
-                sx={{ fontWeight: "bold", paddingLeft: "5%" }}
-              >
-                <Skeleton width={200} />
-              </Typography>
-              <Typography sx={{ paddingRight: "5%" }}>
-                <Skeleton width={150} />
-              </Typography>
-            </div>
-            <div className="jpoinfo-sections">
-              <section className="jpo-left-side-section">
-                <Typography variant="body1" sx={{ color: "lightgray" }}>
-                  <Skeleton count={4} />
-                </Typography>
-                <div className="list-students-project-linked">
-                  <Typography
-                    sx={{
-                      fontWeight: "bold",
-                      padding: "10px",
-                    }}
-                  >
-                    Liste des projets étudiants présentés lors de cette jpo :
-                  </Typography>
-
-                  {Array.from({ length: 3 }).map((_, index) => (
-                    <Card
-                      key={index}
-                      sx={{
-                        padding: "10px 0px",
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "80%",
-                        marginBottom: "10px",
-                      }}
-                    >
-                      <div className="img-name-project-link-jpo-page">
-                        <Skeleton
-                          width={70}
-                          height={30}
-                          variant="rectangular"
-                        />
-                        <Typography fontWeight={"bold"} paddingLeft={"10px"}>
-                          <Skeleton width={150} />
-                        </Typography>
-                      </div>
-                      <div className="button-project">
-                        <Button className={classes.btnProject}>
-                          <Skeleton width={150} />
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              </section>
-              <section className="jpo-right-side-section">
-                <Typography sx={{ fontWeight: "bold", padding: "10px" }}>
-                  Plaquette Commerciale JPO
-                </Typography>
-                <Skeleton width={500} height={800} variant="rectangular" />
-                <Button
-                  sx={{ marginTop: "30px", marginBottom: "30px" }}
-                  className={classes.btnLinkProject}
-                >
-                  <Skeleton width={100} />
-                </Button>
-              </section>
-            </div>
-          </div>
+          <SkeletonJpoInfo classes={classes} />
         </>
       ) : (
         <>
@@ -450,11 +423,13 @@ const JpoInfo = () => {
             </div>
             <div className="jpoinfo-sections">
               <section className="jpo-left-side-section">
-                {/* <div
-                  dangerouslySetInnerHTML={{
-                    __html: htmlDescriptionJpo,
-                  }}
-                /> */}
+                <Container sx={{ paddingBottom: "24px" }}>
+                  <Typography variant="h5">Description JPO</Typography>
+                  <Divider />
+                  <Typography sx={{ fontWeight: "bold" }}>
+                    {jpoData?.jpoDescription}
+                  </Typography>
+                </Container>
                 <Typography sx={{ fontWeight: "bold" }}>
                   Liste des participants lors de cette JPO
                 </Typography>
@@ -471,6 +446,20 @@ const JpoInfo = () => {
                           primary={`${participant.firstname} ${participant.lastname}`}
                           secondary={participant.status}
                         />
+                        <Button
+                          component={Link}
+                          to={`/profil/${participant.id}`}
+                          sx={{
+                            backgroundColor: "#7a52e1",
+                            color: "white",
+                            fontWeight: "bold",
+                            "&:hover": {
+                              backgroundColor: "#d40074",
+                            },
+                          }}
+                        >
+                          Profil <VisibilityIcon />
+                        </Button>
                       </ListItem>
                       {index < jpoData?.jpoParticipants.length - 1 && (
                         <Divider variant="inset" component="li" />
@@ -494,13 +483,13 @@ const JpoInfo = () => {
                         <Card
                           key={project.id}
                           sx={{
-                            padding: "10px 0px",
+                            padding: "10px",
                             display: "flex",
                             flexDirection: "row",
                             justifyContent: "center",
                             alignItems: "center",
-                            width: "80%",
-                            marginBottom: "10px",
+                            width: "85%",
+                            margin: "10px",
                           }}
                         >
                           <div className="img-name-project-link-jpo-page">
@@ -523,9 +512,22 @@ const JpoInfo = () => {
                               }}
                               className={classes.btnProject}
                             >
-                              <Typography>Voir le projet</Typography>
+                              <Typography>Projet</Typography>
                               <VisibilityIcon />
                             </Button>
+                            {userStatus === "pedago" ? (
+                              <Button
+                                onClick={() => {
+                                  deleteLinkedStudentProject(project.id);
+                                }}
+                                className={classes.btnDeleteJop}
+                              >
+                                <Typography>Supprimer</Typography>
+                                <DeleteIcon />
+                              </Button>
+                            ) : (
+                              <></>
+                            )}
                           </div>
                         </Card>
                       ))}
@@ -593,7 +595,7 @@ const JpoInfo = () => {
                         setJPODateStart={setJPODateStart}
                         JPODateEnd={JPODateEnd}
                         setJPODateEnd={setJPODateEnd}
-                        descriptionJPO={jpoData?.jpoDescription}
+                        descriptionJPO={descriptionJPO}
                         setDescriptionJPO={setDescriptionJPO}
                         handleDrop={handleDrop}
                         handleFileChange={handleFileChange}

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import moment from "moment";
@@ -25,10 +25,13 @@ import {
   Avatar,
   Skeleton,
   CardMedia,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
 } from "@mui/material";
 
-import UpdateCoursDialog from "./UpdateCoursDialog";
-import CoursLinkDialog from "./CoursLinkDialog";
+import UpdateCoursDialog from "./../../../components/ressources/cours/UpdateCoursDialog";
+import CoursLinkDialog from "./../../../components/ressources/cours/CoursLinkDialog";
 
 import { makeStyles } from "@mui/styles";
 import EditIcon from "@mui/icons-material/Edit";
@@ -43,10 +46,16 @@ import LaptopChromebookIcon from "@mui/icons-material/LaptopChromebook";
 import PublicIcon from "@mui/icons-material/Public";
 import LockIcon from "@mui/icons-material/Lock";
 import AddLinkIcon from "@mui/icons-material/AddLink";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import GroupIcon from "@mui/icons-material/Group";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
+import CallModal from "./CallModal";
 import "./CoursInfo.scss";
 import "react-toastify/dist/ReactToastify.css";
+import SkeletonCoursInfoLeft from "../../../components/ressources/cours/SkeletonCoursInfoLeft";
+import SkeletonCoursInfoRight from "../../../components/ressources/cours/SkeletonCoursInfoRight";
 
 const useStyles = makeStyles({
   updateButton: {
@@ -123,6 +132,8 @@ const CoursInfo = () => {
   const [pdfLinksCours, setPdfLinksCours] = useState([]);
   const [pdfLinksBacklog, setPdfLinksBacklog] = useState([]);
 
+  const [openCall, setOpenCall] = useState(false);
+
   const { control } = useForm({
     mode: "onTouched",
   });
@@ -130,6 +141,10 @@ const CoursInfo = () => {
   const [loading, setLoading] = useState(true);
 
   const classes = useStyles();
+
+  /*
+    get an Array of all PO then put it in allPo
+ */
 
   const getAllInstructors = async () => {
     try {
@@ -146,6 +161,10 @@ const CoursInfo = () => {
     }
   };
 
+  /*
+    get an Array of all classes then put it in allclass
+ */
+
   const getAllClass = async () => {
     try {
       await axios
@@ -161,7 +180,11 @@ const CoursInfo = () => {
     }
   };
 
-  const getCoursId = useCallback(async () => {
+  /*
+    get an Array of the cours data, an Arry of cours pdf and an Array of backlog pdf using the cours id then put them in coursData, pdfLinkCours and pdfLinkBacklog
+ */
+
+  const getCoursId = async () => {
     try {
       await axios
         .get(`http://localhost:5050/ressources/cours/${id}`)
@@ -176,7 +199,11 @@ const CoursInfo = () => {
     } catch (error) {
       console.error(error);
     }
-  }, [id]);
+  };
+
+  /*
+    get an Array of all cours then put it in courses
+ */
 
   const getAllCours = async () => {
     try {
@@ -192,6 +219,14 @@ const CoursInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    set a formData with the pdf cours file, 
+    the class of the cours, 
+    the title of the cours,
+    and the id of the cours 
+    then post it to the database
+ */
 
   const uploadCoursPdf = async () => {
     try {
@@ -220,6 +255,14 @@ const CoursInfo = () => {
       toastFail(`Le pdf que vous essayez d'uploader rencontre un problème.`);
     }
   };
+
+  /*
+    set a formData with the pdf backlog file, 
+    the class of the cours, 
+    the title of the cours,
+    and the id of the cours 
+    then post it to the database
+ */
 
   const uploadBacklogPdf = async () => {
     try {
@@ -253,6 +296,10 @@ const CoursInfo = () => {
     }
   };
 
+  /*
+    delete the cours pdf using courseClass, title, fileName, pdfLinkCours and courseId
+ */
+
   const deleteCoursPdf = (
     courseClass,
     title,
@@ -278,6 +325,10 @@ const CoursInfo = () => {
       });
   };
 
+  /*
+    delete the backlog pdf using courseClass, title, fileName, pdfLinkBackLog and courseId
+ */
+
   const deleteBackLogPdf = async (
     courseClass,
     title,
@@ -288,8 +339,10 @@ const CoursInfo = () => {
     const data = { courseClass, title, fileName, pdfLinkBackLog, courseId };
 
     try {
-      const res = await axios
-        .delete("http://localhost:5050/ressources/backlog/delete-pdf", { data });
+      const res = await axios.delete(
+        "http://localhost:5050/ressources/backlog/delete-pdf",
+        { data }
+      );
       if (res.status === 200) {
         toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
         getCoursId(id);
@@ -301,6 +354,19 @@ const CoursInfo = () => {
       );
     }
   };
+
+  /*
+    update the cours data using 
+    title (String),
+    description (String),
+    dateStartSprint (Date),
+    dateEndSprint (Date),
+    distanciel (String),
+    coursClass (String),
+    owner (String),
+    coursPrivate (String),
+    imageBase64 (String)
+ */
 
   const updateCours = async (
     title,
@@ -343,6 +409,13 @@ const CoursInfo = () => {
     }
   };
 
+  /*
+    delete the cours using 
+    cours_id (String),
+    courseClass (String),
+    title (String)
+ */
+
   const deleteCours = async (cours_id, courseClass, title) => {
     try {
       await axios
@@ -351,6 +424,29 @@ const CoursInfo = () => {
         })
         .then((res) => {
           console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteLinkedCours = async (cours_id, linkedCourseName, courseName) => {
+    try {
+      await axios
+        .delete(`http://localhost:5050/ressources/linkcours/${cours_id}`)
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data === "Le cours lié a été supprimé avec succès."
+          ) {
+            toastSuccess(
+              `Le cours lié ${linkedCourseName} n'est plus lié avec le cours ${courseName}`
+            );
+          }
+          getCoursId(id);
         })
         .catch((err) => {
           console.log(err);
@@ -425,6 +521,12 @@ const CoursInfo = () => {
     setFileBacklog(event.target.files[0]);
   };
 
+  const handleOpenCallModal = () => {
+    setOpenCall(true);
+  };
+  const handleCloseCallModal = () => {
+    setOpenCall(false);
+  };
   const handleDownload = (url) => {
     const link = document.createElement("a");
     link.href = url;
@@ -486,7 +588,7 @@ const CoursInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, [id]);
+  }, [getCoursId, id]);
 
   return (
     <>
@@ -520,57 +622,7 @@ const CoursInfo = () => {
             <div className="main-cours-container">
               {loading ? (
                 <>
-                  <div className="cours-left-side-container">
-                    <h2>Description</h2>
-                    <Divider />
-                    <p className="p-description-coursinfo">
-                      <Skeleton />
-                    </p>
-                    <h2>Contenu du Cours</h2>
-                    <Divider />
-                    <div className="list-course-pdf">
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                    </div>
-                    <h2>Contenu du BackLog</h2>
-                    <Divider />
-                    <div className="list-course-pdf">
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                      <Skeleton
-                        variant="rectangular"
-                        width={750}
-                        height={130}
-                        sx={{ marginBottom: "30px" }}
-                      />
-                    </div>
-                  </div>
+                  <SkeletonCoursInfoLeft />
                 </>
               ) : (
                 <>
@@ -580,68 +632,97 @@ const CoursInfo = () => {
                     <p className="p-description-coursinfo">
                       {coursData.description}
                     </p>
-                    {console.log(coursData?.linkedCourse)}
                     {coursData?.linkedCourse !== undefined ? (
                       <>
                         <h2>Cours Liée</h2>
                         <Divider />
-                        <Card
-                          sx={{
-                            width: "100%",
-                            marginBottom: "20px",
-                            display: "flex",
-                            flexDirection: "column",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <CardMedia
+                        <div style={{ display: "flex", margin: "20px" }}>
+                          <Card
                             sx={{
                               width: "100%",
-                              minHeight: "150px",
                               display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                            }}
-                            component="img"
-                            src={coursData?.linkedCourse.imageCourseUrl}
-                            alt="course image"
-                            style={{
-                              objectFit: "contain",
-                              objectPosition: "center",
-                              width: "100%",
-                              minHeight: "150px",
-                            }}
-                          />
-                          <CardContent
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-around",
-                              width: "100%",
-                              alignItems: "center",
+                              flexDirection: "row",
                             }}
                           >
-                            <h4
+                            <CardMedia
+                              component="img"
+                              src={coursData?.linkedCourse.imageCourseUrl}
+                              alt="course image"
                               style={{
-                                width: "70%",
-                                wordBreak: "break-all",
-                                whiteSpace: "normal",
+                                objectFit: "contain",
+                                objectPosition: "center",
+                                width: "30%",
+                                minHeight: "10%",
+                                padding: "20px",
+                              }}
+                            />
+                            <CardContent
+                              sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                alignItems: "center",
                               }}
                             >
-                              {coursData?.linkedCourse.title}
-                            </h4>
-                          </CardContent>
-                          <Button
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              navigate(
-                                `/coursinfo/${coursData?.linkedCourse.id}`
-                              );
-                            }}
-                            sx={{ color: "#7a52e1" }}
-                          >
-                            Voir le cours relié
-                          </Button>
-                        </Card>
+                              <h4
+                                style={{
+                                  width: "60%",
+                                  wordBreak: "break-all",
+                                  whiteSpace: "normal",
+                                }}
+                              >
+                                {coursData?.linkedCourse.title}
+                              </h4>
+                              <Button
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  navigate(
+                                    `/coursinfo/${coursData?.linkedCourse.id}`
+                                  );
+                                }}
+                                sx={{
+                                  bgcolor: "#94258c",
+                                  fontWeight: "bold",
+                                  color: "white",
+                                  mr: 1,
+                                }}
+                                className={classes.updateButton}
+                              >
+                                Cours Relié
+                                <OpenInNewIcon />
+                              </Button>
+                              {userStatus === "po" ? (
+                                <>
+                                  <Button
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      deleteLinkedCours(
+                                        coursData?.linkedCourse?.id,
+                                        coursData?.linkedCourse?.title,
+                                        coursData?.title
+                                      );
+                                    }}
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    sx={{
+                                      color: "white",
+                                      fontWeight: "bold",
+                                      backgroundColor: "#ff0000",
+                                      "&:hover": {
+                                        backgroundColor: "#a60000",
+                                      },
+                                    }}
+                                  >
+                                    <DeleteIcon />
+                                  </Button>
+                                </>
+                              ) : (
+                                <></>
+                              )}
+                            </CardContent>
+                          </Card>
+                        </div>
                       </>
                     ) : (
                       <div></div>
@@ -978,82 +1059,7 @@ const CoursInfo = () => {
               )}
               {loading ? (
                 <>
-                  <div className="cours-right-side-container">
-                    <Skeleton
-                      variant="rect"
-                      height={200}
-                      style={{ borderTopRightRadius: "10px" }}
-                    />
-                    <div className="display-date">
-                      <h4 className="h4-data-cours-info">
-                        <Skeleton variant="circle" width={20} height={20} />
-                        Date début de Sprint :
-                      </h4>
-                      <Skeleton width={100} />
-                    </div>
-                    <div className="display-date">
-                      <h4 className="h4-data-cours-info">
-                        <Skeleton variant="circle" width={20} height={20} />
-                        Date fin de Sprint :
-                      </h4>
-                      <Skeleton width={100} />
-                    </div>
-                    <h2 style={{ marginTop: "10px" }} variant="h6">
-                      Classe concernée
-                    </h2>
-                    <Divider />
-                    <div
-                      style={{
-                        display: "flex",
-                        height: "7%",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Skeleton variant="rect" width="40%" height={40} />
-                    </div>
-                    <h2 style={{ marginTop: "0px" }} variant="h6">
-                      Products Owner / Pedago
-                    </h2>
-                    <Divider />
-                    <div
-                      style={{
-                        display: "flex",
-                        height: "7%",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Skeleton variant="circular" width={40} height={40} />
-                      <Skeleton width={100} />
-                    </div>
-                    <h2 style={{ marginTop: "10px" }} variant="h6">
-                      Détails / Actions
-                    </h2>
-                    <Divider />
-                    <div className="details-actions-container">
-                      <div className="display-campus-num">
-                        <h4 className="h4-data-cours-info">
-                          <Skeleton variant="circle" width={20} height={20} />
-                          Campus Numérique :
-                        </h4>
-                        <Skeleton width={100} />
-                      </div>
-                      <div className="display-cours-status">
-                        <h4 className="h4-data-cours-info">
-                          Statut du cours :{" "}
-                        </h4>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            flexDirection: "row",
-                          }}
-                        >
-                          <Skeleton variant="circle" width={20} height={20} />
-                          <Skeleton width={100} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <SkeletonCoursInfoRight />
                 </>
               ) : (
                 <>
@@ -1108,28 +1114,35 @@ const CoursInfo = () => {
                         alignItems: "center",
                       }}
                     >
-                      <Chip
-                        sx={{
-                          display: "flex",
-                          padding: "10px",
-                          width: "40%",
-                          alignItems: "center",
-                        }}
-                        label={
-                          <>
-                            <div style={{ display: "flex" }}>
-                              {coursData?.courseClass?.name && (
-                                  <>
-                                    <Typography>
-                                      {coursData.courseClass.name}
-                                    </Typography>
-                                    <SchoolIcon />
-                                  </>
-                                )}
-                            </div>
-                          </>
-                        }
-                      ></Chip>
+                      {Array.isArray(coursData?.courseClass) ? (
+                        coursData?.courseClass.map((classData) => (
+                          <Chip
+                            key={classData.id}
+                            label={
+                              <>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>{classData.name}</Typography>
+                                  <SchoolIcon />
+                                </div>
+                              </>
+                            }
+                          />
+                        ))
+                      ) : (
+                        <Chip
+                          key={coursData?.courseClass.id}
+                          label={
+                            <>
+                              <div style={{ display: "flex" }}>
+                                <Typography>
+                                  {coursData?.courseClass.name}
+                                </Typography>
+                                <SchoolIcon />
+                              </div>
+                            </>
+                          }
+                        />
+                      )}
                     </div>
                     <h2
                       style={{
@@ -1147,28 +1160,41 @@ const CoursInfo = () => {
                         alignItems: "center",
                       }}
                     >
-                      <Chip
-                        avatar={
+                      <ListItem sx={{ display: "flex", alignItems: "center" }}>
+                        <ListItemAvatar>
                           <Avatar
                             alt={
                               coursData?.owner?.lastname.toUpperCase() +
-                              "" +
+                              " " +
                               coursData?.owner?.firstname +
-                              "photo-profile"
+                              " photo-profile"
                             }
                             src={coursData?.data?.owner?.image}
                           />
-                        }
-                        variant="outlined"
-                        label={
-                          <>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
                             <Typography>
                               {coursData?.owner?.lastname.toUpperCase()}{" "}
                               {coursData?.owner?.firstname}
                             </Typography>
-                          </>
-                        }
-                      ></Chip>
+                          }
+                        />
+                        <Button
+                          component={Link}
+                          to={`/profil/${coursData?.owner?.id}`}
+                          sx={{
+                            backgroundColor: "#7a52e1",
+                            color: "white",
+                            fontWeight: "bold",
+                            "&:hover": {
+                              backgroundColor: "#d40074",
+                            },
+                          }}
+                        >
+                          Profil <VisibilityIcon />
+                        </Button>
+                      </ListItem>
                     </div>
                     <h2
                       style={{
@@ -1222,6 +1248,7 @@ const CoursInfo = () => {
                               color: "#ffffff",
                             }}
                             className={classes.callButton}
+                            onClick={handleOpenCallModal}
                           >
                             Lancer l'appel
                           </Button>
@@ -1235,6 +1262,7 @@ const CoursInfo = () => {
                               color: "#ffffff",
                             }}
                             className={classes.joinCallButton}
+                            onClick={handleOpenCallModal}
                           >
                             Rejoindre l'appel
                           </Button>
@@ -1243,6 +1271,27 @@ const CoursInfo = () => {
                         <div></div>
                       )}
                     </div>
+
+                    {userStatus !== "pedago" ? (
+                      <>
+                        <Button
+                          startIcon={<GroupIcon />}
+                          onClick={() => {
+                            navigate(`/groupes/creation`);
+                          }}
+                          sx={{
+                            bgcolor: "#f9004f",
+                            fontWeight: "bold",
+                            color: "white",
+                            margin: "1vh",
+                          }}
+                        >
+                          Créer un groupe
+                        </Button>
+                      </>
+                    ) : (
+                      <></>
+                    )}
 
                     {userStatus === "etudiant" ? (
                       ""
@@ -1375,6 +1424,14 @@ const CoursInfo = () => {
           </div>
         </div>
         <ToastContainer></ToastContainer>
+        <CallModal
+          open={openCall}
+          lessonId={id}
+          handleClose={handleCloseCallModal}
+          classId={coursData?.courseClass?.id}
+          className={coursData?.courseClass?.name}
+          user={user}
+        ></CallModal>
       </div>
     </>
   );
