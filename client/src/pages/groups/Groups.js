@@ -47,7 +47,6 @@ function GroupsCreation() {
   const [courseChoose, setCourseChoose] = useState();
   const [hasLock, setHasLock] = useState(true);
   const [notAllowed, setNotAllowed] = useState(false);
-
   const [userCursors, setUserCursors] = useState();
 
   const [nbUserConnected, setNbUserConnected] = useState(0);
@@ -224,6 +223,25 @@ function GroupsCreation() {
     } else {
       ws.onopen = handleOpen;
     }
+  }, [user?.id, user?.firstname, ws]);
+
+  function displayUserCursorPositions(users) {
+    const map = new Map(Object.entries(users));
+    setUserCursors(map);
+  }
+
+  useEffect(() => {
+    const handleOpen = async () => {
+      if (user?.status === "etudiant") {
+        await LogToExistingRoomStudent();
+      } else if (user?.status === "po") {
+        await logToExistingRoom();
+      }
+
+      if (inRoom) {
+        if (user?.status === "po") {
+          await fetchAndSetData();
+        }
 
     return () => {
       document.removeEventListener("mousemove", () => {});
@@ -333,7 +351,6 @@ function GroupsCreation() {
           items: copiedItems,
         },
       });
-
       ws.send(
         JSON.stringify({
           type: "updateCol",
@@ -567,7 +584,6 @@ function GroupsCreation() {
   function settingsPopUp() {
     setShowSettings(true);
   }
-
   if (!columns && inRoom) {
     return <p>Loading...</p>;
   }
