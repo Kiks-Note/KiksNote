@@ -89,9 +89,14 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
             id="input-class"
             sx={{ color: "text.primary" }}
             defaultValue={""}
-            renderValue={(selected) => `${selected.name}`}
+            renderValue={(selected) =>
+              selected
+                ? `${selected.data.title} | ${selected?.data?.courseClass?.name}`
+                : "Choice"
+            }
             onChange={(e) => {
-              setClassChoose(e.target.value.id);
+              console.log(e.target.value);
+              setClassChoose(e.target.value.data.courseClass.id);
               setCourseChoosed(e.target.value);
             }}
             value={courseChoosed}
@@ -99,13 +104,11 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
             {courses &&
               courses.cours &&
               courses.cours.length > 0 &&
-              courses.cours.map((course) =>
-                course.data.courseClass.map((courseClass) => (
-                  <MenuItem value={courseClass} key={courseClass.id}>
-                    {course.data.title + " | " + courseClass.name}
-                  </MenuItem>
-                ))
-              )}
+              courses.cours.map((course) => (
+                <MenuItem value={course} key={course.data.courseClass}>
+                  {course.data.title + " | " + course.data.courseClass.name}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
         <div
