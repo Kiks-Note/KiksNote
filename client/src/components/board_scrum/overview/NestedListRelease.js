@@ -11,7 +11,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import axios from "axios";
 
-function NestedListRelease({releases, dashboardId, selectedStories}) {
+function NestedListRelease({ releases, dashboardId, selectedStories }) {
   const [open, setOpen] = useState({});
 
   const handleClick = (key) => () => {
@@ -19,13 +19,10 @@ function NestedListRelease({releases, dashboardId, selectedStories}) {
   };
 
   const chooseBoard = async (sprint) => {
-    await axios.post(
-      `${process.env.REACT_APP_SERVER_API}/dashboard/${dashboardId}/moveStories`,
-      {
-        boardId: sprint.boardId,
-        storiesId: selectedStories,
-      }
-    );
+    await axios.post(`${process.env.REACT_APP_SERVER_API}/dashboard/${dashboardId}/moveStories`, {
+      boardId: sprint.boardId,
+      selectedStories: selectedStories,
+    });
   };
 
   return (
@@ -43,7 +40,7 @@ function NestedListRelease({releases, dashboardId, selectedStories}) {
                 {isOpen ? <ExpandLess /> : <ExpandMore />}
               </ListItem>
               <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                <List component="div" disablePadding style={{marginLeft: "5%"}}>
+                <List component="div" disablePadding style={{ marginLeft: "5%" }}>
                   {release[1].map((sprint) => (
                     <ListItem
                       key={sprint.id}

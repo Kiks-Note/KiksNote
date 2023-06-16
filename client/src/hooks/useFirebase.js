@@ -25,7 +25,7 @@ const storage = getStorage(firebaseApp);
 export const FirebaseContext = createContext();
 
 export const useFirebase = () => useContext(FirebaseContext);
-export const FirebaseContextProvider = ({children}) => {
+export const FirebaseContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const cookies = new Cookies();
   const lastConnectionAt = cookies.get("lastConnectionAt");

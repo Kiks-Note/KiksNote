@@ -14,6 +14,9 @@ import EmpathyMap from "../../agile/EmpathyMap";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setActiveTab } from "../../../redux/slices/tabBoardSlice";
+import AgileHome from "../../agile/AgileHome";
+import ArbreFonctionnel from "../../agile/ArbreFonctionnel";
+import ElevatorPitchPage from "../../agile/ElevatorPitchPage";
 
 TabDemo.propTypes = {
   actualTabs: PropTypes.arrayOf(
@@ -46,13 +49,10 @@ export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
 
   const handleChange = useCallback(
     (event, value) => {
-      console.log("2", value);
       if (checkIfActiveTabExists(tabs, value)) {
-        console.log("activeTab existe dans tabs");
         setActiveTabLocal(value);
         dispatch(setActiveTab(value));
       } else {
-        console.log("activeTab n'existe pas dans tabs");
         setActiveTabLocal(tabs[0].id);
         dispatch(setActiveTab(tabs[0].id));
       }
@@ -109,8 +109,30 @@ export default function TabDemo({ actualTabs, selectedTab, handleClose }) {
               />
             )}
             {tab.component === "Impact" && <ImpactMapping data={tab.data} />}
-            {tab.component === "Personas" && <Personas />}
-            {tab.component === "Empathy" && <EmpathyMap/>}
+            {tab.component === "Personas" && (
+              <Personas
+                dashboardId={tab.data.dashboardId}
+                actorId={tab.data.actorId}
+              />
+            )}
+            {tab.component === "Empathy" && (
+              <EmpathyMap
+                dashboardId={tab.data.dashboardId}
+                actorId={tab.data.actorId}
+              />
+            )}
+            {tab.component === "AgileHome" && (
+              <AgileHome
+                dashboardId={tab.data.dashboardId}
+                agile={tab.data.agile}
+              />
+            )}
+            {tab.component === "Arbre" && (
+              <ArbreFonctionnel dashboardId={tab.data.dashboardId} />
+            )}
+           {tab.component === "Elevator" && (
+              <ElevatorPitchPage dashboardId={tab.data.dashboardId}/>
+            )}
           </TabContainer>
         ) : null
       )}

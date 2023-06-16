@@ -40,13 +40,27 @@ function GroupsCreation() {
   const [courseChoose, setCourseChoose] = useState();
   const [notAllowed, setNotAllowed] = useState(false);
   const [userCursors, setUserCursors] = useState();
-  const [nbUserConnected, setNbUserConnected] = useState(0);
+  const [nbUserConnected, setNbUserConnected] = useState(1);
   const [showEdit, setShowEdit] = useState(false);
   const [postItId, setPostItId] = useState();
 
   const navigate = useNavigate();
   const {user} = useFirebase();
   const theme = useTheme();
+
+  const [clickedIds, setClickedIds] = useState([]);
+
+  const handleTextFieldClick = (event) => {
+    event.stopPropagation();
+  };
+
+  const handleClick = (id) => {
+    if (clickedIds.includes(id)) {
+      setClickedIds(clickedIds.filter((clickedId) => clickedId !== id));
+    } else {
+      setClickedIds([...clickedIds, id]);
+    }
+  };
 
   const ws = useMemo(() => {
     return new w3cwebsocket(`${process.env.REACT_APP_SERVER_API_WS}/retro`);
@@ -108,6 +122,7 @@ function GroupsCreation() {
             setClassStudents(user?.class.id);
             setInRoom(true);
             setCourseChoose(res.data[0].course);
+            fetchAndSetData();
           }
         });
     } catch (error) {
@@ -134,6 +149,7 @@ function GroupsCreation() {
             setClassStudents(res.data[0].class);
             setInRoom(true);
             setCourseChoose(res.data[0].course);
+            fetchAndSetData();
           }
         });
     } catch (error) {
@@ -289,6 +305,7 @@ function GroupsCreation() {
       content: "Entrez votre texte ici..",
       color: userCursors?.get(user?.id).color,
       user: user?.id,
+      userName: user?.firstname,
     });
     group.items = updatedItems;
     setColumns(copiedColContent);
@@ -513,6 +530,7 @@ function GroupsCreation() {
               height: "100%",
               overflow: "hidden",
             }}
+            className="retro-container"
           >
             {showSettings && user?.status === "po" ? (
               <PopUp
@@ -578,29 +596,37 @@ function GroupsCreation() {
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        width: "45 %",
+                        width: "45%",
+                        margin: "10px",
                       }}
                       key={columnId}
                     >
                       {" "}
                       <h2>{column.name}</h2>
-                      <div style={{margin: 8}}>
+                      <div
+                        style={{
+                          margin: 8,
+                          width: "100%",
+                          height: "100%",
+                          minHeight: "40vh",
+                        }}
+                      >
                         <Droppable droppableId={columnId} key={columnId}>
                           {(provided, snapshot) => {
                             return (
                               <div
+                                id="post-its"
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
                                 style={{
                                   backgroundColor: snapshot.isDraggingOver
                                     ? theme.palette.custom.selectBackground
-                                    : "#6b6b6b",
+                                    : theme.palette.background.paper,
                                   padding: 4,
-                                  width: 250,
+                                  width: "100%",
                                   minHeight: 140,
-                                  maxHeight: 500,
+                                  height: "100%",
                                   overflow: "auto",
-                                  height: "auto",
                                 }}
                                 className="group"
                                 onClick={() => {
@@ -617,20 +643,17 @@ function GroupsCreation() {
                                       {(provided, snapshot) => {
                                         return (
                                           <div
+                                            id="post-it-container"
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             {...provided.dragHandleProps}
                                             style={{
                                               userSelect: "none",
                                               borderRadius: 3,
-                                              boxShadow:
-                                                "0 0 10px rgba(0, 0, 0, 0.2)",
-                                              backgroundColor:
-                                                snapshot.isDragging
-                                                  ? "red brightness(0.8)"
-                                                  : item.color,
-                                              color: "white",
+                                              color: "black",
                                               margin: "10px",
+                                              width: "150px",
+                                              height: "150px",
                                               ...(userCursors?.get(item.user)
                                                 ?.isDragging &&
                                                 item.user !== user?.id &&
@@ -646,35 +669,69 @@ function GroupsCreation() {
                                                 }),
                                               ...provided.draggableProps.style,
                                             }}
-                                            className="post-it"
                                             onClick={(event) => {
                                               event.stopPropagation();
+                                              handleClick(item.id);
                                               if (item.user === user.id) {
                                                 setShowEdit(true);
                                                 setPostItId(item.id);
                                               }
                                             }}
+                                            className={
+                                              clickedIds.includes(item.id)
+                                                ? "post-it clicked"
+                                                : "post-it"
+                                            }
                                           >
                                             {showEdit &&
                                             item.id === postItId ? (
-                                              <TextField
-                                                defaultValue={item.content}
-                                                onKeyDown={(event) => {
-                                                  if (event.key === "Enter") {
-                                                    event.preventDefault();
-                                                    updatePostIt(
-                                                      item.id,
-                                                      event.target.value
-                                                    );
-                                                  }
-                                                }}
-                                              />
+                                              <div
+                                                id="post-it-card"
+                                                class="shadow"
+                                              >
+                                                <div class="front face">
+                                                  <div class="strategy">
+                                                    {item.userNam}
+                                                  </div>
+                                                </div>
+                                                <div class="back face center">
+                                                  <TextField
+                                                    onClick={
+                                                      handleTextFieldClick
+                                                    }
+                                                    sx={{ color: "black" }}
+                                                    onKeyDown={(event) => {
+                                                      if (
+                                                        event.key === "Enter"
+                                                      ) {
+                                                        event.preventDefault();
+                                                        updatePostIt(
+                                                          item.id,
+                                                          event.target.value
+                                                        );
+                                                      }
+                                                    }}
+                                                  />
+                                                </div>
+                                              </div>
                                             ) : (
-                                              <p>{item.content}</p>
+                                              <div
+                                                id="post-it-card"
+                                                class="shadow"
+                                              >
+                                                <div class="front face">
+                                                  <div class="strategy">
+                                                    {item.user.split(".")[0]}
+                                                  </div>
+                                                </div>
+                                                <div class="back face center">
+                                                  <p>{item.content}</p>
+                                                </div>
+                                              </div>
                                             )}
 
                                             {!userCursors?.get(item.id) &&
-                                            user.status === "po" ? (
+                                            item.user === user.id ? (
                                               <p
                                                 className="student-cross"
                                                 onClick={(event) => {

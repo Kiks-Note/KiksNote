@@ -10,6 +10,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
 import useFirebase from "../../../hooks/useFirebase";
+
 import {
   Button,
   Grid,
@@ -26,6 +27,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+
 const schema = yup.object().shape({
   sprint_name: yup.string().required("Donnez un nom à votre sprint."),
   group_name: yup.string().required("Donnez un nom à votre groupe."),
@@ -108,7 +110,7 @@ export default function SimpleDashboardForm(props) {
       favorite: "false",
       group_name: data.group_name,
       sprint_name: data.sprint_name,
-      image: "https://picsum.photos/600",
+      image: "https://picsum.photos/1920/900",
       pdf_link: "",
       groupId: "",
       created_by: user.id,

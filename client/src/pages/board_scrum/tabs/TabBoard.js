@@ -24,7 +24,6 @@ export default function TabBoard() {
   );
 
   useEffect(() => {
-    console.log('active', activeTab);
     if (tabs.length === 0) {
       const initialTab = {
         id: "Dashboard",

@@ -104,7 +104,6 @@ export const PopUp = ({onPopupData, dataPopUp, showPopUp}) => {
               ))}
           </Select>
         </FormControl>
-
         <div
           style={{
             display: "flex",

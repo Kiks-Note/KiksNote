@@ -39,6 +39,8 @@ export default function DetailCard(props) {
   //DESCRIPTION LISTENER
   const [isEditingDescription, setIsEditingDescription] = useState(false);
   const [descriptionValue, setDescriptionValue] = useState(info.desc);
+  const [isEditingValue, setIsEditingValue] = useState(false);
+  const [storyValue, setStoryValue] = useState(info.value);
   const [showModal, setShowModal] = useState(false);
   const [type, setType] = useState("");
   const [isAssigned, setIsAssigned] = useState(
@@ -52,8 +54,20 @@ export default function DetailCard(props) {
     setDescriptionValue(event.target.value);
   };
 
+  const handleValueChange = async (e) => {
+    const inputValue = e.target.value;
+    const intValue = parseInt(inputValue);
+
+    if (Number.isInteger(intValue) || inputValue === "") {
+      setStoryValue(inputValue);
+    }
+  };
+
   const handleNameClick = () => {
     setIsEditingName(true);
+  };
+  const handleValueClick = () => {
+    setIsEditingValue(true);
   };
 
   const handleNameChange = (event) => {
@@ -68,6 +82,11 @@ export default function DetailCard(props) {
     setNameValue(event.target.value);
     setIsEditingName(false);
   };
+  const handleValueBlur = (event) => {
+    saveValue(event.target.value);
+    setStoryValue(event.target.value);
+    setIsEditingValue(false);
+  };
   const saveName = async (title) => {
     try {
       let cardDto;
@@ -80,6 +99,7 @@ export default function DetailCard(props) {
           color: info.color,
           assignedTo: info.assignedTo,
           labels: info.labels,
+          value: info.value,
         };
       } else {
         cardDto = {
@@ -109,6 +129,36 @@ export default function DetailCard(props) {
     }
   };
 
+  const saveValue = async (value) => {
+    try {
+      let cardDto;
+      cardDto = {
+        id: info.id,
+        title: info.name,
+        desc: info.desc,
+        storyId: info.storyId,
+        color: info.color,
+        assignedTo: info.assignedTo,
+        labels: info.labels,
+        value: value,
+      };
+
+      await axios.put(
+        "http://localhost:5050/dashboard/" +
+          props.dashboardId +
+          "/board/" +
+          props.boardId +
+          "/column/" +
+          props.columnId +
+          "/editCard",
+        cardDto
+      );
+      setIsEditingDescription(false);
+    } catch (error) {
+      // Gérer les erreurs
+    }
+  };
+
   const saveDesc = async () => {
     try {
       let cardDto;
@@ -121,6 +171,7 @@ export default function DetailCard(props) {
           color: info.color,
           assignedTo: info.assignedTo,
           labels: info.labels,
+          value: info.value,
         };
       } else {
         cardDto = {
@@ -319,6 +370,28 @@ export default function DetailCard(props) {
             variant: "h5",
           }}
         />
+
+        {storyValue != undefined &&
+          (isEditingValue ? (
+            <TextField
+              type="number"
+              value={storyValue}
+              onChange={handleValueChange}
+              onBlur={handleValueBlur}
+            />
+          ) : (
+            <div style={{ width: "-webkit-fill-available" }}>
+              <Typography sx={style_title}>Valeur Métier</Typography>
+              <Typography
+                sx={style_title}
+                color="text.default"
+                variant="h5"
+                onClick={handleValueClick}
+              >
+                {storyValue}
+              </Typography>
+            </div>
+          ))}
         <CardContent className="card-content">
           <div style={{width: "-webkit-fill-available"}}>
             <div>
