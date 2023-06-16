@@ -89,7 +89,6 @@ app.use("/ressources", technosRoutes()); // --> Resssources Technos
 app.use("/home", homeRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
-app.use("/retro", retroRoutesNotNeeded);
 app.use("/call", callRoutesNotNeeded);
 app.use("/groupes", groupNoWs);
 
