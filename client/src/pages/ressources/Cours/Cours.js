@@ -1,7 +1,7 @@
-import React, {useEffect, useState, useCallback} from "react";
-import {toast, ToastContainer} from "react-toastify";
-import {useForm} from "react-hook-form";
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 
@@ -67,7 +67,7 @@ export const toastFail = (message) => {
 const Cours = () => {
   let navigate = useNavigate();
 
-  const {user} = useFirebase();
+  const { user } = useFirebase();
   const userStatus = user?.status;
   console.log(userStatus);
   const userClassConnected = user?.class;
@@ -88,6 +88,7 @@ const Cours = () => {
   const [courseOwner, setCourseOwner] = useState("");
   const [idSelectedOwner, setIdSelectedOwner] = useState("");
   const [selectedClass, setSelectedClass] = useState([]);
+  const [idSelectedClass, setIdSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
 
@@ -247,7 +248,7 @@ const Cours = () => {
       courseDescription === "" ||
       courseDateStart === "" ||
       courseDateEnd === "" ||
-      !selectedClass ||
+      idSelectedClass === "" ||
       idSelectedOwner === "" ||
       courseImageBase64 === ""
     ) {
@@ -262,7 +263,7 @@ const Cours = () => {
             dateStartSprint: courseDateStart,
             dateEndSprint: courseDateEnd,
             campus_numerique: courseCampusNumerique,
-            courseClass: selectedClass,
+            courseClass: idSelectedClass,
             owner: idSelectedOwner,
             private: coursePrivate,
             imageBase64: courseImageBase64,
@@ -377,7 +378,7 @@ const Cours = () => {
             width: "100%",
           }}
         >
-          <Typography variant="h6" sx={{flexGrow: 1}}></Typography>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}></Typography>
           <div className="header-cours">
             <Box
               sx={{
@@ -386,12 +387,12 @@ const Cours = () => {
                 padding: "20px",
               }}
             >
-              <div style={{display: "flex", justifyContent: "space-between"}}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <ToggleButtonGroup
                   value={view}
                   exclusive
                   onChange={viewChange}
-                  sx={{margin: 1}}
+                  sx={{ margin: 1 }}
                 >
                   <ToggleButton value="module" aria-label="module">
                     <ViewModule />
@@ -403,14 +404,14 @@ const Cours = () => {
               </div>
             </Box>
             <div className="search-bar-container">
-              <form noValidate autoComplete="off" style={{width: "100%"}}>
+              <form noValidate autoComplete="off" style={{ width: "100%" }}>
                 <TextField
                   id="outlined-basic"
                   label="Rechercher votre Cours"
                   variant="outlined"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  sx={{width: "80%"}}
+                  sx={{ width: "80%" }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -421,7 +422,7 @@ const Cours = () => {
                 />
               </form>
             </div>
-            <FormControl sx={{width: "15%"}}>
+            <FormControl sx={{ width: "15%" }}>
               <Select
                 value={selectedFilterClass}
                 onChange={(event) => {
@@ -489,6 +490,7 @@ const Cours = () => {
             setCoursePrivate={setCoursePrivate}
             selectedClass={selectedClass}
             setSelectedClass={setSelectedClass}
+            setIdSelectedClass={setIdSelectedClass}
             allclass={allclass}
             control={control}
             allpo={allpo}
@@ -506,7 +508,25 @@ const Cours = () => {
         {view === "module" ? (
           <>
             <div className="grid-view-cours ">
-              <h1>Année {`${currentYear}  - ${currentYear + 1} `}</h1>
+              <h1>
+                Année {`${currentYear} - ${currentYear + 1}`}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>
+
               <Grid container spacing={2}>
                 {loading ? (
                   <>
@@ -543,7 +563,7 @@ const Cours = () => {
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "space-evenly",
-                                height: "450px",
+                                height: "500px",
                               }}
                               /* eslint-disable no-unused-expressions */
                               onClick={() => {
@@ -566,8 +586,8 @@ const Cours = () => {
                                 sx={{
                                   display: "flex",
                                   width: "100%",
-                                  maxHeight: "210px",
-                                  minHeight: "210px",
+                                  maxHeight: "170px",
+                                  minHeight: "170px",
                                   justifyContent: "center",
                                   margin: "0",
                                 }}
@@ -585,64 +605,44 @@ const Cours = () => {
                                 <div
                                   style={{
                                     display: "flex",
-                                    justifyContent: "space-between",
                                   }}
                                 >
-                                  {Array.isArray(course.data.courseClass) ? (
-                                    course.data.courseClass.map((classData) => (
-                                      <Chip
-                                        key={classData.id}
-                                        label={
-                                          <>
-                                            <div style={{ display: "flex" }}>
-                                              <Typography>
-                                                {classData.name}
-                                              </Typography>
-                                              <SchoolIcon />
-                                            </div>
-                                          </>
-                                        }
-                                      />
-                                    ))
-                                  ) : (
-                                    <Chip
-                                      key={course.data.courseClass.id}
-                                      label={
-                                        <>
-                                          <div style={{ display: "flex" }}>
-                                            <Typography>
-                                              {course.data.courseClass.name}
-                                            </Typography>
-                                            <SchoolIcon />
-                                          </div>
-                                        </>
-                                      }
-                                    />
-                                  )}
-
                                   <Chip
-                                    avatar={
-                                      <Avatar
-                                        alt={
-                                          course.data.owner.lastname.toUpperCase() +
-                                          "" +
-                                          course.data.owner.firstname +
-                                          "photo-profile"
-                                        }
-                                        src={course.data.owner.image}
-                                      />
-                                    }
-                                    variant="outlined"
                                     label={
                                       <>
-                                        <Typography>
-                                          {course.data.owner.lastname.toUpperCase()}{" "}
-                                          {course.data.owner.firstname}
-                                        </Typography>
+                                        <div style={{ display: "flex" }}>
+                                          <Typography>
+                                            {course.data.courseClass.name}
+                                          </Typography>
+                                          <SchoolIcon />
+                                        </div>
                                       </>
                                     }
                                   ></Chip>
                                 </div>
+                                <Chip
+                                  sx={{ marginTop: "1vh" }}
+                                  avatar={
+                                    <Avatar
+                                      alt={
+                                        course.data.owner.lastname.toUpperCase() +
+                                        "" +
+                                        course.data.owner.firstname +
+                                        "photo-profile"
+                                      }
+                                      src={course.data.owner.image}
+                                    />
+                                  }
+                                  variant="outlined"
+                                  label={
+                                    <>
+                                      <Typography>
+                                        {course.data.owner.lastname.toUpperCase()}{" "}
+                                        {course.data.owner.firstname}
+                                      </Typography>
+                                    </>
+                                  }
+                                ></Chip>
                                 <div style={{ padding: "10px" }}>
                                   <Typography
                                     sx={{
@@ -700,7 +700,28 @@ const Cours = () => {
               </Grid>
             </div>
             <div className="grid-view-cours ">
-              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
+              <h1>
+                Année {`${currentYear - 1} - ${currentYear} `}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name.replace(
+                              /\d+/,
+                              (match) => parseInt(match, 10) - 1
+                            )}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>
+
               <Grid container spacing={2}>
                 {loading ? (
                   <>
@@ -736,7 +757,7 @@ const Cours = () => {
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-evenly",
-                              height: "450px",
+                              height: "500px",
                             }}
                             onClick={() =>
                               userStatus !== "etudiant" &&
@@ -758,8 +779,8 @@ const Cours = () => {
                               sx={{
                                 display: "flex",
                                 width: "100%",
-                                maxHeight: "210px",
-                                minHeight: "210px",
+                                maxHeight: "170px",
+                                minHeight: "170px",
                                 justifyContent: "center",
                                 margin: "0",
                               }}
@@ -774,63 +795,44 @@ const Cours = () => {
                               <div
                                 style={{
                                   display: "flex",
-                                  justifyContent: "space-between",
                                 }}
                               >
-                                {Array.isArray(course.data.courseClass) ? (
-                                  course.data.courseClass.map((classData) => (
-                                    <Chip
-                                      key={classData.id}
-                                      label={
-                                        <>
-                                          <div style={{ display: "flex" }}>
-                                            <Typography>
-                                              {classData.name}
-                                            </Typography>
-                                            <SchoolIcon />
-                                          </div>
-                                        </>
-                                      }
-                                    />
-                                  ))
-                                ) : (
-                                  <Chip
-                                    key={course.data.courseClass.id}
-                                    label={
-                                      <>
-                                        <div style={{ display: "flex" }}>
-                                          <Typography>
-                                            {course.data.courseClass.name}
-                                          </Typography>
-                                          <SchoolIcon />
-                                        </div>
-                                      </>
-                                    }
-                                  />
-                                )}
                                 <Chip
-                                  avatar={
-                                    <Avatar
-                                      alt={
-                                        course.data.owner.lastname.toUpperCase() +
-                                        "" +
-                                        course.data.owner.firstname +
-                                        "photo-profile"
-                                      }
-                                      src={course.data.owner.image}
-                                    />
-                                  }
-                                  variant="outlined"
                                   label={
                                     <>
-                                      <Typography>
-                                        {course.data.owner.lastname.toUpperCase()}{" "}
-                                        {course.data.owner.firstname}
-                                      </Typography>
+                                      <div style={{ display: "flex" }}>
+                                        <Typography>
+                                          {course.data.courseClass.name}
+                                        </Typography>
+                                        <SchoolIcon />
+                                      </div>
                                     </>
                                   }
                                 ></Chip>
                               </div>
+                              <Chip
+                                sx={{ marginTop: "1vh" }}
+                                avatar={
+                                  <Avatar
+                                    alt={
+                                      course.data.owner.lastname.toUpperCase() +
+                                      "" +
+                                      course.data.owner.firstname +
+                                      "photo-profile"
+                                    }
+                                    src={course.data.owner.image}
+                                  />
+                                }
+                                variant="outlined"
+                                label={
+                                  <>
+                                    <Typography>
+                                      {course.data.owner.lastname.toUpperCase()}{" "}
+                                      {course.data.owner.firstname}
+                                    </Typography>
+                                  </>
+                                }
+                              ></Chip>
                               <div style={{ padding: "10px" }}>
                                 <Typography
                                   sx={{
@@ -887,7 +889,24 @@ const Cours = () => {
         ) : (
           <>
             <div className="list-view-cours">
-              <h1>Année {`${currentYear}  - ${currentYear + 1} `}</h1>
+              <h1>
+                Année {`${currentYear} - ${currentYear + 1}`}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>
               {(searchTerm.length > 0
                 ? [...filteredCoursesCurrentYear].filter(
                     (course) =>
@@ -918,14 +937,14 @@ const Cours = () => {
                   >
                     <div className="list-card-content">
                       <div className="list-card-details">
-                        <CardContent sx={{padding: "10px"}}>
+                        <CardContent sx={{ padding: "10px" }}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
                           <Chip
                             label={
                               <>
-                                <div style={{display: "flex"}}>
+                                <div style={{ display: "flex" }}>
                                   <Typography>
                                     {course.data.courseClass.name}
                                   </Typography>
@@ -956,11 +975,11 @@ const Cours = () => {
                               </>
                             }
                           ></Chip>
-                          <div style={{padding: "10px"}}>
+                          <div style={{ padding: "10px" }}>
                             <Typography
                               sx={{
                                 display: "flex",
-                                justifyContent: "center",
+                                justifyContent: "start",
                                 alignItems: "center",
                               }}
                             >
@@ -998,7 +1017,27 @@ const Cours = () => {
                 ))}
             </div>
             <div className="list-view-cours">
-              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
+              <h1>
+                Année {`${currentYear - 1} - ${currentYear} `}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name.replace(
+                              /\d+/,
+                              (match) => parseInt(match, 10) - 1
+                            )}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>{" "}
               {(searchTerm.length > 0
                 ? [...filteredCoursesLastYear].filter(
                     (course) =>
@@ -1029,19 +1068,14 @@ const Cours = () => {
                   >
                     <div className="list-card-content">
                       <div className="list-card-details">
-                        <CardContent sx={{padding: "10px"}}>
+                        <CardContent sx={{ padding: "10px" }}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
                           <Chip
-                            sx={{
-                              display: "flex",
-                              padding: "10px",
-                              alignItems: "center",
-                            }}
                             label={
                               <>
-                                <div style={{display: "flex"}}>
+                                <div style={{ display: "flex" }}>
                                   <Typography>
                                     {course.data.courseClass.name}
                                   </Typography>
@@ -1072,11 +1106,11 @@ const Cours = () => {
                               </>
                             }
                           ></Chip>
-                          <div style={{padding: "10px"}}>
+                          <div style={{ padding: "10px" }}>
                             <Typography
                               sx={{
                                 display: "flex",
-                                justifyContent: "center",
+                                justifyContent: "start",
                                 alignItems: "center",
                               }}
                             >

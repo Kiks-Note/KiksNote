@@ -184,7 +184,9 @@ const DrawTools = ({
         formData.append("fieldName", "tree");
 
         return axios.post(
-          "http://localhost:5050/agile/" + dashboardId + "/folder",
+          `${process.env.REACT_APP_SERVER_API}/agile/` +
+            dashboardId +
+            "/folder",
           formData
         );
       })

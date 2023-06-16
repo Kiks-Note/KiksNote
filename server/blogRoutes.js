@@ -42,7 +42,7 @@ module.exports = function (connection, pathname, upload) {
   router.put("/:id/like", addLike);
   router.put("/:id/dislike", addDislike);
   router.get("/stats/created_by", getTopCreators);
-  router.get("/stats/participant", getBlogParticipants);
+  router.get("/stats/participant2", getBlogParticipants);
   router.get("/stats/distribution", getRepartition);
 
   switch (pathname) {

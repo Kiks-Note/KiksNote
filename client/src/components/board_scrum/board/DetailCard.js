@@ -144,7 +144,7 @@ export default function DetailCard(props) {
       };
 
       await axios.put(
-        "http://localhost:5050/dashboard/" +
+        `${process.env.REACT_APP_SERVER_API}/dashboard/` +
           props.dashboardId +
           "/board/" +
           props.boardId +
@@ -266,7 +266,7 @@ export default function DetailCard(props) {
           "/story/" +
           info.id +
           "/add-users",
-        {userIds: [user.id]}
+        { userIds: [user.id] }
       );
       setIsAssigned(true);
       props.handleClose();

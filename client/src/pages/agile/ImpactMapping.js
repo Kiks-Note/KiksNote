@@ -17,9 +17,7 @@ import html2pdf from "html2pdf.js";
 import axios from "axios";
 import { Toaster, toast } from "react-hot-toast";
 import Card from "../../components/agile/Card";
-import {
-  addImpactMapping,
-} from "../../components/agile/agile";
+import { addImpactMapping } from "../../components/agile/agile";
 import { setImpactMapping } from "../../redux/slices/impactMappingSlice";
 
 ImpactMapping.propTypes = {
@@ -138,7 +136,9 @@ export default function ImpactMapping({ data }) {
         formData.append("fieldName", "impact_mapping");
 
         return axios.post(
-          "http://localhost:5050/agile/" + data.dashboardId + "/folder",
+          `${process.env.REACT_APP_SERVER_API}/agile/` +
+            data.dashboardId +
+            "/folder",
           formData
         );
       })
@@ -157,7 +157,6 @@ export default function ImpactMapping({ data }) {
             duration: 5000,
           }
         );
-        
       });
   };
   return (

@@ -446,7 +446,7 @@ function GroupsCreation() {
     setShowSettings(false);
     setInRoom(true);
     setCourseChoose(data.courseChoose);
-    setClassStudents(data.courseChoose.data.courseClass.id);
+    setClassStudents(data.courseChoose.id);
   };
 
   const handleClosePopUp = (showFalse) => {

@@ -53,11 +53,11 @@ const Arbre = ({ projet, dashboardId }) => {
   const [nodeToUpdate, setNodeToUpdate] = useState(null);
 
   useEffect(() => {
-    if (currentProjetId == null || projet.id != currentProjetId) {
+    if (currentProjetId == null || projet.id !== currentProjetId) {
       setTreeData(projet.content);
       setCurrentProjetId(projet.id);
     }
-  }, [projet]);
+  }, [currentProjetId, projet]);
 
   const handleNodeMouseOver = (event) => {
     setHoveredNode(event);
@@ -70,7 +70,10 @@ const Arbre = ({ projet, dashboardId }) => {
   const handleUpdateThree = async (data) => {
     try {
       // Envoie des données au backend
-      await axios.put(`http://localhost:5050/agile/${dashboardId}/tree`, data);
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/agile/${dashboardId}/tree`,
+        data
+      );
     } catch (error) {
       console.error("Erreur lors de l'envoi des données au backend", error);
     }

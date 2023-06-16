@@ -197,7 +197,7 @@ const Roadmap = ({ stories, releases, boards, dashboardId }) => {
 
     try {
       await axios.post(
-        `${process.env.REACT_APP_SERVER_API}/agile/${dashboardId}/folder`,
+        `${process.env.REACT_APP_SERVER_API}/agile/` + dashboardId + "/folder",
         formData
       );
       toast.success("Votre persona a été ajouté à votre dossier agile", {

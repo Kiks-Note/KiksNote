@@ -40,19 +40,37 @@ const CallModal = ({
   const ws = useMemo(() => createWebSocket(), [createWebSocket]);
 
   const createCall = useCallback(async () => {
+    const GenerateQrcode = (callId) => {
+      console.log(ip);
+      QRCode.toDataURL(
+        `http://localhost:3000/Presence/${callId}`,
+        {
+          width: 800,
+          margin: 2,
+        },
+        (err, url) => {
+          if (err) return console.log(err);
+          qrcode.current = url;
+        }
+      );
+    };
+
     const date = new Date();
-    const response = await axios.post("http://localhost:5050/call/callAdd", {
-      id_lesson: lessonId,
-      date: date,
-      status: "new",
-      qrcode: "",
-      students_scan: [],
-      chats: [],
-    });
+    const response = await axios.post(
+      `${process.env.REACT_APP_SERVER_API}/call/callAdd`,
+      {
+        id_lesson: lessonId,
+        date: date,
+        status: "new",
+        qrcode: "",
+        students_scan: [],
+        chats: [],
+      }
+    );
     const call = response.data;
     GenerateQrcode(response.data.id);
     call.qrcode = qrcode.current;
-    await axios.put(`http://localhost:5050/call/updatecall`, {
+    await axios.put(`${process.env.REACT_APP_SERVER_API}/call/updatecall`, {
       id: response.data.id,
       object: call,
     });
@@ -72,12 +90,13 @@ const CallModal = ({
     ws.send(JSON.stringify(message));
 
     navigate("/appel/" + response.data.id);
-  }, [className, lessonId, navigate, user.firstname, user.id, ws]);
+  }, [className, ip, lessonId, navigate, user.firstname, user.id, ws]);
 
   useEffect(() => {
     const getCalls = async () => {
       const response = await axios.get(
-        "http://localhost:5050/call/getCallsByLessonId/" + lessonId
+        `${process.env.REACT_APP_SERVER_API}/call/getCallsByLessonId/` +
+          lessonId
       );
       setCalls(response.data);
     };
@@ -92,21 +111,6 @@ const CallModal = ({
       ws.onopen = handleWebSocketOpen;
     }
   }, [lessonId, ws]);
-
-  const GenerateQrcode = (callId) => {
-    console.log(ip);
-    QRCode.toDataURL(
-      `http://localhost:3000/Presence/${callId}`,
-      {
-        width: 800,
-        margin: 2,
-      },
-      (err, url) => {
-        if (err) return console.log(err);
-        qrcode.current = url;
-      }
-    );
-  };
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth={"md"} fullWidth>

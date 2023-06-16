@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from "react";
-import {useTheme} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { useTheme } from "@mui/material";
 import useFirebase from "../../hooks/useFirebase";
 import Modal from "./WidgetModal";
 import GridLayout from "react-grid-layout";
@@ -9,7 +10,7 @@ import axios from "axios";
 import "./Home.scss";
 
 function Home() {
-  const {user} = useFirebase();
+  const { user } = useFirebase();
   const theme = useTheme();
   const [layouts, setLayouts] = useState([]);
   const [edition, setEdition] = useState(false);
@@ -17,7 +18,14 @@ function Home() {
     let randNumber = Math.floor(Math.random() * 1000);
     var updatedLayout = {
       ...newLayout,
-      i: randNumber + "%" + newLayout.img + " % " + newLayout.text,
+      i:
+        randNumber +
+        "%" +
+        newLayout.img +
+        " % " +
+        newLayout.text +
+        " % " +
+        newLayout.path,
     };
 
     console.log(layouts);
@@ -73,6 +81,7 @@ function Home() {
     setEdition(false);
     if (layouts) {
       const updatedLayouts = layouts.map((item) => {
+        console.log(item);
         return {
           ...item,
           static: true,
@@ -118,8 +127,9 @@ function Home() {
             marginRight: "5%",
             borderStyle: "dashed",
             borderColor: "#0005",
-            height: "80vh",
+            height: "90vh",
             overflow: "auto",
+            padding: "10px",
           }}
           className={edition ? "grid" : ""}
         >
@@ -136,12 +146,12 @@ function Home() {
               removeLayout={removeLayout}
             />
             {edition && (
-              <h2 style={{marginLeft: "40%", color: "red"}} className="shaky">
+              <h2 style={{ marginLeft: "40%", color: "red" }} className="shaky">
                 Mode Edition
               </h2>
             )}
           </div>
-          <div style={{position: "relative"}}>
+          <div style={{ position: "relative" }}>
             <GridLayout
               className={"layout"}
               cols={14}
@@ -156,59 +166,62 @@ function Home() {
             >
               {layouts &&
                 layouts.length > 0 &&
-                layouts.map((card) => (
-                  <div
-                    key={card.i}
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      position: "relative",
-                      borderRadius: "30px",
-                    }}
-                  >
-                    {edition && (
-                      <DeleteIcon
-                        onClick={() => {
-                          removeLayout(card);
-                        }}
-                        style={{
-                          position: "absolute",
-                          top: "0",
-                          right: "0",
-                          color: "red",
-                        }}
-                      />
-                    )}
-                    <img
-                      src={card.i.split("%")[1]}
-                      alt="illustration"
+                layouts.map((card) => {
+                  return (
+                    <Link
+                      to={`/${card.i.split("%")[3].split("/")[1]}`}
+                      key={card.i}
                       style={{
-                        backgroundColor: theme.palette.custom.button,
-                        maxWidth: "100%",
-                        maxHeight: "100%",
-                      }}
-                    />
-                    <p
-                      style={{
-                        color: theme.palette.text.primary,
-                        backgroundColor: "#0005",
-                        position: "absolute",
-                        width: "100%",
-                        height: "30%",
-                        bottom: "0",
-                        left: "0",
-                        margin: "0",
-                        maxHeight: "50px",
                         display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        fontWeight: "bold",
+                        flexDirection: "column",
+                        position: "relative",
+                        borderRadius: "30px",
                       }}
                     >
-                      {card.i.split("%")[2]}
-                    </p>
-                  </div>
-                ))}
+                      {edition && (
+                        <DeleteIcon
+                          onClick={() => {
+                            removeLayout(card);
+                          }}
+                          style={{
+                            position: "absolute",
+                            top: "0",
+                            right: "0",
+                            color: "red",
+                          }}
+                        />
+                      )}
+                      <img
+                        src={card.i.split("%")[1]}
+                        alt="illustration"
+                        style={{
+                          backgroundColor: theme.palette.custom.button,
+                          maxWidth: "100%",
+                          maxHeight: "100%",
+                        }}
+                      />
+                      <p
+                        style={{
+                          color: theme.palette.text.primary,
+                          backgroundColor: "#0005",
+                          position: "absolute",
+                          width: "100%",
+                          height: "30%",
+                          bottom: "0",
+                          left: "0",
+                          margin: "0",
+                          maxHeight: "50px",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {card.i.split("%")[2]}
+                      </p>
+                    </Link>
+                  );
+                })}
             </GridLayout>
           </div>
         </div>

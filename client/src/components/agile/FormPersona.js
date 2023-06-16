@@ -117,7 +117,7 @@ export default function FormPersona({ dashboardId, actorId }) {
   };
   const savePersona = () => {
     axios.post(
-      "http://localhost:5050/agile/" +
+      `${process.env.REACT_APP_SERVER_API}/agile/` +
         dashboardId +
         "/persona/" +
         actorId +

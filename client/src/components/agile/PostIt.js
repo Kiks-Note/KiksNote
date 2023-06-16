@@ -24,7 +24,7 @@ export default function PostIt({
     if (isClicked) {
       try {
         axios.delete(
-          "http://localhost:5050/agile/" +
+          `${process.env.REACT_APP_SERVER_API}/agile/` +
             dashboardId +
             "/empathy/" +
             actorId +
