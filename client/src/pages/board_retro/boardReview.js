@@ -39,7 +39,7 @@ export default function BoardReview() {
 
   useEffect(() => {
 
-    setColumns(retroData["dataRetro"])
+    setColumns(retroData["retro"])
     console.log(columns);
 
   },[])

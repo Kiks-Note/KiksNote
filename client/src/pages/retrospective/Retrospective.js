@@ -226,11 +226,11 @@ function Retrospective() {
 
 
 
-  useEffect(async () => {
+  useEffect( () => {
 
       console.log("wsss");
       let allRetros = [];
-      await axios.get("http://localhost:5050/retro/getAllRetrosForPO").then((res) => {
+       axios.get("http://localhost:5050/retro/getAllRetrosForPO").then((res) => {
         console.log(res.data);
         let responseRetros = res.data;
         responseRetros.forEach(retro => {
@@ -355,10 +355,15 @@ function Retrospective() {
     }
   }, [listRetros]);
 
-  const goToBoard = (idRetro) => {
+  const goToBoard = (dateRetro) => {
+    console.log("^^^^^^^^^");
     console.log(datas);
+    console.log(dateRetro);
+    console.log("^^^^^^^^^");
     datas.map(retro => {
-      if (retro["idRetro"] == idRetro) {
+      console.log(retro.date);
+
+      if (retro.date == dateRetro) {
         console.log(retro);
         navigate('/boardReview', { state: { retro } });
       }
@@ -444,7 +449,7 @@ function Retrospective() {
                     <TableCell align="left">{row.date}</TableCell>
                     <TableCell align="left">{row.name}</TableCell>
                     <TableCell>
-                      <Button onClick={() => goToBoard(row.idRetro)}> go board </Button>
+                      <Button onClick={() => goToBoard(row.date)}> go board </Button>
                     </TableCell>
                   </TableRow>
                 ))}
