@@ -1,7 +1,7 @@
-import React, {useEffect, useState, useCallback} from "react";
-import {toast, ToastContainer} from "react-toastify";
-import {useForm} from "react-hook-form";
-import {useNavigate} from "react-router-dom";
+import React, { useEffect, useState, useCallback } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 
@@ -67,7 +67,7 @@ export const toastFail = (message) => {
 const Cours = () => {
   let navigate = useNavigate();
 
-  const {user} = useFirebase();
+  const { user } = useFirebase();
   const userStatus = user?.status;
   console.log(userStatus);
   const userClassConnected = user?.class;
@@ -378,7 +378,7 @@ const Cours = () => {
             width: "100%",
           }}
         >
-          <Typography variant="h6" sx={{flexGrow: 1}}></Typography>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}></Typography>
           <div className="header-cours">
             <Box
               sx={{
@@ -387,12 +387,12 @@ const Cours = () => {
                 padding: "20px",
               }}
             >
-              <div style={{display: "flex", justifyContent: "space-between"}}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <ToggleButtonGroup
                   value={view}
                   exclusive
                   onChange={viewChange}
-                  sx={{margin: 1}}
+                  sx={{ margin: 1 }}
                 >
                   <ToggleButton value="module" aria-label="module">
                     <ViewModule />
@@ -404,14 +404,14 @@ const Cours = () => {
               </div>
             </Box>
             <div className="search-bar-container">
-              <form noValidate autoComplete="off" style={{width: "100%"}}>
+              <form noValidate autoComplete="off" style={{ width: "100%" }}>
                 <TextField
                   id="outlined-basic"
                   label="Rechercher votre Cours"
                   variant="outlined"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  sx={{width: "80%"}}
+                  sx={{ width: "80%" }}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -422,7 +422,7 @@ const Cours = () => {
                 />
               </form>
             </div>
-            <FormControl sx={{width: "15%"}}>
+            <FormControl sx={{ width: "15%" }}>
               <Select
                 value={selectedFilterClass}
                 onChange={(event) => {
@@ -546,19 +546,13 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? Array.isArray(course.data.courseClass) &&
-                            course.data.courseClass.some(
-                              (classItem) => classItem.id === userClass.id
-                            )
+                          ? userClass.id === course?.data?.courseClass.id
                           : true
                       )
                       .filter((course) =>
                         selectedIdFilterClass !== ""
-                          ? Array.isArray(course.data.courseClass) &&
-                            course.data.courseClass.some(
-                              (classItem) =>
-                                classItem.id === selectedIdFilterClass
-                            )
+                          ? course?.data?.courseClass.id ===
+                            selectedIdFilterClass
                           : true
                       )
                       .map((course) => {
@@ -747,19 +741,13 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? Array.isArray(course.data.courseClass) &&
-                            course.data.courseClass.some(
-                              (classItem) => classItem.id === userClass.id
-                            )
+                          ? userClass.id === course?.data?.courseClass.id
                           : true
                       )
                       .filter((course) =>
                         selectedIdFilterClass !== ""
-                          ? Array.isArray(course.data.courseClass) &&
-                            course.data.courseClass.some(
-                              (classItem) =>
-                                classItem.id === selectedIdFilterClass
-                            )
+                          ? course?.data?.courseClass.id ===
+                            selectedIdFilterClass
                           : true
                       )
                       .map((course) => (
@@ -931,18 +919,12 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? Array.isArray(course.data.courseClass) &&
-                      course.data.courseClass.some(
-                        (classItem) => classItem.id === userClass.id
-                      )
+                    ? userClass.id === course?.data?.courseClass.id
                     : true
                 )
                 .filter((course) =>
                   selectedIdFilterClass !== ""
-                    ? Array.isArray(course.data.courseClass) &&
-                      course.data.courseClass.some(
-                        (classItem) => classItem.id === selectedIdFilterClass
-                      )
+                    ? course?.data?.courseClass.id === selectedIdFilterClass
                     : true
                 )
                 .map((course) => (
@@ -955,14 +937,14 @@ const Cours = () => {
                   >
                     <div className="list-card-content">
                       <div className="list-card-details">
-                        <CardContent sx={{padding: "10px"}}>
+                        <CardContent sx={{ padding: "10px" }}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
                           <Chip
                             label={
                               <>
-                                <div style={{display: "flex"}}>
+                                <div style={{ display: "flex" }}>
                                   <Typography>
                                     {course.data.courseClass.name}
                                   </Typography>
@@ -993,7 +975,7 @@ const Cours = () => {
                               </>
                             }
                           ></Chip>
-                          <div style={{padding: "10px"}}>
+                          <div style={{ padding: "10px" }}>
                             <Typography
                               sx={{
                                 display: "flex",
@@ -1068,18 +1050,12 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? Array.isArray(course.data.courseClass) &&
-                      course.data.courseClass.some(
-                        (classItem) => classItem.id === userClass.id
-                      )
+                    ? userClass.id === course?.data?.courseClass.id
                     : true
                 )
                 .filter((course) =>
                   selectedIdFilterClass !== ""
-                    ? Array.isArray(course.data.courseClass) &&
-                      course.data.courseClass.some(
-                        (classItem) => classItem.id === selectedIdFilterClass
-                      )
+                    ? course?.data?.courseClass.id === selectedIdFilterClass
                     : true
                 )
                 .map((course) => (
@@ -1092,14 +1068,14 @@ const Cours = () => {
                   >
                     <div className="list-card-content">
                       <div className="list-card-details">
-                        <CardContent sx={{padding: "10px"}}>
+                        <CardContent sx={{ padding: "10px" }}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
                           <Chip
                             label={
                               <>
-                                <div style={{display: "flex"}}>
+                                <div style={{ display: "flex" }}>
                                   <Typography>
                                     {course.data.courseClass.name}
                                   </Typography>
@@ -1130,7 +1106,7 @@ const Cours = () => {
                               </>
                             }
                           ></Chip>
-                          <div style={{padding: "10px"}}>
+                          <div style={{ padding: "10px" }}>
                             <Typography
                               sx={{
                                 display: "flex",
