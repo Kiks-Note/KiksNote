@@ -132,8 +132,6 @@ export default function Dashboard() {
     setPage(0);
   };
 
-  console.log(view);
-
   return (
     <>
       {loading ? (

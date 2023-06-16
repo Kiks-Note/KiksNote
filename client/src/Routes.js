@@ -28,7 +28,6 @@ import Register from "./pages/register/Register";
 import AskResetPassword from "./pages/resetpassword/AskResetPassword";
 import DetailBlog from "./pages/blog/DetailBlog";
 import DeviceHistory from "./pages/inventory/DeviceHistory";
-import ElevatorPitchPage from "./pages/agile/ElevatorPitchPage";
 import DetailTuto from "./pages/blog/DetailTuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
@@ -63,6 +62,7 @@ function RoutesProvider() {
           <Route path="/presence/:id" element={<Presence />} />
           <Route path="/groups" element={<GroupsCreation />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
+          <Route path="/agile" element={<FolderAgile />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
           <Route path="/tuto/:id" element={<DetailTuto />} />

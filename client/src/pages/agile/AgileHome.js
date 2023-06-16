@@ -120,7 +120,7 @@ export default function AgileHome({ dashboardId, agile }) {
             onClick={() => moveToImpact()}
           >
             <div className="folder_content">
-              <Typography>ImpactMapping</Typography>
+              <Typography variant="h4">ImpactMapping</Typography>
             </div>
           </div>
           {others.map((fold, index) => (
@@ -132,7 +132,8 @@ export default function AgileHome({ dashboardId, agile }) {
                   onClick={() => moveToPersona(fold.id)}
                 >
                   <div className="folder_content">
-                    <Typography>Persona {fold.text}</Typography>
+                    <Typography variant="h4">Persona </Typography>
+                    <Typography variant="body1">{fold.text}</Typography>
                   </div>
                 </div>
               )}
@@ -143,7 +144,8 @@ export default function AgileHome({ dashboardId, agile }) {
                   onClick={() => moveToEmpathy(fold.id)}
                 >
                   <div className="folder_content">
-                    <Typography>Empathy {fold.text}</Typography>
+                    <Typography variant="h4">Empathy</Typography>
+                    <Typography variant="body1">{fold.text}</Typography>
                   </div>
                 </div>
               )}
@@ -155,7 +157,7 @@ export default function AgileHome({ dashboardId, agile }) {
             onClick={() => moveToThree()}
           >
             <div className="folder_content">
-              <Typography>Arbre Fonctionnel</Typography>
+              <Typography variant="h4">Arbre Fonctionnel</Typography>
             </div>
           </div>
           <div
@@ -164,7 +166,7 @@ export default function AgileHome({ dashboardId, agile }) {
             onClick={() => moveToElevator()}
           >
             <div className="folder_content">
-              <Typography>Elevator Pitch</Typography>
+              <Typography variant="h4">Elevator Pitch</Typography>
             </div>
           </div>
         </Grid>

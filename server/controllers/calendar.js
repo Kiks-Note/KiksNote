@@ -9,11 +9,10 @@ const calendarRequest = async (connection) => {
       let querySnapshot;
 
       if (status == "etudiant" || status == "pedago") {
-       querySnapshot = await db
-         .collection("cours")
-         .where("courseClass", "array-contains", { id: classId })
-         .get();
-
+        querySnapshot = await db
+          .collection("cours")
+          .where("courseClass", "==", classId)
+          .get();
       } else if (status == "po") {
         querySnapshot = await db.collection("cours").get();
       }

@@ -28,8 +28,6 @@ const Roadmap = ({ stories, releases, boards, dashboardId }) => {
 
             boards.forEach((board) => {
               if (board.id === sprint.boardId) {
-                console.log(board.data.toDo);
-
                 const filteredItems = board.data.toDo.items.filter((item) => {
                   return sprintData.stories.some(
                     (story) => story.storyId === item.storyId
@@ -58,7 +56,6 @@ const Roadmap = ({ stories, releases, boards, dashboardId }) => {
           return formattedRelease;
         }
       );
-      console.log(formattedReleasesTemp);
       setFormatedReleases(formattedReleasesTemp);
     };
 
