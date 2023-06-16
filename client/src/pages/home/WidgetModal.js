@@ -46,11 +46,11 @@ const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
     setShowSelectionModal(false);
   };
 
-  const handleOpenSelectionModal = (img, text) => {
+  const handleOpenSelectionModal = (img, text, path) => {
     setShowModal(false);
     setShowSelectionModal(true);
 
-    setcard({ img: img, text: text });
+    setcard({ img: img, text: text, path: path });
   };
   return (
     <div>
@@ -89,39 +89,47 @@ const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
               text={"Analyse Agile"}
               path={"/agile"}
               handleOpen={() =>
-                handleOpenSelectionModal(Agile, "Analyse Agile")
+                handleOpenSelectionModal(Agile, "Analyse Agile", "/agile")
               }
             ></Widget>
             <Widget
               image={Boards}
               text={"Boards"}
               path={"/tableau-de-bord"}
-              handleOpen={() => handleOpenSelectionModal(Boards, "Boards")}
+              handleOpen={() =>
+                handleOpenSelectionModal(Boards, "Boards", "/tableau-de-bord")
+              }
             ></Widget>
             <Widget
               image={Groups}
               text={"Groupes"}
               path={"/groupes/creation"}
-              handleOpen={() => handleOpenSelectionModal(Groups, "Groupes")}
+              handleOpen={() =>
+                handleOpenSelectionModal(Groups, "Groupes", "/groupes/creation")
+              }
             ></Widget>
             <Widget
               image={Class}
               text={"Cours"}
               path={"/cours"}
-              handleOpen={() => handleOpenSelectionModal(Class, "Classe")}
+              handleOpen={() =>
+                handleOpenSelectionModal(Class, "Classe", "/cours")
+              }
             ></Widget>
             <Widget
               image={Blog}
               text={"Blogs"}
               path={"/blog"}
-              handleOpen={() => handleOpenSelectionModal(Blog, "Blogs")}
+              handleOpen={() =>
+                handleOpenSelectionModal(Blog, "Blogs", "/blog")
+              }
             ></Widget>{" "}
             <Widget
               image={Retro}
               text={"Rétrospective"}
               path={"/board"}
               handleOpen={() =>
-                handleOpenSelectionModal(Retro, "Rétrospective")
+                handleOpenSelectionModal(Retro, "Rétrospective", "/board")
               }
             ></Widget>{" "}
             <Widget
@@ -129,7 +137,7 @@ const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
               text={"Inventaire"}
               path={"/inventory"}
               handleOpen={() =>
-                handleOpenSelectionModal(Inventaire, "Inventaire")
+                handleOpenSelectionModal(Inventaire, "Inventaire", "/inventory")
               }
             ></Widget>{" "}
             <Widget
@@ -137,20 +145,26 @@ const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
               text={"Calendrier"}
               path={"/calendrier"}
               handleOpen={() =>
-                handleOpenSelectionModal(Calendar, "Calendrier")
+                handleOpenSelectionModal(Calendar, "Calendrier", "/calendrier")
               }
             ></Widget>{" "}
             <Widget
               image={JPO}
               text={"JPO"}
               path={"/jpo"}
-              handleOpen={() => handleOpenSelectionModal(JPO, "jpo")}
+              handleOpen={() => handleOpenSelectionModal(JPO, "jpo", "/jpo")}
             ></Widget>{" "}
             <Widget
               image={Profil}
               text={"Profil"}
               path={`/profil/${user?.id}`}
-              handleOpen={() => handleOpenSelectionModal(Profil, "Profil")}
+              handleOpen={() =>
+                handleOpenSelectionModal(
+                  Profil,
+                  "Profil",
+                  `/profil/${user?.id}`
+                )
+              }
             ></Widget>{" "}
             <button
               onClick={handleCloseModal}
@@ -175,6 +189,7 @@ const Modal = ({ addLayout, edition, enterEdition, leaveEdition }) => {
         addLayout={addLayout}
         img={card.img}
         text={card.text}
+        path={card.path}
       ></WidgetSelection>
     </div>
   );

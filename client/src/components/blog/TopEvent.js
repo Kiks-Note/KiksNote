@@ -58,7 +58,7 @@ function MostParticipantsChart() {
       });
 
       const blogIds = topBlogs.map((blog) => blog.participant);
-      if (blogIds.length != 0) {
+      if (blogIds.length !== 0) {
         fetchParticipantDetails(blogIds);
       }
     } catch (error) {
