@@ -104,7 +104,7 @@ function Blog() {
         };
         allBlogs.push(blogFront);
       });
-
+      console.log(allBlogs);
       setBlog(allBlogs);
       fetchTags();
       setLoading(false);
@@ -167,9 +167,6 @@ function Blog() {
                 }}
               >
                 <CardBlog blog={filtered} key={filtered.id} tags={tags} />
-                {/*<Typography>{user.email}</Typography>*/}
-                {/*<Typography>{filtered.created_by}</Typography>*/}
-                {/*<Typography>{filtered.visibility}</Typography>*/}
               </Box>
             ))}
         </ul>

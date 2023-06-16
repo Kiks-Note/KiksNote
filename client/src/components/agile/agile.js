@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export async function addImpactMapping(impactMapping) {
+export const addImpactMapping = async (impactMapping) => {
   console.log(impactMapping);
   try {
     const res = axios.put(
@@ -16,14 +16,45 @@ export async function addImpactMapping(impactMapping) {
   } catch (e) {
     console.error(e);
   }
-}
+};
 
-export const getImpactMapping = async (dashboardId) => {
+export const deleteActors = async (dashboardId, actorId) => {
   try {
-    const res = await axios.get(
-      `http://localhost:5050/agile/${dashboardId}/get_impact_mapping`
+    const res = await axios.delete(
+      `http://localhost:5050/agile/${dashboardId}/actor/${actorId}`
     );
     return res.data;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const addElevatorPitch = async (dashboardId, elevatorPitch) => {
+  try {
+    const res = await axios.put(
+      `http://localhost:5050/agile/${dashboardId}/elevator/updateElevator`,
+      {
+        name: elevatorPitch.name,
+        forWho: elevatorPitch.forWho,
+        needed: elevatorPitch.needed,
+        type: elevatorPitch.type,
+        who: elevatorPitch.who,
+        difference: elevatorPitch.difference,
+        alternative: elevatorPitch.alternative,
+      }
+    );
+    return res;
+  } catch (e) {
+    console.error(e);
+  }
+};
+
+export const deleteElevatorPitch = async (dashbardId) => {
+  try {
+    const res = await axios.put(
+      `http://localhost:5050/agile/${dashbardId}/resetElevator`
+    );
+    return res;
   } catch (e) {
     console.error(e);
   }

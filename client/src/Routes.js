@@ -1,13 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import FolderAgile from "./pages/agile/FolderAgile";
 import Blog from "./pages/blog/Blog";
-import DetailBlog from "./pages/blog/DetailBlog";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
 import GroupsDisplay from "./pages/groups/GroupsDisplay";
 import GroupsCreation from "./pages/groups/Groups";
 import Home from "./pages/home/Home";
-import DeviceHistory from "./pages/inventory/DeviceHistory";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
 import InventoryDevices from "./pages/inventory/InventoryDevices";
 import InventoryHome from "./pages/inventory/InventoryHome";
@@ -22,6 +20,9 @@ import NotFound from "./pages/not_found/NotFound";
 import Presence from "./pages/presence/Presence";
 import Profil from "./pages/profil/Profil";
 import Register from "./pages/register/Register";
+import DetailBlog from "./pages/blog/DetailBlog";
+import DeviceHistory from "./pages/inventory/DeviceHistory";
+import ElevatorPitchPage from "./pages/agile/ElevatorPitchPage";
 import DetailTuto from "./pages/blog/DetailTuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
@@ -48,6 +49,7 @@ function RoutesProvider() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/askresetpassword" element={<AskResetPassword />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>

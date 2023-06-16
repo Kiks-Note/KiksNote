@@ -1,213 +1,288 @@
-import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Drawer, TextField, Typography } from "@mui/material";
-import { isNameExists, generateUniqueName, findParent } from "../../../utils/FunctionsUtils"
-import Button from '@material-ui/core/Button';
+import React, { useEffect, useState } from "react";
+import html2pdf from "html2pdf.js";
+import axios from "axios";
+import { Toaster, toast } from "react-hot-toast";
+import { makeStyles } from "@material-ui/core/styles";
+import { TextField, Typography, IconButton, Button } from "@mui/material";
+import {
+  isNameExists,
+  generateUniqueName,
+  findParent,
+} from "../../../functions/FunctionsUtils";
 
-import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-
-
-
+import AddIcon from "@mui/icons-material/Add";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
-    padding: '10px',
-    width: 100,
+    padding: "10px",
     flexShrink: 0,
-
-
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-around",
   },
   drawerPaper: {
-    padding: '10px',
-    width: '320px',
-    height: '100vh',
+    padding: "10px",
+    width: "320px",
+    height: "100vh",
   },
   addButton: {
     color: theme.palette.primary.contrastText,
-    backgroundColor: 'green',
-    '&:hover': {
+    backgroundColor: "green",
+    "&:hover": {
       backgroundColor: theme.palette.primary.white,
     },
   },
   editButton: {
     color: theme.palette.secondary.contrastText,
-    backgroundColor: 'yellow',
-    '&:hover': {
+    backgroundColor: "yellow",
+    "&:hover": {
       backgroundColor: theme.palette.secondary.white,
     },
   },
   deleteButton: {
     color: theme.palette.error.contrastText,
-    backgroundColor: 'red',
-    '&:hover': {
+    backgroundColor: "red",
+    "&:hover": {
       backgroundColor: theme.palette.error.white,
     },
   },
   titleDraw: {
-    textAlign: 'center',
-    marginBottom: 70
+    textAlign: "center",
+    marginBottom: 70,
   },
   addSection: {
-    backgroundColor: 'red',
-    marginBottom: 70
+    backgroundColor: "red",
+    marginBottom: 70,
   },
   nameSection: {
-    marginBottom: 30
+    marginBottom: 30,
   },
   deleteSection: {
-    marginBottom: 30
-  }
+    marginBottom: 30,
+  },
 }));
-const DrawTools = ({ nodeToUpdate, sendUpdateThree, oldTreeData }) => {
+const DrawTools = ({
+  nodeToUpdate,
+  sendUpdateThree,
+  oldTreeData,
+  dashboardId,
+}) => {
   const classes = useStyles();
-  const [node, setNode] = useState(nodeToUpdate)
-  const [nameEdit, setNameEdit] = useState('')
-  const [nameAdd, setNameAdd] = useState('')
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [node, setNode] = useState(nodeToUpdate);
+  const [nameEdit, setNameEdit] = useState("");
+  const [nameAdd, setNameAdd] = useState("");
 
   useEffect(() => {
     setNode(nodeToUpdate);
   }, [nodeToUpdate]);
 
-  function handleAddButton() {
-    var newBranch = { name: 'Nouveau', children: [] };
-    if (nameAdd && nameAdd !== '') {
+  const handleNameClick = () => {
+    setNameEdit(node.name);
+    setIsEditingName(true);
+  };
+
+  const handleAddButton = () => {
+    const newBranch = { name: "Nouveau", children: [] };
+    if (nameAdd && nameAdd !== "") {
       newBranch.name = nameAdd;
     }
     if (isNameExists(newBranch.name, oldTreeData)) {
       newBranch.name = generateUniqueName(newBranch.name, oldTreeData);
     }
-    const updatedOldTreeData = findAndReplaceObject(node.name, newBranch, oldTreeData, 'add');
+    const updatedOldTreeData = findAndReplaceObject(
+      node.name,
+      newBranch,
+      oldTreeData,
+      "add"
+    );
     setNode(newBranch);
-    setNameAdd('');
+    setNameAdd("");
     sendUpdateThree(updatedOldTreeData);
-  }
+  };
 
-  function handleEditButton() {
-    if (!nameEdit || nameEdit === '') {
+  const handleEditButton = () => {
+    if (!nameEdit || nameEdit === "") {
+      setIsEditingName(false);
       return;
     }
-    var newBranch = { ...node };
+    const newBranch = { ...node };
     newBranch.name = nameEdit;
     if (isNameExists(newBranch.name, oldTreeData)) {
       newBranch.name = generateUniqueName(newBranch.name, oldTreeData);
     }
-    const updatedOldTreeData = findAndReplaceObject(node.name, newBranch, oldTreeData, 'edit');
-    setNameEdit('');
+    const updatedOldTreeData = findAndReplaceObject(
+      node.name,
+      newBranch,
+      oldTreeData,
+      "edit"
+    );
+    setNameEdit("");
     setNode(newBranch);
+
     sendUpdateThree(updatedOldTreeData);
-  }
+    setIsEditingName(false);
+  };
 
-  function handleNameAdd(e) {
-    console.log(e.target.value)
-    setNameAdd(e.target.value)
-  }
+  const handleNameAdd = (e) => {
+    setNameAdd(e.target.value);
+  };
 
-  function handleNameEdit(e) {
-    setNameEdit(e.target.value)
-  }
+  const handleNameEdit = (e) => {
+    setNameEdit(e.target.value);
+  };
 
-  function handleDeletedButton() {
-
-    var parentNode = findParent(oldTreeData, node.name);
-    console.log(parentNode)
-    if (parentNode == null) {
-      return
+  const handleDeletedButton = () => {
+    const parentNode = findParent(oldTreeData, node.name);
+    console.log(parentNode);
+    if (parentNode === null) {
+      return;
     }
-    var updateChildre = parentNode.children.filter(obj => obj.name !== node.name)
-    parentNode.children.splice(0, parentNode.children.length, ...updateChildre)
-    const updateoldTreeData = findAndReplaceObject(parentNode.name, parentNode, oldTreeData, 'edit')
-    setNode(parentNode)
-    sendUpdateThree(updateoldTreeData)
+    const updatedChildren = parentNode.children.filter(
+      (obj) => obj.name !== node.name
+    );
+    parentNode.children.splice(
+      0,
+      parentNode.children.length,
+      ...updatedChildren
+    );
+    const updatedOldTreeData = findAndReplaceObject(
+      parentNode.name,
+      parentNode,
+      oldTreeData,
+      "edit"
+    );
+    setNode(parentNode);
+    sendUpdateThree(updatedOldTreeData);
+  };
+  const exportToPDF = () => {
+    const element = document.getElementById("pdf-content");
+    const opt = {
+      margin: [0, 0, 0, 0],
+      filename: "tree.pdf",
+      image: { type: "jpeg", quality: 0.9 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+    };
 
-  }
+    html2pdf()
+      .set(opt)
+      .from(element)
+      .toPdf()
+      .get("pdf")
+      .then((pdf) => {
+        return pdf.output("arraybuffer");
+      })
+      .then((buffer) => {
+        const formData = new FormData();
+        formData.append(
+          "pdfFile",
+          new Blob([buffer], { type: "application/pdf" }),
+          "three.pdf"
+        );
+        formData.append("fieldName", "tree");
 
-
-  const buttons = [
-    { label: 0, description: 'Description de l\'action 1', clas: 'addButton', icon: <AddIcon /> },
-    { label: 1, description: 'Description de l\'action 2', clas: 'editButton', icon: <EditIcon /> },
-    { label: 2, description: 'Description de l\'action 3', clas: 'deleteButton', icon: <DeleteIcon /> },
-  ];
-
+        return axios.post(
+          "http://localhost:5050/agile/" + dashboardId + "/folder",
+          formData
+        );
+      })
+      .then((response) => {
+        toast.success(
+          "Votre Arbre a été ajouté a votre dossier agile",
+          {
+            duration: 5000,
+          }
+        );
+      })
+      .catch((error) => {
+        toast.error(
+          "Une erreur s'est produite veuillez réessayer ultérieurement" + error,
+          {
+            duration: 5000,
+          }
+        );
+      });
+  };
   const findAndReplaceObject = (targetName, newBranch, oldTreeData, mode) => {
-
-    var updateoldTreeData = { ...oldTreeData };
-    if (updateoldTreeData.name === targetName) {
-      if (updateoldTreeData.children) {
-        if (mode == 'add') {
-          updateoldTreeData.children.push(newBranch);
-        } else if (mode == 'edit') {
-          updateoldTreeData = { ...newBranch };
+    let updatedOldTreeData = { ...oldTreeData };
+    if (updatedOldTreeData.name === targetName) {
+      if (updatedOldTreeData.children) {
+        if (mode === "add") {
+          updatedOldTreeData.children.push(newBranch);
+        } else if (mode === "edit") {
+          updatedOldTreeData = { ...newBranch };
         }
       }
-    } else if (updateoldTreeData.children) {
-      // Si la branche a des enfants, récursivement chercher la branche cible dans ses enfants
-      updateoldTreeData.children = updateoldTreeData.children.map(child => findAndReplaceObject(targetName, newBranch, child, mode));
+    } else if (updatedOldTreeData.children) {
+      updatedOldTreeData.children = updatedOldTreeData.children.map((child) =>
+        findAndReplaceObject(targetName, newBranch, child, mode)
+      );
     }
-    return updateoldTreeData;
+    return updatedOldTreeData;
   };
-  return (
-    <div>
-      <Drawer
 
+  return (
+    <>
+      <Toaster />
+      <div
         className={classes.drawer}
-        variant="permanent"
         classes={{
           paper: classes.drawerPaper,
         }}
-        style={{ height: '100vh', right: 0 }}
       >
-        <div className='headerDraw' style={{ marginBottom: '70px' }}>
-          <div className='titleDraw' >
-            <Typography variant="h5" align='center'>ÉDITION DU NOEUD</Typography>
-          </div>
-          <div className='nameNode' style={{ margin: '15px' }}>
-            <Typography variant="h2" align='center'>{node.name}</Typography>
-          </div>
-        </div>
-
-        <br>
-        </br>
-        <div className='addSection' style={{ marginBottom: '70px' }}>
-          <div>  <TextField value={nameAdd} onChange={(e) => handleNameAdd(e)}></TextField>
-            <Button
-              title={buttons[0].description}
-              className={buttons[0].clas}
-              style={{ color: 'green', margin: 10, backgroundColor: 'white', border: 10, borderColor: 'green' }}
-              onClick={handleAddButton}
-            >
-              {buttons[0].icon}
-            </Button>
-          </div>
-        </div>
-        <div className='nameSection' style={{ marginBottom: '70px' }}>
-          <div >
-            <TextField value={nameEdit} onChange={(e) => handleNameEdit(e)}></TextField>
-            <Button
-              title={buttons[1].description}
-              className={buttons[1].clas}
-              style={{ backgroundColor: 'white', margin: 10, color: 'yellow', border: 10, borderColor: 'yellow' }}
-              onClick={handleEditButton}
-
-            >
-              {buttons[1].icon}
-            </Button>
+        <div className="headerDraw">
+          <div className="titleDraw">
+            {isEditingName ? (
+              <TextField
+                value={nameEdit}
+                onChange={handleNameEdit}
+                onBlur={handleEditButton}
+              />
+            ) : (
+              <>
+                <Typography color="text.default" align="center" variant="h5">
+                  Élement sélectionné :
+                </Typography>
+                <Typography
+                  color="text.default"
+                  align="center"
+                  variant="body1"
+                  style={{ cursor: "pointer" }}
+                  onClick={handleNameClick}
+                >
+                  {node.name}
+                </Typography>
+              </>
+            )}
           </div>
         </div>
-        <div className='deleteSection' style={{ marginBottom: '70px' }}>
-          <Button
-            title={buttons[2].description}
-            className={buttons[2].clas}
-            onClick={handleDeletedButton}
-            style={{ backgroundColor: 'white', color: 'red', margin: 10, borderColor: 'red', border: 10 }}
-          >
-            {buttons[2].icon}
+        <div>
+          <IconButton onClick={handleDeletedButton}>
+            <DeleteIcon color="error" />
+          </IconButton>
+        </div>
+        <div className="addSection">
+          <div>
+            <TextField
+              value={nameAdd}
+              onChange={handleNameAdd}
+              label="Ajouter un élément"
+            />
+            <IconButton onClick={handleAddButton}>
+              <AddIcon color="success" />
+            </IconButton>
+          </div>
+        </div>
+        <div>
+          <Button variant="contained" onClick={exportToPDF}>
+            Ajouter au dossier à Agile
           </Button>
         </div>
-      </Drawer>
-    </div>
-  )
-}
+      </div>
+    </>
+  );
+};
 
-export default DrawTools
+export default DrawTools;

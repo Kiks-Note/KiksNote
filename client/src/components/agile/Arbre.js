@@ -1,25 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Tree from "react-d3-tree";
-import Button from "@material-ui/core/Button";
-import { Icon } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import {
-  AddRounded,
-  EditNotificationsRounded,
-  NoEncryption,
-} from "@mui/icons-material";
-import { array } from "prop-types";
-import { isNameExists, generateUniqueName } from "../../utils/FunctionsUtils";
-import InputNode from "./arbre/InputNode";
 import DrawTools from "./arbre/DrawTools";
-import { green } from "@mui/material/colors";
-
+import axios from "axios";
 const useStyles = makeStyles((theme) => ({
   treeContainer: {
     height: "100vh",
+    width: "100%",
     transform: "rotate(180deg)",
     backgroundColor: "white",
   },
@@ -54,24 +41,14 @@ const useStyles = makeStyles((theme) => ({
   icon: {
     marginRight: theme.spacing(1),
   },
-  node__leaf: {
-    color: " green",
-    /* Let's also make the radius of leaf nodes larger */
-    r: 40,
-  },
 }));
 
-const Arbre = ({ projet }) => {
+const Arbre = ({ projet, dashboardId }) => {
   const classes = useStyles();
   const [showToolbar, setShowToolbar] = useState(false);
   const [hoveredNode, setHoveredNode] = useState(null);
-  const [showInput, setShowInput] = useState(false);
   const [currentProjetId, setCurrentProjetId] = useState(null);
-  const [showInputFor, setShowInputFor] = useState(null);
-  const [treeData, setTreeData] = useState({
-    name: "Root",
-    children: [],
-  });
+  const [treeData, setTreeData] = useState({});
   const [showeDrawer, setShoweDrawer] = useState(false);
   const [nodeToUpdate, setNodeToUpdate] = useState(null);
 
@@ -83,7 +60,6 @@ const Arbre = ({ projet }) => {
   }, [projet]);
 
   const handleNodeMouseOver = (event) => {
-    console.log(event);
     setHoveredNode(event);
   };
 
@@ -91,9 +67,13 @@ const Arbre = ({ projet }) => {
     setHoveredNode(null);
   };
 
-  const handleUpdateThree = (data) => {
-    console.log(data);
-    setTreeData(data);
+  const handleUpdateThree = async (data) => {
+    try {
+      // Envoie des données au backend
+      await axios.put(`http://localhost:5050/agile/${dashboardId}/tree`, data);
+    } catch (error) {
+      console.error("Erreur lors de l'envoi des données au backend", error);
+    }
   };
 
   /*FINNNNN TOOOOLBAR*/
@@ -107,9 +87,7 @@ const Arbre = ({ projet }) => {
     setShoweDrawer(true);
     setNodeToUpdate(node);
   };
-  const renderForeignObjectNode = ({
-    nodeDatum,
-  }) => (
+  const renderForeignObjectNode = ({ nodeDatum }) => (
     <g transform="rotate(180,0,0)">
       <rect
         width="100"
@@ -147,28 +125,28 @@ const Arbre = ({ projet }) => {
   };
 
   return (
-    <>
-      <div className={classes.treeContainer}>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      {showeDrawer && (
+        <DrawTools
+          nodeToUpdate={nodeToUpdate}
+          sendUpdateThree={handleUpdateThree}
+          oldTreeData={treeData}
+          dashboardId={dashboardId}
+        />
+      )}
+      <div className={classes.treeContainer} id="pdf-content">
         <Tree
           data={treeData}
           orientation="vertical"
           translate={translate}
           separation={{ siblings: 0.5, nonSiblings: 0.5 }}
           nodeSize={nodeSize}
-          leafNodeClassName={classes.node__leaf}
           renderCustomNodeElement={(rd3tProps) =>
             renderForeignObjectNode({ ...rd3tProps, foreignObjectProps })
           }
         />
       </div>
-      {showeDrawer && (
-        <DrawTools
-          nodeToUpdate={nodeToUpdate}
-          sendUpdateThree={handleUpdateThree}
-          oldTreeData={treeData}
-        />
-      )}
-    </>
+    </div>
   );
 };
 

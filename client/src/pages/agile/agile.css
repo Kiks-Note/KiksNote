@@ -1,7 +1,7 @@
 /*------------- folder box----------- */
 .folder {
-  width: 150px;
-  height: 105px;
+  width: 300px;
+  height: 200px;
   margin: 50px 50px;
   float: left;
   position: relative;
@@ -9,6 +9,9 @@
   border-radius: 0 6px 6px 6px;
   transition: 0.1s ease-out;
   box-shadow: 4px 4px 7px rgba(0, 0, 0, 0.59);
+}
+.folder_cursor{
+  cursor: pointer;
 }
 /*-------------folder box----x------- */
 .folder:hover {
@@ -49,7 +52,7 @@
 .folder p {
   margin: 0%;
   font-family: "Source Sans Pro", Arial, sans-serif;
-  font-size: 20px;
+  font-size: 35px;
   font-weight: 900;
   color: white;
 }

@@ -4,10 +4,12 @@ import ReactApexChart from "react-apexcharts";
 const ApexChart = ({ selectedBoard }) => {
   const { data } = selectedBoard;
 
+
   const totalTasks =
     data.done.items.length +
     data.inProgress.items.length +
     data.toDo.items.length;
+
 
   const series = [
     (data.toDo.items.length / totalTasks) * 100,
@@ -37,12 +39,14 @@ const ApexChart = ({ selectedBoard }) => {
 
   return (
     <div id="chart" className="chart-container">
+
       <ReactApexChart
         options={options}
         series={series}
         type="radialBar"
         height={295}
       />
+
     </div>
   );
 };
