@@ -25,7 +25,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SchoolIcon from "@mui/icons-material/School";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ConnectWithoutContactIcon from "@mui/icons-material/ConnectWithoutContact";
-import Logo from "./../../assets/logo/logo.png";
+import Logo from "./../../assets/logo/logo.svg";
 
 /// Drawer width where is open
 const drawerWidth = 240;
@@ -288,7 +288,7 @@ export default function MiniDrawerNotConnected({ element }) {
           )}
         </List>
       </Drawer>
-      <Box component="main" sx={{width: '100%'}}>
+      <Box component="main" sx={{ width: "100%" }}>
         <>{element}</>
       </Box>
     </Box>

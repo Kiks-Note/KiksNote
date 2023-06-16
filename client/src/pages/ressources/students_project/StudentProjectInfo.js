@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 
 import axios from "axios";
@@ -6,6 +6,8 @@ import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
 
 import { toast, ToastContainer } from "react-toastify";
+
+import { makeStyles } from "@mui/styles";
 
 import {
   Typography,
@@ -30,6 +32,7 @@ import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
 import ConstructionIcon from "@mui/icons-material/Construction";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import AddLinkIcon from "@mui/icons-material/AddLink";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -37,13 +40,18 @@ import SchoolIcon from "@mui/icons-material/School";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteIcon from "@mui/icons-material/Delete";
-import GitHubIcon from "@mui/icons-material/GitHub";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import EditIcon from "@mui/icons-material/Edit";
 
 import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
 
 import BlogTutosLinkDialog from "./../../../components/ressources/students_project/BlogTutosLinkDialog";
-import "./StudentsProjectsInfo.scss";
+import UploadVideoPlayerDialog from "./../../../components/ressources/students_project/UploadVideoStudentProject";
+import UpdateProjectDialog from "./../../../components/ressources/students_project/UpdateStudentProject";
+
 import SkeletonStudentProjectInfo from "../../../components/ressources/students_project/SkeletonStudentProjectInfo";
+
+import "./StudentsProjectsInfo.scss";
 
 const options = {
   autoClose: 2000,
@@ -64,7 +72,36 @@ export const toastFail = (message) => {
   toast.error(message, options);
 };
 
+const useStyles = makeStyles({
+  btnVideoProject: {
+    backgroundColor: "#76238b",
+    color: "white",
+    fontWeight: "bold",
+    "&:hover": {
+      backgroundColor: "#76238b",
+      fontWeight: "bold",
+    },
+  },
+  btnEditProject: {
+    backgroundColor: "#df005a",
+    color: "white",
+    "&:hover": {
+      backgroundColor: "#df005a",
+      fontWeight: "bold",
+    },
+  },
+  btnDeleteProject: {
+    backgroundColor: "red",
+    color: "white",
+    "&:hover": {
+      backgroundColor: "darkred",
+      fontWeight: "bold",
+    },
+  },
+});
+
 const StudentProjectInfo = () => {
+  const classes = useStyles();
   const { user } = useFirebase();
   const navigate = useNavigate();
 
@@ -78,11 +115,90 @@ const StudentProjectInfo = () => {
   const [selectedProjectData, setSelectedProjectData] = useState("");
   const [openVoters, setOpenVoters] = useState(false);
   const [openBlogTutos, setOpenBlogTutos] = useState(false);
+  const [openUploadVideo, setOpenUploadVideo] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+
+  const [nameProject, setNameProject] = useState("");
+  const [repoProjectLink, setRepoProjectLink] = useState("");
+  const [promoProject, setPromoProject] = useState([]);
+  const [membersProject, setMembersProject] = useState([]);
+  const [technosProject, setTechnosProject] = useState([]);
+  const [typeProject, setTypeProject] = useState("");
+  const [descriptionProject, setDescriptionProject] = useState("");
+  const [imgProject, setImgProject] = useState("");
+
+  const [files, setFiles] = useState([]);
+  const rejectedFiles = files.filter((file) => file.errors);
+
+  const [allclass, setAllclass] = useState([]);
+  const [allstudents, setAllStudents] = useState([]);
+  const [technos, setTechnos] = useState([]);
 
   const [hasAddedBlog, setHasAddedBlog] = useState(false);
 
   const handleClickVoters = () => {
     setOpenVoters(!openVoters);
+  };
+
+  const handleFileChange = (fileData) => {
+    setImgProject(fileData);
+  };
+
+  const handleDrop = useCallback((acceptedFiles) => {
+    setFiles((files) => [...files, ...acceptedFiles]);
+  }, []);
+
+  /*
+    Get an Array of classes then set it in allClass
+  */
+
+  const getAllClass = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/classes")
+        .then((res) => {
+          setAllclass(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  /*
+      Get an Array of students then set it in allStudents
+    */
+
+  const getAllStudents = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/students")
+        .then((res) => {
+          setAllStudents(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getAllTechnos = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/technos")
+        .then((res) => {
+          setTechnos(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   /*
@@ -136,6 +252,47 @@ const StudentProjectInfo = () => {
     }
   };
 
+  const editProject = async (
+    nameProject,
+    RepoProjectLink,
+    promoProject,
+    membersProject,
+    technosProject,
+    typeProject,
+    descriptionProject,
+    imgProject
+  ) => {
+    try {
+      await axios
+        .put(`http://localhost:5050/ressources/student-project/${projectid}`, {
+          nameProject: nameProject,
+          RepoProjectLink: RepoProjectLink,
+          promoProject: promoProject,
+          membersProject: membersProject,
+          technosProject: technosProject,
+          typeProject: typeProject,
+          descriptionProject: descriptionProject,
+          imgProject: imgProject,
+        })
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data.message === "Projet étudiant modifié avec succès."
+          ) {
+            toastSuccess(
+              `Votre projet ${nameProject} a bien été modifié avec succès`
+            );
+            getStudentProjectById(projectid);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const deleteLinkedBlogTuto = async (
     project_id,
     linkedBlogTuto,
@@ -157,6 +314,33 @@ const StudentProjectInfo = () => {
           getStudentProjectById(projectid);
           setBlogTutoData([]);
           setHasAddedBlog(false);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const deleteStudentProject = async (nameProject, projectId) => {
+    const data = { nameProject, projectId };
+
+    try {
+      await axios
+        .delete(`http://localhost:5050/ressources/student-project`, { data })
+        .then((res) => {
+          if (
+            res.data.message === "Projet étudiant supprimé avec succès." &&
+            res.status === 200
+          ) {
+            toastSuccess(
+              `Votre projet étudiant ${selectedProjectData?.nameProject} a bien été supprimé !`
+            );
+            setTimeout(() => {
+              navigate("/studentprojects");
+            }, 4000);
+          }
         })
         .catch((err) => {
           console.log(err);
@@ -190,6 +374,48 @@ const StudentProjectInfo = () => {
 
   const handleCloseBlogTutos = () => {
     setOpenBlogTutos(false);
+  };
+
+  const handleOpenUploadVideoProject = () => {
+    setOpenUploadVideo(true);
+  };
+
+  const handleCloseUploadVideoProject = () => {
+    setOpenUploadVideo(false);
+  };
+
+  const handleClickOpenUpdateDialog = () => {
+    getAllClass();
+    getAllStudents();
+    getAllTechnos();
+    setOpenUpdate(true);
+  };
+
+  const handleCloseUpdateDialog = () => {
+    setOpenUpdate(false);
+  };
+
+  const deleteProject = async () => {
+    deleteStudentProject(selectedProjectData?.nameProject, projectid);
+  };
+
+  const onSubmitEditProject = async () => {
+    try {
+      await editProject(
+        nameProject,
+        repoProjectLink,
+        promoProject,
+        membersProject,
+        technosProject,
+        typeProject,
+        descriptionProject,
+        imgProject
+      );
+      handleCloseUpdateDialog();
+    } catch (error) {
+      console.error(error);
+      toastFail("Erreur lors de la modification de votre projet.");
+    }
   };
 
   return (
@@ -566,12 +792,79 @@ const StudentProjectInfo = () => {
                   {selectedProjectData?.creatorProject?.firstname}
                 </Typography>
               </div>
+              {selectedProjectData?.creatorProject?.id === user?.id ? (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "center",
+                      width: "100%",
+                    }}
+                  >
+                    <Button
+                      sx={{ margin: "20px" }}
+                      onClick={handleOpenUploadVideoProject}
+                      className={classes.btnVideoProject}
+                    >
+                      Video <VideocamIcon />
+                    </Button>
+                    <Button
+                      sx={{ margin: "20px" }}
+                      onClick={() => handleClickOpenUpdateDialog()}
+                      className={classes.btnEditProject}
+                    >
+                      Modifier <EditIcon />
+                    </Button>
+                    <Button
+                      sx={{ margin: "20px" }}
+                      onClick={deleteProject}
+                      className={classes.btnDeleteProject}
+                    >
+                      Supprimer
+                      <DeleteIcon />
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <></>
+              )}
             </div>
             <BlogTutosLinkDialog
               open={openBlogTutos}
               close={handleCloseBlogTutos}
               allblogtutos={allblogtutos}
               getStudentProjectById={getStudentProjectById}
+            />
+            <UploadVideoPlayerDialog
+              open={openUploadVideo}
+              close={handleCloseUploadVideoProject}
+              nameProject={selectedProjectData.nameProject}
+            />
+            <UpdateProjectDialog
+              open={openUpdate}
+              handleClose={handleCloseUpdateDialog}
+              nameProject={selectedProjectData.nameProject}
+              setNameProject={setNameProject}
+              repoProjectLink={selectedProjectData.RepoProjectLink}
+              setRepoProjectLink={setRepoProjectLink}
+              promoProject={selectedProjectData.promoProject}
+              setPromoProject={setPromoProject}
+              membersProject={selectedProjectData.membersProject}
+              setMembersProject={setMembersProject}
+              technosProject={selectedProjectData.technosProject}
+              setTechnosProject={setTechnosProject}
+              typeProject={selectedProjectData.typeProject}
+              setTypeProject={setTypeProject}
+              descriptionProject={selectedProjectData.descriptionProject}
+              setDescriptionProject={setDescriptionProject}
+              imgProject={selectedProjectData.imgProject}
+              setImgProject={setImgProject}
+              handleSubmit={onSubmitEditProject}
+              handleFileChange={handleFileChange}
+              handleDrop={handleDrop}
+              allstudents={allstudents}
+              allclass={allclass}
+              alltechnos={technos}
             />
           </div>
         </>

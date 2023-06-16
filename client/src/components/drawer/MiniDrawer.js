@@ -40,7 +40,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import BookIcon from "@mui/icons-material/Book";
 import EventIcon from "@mui/icons-material/Event";
 
-import Logo from "./../../assets/logo/logo.png";
+import Logo from "./../../assets/logo/logo.svg";
 import useFirebase from "../../hooks/useFirebase";
 
 /// Drawer width where is open

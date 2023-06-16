@@ -16,7 +16,7 @@ import Dropzone from "../Dropzone";
 
 import "./../../../pages/ressources/students_project/StudentsProjects";
 
-const CreateProjectDialog = (props) => {
+const UpdateProjectDialog = (props) => {
   return (
     <Dialog
       open={props.open}
@@ -46,9 +46,9 @@ const CreateProjectDialog = (props) => {
             defaultValue={props.repoProjectLink}
             onChange={(event) => props.setRepoProjectLink(event.target.value)}
           />
-
           <TextField
             placeholder={`Commencer à écrire une petite description de ton projet ${props.nameProject}`}
+            // sx={{ marginBottom: "10px", marginTop: "5px" }}
             label="Description de votre Projet"
             fullWidth
             multiline
@@ -56,7 +56,6 @@ const CreateProjectDialog = (props) => {
             defaultValue={props.descriptionProject}
             onChange={(e) => props.setDescriptionProject(e.target.value)}
           />
-
           <div className="dropzone-coursimg-container">
             <p className="info-dropdown-img">
               Drag and drop an image file here, or click to select an image
@@ -77,19 +76,6 @@ const CreateProjectDialog = (props) => {
                 </section>
               )}
             </Dropzone>
-            {props.rejectedFiles.length > 0 && (
-              <div>
-                <h4>Rejected files:</h4>
-                <ul>
-                  {props.rejectedFiles.map((file) => (
-                    <li key={file.name}>
-                      {file.name} - {file.size} bytes - {file.type}
-                      <button onClick={props.handleRemove(file)}>Remove</button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
           </div>
           <Select
             sx={{ marginBottom: "10px" }}
@@ -233,4 +219,4 @@ const CreateProjectDialog = (props) => {
     </Dialog>
   );
 };
-export default CreateProjectDialog;
+export default UpdateProjectDialog;

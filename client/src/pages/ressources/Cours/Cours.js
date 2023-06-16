@@ -501,7 +501,25 @@ const Cours = () => {
         {view === "module" ? (
           <>
             <div className="grid-view-cours ">
-              <h1>Année {`${currentYear}  - ${currentYear + 1} `}</h1>
+              <h1>
+                Année {`${currentYear} - ${currentYear + 1}`}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>
+
               <Grid container spacing={2}>
                 {loading ? (
                   <>
@@ -521,14 +539,16 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? course.data.courseClass.some(
+                          ? Array.isArray(course.data.courseClass) &&
+                            course.data.courseClass.some(
                               (classItem) => classItem.id === userClass.id
                             )
                           : true
                       )
                       .filter((course) =>
                         selectedIdFilterClass !== ""
-                          ? course.data.courseClass.some(
+                          ? Array.isArray(course.data.courseClass) &&
+                            course.data.courseClass.some(
                               (classItem) =>
                                 classItem.id === selectedIdFilterClass
                             )
@@ -542,7 +562,7 @@ const Cours = () => {
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "space-evenly",
-                                height: "450px",
+                                height: "500px",
                               }}
                               /* eslint-disable no-unused-expressions */
                               onClick={() => {
@@ -565,8 +585,8 @@ const Cours = () => {
                                 sx={{
                                   display: "flex",
                                   width: "100%",
-                                  maxHeight: "210px",
-                                  minHeight: "210px",
+                                  maxHeight: "170px",
+                                  minHeight: "170px",
                                   justifyContent: "center",
                                   margin: "0",
                                 }}
@@ -584,12 +604,12 @@ const Cours = () => {
                                 <div
                                   style={{
                                     display: "flex",
-                                    justifyContent: "space-between",
                                   }}
                                 >
                                   {Array.isArray(course.data.courseClass) ? (
                                     course.data.courseClass.map((classData) => (
                                       <Chip
+                                        sx={{ marginRight: "1vh" }}
                                         key={classData.id}
                                         label={
                                           <>
@@ -605,6 +625,7 @@ const Cours = () => {
                                     ))
                                   ) : (
                                     <Chip
+                                      sx={{ marginRight: "1vh" }}
                                       key={course.data.courseClass.id}
                                       label={
                                         <>
@@ -618,30 +639,30 @@ const Cours = () => {
                                       }
                                     />
                                   )}
-
-                                  <Chip
-                                    avatar={
-                                      <Avatar
-                                        alt={
-                                          course.data.owner.lastname.toUpperCase() +
-                                          "" +
-                                          course.data.owner.firstname +
-                                          "photo-profile"
-                                        }
-                                        src={course.data.owner.image}
-                                      />
-                                    }
-                                    variant="outlined"
-                                    label={
-                                      <>
-                                        <Typography>
-                                          {course.data.owner.lastname.toUpperCase()}{" "}
-                                          {course.data.owner.firstname}
-                                        </Typography>
-                                      </>
-                                    }
-                                  ></Chip>
                                 </div>
+                                <Chip
+                                  sx={{ marginTop: "1vh" }}
+                                  avatar={
+                                    <Avatar
+                                      alt={
+                                        course.data.owner.lastname.toUpperCase() +
+                                        "" +
+                                        course.data.owner.firstname +
+                                        "photo-profile"
+                                      }
+                                      src={course.data.owner.image}
+                                    />
+                                  }
+                                  variant="outlined"
+                                  label={
+                                    <>
+                                      <Typography>
+                                        {course.data.owner.lastname.toUpperCase()}{" "}
+                                        {course.data.owner.firstname}
+                                      </Typography>
+                                    </>
+                                  }
+                                ></Chip>
                                 <div style={{ padding: "10px" }}>
                                   <Typography
                                     sx={{
@@ -699,7 +720,28 @@ const Cours = () => {
               </Grid>
             </div>
             <div className="grid-view-cours ">
-              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
+              <h1>
+                Année {`${currentYear - 1} - ${currentYear} `}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name.replace(
+                              /\d+/,
+                              (match) => parseInt(match, 10) - 1
+                            )}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>
+
               <Grid container spacing={2}>
                 {loading ? (
                   <>
@@ -719,14 +761,16 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? course.data.courseClass.some(
+                          ? Array.isArray(course.data.courseClass) &&
+                            course.data.courseClass.some(
                               (classItem) => classItem.id === userClass.id
                             )
                           : true
                       )
                       .filter((course) =>
                         selectedIdFilterClass !== ""
-                          ? course.data.courseClass.some(
+                          ? Array.isArray(course.data.courseClass) &&
+                            course.data.courseClass.some(
                               (classItem) =>
                                 classItem.id === selectedIdFilterClass
                             )
@@ -739,7 +783,7 @@ const Cours = () => {
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-evenly",
-                              height: "450px",
+                              height: "500px",
                             }}
                             onClick={() =>
                               userStatus !== "etudiant" &&
@@ -761,8 +805,8 @@ const Cours = () => {
                               sx={{
                                 display: "flex",
                                 width: "100%",
-                                maxHeight: "210px",
-                                minHeight: "210px",
+                                maxHeight: "170px",
+                                minHeight: "170px",
                                 justifyContent: "center",
                                 margin: "0",
                               }}
@@ -777,12 +821,12 @@ const Cours = () => {
                               <div
                                 style={{
                                   display: "flex",
-                                  justifyContent: "space-between",
                                 }}
                               >
                                 {Array.isArray(course.data.courseClass) ? (
                                   course.data.courseClass.map((classData) => (
                                     <Chip
+                                      sx={{ marginRight: "1vh" }}
                                       key={classData.id}
                                       label={
                                         <>
@@ -811,29 +855,30 @@ const Cours = () => {
                                     }
                                   />
                                 )}
-                                <Chip
-                                  avatar={
-                                    <Avatar
-                                      alt={
-                                        course.data.owner.lastname.toUpperCase() +
-                                        "" +
-                                        course.data.owner.firstname +
-                                        "photo-profile"
-                                      }
-                                      src={course.data.owner.image}
-                                    />
-                                  }
-                                  variant="outlined"
-                                  label={
-                                    <>
-                                      <Typography>
-                                        {course.data.owner.lastname.toUpperCase()}{" "}
-                                        {course.data.owner.firstname}
-                                      </Typography>
-                                    </>
-                                  }
-                                ></Chip>
                               </div>
+                              <Chip
+                                sx={{ marginTop: "1vh" }}
+                                avatar={
+                                  <Avatar
+                                    alt={
+                                      course.data.owner.lastname.toUpperCase() +
+                                      "" +
+                                      course.data.owner.firstname +
+                                      "photo-profile"
+                                    }
+                                    src={course.data.owner.image}
+                                  />
+                                }
+                                variant="outlined"
+                                label={
+                                  <>
+                                    <Typography>
+                                      {course.data.owner.lastname.toUpperCase()}{" "}
+                                      {course.data.owner.firstname}
+                                    </Typography>
+                                  </>
+                                }
+                              ></Chip>
                               <div style={{ padding: "10px" }}>
                                 <Typography
                                   sx={{
@@ -890,7 +935,24 @@ const Cours = () => {
         ) : (
           <>
             <div className="list-view-cours">
-              <h1>Année {`${currentYear}  - ${currentYear + 1} `}</h1>
+              <h1>
+                Année {`${currentYear} - ${currentYear + 1}`}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>
               {(searchTerm.length > 0
                 ? [...filteredCoursesCurrentYear].filter(
                     (course) =>
@@ -903,14 +965,16 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? course.data.courseClass.some(
+                    ? Array.isArray(course.data.courseClass) &&
+                      course.data.courseClass.some(
                         (classItem) => classItem.id === userClass.id
                       )
                     : true
                 )
                 .filter((course) =>
                   selectedIdFilterClass !== ""
-                    ? course.data.courseClass.some(
+                    ? Array.isArray(course.data.courseClass) &&
+                      course.data.courseClass.some(
                         (classItem) => classItem.id === selectedIdFilterClass
                       )
                     : true
@@ -929,18 +993,35 @@ const Cours = () => {
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
-                          <Chip
-                            label={
-                              <>
-                                <div style={{ display: "flex" }}>
-                                  <Typography>
-                                    {course.data.courseClass.name}
-                                  </Typography>
-                                  <SchoolIcon />
-                                </div>
-                              </>
-                            }
-                          ></Chip>
+                          {Array.isArray(course.data.courseClass) ? (
+                            course.data.courseClass.map((classData) => (
+                              <Chip
+                                key={classData.id}
+                                label={
+                                  <>
+                                    <div style={{ display: "flex" }}>
+                                      <Typography>{classData.name}</Typography>
+                                      <SchoolIcon />
+                                    </div>
+                                  </>
+                                }
+                              />
+                            ))
+                          ) : (
+                            <Chip
+                              key={course.data.courseClass.id}
+                              label={
+                                <>
+                                  <div style={{ display: "flex" }}>
+                                    <Typography>
+                                      {course.data.courseClass.name}
+                                    </Typography>
+                                    <SchoolIcon />
+                                  </div>
+                                </>
+                              }
+                            />
+                          )}
                           <Chip
                             avatar={
                               <Avatar
@@ -967,7 +1048,7 @@ const Cours = () => {
                             <Typography
                               sx={{
                                 display: "flex",
-                                justifyContent: "center",
+                                justifyContent: "start",
                                 alignItems: "center",
                               }}
                             >
@@ -1005,7 +1086,27 @@ const Cours = () => {
                 ))}
             </div>
             <div className="list-view-cours">
-              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
+              <h1>
+                Année {`${currentYear - 1} - ${currentYear} `}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name.replace(
+                              /\d+/,
+                              (match) => parseInt(match, 10) - 1
+                            )}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>{" "}
               {(searchTerm.length > 0
                 ? [...filteredCoursesLastYear].filter(
                     (course) =>
@@ -1018,14 +1119,16 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? course.data.courseClass.some(
+                    ? Array.isArray(course.data.courseClass) &&
+                      course.data.courseClass.some(
                         (classItem) => classItem.id === userClass.id
                       )
                     : true
                 )
                 .filter((course) =>
                   selectedIdFilterClass !== ""
-                    ? course.data.courseClass.some(
+                    ? Array.isArray(course.data.courseClass) &&
+                      course.data.courseClass.some(
                         (classItem) => classItem.id === selectedIdFilterClass
                       )
                     : true
@@ -1044,23 +1147,35 @@ const Cours = () => {
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
-                          <Chip
-                            sx={{
-                              display: "flex",
-                              padding: "10px",
-                              alignItems: "center",
-                            }}
-                            label={
-                              <>
-                                <div style={{ display: "flex" }}>
-                                  <Typography>
-                                    {course.data.courseClass.name}
-                                  </Typography>
-                                  <SchoolIcon />
-                                </div>
-                              </>
-                            }
-                          ></Chip>
+                          {Array.isArray(course.data.courseClass) ? (
+                            course.data.courseClass.map((classData) => (
+                              <Chip
+                                key={classData.id}
+                                label={
+                                  <>
+                                    <div style={{ display: "flex" }}>
+                                      <Typography>{classData.name}</Typography>
+                                      <SchoolIcon />
+                                    </div>
+                                  </>
+                                }
+                              />
+                            ))
+                          ) : (
+                            <Chip
+                              key={course.data.courseClass.id}
+                              label={
+                                <>
+                                  <div style={{ display: "flex" }}>
+                                    <Typography>
+                                      {course.data.courseClass.name}
+                                    </Typography>
+                                    <SchoolIcon />
+                                  </div>
+                                </>
+                              }
+                            />
+                          )}
                           <Chip
                             avatar={
                               <Avatar
@@ -1087,7 +1202,7 @@ const Cours = () => {
                             <Typography
                               sx={{
                                 display: "flex",
-                                justifyContent: "center",
+                                justifyContent: "start",
                                 alignItems: "center",
                               }}
                             >

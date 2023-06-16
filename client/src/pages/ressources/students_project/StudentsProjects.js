@@ -98,8 +98,6 @@ const StudentsProjects = () => {
   const [technoName, setTechnoName] = useState("");
   const [technoImageBase64, setTechnoImageBase64] = useState("");
 
-  const [loadingProjects, setLoadingProjects] = useState(false);
-
   var votePo = 5;
   var votePedago = 3;
   var voteStudent = 1;
