@@ -4,32 +4,34 @@ import { useTheme } from "@mui/material";
 
 import "./Widget.scss";
 
-function Widget({ handleOpen, image, text }) {
+function Widget({ handleOpen, image, text, path }) {
   const theme = useTheme();
 
   return (
     <div className="home-dashboard-item" onClick={() => handleOpen()}>
-      <img
-        src={image}
-        alt="illustration"
-        style={{
-          backgroundColor: theme.palette.custom.button,
-        }}
-      />
-      <div
-        className="home-dashboard-item-content"
-        style={{
-          backgroundColor: theme.palette.background.container,
-        }}
-      >
-        <p
+      <Link to={path}>
+        <img
+          src={image}
+          alt="illustration"
           style={{
-            color: theme.palette.text.primary,
+            backgroundColor: theme.palette.custom.button,
+          }}
+        />
+        <div
+          className="home-dashboard-item-content"
+          style={{
+            backgroundColor: theme.palette.background.container,
           }}
         >
-          {text}
-        </p>
-      </div>
+          <p
+            style={{
+              color: theme.palette.text.primary,
+            }}
+          >
+            {text}
+          </p>
+        </div>
+      </Link>
     </div>
   );
 }

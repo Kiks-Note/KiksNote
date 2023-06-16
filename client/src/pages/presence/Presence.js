@@ -25,7 +25,7 @@ function Presence() {
 
   const updateCall = async () => {
     await axios
-      .put(`http://localhost:5050/call/updatecall`, {
+      .put(`${process.env.REACT_APP_SERVER_API}/call/updatecall`, {
         id: id,
         object: tempCall.current,
       })
@@ -51,10 +51,12 @@ function Presence() {
     navigate(`/appel/${tempCall.current.id}`);
   };
   const getCall = () => {
-    axios.get(`${process.env.REACT_APP_SERVER_API}/call/getcall/${id}`).then((res) => {
-      tempCall.current = res.data;
-      getUsers();
-    });
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/call/getcall/${id}`)
+      .then((res) => {
+        tempCall.current = res.data;
+        getUsers();
+      });
   };
   const getUsers = () => {
     console.log("test");

@@ -130,9 +130,9 @@ export default function Profil() {
   const getJpo = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5050/ressources/jpo/user/${id}`
+        `${process.env.REACT_APP_SERVER_API}/ressources/jpo/user/${id}`
       );
-      if (response.data != undefined) {
+      if (response.data !== undefined) {
         setRecentJpo(response.data);
         console.log(response.data);
       }
@@ -142,7 +142,9 @@ export default function Profil() {
   };
   const fetchTags = async () => {
     try {
-      const response = await axios.get("http://localhost:5050/blog/tag");
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API}/blog/tag`
+      );
       const tags = response.data;
       setTags(tags);
     } catch (error) {
@@ -151,7 +153,9 @@ export default function Profil() {
   };
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get(`http://localhost:5050/blog/user/${id}`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API}/blog/user/${id}`
+      );
       var filtredBlogs = filterTwoMostRecentBlogs(response.data, 2);
       var allBlogs = [];
       const dateOptions = {
@@ -202,7 +206,9 @@ export default function Profil() {
   };
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`${process.env.REACT_APP_SERVER_API_WS}/profil`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/profil`
+      );
 
       wsComments.onopen = function (e) {
         wsComments.send(JSON.stringify(id));

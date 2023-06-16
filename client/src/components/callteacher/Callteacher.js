@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import axios from "axios";
 import "./Callteacher.scss";
@@ -35,7 +34,7 @@ function AppelProf(callId) {
   const LogToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/call/getRoomPo/${user?.id}`, {
+        .get(`${process.env.REACT_APP_SERVER_API}/call/getRoomPo/${user?.id}`, {
           params: { callId: callId },
         })
         .then((res) => {
@@ -59,7 +58,6 @@ function AppelProf(callId) {
       console.log(error);
     }
   }, [user?.id, user?.firstname, user?.class, ws]);
-
 
   useEffect(() => {
     const handleOpen = async () => {

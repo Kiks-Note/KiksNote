@@ -43,5 +43,6 @@
   "devDependencies": {
     "@flydotio/dockerfile": "^0.2.14",
     "nodemon": "^2.0.20"
-  }
+  },
+  "proxy": "https://storage.googleapis.com/"
 }

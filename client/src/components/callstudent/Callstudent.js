@@ -29,9 +29,12 @@ function AppelEleve({ callId }) {
   const LogToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/call/getRoom/${user?.class.name}`, {
-          params: { callId: callId },
-        })
+        .get(
+          `${process.env.REACT_APP_SERVER_API}/call/getRoom/${user?.class.name}`,
+          {
+            params: { callId: callId },
+          }
+        )
         .then((res) => {
           console.log(res);
           if (res.data.length > 0) {
@@ -52,7 +55,7 @@ function AppelEleve({ callId }) {
     } catch (error) {
       console.log(error);
     }
-  }, [user?.id, user?.firstname, user?.class, ws]);
+  }, [user?.class.name, user?.id, user?.firstname, callId, ws]);
 
   useEffect(() => {
     const handleOpen = async () => {
@@ -131,7 +134,7 @@ function AppelEleve({ callId }) {
   };
 
   const addMsg = () => {
-    if (msg.current == "") {
+    if (msg.current === "") {
       return;
     }
     const date = new Date();
@@ -158,10 +161,13 @@ function AppelEleve({ callId }) {
 
   const updateCall = async () => {
     try {
-      const res = await axios.put(`http://localhost:5050/call/updatecall`, {
-        id: id.current,
-        object: callToUpdate.current,
-      });
+      const res = await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/call/updatecall`,
+        {
+          id: id.current,
+          object: callToUpdate.current,
+        }
+      );
       const message = {
         type: "updateCall",
         data: {
@@ -198,7 +204,7 @@ function AppelEleve({ callId }) {
             {Call.chats.map((chat) => {
               return (
                 <li className="clearfix" key={chat.id}>
-                  {chat.username == user.firstname ? (
+                  {chat.username === user.firstname ? (
                     <>
                       <div className="message-data">
                         <span className="message-data-name">
