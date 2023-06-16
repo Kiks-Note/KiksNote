@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Typography, Divider, Card } from "@mui/material";
+import { Typography, Divider, Card, Menu, MenuItem, IconButton } from "@mui/material";
 
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -17,6 +17,7 @@ import { CircularProgressbarWithChildren, buildStyles } from "react-circular-pro
 import "react-circular-progressbar/dist/styles.css";
 import RadialSeparators from "../../../components/board_scrum/overview/RadialSeparator";
 
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import EngineeringIcon from "@mui/icons-material/Engineering";
@@ -26,6 +27,7 @@ import BarChart from "../../../components/board_scrum/overview/BarChart";
 import { withStyles } from "@material-ui/core/styles";
 import Timer from "../../../components/board_scrum/overview/Timer";
 
+import Roadmap from "./Roadmap";
 
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
@@ -54,15 +56,6 @@ function OverView({ id }) {
   });
   const dispatch = useDispatch();
   const [value, setValue] = useState(0);
-
-  const dividerStyle = {
-    root: {
-      height: "1px",
-      backgroundColor: "gray",
-    },
-  };
-  const CustomDivider = withStyles(dividerStyle)(Divider);
-
 
   const dividerStyle = {
     root: {
@@ -107,16 +100,6 @@ function OverView({ id }) {
       data: { boardId: board.id, dashboardId: id },
     };
 
-
-  const moveToBoard = (board) => {
-    const boardTab = {
-      id: board.id,
-      label: `Board ${board.name}`,
-      closeable: true,
-      component: "Board",
-      data: { boardId: board.id, dashboardId: id },
-    };
-
     dispatch(addTab(boardTab));
     dispatch(setActiveTab(boardTab.id));
     console.log("moved ?");
@@ -129,7 +112,6 @@ function OverView({ id }) {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
 
   useEffect(() => {
     (async () => {
@@ -153,7 +135,7 @@ function OverView({ id }) {
           const data = { begin: 0, end: 4 };
           setDisplayedBoards(data);
         } else {
-          const data = { begin: 0, end: data.boards.length };
+          // const data = { begin: 0, end: data.boards.length };
           // const data = { begin: 0, end: data.boards.length };
           setDisplayedBoards(data);
         }
@@ -238,24 +220,11 @@ function OverView({ id }) {
           <IconButton onClick={handleClick}>
             <MoreVertIcon />
           </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={moveToAgileHome}>
-              Accéder à la partie Agile
-            </MenuItem>
-            {pdfLink.length != 0 && (
-              <MenuItem onClick={moveToBacklog}>Accéder au Backlog</MenuItem>
-            )}
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+            <MenuItem onClick={moveToAgileHome}>Accéder à la partie Agile</MenuItem>
+            {pdfLink.length != 0 && <MenuItem onClick={moveToBacklog}>Accéder au Backlog</MenuItem>}
             <MenuItem>
-              <Roadmap
-                stories={stories}
-                releases={releases}
-                boards={boards}
-                dashboardId={id}
-              />
+              <Roadmap stories={stories} releases={releases} boards={boards} dashboardId={id} />
             </MenuItem>
           </Menu>
         </Box>
@@ -279,7 +248,6 @@ function OverView({ id }) {
                 justifyContent: "center",
               }}
             >
-
               <Typography varian="h5" style={{ textAlign: "center" }}>
                 Participation
               </Typography>
@@ -289,10 +257,7 @@ function OverView({ id }) {
                   marginTop: "5vh",
                 }}
               >
-                <BarChart
-                  participation={getParticipation()}
-                  label={"Nombre de taches"}
-                />
+                <BarChart participation={getParticipation()} label={"Nombre de taches"} />
               </Box>
             </Box>
 
@@ -313,11 +278,9 @@ function OverView({ id }) {
               <Box
                 style={{
                   display: "flex",
-
                 }}
               >
                 <ApexChart selectedBoard={selectedBoard} />
-
 
                 <Box
                   sx={{
@@ -327,7 +290,6 @@ function OverView({ id }) {
                     justifyContent: "center",
                   }}
                 >
-
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <div
                       style={{
@@ -366,8 +328,7 @@ function OverView({ id }) {
                   </div>
                 </Box>
               </Box>
-
-            </Card>
+            </Box>
             <Card
               style={{
                 width: "40%",
