@@ -30,7 +30,7 @@ export default function InventoryStatistics() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5050/inventory/statistics"
+          `${process.env.REACT_APP_SERVER_API}/inventory/statistics`
         );
         console.log("Réponse du serveur:", response);
         const data = await response.json();

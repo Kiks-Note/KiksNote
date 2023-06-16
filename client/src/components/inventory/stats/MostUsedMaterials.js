@@ -39,7 +39,7 @@ export default function MostUsedMaterials() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5050/inventory/statistics2"
+          `${process.env.REACT_APP_SERVER_API}/inventory/statistics2`
         );
         console.log("Réponse du serveur:", response);
         const data = await response.json();

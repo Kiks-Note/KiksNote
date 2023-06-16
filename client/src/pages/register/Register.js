@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 import {
   TextField,
@@ -14,16 +15,16 @@ import {
   useTheme,
 } from "@mui/material";
 
-import { parseISO, isValid } from 'date-fns';
-import { format } from 'date-fns';
+import {parseISO, isValid} from "date-fns";
+import {format} from "date-fns";
 
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import MailIcon from "@mui/icons-material/Mail";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import HttpsRoundedIcon from "@mui/icons-material/HttpsRounded";
 
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import {toast, ToastContainer} from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import axios from "axios";
 
@@ -82,7 +83,7 @@ const Register = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/classes")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/classes`)
         .then((res) => {
           setAllclass(res.data);
         })
@@ -105,8 +106,14 @@ const Register = () => {
       }
     }
     await axios
-      .post("http://localhost:5050/auth/signup", {
-        userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass
+      .post(`${process.env.REACT_APP_SERVER_API}/auth/signup`, {
+        userEmail: userEmail,
+        userPassword: userPassword,
+        userFirstName: userFirstName,
+        userLastName: userLastName,
+        userBirthDate: userBirthDate,
+        userStatus: userStatus,
+        userClass: selectedStudentClassId,
       })
       .then((res) => {
         console.log(res.status);
@@ -131,33 +138,71 @@ const Register = () => {
       });
   };
 
-  const verifInputErrors = (lastname, firstname, email, password, confirmpassword, status, student_class, birthdate) => {
+  const validateEmail = (email, userStatus) => {
+    if (userStatus === "etudiant" || userStatus === "pedago") {
+      if (
+        !email.includes("edu.esiee-it.fr") &&
+        !email.includes("edu.itescia.fr") &&
+        !email.includes("cergy.itin.fr")
+      ) {
+        setErrorEmail(true);
+        setMessageEmail(
+          "L'adresse e-mail doit contenir les domaines edu.esiee-it.fr, edu.itescia.fr ou cergy.itin.fr"
+        );
+        toastFail(
+          "L'adresse e-mail doit contenir les domaines edu.esiee-it.fr, edu.itescia.fr ou cergy.itin.fr"
+        );
+        return false;
+      }
+    }
+    setErrorEmail(false);
+    setMessageEmail("");
+    return true;
+  };
+
+  const verifInputErrors = (
+    lastname,
+    firstname,
+    email,
+    password,
+    confirmpassword,
+    status,
+    student_class,
+    birthdate
+  ) => {
     if (lastname === "") {
-      setErrorLastName(true)
-      setMessageLastName("Le nom est requis")
+      setErrorLastName(true);
+      setMessageLastName("Le nom est requis");
+      toastFail("Le nom est un champ obligatoire");
+    } else {
+      setErrorLastName(false);
+      setMessageLastName("");
     }
-    else {
-      setErrorLastName(false)
-      setMessageLastName("")
-    }
+
     if (firstname === "") {
-      setErrorFirstName(true)
-      setMessageFirstName("Le prénom est requis")
+      setErrorFirstName(true);
+      setMessageFirstName("Le prénom est requis");
+      toastFail("Le prénom est un champ obligatoire");
+    } else {
+      setErrorFirstName(false);
+      setMessageFirstName("");
     }
-    else {
-      setErrorFirstName(false)
-      setMessageFirstName("")
-    }
+
     if (email === "") {
       setErrorEmail(true);
       setMessageEmail("L'adresse email est requis");
-    }
-    else if (regex.test(email)) {
+      toastFail("L'adresse email est un champ obligatoire");
+    } else if (validateEmail(email, status)) {
       setErrorEmail(false);
       setMessageEmail("");
     } else {
       setErrorEmail(true);
-      setMessageEmail("L'adresse mail que vous avez rentrés n'est pas conforme. Celle-ci doit  par @edu.esiee-it.fr");
+      setMessageEmail(
+        "L'adresse mail que vous avez rentrée n'est pas conforme. Celle-ci doit inclure les domaines edu.esiee-it.fr, edu.itescia.fr ou cergy.itin.fr"
+      );
+      toastFail(
+        "L'adresse email doit contenir les domaines edu.esiee-it.fr, edu.itescia.fr ou cergy.itin.fr"
+      );
     }
 
     if (password === "") {
@@ -170,9 +215,9 @@ const Register = () => {
       toastFail("Le mot de passe doit comporter plus de 6 caractères");
     } else if (password.length > 24) {
       setErrorPassword(true);
-      setMessagePassword("Le mot de passe ne peut pas dépasser plus de 24 caractères");
-    }
-    else {
+      setMessagePassword("Le mot de passe ne peut pas dépasser 24 caractères");
+      toastFail("Le mot de passe ne peut pas dépasser 24 caractères");
+    } else {
       setErrorPassword(false);
       setMessagePassword("");
     }
@@ -184,47 +229,70 @@ const Register = () => {
     } else if (password !== confirmpassword) {
       setErrorConfirmPassword(true);
       setMessageConfirmPassword("Le mot de passe ne correspond pas");
-    }
-    else {
-      setErrorConfirmPassword(false)
+      toastFail(
+        "Le mot de passe ne correspond pas au mot de passe que vous avez saisi"
+      );
+    } else {
+      setErrorConfirmPassword(false);
       setMessageConfirmPassword("");
     }
 
     if (status === "") {
       setErrorStatus(true);
       setMessageStatus("Choisissez le statut");
-    } else if (student_class === "etudiant" && !regex.test(email)) {
-      setErrorStatus(true)
+      toastFail("Veuillez renseigner votre statut au sein de l'école");
+    } else if (student_class === "etudiant" && !validateEmail(email, status)) {
+      setErrorStatus(true);
       setMessageEmail("Courriel edu introuvable");
-    }
-    else {
-      setErrorStatus(false)
+      toastFail("Courriel edu introuvable");
+    } else {
+      setErrorStatus(false);
       setMessageStatus("");
     }
 
     if (status === "etudiant" && student_class === "") {
-      setErrorClass(true)
-      setMessageClass("Indiquez votre classe")
-    }
-    else {
+      setErrorClass(true);
+      setMessageClass("Indiquez votre classe");
+      toastFail("Choisissez votre classe");
+    } else {
       setErrorClass(false);
       setMessageClass("");
     }
 
     if (birthdate === "") {
-      setErrorBirthDate(true)
-      setMessageBirthDate("La date de naissance est requis");
-    }
-    else {
-      setErrorBirthDate(false)
+      setErrorBirthDate(true);
+      setMessageBirthDate("La date de naissance est requise");
+      toastFail("Le champ de la date de naissance est obligatoire");
+    } else {
+      setErrorBirthDate(false);
       setMessageBirthDate("");
     }
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    await register();
-    verifInputErrors(userLastName, userFirstName, userEmail, userPassword, userConfirmPassword, userStatus, userClass, userBirthDate);
+    verifInputErrors(
+      userLastName,
+      userFirstName,
+      userEmail,
+      userPassword,
+      userConfirmPassword,
+      userStatus,
+      selectedStudentClassId,
+      userBirthDate
+    );
+    if (
+      !errorLastName &&
+      !errorFirstName &&
+      !errorEmail &&
+      !errorPassword &&
+      !errorConfirmPassword &&
+      !errorStatus &&
+      !errorClass &&
+      !errorBirthDate
+    ) {
+      await register();
+    }
   };
 
   const handleDateChange = (event) => {
@@ -248,7 +316,10 @@ const Register = () => {
 
   return (
     <div className="register">
-      <div className="register-header" style={{ backgroundColor: theme.palette.background.container }}>
+      <div
+        className="register-header"
+        style={{backgroundColor: theme.palette.background.container}}
+      >
         <div className="container-register">
           <Typography
             component="h1"
@@ -287,7 +358,7 @@ const Register = () => {
                 defaultValue={userLastName}
                 onChange={(e) => setUserLastName(e.target.value)}
                 sx={{
-                  input: { color: 'text.primary' }
+                  input: {color: "text.primary"},
                 }}
                 error={errorLastName}
                 helperText={messageLastName}
@@ -319,7 +390,7 @@ const Register = () => {
                 error={errorFirstName}
                 helperText={messageFirstName}
                 sx={{
-                  input: { color: 'text.primary' }
+                  input: {color: "text.primary"},
                 }}
               />
             </Container>
@@ -350,7 +421,7 @@ const Register = () => {
                 error={errorEmail}
                 helperText={messageEmail}
                 sx={{
-                  input: { color: 'text.primary' }
+                  input: {color: "text.primary"},
                 }}
               />
             </Container>
@@ -375,7 +446,7 @@ const Register = () => {
                 type="date"
                 fullWidth
                 sx={{
-                  input: { color: 'text.primary' },
+                  input: {color: "text.primary"},
                 }}
                 id="input-birthdate"
                 value={userBirthDate ? format(userBirthDate, "yyyy-MM-dd") : ""}
@@ -410,7 +481,7 @@ const Register = () => {
                 defaultValue={userPassword}
                 onChange={(e) => setUserPassword(e.target.value)}
                 sx={{
-                  input: { color: 'text-primary' }
+                  input: {color: "text-primary"},
                 }}
                 error={errorPassword}
                 helperText={messagePassword}
@@ -442,17 +513,30 @@ const Register = () => {
                 defaultValue={userConfirmPassword}
                 onChange={(e) => setUserConfirmPassword(e.target.value)}
                 sx={{
-                  input: { color: 'text.primary' }
+                  input: {color: "text.primary"},
                 }}
                 error={errorConfirmPassword}
                 helperText={messageConfirmPassword}
               />
             </Container>
 
-            <Container sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-              <FormControl sx={{ m: 1, minWidth: 120 }} error={errorStatus}>
-                <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
-                <Select variant="filled" id="input-status" sx={{ color: 'text.primary' }} label="Status" value={userStatus} onChange={(e) => setUserStatus(e.target.value)}>
+            <Container
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <FormControl sx={{m: 1, minWidth: 120}} error={errorStatus}>
+                <InputLabel>Status</InputLabel>
+                <Select
+                  variant="filled"
+                  id="input-status"
+                  sx={{color: "text.primary"}}
+                  label="Status"
+                  value={userStatus}
+                  onChange={(e) => setUserStatus(e.target.value)}
+                >
                   <MenuItem value="etudiant">Étudiant</MenuItem>
                   <MenuItem value="po">PO</MenuItem>
                   <MenuItem value="pedago">Pedago</MenuItem>
@@ -462,20 +546,25 @@ const Register = () => {
                 )}
               </FormControl>
               {userStatus === "etudiant" ? (
-
-                <FormControl sx={{ m: 1, minWidth: 120 }} error={errorClass}>
-                  <InputLabel id="demo-simple-select-helper-label">Classe</InputLabel>
-                  <Select variant="filled" id="input-class" sx={{ color: 'text.primary' }} value={userClass} onChange={(e) => setUserClass(e.target.value)}>
-                    <MenuItem value="L1-paris">L1-Paris</MenuItem>
-                    <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
-                    <MenuItem value="L2-paris">L2-Paris</MenuItem>
-                    <MenuItem value="L2-cergy">L2-Cergy</MenuItem>
-                    <MenuItem value="L3-paris">L3-Paris</MenuItem>
-                    <MenuItem value="L3-cergy">L3-Cergy</MenuItem>
-                    <MenuItem value="M1-lead">M1-LeadDev</MenuItem>
-                    <MenuItem value="M1-gaming">M1-Gaming</MenuItem>
-                    <MenuItem value="M2-lead">M2-LeadDev</MenuItem>
-                    <MenuItem value="M2-gaming">M2-Gaming</MenuItem>
+                <FormControl sx={{m: 1, minWidth: 120}} error={errorClass}>
+                  <Select
+                    value={selectedStudentClass}
+                    onChange={(event) => {
+                      setSelectedStudentClass(event.target.value);
+                      const selectedClass = allclass.find(
+                        (coursClass) => coursClass.name === event.target.value
+                      );
+                      setSelectedStudentClassId(
+                        selectedClass ? selectedClass.id : ""
+                      );
+                    }}
+                    displayEmpty
+                    renderValue={(value) => value || "Classe"}
+                  >
+                    <MenuItem value="">Choissisez votre classe</MenuItem>
+                    {allclass.map((promo) => (
+                      <MenuItem value={promo.name}>{promo.name}</MenuItem>
+                    ))}
                   </Select>
                   {errorClass && (
                     <FormHelperText>{messageClass}</FormHelperText>
@@ -495,7 +584,8 @@ const Register = () => {
               <Button
                 sx={{
                   backgroundColor: "#7a52e1",
-                  color: 'white'
+                  color: "white",
+                  margin: "15px",
                 }}
                 variant="contained"
                 id="btn-register"
@@ -507,7 +597,14 @@ const Register = () => {
             </div>
           </form>
           <div className="text-xs font-medium text-center m-3">
-            <p style={{ color: theme.palette.text.primary, fontWeight: "bold" }} >Vous avez déjà un compte ?
+            <Typography
+              style={{
+                color: theme.palette.text.primary,
+                fontWeight: "bold",
+                margin: "10px",
+              }}
+            >
+              Vous avez déjà un compte ?
               <Link
                 href="/login"
                 sx={{

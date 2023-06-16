@@ -1,4 +1,4 @@
-import { yupResolver } from "@hookform/resolvers/yup";
+import {yupResolver} from "@hookform/resolvers/yup";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
@@ -11,14 +11,14 @@ import {
   InputLabel,
   Typography,
 } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+import {useTheme} from "@mui/material/styles";
 import axios from "axios";
 import PropTypes from "prop-types";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 import "react-pdf/dist/esm/Page/TextLayer.css";
-import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import {Document, Page} from "react-pdf";
 import * as yup from "yup";
 import "./PdfView.scss";
 

@@ -6,7 +6,7 @@ function PdfGenerator() {
   const generatePdf = async () => {
     try {
       const response = await fetch(
-        "http://localhost:5050/inventory/pdfGenerator"
+        `${process.env.REACT_APP_SERVER_API}/inventory/pdfGenerator`
       );
       console.log("Réponse du serveur :", response);
 

@@ -432,10 +432,12 @@ const InventoryAdminDashboard = () => {
       let response;
 
       if (value === "all") {
-        response = await fetch("http://localhost:5050/inventory/pdfGenerator");
+        response = await fetch(
+          `${process.env.REACT_APP_SERVER_API}/inventory/pdfGenerator`
+        );
       } else {
         response = await fetch(
-          `http://localhost:5050/inventory/generatePdf/${value}`
+          `${process.env.REACT_APP_SERVER_API}/inventory/generatePdf/${value}`
         );
       }
 

@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Box,
   SwipeableDrawer,
@@ -8,21 +8,21 @@ import {
   TextField,
   Button,
 } from "@mui/material";
-import { Rings } from "react-loader-spinner";
-import { Typography } from "@material-ui/core";
+import {Rings} from "react-loader-spinner";
+import {Typography} from "@material-ui/core";
 import CloseIcon from "@mui/icons-material/Close";
-import { EditorState } from "draft-js";
-import { toast } from "react-hot-toast";
+import {EditorState} from "draft-js";
+import {toast} from "react-hot-toast";
 import Stepper from "@mui/material/Stepper";
 import Step from "@mui/material/Step";
 import StepButton from "@mui/material/StepButton";
 import Markdown from "./Markdown";
-import MDEditor, { commands } from "@uiw/react-md-editor";
+import MDEditor, {commands} from "@uiw/react-md-editor";
 import useFirebase from "../../../hooks/useFirebase";
-import { da } from "date-fns/locale";
+import {da} from "date-fns/locale";
 import Autocomplete from "@mui/material/Autocomplete";
 
-export default function NewTuto2({ open, toggleDrawerModify }) {
+export default function NewTuto2({open, toggleDrawerModify}) {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(true);
@@ -31,7 +31,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
   const [titleStep, setTitleStep] = useState([]);
   const [valueMarkdown, setValueMarkdown] = useState("**Hello world!!!**");
   const [markdownStepsInfo, setMarkdownStepsInfo] = useState([]);
-  const { user } = useFirebase();
+  const {user} = useFirebase();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -41,7 +41,9 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
 
   const fetchTags = async () => {
     try {
-      const response = await axios.get("http://localhost:5050/blog/tag");
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API}/blog/tag`
+      );
       const tags = response.data;
       setTags(tags);
     } catch (error) {
@@ -193,7 +195,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
   const help = {
     name: "help",
     keyCommand: "help",
-    buttonProps: { "aria-label": "Insert help" },
+    buttonProps: {"aria-label": "Insert help"},
     icon: (
       <svg viewBox="0 0 16 16" width="12px" height="12px">
         <path
@@ -230,7 +232,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
     formData.append("tutoData", JSON.stringify(data));
     try {
       const response = await axios.post(
-        "http://localhost:5050/blog/tuto",
+        `http${process.env.REACT_APP_SERVER_API}/blog/tuto`,
         formData,
         {
           headers: {
@@ -274,14 +276,14 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
           <CloseIcon />
         </IconButton>
         {showForm ? (
-          <form onSubmit={handleFormSubmit} style={{ width: "80%" }}>
+          <form onSubmit={handleFormSubmit} style={{width: "80%"}}>
             <TextField
               type="text"
               label="Titre"
               fullWidth
               value={title}
               onChange={(event) => setTitle(event.target.value)}
-              sx={{ mb: 2 }}
+              sx={{mb: 2}}
             />
             <TextField
               type="text"
@@ -289,10 +291,10 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
               fullWidth
               value={description}
               onChange={(event) => setDescription(event.target.value)}
-              sx={{ mb: 2 }}
+              sx={{mb: 2}}
             />
             <Autocomplete
-              sx={{ mb: 2 }}
+              sx={{mb: 2}}
               multiple
               id="tags"
               options={tags}
@@ -317,8 +319,8 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
               label="Nombre de parties"
               value={numSteps}
               onChange={handleNumStepsChange}
-              inputProps={{ min: 1, max: 10 }}
-              sx={{ width: 150 }}
+              inputProps={{min: 1, max: 10}}
+              sx={{width: 150}}
             />
             <Box
               sx={{
@@ -327,7 +329,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
               }}
             >
               {[...Array(numSteps)].map((_, index) => (
-                <Box key={index} sx={{ m: 2 }}>
+                <Box key={index} sx={{m: 2}}>
                   <Typography variant="h6" component="h2" gutterBottom>
                     Partie {index + 1}
                   </Typography>
@@ -341,7 +343,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
             </Box>
             <Box marginTop={2}>
               <TextField
-                sx={{ marginBottom: 2 }}
+                sx={{marginBottom: 2}}
                 id="outlined-search"
                 type="file"
                 accept="image/png, image/jpeg"
@@ -367,8 +369,8 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
                     sx={{
                       height: 300,
                       width: 350,
-                      maxHeight: { xs: 233, md: 167 },
-                      maxWidth: { xs: 350, md: 250 },
+                      maxHeight: {xs: 233, md: 167},
+                      maxWidth: {xs: 350, md: 250},
                     }}
                     alt="preview Miniature"
                     src={previewImage}
@@ -381,7 +383,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
             </Button>
           </form>
         ) : (
-          <Box sx={{ width: "100%" }}>
+          <Box sx={{width: "100%"}}>
             <Stepper nonLinear activeStep={activeStep}>
               {titleStep.map((label, index) => (
                 <Step key={label} completed={completed[index]}>
@@ -394,19 +396,19 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
             <div>
               {allStepsCompleted() ? (
                 <>
-                  <Typography sx={{ mt: 2, mb: 1 }}>
+                  <Typography sx={{mt: 2, mb: 1}}>
                     Vous avez terminé de créer votre tutoriel, cliquez sur
                     publier pour le mettre en ligne
                   </Typography>
-                  <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
-                    <Box sx={{ flex: "1 1 auto" }} />
+                  <Box sx={{display: "flex", flexDirection: "row", pt: 2}}>
+                    <Box sx={{flex: "1 1 auto"}} />
                     <Button onClick={handleCancel}>Recommencer</Button>
                     <Button onClick={handleReset}>Publier</Button>
                   </Box>
                 </>
               ) : (
                 <>
-                  <Typography sx={{ mt: 2, mb: 1, py: 1 }}>
+                  <Typography sx={{mt: 2, mb: 1, py: 1}}>
                     Étape {activeStep + 1} {titleStep[activeStep]}
                     <div data-color-mode="light">
                       <MDEditor
@@ -417,24 +419,24 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
                       />
                     </div>
                   </Typography>
-                  <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                  <Box sx={{display: "flex", flexDirection: "row", pt: 2}}>
                     <Button
                       color="inherit"
                       disabled={activeStep === 0}
                       onClick={handleBack}
-                      sx={{ mr: 1 }}
+                      sx={{mr: 1}}
                     >
                       Précédent
                     </Button>
-                    <Box sx={{ flex: "1 1 auto" }} />
-                    <Button onClick={handleNext} sx={{ mr: 1 }}>
+                    <Box sx={{flex: "1 1 auto"}} />
+                    <Button onClick={handleNext} sx={{mr: 1}}>
                       Suivant
                     </Button>
                     {activeStep !== titleStep.length &&
                       (completed[activeStep] ? (
                         <Typography
                           variant="caption"
-                          sx={{ display: "inline-block" }}
+                          sx={{display: "inline-block"}}
                         >
                           Étape {activeStep + 1} déjà complétée
                         </Typography>
@@ -464,7 +466,7 @@ export default function NewTuto2({ open, toggleDrawerModify }) {
             open={open}
             onClose={(e) => toggleDrawerModify(e, false)}
             onOpen={(e) => toggleDrawerModify(e, true)}
-            {...{ PaperProps: { style: { width: "90%" } } }}
+            {...{PaperProps: {style: {width: "90%"}}}}
           >
             {tutoInfo()}
           </Drawer>

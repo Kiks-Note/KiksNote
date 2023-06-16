@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -8,7 +8,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { Radar } from "react-chartjs-2";
+import {Radar} from "react-chartjs-2";
 import axios from "axios";
 
 function MostParticipantsChart() {
@@ -31,7 +31,7 @@ function MostParticipantsChart() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5050/blog/stats/participant"
+        `${process.env.REACT_APP_SERVER_API}/blog/stats/participant`
       );
       const blogs = response.data;
       const sortedBlogs = blogs.sort((a, b) => b.count - a.count);
@@ -72,7 +72,7 @@ function MostParticipantsChart() {
   const fetchParticipantDetails = async (blogIds) => {
     try {
       const response = await axios.post(
-        "http://localhost:5050/blog/participant",
+        `${process.env.REACT_APP_SERVER_API}/blog/participant`,
         {
           userIds: blogIds,
         }

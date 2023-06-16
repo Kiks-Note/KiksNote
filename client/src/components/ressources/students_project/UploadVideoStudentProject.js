@@ -1,11 +1,11 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, {useState, useRef, useEffect} from "react";
+import {useParams} from "react-router-dom";
 import axios from "axios";
 
-import { Player } from "video-react";
+import {Player} from "video-react";
 import "video-react/dist/video-react.css";
 
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import {
   Button,
   Dialog,
@@ -33,7 +33,7 @@ export const toastFail = (message) => {
 };
 
 const UploadVideoPlayerDialog = (props) => {
-  const { projectid } = useParams();
+  const {projectid} = useParams();
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [selectedVideoUrl, setSelectedVideoUrl] = useState(null);
   const [selectedVideoName, setSelectedVideoName] = useState("");
@@ -59,7 +59,10 @@ const UploadVideoPlayerDialog = (props) => {
       console.log(formData);
 
       await axios
-        .post(`http://localhost:5050/ressources/upload-media-project`, formData)
+        .post(
+          `${process.env.REACT_APP_SERVER_API}/ressources/upload-media-project`,
+          formData
+        )
         .then((res) => {
           console.log(res.data);
           if (

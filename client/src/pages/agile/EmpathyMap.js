@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import Button from "@mui/material/Button";
-import { TextField, Typography } from "@mui/material";
+import {TextField, Typography} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
 import PostIt from "../../components/agile/PostIt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import axios from "axios";
-import { w3cwebsocket } from "websocket";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {w3cwebsocket} from "websocket";
+import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 import html2pdf from "html2pdf.js";
 
 import "../../components/agile/Postit.scss";
@@ -34,24 +34,26 @@ const taskStatus = {
     items: [],
   },
 };
-export default function EmpathyMap({ dashboardId, actorId }) {
+export default function EmpathyMap({dashboardId, actorId}) {
   const [columns, setColumns] = useState(taskStatus);
   const [showTextField, setShowTextField] = useState(false);
   const [newPostItContent, setNewPostItContent] = useState("");
   const [selectedColumnId, setSelectedColumnId] = useState(null);
-  
-  useEffect(()=>{
-    const wsComments = new w3cwebsocket(`ws://localhost:5050/empathy`);
+
+  useEffect(() => {
+    const wsComments = new w3cwebsocket(
+      `${process.env.REACT_APP_SERVER_API_WS}/empathy`
+    );
     // console.log('ws', wsComments);
     console.log(dashboardId);
     // wsComments.onopen = function (e) {
     //   wsComments.send(JSON.stringify({dashboardId: dashboardId, actorId: actorId}));
     // };
 
-    wsComments.onmessage = (message) =>{
-      console.log('msg-empathy', JSON.parse(message));
-    }
-  },[]);
+    wsComments.onmessage = (message) => {
+      console.log("msg-empathy", JSON.parse(message));
+    };
+  }, []);
 
   const onDragEnd = (result, columns, setColumns) => {
     if (!result.destination) return;
@@ -114,7 +116,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
 
   //!TODO
   const addPostIt = (columnId) => {
-    // axios.put("http://localhost:5050/agile/" + dashboardId + "/empathy_map", {
+    // axios.put(`${process.env.REACT_APP_SERVER_API}/agile/` + dashboardId + "/empathy_map", {
     //   content: newPostItContent,
     // });
     const newPostIt = {
@@ -141,7 +143,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
   const deletePostIt = async () => {
     try {
       await axios.delete(
-        "http://localhost:5050/agile/" +
+        `${process.env.REACT_APP_SERVER_API}/agile/` +
           dashboardId +
           "/empathy/:id" +
           "/postit/"
@@ -153,7 +155,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
   //!TODO
   async function changeCardIndex(newColumns) {
     await axios.put(
-      "http://localhost:5050/agile/" +
+      `${process.env.REACT_APP_SERVER_API}/agile/` +
         dashboardId +
         "/empathy/:id" +
         "/setPostit",
@@ -177,9 +179,9 @@ export default function EmpathyMap({ dashboardId, actorId }) {
     const opt = {
       margin: [0, 0, 0, 0],
       filename: "empathy-map.pdf",
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+      image: {type: "jpeg", quality: 0.98},
+      html2canvas: {scale: 2},
+      jsPDF: {unit: "in", format: "letter", orientation: "portrait"},
     };
 
     //html2pdf().set(opt).from(element).save();
@@ -196,11 +198,14 @@ export default function EmpathyMap({ dashboardId, actorId }) {
         const formData = new FormData();
         formData.append(
           "pdfFile",
-          new Blob([buffer], { type: "application/pdf" }),
+          new Blob([buffer], {type: "application/pdf"}),
           "empathy-map.pdf"
         );
 
-        return axios.post("http://localhost:5050/agile/empathy_map", formData);
+        return axios.post(
+          `${process.env.REACT_APP_SERVER_API}/agile/empathy_map`,
+          formData
+        );
       })
       .then((response) => {
         console.log("PDF envoyé avec succès !");
@@ -212,7 +217,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
 
   return (
     <>
-      <div style={{ margin: 2 }}>
+      <div style={{margin: 2}}>
         <Button variant="contained" onClick={exportToPDF}>
           Exporter mon EmpathyMap
         </Button>
@@ -266,7 +271,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
                       aria-label="Add"
                       color="primary"
                       size="small"
-                      style={{ marginLeft: "auto" }}
+                      style={{marginLeft: "auto"}}
                       onClick={() => handleClickAddButton(columnId)}
                     >
                       <AddIcon />
@@ -297,7 +302,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
                                 autoFocus
                                 value={newPostItContent}
                                 onChange={handleChange}
-                                style={{ marginRight: "10px" }}
+                                style={{marginRight: "10px"}}
                                 InputProps={{
                                   style: {
                                     color: "#130d6b",

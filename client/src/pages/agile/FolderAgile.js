@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import axios from "axios";
-import { Grid, Button, Typography } from "@material-ui/core";
+import {Grid, Button, Typography} from "@material-ui/core";
 import useFirebase from "../../hooks/useFirebase";
 import "./agile.css";
 
 const FolderAgile = () => {
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState(null);
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false);
@@ -14,7 +14,7 @@ const FolderAgile = () => {
     const fetchFolder = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5050/agile/${user.id}/agile_folder`
+          `${process.env.REACT_APP_SERVER_API}/agile/${user.id}/agile_folder`
         );
         setFolders(response.data);
         console.log(response.data);
@@ -38,7 +38,7 @@ const FolderAgile = () => {
   const handleDownloadContent = (event) => {
     event.stopPropagation();
     // Récupérer les liens des fichiers du dossier sélectionné
-    const { elevator_pitch, impact_mapping, empathy_map, three, personas } =
+    const {elevator_pitch, impact_mapping, empathy_map, three, personas} =
       selectedFolder;
 
     // Créer une liste des liens de fichiers à télécharger
@@ -58,9 +58,9 @@ const FolderAgile = () => {
 
     if (fileLinks.length != 0) {
       // Générer un lien de téléchargement regroupant tous les fichiers
-      const zipLink = `http://localhost:5050/agile/folder?files=${encodeURIComponent(
-        fileLinks.join(",")
-      )}`;
+      const zipLink = `${
+        process.env.REACT_APP_SERVER_API
+      }/agile/folder?files=${encodeURIComponent(fileLinks.join(","))}`;
 
       // Ouvrir le lien de téléchargement dans une nouvelle fenêtre/onglet
       window.open(zipLink, "_blank");

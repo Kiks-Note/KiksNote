@@ -36,7 +36,7 @@ function InventoryStatistics() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5050/inventory/statistics"
+          `${process.env.REACT_APP_SERVER_API}/inventory/statistics`
         );
         console.log("Réponse du serveur:", response);
         const data = await response.json();
@@ -196,7 +196,7 @@ function MostUsedMaterials() {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:5050/inventory/statistics2"
+          `${process.env.REACT_APP_SERVER_API}/inventory/statistics2`
         );
         console.log("Réponse du serveur:", response);
         const data = await response.json();
@@ -322,7 +322,9 @@ function TotalMacCount() {
   useEffect(() => {
     const fetchMacData = async () => {
       try {
-        const response = await fetch("http://localhost:5050/inventory"); // Endpoint pour récupérer toutes les données de la collection "inventory"
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_API}/inventory`
+        ); // Endpoint pour récupérer toutes les données de la collection "inventory"
         const data = await response.json();
 
         // Filtrer les données pour n'inclure que celles avec la variable "category" de type "Mac"

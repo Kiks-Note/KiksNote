@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, {useState, useRef, useEffect, useMemo} from "react";
 import {
   FormControl,
   InputLabel,
@@ -7,31 +7,35 @@ import {
   Button,
   useTheme,
 } from "@mui/material";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import "./Popup.scss";
 import axios from "axios";
 
-export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
+export const PopUp = ({onPopupData, dataPopUp, showPopUp}) => {
   const [classChoose, setClassChoose] = useState(" ");
   const [courseChoosed, setCourseChoosed] = useState({
-    data: { title: "Tous les cours" },
+    data: {title: "Tous les cours"},
   });
 
   const popUpRef = useRef();
   const [courses, setCourses] = useState([]);
 
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const theme = useTheme();
 
   const ws = useMemo(() => {
-    return new w3cwebsocket("ws://localhost:5050/groupes/creation");
+    return new w3cwebsocket(
+      `${process.env.REACT_APP_SERVER_API_WS}/groupes/creation`
+    );
   }, []);
 
   useEffect(() => {
     const getCourse = async () => {
       await axios
-        .get(`http://localhost:5050/ressources/getCoursesByPo/${user.id}`)
+        .get(
+          `${process.env.REACT_APP_SERVER_API}/ressources/getCoursesByPo/${user.id}`
+        )
         .then((res) => {
           setCourses(res.data);
         });
@@ -77,12 +81,12 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         }}
       >
         <p>Paramétrage de la création de groupes</p>
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <FormControl sx={{m: 1, minWidth: 120}}>
           <InputLabel id="demo-simple-select-helper-label">Cours</InputLabel>
           <Select
             variant="filled"
             id="input-class"
-            sx={{ color: "text.primary" }}
+            sx={{color: "text.primary"}}
             renderValue={(selected) => selected.data.title}
             onChange={(e) => {
               setClassChoose(e.target.value.data.courseClass.id);

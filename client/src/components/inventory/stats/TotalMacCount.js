@@ -8,7 +8,9 @@ export default function TotalMacCount() {
   useEffect(() => {
     const fetchMacData = async () => {
       try {
-        const response = await fetch("http://localhost:5050/inventory"); // Endpoint pour récupérer toutes les données de la collection "inventory"
+        const response = await fetch(
+          `${process.env.REACT_APP_SERVER_API}/inventory`
+        ); // Endpoint pour récupérer toutes les données de la collection "inventory"
         const data = await response.json();
 
         // Filtrer les données pour n'inclure que celles avec la variable "category" de type "Mac"

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -11,7 +11,7 @@ import {
   PointElement,
   Filler,
 } from "chart.js";
-import { Doughnut, Line } from "react-chartjs-2";
+import {Doughnut, Line} from "react-chartjs-2";
 import axios from "axios";
 
 function TopCreatorsChart() {
@@ -37,7 +37,7 @@ function TopCreatorsChart() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5050/blog/stats/created_by"
+        `${process.env.REACT_APP_SERVER_API}/blog/stats/created_by`
       );
       const blogs = response.data;
       console.log(blogs);
@@ -96,7 +96,7 @@ function TopCreatorsChart() {
   const fetchUserDetails = async (userIds) => {
     try {
       const response = await axios.post(
-        "http://localhost:5050/blog/participant",
+        `${process.env.REACT_APP_SERVER_API}/blog/participant`,
         {
           userIds: userIds,
         }
