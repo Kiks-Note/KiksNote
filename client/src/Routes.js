@@ -31,7 +31,6 @@ import JpoInfo from "./pages/ressources/jpo/JpoInfo";
 import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
 import StudentsProjects from "./pages/ressources/students_project/StudentsProjects";
 import Retrospective from "./pages/retrospective/Retrospective";
-import RetrospectiveStudent from "./pages/retrospective/RetrospectiveStudent";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
 import Board from "./pages/board_retro/board";
@@ -58,7 +57,7 @@ function RoutesProvider() {
           <Route path="/" element={<Home />} />
           <Route path="/appel/:id" element={<Appel />} />
           <Route path="/presence/:id" element={<Presence />} />
-          <Route path="/groups" element={<Groups />} />
+          <Route path="/groups" element={<GroupsCreation />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
