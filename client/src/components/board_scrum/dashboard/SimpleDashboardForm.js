@@ -10,6 +10,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import Dialog from "@mui/material/Dialog";
 import useFirebase from "../../../hooks/useFirebase";
+
 import {
   Button,
   Grid,
@@ -26,6 +27,7 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import IconButton from "@mui/material/IconButton";
+
 const schema = yup.object().shape({
   sprint_name: yup.string().required("Donnez un nom à votre sprint."),
   group_name: yup.string().required("Donnez un nom à votre groupe."),
@@ -264,7 +266,7 @@ export default function SimpleDashboardForm(props) {
               )}
             </Grid>
           </Grid>
-          <Button variant="contained" type="submit" sx={{ mt: 3, mb: 2 }}>
+          <Button type="submit" sx={{ mt: 3, mb: 2 }}>
             Sauvegarder
           </Button>
         </Box>
