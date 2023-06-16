@@ -42,7 +42,10 @@ export default function SideBarRequest({open, toggleDrawerRequest, device}) {
             startDate: new Date(selectDates[0].startDate),
             endDate: new Date(selectDates[0].endDate),
             requestReason: requestReason,
-            persons: persons.split(",").map((person) => person.trim()) || [],
+            persons:
+              persons.length > 0
+                ? persons.split(",").map((person) => person.trim())
+                : [],
             requesterId: user.id,
             category: device.category,
           }
@@ -51,6 +54,15 @@ export default function SideBarRequest({open, toggleDrawerRequest, device}) {
           console.log(res);
           toast.success("Demande envoyée");
           toggleDrawerRequest(false);
+          setRequestReason("");
+          setPersons([]);
+          setSelectedDates([
+            {
+              startDate: new Date(),
+              endDate: null,
+              key: "selection",
+            },
+          ]);
         })
         .catch((err) => {
           console.log(err);
