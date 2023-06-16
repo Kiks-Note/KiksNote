@@ -32,16 +32,12 @@ import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
 import ConstructionIcon from "@mui/icons-material/Construction";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import AddLinkIcon from "@mui/icons-material/AddLink";
-import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
-import ConstructionIcon from "@mui/icons-material/Construction";
 import DeleteIcon from "@mui/icons-material/Delete";
-import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import SchoolIcon from "@mui/icons-material/School";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import DeleteIcon from "@mui/icons-material/Delete";
 import VideocamIcon from "@mui/icons-material/Videocam";
 import EditIcon from "@mui/icons-material/Edit";
 
@@ -51,8 +47,6 @@ import SkeletonStudentProjectInfo from "../../../components/ressources/students_
 import BlogTutosLinkDialog from "./../../../components/ressources/students_project/BlogTutosLinkDialog";
 import UploadVideoPlayerDialog from "./../../../components/ressources/students_project/UploadVideoStudentProject";
 import UpdateProjectDialog from "./../../../components/ressources/students_project/UpdateStudentProject";
-
-import SkeletonStudentProjectInfo from "../../../components/ressources/students_project/SkeletonStudentProjectInfo";
 
 import "./StudentsProjectsInfo.scss";
 
