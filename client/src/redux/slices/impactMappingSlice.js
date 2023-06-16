@@ -14,37 +14,41 @@ const impactMappingSlice = createSlice({
   reducers: {
     // function to add data to goals tab
     addImpactMappingGoals: (state, action) => {
-      const { text, color } = action.payload;
+      const { text, color, id } = action.payload;
       const newGoal = {
         text: text,
-        color: color || DEFAULT_COLOR, 
+        color: color || DEFAULT_COLOR,
+        id: id
       };
       state.goals.push(newGoal);
     },
     // function to add data to actors tab
     addImpactMappingActors: (state, action) => {
-      const { text, color } = action.payload;
+      const { text, color, id } = action.payload;
       const newActor = {
         text: text,
         color: color || DEFAULT_COLOR,
+        id: id
       };
       state.actors.push(newActor);
     },
     // function to add data to impacts tab
     addImpactMappingImpacts: (state, action) => {
-      const { text, color } = action.payload;
+      const { text, color, id } = action.payload;
       const newImpact = {
         text: text,
         color: color || DEFAULT_COLOR,
+        id: id
       };
       state.impacts.push(newImpact);
     },
     // function to add data to deliverables tab
     addImpactMappingDeliverables: (state, action) => {
-      const { text, color } = action.payload;
+      const { text, color, id } = action.payload;
       const newDeliverable = {
         text: text,
         color: color || DEFAULT_COLOR,
+        id: id
       };
       state.deliverables.push(newDeliverable);
     },
@@ -96,6 +100,16 @@ const impactMappingSlice = createSlice({
         color: color || state.deliverables[index].color,
       };
       state.deliverables[index] = updatedDeliverable;
+    },
+    setImpactMapping: (state, action) => {
+      const { goals, actors, impacts, deliverables } = action.payload;
+      return {
+        ...state,
+        goals: goals,
+        actors: actors,
+        impacts: impacts,
+        deliverables: deliverables
+      };
     }
   },
 });
@@ -114,6 +128,7 @@ export const {
   editImpactMappingActor,
   editImpactMappingImpact,
   editImpactMappingDeliverable,
+  setImpactMapping
 } = impactMappingSlice.actions;
 
 export default impactMappingSlice.reducer;

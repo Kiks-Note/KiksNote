@@ -9,11 +9,17 @@ const {
   getStudentProjectById,
   getAllStudentsProjects,
   createStudentProject,
+  uploadMediaProject,
   refStudentProject,
+  removeRefStudentProject,
   createLinkedBlogTuto,
+  removeLinkedBlogTuto,
+  updateStudentProject,
+  deleteStudentProject,
 } = require("./controllers/studentsProjects");
 
 module.exports = function () {
+  // Routes Students Projects
   router.get("/students", getAllStudents);
   router.get("/student/:id", getStudentById);
   router.get("/blogstutos", getBlogTutorials);
@@ -21,7 +27,12 @@ module.exports = function () {
   router.get("/studentsprojects/:id", getStudentProjectById);
   router.get("/students-projects", getAllStudentsProjects);
   router.post("/students-projects", createStudentProject);
+  router.post("/upload-media-project", uploadMediaProject);
   router.post("/refprojects", refStudentProject);
+  router.post("/removerefprojects", removeRefStudentProject);
   router.post("/linkblogtuto/:projectId", createLinkedBlogTuto);
+  router.put("/student-project/:projectId", updateStudentProject);
+  router.delete("/student-project", deleteStudentProject);
+  router.delete("/linkblogtuto/:projectId", removeLinkedBlogTuto);
   return router;
 };

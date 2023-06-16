@@ -1,7 +1,8 @@
 import TextField from "@mui/material/TextField";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import {format} from "date-fns";
+import { format } from "date-fns";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   InputLabel,
   Input,
@@ -28,29 +29,14 @@ function ProfilFormUpdate({onClose, user}) {
   const [description, setDescription] = useState(user.description);
   const [classe, setClasse] = useState(user.class);
   const [programmationLanguage, setProgrammationLanguage] = useState();
-  const [programmationLanguages, setProgrammationLanguages] = useState(
-    user.programmationLanguage
-  );
+  const [programmationLanguages, setProgrammationLanguages] = useState(user.programmationLanguage);
 
   const [discordName, setDiscordName] = useState(user.discord);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
-  const mustClass = [
-    {value: "L1-paris", label: "L1-Paris"},
-    {value: "L1-cergy", label: "L1-Cergy"},
-    {value: "L2-paris", label: "L2-Paris"},
-    {value: "L2-cergy", label: "L2-Cergy"},
-    {value: "L3-paris", label: "L3-Paris"},
-    {value: "L3-cergy", label: "L3-Cergy"},
-    {value: "M1-lead", label: "M1-LeadDev"},
-    {value: "M1-gaming", label: "M1-Gaming"},
-    {value: "M2-lead", label: "M2-LeadDev"},
-    {value: "M2-gaming", label: "M2-Gaming"},
-  ];
 
   /// VALIDATION && REGEX FORM
   const PHONE_NUMBER_REGEX = /^\d{10}$/;
-  const GITHUB_LINK_REGEX =
-    /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+$/;
+  const GITHUB_LINK_REGEX = /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+$/;
 
   const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/;
 
@@ -100,31 +86,21 @@ function ProfilFormUpdate({onClose, user}) {
   };
 
   const handleButtonClick = () => {
-    if (
-      typeof programmationLanguage === "string" &&
-      programmationLanguage.trim() !== ""
-    ) {
+    if (typeof programmationLanguage === "string" && programmationLanguage.trim() !== "") {
       if (
         !programmationLanguages.some(
-          (language) =>
-            typeof language === "string" &&
-            language.toLowerCase() === programmationLanguage.toLowerCase()
+          (language) => typeof language === "string" && language.toLowerCase() === programmationLanguage.toLowerCase()
         ) &&
         programmationLanguages.length < 5
       ) {
-        setProgrammationLanguages([
-          ...programmationLanguages,
-          programmationLanguage,
-        ]);
+        setProgrammationLanguages([...programmationLanguages, programmationLanguage]);
         setProgrammationLanguage("");
       }
     }
   };
 
   const handleDelete = (languageToDelete) => {
-    setProgrammationLanguages(
-      programmationLanguages.filter((language) => language !== languageToDelete)
-    );
+    setProgrammationLanguages(programmationLanguages.filter((language) => language !== languageToDelete));
   };
 
   const handleOnChange = async (event) => {
@@ -166,18 +142,8 @@ function ProfilFormUpdate({onClose, user}) {
               }}
             >
               {image && (
-                <IconButton
-                  color="indefined"
-                  aria-label="upload picture"
-                  component="label"
-                >
-                  <input
-                    hidden
-                    type="file"
-                    onChange={handleOnChange}
-                    name="image"
-                    accept="image/png,image/jpeg"
-                  />
+                <IconButton color="indefined" aria-label="upload picture" component="label">
+                  <input hidden type="file" onChange={handleOnChange} name="image" accept="image/png,image/jpeg" />
                   <Avatar
                     src={image}
                     style={{
@@ -188,17 +154,12 @@ function ProfilFormUpdate({onClose, user}) {
                 </IconButton>
               )}
               {!image && (
-                <IconButton
-                  color="indefined"
-                  aria-label="upload picture"
-                  component="label"
-                >
+                <IconButton color="indefined" aria-label="upload picture" component="label">
                   <input
                     hidden
                     {...register("image", {
                       validate: {
-                        lessThan10MB: (file) =>
-                          file[0]?.size < 10000000 || "Max 10MB",
+                        lessThan10MB: (file) => file[0]?.size < 10000000 || "Max 10MB",
                       },
                     })}
                     type="file"
@@ -230,246 +191,195 @@ function ProfilFormUpdate({onClose, user}) {
               )}
             </Box>
           </Grid>
-          <Grid item xs={12}>
-            <InputLabel id="description">Description *</InputLabel>
-            <TextareaAutosize
-              id="description"
-              aria-describedby="description"
-              name="description"
-              onChange={(e) => setDescription(e.target.value)}
-              minRows={2}
-              maxRows={4}
-              style={{
-                width: "100%",
-                background: "transparent",
-                border: "1px solid",
-                borderRadius: "10px",
-              }}
-              {...register("description", {
-                value: description,
-                required: true,
-              })}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <InputLabel id="label_date_birthday">
-              Date de naissance *
-            </InputLabel>
-            <TextField
-              id="date"
-              type="date"
-              name="dateBirthday"
-              onChange={handleDateChange}
-              sx={{width: 220}}
-              InputLabelProps={{
-                shrink: true,
-              }}
-              {...register("dateBirthday", {
-                value: dateBirthday ? format(dateBirthday, "yyyy-MM-dd") : "",
-                required: true,
-              })}
-            />
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Box sx={{ display: "flex" }}>
+              <Box sx={{ miWwidth: "50%" }}>
+                <Grid item xs={12}>
+                  <InputLabel id="description">Description *</InputLabel>
+                  <TextareaAutosize
+                    id="description"
+                    aria-describedby="description"
+                    name="description"
+                    onChange={(e) => setDescription(e.target.value)}
+                    minRows={2}
+                    maxRows={4}
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      border: "1px solid",
+                      borderRadius: "10px",
+                    }}
+                    {...register("description", {
+                      value: description,
+                      required: true,
+                    })}
+                  />
+                </Grid>
+              </Box>
+              <Box>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel id="phonenumber"> Numéro de téléphone * </InputLabel>
+                  <Input
+                    id="phonenumber"
+                    aria-describedby="phoneNumber"
+                    name="phoneNumber"
+                    {...register("phoneNumber", {
+                      required: true,
+                      value: phoneNumber,
+                      pattern: {
+                        value: PHONE_NUMBER_REGEX,
+                        message: "Le format du numéro est incorrect",
+                      },
+                    })}
+                  />
 
-            {errors.dateBirthday && (
-              <Typography variant="subtitle1" color="error">
-                {errors.dateBirthday.message}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <InputLabel id="phonenumber"> Numéro de téléphone * </InputLabel>
-            <Input
-              id="phonenumber"
-              aria-describedby="phoneNumber"
-              name="phoneNumber"
-              {...register("phoneNumber", {
-                required: true,
-                value: phoneNumber,
-                pattern: {
-                  value: PHONE_NUMBER_REGEX,
-                  message: "Le format du numéro est incorrect",
-                },
-              })}
-            />
+                  {errors.phoneNumber && (
+                    <Typography variant="subtitle1" color="error">
+                      {errors.phoneNumber.message}
+                    </Typography>
+                  )}
+                </Grid>
 
-            {errors.phoneNumber && (
-              <Typography variant="subtitle1" color="error">
-                {errors.phoneNumber.message}
-              </Typography>
-            )}
-          </Grid>
-          {user && user.status === "etudiant" && (
-            <Grid item xs={12} sm={6}>
-              <InputLabel id="select-class">Classe *</InputLabel>
-              <Select
-                name="classe"
-                id="class"
-                onChange={(e) => setClasse(e.target.value)}
-                defaultValue={classe}
-                sx={{width: 320}}
-                {...register("class", {value: classe, required: true})}
-              >
-                {mustClass.map((option) => (
-                  <MenuItem key={option.value} value={option.value}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </Grid>
-          )}
+                <Grid item xs={12} sm={6}>
+                  <InputLabel id="ProgrammationLanguage-name">Langage de Programmation Favori</InputLabel>
+                  <TextField
+                    id="ProgrammationLanguage-name"
+                    aria-describedby="ProgrammationLanguage"
+                    name="ProgrammationLanguage"
+                    value={programmationLanguage}
+                    onChange={(e) => setProgrammationLanguage(e.target.value)}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    disabled={!programmationLanguage}
+                    onClick={handleButtonClick}
+                  >
+                    Ajouter
+                  </Button>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    {programmationLanguages.map((language) => (
+                      <Chip
+                        key={language}
+                        label={language}
+                        onDelete={() => handleDelete(language)}
+                        style={{ margin: "2px" }}
+                      />
+                    ))}
+                  </div>
+                </Grid>
 
-          <Grid item xs={12} sm={6}>
-            <InputLabel id="ProgrammationLanguage-name">
-              Langage de Programmation Favori
-            </InputLabel>
-            <TextField
-              id="ProgrammationLanguage-name"
-              aria-describedby="ProgrammationLanguage"
-              name="ProgrammationLanguage"
-              value={programmationLanguage}
-              onChange={(e) => setProgrammationLanguage(e.target.value)}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              disabled={!programmationLanguage}
-              onClick={handleButtonClick}
-            >
-              Ajouter
-            </Button>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                flexWrap: "wrap",
-              }}
-            >
-              {programmationLanguages.map((language) => (
-                <Chip
-                  key={language}
-                  label={language}
-                  onDelete={() => handleDelete(language)}
-                  style={{margin: "2px"}}
-                />
-              ))}
-            </div>
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <InputLabel id="github-link"> Lien GitHub </InputLabel>
-            <Input
-              id="github-link"
-              type="text"
-              name="gitLink"
-              onChange={(e) => setGitLink(e.target.value)}
-              {...register("gitLink", {
-                value: gitLink,
-                pattern: {
-                  value: GITHUB_LINK_REGEX,
-                  message: "Le format du lien GitHub est incorrect",
-                },
-              })}
-            />
-            {errors.gitLink && (
-              <Typography variant="subtitle1" color="error">
-                {errors.gitLink.message}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <InputLabel id="discord-name"> Discord </InputLabel>
-            <Input
-              id="discord-name"
-              type="text"
-              name="discordName"
-              aria-describedby="discordName"
-              onChange={(e) => setDiscordName(e.target.value)}
-              {...register("discordName", {
-                value: discordName,
-              })}
-            />
-            {errors.discordName && (
-              <Typography variant="subtitle1" color="error">
-                {errors.discordName.message}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <InputLabel id="linkedin-name"> Linkedin </InputLabel>
-            <Input
-              id="linkedin-name"
-              aria-describedby="linkedin"
-              onChange={(e) => setLinkedin(e.target.value)}
-              type="text"
-              name="linkedin"
-              {...register("linkedin", {
-                value: linkedin,
-                pattern: {
-                  value: LINKEDIN_REGEX,
-                  message: "Le format du lien linkedin est incorrect",
-                },
-              })}
-            />
-            {errors.linkedin && (
-              <Typography variant="subtitle1" color="error">
-                {errors.linkedin.message}
-              </Typography>
-            )}
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <InputLabel id="compagny-name">Nom Entreprise </InputLabel>
-            <Input
-              id="compagny-name"
-              aria-describedby="CompagnyName"
-              name="company"
-              onChange={(e) => setCompany(e.target.value)}
-              {...register("company", {
-                value: company,
-              })}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <InputLabel id="job">Poste Pourvu </InputLabel>
-            <Input
-              id="job"
-              aria-describedby="job"
-              name="job"
-              onChange={(e) => setJob(e.target.value)}
-              {...register("job", {
-                value: job,
-              })}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                flexDirection: "row ",
-                justifyContent: "space-evenly",
-              }}
-            >
-              <Button
-                variant="contained"
-                color="success"
-                type="submit"
-                disabled={isSubmitting}
-                sx={{mt: 3, mb: 2}}
-              >
-                Mettre à jour
-              </Button>
-              <Button
-                variant="contained"
-                color="error"
-                sx={{mt: 3, mb: 2}}
-                type="button"
-                onClick={onClose}
-              >
-                Annuler
-              </Button>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel id="github-link"> Lien GitHub </InputLabel>
+                  <Input
+                    id="github-link"
+                    type="text"
+                    name="gitLink"
+                    onChange={(e) => setGitLink(e.target.value)}
+                    {...register("gitLink", {
+                      value: gitLink,
+                      pattern: {
+                        value: GITHUB_LINK_REGEX,
+                        message: "Le format du lien GitHub est incorrect",
+                      },
+                    })}
+                  />
+                  {errors.gitLink && (
+                    <Typography variant="subtitle1" color="error">
+                      {errors.gitLink.message}
+                    </Typography>
+                  )}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel id="discord-name"> Discord </InputLabel>
+                  <Input
+                    id="discord-name"
+                    type="text"
+                    name="discordName"
+                    aria-describedby="discordName"
+                    onChange={(e) => setDiscordName(e.target.value)}
+                    {...register("discordName", {
+                      value: discordName,
+                    })}
+                  />
+                  {errors.discordName && (
+                    <Typography variant="subtitle1" color="error">
+                      {errors.discordName.message}
+                    </Typography>
+                  )}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel id="linkedin-name"> Linkedin </InputLabel>
+                  <Input
+                    id="linkedin-name"
+                    aria-describedby="linkedin"
+                    onChange={(e) => setLinkedin(e.target.value)}
+                    type="text"
+                    name="linkedin"
+                    {...register("linkedin", {
+                      value: linkedin,
+                      pattern: {
+                        value: LINKEDIN_REGEX,
+                        message: "Le format du lien linkedin est incorrect",
+                      },
+                    })}
+                  />
+                  {errors.linkedin && (
+                    <Typography variant="subtitle1" color="error">
+                      {errors.linkedin.message}
+                    </Typography>
+                  )}
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel id="compagny-name">Nom Entreprise </InputLabel>
+                  <Input
+                    id="compagny-name"
+                    aria-describedby="CompagnyName"
+                    name="company"
+                    onChange={(e) => setCompany(e.target.value)}
+                    {...register("company", {
+                      value: company,
+                    })}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <InputLabel id="job">Poste Pourvu </InputLabel>
+                  <Input
+                    id="job"
+                    aria-describedby="job"
+                    name="job"
+                    onChange={(e) => setJob(e.target.value)}
+                    {...register("job", {
+                      value: job,
+                    })}
+                  />
+                </Grid>
+              </Box>
             </Box>
-          </Grid>
+            <Grid item xs={12}>
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  flexDirection: "row ",
+                  justifyContent: "space-evenly",
+                }}
+              >
+                <Button variant="contained" color="success" type="submit" disabled={isSubmitting} sx={{ mt: 3, mb: 2 }}>
+                  Mettre à jour
+                </Button>
+                <Button variant="contained" color="error" sx={{ mt: 3, mb: 2 }} type="button" onClick={onClose}>
+                  Annuler
+                </Button>
+              </Box>
+            </Grid>
+          </Box>
         </Grid>
       </Box>
     </>

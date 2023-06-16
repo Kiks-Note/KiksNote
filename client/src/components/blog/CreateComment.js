@@ -6,11 +6,12 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import {useState} from "react";
 import axios from "axios";
+import useFirebase from "../../hooks/useFirebase";
 
 export default function CreateComment({tutoId}) {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState("");
-
+  const { user } = useFirebase();
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -20,16 +21,20 @@ export default function CreateComment({tutoId}) {
   };
 
   const handlePublish = async () => {
-    axios
-      .post(`${process.env.REACT_APP_SERVER_API}/blog/${tutoId}/comments`, {
+    try {
+      const response = await axios.put(`${process.env.REACT_APP_SERVER_API}/blog/comments`, {
+        id: tutoId,
+        userId: user.id,
         message,
-      })
-      .then(function () {})
-      .catch(function (error) {
-        throw error;
       });
 
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    }
+
     setOpen(false);
+    setMessage("");
   };
 
   const handleClose = () => {

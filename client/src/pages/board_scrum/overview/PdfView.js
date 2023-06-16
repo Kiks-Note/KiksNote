@@ -1,25 +1,25 @@
-import axios from "axios";
-import React, {useState, useEffect} from "react";
-import {useForm} from "react-hook-form";
-import {yupResolver} from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 import FileDownloadIcon from "@mui/icons-material/FileDownload";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
-import {useTheme} from "@mui/material/styles";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import {
-  InputLabel,
-  Input,
-  Button,
-  IconButton,
   Box,
+  Button,
   Grid,
+  IconButton,
+  Input,
+  InputLabel,
   Typography,
 } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import axios from "axios";
 import PropTypes from "prop-types";
-import {Document, Page} from "react-pdf/dist/esm/entry.webpack";
-import "react-pdf/dist/esm/Page/TextLayer.css";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
+import "react-pdf/dist/esm/Page/TextLayer.css";
+import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import * as yup from "yup";
 import "./PdfView.scss";
 
 PdfView.propTypes = {

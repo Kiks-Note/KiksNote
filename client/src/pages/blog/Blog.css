@@ -1,0 +1,37 @@
+/* WYNSIG*/
+
+.rdw-dropdown-selectedtext {
+  color: black;
+  margin: 0;
+}
+
+.rdw-dropdownoption-default {
+  color: black;
+}
+
+.rdw-colorpicker-modal-style-label {
+  color: black;
+}
+
+.rdw-link-modal-label {
+  color: black;
+}
+
+.rdw-link-modal-target-option {
+  color: black;
+}
+
+.rdw-embedded-modal {
+  color: black;
+}
+
+.container_detail_blog {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: space-evenly;
+}
+
+.detail_blog_content {
+  width: 100%;
+}

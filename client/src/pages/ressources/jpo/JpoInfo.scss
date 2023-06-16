@@ -1,0 +1,83 @@
+.jpo-left-side-section {
+    display: flex;
+    flex-direction: column;
+    width: 55%;
+    padding: 30px;
+    padding-top: 0;
+}
+
+.list-students-project-linked {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.img-name-project-link-jpo-page {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.jpo-right-side-section {
+    display: flex;
+    flex-direction: column;
+    width: 45%;
+    justify-content: center;
+    align-items: center;
+}
+
+.jpo-details-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 30px;
+}
+
+.head-jpo-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 40px;
+}
+
+.jpo-info-image {
+    width: 50%;
+}
+
+.jpoinfo-sections {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: 100%;
+}
+
+.project-img {
+    width: 15%;
+}
+
+.jpo-pdf {
+    width: 90%;
+}
+
+.no-project-linked {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.button-project {
+    display: flex;
+    padding: 10px;
+    align-items: center;
+    justify-content: space-around;
+    min-width: 350px;
+}
+
+//disable button open file in react pdf viewer
+.rpv-open__input-wrapper {
+    display: none;
+}

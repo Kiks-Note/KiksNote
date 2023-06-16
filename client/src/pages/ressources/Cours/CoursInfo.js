@@ -1,7 +1,7 @@
-import {useEffect, useState, useCallback} from "react";
-import {useParams, useNavigate} from "react-router-dom";
-import {useForm} from "react-hook-form";
-import {toast, ToastContainer} from "react-toastify";
+import { useEffect, useState, useCallback } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { toast, ToastContainer } from "react-toastify";
 import moment from "moment";
 
 import useFirebase from "../../../hooks/useFirebase";
@@ -23,9 +23,15 @@ import {
   CardContent,
   Chip,
   Avatar,
+  Skeleton,
+  CardMedia,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
 } from "@mui/material";
 
-import UpdateCoursDialog from "./UpdateCoursDialog";
+import UpdateCoursDialog from "./../../../components/ressources/cours/UpdateCoursDialog";
+import CoursLinkDialog from "./../../../components/ressources/cours/CoursLinkDialog";
 
 import {makeStyles} from "@mui/styles";
 import EditIcon from "@mui/icons-material/Edit";
@@ -36,10 +42,19 @@ import CallRoundedIcon from "@mui/icons-material/CallRounded";
 import SchoolIcon from "@mui/icons-material/School";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
+import LaptopChromebookIcon from "@mui/icons-material/LaptopChromebook";
+import PublicIcon from "@mui/icons-material/Public";
+import LockIcon from "@mui/icons-material/Lock";
+import AddLinkIcon from "@mui/icons-material/AddLink";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import GroupIcon from "@mui/icons-material/Group";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
 import "./CoursInfo.scss";
 import "react-toastify/dist/ReactToastify.css";
+import SkeletonCoursInfoLeft from "../../../components/ressources/cours/SkeletonCoursInfoLeft";
+import SkeletonCoursInfoRight from "../../../components/ressources/cours/SkeletonCoursInfoRight";
 
 const useStyles = makeStyles({
   updateButton: {
@@ -85,6 +100,8 @@ const CoursInfo = () => {
   const {id} = useParams();
   const navigate = useNavigate();
 
+  const [allcourses, setCourses] = useState([]);
+
   const [coursData, setCoursData] = useState([]);
   const [coursTitle, setCoursTitle] = useState("");
   const [courseDateStart, setCourseDateStart] = useState("");
@@ -101,6 +118,8 @@ const CoursInfo = () => {
   const [openCours, setOpenCours] = useState(false);
   const [openBacklog, setOpenBacklog] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [openLink, setOpenLink] = useState(false);
+
   const [openDelete, setOpenDelete] = useState(false);
   const [fileCours, setFileCours] = useState(null);
   const [fileBacklog, setFileBacklog] = useState(null);
@@ -116,7 +135,13 @@ const CoursInfo = () => {
     mode: "onTouched",
   });
 
+  const [loading, setLoading] = useState(true);
+
   const classes = useStyles();
+
+  /*
+    get an Array of all PO then put it in allPo
+ */
 
   const getAllInstructors = async () => {
     try {
@@ -133,6 +158,10 @@ const CoursInfo = () => {
     }
   };
 
+  /*
+    get an Array of all classes then put it in allclass
+ */
+
   const getAllClass = async () => {
     try {
       await axios
@@ -147,6 +176,10 @@ const CoursInfo = () => {
       console.error(error);
     }
   };
+
+  /*
+    get an Array of the cours data, an Arry of cours pdf and an Array of backlog pdf using the cours id then put them in coursData, pdfLinkCours and pdfLinkBacklog
+ */
 
   const getCoursId = async () => {
     try {
@@ -165,6 +198,33 @@ const CoursInfo = () => {
     }
   };
 
+  /*
+    get an Array of all cours then put it in courses
+ */
+
+  const getAllCours = async () => {
+    try {
+      await axios
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/cours`)
+        .then((res) => {
+          setCourses(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  /*
+    set a formData with the pdf cours file, 
+    the class of the cours, 
+    the title of the cours,
+    and the id of the cours 
+    then post it to the database
+ */
+
   const uploadCoursPdf = async () => {
     try {
       const formData = new FormData();
@@ -181,7 +241,7 @@ const CoursInfo = () => {
           if (res.status === 200) {
             toastSuccess(`Votre pdf cours a bien été uploadé`);
             handleCloseCoursDialog();
-            window.location.reload();
+            getCoursId(id);
           }
         })
         .catch((err) => {
@@ -195,6 +255,14 @@ const CoursInfo = () => {
       toastFail(`Le pdf que vous essayez d'uploader rencontre un problème.`);
     }
   };
+
+  /*
+    set a formData with the pdf backlog file, 
+    the class of the cours, 
+    the title of the cours,
+    and the id of the cours 
+    then post it to the database
+ */
 
   const uploadBacklogPdf = async () => {
     try {
@@ -213,7 +281,7 @@ const CoursInfo = () => {
           if (res.status === 200) {
             toastSuccess(`Votre pdf backlog a bien été uploadé`);
             handleCloseBacklogDialog();
-            window.location.reload();
+            getCoursId(id);
           }
         })
         .catch((err) => {
@@ -227,6 +295,10 @@ const CoursInfo = () => {
       toastFail(`Le pdf que vous essayez d'uploader rencontre un problème.`);
     }
   };
+
+  /*
+    delete the cours pdf using courseClass, title, fileName, pdfLinkCours and courseId
+ */
 
   const deleteCoursPdf = (
     courseClass,
@@ -247,7 +319,7 @@ const CoursInfo = () => {
       .then((res) => {
         if (res.status === 200) {
           toastSuccess(`Votre fichier cours ${fileName} a bien été supprimé`);
-          window.location.reload();
+          getCoursId(id);
         }
       })
       .catch((err) => {
@@ -258,7 +330,11 @@ const CoursInfo = () => {
       });
   };
 
-  const deleteBackLogPdf = (
+  /*
+    delete the backlog pdf using courseClass, title, fileName, pdfLinkBackLog and courseId
+ */
+
+  const deleteBackLogPdf = async (
     courseClass,
     title,
     fileName,
@@ -267,26 +343,35 @@ const CoursInfo = () => {
   ) => {
     const data = {courseClass, title, fileName, pdfLinkBackLog, courseId};
 
-    return axios
-      .delete(
+    try {
+      const res = await axios.delete(
         `${process.env.REACT_APP_SERVER_API}/ressources/backlog/delete-pdf`,
-        {
-          data,
-        }
-      )
-      .then((res) => {
-        if (res.status === 200) {
-          toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
-          window.location.reload();
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-        toastFail(
-          `Le fichier ${fileName} que vous essayez de supprimer rencontre un problème.`
-        );
-      });
+        { data }
+      );
+      if (res.status === 200) {
+        toastSuccess(`Votre fichier ${fileName} a bien été supprimé`);
+        getCoursId(id);
+      }
+    } catch (err) {
+      console.log(err);
+      toastFail(
+        `Le fichier ${fileName} que vous essayez de supprimer rencontre un problème.`
+      );
+    }
   };
+
+  /*
+    update the cours data using 
+    title (String),
+    description (String),
+    dateStartSprint (Date),
+    dateEndSprint (Date),
+    distanciel (String),
+    coursClass (String),
+    owner (String),
+    coursPrivate (String),
+    imageBase64 (String)
+ */
 
   const updateCours = async (
     title,
@@ -315,7 +400,7 @@ const CoursInfo = () => {
         .then((res) => {
           if (res.status === 200) {
             toastSuccess(`Votre cours ${coursTitle} a bien été modifié`);
-            window.location.reload();
+            getCoursId(id);
           }
         })
         .catch((error) => {
@@ -328,6 +413,13 @@ const CoursInfo = () => {
       throw error;
     }
   };
+
+  /*
+    delete the cours using 
+    cours_id (String),
+    courseClass (String),
+    title (String)
+ */
 
   const deleteCours = async (cours_id, courseClass, title) => {
     try {
@@ -347,6 +439,38 @@ const CoursInfo = () => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const deleteLinkedCours = async (cours_id, linkedCourseName, courseName) => {
+    try {
+      await axios
+        .delete(`${process.env.REACT_APP_SERVER_API}/ressources/linkcours/${cours_id}`)
+        .then((res) => {
+          if (
+            res.status === 200 &&
+            res.data === "Le cours lié a été supprimé avec succès."
+          ) {
+            toastSuccess(
+              `Le cours lié ${linkedCourseName} n'est plus lié avec le cours ${courseName}`
+            );
+          }
+          getCoursId(id);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleClickOpenLinkCoursDialog = () => {
+    setOpenLink(true);
+    getAllCours();
+  };
+
+  const handleCloseCoursLinkDialog = () => {
+    setOpenLink(false);
   };
 
   const handleClickOpenCoursDialog = () => {
@@ -434,7 +558,7 @@ const CoursInfo = () => {
   const deleteCompleteCours = () => {
     deleteCours(id, coursData.courseClass, coursData.title);
     navigate("/cours");
-    window.location.reload();
+    getAllCours();
   };
 
   const onSubmit = async () => {
@@ -458,8 +582,15 @@ const CoursInfo = () => {
   };
 
   useEffect(() => {
-    getCoursId();
-  }, []);
+    getCoursId(id)
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+      });
+  }, [id]);
 
   return (
     <>
@@ -482,589 +613,813 @@ const CoursInfo = () => {
               padding: "50px",
             }}
           >
-            <h1>{coursData.title}</h1>
+            <h1>
+              {coursData.title || (
+                <>
+                  <Skeleton width={100} />
+                </>
+              )}
+            </h1>
             <Divider variant="middle" />
             <div className="main-cours-container">
-              <div className="cours-left-side-container">
-                <h2>Description</h2>
-                <Divider />
-                <p className="p-description-coursinfo">
-                  {coursData.description}
-                </p>
-                <h2>Contenu du Cours</h2>
-                <Divider />
-                <div className="list-course-pdf">
-                  {coursePdfUploaded === true ? (
-                    pdfLinksCours.length === 0 ? (
+              {loading ? (
+                <>
+                  <SkeletonCoursInfoLeft />
+                </>
+              ) : (
+                <>
+                  <div className="cours-left-side-container">
+                    <h2>Description</h2>
+                    <Divider />
+                    <p className="p-description-coursinfo">
+                      {coursData.description}
+                    </p>
+                    {coursData?.linkedCourse !== undefined ? (
                       <>
-                        <p className="text-center p-5 font-bold">
-                          Aucun cours uploader pour le moment par le PO
-                        </p>
-                        <img
-                          className="no-class-img"
-                          src={uploadFile}
-                          alt="no-cours-uploaded"
-                        />
-                      </>
-                    ) : (
-                      pdfLinksCours.map((pdfLink, index) => (
-                        <Card
-                          key={index}
-                          sx={{
-                            width: "100%",
-                            marginBottom: "20px",
-                          }}
-                        >
-                          <CardContent
+                        <h2>Cours Liée</h2>
+                        <Divider />
+                        <div style={{ display: "flex", margin: "20px" }}>
+                          <Card
                             sx={{
-                              display: "flex",
-                              justifyContent: "space-around",
                               width: "100%",
-                              alignItems: "center",
+                              display: "flex",
+                              flexDirection: "row",
                             }}
                           >
-                            <h4 style={{flexGrow: 1}}>{pdfLink.name}</h4>
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              size="small"
-                              sx={{
-                                color: "white",
-                                fontWeight: "bold",
-                                backgroundColor: "#45b3e0",
-                                marginRight: "20px",
-                                "&:hover": {
-                                  backgroundColor: "#1f8dba",
-                                },
+                            <CardMedia
+                              component="img"
+                              src={coursData?.linkedCourse.imageCourseUrl}
+                              alt="course image"
+                              style={{
+                                objectFit: "contain",
+                                objectPosition: "center",
+                                width: "30%",
+                                minHeight: "10%",
+                                padding: "20px",
                               }}
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                handleDownload(pdfLink.url);
-                              }}
-                            >
-                              <DownloadIcon />
-                            </Button>
-                            {userStatus === "etudiant" ? (
-                              ""
-                            ) : (
-                              <>
-                                <Button
-                                  variant="contained"
-                                  color="primary"
-                                  size="small"
-                                  sx={{
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    backgroundColor: "#ff0000",
-                                    "&:hover": {
-                                      backgroundColor: "#a60000",
-                                    },
-                                  }}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    deleteCoursPdf(
-                                      coursData.courseClass,
-                                      coursData.title,
-                                      pdfLink.name,
-                                      pdfLink.url,
-                                      id
-                                    );
-                                  }}
-                                >
-                                  <DeleteIcon />
-                                </Button>
-                              </>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))
-                    )
-                  ) : (
-                    <>
-                      <p className="text-center p-5 font-bold">
-                        Aucun backlog uploader pour le moment par le PO
-                      </p>
-                      <img
-                        className="no-class-img"
-                        src={uploadFile}
-                        alt="no-backlog-uploaded"
-                      />
-                    </>
-                  )}
-                  {userStatus === "etudiant" ? (
-                    ""
-                  ) : (
-                    <>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          width: "100%",
-                        }}
-                      >
-                        <Button
-                          sx={{
-                            color: "white",
-                            fontWeight: "bold",
-                            backgroundColor: "#df005a",
-                            "&:hover": {
-                              backgroundColor: "#c81776",
-                            },
-                          }}
-                          onClick={handleClickOpenCoursDialog}
-                          startIcon={<UploadIcon />}
-                        >
-                          Upload Cours
-                        </Button>
-                        <Dialog
-                          open={openCours}
-                          onClose={handleCloseCoursDialog}
-                        >
-                          <DialogTitle>Upload Cours PDF</DialogTitle>
-                          <DialogContent>
-                            <DialogContentText>
-                              Choissisez votre fichier PDF à upload
-                            </DialogContentText>
-                            <input
-                              type="file"
-                              onChange={handleFileChangeCours}
                             />
-                          </DialogContent>
-                          <DialogActions>
-                            <Button onClick={handleCloseCoursDialog}>
-                              Cancel
-                            </Button>
-                            <Button
-                              onClick={handleUploadCoursPdf}
-                              disabled={!fileCours}
-                            >
-                              Upload
-                            </Button>
-                          </DialogActions>
-                        </Dialog>
-                      </div>
-                    </>
-                  )}
-                </div>
-                <h2>Contenu du BackLog</h2>
-                <Divider />
-                <div className="list-course-pdf">
-                  {backlogCoursePdfUploaded === true ? (
-                    pdfLinksBacklog.length === 0 ? (
-                      <>
-                        <p className="text-center p-5 font-bold">
-                          Aucun backlog uploader pour le moment par le PO
-                        </p>
-                        <img
-                          className="no-class-img"
-                          src={uploadFile}
-                          alt="no-backlog-uploaded"
-                        />
-                      </>
-                    ) : (
-                      pdfLinksBacklog.map((pdfLink, index) => (
-                        <Card
-                          key={index}
-                          sx={{
-                            width: "100%",
-                            marginBottom: "20px",
-                          }}
-                        >
-                          <CardContent
-                            sx={{
-                              display: "flex",
-                              justifyContent: "space-around",
-                              width: "100%",
-                              alignItems: "center",
-                            }}
-                          >
-                            <h4 style={{flexGrow: 1}}>{pdfLink.name}</h4>
-                            <Button
-                              variant="contained"
-                              color="primary"
-                              size="small"
+                            <CardContent
                               sx={{
-                                color: "white",
-                                fontWeight: "bold",
-                                backgroundColor: "#45b3e0",
-                                marginRight: "20px",
-                                "&:hover": {
-                                  backgroundColor: "#1f8dba",
-                                },
-                              }}
-                              onClick={(event) => {
-                                event.stopPropagation();
-                                handleDownload(pdfLink.url);
+                                display: "flex",
+                                justifyContent: "space-between",
+                                width: "100%",
+                                alignItems: "center",
                               }}
                             >
-                              <DownloadIcon />
-                            </Button>
-                            {userStatus === "etudiant" ? (
-                              ""
-                            ) : (
-                              <>
-                                <Button
-                                  variant="contained"
-                                  color="primary"
-                                  size="small"
-                                  sx={{
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    backgroundColor: "#ff0000",
-                                    "&:hover": {
-                                      backgroundColor: "#a60000",
-                                    },
-                                  }}
-                                  onClick={(event) => {
-                                    event.stopPropagation();
-                                    deleteBackLogPdf(
-                                      coursData.courseClass,
-                                      coursData.title,
-                                      pdfLink.name,
-                                      pdfLink.url,
-                                      id
-                                    );
-                                  }}
-                                >
-                                  <DeleteIcon />
-                                </Button>
-                              </>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))
-                    )
-                  ) : (
-                    <>
-                      <p className="text-center p-5 font-bold">
-                        Aucun backlog uploader pour le moment par le PO
-                      </p>
-                      <img
-                        className="no-class-img"
-                        src={uploadFile}
-                        alt="no-backlog-uploaded"
-                      />
-                    </>
-                  )}
-                  {userStatus === "etudiant" ? (
-                    ""
-                  ) : (
-                    <>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          width: "100%",
-                        }}
-                      >
-                        <Button
-                          sx={{
-                            color: "white",
-                            fontWeight: "bold",
-                            backgroundColor: "#df005a",
-                            "&:hover": {
-                              backgroundColor: "#c81776",
-                            },
-                          }}
-                          onClick={handleClickOpenBacklogDialog}
-                          startIcon={<UploadIcon />}
-                        >
-                          Upload BackLog
-                        </Button>
-                        <Dialog
-                          open={openBacklog}
-                          onClose={handleCloseBacklogDialog}
-                        >
-                          <DialogTitle>Upload Backlog PDF</DialogTitle>
-                          <DialogContent>
-                            <DialogContentText>
-                              Veuillez upload votre fichier pdf que vous
-                              souhaitez.
-                            </DialogContentText>
-                            <input
-                              type="file"
-                              onChange={handleFileChangeBacklog}
-                            />
-                          </DialogContent>
-                          <DialogActions>
-                            <Button onClick={handleCloseBacklogDialog}>
-                              Annuler
-                            </Button>
-                            <Button
-                              onClick={handleUploadBackLogPdf}
-                              disabled={!fileBacklog}
-                            >
-                              Uploader
-                            </Button>
-                          </DialogActions>
-                        </Dialog>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="cours-right-side-container">
-                <img
-                  style={{
-                    borderTopRightRadius: "10px",
-                  }}
-                  src={coursData.imageCourseUrl}
-                  alt="course-img"
-                />
-                <div className="display-date">
-                  <h4 className="h4-data-cours-info">
-                    <CalendarTodayIcon />
-                    Date début de Sprint :{" "}
-                  </h4>
-                  <p className="pl-2">
-                    {coursData?.dateStartSprint &&
-                      coursData.dateStartSprint._seconds &&
-                      moment
-                        .unix(coursData.dateStartSprint._seconds)
-                        .format("DD.MM.YYYY")}
-                  </p>
-                </div>
-                <div className="display-date">
-                  <h4 className="h4-data-cours-info">
-                    <EventBusyIcon />
-                    Date fin de Sprint :{" "}
-                  </h4>
-                  <p className="pl-2">
-                    {coursData?.dateEndSprint &&
-                      coursData.dateEndSprint._seconds &&
-                      moment
-                        .unix(coursData.dateEndSprint._seconds)
-                        .format("DD.MM.YYYY")}
-                  </p>
-                </div>
-                <h2
-                  style={{
-                    marginTop: "10px",
-                  }}
-                  variant="h6"
-                >
-                  Classe concernée
-                </h2>
-                <Divider />
-                <div
-                  style={{
-                    display: "flex",
-                    height: "7%",
-                    alignItems: "center",
-                  }}
-                >
-                  <Chip
-                    sx={{
-                      display: "flex",
-                      padding: "10px",
-                      width: "40%",
-                      alignItems: "center",
-                    }}
-                    label={
-                      <>
-                        <div style={{display: "flex"}}>
-                          {coursData &&
-                            coursData.courseClass &&
-                            coursData.courseClass.name && (
-                              <>
-                                <Typography>
-                                  {coursData.courseClass.name}
-                                </Typography>
-                                <SchoolIcon />
-                              </>
-                            )}
+                              <h4
+                                style={{
+                                  width: "60%",
+                                  wordBreak: "break-all",
+                                  whiteSpace: "normal",
+                                }}
+                              >
+                                {coursData?.linkedCourse.title}
+                              </h4>
+                              <Button
+                                onClick={(event) => {
+                                  event.stopPropagation();
+                                  navigate(
+                                    `/coursinfo/${coursData?.linkedCourse.id}`
+                                  );
+                                }}
+                                sx={{
+                                  bgcolor: "#94258c",
+                                  fontWeight: "bold",
+                                  color: "white",
+                                  mr: 1,
+                                }}
+                                className={classes.updateButton}
+                              >
+                                Cours Relié
+                                <OpenInNewIcon />
+                              </Button>
+                              {userStatus === "po" ? (
+                                <>
+                                  <Button
+                                    onClick={(event) => {
+                                      event.stopPropagation();
+                                      deleteLinkedCours(
+                                        coursData?.linkedCourse?.id,
+                                        coursData?.linkedCourse?.title,
+                                        coursData?.title
+                                      );
+                                    }}
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    sx={{
+                                      color: "white",
+                                      fontWeight: "bold",
+                                      backgroundColor: "#ff0000",
+                                      "&:hover": {
+                                        backgroundColor: "#a60000",
+                                      },
+                                    }}
+                                  >
+                                    <DeleteIcon />
+                                  </Button>
+                                </>
+                              ) : (
+                                <></>
+                              )}
+                            </CardContent>
+                          </Card>
                         </div>
                       </>
-                    }
-                  ></Chip>
-                </div>
-                <h2
-                  style={{
-                    marginTop: "0px",
-                  }}
-                  variant="h6"
-                >
-                  Products Owner / Pedago
-                </h2>
-                <Divider />
-                <Chip
-                  avatar={
-                    <Avatar
-                      alt={
-                        coursData?.owner?.lastname.toUpperCase() +
-                        "" +
-                        coursData?.owner?.firstname +
-                        "photo-profile"
-                      }
-                      src={coursData?.data?.owner?.image}
-                    />
-                  }
-                  variant="outlined"
-                  label={
-                    <>
-                      <Typography>
-                        {coursData?.owner?.lastname.toUpperCase()}{" "}
-                        {coursData?.owner?.firstname}
-                      </Typography>
-                    </>
-                  }
-                ></Chip>
-                <h2
-                  style={{
-                    marginTop: "10px",
-                  }}
-                  variant="h6"
-                >
-                  Détails / Actions
-                </h2>
-                <Divider />
-                <div className="details-actions-container">
-                  <div className="display-campus-num">
-                    <h4 className="h4-data-cours-info">Campus Numérique : </h4>
-                    <p className="is-campus-num">
-                      {coursData.campus_numerique === false ? "Non" : "Oui"}
-                    </p>
+                    ) : (
+                      <div></div>
+                    )}
+                    <h2>Contenu du Cours</h2>
+                    <Divider />
+                    <div className="list-course-pdf">
+                      {coursePdfUploaded === true ? (
+                        pdfLinksCours.length === 0 ? (
+                          <>
+                            <p className="text-center p-5 font-bold">
+                              Aucun cours uploader pour le moment par le PO
+                            </p>
+                            <img
+                              className="no-class-img"
+                              src={uploadFile}
+                              alt="no-cours-uploaded"
+                            />
+                          </>
+                        ) : (
+                          pdfLinksCours.map((pdfLink, index) => (
+                            <Card
+                              key={index}
+                              sx={{
+                                width: "100%",
+                                marginBottom: "20px",
+                              }}
+                            >
+                              <CardContent
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-around",
+                                  width: "100%",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <h4
+                                  style={{
+                                    width: "70%",
+                                    wordBreak: "break-all",
+                                    whiteSpace: "normal",
+                                  }}
+                                >
+                                  {pdfLink.name}
+                                </h4>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  size="small"
+                                  sx={{
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    backgroundColor: "#45b3e0",
+                                    marginRight: "20px",
+                                    "&:hover": {
+                                      backgroundColor: "#1f8dba",
+                                    },
+                                  }}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleDownload(pdfLink.url);
+                                  }}
+                                >
+                                  <DownloadIcon />
+                                </Button>
+                                {userStatus === "etudiant" ? (
+                                  ""
+                                ) : (
+                                  <>
+                                    <Button
+                                      variant="contained"
+                                      color="primary"
+                                      size="small"
+                                      sx={{
+                                        color: "white",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#ff0000",
+                                        "&:hover": {
+                                          backgroundColor: "#a60000",
+                                        },
+                                      }}
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        deleteCoursPdf(
+                                          coursData.courseClass,
+                                          coursData.title,
+                                          pdfLink.name,
+                                          pdfLink.url,
+                                          id
+                                        );
+                                      }}
+                                    >
+                                      <DeleteIcon />
+                                    </Button>
+                                  </>
+                                )}
+                              </CardContent>
+                            </Card>
+                          ))
+                        )
+                      ) : (
+                        <>
+                          <p className="text-center p-5 font-bold">
+                            Aucun backlog uploader pour le moment par le PO
+                          </p>
+                          <img
+                            className="no-class-img"
+                            src={uploadFile}
+                            alt="no-backlog-uploaded"
+                          />
+                        </>
+                      )}
+                      {userStatus === "etudiant" ? (
+                        ""
+                      ) : (
+                        <>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              width: "100%",
+                            }}
+                          >
+                            <Button
+                              sx={{
+                                color: "white",
+                                fontWeight: "bold",
+                                backgroundColor: "#df005a",
+                                "&:hover": {
+                                  backgroundColor: "#c81776",
+                                },
+                              }}
+                              onClick={handleClickOpenCoursDialog}
+                              startIcon={<UploadIcon />}
+                            >
+                              Upload Cours
+                            </Button>
+                            <Dialog
+                              open={openCours}
+                              onClose={handleCloseCoursDialog}
+                            >
+                              <DialogTitle>Upload Cours PDF</DialogTitle>
+                              <DialogContent>
+                                <DialogContentText>
+                                  Choissisez votre fichier PDF à upload
+                                </DialogContentText>
+                                <input
+                                  type="file"
+                                  onChange={handleFileChangeCours}
+                                />
+                              </DialogContent>
+                              <DialogActions>
+                                <Button onClick={handleCloseCoursDialog}>
+                                  Cancel
+                                </Button>
+                                <Button
+                                  onClick={handleUploadCoursPdf}
+                                  disabled={!fileCours}
+                                >
+                                  Upload
+                                </Button>
+                              </DialogActions>
+                            </Dialog>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <h2>Contenu du BackLog</h2>
+                    <Divider />
+                    <div className="list-course-pdf">
+                      {backlogCoursePdfUploaded === true ? (
+                        pdfLinksBacklog.length === 0 ? (
+                          <>
+                            <p className="text-center p-5 font-bold">
+                              Aucun backlog uploader pour le moment par le PO
+                            </p>
+                            <img
+                              className="no-class-img"
+                              src={uploadFile}
+                              alt="no-backlog-uploaded"
+                            />
+                          </>
+                        ) : (
+                          pdfLinksBacklog.map((pdfLink, index) => (
+                            <Card
+                              key={index}
+                              sx={{
+                                width: "100%",
+                                marginBottom: "20px",
+                              }}
+                            >
+                              <CardContent
+                                sx={{
+                                  display: "flex",
+                                  justifyContent: "space-around",
+                                  width: "100%",
+                                  alignItems: "center",
+                                }}
+                              >
+                                <h4
+                                  style={{
+                                    width: "70%",
+                                    wordBreak: "break-all",
+                                    whiteSpace: "normal",
+                                  }}
+                                >
+                                  {pdfLink.name}
+                                </h4>
+                                <Button
+                                  variant="contained"
+                                  color="primary"
+                                  size="small"
+                                  sx={{
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    backgroundColor: "#45b3e0",
+                                    marginRight: "20px",
+                                    "&:hover": {
+                                      backgroundColor: "#1f8dba",
+                                    },
+                                  }}
+                                  onClick={(event) => {
+                                    event.stopPropagation();
+                                    handleDownload(pdfLink.url);
+                                  }}
+                                >
+                                  <DownloadIcon />
+                                </Button>
+                                {userStatus === "etudiant" ? (
+                                  ""
+                                ) : (
+                                  <>
+                                    <Button
+                                      variant="contained"
+                                      color="primary"
+                                      size="small"
+                                      sx={{
+                                        color: "white",
+                                        fontWeight: "bold",
+                                        backgroundColor: "#ff0000",
+                                        "&:hover": {
+                                          backgroundColor: "#a60000",
+                                        },
+                                      }}
+                                      onClick={(event) => {
+                                        event.stopPropagation();
+                                        deleteBackLogPdf(
+                                          coursData.courseClass,
+                                          coursData.title,
+                                          pdfLink.name,
+                                          pdfLink.url,
+                                          id
+                                        );
+                                      }}
+                                    >
+                                      <DeleteIcon />
+                                    </Button>
+                                  </>
+                                )}
+                              </CardContent>
+                            </Card>
+                          ))
+                        )
+                      ) : (
+                        <>
+                          <p className="text-center p-5 font-bold">
+                            Aucun backlog uploader pour le moment par le PO
+                          </p>
+                          <img
+                            className="no-class-img"
+                            src={uploadFile}
+                            alt="no-backlog-uploaded"
+                          />
+                        </>
+                      )}
+                      {userStatus === "etudiant" ? (
+                        ""
+                      ) : (
+                        <>
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              width: "100%",
+                            }}
+                          >
+                            <Button
+                              sx={{
+                                color: "white",
+                                fontWeight: "bold",
+                                backgroundColor: "#df005a",
+                                "&:hover": {
+                                  backgroundColor: "#c81776",
+                                },
+                              }}
+                              onClick={handleClickOpenBacklogDialog}
+                              startIcon={<UploadIcon />}
+                            >
+                              Upload BackLog
+                            </Button>
+                            <Dialog
+                              open={openBacklog}
+                              onClose={handleCloseBacklogDialog}
+                            >
+                              <DialogTitle>Upload Backlog PDF</DialogTitle>
+                              <DialogContent>
+                                <DialogContentText>
+                                  Veuillez upload votre fichier pdf que vous
+                                  souhaitez.
+                                </DialogContentText>
+                                <input
+                                  type="file"
+                                  onChange={handleFileChangeBacklog}
+                                />
+                              </DialogContent>
+                              <DialogActions>
+                                <Button onClick={handleCloseBacklogDialog}>
+                                  Annuler
+                                </Button>
+                                <Button
+                                  onClick={handleUploadBackLogPdf}
+                                  disabled={!fileBacklog}
+                                >
+                                  Uploader
+                                </Button>
+                              </DialogActions>
+                            </Dialog>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </div>
-                  <div className="display-cours-status">
-                    <h4 className="h4-data-cours-info">Statut du cours : </h4>
-                    <p className="is-public">
-                      {coursData.private === false ? "Public" : "Privé"}
-                    </p>
-                  </div>
-                  {userStatus === "po" ? (
-                    <>
-                      <Button
-                        startIcon={<CallRoundedIcon />}
-                        sx={{
-                          backgroundColor: "#009800",
-                          color: "#ffffff",
+                </>
+              )}
+              {loading ? (
+                <>
+                  <SkeletonCoursInfoRight />
+                </>
+              ) : (
+                <>
+                  <div className="cours-right-side-container">
+                    <div className="cours-img">
+                      <img
+                        style={{
+                          borderTopRightRadius: "10px",
+                          maxWidth: "80%",
                         }}
-                        className={classes.callButton}
-                      >
-                        Lancer l'appel
-                      </Button>
-                    </>
-                  ) : userStatus === "etudiant" ? (
-                    <>
-                      <Button
-                        startIcon={<CallRoundedIcon />}
-                        sx={{
-                          backgroundColor: "#009800",
-                          color: "#ffffff",
-                        }}
-                        className={classes.joinCallButton}
-                      >
-                        Rejoindre l'appel
-                      </Button>
-                    </>
-                  ) : (
-                    <div></div>
-                  )}
-                </div>
-
-                {userStatus === "etudiant" ? (
-                  ""
-                ) : (
-                  <>
+                        src={coursData.imageCourseUrl}
+                        alt="course-img"
+                      />
+                    </div>
+                    <div className="display-date">
+                      <h4 className="h4-data-cours-info">
+                        <CalendarTodayIcon />
+                        Date début de Sprint :{" "}
+                      </h4>
+                      <p className="pl-2">
+                        {coursData?.dateStartSprint?._seconds &&
+                          moment
+                            .unix(coursData.dateStartSprint._seconds)
+                            .format("DD.MM.YYYY")}
+                      </p>
+                    </div>
+                    <div className="display-date">
+                      <h4 className="h4-data-cours-info">
+                        <EventBusyIcon />
+                        Date fin de Sprint :{" "}
+                      </h4>
+                      <p className="pl-2">
+                        {coursData?.dateEndSprint?._seconds &&
+                          moment
+                            .unix(coursData.dateEndSprint._seconds)
+                            .format("DD.MM.YYYY")}
+                      </p>
+                    </div>
+                    <h2
+                      style={{
+                        marginTop: "10px",
+                      }}
+                      variant="h6"
+                    >
+                      Classe concernée
+                    </h2>
+                    <Divider />
                     <div
                       style={{
                         display: "flex",
-                        justifyContent: "space-evenly",
+                        height: "7%",
                         alignItems: "center",
-                        padding: "16px",
-                        width: "100%",
                       }}
                     >
-                      {/* <Button
-                        startIcon={<EditIcon />}
-                        onClick={() => handleClickOpenUpdateDialog()}
-                        sx={{
-                          bgcolor: "#94258c",
-                          fontWeight: "bold",
-                          color: "white",
-                          mr: 1,
-                        }}
-                        className={classes.updateButton}
-                      >
-                        Modifier
-                      </Button>
-                      {coursData &&
-                        coursData.courseClass &&
-                        coursData.courseClass.name &&
-                        coursData &&
-                        coursData.owner &&
-                        coursData.owner.lastname &&
-                        coursData.owner.firstname && (
-                          <UpdateCoursDialog
-                            openUpdate={openUpdate}
-                            handleClose={handleCloseUpdateDialog}
-                            handleFileChange={handleFileChange}
-                            handleDrop={handleDrop}
-                            coursTitle={coursData.title}
-                            coursDate={
-                              coursData?.date &&
-                              coursData.date._seconds &&
-                              moment
-                                .unix(coursData.date._seconds)
-                                .format("YYYY-MM-DD")
+                      {Array.isArray(coursData?.courseClass) ? (
+                        coursData?.courseClass.map((classData) => (
+                          <Chip
+                            key={classData.id}
+                            label={
+                              <>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>{classData.name}</Typography>
+                                  <SchoolIcon />
+                                </div>
+                              </>
                             }
-                            coursDescription={coursData.description}
-                            setCoursTitle={setCoursTitle}
-                            courseDateStart={courseDateStart}
-                            setCourseDateStart={setCourseDateStart}
-                            courseDateEnd={courseDateEnd}
-                            setCourseDateEnd={setCourseDateEnd}
-                            setCoursDescription={setCoursDescription}
-                            setCoursCampusNumerique={setCoursCampusNumerique}
-                            coursCampusNumerique={coursData.campus_numerique}
-                            coursPrivate={coursData.private}
-                            setCoursPrivate={setCoursPrivate}
-                            currentClass={coursData.courseClass.name}
-                            courseClassName={courseClassName}
-                            setCourseClassName={setCourseClassName}
-                            courseIdClass={courseIdClass}
-                            setCourseIdClass={setCourseIdClass}
-                            rejectedFiles={rejectedFiles}
-                            onSubmit={onSubmit}
-                            allpo={allpo}
-                            allclass={allclass}
-                            currentPO={
-                              coursData.owner.lastname.toUpperCase() +
-                              " " +
-                              coursData.owner.firstname
-                            }
-                            setCoursOwnerId={setCoursOwnerId}
-                            control={control}
                           />
-                        )} */}
-                      <Button
-                        startIcon={<DeleteIcon />}
-                        onClick={() => handleClickOpenDeleteDialog()}
-                        sx={{
-                          bgcolor: "#FF0000",
-                          fontWeight: "bold",
-                          color: "white",
-                        }}
-                        className={classes.deleteButton}
-                      >
-                        Supprimer
-                      </Button>
-                      <Dialog
-                        open={openDelete}
-                        onClose={handleCloseDeleteDialog}
-                      >
-                        <DialogTitle>
-                          Etes-vous sur de vouloir supprimer ce cours ?
-                        </DialogTitle>
-                        <DialogActions>
-                          <Button onClick={handleCloseDeleteDialog}>Non</Button>
-                          <Button onClick={deleteCompleteCours}>Oui</Button>
-                        </DialogActions>
-                      </Dialog>
+                        ))
+                      ) : (
+                        <Chip
+                          key={coursData?.courseClass.id}
+                          label={
+                            <>
+                              <div style={{ display: "flex" }}>
+                                <Typography>
+                                  {coursData?.courseClass.name}
+                                </Typography>
+                                <SchoolIcon />
+                              </div>
+                            </>
+                          }
+                        />
+                      )}
                     </div>
-                  </>
-                )}
-              </div>
+                    <h2
+                      style={{
+                        marginTop: "0px",
+                      }}
+                      variant="h6"
+                    >
+                      Products Owner / Pedago
+                    </h2>
+                    <Divider />
+                    <div
+                      style={{
+                        display: "flex",
+                        height: "7%",
+                        alignItems: "center",
+                      }}
+                    >
+                      <ListItem sx={{ display: "flex", alignItems: "center" }}>
+                        <ListItemAvatar>
+                          <Avatar
+                            alt={
+                              coursData?.owner?.lastname.toUpperCase() +
+                              " " +
+                              coursData?.owner?.firstname +
+                              " photo-profile"
+                            }
+                            src={coursData?.data?.owner?.image}
+                          />
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
+                            <Typography>
+                              {coursData?.owner?.lastname.toUpperCase()}{" "}
+                              {coursData?.owner?.firstname}
+                            </Typography>
+                          }
+                        />
+                        <Button
+                          component={Link}
+                          to={`/profil/${coursData?.owner?.id}`}
+                          sx={{
+                            backgroundColor: "#7a52e1",
+                            color: "white",
+                            fontWeight: "bold",
+                            "&:hover": {
+                              backgroundColor: "#d40074",
+                            },
+                          }}
+                        >
+                          Profil <VisibilityIcon />
+                        </Button>
+                      </ListItem>
+                    </div>
+                    <h2
+                      style={{
+                        marginTop: "10px",
+                      }}
+                      variant="h6"
+                    >
+                      Détails / Actions
+                    </h2>
+                    <Divider />
+                    <div className="details-actions-container">
+                      <div className="display-campus-num">
+                        <h4 className="h4-data-cours-info">
+                          <LaptopChromebookIcon />
+                          Campus Numérique :{" "}
+                        </h4>
+                        <p className="is-campus-num">
+                          {coursData.campus_numerique === false ? "Non" : "Oui"}
+                        </p>
+                      </div>
+                      <div className="display-cours-status">
+                        <h4 className="h4-data-cours-info">
+                          Statut du cours :{" "}
+                        </h4>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            flexDirection: "row",
+                          }}
+                        >
+                          {coursData.private === false ? (
+                            <>
+                              <PublicIcon />
+                              <Typography>Public</Typography>
+                            </>
+                          ) : (
+                            <>
+                              <LockIcon />
+                              <Typography>Privée</Typography>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      {userStatus === "po" ? (
+                        <>
+                          <Button
+                            startIcon={<CallRoundedIcon />}
+                            sx={{
+                              backgroundColor: "#009800",
+                              color: "#ffffff",
+                            }}
+                            className={classes.callButton}
+                          >
+                            Lancer l'appel
+                          </Button>
+                        </>
+                      ) : userStatus === "etudiant" ? (
+                        <>
+                          <Button
+                            startIcon={<CallRoundedIcon />}
+                            sx={{
+                              backgroundColor: "#009800",
+                              color: "#ffffff",
+                            }}
+                            className={classes.joinCallButton}
+                          >
+                            Rejoindre l'appel
+                          </Button>
+                        </>
+                      ) : (
+                        <div></div>
+                      )}
+                    </div>
+
+                    {userStatus !== "pedago" ? (
+                      <>
+                        <Button
+                          startIcon={<GroupIcon />}
+                          onClick={() => {
+                            navigate(`/groupes/creation`);
+                          }}
+                          sx={{
+                            bgcolor: "#f9004f",
+                            fontWeight: "bold",
+                            color: "white",
+                            margin: "1vh",
+                          }}
+                        >
+                          Créer un groupe
+                        </Button>
+                      </>
+                    ) : (
+                      <></>
+                    )}
+
+                    {userStatus === "etudiant" ? (
+                      ""
+                    ) : (
+                      <>
+                        <Button
+                          startIcon={<AddLinkIcon />}
+                          onClick={() => handleClickOpenLinkCoursDialog()}
+                          sx={{
+                            bgcolor: "#94258c",
+                            fontWeight: "bold",
+                            color: "white",
+                            mr: 1,
+                          }}
+                          className={classes.updateButton}
+                        >
+                          Lier à un autre cours
+                        </Button>
+                        <CoursLinkDialog
+                          open={openLink}
+                          close={handleCloseCoursLinkDialog}
+                          allcours={allcourses}
+                          coursData={coursData}
+                          getCoursId={getCoursId}
+                        />
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-evenly",
+                            alignItems: "center",
+                            padding: "16px",
+                            width: "100%",
+                          }}
+                        >
+                          <Button
+                            startIcon={<EditIcon />}
+                            onClick={() => handleClickOpenUpdateDialog()}
+                            sx={{
+                              bgcolor: "#94258c",
+                              fontWeight: "bold",
+                              color: "white",
+                              mr: 1,
+                            }}
+                            className={classes.updateButton}
+                          >
+                            Modifier
+                          </Button>
+                          {coursData?.courseClass?.name &&
+                            coursData?.owner &&
+                            coursData.owner.lastname &&
+                            coursData.owner.firstname && (
+                              <UpdateCoursDialog
+                                openUpdate={openUpdate}
+                                handleClose={handleCloseUpdateDialog}
+                                handleFileChange={handleFileChange}
+                                handleDrop={handleDrop}
+                                coursTitle={coursData.title}
+                                coursDate={
+                                  coursData?.date?._seconds &&
+                                  moment
+                                    .unix(coursData.date._seconds)
+                                    .format("YYYY-MM-DD")
+                                }
+                                coursDescription={coursData.description}
+                                setCoursTitle={setCoursTitle}
+                                courseDateStart={courseDateStart}
+                                setCourseDateStart={setCourseDateStart}
+                                courseDateEnd={courseDateEnd}
+                                setCourseDateEnd={setCourseDateEnd}
+                                setCoursDescription={setCoursDescription}
+                                setCoursCampusNumerique={
+                                  setCoursCampusNumerique
+                                }
+                                coursCampusNumerique={
+                                  coursData.campus_numerique
+                                }
+                                coursPrivate={coursData.private}
+                                setCoursPrivate={setCoursPrivate}
+                                currentClass={coursData.courseClass.name}
+                                courseClassName={courseClassName}
+                                setCourseClassName={setCourseClassName}
+                                courseIdClass={courseIdClass}
+                                setCourseIdClass={setCourseIdClass}
+                                rejectedFiles={rejectedFiles}
+                                onSubmit={onSubmit}
+                                allpo={allpo}
+                                allclass={allclass}
+                                currentPO={
+                                  coursData.owner.lastname.toUpperCase() +
+                                  " " +
+                                  coursData.owner.firstname
+                                }
+                                setCoursOwnerId={setCoursOwnerId}
+                                control={control}
+                              />
+                            )}
+                          <Button
+                            startIcon={<DeleteIcon />}
+                            onClick={() => handleClickOpenDeleteDialog()}
+                            sx={{
+                              bgcolor: "#FF0000",
+                              fontWeight: "bold",
+                              color: "white",
+                            }}
+                            className={classes.deleteButton}
+                          >
+                            Supprimer
+                          </Button>
+                          <Dialog
+                            open={openDelete}
+                            onClose={handleCloseDeleteDialog}
+                          >
+                            <DialogTitle>
+                              Etes-vous sur de vouloir supprimer ce cours ?
+                            </DialogTitle>
+                            <DialogActions>
+                              <Button onClick={handleCloseDeleteDialog}>
+                                Non
+                              </Button>
+                              <Button onClick={deleteCompleteCours}>Oui</Button>
+                            </DialogActions>
+                          </Dialog>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

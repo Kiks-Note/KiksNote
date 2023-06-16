@@ -10,12 +10,12 @@ function PrivateRoutes() {
   const cookies = new Cookies();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const lastConnectionAt = cookies.get("lastConnectionAt");
-    const token = cookies.get("token");
-    const currentTime = Date.now();
+  const lastConnectionAt = cookies.get("lastConnectionAt");
+  const token = cookies.get("token");
+  const currentTime = Date.now();
 
-    if (lastConnectionAt <= currentTime || !token) {
+  useEffect(() => {
+    if (lastConnectionAt < currentTime || !token || !lastConnectionAt) {
       logout();
       navigate("/login");
     }
@@ -30,7 +30,7 @@ function PrivateRoutes() {
           navigate("/login");
         });
     })();
-  }, []);
+  }, [token, lastConnectionAt]);
 
   return user && <MiniDrawer element={<Outlet />} />;
 }

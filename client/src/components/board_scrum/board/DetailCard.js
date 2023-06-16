@@ -247,25 +247,22 @@ export default function DetailCard(props) {
           borderColor: label.color + "30",
         }}
       >
-        <div style={{display: "flex", paddingTop: "5%", width: "fit-content"}}>
+        <div
+          style={{
+            display: "flex",
+            " justify-content": "center",
+            "align-items": "center",
+          }}
+        >
           <CircleIcon
             style={{
-              flexDirection: "column",
-              justifyContent: "center",
-              height: "80%",
               color: label.color,
             }}
           />
           <p
             style={{
-              flexDirection: "column",
-              justifyContent: "center",
-              height: "80%",
-              paddingLeft: "5%",
               fontSize: "small",
               minWidth: "70px",
-              height: "25px",
-              paddingTop: "5%",
             }}
           >
             {label.name}
@@ -407,52 +404,20 @@ export default function DetailCard(props) {
             </div>
           </div>
           <List>
-            <ListItem disablePadding sx={style_item_button}>
-              <ListItemButton onClick={assigneMe}>
-                <ListItemIcon>
-                  <PersonIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary={isAssigned ? "Déjà Rejoint" : "Rejoindre"}
-                  primaryTypographyProps={{color: "text.default"}}
-                />
-              </ListItemButton>
-            </ListItem>
-            <ListItem disablePadding sx={style_item_button}>
-              <ListItemButton
-                onClick={() => {
-                  setShowModal(!showModal);
-                  setType("membres");
-                }}
-              >
-                <ListItemIcon>
-                  <PersonAddIcon color="primary" />
-                </ListItemIcon>
-                <ListItemText
-                  primary="Membres"
-                  primaryTypographyProps={{color: "text.default"}}
-                />
-              </ListItemButton>
-            </ListItem>
             {!allowedColumnIds.includes(props.columnId) && (
               <ListItem disablePadding sx={style_item_button}>
-                <ListItemButton
-                  onClick={() => {
-                    setShowModal(!showModal);
-                    setType("avancement");
-                  }}
-                >
+                <ListItemButton onClick={assigneMe}>
                   <ListItemIcon>
-                    <AutoGraphIcon color="primary" />
+                    <PersonIcon color="primary" />
                   </ListItemIcon>
                   <ListItemText
-                    primary="Avancement"
-                    primaryTypographyProps={{color: "text.default"}}
+                    primary={isAssigned ? "Déjà Rejoint" : "Rejoindre"}
+                    primaryTypographyProps={{ color: "text.default" }}
                   />
                 </ListItemButton>
               </ListItem>
             )}
-            {!allowedColumnIds.includes(props.columnId) && (
+            {!["0", "5", "6"].includes(props.columnId) && (
               <ListItem disablePadding sx={style_item_button}>
                 <ListItemButton
                   onClick={() => {

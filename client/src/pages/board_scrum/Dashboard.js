@@ -43,7 +43,6 @@ export default function Dashboard() {
       );
     } catch (error) {
       console.error(error);
-      // Gérer l'erreur de manière appropriée, par exemple :
       // throw new Error('Erreur lors de la mise à jour du document');
     }
   }
@@ -65,7 +64,7 @@ export default function Dashboard() {
     );
 
     wsComments.onopen = function (e) {
-      wsComments.send(JSON.stringify(user.id));
+      wsComments.send(JSON.stringify({ id: user.id, status: user.status }));
     };
 
     wsComments.onmessage = (message) => {
@@ -73,12 +72,10 @@ export default function Dashboard() {
         const data = JSON.parse(message.data);
         const listDashboards = data.map((dashboarddto) => {
           const startDate = new Date(
-            dashboarddto.starting_date._seconds * 1000 +
-              dashboarddto.starting_date._nanoseconds / 100000
+            dashboarddto.starting_date._seconds * 1000 + dashboarddto.starting_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
           const endDate = new Date(
-            dashboarddto.ending_date._seconds * 1000 +
-              dashboarddto.ending_date._nanoseconds / 100000
+            dashboarddto.ending_date._seconds * 1000 + dashboarddto.ending_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
           return {
             id: dashboarddto.id,
@@ -97,7 +94,7 @@ export default function Dashboard() {
         setLoading(false);
       } catch (error) {
         setLoading(true);
-        console.error(error);
+
       }
     };
 
@@ -117,9 +114,7 @@ export default function Dashboard() {
       return startDate <= maDateFormatted && maDateFormatted <= endDate;
     });
     setActifDashboard(actifDashboards);
-    const favorisDashboards = dashboard.filter(
-      (board) => board.favorite === true
-    );
+    const favorisDashboards = dashboard.filter((board) => board.favorite === true);
 
     setFavorisDashboard(favorisDashboards);
   }, [dashboard]);
@@ -156,31 +151,16 @@ export default function Dashboard() {
           />
         </div>
       ) : (
-        <div style={{marginLeft: "1%", marginTop: "1%"}}>
-          {favorisDashboard.length > 0 &&
-            ListCardDashboard(
-              favorisDashboard,
-              "Espace de travail favoris",
-              favorisTell
-            )}
-          {actifDashboard.length > 0 &&
-            ListCardDashboard(
-              actifDashboard,
-              "Espace de travail actif",
-              favorisTell
-            )}
+        <div style={{ marginLeft: "1%", marginTop: "1%" }}>
+          {favorisDashboard.length > 0 && ListCardDashboard(favorisDashboard, "Espace de travail favoris", favorisTell)}
+          {actifDashboard.length > 0 && ListCardDashboard(actifDashboard, "Espace de travail actif", favorisTell)}
 
           <Box sx={{width: "100%", display: "flex", flexDirection: "column"}}>
             <Typography variant="h6" gutterBottom sx={{flexGrow: 1}}>
               Mon espace de travail
             </Typography>
-            <div style={{display: "flex", justifyContent: "space-between"}}>
-              <ToggleButtonGroup
-                value={view}
-                exclusive
-                onChange={viewChange}
-                sx={{margin: 1}}
-              >
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <ToggleButtonGroup value={view} exclusive onChange={viewChange} sx={{ margin: 1 }}>
                 <ToggleButton value="module" aria-label="module">
                   <ViewModuleIcon />
                 </ToggleButton>
@@ -195,25 +175,20 @@ export default function Dashboard() {
           {view === "module" ? (
             <Grid container spacing={2}>
               {!loading &&
-                dashboard
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((board) => (
-                    <Grid item xs={3} key={board.id}>
-                      <CardDashBoard
-                        picture={board.picture}
-                        sprint_group={board.sprint_group}
-                        fav={board.favorite}
-                        isFavoris={favorisTell}
-                        id={board.id}
-                      />
-                    </Grid>
-                  ))}
+                dashboard.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((board) => (
+                  <Grid item xs={3} key={board.id}>
+                    <CardDashBoard
+                      picture={board.picture}
+                      sprint_group={board.sprint_group}
+                      fav={board.favorite}
+                      isFavoris={favorisTell}
+                      id={board.id}
+                    />
+                  </Grid>
+                ))}
             </Grid>
           ) : (
-            !loading &&
-            dashboard.length > 0 && (
-              <TableDashboard rows={!loading && dashboard} />
-            )
+            !loading && dashboard.length > 0 && <TableDashboard rows={!loading && dashboard} />
           )}
 
           {view === "module" ? (
@@ -236,9 +211,7 @@ export default function Dashboard() {
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
                   labelRowsPerPage="Par page"
-                  labelDisplayedRows={({from, to, count}) =>
-                    `${from} - ${to} sur ${count}`
-                  }
+                  labelDisplayedRows={({ from, to, count }) => `${from} - ${to} sur ${count}`}
                 />
               </Box>
             )

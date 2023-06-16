@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 import {
   TextField,
@@ -14,16 +14,16 @@ import {
   useTheme,
 } from "@mui/material";
 
-import {parseISO, isValid} from "date-fns";
-import {format} from "date-fns";
+import { parseISO, isValid } from 'date-fns';
+import { format } from 'date-fns';
 
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import MailIcon from "@mui/icons-material/Mail";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import HttpsRoundedIcon from "@mui/icons-material/HttpsRounded";
 
-import {toast, ToastContainer} from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import axios from "axios";
 
@@ -46,6 +46,12 @@ export const toastFail = (message) => {
 };
 
 const Register = () => {
+  const navigate = useNavigate();
+
+  const [allclass, setAllclass] = useState([]);
+  const [selectedStudentClass, setSelectedStudentClass] = useState("");
+  const [selectedStudentClassId, setSelectedStudentClassId] = useState("");
+
   const [userFirstName, setUserFirstName] = useState("");
   const [userLastName, setUserLastName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -53,7 +59,6 @@ const Register = () => {
   const [userPassword, setUserPassword] = useState("");
   const [userConfirmPassword, setUserConfirmPassword] = useState("");
   const [userStatus, setUserStatus] = useState("");
-  const [userClass, setUserClass] = useState("");
 
   const [messageFirstName, setMessageFirstName] = useState("");
   const [messageLastName, setMessageLastName] = useState("");
@@ -74,116 +79,144 @@ const Register = () => {
   const [errorClass, setErrorClass] = useState(false);
   const theme = useTheme();
 
-  const regex = /@edu\.esiee-it\.fr/;
+  const getAllClass = async () => {
+    try {
+      await axios
+        .get("http://localhost:5050/ressources/classes")
+        .then((res) => {
+          setAllclass(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const register = async () => {
+    if (userStatus === "etudiant" || userStatus === "pedago") {
+      if (
+        !userEmail.includes("edu.esiee-it.fr") &&
+        !userEmail.includes("edu.itescia.fr") &&
+        !userEmail.includes("cergy.itin.fr")
+      ) {
+        return;
+      }
+    }
     await axios
-      .post(`${process.env.REACT_APP_SERVER_API}/auth/signup`, {
-        userEmail,
-        userPassword,
-        userFirstName,
-        userLastName,
-        userBirthDate,
-        userStatus,
-        userClass,
+      .post("http://localhost:5050/auth/signup", {
+        userEmail, userPassword, userFirstName, userLastName, userBirthDate, userStatus, userClass
       })
       .then((res) => {
         console.log(res.status);
         if (res.status === 200) {
-          toastSuccess("Utilisateur enregistré");
+          toastSuccess(
+            `Utilisateur inscrit ! Vous avez recu un mail de confirmation sur ${userEmail}`
+          );
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
         } else {
           toastFail("Utilisateur non enregistré");
         }
       })
       .catch((err) => {
-        toastFail("Erreur pendant l'enregistrement");
-        console.log(err);
+        if (
+          err.response.status === 400 &&
+          err.response.data.message === "L'adresse e-mail est déjà utilisée."
+        ) {
+          toastFail("L'adresse email est déjà utilisée");
+        }
       });
   };
 
-  const verifInputErrors = (
-    lastname,
-    firstname,
-    email,
-    password,
-    confirmpassword,
-    status,
-    student_class,
-    birthdate
-  ) => {
+  const verifInputErrors = (lastname, firstname, email, password, confirmpassword, status, student_class, birthdate) => {
     if (lastname === "") {
-      setErrorLastName(true);
-      setMessageLastName("Le nom est requis");
-    } else {
-      setErrorLastName(false);
-      setMessageLastName("");
+      setErrorLastName(true)
+      setMessageLastName("Le nom est requis")
+    }
+    else {
+      setErrorLastName(false)
+      setMessageLastName("")
     }
     if (firstname === "") {
-      setErrorFirstName(true);
-      setMessageFirstName("Le prénom est requis");
-    } else {
-      setErrorFirstName(false);
-      setMessageFirstName("");
+      setErrorFirstName(true)
+      setMessageFirstName("Le prénom est requis")
+    }
+    else {
+      setErrorFirstName(false)
+      setMessageFirstName("")
     }
     if (email === "") {
       setErrorEmail(true);
       setMessageEmail("L'adresse email est requis");
-    } else if (regex.test(email)) {
+    }
+    else if (regex.test(email)) {
       setErrorEmail(false);
       setMessageEmail("");
     } else {
       setErrorEmail(true);
-      setMessageEmail(
-        "L'adresse mail que vous avez rentrés n'est pas conforme. Celle-ci doit  par @edu.esiee-it.fr"
-      );
+      setMessageEmail("L'adresse mail que vous avez rentrés n'est pas conforme. Celle-ci doit  par @edu.esiee-it.fr");
     }
+
     if (password === "") {
       setErrorPassword(true);
       setMessagePassword("Mot de passe requis");
+      toastFail("Le champ du mot de passe est obligatoire");
     } else if (password.length < 6) {
       setErrorPassword(true);
       setMessagePassword("Le mot de passe doit comporter plus de 6 caractères");
+      toastFail("Le mot de passe doit comporter plus de 6 caractères");
     } else if (password.length > 24) {
       setErrorPassword(true);
-      setMessagePassword(
-        "Le mot de passe ne peut pas dépasser plus de 24 caractères"
-      );
-    } else {
+      setMessagePassword("Le mot de passe ne peut pas dépasser plus de 24 caractères");
+    }
+    else {
       setErrorPassword(false);
       setMessagePassword("");
     }
+
     if (confirmpassword === "") {
       setErrorConfirmPassword(true);
       setMessageConfirmPassword("Confirmez le mot de passe");
+      toastFail("Le champ de confirmation du mot de passe est obligatoire");
     } else if (password !== confirmpassword) {
       setErrorConfirmPassword(true);
       setMessageConfirmPassword("Le mot de passe ne correspond pas");
-    } else {
-      setErrorConfirmPassword(false);
+    }
+    else {
+      setErrorConfirmPassword(false)
       setMessageConfirmPassword("");
     }
+
     if (status === "") {
       setErrorStatus(true);
       setMessageStatus("Choisissez le statut");
     } else if (student_class === "etudiant" && !regex.test(email)) {
-      setErrorStatus(true);
+      setErrorStatus(true)
       setMessageEmail("Courriel edu introuvable");
-    } else {
-      setErrorStatus(false);
+    }
+    else {
+      setErrorStatus(false)
       setMessageStatus("");
     }
+
     if (status === "etudiant" && student_class === "") {
-      setErrorClass(true);
-      setMessageClass("Indiquez votre classe");
-    } else {
+      setErrorClass(true)
+      setMessageClass("Indiquez votre classe")
+    }
+    else {
       setErrorClass(false);
       setMessageClass("");
     }
+
     if (birthdate === "") {
-      setErrorBirthDate(true);
+      setErrorBirthDate(true)
       setMessageBirthDate("La date de naissance est requis");
-    } else {
-      setErrorBirthDate(false);
+    }
+    else {
+      setErrorBirthDate(false)
       setMessageBirthDate("");
     }
   };
@@ -191,16 +224,7 @@ const Register = () => {
   const onSubmit = async (e) => {
     e.preventDefault();
     await register();
-    verifInputErrors(
-      userLastName,
-      userFirstName,
-      userEmail,
-      userPassword,
-      userConfirmPassword,
-      userStatus,
-      userClass,
-      userBirthDate
-    );
+    verifInputErrors(userLastName, userFirstName, userEmail, userPassword, userConfirmPassword, userStatus, userClass, userBirthDate);
   };
 
   const handleDateChange = (event) => {
@@ -218,12 +242,13 @@ const Register = () => {
     }
   };
 
+  useEffect(() => {
+    getAllClass();
+  }, []);
+
   return (
     <div className="register">
-      <div
-        className="register-header"
-        style={{backgroundColor: theme.palette.background.container}}
-      >
+      <div className="register-header" style={{ backgroundColor: theme.palette.background.container }}>
         <div className="container-register">
           <Typography
             component="h1"
@@ -262,7 +287,7 @@ const Register = () => {
                 defaultValue={userLastName}
                 onChange={(e) => setUserLastName(e.target.value)}
                 sx={{
-                  input: {color: "text.primary"},
+                  input: { color: 'text.primary' }
                 }}
                 error={errorLastName}
                 helperText={messageLastName}
@@ -294,7 +319,7 @@ const Register = () => {
                 error={errorFirstName}
                 helperText={messageFirstName}
                 sx={{
-                  input: {color: "text.primary"},
+                  input: { color: 'text.primary' }
                 }}
               />
             </Container>
@@ -325,7 +350,7 @@ const Register = () => {
                 error={errorEmail}
                 helperText={messageEmail}
                 sx={{
-                  input: {color: "text.primary"},
+                  input: { color: 'text.primary' }
                 }}
               />
             </Container>
@@ -350,7 +375,7 @@ const Register = () => {
                 type="date"
                 fullWidth
                 sx={{
-                  input: {color: "text.primary"},
+                  input: { color: 'text.primary' },
                 }}
                 id="input-birthdate"
                 value={userBirthDate ? format(userBirthDate, "yyyy-MM-dd") : ""}
@@ -385,7 +410,7 @@ const Register = () => {
                 defaultValue={userPassword}
                 onChange={(e) => setUserPassword(e.target.value)}
                 sx={{
-                  input: {color: "text-primary"},
+                  input: { color: 'text-primary' }
                 }}
                 error={errorPassword}
                 helperText={messagePassword}
@@ -417,32 +442,17 @@ const Register = () => {
                 defaultValue={userConfirmPassword}
                 onChange={(e) => setUserConfirmPassword(e.target.value)}
                 sx={{
-                  input: {color: "text.primary"},
+                  input: { color: 'text.primary' }
                 }}
                 error={errorConfirmPassword}
                 helperText={messageConfirmPassword}
               />
             </Container>
 
-            <Container
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <FormControl sx={{m: 1, minWidth: 120}} error={errorStatus}>
-                <InputLabel id="demo-simple-select-helper-label">
-                  Status
-                </InputLabel>
-                <Select
-                  variant="filled"
-                  id="input-status"
-                  sx={{color: "text.primary"}}
-                  label="Status"
-                  value={userStatus}
-                  onChange={(e) => setUserStatus(e.target.value)}
-                >
+            <Container sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+              <FormControl sx={{ m: 1, minWidth: 120 }} error={errorStatus}>
+                <InputLabel id="demo-simple-select-helper-label">Status</InputLabel>
+                <Select variant="filled" id="input-status" sx={{ color: 'text.primary' }} label="Status" value={userStatus} onChange={(e) => setUserStatus(e.target.value)}>
                   <MenuItem value="etudiant">Étudiant</MenuItem>
                   <MenuItem value="po">PO</MenuItem>
                   <MenuItem value="pedago">Pedago</MenuItem>
@@ -452,17 +462,10 @@ const Register = () => {
                 )}
               </FormControl>
               {userStatus === "etudiant" ? (
-                <FormControl sx={{m: 1, minWidth: 120}} error={errorClass}>
-                  <InputLabel id="demo-simple-select-helper-label">
-                    Classe
-                  </InputLabel>
-                  <Select
-                    variant="filled"
-                    id="input-class"
-                    sx={{color: "text.primary"}}
-                    value={userClass}
-                    onChange={(e) => setUserClass(e.target.value)}
-                  >
+
+                <FormControl sx={{ m: 1, minWidth: 120 }} error={errorClass}>
+                  <InputLabel id="demo-simple-select-helper-label">Classe</InputLabel>
+                  <Select variant="filled" id="input-class" sx={{ color: 'text.primary' }} value={userClass} onChange={(e) => setUserClass(e.target.value)}>
                     <MenuItem value="L1-paris">L1-Paris</MenuItem>
                     <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
                     <MenuItem value="L2-paris">L2-Paris</MenuItem>
@@ -482,11 +485,17 @@ const Register = () => {
                 <div></div>
               )}
             </Container>
-            <div className="flex justify-center">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                width: "100%",
+              }}
+            >
               <Button
                 sx={{
                   backgroundColor: "#7a52e1",
-                  color: "white",
+                  color: 'white'
                 }}
                 variant="contained"
                 id="btn-register"
@@ -498,8 +507,7 @@ const Register = () => {
             </div>
           </form>
           <div className="text-xs font-medium text-center m-3">
-            <p style={{color: theme.palette.text.primary, fontWeight: "bold"}}>
-              Vous avez déjà un compte ?
+            <p style={{ color: theme.palette.text.primary, fontWeight: "bold" }} >Vous avez déjà un compte ?
               <Link
                 href="/login"
                 sx={{
@@ -512,7 +520,7 @@ const Register = () => {
               >
                 Se connecter
               </Link>
-            </p>
+            </Typography>
           </div>
         </div>
         <div className="image-container">
