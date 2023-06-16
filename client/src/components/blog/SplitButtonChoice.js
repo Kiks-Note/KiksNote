@@ -10,12 +10,14 @@ import ClickAwayListener from "@mui/material/ClickAwayListener";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import NewBlog from "./form/NewBlog";
 import NewTuto from "./form/NewTuto";
+import NewTuto2 from "./form/NewTuto2";
 
 export default function SplitButtonChoice() {
   const [open, setOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [openBlog, setOpenBlog] = useState(false);
   const [openTuto, setOpenTuto] = useState(false);
+  const [openTuto2, setOpenTuto2] = useState(false);
   const anchorRef = useRef(null);
   const toggleDrawerBlog = (event, open) => {
     if (
@@ -38,6 +40,17 @@ export default function SplitButtonChoice() {
     setOpenTuto(open);
   };
 
+  const toggleDrawerTuto2 = (event, open) => {
+    if (
+      event &&
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+    setOpenTuto2(open);
+  };
+
   const handleMenuItemClick = (event, index) => {
     switch (index) {
       case 0:
@@ -45,6 +58,10 @@ export default function SplitButtonChoice() {
         break;
       case 1:
         toggleDrawerTuto(event, true);
+        break;
+
+      case 2:
+        toggleDrawerTuto2(event, true);
         break;
 
       default:
@@ -113,7 +130,7 @@ export default function SplitButtonChoice() {
                       Créer un article de blog
                     </MenuItem>
                     <MenuItem
-                      onClick={(event) => handleMenuItemClick(event, 1)}
+                      onClick={(event) => handleMenuItemClick(event, 2)}
                     >
                       Créer un tutoriel
                     </MenuItem>
@@ -125,7 +142,7 @@ export default function SplitButtonChoice() {
         </Popper>
       </ButtonGroup>
       <NewBlog open={openBlog} toggleDrawerModify={toggleDrawerBlog} />
-      <NewTuto open={openTuto} toggleDrawerModify={toggleDrawerTuto} />
+      <NewTuto2 open={openTuto2} toggleDrawerModify={toggleDrawerTuto2} />
     </>
   );
 }

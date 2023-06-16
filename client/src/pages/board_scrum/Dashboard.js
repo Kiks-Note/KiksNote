@@ -88,7 +88,7 @@ export default function Dashboard() {
         setLoading(false);
       } catch (error) {
         setLoading(true);
-        console.error(error);
+
       }
     };
 

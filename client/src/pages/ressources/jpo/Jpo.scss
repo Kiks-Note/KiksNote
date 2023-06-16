@@ -5,8 +5,8 @@
 
 .header-jpo {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     width: 100%;
     padding: 20px;
 }
@@ -26,10 +26,24 @@
     padding: 20px;
 }
 
-.jpo-image {
-    width: 30%;
-    height: auto;
+.jpo-grid-container {
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
+    flex-direction: row;
+    align-items: center;
+    padding: 20px;
+}
 
+.jpo-grid-image {
+    width: 100% !important;
+    height: auto;
+}
+
+.jpo-image-list {
+    width: 50% !important;
+    height: auto;
+    padding: 20px;
 }
 
 .jpo-text {
@@ -78,4 +92,12 @@ p.p-start-end-date-jpo-label {
     flex-direction: column;
     align-items: center;
     max-width: 650px;
+}
+
+.img-name-project-link-jpo-page {
+    width: 100%;
+}
+
+.no-votes-student-projects-p {
+    padding: 20px;
 }

@@ -39,11 +39,8 @@ var upload = multer({
   },
 });
 
-const {
-  retroRoutesWsNeeded,
-  retroRoutesWsNotNeeded,
-} = require("./retroRoutes");
 const { callRoutesWsNeeded, callRoutesWsNotNeeded } = require("./callRoutes");
+const { retroRoutesWsNeeded } = require("./retroRoutes");
 
 app.use(express.json());
 app.use(
@@ -80,12 +77,15 @@ const path = require("path");
 
 const agileRoute = require("./agileRoutes");
 const inventoryRoutes = require("./inventoryRoutes");
-const retroRoutesNotNeeded = retroRoutesWsNotNeeded();
 const callRoutesNotNeeded = callRoutesWsNotNeeded();
+const calendarRoutes = require("./calendarRoutes");
 
 const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
 const groupNoWs = groupNoWsNeeded();
-
+app.use("/ressources", coursRoutes()); // --> Resssources Cours
+app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
+app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
+app.use("/ressources", technosRoutes()); // --> Resssources Technos
 app.use("/home", homeRoutes);
 app.use("/inventory", inventoryRoutes);
 app.use("/auth", authRoutes);
@@ -107,6 +107,7 @@ wsI.on("request", (request) => {
   app.use("/groupes", groupWsNeeded(connection, pathname));
   app.use("/agile", agileRoute(connection, pathname, upload));
   app.use("/retro", retroRoutesWsNeeded(connection, pathname));
+  app.use("/calendar", calendarRoutes(connection, pathname));
   require("./web/inventoryWebSocket")(connection, pathname);
 
   connection.on("error", (error) => {
@@ -119,10 +120,6 @@ wsI.on("request", (request) => {
   });
 });
 
-app.use("/ressources", coursRoutes()); // --> Resssources Cours
-app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
-app.use("/ressources", jpoRoutes()); // --> Resssources Jpo
-app.use("/ressources", technosRoutes()); // --> Resssources Technos
 server.listen(PORT, () => {
   console.log(`Listening on port ${PORT}`);
 });

@@ -6,6 +6,7 @@ const fs = require("fs");
 const mime = require("mime-types");
 const bucket = storageFirebase.bucket();
 const path = require("path");
+const { log } = require("console");
 
 const DIR = "./uploads";
 
@@ -62,6 +63,25 @@ const getAllCours = async (req, res) => {
   }
 };
 
+const getCoursesByOwnerId = async (req, res) => {
+  try {
+    const snapshot = await db.collection("cours").get();
+    const courses = [];
+    snapshot.forEach((doc) => {
+      if (doc.data().owner.id == req.params.ownerid) {
+        courses.push({
+          id: doc.id,
+          ...doc.data(),
+        });
+      }
+    });
+    res.status(200).send(courses);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(error);
+  }
+};
+
 const getAllClasses = async (req, res) => {
   try {
     const snapshot = await db.collection("class").get();
@@ -110,6 +130,29 @@ const getClassById = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send("Erreur lors de la récupération de la classe.");
+  }
+};
+
+const getCoursByClass = async (req, res) => {
+  try {
+    const classId = req.params.classId;
+    const snapshot = await db
+      .collection("cours")
+      .where("courseClass.id", "==", classId)
+      .get();
+    const resources = [];
+    snapshot.forEach((doc) => {
+      resources.push({
+        id: doc.id,
+        data: doc.data(),
+      });
+    });
+    res.status(200).send({
+      cours: resources,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération des cours.");
   }
 };
 
@@ -174,20 +217,27 @@ const createCours = async (req, res) => {
       dateStartSprint,
       dateEndSprint,
       campus_numerique,
-      courseClass,
+      courseClass = [],
       owner,
       private,
       imageBase64,
     } = req.body;
 
-    const courseClassRef = await db.collection("class").doc(courseClass).get();
+    const courseClassData = [];
+    for (const classId of courseClass) {
+      const classRef = await db.collection("class").doc(classId).get();
+      if (classRef.exists) {
+        const classData = {
+          id: classRef.id,
+          cursus: classRef.data().cursus,
+          name: classRef.data().name,
+          promo: classRef.data().promo,
+          site: classRef.data().site,
+        };
 
-    if (!courseClassRef.exists) {
-      return res.status(404).send("Classe non trouvée");
+        courseClassData.push(classData);
+      }
     }
-
-    const courseClassData = courseClassRef.data();
-    courseClassData.id = courseClassRef.id;
 
     const ownerRef = await db.collection("users").doc(owner).get();
 
@@ -216,7 +266,10 @@ const createCours = async (req, res) => {
         imageBase64.replace(/^data:image\/\w+;base64,/, ""),
         "base64"
       );
-      const file = bucket.file(`${courseClass}/${title}/${fileName}`);
+      const folderName = courseClassData
+        .map((classData) => classData.name.replace(/ /g, "-"))
+        .join("-");
+      const file = bucket.file(`cours/${folderName}/${title}/${fileName}`);
 
       const options = {
         metadata: {
@@ -298,6 +351,32 @@ const createLinkedCours = async (req, res) => {
   } catch (err) {
     console.error(err);
     throw new Error("Erreur lors de la création du lien entre les cours.");
+  }
+};
+
+const removeLinkedCours = async (req, res) => {
+  const courseId = req.params.courseId;
+
+  try {
+    const courseRef = db.collection("cours").doc(courseId);
+    const courseDoc = await courseRef.get();
+
+    if (!courseDoc.exists) {
+      return res.status(404).send("Le cours spécifié n'a pas été trouvé.");
+    }
+
+    if (!courseDoc.data().linkedCourse) {
+      return res.status(404).send("Aucun cours lié n'est associé à ce cours.");
+    }
+
+    await courseRef.update({
+      linkedCourse: FieldValue.delete(),
+    });
+
+    return res.status(200).send("Le cours lié a été supprimé avec succès.");
+  } catch (err) {
+    console.error(err);
+    throw new Error("Erreur lors de la suppression du lien entre les cours.");
   }
 };
 
@@ -681,8 +760,54 @@ const deleteCours = async (req, res) => {
   }
 };
 
+const getCoursesByPo = async (req, res) => {
+  const po = req.params.poId;
+  try {
+    const snapshot = await db
+      .collection("cours")
+      .where("owner.id", "==", po)
+      .get();
+    const resources = [];
+    snapshot.forEach((doc) => {
+      resources.push({
+        id: doc.id,
+        data: doc.data(),
+      });
+    });
+
+    res.status(200).send({
+      cours: resources,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération des cours.");
+  }
+};
+
+const getAllGroupesByCourseId = async (req, res) => {
+  const { courseId } = req.params;
+
+  try {
+    const snapshot = await db
+      .collection("groups")
+      .where("courseId", "==", courseId)
+      .get();
+
+    const groupes = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    res.status(200).send(groupes);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erreur lors de la récupération des groupes.");
+  }
+};
+
 module.exports = {
   getAllCours,
+  getCoursesByOwnerId,
   getAllClasses,
   getCoursById,
   getClassById,
@@ -691,10 +816,14 @@ module.exports = {
   getInstructorById,
   createCours,
   createLinkedCours,
+  removeLinkedCours,
   updateCours,
   uploadCoursPdf,
   uploadBackLogPdf,
   deleteCoursPdf,
   deleteBackLogPdf,
+  getCoursByClass,
   deleteCours,
+  getCoursesByPo,
+  getAllGroupesByCourseId,
 };

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import {
   TextField,
@@ -46,6 +47,8 @@ export const toastFail = (message) => {
 };
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [allclass, setAllclass] = useState([]);
   const [selectedStudentClass, setSelectedStudentClass] = useState("");
   const [selectedStudentClassId, setSelectedStudentClassId] = useState("");
@@ -93,6 +96,15 @@ const Register = () => {
   };
 
   const register = async () => {
+    if (userStatus === "etudiant" || userStatus === "pedago") {
+      if (
+        !userEmail.includes("edu.esiee-it.fr") &&
+        !userEmail.includes("edu.itescia.fr") &&
+        !userEmail.includes("cergy.itin.fr")
+      ) {
+        return;
+      }
+    }
     await axios
       .post("http://localhost:5050/auth/signup", {
         userEmail: userEmail,
@@ -109,6 +121,9 @@ const Register = () => {
           toastSuccess(
             `Utilisateur inscrit ! Vous avez recu un mail de confirmation sur ${userEmail}`
           );
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
         } else {
           toastFail("Utilisateur non enregistré");
         }

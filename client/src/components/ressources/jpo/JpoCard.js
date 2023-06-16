@@ -21,6 +21,8 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 
+import "../../../pages/ressources/jpo/Jpo.scss";
+
 const useStyles = makeStyles({
   btnDetailJpo: {
     backgroundColor: "#D1229D",
@@ -29,6 +31,7 @@ const useStyles = makeStyles({
       backgroundColor: "#D1229D",
       fontWeight: "bold",
     },
+    margin: "20px",
   },
   btnProject: {
     backgroundColor: "#7a52e1",
@@ -54,15 +57,14 @@ const JpoCard = ({ jpoData, key }) => {
   return (
     <>
       <Card
-        key={key}
         className="jpo-card"
         sx={{
           display: "flex",
-          flexDirection: "row",
+          flexDirection: "column",
           justifyContent: "space-between",
-          flexWrap: "wrap",
-          width: "70%",
-          margin: "30px",
+          width: "100%",
+          height: "100%",
+          marginBottom: "30px",
         }}
       >
         <Grid container>
@@ -71,7 +73,7 @@ const JpoCard = ({ jpoData, key }) => {
               component="img"
               src={jpoData.jpoThumbnail}
               alt="img-jpo"
-              className="jpo-image"
+              className="jpo-image-list"
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -83,11 +85,13 @@ const JpoCard = ({ jpoData, key }) => {
                 {moment
                   .unix(jpoData.jpoDayStart._seconds)
                   .format("DD.MM.YYYY HH:mm")}
-                {" - "} 
+                {" - "}
                 {moment
                   .unix(jpoData.jpoDayEnd._seconds)
                   .format("DD.MM.YYYY HH:mm")}
               </Typography>
+            </div>
+            <div>
               {Array.isArray(jpoData.linkedStudentProjects) &&
               jpoData.linkedStudentProjects.length > 0 ? (
                 <List>
@@ -133,7 +137,7 @@ const JpoCard = ({ jpoData, key }) => {
                               }}
                               className={classes.btnProject}
                             >
-                              <Typography>Voir le projet</Typography>
+                              <Typography>projet</Typography>
                               <VisibilityIcon />
                             </Button>
                           </div>

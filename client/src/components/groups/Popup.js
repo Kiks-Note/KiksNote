@@ -10,41 +10,35 @@ import {
 import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import "./Popup.scss";
+import axios from "axios";
 
 export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
-  const [classChoose, setClassChoose] = useState("");
-  const start_date = useRef();
-  const end_date = useRef();
-  const nb_release = useRef();
+  const [classChoose, setClassChoose] = useState(" ");
+  const [courseChoosed, setCourseChoosed] = useState({
+    data: { title: "Tous les cours" },
+  });
+
   const popUpRef = useRef();
+  const [courses, setCourses] = useState([]);
 
   const { user } = useFirebase();
   const theme = useTheme();
 
-    const ws = useMemo(() => {
-        return new w3cwebsocket('ws://localhost:5050/groupes/creation');
-    }, []);
+  const ws = useMemo(() => {
+    return new w3cwebsocket("ws://localhost:5050/groupes/creation");
+  }, []);
 
   useEffect(() => {
-    if (dataPopUp) {
-      setClassChoose(dataPopUp.classChoose);
-      if (start_date.current) {
-        start_date.current.value = dataPopUp.start_date;
-      }
+    const getCourse = async () => {
+      await axios
+        .get(`http://localhost:5050/ressources/getCoursesByPo/${user.id}`)
+        .then((res) => {
+          setCourses(res.data);
+        });
+    };
 
-      if (end_date.current) {
-        end_date.current.value = dataPopUp.end_date;
-      }
-
-      if (nb_release.current) {
-        nb_release.current.value = dataPopUp.nb_release;
-      }
-    }
-
-        ws.onopen = () => {
-            console.log("WebSocket Client Connected");
-        };
-    }, [dataPopUp, user.id, ws]);
+    getCourse();
+  }, [dataPopUp, user.id, ws]);
 
   const createRoom = (roomData) => {
     const message = {
@@ -55,23 +49,16 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   };
 
   function validate() {
-    if (!classChoose || !start_date.current.value || !end_date.current.value) {
-      alert("Veuillez remplir tous les champs");
+    if (courseChoosed.data.title === "Tous les cours") {
+      alert("Veuillez remplir le champs");
     } else {
       onPopupData({
-        start_date: start_date.current.value,
-        end_date: end_date.current.value,
-        classChoose: classChoose,
+        courseChoose: courseChoosed,
       });
       createRoom({
         po_id: user.id,
         class: classChoose,
         name: user?.firstname,
-        settings: {
-          start_date: start_date.current.value,
-          end_date: end_date.current.value,
-          classChoose: classChoose,
-        },
       });
     }
   }
@@ -91,45 +78,28 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
       >
         <p>Paramétrage de la création de groupes</p>
         <FormControl sx={{ m: 1, minWidth: 120 }}>
-          <InputLabel id="demo-simple-select-helper-label">Classe</InputLabel>
+          <InputLabel id="demo-simple-select-helper-label">Cours</InputLabel>
           <Select
             variant="filled"
             id="input-class"
             sx={{ color: "text.primary" }}
-            value={classChoose}
-            onChange={(e) => setClassChoose(e.target.value)}
+            renderValue={(selected) => selected.data.title}
+            onChange={(e) => {
+              setClassChoose(e.target.value.data.courseClass.id);
+              setCourseChoosed(e.target.value);
+            }}
+            value={courseChoosed}
           >
-            <MenuItem value="L1-paris">L1-Paris</MenuItem>
-            <MenuItem value="L1-cergy">L1-Cergy</MenuItem>
-            <MenuItem value="L2-paris">L2-Paris</MenuItem>
-            <MenuItem value="L2-cergy">L2-Cergy</MenuItem>
-            <MenuItem value="L3-paris">L3-Paris</MenuItem>
-            <MenuItem value="L3-cergy">L3-Cergy</MenuItem>
-            <MenuItem value="M1-lead">M1-LeadDev</MenuItem>
-            <MenuItem value="M1-gaming">M1-Gaming</MenuItem>
-            <MenuItem value="M2-lead">M2-LeadDev</MenuItem>
-            <MenuItem value="M2-gaming">M2-Gaming</MenuItem>
+            {courses &&
+              courses.cours &&
+              courses.cours.length > 0 &&
+              courses.cours.map((course) => (
+                <MenuItem value={course} key={course.id}>
+                  {course.data.title + " | " + course.data.courseClass.name}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
-
-        <div className="date-sprint">
-          <div className="date-input">
-            <label>Date de début de Sprint</label>
-            <input
-              type="date"
-              defaultValue={dataPopUp ? dataPopUp.start_date : ""}
-              ref={start_date}
-            />
-          </div>
-          <div className="date-input">
-            <label>Date de fin de Sprint</label>
-            <input
-              type="date"
-              defaultValue={dataPopUp ? dataPopUp.end_date : ""}
-              ref={end_date}
-            />
-          </div>
-        </div>
         <div
           style={{
             display: "flex",
