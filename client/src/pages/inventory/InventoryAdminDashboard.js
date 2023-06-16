@@ -425,31 +425,36 @@ const InventoryAdminDashboard = () => {
     })();
   }, []);
 
-  const generatePdf = async (value) => {
+  const generatePdf = async (event, value) => {
     try {
       setPdfLoading("loading");
       setPdfCampus(value);
       let response;
 
-      if (value === "all") {
-        response = await fetch(
-          `${process.env.REACT_APP_SERVER_API}/inventory/pdfGenerator`
-        );
+      response = await fetch(
+        `${process.env.REACT_APP_SERVER_API}/inventory/generatePdf/${value}`
+      );
+
+      if (response.status === 400) {
+        toast.error("Erreur lors de la génération du PDF");
+        setPdfLoading("none");
+        setOpen((prev) => !prev);
+        setAnchorEl(anchorEl ? null : event.currentTarget);
+        return;
       } else {
-        response = await fetch(
-          `${process.env.REACT_APP_SERVER_API}/inventory/generatePdf/${value}`
-        );
+        const blob = await response.blob();
+        const downloadUrl = URL.createObjectURL(blob);
+        setDownloadLink(downloadUrl);
+        setPdfLoading("done");
+        toast.success("PDF généré avec succès");
+        return;
       }
-
-      console.log("Réponse du serveur :", response);
-
-      const blob = await response.blob();
-      const downloadUrl = URL.createObjectURL(blob);
-      setDownloadLink(downloadUrl);
-      setPdfLoading("done");
     } catch (error) {
-      console.error("Erreur lors de la génération du PDF :", error);
-      setPdfLoading("error");
+      console.log(error);
+      toast.error("Erreur lors de la génération du PDF");
+      setPdfLoading("none");
+      setOpen((prev) => !prev);
+      setAnchorEl(anchorEl ? null : event.currentTarget);
     }
   };
 
@@ -604,7 +609,7 @@ const InventoryAdminDashboard = () => {
                       fontFamily: "poppins-semibold",
                       boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
                     }}
-                    onClick={() => generatePdf("Cergy")}
+                    onClick={(event) => generatePdf(event, "Cergy")}
                   >
                     Cergy
                   </Button>
@@ -616,11 +621,23 @@ const InventoryAdminDashboard = () => {
                       fontFamily: "poppins-semibold",
                       boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
                     }}
-                    onClick={() => generatePdf("Paris")}
+                    onClick={(event) => generatePdf(event, "Pontoise")}
+                  >
+                    Pontoise
+                  </Button>
+                  <Button
+                    variant="contained"
+                    sx={{
+                      backgroundColor: "#ffffff",
+                      color: "#1A2027",
+                      fontFamily: "poppins-semibold",
+                      boxShadow: "0px 5px 10px 0px rgba(200, 200, 200, 0.05)",
+                    }}
+                    onClick={(event) => generatePdf(event, "Paris")}
                   >
                     Paris
                   </Button>
-                  <Button
+                  {/* <Button
                     variant="contained"
                     sx={{
                       backgroundColor: "#ffffff",
@@ -631,7 +648,7 @@ const InventoryAdminDashboard = () => {
                     onClick={() => generatePdf("all")}
                   >
                     Les deux
-                  </Button>
+                  </Button> */}
                 </div>
               ) : pdfLoading == "loading" ? (
                 <Typography sx={{p: 2, fontFamily: "poppins-semibold"}}>
@@ -642,7 +659,7 @@ const InventoryAdminDashboard = () => {
                   href={downloadLink}
                   download={
                     "inventaire_" +
-                    moment().format("DD-MM-YYYY") +
+                    moment().format("DD_MM_YYYY") +
                     "_" +
                     (pdfCampus === "all" ? "cergy_paris" : pdfCampus) +
                     ".pdf"

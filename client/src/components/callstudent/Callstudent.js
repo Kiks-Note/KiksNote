@@ -188,7 +188,7 @@ function AppelEleve({ callId }) {
           {users.map((user) => {
             return (
               <li className="clearfix">
-                <img src={user.image} alt="avatar" />
+                <img src={user.image} alt="avatar" className="avatar" />
                 <div className="about">
                   <div className="name">{user.firstname}</div>
                 </div>
