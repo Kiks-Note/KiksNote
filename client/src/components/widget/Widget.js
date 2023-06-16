@@ -9,29 +9,27 @@ function Widget({ handleOpen, image, text, path }) {
 
   return (
     <div className="home-dashboard-item" onClick={() => handleOpen()}>
-      <Link to={path}>
-        <img
-          src={image}
-          alt="illustration"
+      <img
+        src={image}
+        alt="illustration"
+        style={{
+          backgroundColor: theme.palette.custom.button,
+        }}
+      />
+      <div
+        className="home-dashboard-item-content"
+        style={{
+          backgroundColor: theme.palette.background.container,
+        }}
+      >
+        <p
           style={{
-            backgroundColor: theme.palette.custom.button,
-          }}
-        />
-        <div
-          className="home-dashboard-item-content"
-          style={{
-            backgroundColor: theme.palette.background.container,
+            color: theme.palette.text.primary,
           }}
         >
-          <p
-            style={{
-              color: theme.palette.text.primary,
-            }}
-          >
-            {text}
-          </p>
-        </div>
-      </Link>
+          {text}
+        </p>
+      </div>
     </div>
   );
 }

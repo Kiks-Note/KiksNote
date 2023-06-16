@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from "react";
-import {useTheme} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useTheme } from "@mui/material";
 import useFirebase from "../../hooks/useFirebase";
 import Modal from "./WidgetModal";
 import GridLayout from "react-grid-layout";
@@ -9,7 +9,7 @@ import axios from "axios";
 import "./Home.scss";
 
 function Home() {
-  const {user} = useFirebase();
+  const { user } = useFirebase();
   const theme = useTheme();
   const [layouts, setLayouts] = useState([]);
   const [edition, setEdition] = useState(false);
@@ -73,6 +73,7 @@ function Home() {
     setEdition(false);
     if (layouts) {
       const updatedLayouts = layouts.map((item) => {
+        console.log(item);
         return {
           ...item,
           static: true,
@@ -136,12 +137,12 @@ function Home() {
               removeLayout={removeLayout}
             />
             {edition && (
-              <h2 style={{marginLeft: "40%", color: "red"}} className="shaky">
+              <h2 style={{ marginLeft: "40%", color: "red" }} className="shaky">
                 Mode Edition
               </h2>
             )}
           </div>
-          <div style={{position: "relative"}}>
+          <div style={{ position: "relative" }}>
             <GridLayout
               className={"layout"}
               cols={14}
