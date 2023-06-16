@@ -39,8 +39,12 @@ import StudentsProjects from "./pages/ressources/students_project/StudentsProjec
 import Retrospective from "./pages/retrospective/Retrospective";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
+import useFirebase from "./hooks/useFirebase";
 
 function RoutesProvider() {
+  const {user} = useFirebase();
+  console.log(user);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -50,7 +54,7 @@ function RoutesProvider() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/askresetpassword" element={<AskResetPassword />} />
-          <Route path="*" element={<NotFound />} />
+          {/* <Route path="*" element={<NotFound />} /> */}
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
@@ -85,38 +89,52 @@ function RoutesProvider() {
           <Route path="/boardReview" element={<BoardReview />} />
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
-          <Route path="/inventory/ideas" element={<InventoryIdeas />} />
-          <Route path="/inventory/ideas/:status" element={<InventoryIdeas />} />
-          <Route path="/inventory/ideas/:status" element={<InventoryIdeas />} />
-          <Route path="/inventory/requests" element={<InventoryRequests />} />
-          <Route path="/inventory/devices" element={<InventoryDevices />} />
-          <Route
-            path="/inventory/statistics"
-            element={<InventoryStatistics />}
-          />
-          <Route
-            path="/inventory/pdfGenerator"
-            element={<InventoryPdfGenerator />}
-          />
-          <Route
-            path="/inventory/admin/dashboard"
-            element={<InventoryAdminDashboard />}
-          />
-          {/* <Route
-            path="/inventory/device/:deviceId"
-            element={<PhoneRequestDevice />}
-          /> */}
 
-          <Route path="/inventory/admin/list" element={<InventoryList />} />
-          <Route
-            path="/inventory/admin/borrowed"
-            element={<InventoryListBorrowed />}
-          />
-          <Route
-            path="/inventory/requests/:status"
-            element={<InventoryPendingRequests />}
-          />
-          <Route path="/deviceHistory/:deviceId" element={<DeviceHistory />} />
+          {user?.status === "pedago" && (
+            <>
+              <Route path="/inventory/ideas" element={<InventoryIdeas />} />
+              <Route
+                path="/inventory/ideas/:status"
+                element={<InventoryIdeas />}
+              />
+              <Route
+                path="/inventory/ideas/:status"
+                element={<InventoryIdeas />}
+              />
+              <Route
+                path="/inventory/requests"
+                element={<InventoryRequests />}
+              />
+              <Route path="/inventory/devices" element={<InventoryDevices />} />
+              <Route
+                path="/inventory/statistics"
+                element={<InventoryStatistics />}
+              />
+              <Route
+                path="/inventory/pdfGenerator"
+                element={<InventoryPdfGenerator />}
+              />
+              <Route
+                path="/inventory/admin/dashboard"
+                element={<InventoryAdminDashboard />}
+              />
+
+              <Route path="/inventory/admin/list" element={<InventoryList />} />
+              <Route
+                path="/inventory/admin/borrowed"
+                element={<InventoryListBorrowed />}
+              />
+              <Route
+                path="/inventory/requests/:status"
+                element={<InventoryPendingRequests />}
+              />
+              <Route
+                path="/deviceHistory/:deviceId"
+                element={<DeviceHistory />}
+              />
+            </>
+          )}
+
           <Route path="/calendrier" element={<Calendar />} />
           <Route path="/calendrier/:id" element={<CalendarPedago />} />
           <Route path="*" element={<NotFound />} />

@@ -55,7 +55,6 @@ const getPdfGenerator = async (req, res) => {
     id: doc.id,
     ...doc.data(),
   }));
-  console.log("Inventory Data:", inventoryData);
 
   try {
     // if (inventoryData.length === 0) {
@@ -80,9 +79,13 @@ const getPdfGeneratorCampus = async (req, res) => {
     ...doc.data(),
   }));
 
+  console.log("Inventory Data:", inventoryData.length);
+
   try {
-    if (inventoryData.length === 0) {
-      return res.status(400).send("Aucun matériel n'a été trouvé");
+    if (inventoryData.length <= 0) {
+      return res
+        .status(400)
+        .send("Aucun matériel n'a été trouvé pour ce campus");
     } else {
       generatePDF(inventoryData, res);
     }
