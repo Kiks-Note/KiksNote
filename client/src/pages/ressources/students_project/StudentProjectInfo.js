@@ -801,13 +801,13 @@ const StudentProjectInfo = () => {
                       width: "100%",
                     }}
                   >
-                    <Button
+                    {/* <Button
                       sx={{ margin: "20px" }}
                       onClick={handleOpenUploadVideoProject}
                       className={classes.btnVideoProject}
                     >
                       Video <VideocamIcon />
-                    </Button>
+                    </Button> */}
                     <Button
                       sx={{ margin: "20px" }}
                       onClick={() => handleClickOpenUpdateDialog()}

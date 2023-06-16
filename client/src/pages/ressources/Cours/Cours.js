@@ -88,6 +88,7 @@ const Cours = () => {
   const [courseOwner, setCourseOwner] = useState("");
   const [idSelectedOwner, setIdSelectedOwner] = useState("");
   const [selectedClass, setSelectedClass] = useState([]);
+  const [idSelectedClass, setIdSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
 
@@ -247,7 +248,7 @@ const Cours = () => {
       courseDescription === "" ||
       courseDateStart === "" ||
       courseDateEnd === "" ||
-      !selectedClass ||
+      idSelectedClass === "" ||
       idSelectedOwner === "" ||
       courseImageBase64 === ""
     ) {
@@ -262,7 +263,7 @@ const Cours = () => {
             dateStartSprint: courseDateStart,
             dateEndSprint: courseDateEnd,
             campus_numerique: courseCampusNumerique,
-            courseClass: selectedClass,
+            courseClass: idSelectedClass,
             owner: idSelectedOwner,
             private: coursePrivate,
             imageBase64: courseImageBase64,
@@ -489,6 +490,7 @@ const Cours = () => {
             setCoursePrivate={setCoursePrivate}
             selectedClass={selectedClass}
             setSelectedClass={setSelectedClass}
+            setIdSelectedClass={setIdSelectedClass}
             allclass={allclass}
             control={control}
             allpo={allpo}
@@ -611,39 +613,18 @@ const Cours = () => {
                                     display: "flex",
                                   }}
                                 >
-                                  {Array.isArray(course.data.courseClass) ? (
-                                    course.data.courseClass.map((classData) => (
-                                      <Chip
-                                        sx={{ marginRight: "1vh" }}
-                                        key={classData.id}
-                                        label={
-                                          <>
-                                            <div style={{ display: "flex" }}>
-                                              <Typography>
-                                                {classData.name}
-                                              </Typography>
-                                              <SchoolIcon />
-                                            </div>
-                                          </>
-                                        }
-                                      />
-                                    ))
-                                  ) : (
-                                    <Chip
-                                      sx={{ marginRight: "1vh" }}
-                                      key={course.data.courseClass.id}
-                                      label={
-                                        <>
-                                          <div style={{ display: "flex" }}>
-                                            <Typography>
-                                              {course.data.courseClass.name}
-                                            </Typography>
-                                            <SchoolIcon />
-                                          </div>
-                                        </>
-                                      }
-                                    />
-                                  )}
+                                  <Chip
+                                    label={
+                                      <>
+                                        <div style={{ display: "flex" }}>
+                                          <Typography>
+                                            {course.data.courseClass.name}
+                                          </Typography>
+                                          <SchoolIcon />
+                                        </div>
+                                      </>
+                                    }
+                                  ></Chip>
                                 </div>
                                 <Chip
                                   sx={{ marginTop: "1vh" }}
@@ -828,38 +809,18 @@ const Cours = () => {
                                   display: "flex",
                                 }}
                               >
-                                {Array.isArray(course.data.courseClass) ? (
-                                  course.data.courseClass.map((classData) => (
-                                    <Chip
-                                      sx={{ marginRight: "1vh" }}
-                                      key={classData.id}
-                                      label={
-                                        <>
-                                          <div style={{ display: "flex" }}>
-                                            <Typography>
-                                              {classData.name}
-                                            </Typography>
-                                            <SchoolIcon />
-                                          </div>
-                                        </>
-                                      }
-                                    />
-                                  ))
-                                ) : (
-                                  <Chip
-                                    key={course.data.courseClass.id}
-                                    label={
-                                      <>
-                                        <div style={{ display: "flex" }}>
-                                          <Typography>
-                                            {course.data.courseClass.name}
-                                          </Typography>
-                                          <SchoolIcon />
-                                        </div>
-                                      </>
-                                    }
-                                  />
-                                )}
+                                <Chip
+                                  label={
+                                    <>
+                                      <div style={{ display: "flex" }}>
+                                        <Typography>
+                                          {course.data.courseClass.name}
+                                        </Typography>
+                                        <SchoolIcon />
+                                      </div>
+                                    </>
+                                  }
+                                ></Chip>
                               </div>
                               <Chip
                                 sx={{ marginTop: "1vh" }}
@@ -998,35 +959,18 @@ const Cours = () => {
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
-                          {Array.isArray(course.data.courseClass) ? (
-                            course.data.courseClass.map((classData) => (
-                              <Chip
-                                key={classData.id}
-                                label={
-                                  <>
-                                    <div style={{ display: "flex" }}>
-                                      <Typography>{classData.name}</Typography>
-                                      <SchoolIcon />
-                                    </div>
-                                  </>
-                                }
-                              />
-                            ))
-                          ) : (
-                            <Chip
-                              key={course.data.courseClass.id}
-                              label={
-                                <>
-                                  <div style={{ display: "flex" }}>
-                                    <Typography>
-                                      {course.data.courseClass.name}
-                                    </Typography>
-                                    <SchoolIcon />
-                                  </div>
-                                </>
-                              }
-                            />
-                          )}
+                          <Chip
+                            label={
+                              <>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>
+                                    {course.data.courseClass.name}
+                                  </Typography>
+                                  <SchoolIcon />
+                                </div>
+                              </>
+                            }
+                          ></Chip>
                           <Chip
                             avatar={
                               <Avatar
@@ -1152,35 +1096,18 @@ const Cours = () => {
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
-                          {Array.isArray(course.data.courseClass) ? (
-                            course.data.courseClass.map((classData) => (
-                              <Chip
-                                key={classData.id}
-                                label={
-                                  <>
-                                    <div style={{ display: "flex" }}>
-                                      <Typography>{classData.name}</Typography>
-                                      <SchoolIcon />
-                                    </div>
-                                  </>
-                                }
-                              />
-                            ))
-                          ) : (
-                            <Chip
-                              key={course.data.courseClass.id}
-                              label={
-                                <>
-                                  <div style={{ display: "flex" }}>
-                                    <Typography>
-                                      {course.data.courseClass.name}
-                                    </Typography>
-                                    <SchoolIcon />
-                                  </div>
-                                </>
-                              }
-                            />
-                          )}
+                          <Chip
+                            label={
+                              <>
+                                <div style={{ display: "flex" }}>
+                                  <Typography>
+                                    {course.data.courseClass.name}
+                                  </Typography>
+                                  <SchoolIcon />
+                                </div>
+                              </>
+                            }
+                          ></Chip>
                           <Chip
                             avatar={
                               <Avatar

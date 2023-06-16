@@ -208,7 +208,6 @@ const getInstructorById = async (req, res) => {
     res.status(500).send("Erreur lors de la récupération de l'instructeur.");
   }
 };
-
 const createCours = async (req, res) => {
   try {
     const {
@@ -217,27 +216,20 @@ const createCours = async (req, res) => {
       dateStartSprint,
       dateEndSprint,
       campus_numerique,
-      courseClass = [],
+      courseClass,
       owner,
       private,
       imageBase64,
     } = req.body;
 
-    const courseClassData = [];
-    for (const classId of courseClass) {
-      const classRef = await db.collection("class").doc(classId).get();
-      if (classRef.exists) {
-        const classData = {
-          id: classRef.id,
-          cursus: classRef.data().cursus,
-          name: classRef.data().name,
-          promo: classRef.data().promo,
-          site: classRef.data().site,
-        };
+    const courseClassRef = await db.collection("class").doc(courseClass).get();
 
-        courseClassData.push(classData);
-      }
+    if (!courseClassRef.exists) {
+      return res.status(404).send("Classe non trouvée");
     }
+
+    const courseClassData = courseClassRef.data();
+    courseClassData.id = courseClassRef.id;
 
     const ownerRef = await db.collection("users").doc(owner).get();
 
@@ -266,10 +258,7 @@ const createCours = async (req, res) => {
         imageBase64.replace(/^data:image\/\w+;base64,/, ""),
         "base64"
       );
-      const folderName = courseClassData
-        .map((classData) => classData.name.replace(/ /g, "-"))
-        .join("-");
-      const file = bucket.file(`cours/${folderName}/${title}/${fileName}`);
+      const file = bucket.file(`${courseClass}/${title}/${fileName}`);
 
       const options = {
         metadata: {

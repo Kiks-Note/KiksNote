@@ -91,7 +91,7 @@ const UploadVideoPlayerDialog = (props) => {
         <DialogContent>
           <input type="file" accept="video/*" onChange={handleVideoUpload} />
           {selectedVideo && (
-            <Player ref={playerRef} autoPlay>
+            <Player ref={playerRef} autoPlay muted>
               <source src={selectedVideoUrl} />
             </Player>
           )}
