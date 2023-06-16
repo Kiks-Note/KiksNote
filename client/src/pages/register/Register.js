@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState} from "react";
+import {useNavigate} from "react-router-dom";
 
 import {
   TextField,
@@ -15,15 +15,15 @@ import {
   useTheme,
 } from "@mui/material";
 
-import { parseISO, isValid } from "date-fns";
-import { format } from "date-fns";
+import {parseISO, isValid} from "date-fns";
+import {format} from "date-fns";
 
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import MailIcon from "@mui/icons-material/Mail";
 import CalendarMonthRoundedIcon from "@mui/icons-material/CalendarMonthRounded";
 import HttpsRoundedIcon from "@mui/icons-material/HttpsRounded";
 
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import axios from "axios";
@@ -83,7 +83,7 @@ const Register = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/classes")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/classes`)
         .then((res) => {
           setAllclass(res.data);
         })
@@ -106,7 +106,7 @@ const Register = () => {
       }
     }
     await axios
-      .post("http://212.73.217.176:5050/auth/signup", {
+      .post(`${process.env.REACT_APP_SERVER_API}/auth/signup`, {
         userEmail: userEmail,
         userPassword: userPassword,
         userFirstName: userFirstName,
@@ -296,7 +296,7 @@ const Register = () => {
   };
 
   const handleDateChange = (event) => {
-    const { value } = event.target;
+    const {value} = event.target;
     const parsedDate = parseISO(value);
 
     if (isValid(parsedDate)) {
@@ -318,7 +318,7 @@ const Register = () => {
     <div className="register">
       <div
         className="register-header"
-        style={{ backgroundColor: theme.palette.background.container }}
+        style={{backgroundColor: theme.palette.background.container}}
       >
         <div className="container-register">
           <Typography
@@ -358,7 +358,7 @@ const Register = () => {
                 defaultValue={userLastName}
                 onChange={(e) => setUserLastName(e.target.value)}
                 sx={{
-                  input: { color: "text.primary" },
+                  input: {color: "text.primary"},
                 }}
                 error={errorLastName}
                 helperText={messageLastName}
@@ -390,7 +390,7 @@ const Register = () => {
                 error={errorFirstName}
                 helperText={messageFirstName}
                 sx={{
-                  input: { color: "text.primary" },
+                  input: {color: "text.primary"},
                 }}
               />
             </Container>
@@ -421,7 +421,7 @@ const Register = () => {
                 error={errorEmail}
                 helperText={messageEmail}
                 sx={{
-                  input: { color: "text.primary" },
+                  input: {color: "text.primary"},
                 }}
               />
             </Container>
@@ -446,7 +446,7 @@ const Register = () => {
                 type="date"
                 fullWidth
                 sx={{
-                  input: { color: "text.primary" },
+                  input: {color: "text.primary"},
                 }}
                 id="input-birthdate"
                 value={userBirthDate ? format(userBirthDate, "yyyy-MM-dd") : ""}
@@ -481,7 +481,7 @@ const Register = () => {
                 defaultValue={userPassword}
                 onChange={(e) => setUserPassword(e.target.value)}
                 sx={{
-                  input: { color: "text-primary" },
+                  input: {color: "text-primary"},
                 }}
                 error={errorPassword}
                 helperText={messagePassword}
@@ -513,7 +513,7 @@ const Register = () => {
                 defaultValue={userConfirmPassword}
                 onChange={(e) => setUserConfirmPassword(e.target.value)}
                 sx={{
-                  input: { color: "text.primary" },
+                  input: {color: "text.primary"},
                 }}
                 error={errorConfirmPassword}
                 helperText={messageConfirmPassword}
@@ -527,12 +527,12 @@ const Register = () => {
                 alignItems: "center",
               }}
             >
-              <FormControl sx={{ m: 1, minWidth: 120 }} error={errorStatus}>
+              <FormControl sx={{m: 1, minWidth: 120}} error={errorStatus}>
                 <InputLabel>Status</InputLabel>
                 <Select
                   variant="filled"
                   id="input-status"
-                  sx={{ color: "text.primary" }}
+                  sx={{color: "text.primary"}}
                   label="Status"
                   value={userStatus}
                   onChange={(e) => setUserStatus(e.target.value)}
@@ -546,7 +546,7 @@ const Register = () => {
                 )}
               </FormControl>
               {userStatus === "etudiant" ? (
-                <FormControl sx={{ m: 1, minWidth: 120 }} error={errorClass}>
+                <FormControl sx={{m: 1, minWidth: 120}} error={errorClass}>
                   <Select
                     value={selectedStudentClass}
                     onChange={(event) => {

@@ -14,10 +14,10 @@ import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import axios from "axios";
 import * as React from "react";
-import { useEffect, useState } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import {useEffect, useState} from "react";
+import toast, {Toaster} from "react-hot-toast";
 
-export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
+export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [photo, setPhoto] = useState("");
@@ -38,7 +38,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
     };
     try {
       const response = await axios.post(
-        `http://212.73.217.176:5050/blog/newblog`,
+        `${process.env.REACT_APP_SERVER_API}/blog/newblog`,
         blog
       );
 
@@ -85,7 +85,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
         </IconButton>
         <>
           <TextField
-            sx={{ marginBottom: 2 }}
+            sx={{marginBottom: 2}}
             id="outlined-search"
             type={"text"}
             name="Titre"
@@ -93,11 +93,11 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             fullWidth
-            InputLabelProps={{ className: "inputLabel" }}
-            InputProps={{ className: "input" }}
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
           />
           <TextField
-            sx={{ marginBottom: 2 }}
+            sx={{marginBottom: 2}}
             id="outlined-search"
             type={"text"}
             name="Description"
@@ -105,12 +105,12 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             fullWidth
-            InputLabelProps={{ className: "inputLabel" }}
-            InputProps={{ className: "input" }}
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
           />
 
           <TextField
-            sx={{ marginBottom: 2 }}
+            sx={{marginBottom: 2}}
             id="outlined-search"
             label="Image"
             type={"text"}
@@ -118,8 +118,8 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
             value={photo}
             onChange={(e) => setPhoto(e.target.value)}
             fullWidth
-            InputLabelProps={{ className: "inputLabel" }}
-            InputProps={{ className: "input" }}
+            InputLabelProps={{className: "inputLabel"}}
+            InputProps={{className: "input"}}
           />
           {photo && (
             <>
@@ -134,7 +134,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
                 Aperçu de l'image :
               </Typography>
               <CardMedia
-                sx={{ marginBottom: 2, borderRadius: 2 }}
+                sx={{marginBottom: 2, borderRadius: 2}}
                 component="img"
                 height="140"
                 image={photo ? photo : ""}
@@ -145,7 +145,7 @@ export default function SideBarModify({ open, toggleDrawerModify, deviceId }) {
 
           <Button
             variant="contained"
-            sx={{ marginBottom: 2 }}
+            sx={{marginBottom: 2}}
             fullWidth
             onClick={(e) => {
               newBlog(e);

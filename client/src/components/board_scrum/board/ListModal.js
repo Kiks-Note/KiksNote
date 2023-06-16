@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import PropTypes from "prop-types";
 import axios from "axios";
 import CloseIcon from "@mui/icons-material/Close";
-import { useForm, Controller } from "react-hook-form";
-import { yupResolver } from "@hookform/resolvers/yup";
+import {useForm, Controller} from "react-hook-form";
+import {yupResolver} from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import {
   Box,
@@ -49,7 +49,7 @@ export default function ListModal({
   labelList,
   label,
 }) {
-  const { assignedTo } = info;
+  const {assignedTo} = info;
   const [selectedAssignees, setSelectedAssignees] = useState(assignedTo);
   const [labels, setLabels] = useState([]);
   const allowedColumnIds = ["0", "1", "5", "6"];
@@ -59,7 +59,7 @@ export default function ListModal({
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: {errors},
   } = useForm({
     resolver: yupResolver(schema),
   });
@@ -90,7 +90,7 @@ export default function ListModal({
         };
       }
       axios.put(
-        "http://212.73.217.176:5050/dashboard/" +
+        `${process.env.REACT_APP_SERVER_API}/dashboard/` +
           dashboardId +
           "/board/" +
           boardId +
@@ -138,7 +138,7 @@ export default function ListModal({
       }
 
       await axios.put(
-        "http://212.73.217.176:5050/dashboard/" +
+        `${process.env.REACT_APP_SERVER_API}/dashboard/` +
           dashboardId +
           "/board/" +
           boardId +
@@ -180,9 +180,7 @@ export default function ListModal({
           height: "100%",
         }}
       >
-        <Card
-          sx={[{ width: "30vh", maxWidth: "60%", minWidth: "fit-content" }]}
-        >
+        <Card sx={[{width: "30vh", maxWidth: "60%", minWidth: "fit-content"}]}>
           <CardHeader
             title={titleModal}
             action={
@@ -191,7 +189,7 @@ export default function ListModal({
               </IconButton>
             }
           />
-          <Box sx={{ m: 2 }}>
+          <Box sx={{m: 2}}>
             {type === "stories" && (
               <List>
                 {stories.map((item) => (
@@ -215,7 +213,7 @@ export default function ListModal({
             {type === "membres" && (
               <Box>
                 <h2>Membres</h2>
-                <FormControl sx={{ minWidth: 200 }}>
+                <FormControl sx={{minWidth: 200}}>
                   <InputLabel id="assigned-to-label">Membres</InputLabel>
                   <Select
                     labelId="assigned-to-label"
@@ -235,12 +233,12 @@ export default function ListModal({
               </Box>
             )}
             {type === "labels" && (
-              <Box sx={{ display: "flex", flexDirection: "column" }}>
+              <Box sx={{display: "flex", flexDirection: "column"}}>
                 <Controller
                   name="labels"
                   control={control}
                   defaultValue={label}
-                  render={({ field: { onChange, value } }) => (
+                  render={({field: {onChange, value}}) => (
                     <Autocomplete
                       multiple
                       isOptionEqualToValue={(option, value) =>
@@ -254,8 +252,8 @@ export default function ListModal({
                         value.map((option, index) => (
                           <Chip
                             label={option.name}
-                            {...getTagProps({ index })}
-                            style={{ backgroundColor: option.color }}
+                            {...getTagProps({index})}
+                            style={{backgroundColor: option.color}}
                             onDelete={() => {
                               const newValues = [...value];
                               newValues.splice(index, 1);
@@ -268,7 +266,7 @@ export default function ListModal({
                         <TextField
                           {...params}
                           label="Labels"
-                          sx={{ marginBottom: 2 }}
+                          sx={{marginBottom: 2}}
                           error={!!errors.labels}
                           helperText={errors.labels?.message}
                         />

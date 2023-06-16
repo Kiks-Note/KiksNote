@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import {
   Button,
@@ -12,28 +12,11 @@ import {
   Typography,
 } from "@mui/material";
 
-import { Editor } from "react-draft-wysiwyg";
-import { EditorState, convertToRaw } from "draft-js";
-import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
-import draftToHtml from "draftjs-to-html";
-
 import Dropzone from "../Dropzone";
 
 import "./../../../pages/ressources/students_project/StudentsProjects";
 
 const CreateProjectDialog = (props) => {
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
-  const [inputEditorState, setInputEditorState] = useState("");
-
-  const handleEditorChange = (e) => {
-    setEditorState(e);
-    setInputEditorState(draftToHtml(convertToRaw(e.getCurrentContent())));
-  };
-
-  useEffect(() => {
-    props.setDescriptionProject(inputEditorState);
-  }, [inputEditorState]);
-
   return (
     <Dialog
       open={props.open}
@@ -63,22 +46,15 @@ const CreateProjectDialog = (props) => {
             defaultValue={props.repoProjectLink}
             onChange={(event) => props.setRepoProjectLink(event.target.value)}
           />
-          <Editor
+
+          <TextField
             placeholder={`Commencer à écrire une petite description de ton projet ${props.nameProject}`}
-            onEditorStateChange={handleEditorChange}
-            editorState={editorState}
-            toolbarClassName="toolbarClassName"
-            wrapperClassName="wrapperClassName"
-            editorClassName="editorClassName"
-            editorStyle={{
-              border: "1px solid black",
-              minHeight: "180px",
-              height: "300px",
-              padding: "10px",
-              borderRadius: "5px",
-              boxShadow: "0 0 10px 0 rgba(0,0,0,0.2)",
-              marginBottom: "16px",
-            }}
+            label="Description de votre Projet"
+            fullWidth
+            multiline
+            rows={5}
+            defaultValue={props.descriptionProject}
+            onChange={(e) => props.setDescriptionProject(e.target.value)}
           />
 
           <div className="dropzone-coursimg-container">

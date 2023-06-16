@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import Button from "@mui/material/Button";
-import { TextField, Typography } from "@mui/material";
+import {TextField, Typography} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
 import PostIt from "../../components/agile/PostIt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import axios from "axios";
-import { w3cwebsocket } from "websocket";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {w3cwebsocket} from "websocket";
+import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 import html2pdf from "html2pdf.js";
 import "../../components/agile/Postit.scss";
 import { Rings } from "react-loader-spinner";
@@ -108,45 +108,8 @@ export default function EmpathyMap({ dashboardId, actorId }) {
     }
   };
   const addPostIt = (columnId) => {
-    // axios.put("http://212.73.217.176:5050/agile/" + dashboardId + "/empathy_map", {
-    //   content: newPostItContent,
-    // });
-    const newPostIt = {
-      id: `postIt-${Date.now()}`,
-      content: newPostItContent,
-    };
-
-    // Add the new PostIt to the specific column
-    const updatedItems = [...columns[columnId].items, newPostIt];
-    const updatedColumn = {
-      ...columns[columnId],
-      items: updatedItems,
-    };
-
-    setColumns({
-      ...columns,
-      [columnId]: updatedColumn,
-    });
-
-    setShowTextField(false); // Hide the TextField and button after adding the post-it
-    setNewPostItContent(""); // Reset the new post-it content
-  };
-  //!TODO
-  const deletePostIt = async () => {
-    try {
-      await axios.delete(
-        "http://212.73.217.176:5050/agile/" +
-          dashboardId +
-          "/empathy/:id" +
-          "/postit/"
-      );
-    } catch (error) {
-      // Gérer les erreurs
-    }
-  };
-  //!TODO
     axios.put(
-      "http://localhost:5050/agile/" +
+      `${process.env.REACT_APP_SERVER_API}/agile/` +
         dashboardId +
         "/empathy/" +
         actorId +
@@ -162,7 +125,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
   };
   async function changeCardIndex(newColumns) {
     await axios.put(
-      "http://212.73.217.176:5050/agile/" +
+      `${process.env.REACT_APP_SERVER_API}/agile/` +
         dashboardId +
         "/empathy/" +
         actorId +
@@ -206,13 +169,17 @@ export default function EmpathyMap({ dashboardId, actorId }) {
         const formData = new FormData();
         formData.append(
           "pdfFile",
-          new Blob([buffer], { type: "application/pdf" }),
+          new Blob([buffer], {type: "application/pdf"}),
           "empathy-map.pdf"
         );
         formData.append("fieldName", "empathy_map");
         formData.append("actorId", actorId);
 
-        return axios.post("http://212.73.217.176:5050/agile/empathy_map", formData);
+        return axios.post(
+
+          `${process.env.REACT_APP_SERVER_API}/agile/` + dashboardId + "/folder",
+          formData
+        );
       })
       .then((response) => {
         toast.success("Votre empathy a été ajouté a votre dossier agile", {
@@ -408,4 +375,4 @@ export default function EmpathyMap({ dashboardId, actorId }) {
       )}
     </>
   );
-}
+})}

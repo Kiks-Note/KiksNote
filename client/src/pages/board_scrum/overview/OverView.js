@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { Typography, Divider, Card } from "@mui/material";
+import { Typography, Divider, Card, Menu, MenuItem, IconButton } from "@mui/material";
 
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
@@ -9,7 +9,7 @@ import StatTab from "../../../components/board_scrum/overview/StatTab";
 import StoryList from "../../../components/board_scrum/overview/StoryList";
 import { w3cwebsocket } from "websocket";
 import PropTypes from "prop-types";
-import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
+import {setActiveTab, addTab} from "../../../redux/slices/tabBoardSlice";
 
 import ApexChart from "./ApexChart";
 import BurndownChart from "./BurnDown";
@@ -17,6 +17,7 @@ import { CircularProgressbarWithChildren, buildStyles } from "react-circular-pro
 import "react-circular-progressbar/dist/styles.css";
 import RadialSeparators from "../../../components/board_scrum/overview/RadialSeparator";
 
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import EngineeringIcon from "@mui/icons-material/Engineering";
@@ -26,10 +27,12 @@ import BarChart from "../../../components/board_scrum/overview/BarChart";
 import { withStyles } from "@material-ui/core/styles";
 import Timer from "../../../components/board_scrum/overview/Timer";
 
+import Roadmap from "./Roadmap";
 
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
 };
+
 function OverView({ id }) {
   const [displayedBoards, setDisplayedBoards] = useState([]);
   var [releases, setRelease] = useState({});
@@ -63,22 +66,13 @@ function OverView({ id }) {
   };
   const CustomDivider = withStyles(dividerStyle)(Divider);
 
-
-  const dividerStyle = {
-    root: {
-      height: "1px",
-      backgroundColor: "gray",
-    },
-  };
-  const CustomDivider = withStyles(dividerStyle)(Divider);
-
   const moveToBacklog = () => {
     const pdfViewTab = {
       id: "Backlog" + id,
       label: "Backlog ",
       closeable: true,
       component: "PdfView",
-      data: { dashboardId: id, pdfLink: pdfLink },
+      data: {dashboardId: id, pdfLink: pdfLink},
     };
     dispatch(addTab(pdfViewTab));
     dispatch(setActiveTab(pdfViewTab.id));
@@ -107,16 +101,6 @@ function OverView({ id }) {
       data: { boardId: board.id, dashboardId: id },
     };
 
-
-  const moveToBoard = (board) => {
-    const boardTab = {
-      id: board.id,
-      label: `Board ${board.name}`,
-      closeable: true,
-      component: "Board",
-      data: { boardId: board.id, dashboardId: id },
-    };
-
     dispatch(addTab(boardTab));
     dispatch(setActiveTab(boardTab.id));
     console.log("moved ?");
@@ -130,10 +114,11 @@ function OverView({ id }) {
     setAnchorEl(null);
   };
 
-
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/overview`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/overview`
+      );
 
       wsComments.onopen = function (e) {
         wsComments.send(JSON.stringify(id));
@@ -153,7 +138,7 @@ function OverView({ id }) {
           const data = { begin: 0, end: 4 };
           setDisplayedBoards(data);
         } else {
-          const data = { begin: 0, end: data.boards.length };
+          // const data = { begin: 0, end: data.boards.length };
           // const data = { begin: 0, end: data.boards.length };
           setDisplayedBoards(data);
         }
@@ -238,24 +223,11 @@ function OverView({ id }) {
           <IconButton onClick={handleClick}>
             <MoreVertIcon />
           </IconButton>
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={moveToAgileHome}>
-              Accéder à la partie Agile
-            </MenuItem>
-            {pdfLink.length != 0 && (
-              <MenuItem onClick={moveToBacklog}>Accéder au Backlog</MenuItem>
-            )}
+          <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
+            <MenuItem onClick={moveToAgileHome}>Accéder à la partie Agile</MenuItem>
+            {pdfLink.length != 0 && <MenuItem onClick={moveToBacklog}>Accéder au Backlog</MenuItem>}
             <MenuItem>
-              <Roadmap
-                stories={stories}
-                releases={releases}
-                boards={boards}
-                dashboardId={id}
-              />
+              <Roadmap stories={stories} releases={releases} boards={boards} dashboardId={id} />
             </MenuItem>
           </Menu>
         </Box>
@@ -279,7 +251,6 @@ function OverView({ id }) {
                 justifyContent: "center",
               }}
             >
-
               <Typography varian="h5" style={{ textAlign: "center" }}>
                 Participation
               </Typography>
@@ -289,10 +260,7 @@ function OverView({ id }) {
                   marginTop: "5vh",
                 }}
               >
-                <BarChart
-                  participation={getParticipation()}
-                  label={"Nombre de taches"}
-                />
+                <BarChart participation={getParticipation()} label={"Nombre de taches"} />
               </Box>
             </Box>
 
@@ -313,11 +281,9 @@ function OverView({ id }) {
               <Box
                 style={{
                   display: "flex",
-
                 }}
               >
                 <ApexChart selectedBoard={selectedBoard} />
-
 
                 <Box
                   sx={{
@@ -327,7 +293,6 @@ function OverView({ id }) {
                     justifyContent: "center",
                   }}
                 >
-
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <div
                       style={{
@@ -366,8 +331,7 @@ function OverView({ id }) {
                   </div>
                 </Box>
               </Box>
-
-            </Card>
+            </Box>
             <Card
               style={{
                 width: "40%",

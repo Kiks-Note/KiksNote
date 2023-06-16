@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { Typography, Button, Grid, Box } from "@material-ui/core";
-import { Link } from "react-router-dom";
-import { w3cwebsocket } from "websocket";
+import {useState, useEffect} from "react";
+import {Typography, Button, Grid, Box} from "@material-ui/core";
+import {Link} from "react-router-dom";
+import {w3cwebsocket} from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 
 export default function CalendarViewPedago() {
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const [allClass, setAllClass] = useState([]);
   useEffect(() => {
     const fetchSocket = async () => {
       const wsComments = new w3cwebsocket(
-        `ws://212.73.217.176:5050/calendar/pedago`
+        `${process.env.REACT_APP_SERVER_API_WS}/calendar/pedago`
       );
 
       wsComments.onopen = function (e) {

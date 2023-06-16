@@ -1,23 +1,24 @@
-import React, { useEffect, useState } from "react";
-import CardBlog from "../../components/blog/CardBlog";
-import { Box, Grid, Button } from "@mui/material";
-import { w3cwebsocket } from "websocket";
-import { Toaster } from "react-hot-toast";
-import { Rings } from "react-loader-spinner";
-import useFirebase from "../../hooks/useFirebase";
-import Typography from "@mui/material/Typography";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import {useTheme} from "@mui/material/styles";
+import axios from "axios";
+import React, {useEffect, useState} from "react";
+import {Toaster} from "react-hot-toast";
+import {Rings} from "react-loader-spinner";
+import {useSnapCarousel} from "react-snap-carousel";
 import SwipeableViews from "react-swipeable-views";
-import { autoPlay } from "react-swipeable-views-utils";
-import { useTheme } from "@mui/material/styles";
+import {autoPlay} from "react-swipeable-views-utils";
+import {w3cwebsocket} from "websocket";
+import CardBlog from "../../components/blog/CardBlog";
+import BlogRepartition from "../../components/blog/Repartition.js";
 import TopCreatorsChart from "../../components/blog/TopCreator.js";
 import MostParticipantsChart from "../../components/blog/TopEvent.js";
-import SplitButtonChoice from "../../components/blog/SplitButtonChoice";
+import SplitButtonChoice from "../../components/blog/SplitButtonChoice.js";
+import useFirebase from "../../hooks/useFirebase";
 import "./Blog.css";
-import BlogRepartition from "../../components/blog/Repartition.js";
-import { useSnapCarousel } from "react-snap-carousel";
-import axios from "axios";
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
@@ -25,7 +26,7 @@ function Blog() {
   const theme = useTheme();
   const [blog, setBlog] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const [tags, setTags] = useState([]);
 
   const stats = [
@@ -53,7 +54,7 @@ function Blog() {
     setActiveStep(step);
   };
   useEffect(() => {
-    const ws = new w3cwebsocket("ws://212.73.217.176:5050/blog");
+    const ws = new w3cwebsocket(`${process.env.REACT_APP_SERVER_API_WS}/blog`);
 
     ws.onopen = function (e) {
       console.log("[open] Connection established");
@@ -74,7 +75,7 @@ function Blog() {
       blogs.forEach((blog) => {
         const dateCreation = new Date(
           blog.created_at._seconds * 1000 +
-          blog.created_at._nanoseconds / 100000
+            blog.created_at._nanoseconds / 100000
         ).toLocaleString("fr", dateOptions);
         const userLiked = blog.like.includes(user.id);
         const userDisliked = blog.dislike.includes(user.id);
@@ -113,7 +114,9 @@ function Blog() {
 
   const fetchTags = async () => {
     try {
-      const response = await axios.get("http://212.73.217.176:5050/blog/tag");
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API}/blog/tag`
+      );
       const tags = response.data;
       setTags(tags);
     } catch (error) {
@@ -125,12 +128,12 @@ function Blog() {
   blog.sort((a, b) => b.created_at.localeCompare(a.created_at)); // sort by date
 
   const AdvancedCarouselPending = () => {
-    const { scrollRef, pages, activePageIndex, next, prev, goTo } =
+    const {scrollRef, pages, activePageIndex, next, prev, goTo} =
       useSnapCarousel();
     return (
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{mt: 2}}>
         <Box>
-          <Typography variant="h4" sx={{ textAlign: "center" }}>
+          <Typography variant="h4" sx={{textAlign: "center"}}>
             En attente de validation
           </Typography>
         </Box>
@@ -147,8 +150,8 @@ function Blog() {
               user.status !== "etudiant"
                 ? blog.visibility === "pending"
                 : user.email === blog.created_by
-                  ? blog.visibility === "pending"
-                  : undefined
+                ? blog.visibility === "pending"
+                : undefined
             )
             .map((filtered) => (
               <Box
@@ -180,9 +183,9 @@ function Blog() {
           <Button onClick={() => prev()}>
             <KeyboardArrowLeft />
           </Button>
-          <ol style={{ display: "flex", padding: "0px" }}>
+          <ol style={{display: "flex", padding: "0px"}}>
             {pages.map((_, i) => (
-              <li key={i} style={{ listStyle: "none" }}>
+              <li key={i} style={{listStyle: "none"}}>
                 <button
                   onClick={() => goTo(i)}
                   color="red"
@@ -210,12 +213,12 @@ function Blog() {
   };
 
   const AdvancedCarouselTuto = () => {
-    const { scrollRef, pages, activePageIndex, next, prev, goTo } =
+    const {scrollRef, pages, activePageIndex, next, prev, goTo} =
       useSnapCarousel();
     return (
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{mt: 2}}>
         <Box>
-          <Typography variant="h4" sx={{ textAlign: "center" }}>
+          <Typography variant="h4" sx={{textAlign: "center"}}>
             Tuto
           </Typography>
         </Box>
@@ -257,7 +260,7 @@ function Blog() {
               ))
           ) : (
             <Box>
-              <Typography variant="h6" sx={{ textAlign: "center" }}>
+              <Typography variant="h6" sx={{textAlign: "center"}}>
                 Pas de tuto disponible
               </Typography>
             </Box>
@@ -276,9 +279,9 @@ function Blog() {
             <Button onClick={() => prev()}>
               <KeyboardArrowLeft />
             </Button>
-            <ol style={{ display: "flex", padding: "0px" }}>
+            <ol style={{display: "flex", padding: "0px"}}>
               {pages.map((_, i) => (
-                <li key={i} style={{ listStyle: "none" }}>
+                <li key={i} style={{listStyle: "none"}}>
                   <button
                     onClick={() => goTo(i)}
                     color="red"
@@ -309,12 +312,12 @@ function Blog() {
   };
 
   const AdvancedCarouselBlog = () => {
-    const { scrollRef, pages, activePageIndex, next, prev, goTo } =
+    const {scrollRef, pages, activePageIndex, next, prev, goTo} =
       useSnapCarousel();
     return (
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{mt: 2}}>
         <Box>
-          <Typography variant="h4" sx={{ textAlign: "center" }}>
+          <Typography variant="h4" sx={{textAlign: "center"}}>
             Blog
           </Typography>
         </Box>
@@ -356,7 +359,7 @@ function Blog() {
               ))
           ) : (
             <Box>
-              <Typography variant="h6" sx={{ textAlign: "center" }}>
+              <Typography variant="h6" sx={{textAlign: "center"}}>
                 Pas de blog disponible
               </Typography>
             </Box>
@@ -375,9 +378,9 @@ function Blog() {
             <Button onClick={() => prev()}>
               <KeyboardArrowLeft />
             </Button>
-            <ol style={{ display: "flex", padding: "0px" }}>
+            <ol style={{display: "flex", padding: "0px"}}>
               {pages.map((_, i) => (
-                <li key={i} style={{ listStyle: "none" }}>
+                <li key={i} style={{listStyle: "none"}}>
                   <button
                     onClick={() => goTo(i)}
                     color="red"
@@ -408,12 +411,12 @@ function Blog() {
   };
 
   const AdvancedCarouselEvent = () => {
-    const { scrollRef, pages, activePageIndex, next, prev, goTo } =
+    const {scrollRef, pages, activePageIndex, next, prev, goTo} =
       useSnapCarousel();
     return (
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{mt: 2}}>
         <Box>
-          <Typography variant="h4" sx={{ textAlign: "center" }}>
+          <Typography variant="h4" sx={{textAlign: "center"}}>
             Évenements
           </Typography>
         </Box>
@@ -455,7 +458,7 @@ function Blog() {
               ))
           ) : (
             <Box>
-              <Typography variant="h6" sx={{ textAlign: "center" }}>
+              <Typography variant="h6" sx={{textAlign: "center"}}>
                 Pas d'événement disponible
               </Typography>
             </Box>
@@ -474,9 +477,9 @@ function Blog() {
             <Button onClick={() => prev()}>
               <KeyboardArrowLeft />
             </Button>
-            <ol style={{ display: "flex", padding: "0px" }}>
+            <ol style={{display: "flex", padding: "0px"}}>
               {pages.map((_, i) => (
-                <li key={i} style={{ listStyle: "none" }}>
+                <li key={i} style={{listStyle: "none"}}>
                   <button
                     onClick={() => goTo(i)}
                     color="red"
@@ -511,12 +514,12 @@ function Blog() {
       {!loading ? (
         <>
           <Toaster />
-          <Box sx={{ margin: 2 }}>
+          <Box sx={{margin: 2}}>
             <Box>
               <Box>
                 <SplitButtonChoice />
               </Box>
-              <Box sx={{ width: "93vw" }}>
+              <Box sx={{width: "93vw"}}>
                 {user.status !== "etudiant" && (
                   <Box
                     sx={{

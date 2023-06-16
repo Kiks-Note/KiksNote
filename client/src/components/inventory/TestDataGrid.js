@@ -26,7 +26,9 @@ export default function TestDataGrid() {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://212.73.217.176:5050/liveInventory");
+      const ws = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/liveInventory`
+      );
       ws.onmessage = (message) => {
         const data = JSON.parse(message.data);
         console.log(data);
@@ -52,7 +54,9 @@ export default function TestDataGrid() {
     setSnackBarOpen(false);
 
     await axios
-      .delete(`http://212.73.217.176:5050/inventory/device/${deviceId}`)
+      .delete(
+        `${process.env.REACT_APP_SERVER_API}/inventory/device/${deviceId}`
+      )
       .then((res) => {
         toast.success("Matériel supprimé avec succès");
       })

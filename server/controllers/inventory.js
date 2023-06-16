@@ -1,6 +1,8 @@
 const {db, FieldValue} = require("../firebase");
 const {parse} = require("url");
 const moment = require("moment");
+const generatePDF = require("./pdfGenerator");
+const path = require("path");
 
 const inventory = async (req, res) => {
   const docRef = db.collection("inventory");
@@ -11,6 +13,82 @@ const inventory = async (req, res) => {
     res.status(200).send(documents);
   } catch (err) {
     res.status(500).send(err);
+  }
+};
+
+const getInventoryStatistics = async (req, res) => {
+  const docRef = db.collection("inventory");
+  const snapshot = await docRef.orderBy("createdAt").limit(5).get();
+  const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+  try {
+    res.status(200).json(documents);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send("Une erreur est survenue lors de la récupération des données.");
+  }
+};
+
+const getInventoryRequestsStatistics = async (req, res) => {
+  const docRef = db.collection("inventory_requests");
+  const snapshot = await docRef.orderBy("deviceId").get();
+  const documents = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data()}));
+
+  try {
+    res.status(200).json(documents);
+  } catch (err) {
+    console.error(err);
+    res
+      .status(500)
+      .send("Une erreur est survenue lors de la récupération des données.");
+  }
+};
+
+const getPdfGenerator = async (req, res) => {
+  const docRef = db.collection("inventory");
+  const snapshot = await docRef.orderBy("createdAt").get();
+  console.log("Snapshot:", snapshot);
+
+  const inventoryData = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  console.log("Inventory Data:", inventoryData);
+
+  try {
+    // if (inventoryData.length === 0) {
+    //   return res.status(400).send("Aucun matériel n'a été trouvé");
+    // } else {
+    generatePDF(inventoryData, res);
+    // }
+  } catch (err) {
+    console.error("Erreur lors de la génération du PDF:", err);
+    res.status(500).send("Erreur lors de la génération du PDF");
+  }
+};
+
+const getPdfGeneratorCampus = async (req, res) => {
+  const {campus} = req.params;
+
+  const docRef = db.collection("inventory").where("campus", "==", campus);
+  const snapshot = await docRef.orderBy("createdAt").get();
+
+  const inventoryData = snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+
+  try {
+    if (inventoryData.length === 0) {
+      return res.status(400).send("Aucun matériel n'a été trouvé");
+    } else {
+      generatePDF(inventoryData, res);
+    }
+  } catch (err) {
+    console.error("Erreur lors de la génération du PDF:", err);
+    res.status(500).send("Erreur lors de la génération du PDF");
   }
 };
 
@@ -416,20 +494,20 @@ const getDeviceRequests = async (req, res) => {
 };
 
 const createIdea = async (req, res) => {
-  const {name, url, price, description, reason, createdBy} = req.body;
+  const {name, url, imageURL, price, description, reason, createdBy} = req.body;
 
-  if (!name || !url || !price || !reason || !createdBy) {
+  if (!name || !url || !imageURL || !price || !reason || !createdBy) {
     return res.status(400).send("Veuillez remplir tous les champs");
   }
 
   // verify url
-  const regex = new RegExp(
-    "^(https?://)?(www.)?([a-z0-9]+(-[a-z0-9]+)*.)+[a-z]{2,}$"
-  );
+  // const regex = new RegExp(
+  //   "^(https?://)?(www.)?([a-z0-9]+(-[a-z0-9]+)*.)+[a-z]{2,}$"
+  // );
 
-  if (!regex.test(url)) {
-    return res.status(400).send("Veuillez entrer une url valide");
-  }
+  // if (!regex.test(url)) {
+  //   return res.status(400).send("Veuillez entrer une url valide");
+  // }
 
   // verify price
   if (isNaN(price)) {
@@ -443,6 +521,7 @@ const createIdea = async (req, res) => {
 
     await docRef.set({
       url: url,
+      imageURL: imageURL,
       name: name,
       price: parseFloat(price.replace(",", ".")),
       description: description,
@@ -550,20 +629,39 @@ const getIdeaByUser = async (req, res) => {
 const makeIdeaComment = async (req, res) => {
   try {
     const {ideaId} = req.params;
-    const {comment, user} = req.body;
+    const {comment, userId} = req.body;
 
     const docRef = db.collection("inventory-ideas").doc(ideaId);
 
     await docRef.update({
       comments: FieldValue.arrayUnion({
         comment: comment,
-        user: user,
+        userId: userId,
         createdAt: new Date(),
       }),
     });
 
     res.status(200).send("Commentaire ajouté avec succès");
-  } catch (err) {}
+  } catch (err) {
+    res.status(500).send("Une erreur est survenue");
+    console.log(err);
+  }
+};
+
+const getIdea = async (req, res) => {
+  try {
+    const {ideaId} = req.params;
+
+    if (!ideaId) {
+      return res.status(400).send("Veuillez entrer un id");
+    }
+
+    const snapshot = await db.collection("inventory-ideas").doc(ideaId).get();
+
+    res.status(200).send(snapshot.data());
+  } catch (error) {
+    res.status(500).send("Une erreur est survenue");
+  }
 };
 
 const liveCategories = async (connection) => {
@@ -657,6 +755,23 @@ const borrowedList = async (connection) => {
     );
 };
 
+const getIdeaComments = async (connection) => {
+  connection.on("message", (message) => {
+    const value = JSON.parse(message.utf8Data).value; // Parse the received message
+
+    try {
+      db.collection("inventory-ideas")
+        .doc(value)
+        .onSnapshot((snapshot) => {
+          const idea = snapshot.data();
+          connection.sendUTF(JSON.stringify(idea.comments || []));
+        });
+    } catch (err) {
+      console.log(err);
+    }
+  });
+};
+
 module.exports = {
   inventory,
   inventoryLength,
@@ -685,7 +800,13 @@ module.exports = {
   refuseIdea,
   deleteIdea,
   getIdeaByUser,
+  getIdea,
   pendingRequests,
+  getIdeaComments,
+  getInventoryStatistics,
+  getInventoryRequestsStatistics,
+  getPdfGenerator,
+  getPdfGeneratorCampus,
   liveCategories,
   liveInventory,
   borrowedList,

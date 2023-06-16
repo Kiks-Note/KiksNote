@@ -58,13 +58,13 @@ function GroupsCreation() {
   const theme = useTheme();
 
   const ws = useMemo(() => {
-    return new w3cwebsocket("ws://212.73.217.176:5050/groupes/creation");
+    return new w3cwebsocket(`${process.env.REACT_APP_SERVER_API_WS}/groupes/creation`);
   }, []);
 
   const getStudents = useCallback(async () => {
     try {
       const res = await axios.get(
-        `http://212.73.217.176:5050/groupes/${classStudents}`
+        `${process.env.REACT_APP_SERVER_API}/groupes/${classStudents}`
       );
       setNumberOfStudentInclass(res.data.length);
       return res.data;
@@ -103,7 +103,7 @@ function GroupsCreation() {
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
       axios
-        .get(`http://212.73.217.176:5050/groupes/getRoom/${user?.class.id}`)
+        .get(`${process.env.REACT_APP_SERVER_API}/groupes/getRoom/${user?.class.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -128,7 +128,7 @@ function GroupsCreation() {
   const logToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://212.73.217.176:5050/groupes/getRoomPo/${user?.id}`)
+        .get(`${process.env.REACT_APP_SERVER_API}/groupes/getRoomPo/${user?.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -446,7 +446,7 @@ function GroupsCreation() {
     setShowSettings(false);
     setInRoom(true);
     setCourseChoose(data.courseChoose);
-    setClassStudents(data.courseChoose.data.courseClass.id);
+    setClassStudents(data.courseChoose.id);
   };
 
   const handleClosePopUp = (showFalse) => {
@@ -470,7 +470,7 @@ function GroupsCreation() {
     );
     ws.close();
     groupsKey.forEach((group) => {
-      axios.post(`http://212.73.217.176:5050/groupes/exportGroups`, {
+      axios.post(`${process.env.REACT_APP_SERVER_API}/groupes/exportGroups`, {
         students: columns[group].items.map((student) => ({
           id: student.id,
           firstname: student.firstname,
@@ -483,7 +483,7 @@ function GroupsCreation() {
 
     try {
       await axios.delete(
-        `http://212.73.217.176:5050/groupes/deleteRoom/${user?.id}`
+        `${process.env.REACT_APP_SERVER_API}/groupes/deleteRoom/${user?.id}`
       );
     } catch (error) {
       console.error(error);

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import Button from "@mui/material/Button";
 
@@ -9,42 +9,40 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
-import { TextField, Typography } from "@mui/material";
+import {TextField, Typography} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
 import PostIt from "../../components/agile/PostIt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 import useFirebase from "../../hooks/useFirebase";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
-import * as React from 'react';
+import * as React from "react";
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { setDoc } from "firebase/firestore";
+import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
+import {setDoc} from "firebase/firestore";
 import Board from "../board_retro/board";
 
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import { TableVirtuoso, TableComponents } from 'react-virtuoso';
-
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
+import {TableVirtuoso, TableComponents} from "react-virtuoso";
 
 function Retrospective() {
-  const { user } = useFirebase();
-
+  const {user} = useFirebase();
 
   const [open, setOpen] = useState(false);
   const [openPostItEdit, setOpenPostItEdit] = useState(false);
   const [postItText, setPostItText] = useState("");
-  const [categorie, setCategorie] = useState("")
+  const [categorie, setCategorie] = useState("");
   const [selectedPostItIndex, setSelectedPostItIndex] = useState();
-  const [retroModel, setRetroModel] = useState('Model de retro')
+  const [retroModel, setRetroModel] = useState("Model de retro");
   const [message, setMessage] = useState("");
   const [seconds, setSeconds] = useState(0);
   const [columns, setColumns] = useState(null);
@@ -52,12 +50,12 @@ function Retrospective() {
   const [showTextField, setShowTextField] = useState(false);
   const [newPostItContent, setNewPostItContent] = useState("");
   const [selectedColumnId, setSelectedColumnId] = useState(null);
-  const [selectedRetro, setSelectedRetro] = useState('');
+  const [selectedRetro, setSelectedRetro] = useState("");
   const [connectedUsers, setConnectedUsers] = useState([]);
-  const [currentRetroIndex, setCurrentRetroIndex] = useState(null)
+  const [currentRetroIndex, setCurrentRetroIndex] = useState(null);
   const [allCourses, setAllCourses] = useState([]);
-  const [choosenCourse, setChoosenCourse] = useState(null)
-  const [boardTitle, setBoardTitle] = useState("")
+  const [choosenCourse, setChoosenCourse] = useState(null);
+  const [boardTitle, setBoardTitle] = useState("");
   const [listRetros, setListRetros] = useState();
   const [rows, setRows] = useState([]);
   const [datas, setDatas] = useState(null);
@@ -65,31 +63,30 @@ function Retrospective() {
 
   let navigate = useNavigate();
 
-
   useEffect(() => {
     if (user?.status == "po") {
-        navigate('/retro');
+      navigate("/retro");
     }
-  })
+  });
 
   const columno = [
     {
       width: 200,
-      label: 'titleRetro',
-      dataKey: 'titleRetro',
+      label: "titleRetro",
+      dataKey: "titleRetro",
     },
     {
       width: 120,
-      label: 'date',
-      dataKey: 'date',
+      label: "date",
+      dataKey: "date",
       //numeric: true,
     },
     {
       width: 120,
-      label: 'name',
-      dataKey: 'name',
+      label: "name",
+      dataKey: "name",
       numeric: true,
-    }
+    },
   ];
 
   const VirtuosoTableComponents = {
@@ -97,11 +94,16 @@ function Retrospective() {
       <TableContainer component={Paper} {...props} ref={ref} />
     )),
     Table: (props) => (
-      <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
+      <Table
+        {...props}
+        sx={{borderCollapse: "separate", tableLayout: "fixed"}}
+      />
     ),
     TableHead,
-    TableRow: ({ item: _item, ...props }) => <TableRow {...props} />,
-    TableBody: React.forwardRef((props, ref) => <TableBody {...props} ref={ref} />),
+    TableRow: ({item: _item, ...props}) => <TableRow {...props} />,
+    TableBody: React.forwardRef((props, ref) => (
+      <TableBody {...props} ref={ref} />
+    )),
   };
 
   function fixedHeaderContent() {
@@ -111,10 +113,10 @@ function Retrospective() {
           <TableCell
             key={column.dataKey}
             variant="head"
-            align={column.numeric || false ? 'right' : 'left'}
-            style={{ width: column.width }}
+            align={column.numeric || false ? "right" : "left"}
+            style={{width: column.width}}
             sx={{
-              backgroundColor: 'background.paper',
+              backgroundColor: "background.paper",
             }}
           >
             {column.label}
@@ -130,7 +132,7 @@ function Retrospective() {
         {columno.map((column) => (
           <TableCell
             key={column.dataKey}
-            align={column.numeric || false ? 'right' : 'left'}
+            align={column.numeric || false ? "right" : "left"}
           >
             {row[column.dataKey]}
           </TableCell>
@@ -157,7 +159,7 @@ function Retrospective() {
       color: "#9ACD32",
       params: "3 / 1 / 5 / 3",
       items: [],
-    }
+    },
   };
 
   const PNABoard = {
@@ -178,7 +180,7 @@ function Retrospective() {
       color: "#9ACD32",
       params: "3 / 1 / 5 / 3",
       items: [],
-    }
+    },
   };
 
   const FourLBoard = {
@@ -205,70 +207,76 @@ function Retrospective() {
       color: "#FFFF00",
       params: "3 / 3 / 5 / 5",
       items: [],
-    }
+    },
   };
-
-
 
   const getCourse = async (idOwner) => {
     console.log(user);
-    await axios.get(`http://212.73.217.176:5050/ressources/coursbyowner/${idOwner}`).then(
-      (res) => {
-        console.log(res.data)
-        setAllCourses(res.data)
-      }
-    )
-  }
+    await axios
+      .get(
+        `${process.env.REACT_APP_SERVER_API}/ressources/coursbyowner/${idOwner}`
+      )
+      .then((res) => {
+        console.log(res.data);
+        setAllCourses(res.data);
+      });
+  };
 
   useEffect(() => {
-    getCourse(user.id)
+    getCourse(user.id);
   }, []);
 
-
-
   useEffect(() => {
-    const ws = new w3cwebsocket("ws://212.73.217.176:5050/retro");
+    const ws = new w3cwebsocket(`${process.env.REACT_APP_SERVER_API_WS}/retro`);
     ws.onmessage = async (message) => {
       console.log("wsss");
       let allRetros = [];
-      await axios.get("http://212.73.217.176:5050/retro/getAll").then((res) => {
-        console.log(res.data);
-        let responseRetros = res.data;
-        responseRetros.forEach(retro => {
-          allRetros.push(retro["dataRetro"])
+      await axios
+        .get(`${process.env.REACT_APP_SERVER_API}/retro/getAll`)
+        .then((res) => {
+          console.log(res.data);
+          let responseRetros = res.data;
+          responseRetros.forEach((retro) => {
+            allRetros.push(retro["dataRetro"]);
+          });
+          const updatedRows = res.data.map((retro) =>
+            createData(
+              retro["titleRetro"],
+              retro["creationDate"],
+              retro["firstname"] + " " + retro["lastname"],
+              retro["idRetro"]
+            )
+          );
+          setRows(updatedRows);
+          setDatas(res.data);
         });
-        const updatedRows = res.data.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
-        setRows(updatedRows);
-        setDatas(res.data)
-      })
     };
     return () => {
       ws.close();
     };
   }, []);
 
-
   const setAllRetrosAtbeginning = async (dataResponse) => {
     let allRetros = [];
 
-    dataResponse.forEach(retro => {
-      allRetros.push(retro["dataRetro"])
+    dataResponse.forEach((retro) => {
+      allRetros.push(retro["dataRetro"]);
     });
 
     console.log(allRetros);
     console.log(allRetro);
     setAllRetro(allRetros);
-  }
+  };
 
   useEffect(() => {
     let allRetros = [];
-    axios.get("http://212.73.217.176:5050/retro/getAll").then((res) => {
-      let responseRetros = res.data;
-      setAllRetrosAtbeginning(res.data);
-
-    });
+    axios
+      .get(`${process.env.REACT_APP_SERVER_API}/retro/getAll`)
+      .then((res) => {
+        let responseRetros = res.data;
+        setAllRetrosAtbeginning(res.data);
+      });
   }, []);
-
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -278,51 +286,50 @@ function Retrospective() {
     setOpen(false);
   };
 
-
   const handleValidate = (e) => {
     let value = e.target.value;
     if (value == "GMDBoard") {
-      setColumns(GMDBoard)
+      setColumns(GMDBoard);
     } else if (value == "fourLBoard") {
-      setColumns(FourLBoard)
+      setColumns(FourLBoard);
     } else if (value == "PNABoard") {
-      setColumns(PNABoard)
+      setColumns(PNABoard);
     }
-    setRetroModel(e.target.value)
+    setRetroModel(e.target.value);
     setOpen(false);
-
-  }
+  };
 
   const getAllRetroByUser = async () => {
     const userId = user.id;
 
     if (user.status == "po") {
       console.log("im a po");
-      await axios.get(`http://212.73.217.176:5050/retro/getAll`
-      ).then((res) => {
-        console.log("************");
-        console.log(res.data)
-        console.log("************");
-        setListRetros(res.data)
-      }).catch((err) => {
-        console.log(err)
-      })
+      await axios
+        .get(`${process.env.REACT_APP_SERVER_API}/retro/getAll`)
+        .then((res) => {
+          console.log("************");
+          console.log(res.data);
+          console.log("************");
+          setListRetros(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else if (user.status == "etudiant") {
       console.log("im a student ");
-      await axios.get(`http://212.73.217.176:5050/retro/getAll`
-      ).then((res) => {
-        console.log("************");
-        console.log(res.data)
-        console.log("************");
-        setListRetros(res.data)
-      }).catch((err) => {
-        console.log(err)
-      })
-
+      await axios
+        .get(`${process.env.REACT_APP_SERVER_API}/retro/getAll`)
+        .then((res) => {
+          console.log("************");
+          console.log(res.data);
+          console.log("************");
+          setListRetros(res.data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
-  }
-
-
+  };
 
   useEffect(() => {
     getAllRetroByUser();
@@ -331,24 +338,29 @@ function Retrospective() {
   useEffect(() => {
     console.log(listRetros);
     if (listRetros !== undefined) {
-      const updatedRows = listRetros.map((retro) => createData(retro["titleRetro"], retro["creationDate"], retro["firstname"] + " " + retro["lastname"], retro["idRetro"]));
+      const updatedRows = listRetros.map((retro) =>
+        createData(
+          retro["titleRetro"],
+          retro["creationDate"],
+          retro["firstname"] + " " + retro["lastname"],
+          retro["idRetro"]
+        )
+      );
       setRows(updatedRows);
     }
   }, [listRetros]);
 
   const goToBoard = (idRetro) => {
-    datas.map(retro => {
+    datas.map((retro) => {
       if (retro["idRetro"] == idRetro) {
         console.log(retro);
-        navigate('/boardRetro', { state: { retro } });
+        navigate("/boardRetro", {state: {retro}});
       }
-    })
-  }
-
+    });
+  };
 
   const validateBoard = async () => {
     if (boardTitle && choosenCourse && retroModel) {
-
       let choosenModel = null;
 
       if (retroModel == "GMDBoard") {
@@ -359,55 +371,59 @@ function Retrospective() {
         choosenModel = PNABoard;
       }
 
-      await axios.post("http://212.73.217.176:5050/retro/newRetro",
-        {
-          dataRetro: choosenModel,
-          titleRetro: boardTitle,
-          courseRetro: choosenCourse,
-          idUser: user?.id,
-          firstname: user?.firstname,
-          lastname: user?.lastname
-        }
-      )
-      setBoardTitle("")
-      setChoosenCourse(null)
-      setRetroModel("'Model de retro'")
+      await axios.post(`${process.env.REACT_APP_SERVER_API}/retro/newRetro`, {
+        dataRetro: choosenModel,
+        titleRetro: boardTitle,
+        courseRetro: choosenCourse,
+        idUser: user?.id,
+        firstname: user?.firstname,
+        lastname: user?.lastname,
+      });
+      setBoardTitle("");
+      setChoosenCourse(null);
+      setRetroModel("'Model de retro'");
       handleClose();
     } else {
       console.log("champ manquant");
     }
-  }
-
+  };
 
   function createData(titleRetro, date, name, idRetro) {
-    return { titleRetro, date, name, idRetro };
+    return {titleRetro, date, name, idRetro};
   }
 
-
   return (
-
     <div className="container-retro">
       <h2> Retrospective </h2>
 
-      <Button onClick={getAllRetroByUser} > Get retros </Button>
-
+      <Button onClick={getAllRetroByUser}> Get retros </Button>
 
       <div className="container-in-retro">
-        <Button variant="outlined"
-          onClick={handleClickOpen} className="add-retro"> + Ajouter une retro </Button>
+        <Button
+          variant="outlined"
+          onClick={handleClickOpen}
+          className="add-retro"
+        >
+          {" "}
+          + Ajouter une retro{" "}
+        </Button>
         <div className="historic">
           Choix de la retrospective
-          <TableContainer component={Paper} style={{ maxHeight: '500px', overflowY: 'auto' }}>
-            <Table sx={{ minWidth: 650 }} aria-label="caption table">
+          <TableContainer
+            component={Paper}
+            style={{maxHeight: "500px", overflowY: "auto"}}
+          >
+            <Table sx={{minWidth: 650}} aria-label="caption table">
               <TableHead>
                 <TableRow>
                   <TableCell>Nom retro</TableCell>
                   <TableCell align="left">Date</TableCell>
                   <TableCell align="left">Proprietaire</TableCell>
-
                 </TableRow>
               </TableHead>
-              <TableBody > {/*style={{cursor: "pointer"}}*/}
+              <TableBody>
+                {" "}
+                {/*style={{cursor: "pointer"}}*/}
                 {rows.map((row) => (
                   <TableRow key={row.date}>
                     <TableCell component="th" scope="row">
@@ -416,16 +432,17 @@ function Retrospective() {
                     <TableCell align="left">{row.date}</TableCell>
                     <TableCell align="left">{row.name}</TableCell>
                     <TableCell>
-                      <Button onClick={() => goToBoard(row.idRetro)}> go board </Button>
+                      <Button onClick={() => goToBoard(row.idRetro)}>
+                        {" "}
+                        go board{" "}
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </TableContainer>
-
         </div>
-
       </div>
 
       <div>
@@ -438,20 +455,19 @@ function Retrospective() {
           <DialogTitle>Créer une nouvelle retrospective</DialogTitle>
 
           <DialogContent>
-
             <TextField
-
               aria-describedby="my-helper-text"
               //InputLabelProps={{ shrink: true }}
               variant="outlined"
               placeholder="Titre"
-
               fullWidth
               onChange={(e) => setBoardTitle(e.target.value)}
               wrap="true"
             />
 
-            <InputLabel id="demo-simple-select-label">Type de representation</InputLabel>
+            <InputLabel id="demo-simple-select-label">
+              Type de representation
+            </InputLabel>
             <Select
               labelId="model-retro-select-label"
               id="model-retro-select"
@@ -461,7 +477,9 @@ function Retrospective() {
             >
               <MenuItem value="GMDBoard">Glad, Mad, Sad</MenuItem>
               <MenuItem value="fourLBoard">4L</MenuItem>
-              <MenuItem value="PNABoard">Positif, Negatif, Axe d'amélioration</MenuItem>
+              <MenuItem value="PNABoard">
+                Positif, Negatif, Axe d'amélioration
+              </MenuItem>
             </Select>
 
             <InputLabel id="select-course">Cours</InputLabel>
@@ -471,7 +489,6 @@ function Retrospective() {
               value={choosenCourse}
               onChange={(e) => setChoosenCourse(e.target.value)}
             >
-
               {allCourses.map((course, index) => (
                 <MenuItem
                   key={index}
@@ -492,8 +509,7 @@ function Retrospective() {
         </Dialog>
       </div>
 
-      {columns !== null ? <Board choosenColumn={columns} /> : (<></>)}
-
+      {columns !== null ? <Board choosenColumn={columns} /> : <></>}
     </div>
   );
 }

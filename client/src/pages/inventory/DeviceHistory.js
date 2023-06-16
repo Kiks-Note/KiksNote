@@ -183,10 +183,11 @@ const DeviceHistory = () => {
   useEffect(() => {
     (async () => {
       const res = await axios.get(
-        `http://212.73.217.176:5050/inventory/device/${deviceId}`
+        `${process.env.REACT_APP_SERVER_API}/inventory/device/${deviceId}`
       );
       const resHistory = await axios.get(
-        "http://212.73.217.176:5050/inventory/deviceRequests/" + deviceId
+        `${process.env.REACT_APP_SERVER_API}/inventory/deviceRequests/` +
+          deviceId
       );
       setDeviceHistory(resHistory.data);
       setDevice(res.data);

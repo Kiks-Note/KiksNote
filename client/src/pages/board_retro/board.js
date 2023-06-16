@@ -1,21 +1,15 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, {useState, useEffect, useCallback, useMemo} from "react";
 import axios from "axios";
-import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import {DragDropContext, Draggable, Droppable} from "@hello-pangea/dnd";
 import SettingsIcon from "@mui/icons-material/Settings";
 import DeleteIcon from "@mui/icons-material/Delete";
 import GroupIcon from "@mui/icons-material/Group";
-import {
-  Button,
-  useTheme,
-  Tooltip,
-  IconButton,
-  TextField,
-} from "@mui/material";
-import { PopUp } from "../../components/retro/Popup";
-import { toast, ToastContainer } from "react-toastify";
+import {Button, useTheme, Tooltip, IconButton, TextField} from "@mui/material";
+import {PopUp} from "../../components/retro/Popup";
+import {toast, ToastContainer} from "react-toastify";
 import useFirebase from "../../hooks/useFirebase";
-import { w3cwebsocket } from "websocket";
-import { useNavigate } from "react-router-dom";
+import {w3cwebsocket} from "websocket";
+import {useNavigate} from "react-router-dom";
 
 import "./Retro.scss";
 
@@ -51,7 +45,7 @@ function GroupsCreation() {
   const [postItId, setPostItId] = useState();
 
   const navigate = useNavigate();
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const theme = useTheme();
 
   const [clickedIds, setClickedIds] = useState([]);
@@ -69,7 +63,7 @@ function GroupsCreation() {
   };
 
   const ws = useMemo(() => {
-    return new w3cwebsocket("ws://212.73.217.176:5050/retro");
+    return new w3cwebsocket(`${process.env.REACT_APP_SERVER_API_WS}/retro`);
   }, []);
 
   const fetchData = useCallback(async () => {
@@ -111,7 +105,9 @@ function GroupsCreation() {
   const LogToExistingRoomStudent = useCallback(async () => {
     try {
       axios
-        .get(`http://212.73.217.176:5050/retro/getRoom/${user?.class.id}`)
+        .get(
+          `${process.env.REACT_APP_SERVER_API}/retro/getRoom/${user?.class.id}`
+        )
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -138,7 +134,7 @@ function GroupsCreation() {
   const logToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://212.73.217.176:5050/retro/getRoomPo/${user?.id}`)
+        .get(`${process.env.REACT_APP_SERVER_API}/retro/getRoomPo/${user?.id}`)
         .then((res) => {
           if (res.data.length > 0) {
             const message = {
@@ -233,7 +229,7 @@ function GroupsCreation() {
       ws.send(
         JSON.stringify({
           type: "leaveRoom",
-          data: { userID: user?.id, class: classStudents },
+          data: {userID: user?.id, class: classStudents},
         })
       );
     };
@@ -259,7 +255,7 @@ function GroupsCreation() {
   });
 
   function deletePostIt(postID) {
-    const copiedColContent = { ...columns };
+    const copiedColContent = {...columns};
 
     Object.keys(copiedColContent).forEach((key) => {
       const group = copiedColContent[key];
@@ -273,18 +269,18 @@ function GroupsCreation() {
     ws.send(
       JSON.stringify({
         type: "updateCol",
-        data: { columns: copiedColContent, class: classStudents },
+        data: {columns: copiedColContent, class: classStudents},
       })
     );
   }
 
   function updatePostIt(postID, content) {
-    const copiedColContent = { ...columns };
+    const copiedColContent = {...columns};
     Object.keys(copiedColContent).forEach((key) => {
       const group = copiedColContent[key];
       const updatedItems = group.items.map((item) => {
         if (item.id === postID) {
-          return { ...item, content };
+          return {...item, content};
         }
         return item;
       });
@@ -294,14 +290,14 @@ function GroupsCreation() {
     ws.send(
       JSON.stringify({
         type: "updateCol",
-        data: { columns: copiedColContent, class: classStudents },
+        data: {columns: copiedColContent, class: classStudents},
       })
     );
     setShowEdit(false);
   }
 
   function addPostIt(columnId, columns) {
-    const copiedColContent = { ...columns };
+    const copiedColContent = {...columns};
     const group = copiedColContent[columnId];
     const updatedItems = group.items;
     updatedItems.push({
@@ -316,7 +312,7 @@ function GroupsCreation() {
 
     const message = {
       type: "updateCol",
-      data: { columns: copiedColContent, class: classStudents },
+      data: {columns: copiedColContent, class: classStudents},
     };
     ws.send(JSON.stringify(message));
   }
@@ -331,7 +327,7 @@ function GroupsCreation() {
     };
     ws.send(JSON.stringify(message));
     if (!result.destination) return;
-    const { source, destination } = result;
+    const {source, destination} = result;
     if (notAllowed) {
       setNotAllowed(false);
       toast.error("Vous ne pouvez pas déplacer ce post-it");
@@ -364,8 +360,8 @@ function GroupsCreation() {
           data: {
             columns: {
               ...columns,
-              [source.droppableId]: { ...sourceColumn, items: sourceItems },
-              [destination.droppableId]: { ...destColumn, items: destItems },
+              [source.droppableId]: {...sourceColumn, items: sourceItems},
+              [destination.droppableId]: {...destColumn, items: destItems},
             },
             class: classStudents,
           },
@@ -411,7 +407,7 @@ function GroupsCreation() {
     }
     const message = {
       type: "dragStart",
-      data: { userID: user?.id, class: classStudents, itemID: item.id },
+      data: {userID: user?.id, class: classStudents, itemID: item.id},
     };
     ws.send(JSON.stringify(message));
   };
@@ -428,7 +424,7 @@ function GroupsCreation() {
   };
 
   async function saveRetro() {
-    axios.post("http://212.73.217.176:5050/retro/saveRetro", {
+    axios.post(`${process.env.REACT_APP_SERVER_API}/retro/saveRetro`, {
       retro: columns,
       classRetro: classStudents,
       course: courseChoose.id,
@@ -437,16 +433,14 @@ function GroupsCreation() {
 
     try {
       await axios.delete(
-        `http://212.73.217.176:5050/groupes/deleteRoom/${user?.id}`
+        `${process.env.REACT_APP_SERVER_API}/groupes/deleteRoom/${user?.id}`
       );
     } catch (error) {
       console.error(error);
     }
 
     setInRoom(false);
-    ws.send(
-      JSON.stringify({ type: "closeRoom", data: { class: classStudents } })
-    );
+    ws.send(JSON.stringify({type: "closeRoom", data: {class: classStudents}}));
     navigate("/");
   }
 
@@ -491,7 +485,7 @@ function GroupsCreation() {
                         viewBox="0 0 50 50"
                         width="30px"
                         height="30px"
-                        style={{ stroke: "#3d3d3d" }}
+                        style={{stroke: "#3d3d3d"}}
                       >
                         <path
                           fill={userData.color}
@@ -563,7 +557,7 @@ function GroupsCreation() {
                   fontWeight: "bold",
                 }}
               >
-                <GroupIcon style={{ marginRight: "10px" }} />
+                <GroupIcon style={{marginRight: "10px"}} />
                 {nbUserConnected}
               </p>
 

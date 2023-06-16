@@ -16,17 +16,15 @@ import * as React from "react";
 import {useState, useEffect} from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import {toast} from "react-hot-toast";
-import Datetime from 'react-datetime';
+import Datetime from "react-datetime";
 import "react-datetime/css/react-datetime.css";
 
 export default function LoanRequestForm({open, toggleDrawerAdd, reloadData}) {
-
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [concernedPeople, setConcernedPeople] = useState("");
   const [reason, setReason] = useState("");
   const [loading, setLoading] = useState(true);
-
 
   const addDevice = async () => {
     if (!startDate || !endDate || !concernedPeople || !reason) {
@@ -35,7 +33,7 @@ export default function LoanRequestForm({open, toggleDrawerAdd, reloadData}) {
     } else {
       try {
         await toast.promise(
-          axios.post("http://212.73.217.176:5050/requestDevice", {
+          axios.post(`${process.env.REACT_APP_SERVER_API}/requestDevice`, {
             startDate: startDate,
             endDate: endDate,
             concernedPeople: concernedPeople,
@@ -68,9 +66,11 @@ export default function LoanRequestForm({open, toggleDrawerAdd, reloadData}) {
   useEffect(() => {
     open === true &&
       (async () => {
-        await axios.get("http://212.73.217.176:5050/categories").then((res) => {
-          setLoading(false);
-        });
+        await axios
+          .get(`${process.env.REACT_APP_SERVER_API}/categories`)
+          .then((res) => {
+            setLoading(false);
+          });
       })();
   }, [open === true]);
 

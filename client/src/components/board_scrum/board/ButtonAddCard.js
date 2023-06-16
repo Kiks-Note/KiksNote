@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import axios from "axios";
 import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
@@ -32,7 +32,7 @@ export default function ButtonAddCard(props) {
   const handleAddCard = () => {
     axios
       .put(
-        "http://212.73.217.176:5050/dashboard/" +
+        `${process.env.REACT_APP_SERVER_API}/dashboard/` +
           props.dashboardId +
           "/board/" +
           props.boardId +
@@ -58,16 +58,16 @@ export default function ButtonAddCard(props) {
             autoFocus
             value={cardTitle}
             onChange={handleChange}
-            style={{ marginRight: "10px" }}
+            style={{marginRight: "10px"}}
             InputProps={{
-              style: { color: "#5e5e5e" },
+              style: {color: "#5e5e5e"},
             }}
             multiline
             rows={2}
             placeholder="Saisissez un titre pour cette carte…"
           />
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <span style={{ marginRight: "10px" }}>Estimation (heures):</span>
+          <div style={{display: "flex", alignItems: "center"}}>
+            <span style={{marginRight: "10px"}}>Estimation (heures):</span>
             <Slider
               value={estimation}
               onChange={handleEstimationChange}
@@ -75,7 +75,7 @@ export default function ButtonAddCard(props) {
               max={24}
               step={0.5}
               valueLabelDisplay="on"
-              style={{ width: "200px" }}
+              style={{width: "200px"}}
             />
           </div>
           <div
@@ -107,9 +107,9 @@ export default function ButtonAddCard(props) {
             autoFocus
             value={cardTitle}
             onChange={handleChange}
-            style={{ marginRight: "10px" }}
+            style={{marginRight: "10px"}}
             InputProps={{
-              style: { color: "#5e5e5e" },
+              style: {color: "#5e5e5e"},
             }}
             multiline
             rows={2}

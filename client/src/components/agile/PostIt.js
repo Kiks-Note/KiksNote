@@ -3,7 +3,13 @@ import axios from "axios";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-export default function PostIt({ text, dashboardId, actorId, columnId, postitId }) {
+export default function PostIt({
+  text,
+  dashboardId,
+  actorId,
+  columnId,
+  postitId,
+}) {
   const [isClicked, setIsClicked] = useState(false);
 
   const handleClick = () => {
@@ -18,7 +24,7 @@ export default function PostIt({ text, dashboardId, actorId, columnId, postitId 
     if (isClicked) {
       try {
         axios.delete(
-          "http://localhost:5050/agile/" +
+          `${process.env.REACT_APP_SERVER_API}/agile/` +
             dashboardId +
             "/empathy/" +
             actorId +

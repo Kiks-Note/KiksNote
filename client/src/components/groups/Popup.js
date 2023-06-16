@@ -25,13 +25,17 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   const theme = useTheme();
 
   const ws = useMemo(() => {
-    return new w3cwebsocket("ws://212.73.217.176:5050/groupes/creation");
+    return new w3cwebsocket(
+      `${process.env.REACT_APP_SERVER_API_WS}/groupes/creation`
+    );
   }, []);
 
   useEffect(() => {
     const getCourse = async () => {
       await axios
-        .get(`http://212.73.217.176:5050/ressources/getCoursesByPo/${user.id}`)
+        .get(
+          `${process.env.REACT_APP_SERVER_API}/ressources/getCoursesByPo/${user.id}`
+        )
         .then((res) => {
           setCourses(res.data);
         });
@@ -49,7 +53,8 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
   };
 
   function validate() {
-    if (courseChoosed.data.title === "Tous les cours") {
+    console.log(courseChoosed);
+    if (courseChoosed.name === "Tous les cours") {
       alert("Veuillez remplir le champs");
     } else {
       onPopupData({
@@ -83,9 +88,10 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
             variant="filled"
             id="input-class"
             sx={{ color: "text.primary" }}
-            renderValue={(selected) => selected.data.title}
+            defaultValue={""}
+            renderValue={(selected) => `${selected.name}`}
             onChange={(e) => {
-              setClassChoose(e.target.value.data.courseClass.id);
+              setClassChoose(e.target.value.id);
               setCourseChoosed(e.target.value);
             }}
             value={courseChoosed}
@@ -93,11 +99,13 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
             {courses &&
               courses.cours &&
               courses.cours.length > 0 &&
-              courses.cours.map((course) => (
-                <MenuItem value={course} key={course.id}>
-                  {course.data.title + " | " + course.data.courseClass.name}
-                </MenuItem>
-              ))}
+              courses.cours.map((course) =>
+                course.data.courseClass.map((courseClass) => (
+                  <MenuItem value={courseClass} key={courseClass.id}>
+                    {course.data.title + " | " + courseClass.name}
+                  </MenuItem>
+                ))
+              )}
           </Select>
         </FormControl>
         <div

@@ -4,7 +4,7 @@ export const addImpactMapping = async (impactMapping) => {
   console.log(impactMapping);
   try {
     const res = axios.put(
-      `http://212.73.217.176:5050/agile/${impactMapping.dashboardId}/add_impact_mapping`,
+      `${process.env.REACT_APP_SERVER_API}/agile/${impactMapping.dashboardId}/add_impact_mapping`,
       {
         actors: impactMapping.actors,
         deliverables: impactMapping.deliverables,
@@ -20,8 +20,8 @@ export const addImpactMapping = async (impactMapping) => {
 
 export const deleteActors = async (dashboardId, actorId) => {
   try {
-    const res = await axios.get(
-      `http://212.73.217.176:5050/agile/${dashboardId}/get_impact_mapping`
+    const res = await axios.delete(
+      `${process.env.REACT_APP_SERVER_API}/agile/${dashboardId}/actor/${actorId}`
     );
     return res.data;
   } catch (e) {
@@ -32,7 +32,7 @@ export const deleteActors = async (dashboardId, actorId) => {
 export const addElevatorPitch = async (dashboardId, elevatorPitch) => {
   try {
     const res = await axios.put(
-      `http://localhost:5050/agile/${dashboardId}/elevator/updateElevator`,
+      `${process.env.REACT_APP_SERVER_API}/agile/${dashboardId}/elevator/updateElevator`,
       {
         name: elevatorPitch.name,
         forWho: elevatorPitch.forWho,
@@ -52,7 +52,7 @@ export const addElevatorPitch = async (dashboardId, elevatorPitch) => {
 export const deleteElevatorPitch = async (dashbardId) => {
   try {
     const res = await axios.put(
-      `http://localhost:5050/agile/${dashbardId}/resetElevator`
+      `${process.env.REACT_APP_SERVER_API}/agile/${dashbardId}/resetElevator`
     );
     return res;
   } catch (e) {

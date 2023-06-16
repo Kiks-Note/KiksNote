@@ -1,19 +1,19 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { Checkbox, IconButton, TextField, Typography } from "@mui/material";
+import {Checkbox, IconButton, TextField, Typography} from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 import axios from "axios";
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { Rings } from "react-loader-spinner";
+import {useEffect, useState} from "react";
+import {Rings} from "react-loader-spinner";
 import toast from "react-hot-toast";
 import useFirebase from "../../../hooks/useFirebase";
 import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 import Autocomplete from "@mui/material/Autocomplete";
-import MDEditor, { commands } from "@uiw/react-md-editor";
+import MDEditor, {commands} from "@uiw/react-md-editor";
 
-export default function NewBlog({ open, toggleDrawerModify }) {
+export default function NewBlog({open, toggleDrawerModify}) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
@@ -23,7 +23,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [valueMarkdown, setValueMarkdown] = useState("**Hello world!!!**");
-  const { user } = useFirebase();
+  const {user} = useFirebase();
 
   useEffect(() => {
     fetchTags();
@@ -32,7 +32,9 @@ export default function NewBlog({ open, toggleDrawerModify }) {
 
   const fetchTags = async () => {
     try {
-      const response = await axios.get("http://212.73.217.176:5050/blog/tag");
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API}/blog/tag`
+      );
       const tags = response.data;
       setTags(tags);
     } catch (error) {
@@ -107,7 +109,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
     formData.append("blogData", JSON.stringify(blogData));
     try {
       const response = await axios.post(
-        "http://212.73.217.176:5050/blog",
+        `${process.env.REACT_APP_SERVER_API}/blog`,
         formData,
         {
           headers: {
@@ -139,7 +141,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
   const help = {
     name: "help",
     keyCommand: "help",
-    buttonProps: { "aria-label": "Insert help" },
+    buttonProps: {"aria-label": "Insert help"},
     icon: (
       <svg viewBox="0 0 16 16" width="12px" height="12px">
         <path
@@ -191,7 +193,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
 
         <>
           <TextField
-            sx={{ marginBottom: 2 }}
+            sx={{marginBottom: 2}}
             id="outlined-search"
             type="text"
             name="Titre"
@@ -203,7 +205,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
             helperText={errors.title}
           />
           <TextField
-            sx={{ marginBottom: 2 }}
+            sx={{marginBottom: 2}}
             id="outlined-search"
             type="text"
             name="Description"
@@ -214,9 +216,9 @@ export default function NewBlog({ open, toggleDrawerModify }) {
             error={errors.description ? true : false}
             helperText={errors.description}
           />
-          <Box sx={{ display: "flex", width: "100%", mb: 2 }}>
+          <Box sx={{display: "flex", width: "100%", mb: 2}}>
             <Autocomplete
-              sx={{ width: "50%" }}
+              sx={{width: "50%"}}
               multiple
               id="tags"
               options={tags}
@@ -237,18 +239,18 @@ export default function NewBlog({ open, toggleDrawerModify }) {
               )}
             />
 
-            <Box sx={{ ml: 5 }}>
+            <Box sx={{ml: 5}}>
               <Checkbox
                 checked={checked}
                 onChange={handleChange}
-                inputProps={{ "aria-label": "controlled" }}
+                inputProps={{"aria-label": "controlled"}}
               />
               <Typography variant="caption" color="textSecondary">
                 Évenement
               </Typography>
             </Box>
           </Box>
-          <Box sx={{ width: "100%", mb: 2 }}>
+          <Box sx={{width: "100%", mb: 2}}>
             <div data-color-mode="light">
               <MDEditor
                 value={valueMarkdown}
@@ -259,7 +261,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
             </div>
           </Box>
           <TextField
-            sx={{ marginBottom: 2 }}
+            sx={{marginBottom: 2}}
             id="outlined-search"
             // label="Miniature"
             type="file"
@@ -289,8 +291,8 @@ export default function NewBlog({ open, toggleDrawerModify }) {
                 sx={{
                   height: 300,
                   width: 350,
-                  maxHeight: { xs: 233, md: 167 },
-                  maxWidth: { xs: 350, md: 250 },
+                  maxHeight: {xs: 233, md: 167},
+                  maxWidth: {xs: 350, md: 250},
                 }}
                 alt="The house from the offer."
                 src={previewImage}
@@ -326,7 +328,7 @@ export default function NewBlog({ open, toggleDrawerModify }) {
               open={open}
               onClose={(e) => toggleDrawerModify(e, false)}
               onOpen={(e) => toggleDrawerModify(e, true)}
-              {...{ PaperProps: { style: { width: "90%" } } }}
+              {...{PaperProps: {style: {width: "90%"}}}}
             >
               {list("right")}
             </SwipeableDrawer>

@@ -31,7 +31,7 @@ function MostParticipantsChart() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://212.73.217.176:5050/blog/stats/participant"
+        `${process.env.REACT_APP_SERVER_API}/blog/stats/participant2`
       );
       const blogs = response.data;
       const sortedBlogs = blogs.sort((a, b) => b.count - a.count);
@@ -58,7 +58,7 @@ function MostParticipantsChart() {
       });
 
       const blogIds = topBlogs.map((blog) => blog.participant);
-      if (blogIds.length != 0) {
+      if (blogIds.length !== 0) {
         fetchParticipantDetails(blogIds);
       }
     } catch (error) {
@@ -72,7 +72,7 @@ function MostParticipantsChart() {
   const fetchParticipantDetails = async (blogIds) => {
     try {
       const response = await axios.post(
-        "http://212.73.217.176:5050/blog/participant",
+        `${process.env.REACT_APP_SERVER_API}/blog/participant`,
         {
           userIds: blogIds,
         }

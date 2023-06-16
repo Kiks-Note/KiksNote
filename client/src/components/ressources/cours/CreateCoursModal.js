@@ -279,38 +279,25 @@ const CreateCoursModal = (props) => {
           </div>
 
           <div className="select-class-allpo-container">
-            <Autocomplete
-              multiple
-              id="tags-outlined"
-              sx={{
-                width: "100%",
-              }}
-              options={props.allclass}
-              getOptionLabel={(option) => (
-                <>
-                  <Typography>{option.name}</Typography>
-                </>
-              )}
-              defaultValue={props.selectedClass}
-              filterSelectedOptions
-              onChange={(event, newValue) => {
-                const selectedClass = newValue.map(
-                  (courseClass) => courseClass.id
+            <Select
+              value={props.selectedClass}
+              onChange={(event) => {
+                props.setSelectedClass(event.target.value);
+                const selectedCours = props.allclass.find(
+                  (cours) => cours.name === event.target.value
                 );
-                props.setSelectedClass(selectedClass);
+                props.setIdSelectedClass(selectedCours ? selectedCours.id : "");
               }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Select a class"
-                  variant="outlined"
-                  inputProps={{
-                    ...params.inputProps,
-                    name: "class",
-                  }}
-                />
-              )}
-            />
+              displayEmpty
+              renderValue={(value) => value || "Choisir la classe"}
+            >
+              <MenuItem value="">Choisir une option</MenuItem>
+              {props.allclass.map((cours) => (
+                <MenuItem key={cours.id} value={cours.name}>
+                  {cours.name}
+                </MenuItem>
+              ))}
+            </Select>
 
             <Controller
               name="po"

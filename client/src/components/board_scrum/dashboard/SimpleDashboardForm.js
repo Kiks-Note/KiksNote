@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {useEffect, useState, useRef} from "react";
 import axios from "axios";
-import { format } from "date-fns";
-import { useForm } from "react-hook-form";
+import {format} from "date-fns";
+import {useForm} from "react-hook-form";
 import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
+import {yupResolver} from "@hookform/resolvers/yup";
 import PropTypes from "prop-types";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
@@ -51,25 +51,25 @@ const schema = yup.object().shape({
 });
 
 export default function SimpleDashboardForm(props) {
-  const { onClose, value: valueProp, open, ...other } = props;
+  const {onClose, value: valueProp, open, ...other} = props;
   const [value, setValue] = React.useState(valueProp);
   const [members, setMembers] = useState(props.members);
   const [valueMembers, setValueMembers] = useState([]);
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {errors},
     reset,
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const today = new Date();
   const defaultStartDate = format(today, "yyyy-MM-dd");
   //Function for the select to change member
   const handleChange = (event) => {
     const {
-      target: { value },
+      target: {value},
     } = event;
     setValueMembers(
       // On autofill we get a stringified value.
@@ -117,7 +117,10 @@ export default function SimpleDashboardForm(props) {
     };
     try {
       axios
-        .post(`http://212.73.217.176:5050/dashboard/creation`, dataForm)
+        .post(
+          `${process.env.REACT_APP_SERVER_API}/dashboard/creation`,
+          dataForm
+        )
         .then((res) => {
           handleClose();
         });
@@ -146,7 +149,7 @@ export default function SimpleDashboardForm(props) {
           },
         },
       }}
-      TransitionProps={{ onEntering: handleEntering }}
+      TransitionProps={{onEntering: handleEntering}}
       open={open}
       {...other}
     >
@@ -160,7 +163,7 @@ export default function SimpleDashboardForm(props) {
         <Box
           component="form"
           noValidate
-          sx={{ mt: 3 }}
+          sx={{mt: 3}}
           autoComplete="off"
           onSubmit={handleSubmit(onSubmit)}
         >
@@ -177,7 +180,7 @@ export default function SimpleDashboardForm(props) {
                     <OutlinedInput id="select-multiple-chip" label="Chip" />
                   }
                   renderValue={(selected) => (
-                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                    <Box sx={{display: "flex", flexWrap: "wrap", gap: 0.5}}>
                       {selected.map((value) => (
                         <Chip key={value.uid} label={value.firstname} />
                       ))}
@@ -204,7 +207,7 @@ export default function SimpleDashboardForm(props) {
                 </Select>
               </FormControl>
               {errors.students && (
-                <Typography color="error" sx={{ mt: 1 }}>
+                <Typography color="error" sx={{mt: 1}}>
                   {errors.students.message}
                 </Typography>
               )}
@@ -232,7 +235,7 @@ export default function SimpleDashboardForm(props) {
               <TextField
                 id="date-start"
                 type="date"
-                sx={{ width: 250 }}
+                sx={{width: 250}}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -251,7 +254,7 @@ export default function SimpleDashboardForm(props) {
               <TextField
                 id="date-end"
                 type="date"
-                sx={{ width: 250 }}
+                sx={{width: 250}}
                 InputLabelProps={{
                   shrink: true,
                 }}
@@ -266,7 +269,7 @@ export default function SimpleDashboardForm(props) {
               )}
             </Grid>
           </Grid>
-          <Button type="submit" sx={{ mt: 3, mb: 2 }}>
+          <Button variant="contained" type="submit" sx={{mt: 3, mb: 2}}>
             Sauvegarder
           </Button>
         </Box>

@@ -14,7 +14,7 @@ const DeviceActions = ({params, rowId, setRowId}) => {
     const {label, ref, category, campus, status, deviceId} = params.row;
     console.log(params.row);
     const res = await axios.put(
-      `http://212.73.217.176:5050/inventory/edit/${deviceId}`,
+      `${process.env.REACT_APP_SERVER_API}/inventory/edit/${deviceId}`,
       {
         label,
         ref,

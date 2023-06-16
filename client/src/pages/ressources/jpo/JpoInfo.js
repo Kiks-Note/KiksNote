@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import React, {useState, useEffect, useCallback} from "react";
+import {useParams, useNavigate, Link} from "react-router-dom";
 import axios from "axios";
 import useFirebase from "../../../hooks/useFirebase";
 
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 import moment from "moment";
 
@@ -31,7 +31,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import notify from "../../../assets/img/notify.svg";
 import "./JpoInfo.scss";
 
-import { makeStyles } from "@mui/styles";
+import {makeStyles} from "@mui/styles";
 
 import UpdateJpoDialog from "./../../../components/ressources/jpo/UpdateJpoDialog";
 import PdfCommercialBrochureViewer from "./../../../components/ressources/jpo/PdfCommercialBrochureViewer";
@@ -99,10 +99,10 @@ const JpoInfo = () => {
   const classes = useStyles();
   let navigate = useNavigate();
 
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const userStatus = user?.status;
 
-  const { id } = useParams();
+  const {id} = useParams();
 
   const [jpoData, setJpoData] = useState();
   const [projects, setProjects] = useState([]);
@@ -142,7 +142,7 @@ const JpoInfo = () => {
   const getJpoById = async () => {
     try {
       await axios
-        .get(`http://212.73.217.176:5050/ressources/jpo/${id}`)
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/jpo/${id}`)
         .then((res) => {
           setJpoData(res.data);
         })
@@ -172,7 +172,7 @@ const JpoInfo = () => {
   ) => {
     try {
       await axios
-        .put(`http://212.73.217.176:5050/ressources/jpo/${id}`, {
+        .put(`${process.env.REACT_APP_SERVER_API}/ressources/jpo/${id}`, {
           jpoTitle: jpoTitle,
           jpoDescription: jpoDescription,
           jpoThumbnail: jpoThumbnail,
@@ -209,7 +209,10 @@ const JpoInfo = () => {
       const formData = new FormData();
       formData.append("file", pdfUrl);
       await axios
-        .put(`http://212.73.217.176:5050/ressources/jpopdf/${id}`, formData)
+        .put(
+          `${process.env.REACT_APP_SERVER_API}/ressources/jpopdf/${id}`,
+          formData
+        )
         .then((res) => {
           if (
             res.status === 200 &&
@@ -239,11 +242,11 @@ const JpoInfo = () => {
   */
 
   const DeleteJpoById = async (jpoTitle, jpoId) => {
-    const data = { jpoTitle, jpoId };
+    const data = {jpoTitle, jpoId};
 
     try {
       await axios
-        .delete(`http://212.73.217.176:5050/ressources/jpo`, { data })
+        .delete(`${process.env.REACT_APP_SERVER_API}/ressources/jpo`, {data})
         .then((res) => {
           console.log(res.data);
         })
@@ -262,7 +265,7 @@ const JpoInfo = () => {
   const getAllProjects = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/students-projects")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/students-projects`)
         .then((res) => {
           setProjects(res.data);
         })
@@ -341,8 +344,8 @@ const JpoInfo = () => {
   const deleteLinkedStudentProject = async (studentProjectId) => {
     try {
       await axios
-        .delete(`http://212.73.217.176:5050/ressources/jpo/${id}`, {
-          data: { studentProjectId },
+        .delete(`${process.env.REACT_APP_SERVER_API}/ressources/jpo/${id}`, {
+          data: {studentProjectId},
         })
         .then((res) => {
           if (
@@ -407,11 +410,11 @@ const JpoInfo = () => {
             <div className="head-jpo-container">
               <Typography
                 variant="h3"
-                sx={{ fontWeight: "bold", paddingLeft: "5%" }}
+                sx={{fontWeight: "bold", paddingLeft: "5%"}}
               >
                 {jpoData?.jpoTitle}
               </Typography>
-              <Typography sx={{ paddingRight: "5%" }}>
+              <Typography sx={{paddingRight: "5%"}}>
                 {moment
                   .unix(jpoData?.jpoDayStart?._seconds)
                   .format("DD.MM.YYYY HH:mm")}
@@ -423,14 +426,14 @@ const JpoInfo = () => {
             </div>
             <div className="jpoinfo-sections">
               <section className="jpo-left-side-section">
-                <Container sx={{ paddingBottom: "24px" }}>
+                <Container sx={{paddingBottom: "24px"}}>
                   <Typography variant="h5">Description JPO</Typography>
                   <Divider />
-                  <Typography sx={{ fontWeight: "bold" }}>
+                  <Typography sx={{fontWeight: "bold"}}>
                     {jpoData?.jpoDescription}
                   </Typography>
                 </Container>
-                <Typography sx={{ fontWeight: "bold" }}>
+                <Typography sx={{fontWeight: "bold"}}>
                   Liste des participants lors de cette JPO
                 </Typography>
                 <List>
@@ -549,7 +552,7 @@ const JpoInfo = () => {
                 </div>
               </section>
               <section className="jpo-right-side-section">
-                <Typography sx={{ fontWeight: "bold", padding: "10px" }}>
+                <Typography sx={{fontWeight: "bold", padding: "10px"}}>
                   Plaquette Commerciale JPO
                 </Typography>
                 {jpoData?.linkCommercialBrochure?.pdfBase64 === undefined ? (
@@ -565,7 +568,7 @@ const JpoInfo = () => {
                 {userStatus === "pedago" ? (
                   <>
                     <Button
-                      sx={{ margin: "20px" }}
+                      sx={{margin: "20px"}}
                       onClick={handleOpenStudentsProject}
                       className={classes.btnLinkProject}
                     >
@@ -579,7 +582,7 @@ const JpoInfo = () => {
                       }}
                     >
                       <Button
-                        sx={{ margin: "20px" }}
+                        sx={{margin: "20px"}}
                         onClick={() => handleClickOpenUpdateDialog()}
                         className={classes.btnEditJpo}
                       >
@@ -604,7 +607,7 @@ const JpoInfo = () => {
                         btnCreateJpo={classes.btnCreateJpo}
                       />
                       <Button
-                        sx={{ margin: "20px" }}
+                        sx={{margin: "20px"}}
                         onClick={() => handleClickOpenUpdatePdfDialog()}
                         className={classes.btnEditJpo}
                       >
@@ -621,7 +624,7 @@ const JpoInfo = () => {
                     </div>
 
                     <Button
-                      sx={{ margin: "20px" }}
+                      sx={{margin: "20px"}}
                       onClick={deleteJpo}
                       className={classes.btnDeleteJop}
                     >

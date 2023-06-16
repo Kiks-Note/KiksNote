@@ -88,6 +88,7 @@ const Cours = () => {
   const [courseOwner, setCourseOwner] = useState("");
   const [idSelectedOwner, setIdSelectedOwner] = useState("");
   const [selectedClass, setSelectedClass] = useState([]);
+  const [idSelectedClass, setIdSelectedClass] = useState("");
   const [coursePrivate, setCoursePrivate] = useState(false);
   const [courseImageBase64, setCourseImageBase64] = useState("");
 
@@ -147,7 +148,7 @@ const Cours = () => {
   const getAllTechnos = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/technos")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/technos`)
         .then((res) => {
           setTechnos(res.data);
           setIsAllCoursesDataLoaded(true);
@@ -167,7 +168,7 @@ const Cours = () => {
   const getAllCours = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/cours")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/cours`)
         .then((res) => {
           setCourses(res.data.cours);
           setIsAllCoursesDataLoaded(true);
@@ -187,7 +188,7 @@ const Cours = () => {
   const getAllPo = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/instructors")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/instructors`)
         .then((res) => {
           setAllPo(res.data);
         })
@@ -206,7 +207,7 @@ const Cours = () => {
   const getClassId = async (classId) => {
     try {
       await axios
-        .get(`http://212.73.217.176:5050/ressources/class/${classId}`)
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/class/${classId}`)
         .then((res) => {
           setUserClass(res.data);
         })
@@ -225,7 +226,7 @@ const Cours = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/classes")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/classes`)
         .then((res) => {
           setAllclass(res.data);
         })
@@ -247,7 +248,7 @@ const Cours = () => {
       courseDescription === "" ||
       courseDateStart === "" ||
       courseDateEnd === "" ||
-      !selectedClass ||
+      idSelectedClass === "" ||
       idSelectedOwner === "" ||
       courseImageBase64 === ""
     ) {
@@ -256,13 +257,13 @@ const Cours = () => {
     } else {
       try {
         await axios
-          .post("http://212.73.217.176:5050/ressources/cours", {
+          .post(`${process.env.REACT_APP_SERVER_API}/ressources/cours`, {
             title: courseTitle,
             description: courseDescription,
             dateStartSprint: courseDateStart,
             dateEndSprint: courseDateEnd,
             campus_numerique: courseCampusNumerique,
-            courseClass: selectedClass,
+            courseClass: idSelectedClass,
             owner: idSelectedOwner,
             private: coursePrivate,
             imageBase64: courseImageBase64,
@@ -489,6 +490,7 @@ const Cours = () => {
             setCoursePrivate={setCoursePrivate}
             selectedClass={selectedClass}
             setSelectedClass={setSelectedClass}
+            setIdSelectedClass={setIdSelectedClass}
             allclass={allclass}
             control={control}
             allpo={allpo}
@@ -506,7 +508,25 @@ const Cours = () => {
         {view === "module" ? (
           <>
             <div className="grid-view-cours ">
-              <h1>Année {`${currentYear}  - ${currentYear + 1} `}</h1>
+              <h1>
+                Année {`${currentYear} - ${currentYear + 1}`}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>
+
               <Grid container spacing={2}>
                 {loading ? (
                   <>
@@ -543,7 +563,7 @@ const Cours = () => {
                                 display: "flex",
                                 flexDirection: "column",
                                 justifyContent: "space-evenly",
-                                height: "450px",
+                                height: "500px",
                               }}
                               /* eslint-disable no-unused-expressions */
                               onClick={() => {
@@ -566,8 +586,8 @@ const Cours = () => {
                                 sx={{
                                   display: "flex",
                                   width: "100%",
-                                  maxHeight: "210px",
-                                  minHeight: "210px",
+                                  maxHeight: "170px",
+                                  minHeight: "170px",
                                   justifyContent: "center",
                                   margin: "0",
                                 }}
@@ -585,64 +605,44 @@ const Cours = () => {
                                 <div
                                   style={{
                                     display: "flex",
-                                    justifyContent: "space-between",
                                   }}
                                 >
-                                  {Array.isArray(course.data.courseClass) ? (
-                                    course.data.courseClass.map((classData) => (
-                                      <Chip
-                                        key={classData.id}
-                                        label={
-                                          <>
-                                            <div style={{ display: "flex" }}>
-                                              <Typography>
-                                                {classData.name}
-                                              </Typography>
-                                              <SchoolIcon />
-                                            </div>
-                                          </>
-                                        }
-                                      />
-                                    ))
-                                  ) : (
-                                    <Chip
-                                      key={course.data.courseClass.id}
-                                      label={
-                                        <>
-                                          <div style={{ display: "flex" }}>
-                                            <Typography>
-                                              {course.data.courseClass.name}
-                                            </Typography>
-                                            <SchoolIcon />
-                                          </div>
-                                        </>
-                                      }
-                                    />
-                                  )}
-
                                   <Chip
-                                    avatar={
-                                      <Avatar
-                                        alt={
-                                          course.data.owner.lastname.toUpperCase() +
-                                          "" +
-                                          course.data.owner.firstname +
-                                          "photo-profile"
-                                        }
-                                        src={course.data.owner.image}
-                                      />
-                                    }
-                                    variant="outlined"
                                     label={
                                       <>
-                                        <Typography>
-                                          {course.data.owner.lastname.toUpperCase()}{" "}
-                                          {course.data.owner.firstname}
-                                        </Typography>
+                                        <div style={{ display: "flex" }}>
+                                          <Typography>
+                                            {course.data.courseClass.name}
+                                          </Typography>
+                                          <SchoolIcon />
+                                        </div>
                                       </>
                                     }
                                   ></Chip>
                                 </div>
+                                <Chip
+                                  sx={{ marginTop: "1vh" }}
+                                  avatar={
+                                    <Avatar
+                                      alt={
+                                        course.data.owner.lastname.toUpperCase() +
+                                        "" +
+                                        course.data.owner.firstname +
+                                        "photo-profile"
+                                      }
+                                      src={course.data.owner.image}
+                                    />
+                                  }
+                                  variant="outlined"
+                                  label={
+                                    <>
+                                      <Typography>
+                                        {course.data.owner.lastname.toUpperCase()}{" "}
+                                        {course.data.owner.firstname}
+                                      </Typography>
+                                    </>
+                                  }
+                                ></Chip>
                                 <div style={{ padding: "10px" }}>
                                   <Typography
                                     sx={{
@@ -700,7 +700,28 @@ const Cours = () => {
               </Grid>
             </div>
             <div className="grid-view-cours ">
-              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
+              <h1>
+                Année {`${currentYear - 1} - ${currentYear} `}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name.replace(
+                              /\d+/,
+                              (match) => parseInt(match, 10) - 1
+                            )}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>
+
               <Grid container spacing={2}>
                 {loading ? (
                   <>
@@ -736,7 +757,7 @@ const Cours = () => {
                               display: "flex",
                               flexDirection: "column",
                               justifyContent: "space-evenly",
-                              height: "450px",
+                              height: "500px",
                             }}
                             onClick={() =>
                               userStatus !== "etudiant" &&
@@ -758,8 +779,8 @@ const Cours = () => {
                               sx={{
                                 display: "flex",
                                 width: "100%",
-                                maxHeight: "210px",
-                                minHeight: "210px",
+                                maxHeight: "170px",
+                                minHeight: "170px",
                                 justifyContent: "center",
                                 margin: "0",
                               }}
@@ -774,63 +795,44 @@ const Cours = () => {
                               <div
                                 style={{
                                   display: "flex",
-                                  justifyContent: "space-between",
                                 }}
                               >
-                                {Array.isArray(course.data.courseClass) ? (
-                                  course.data.courseClass.map((classData) => (
-                                    <Chip
-                                      key={classData.id}
-                                      label={
-                                        <>
-                                          <div style={{ display: "flex" }}>
-                                            <Typography>
-                                              {classData.name}
-                                            </Typography>
-                                            <SchoolIcon />
-                                          </div>
-                                        </>
-                                      }
-                                    />
-                                  ))
-                                ) : (
-                                  <Chip
-                                    key={course.data.courseClass.id}
-                                    label={
-                                      <>
-                                        <div style={{ display: "flex" }}>
-                                          <Typography>
-                                            {course.data.courseClass.name}
-                                          </Typography>
-                                          <SchoolIcon />
-                                        </div>
-                                      </>
-                                    }
-                                  />
-                                )}
                                 <Chip
-                                  avatar={
-                                    <Avatar
-                                      alt={
-                                        course.data.owner.lastname.toUpperCase() +
-                                        "" +
-                                        course.data.owner.firstname +
-                                        "photo-profile"
-                                      }
-                                      src={course.data.owner.image}
-                                    />
-                                  }
-                                  variant="outlined"
                                   label={
                                     <>
-                                      <Typography>
-                                        {course.data.owner.lastname.toUpperCase()}{" "}
-                                        {course.data.owner.firstname}
-                                      </Typography>
+                                      <div style={{ display: "flex" }}>
+                                        <Typography>
+                                          {course.data.courseClass.name}
+                                        </Typography>
+                                        <SchoolIcon />
+                                      </div>
                                     </>
                                   }
                                 ></Chip>
                               </div>
+                              <Chip
+                                sx={{ marginTop: "1vh" }}
+                                avatar={
+                                  <Avatar
+                                    alt={
+                                      course.data.owner.lastname.toUpperCase() +
+                                      "" +
+                                      course.data.owner.firstname +
+                                      "photo-profile"
+                                    }
+                                    src={course.data.owner.image}
+                                  />
+                                }
+                                variant="outlined"
+                                label={
+                                  <>
+                                    <Typography>
+                                      {course.data.owner.lastname.toUpperCase()}{" "}
+                                      {course.data.owner.firstname}
+                                    </Typography>
+                                  </>
+                                }
+                              ></Chip>
                               <div style={{ padding: "10px" }}>
                                 <Typography
                                   sx={{
@@ -887,7 +889,24 @@ const Cours = () => {
         ) : (
           <>
             <div className="list-view-cours">
-              <h1>Année {`${currentYear}  - ${currentYear + 1} `}</h1>
+              <h1>
+                Année {`${currentYear} - ${currentYear + 1}`}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>
               {(searchTerm.length > 0
                 ? [...filteredCoursesCurrentYear].filter(
                     (course) =>
@@ -960,7 +979,7 @@ const Cours = () => {
                             <Typography
                               sx={{
                                 display: "flex",
-                                justifyContent: "center",
+                                justifyContent: "start",
                                 alignItems: "center",
                               }}
                             >
@@ -998,7 +1017,27 @@ const Cours = () => {
                 ))}
             </div>
             <div className="list-view-cours">
-              <h1>Année {`${currentYear - 1}  - ${currentYear} `}</h1>
+              <h1>
+                Année {`${currentYear - 1} - ${currentYear} `}
+                {userStatus === "etudiant" && userClass ? (
+                  <Chip
+                    label={
+                      <>
+                        <div style={{ display: "flex" }}>
+                          <Typography sx={{ fontWeight: "bold" }}>
+                            {userClass?.data?.name.replace(
+                              /\d+/,
+                              (match) => parseInt(match, 10) - 1
+                            )}
+                          </Typography>
+                          <SchoolIcon />
+                        </div>
+                      </>
+                    }
+                    style={{ marginLeft: "10px" }}
+                  />
+                ) : null}
+              </h1>{" "}
               {(searchTerm.length > 0
                 ? [...filteredCoursesLastYear].filter(
                     (course) =>
@@ -1034,11 +1073,6 @@ const Cours = () => {
                             {course.data.title}
                           </h2>
                           <Chip
-                            sx={{
-                              display: "flex",
-                              padding: "10px",
-                              alignItems: "center",
-                            }}
                             label={
                               <>
                                 <div style={{ display: "flex" }}>
@@ -1076,7 +1110,7 @@ const Cours = () => {
                             <Typography
                               sx={{
                                 display: "flex",
-                                justifyContent: "center",
+                                justifyContent: "start",
                                 alignItems: "center",
                               }}
                             >

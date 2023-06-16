@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {useState} from "react";
+import {useParams} from "react-router-dom";
 import axios from "axios";
 
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 import {
   Button,
@@ -36,7 +36,7 @@ export const toastFail = (message) => {
 };
 
 const BlogTutosLinkDialog = (props) => {
-  const { projectid } = useParams();
+  const {projectid} = useParams();
   const [selectedBlogTutoId, setSelectedBlogTutoId] = useState("");
 
   const selectedBlogTuto = props.allblogtutos.find(
@@ -46,7 +46,7 @@ const BlogTutosLinkDialog = (props) => {
     ? selectedBlogTuto.data.title
     : "";
 
-    /* 
+  /* 
       Link a blog tuto with the current project using 
       projectId (String),
       selectedBlogTutoId (String) 
@@ -56,9 +56,12 @@ const BlogTutosLinkDialog = (props) => {
   const publishStudentProject = async () => {
     try {
       await axios
-        .post(`http://212.73.217.176:5050/ressources/linkblogtuto/${projectid}`, {
-          blogTutoId: selectedBlogTutoId,
-        })
+        .post(
+          `${process.env.REACT_APP_SERVER_API}/ressources/linkblogtuto/${projectid}`,
+          {
+            blogTutoId: selectedBlogTutoId,
+          }
+        )
         .then((res) => {
           console.log(res.data);
           if (
@@ -93,11 +96,11 @@ const BlogTutosLinkDialog = (props) => {
       <Dialog open={props.open} onClose={props.close}>
         <DialogTitle>Lier à un article blog tuto</DialogTitle>
         <DialogContent>
-          <div style={{ height: "600px", overflow: "auto" }}>
+          <div style={{height: "600px", overflow: "auto"}}>
             <Grid container spacing={2}>
               {props.allblogtutos.map((blogTuto) => (
                 <Grid item key={blogTuto.id} xs={12} sm={6} md={4}>
-                  <div style={{ position: "relative" }}>
+                  <div style={{position: "relative"}}>
                     <FormControlLabel
                       value={blogTuto.id}
                       control={
@@ -116,14 +119,14 @@ const BlogTutosLinkDialog = (props) => {
                     />
                     <img
                       src={blogTuto?.data?.thumbnail}
-                      style={{ width: "100%", cursor: "pointer" }}
+                      style={{width: "100%", cursor: "pointer"}}
                       alt="blog-tuto-linked-img"
                       onClick={() => handleImageClick(blogTuto.id)}
                     />
                   </div>
                   <Typography
                     variant="subtitle1"
-                    sx={{ textAlign: "center", marginBottom: "15px" }}
+                    sx={{textAlign: "center", marginBottom: "15px"}}
                   >
                     {blogTuto?.data?.title}
                   </Typography>
@@ -135,7 +138,7 @@ const BlogTutosLinkDialog = (props) => {
         <DialogActions>
           <Button
             onClick={publishStudentProject}
-            sx={{ backgroundColor: "#7a52e1", color: "white" }}
+            sx={{backgroundColor: "#7a52e1", color: "white"}}
             disabled={!selectedBlogTutoId}
           >
             Soumettre

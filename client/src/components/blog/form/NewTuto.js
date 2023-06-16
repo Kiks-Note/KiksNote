@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { EditorState, convertToRaw } from "draft-js";
-import { Editor } from "react-draft-wysiwyg";
+import React, {useState, useEffect} from "react";
+import {EditorState, convertToRaw} from "draft-js";
+import {Editor} from "react-draft-wysiwyg";
 import axios from "axios";
 import CloseIcon from "@mui/icons-material/Close";
 import {
@@ -13,14 +13,14 @@ import {
   TextField,
   IconButton,
 } from "@mui/material";
-import { toast } from "react-hot-toast";
+import {toast} from "react-hot-toast";
 import draftToHtml from "draftjs-to-html";
 import useFirebase from "../../../hooks/useFirebase";
 import Autocomplete from "@mui/material/Autocomplete";
-import { Rings } from "react-loader-spinner";
+import {Rings} from "react-loader-spinner";
 import SwipeableDrawer from "@mui/material/SwipeableDrawer";
 
-export default function NewTuto({ open, toggleDrawerModify }) {
+export default function NewTuto({open, toggleDrawerModify}) {
   const [editorStates, setEditorStates] = useState([]);
   const [activeStep, setActiveStep] = useState(0);
   const [numSteps, setNumSteps] = useState(1);
@@ -33,7 +33,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useFirebase();
+  const {user} = useFirebase();
 
   useEffect(() => {
     fetchTags();
@@ -42,7 +42,9 @@ export default function NewTuto({ open, toggleDrawerModify }) {
 
   const fetchTags = async () => {
     try {
-      const response = await axios.get("http://212.73.217.176:5050/blog/tag");
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API}/blog/tag`
+      );
       const tags = response.data;
       setTags(tags);
     } catch (error) {
@@ -53,7 +55,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
     const inputEditorState = editorStates.map((editorState, index) => {
       const currentContent = editorState.getCurrentContent();
       const content = draftToHtml(convertToRaw(currentContent));
-      return { id: index, content: content };
+      return {id: index, content: content};
     });
 
     var statut = "online";
@@ -83,7 +85,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
     formData.append("tutoData", JSON.stringify(tutoData));
     try {
       const response = await axios.post(
-        "http://212.73.217.176:5050/blog/tuto",
+        `${process.env.REACT_APP_SERVER_API}/blog/tuto`,
         formData,
         {
           headers: {
@@ -224,13 +226,13 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                 type="text"
                 label="Titre "
                 fullWidth
-                InputLabelProps={{ className: "inputLabel" }}
-                InputProps={{ className: "input" }}
+                InputLabelProps={{className: "inputLabel"}}
+                InputProps={{className: "input"}}
                 value={title}
                 onChange={(event) => setTitle(event.target.value)}
               />
               <TextField
-                sx={{ marginBottom: 2 }}
+                sx={{marginBottom: 2}}
                 id="outlined-search"
                 type="text"
                 name="Description"
@@ -238,8 +240,8 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 fullWidth
-                InputLabelProps={{ className: "inputLabel" }}
-                InputProps={{ className: "input" }}
+                InputLabelProps={{className: "inputLabel"}}
+                InputProps={{className: "input"}}
               />
               <div>
                 <Autocomplete
@@ -265,7 +267,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
               </div>
               <Box marginTop={2}>
                 <TextField
-                  sx={{ marginBottom: 2 }}
+                  sx={{marginBottom: 2}}
                   id="outlined-search"
                   type="file"
                   accept="image/png, image/jpeg"
@@ -291,8 +293,8 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                       sx={{
                         height: 300,
                         width: 350,
-                        maxHeight: { xs: 233, md: 167 },
-                        maxWidth: { xs: 350, md: 250 },
+                        maxHeight: {xs: 233, md: 167},
+                        maxWidth: {xs: 350, md: 250},
                       }}
                       alt="preview Miniature"
                       src={previewImage}
@@ -305,7 +307,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                 label="Nombre de page"
                 value={numSteps}
                 onChange={handleNumStepsChange}
-                inputProps={{ min: 1, max: 10 }}
+                inputProps={{min: 1, max: 10}}
               />
               <Box
                 sx={{
@@ -415,7 +417,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                     },
                     image: {
                       uploadCallback: handleImageUpload,
-                      alt: { present: true, mandatory: true },
+                      alt: {present: true, mandatory: true},
                       previewImage: true,
                       inputAccept:
                         "image/gif,image/jpeg,image/jpg,image/png,image/svg",
@@ -428,7 +430,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                       variant="contained"
                       color="secondary"
                       onClick={handlePrevStep}
-                      style={{ marginLeft: "8px" }}
+                      style={{marginLeft: "8px"}}
                     >
                       Précédent
                     </Button>
@@ -438,7 +440,7 @@ export default function NewTuto({ open, toggleDrawerModify }) {
                       variant="contained"
                       color="primary"
                       onClick={handleNextStep}
-                      style={{ marginLeft: "8px" }}
+                      style={{marginLeft: "8px"}}
                       disabled={
                         !editorStates[activeStep].getCurrentContent().hasText()
                       }

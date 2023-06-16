@@ -1,10 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { v4: uuidv4 } = require("uuid");
+const {v4: uuidv4} = require("uuid");
 const app = express();
 const dotenv = require("dotenv").config();
-const { parse } = require("url");
+const {parse} = require("url");
 const webSocketServer = require("websocket").server;
 const http = require("http");
 /// MULTER CONFIG FOR UPLOAD ON SERVER
@@ -80,7 +80,7 @@ const inventoryRoutes = require("./inventoryRoutes");
 const callRoutesNotNeeded = callRoutesWsNotNeeded();
 const calendarRoutes = require("./calendarRoutes");
 
-const { groupNoWsNeeded, groupWsNeeded } = require("./groupsRoutes");
+const {groupNoWsNeeded, groupWsNeeded} = require("./groupsRoutes");
 const groupNoWs = groupNoWsNeeded();
 app.use("/ressources", coursRoutes()); // --> Resssources Cours
 app.use("/ressources", studentsProjectsRoutes()); // --> Resssources Projet Etudiants
@@ -94,7 +94,7 @@ app.use("/groupes", groupNoWs);
 
 wsI.on("request", (request) => {
   const connection = request.accept(null, request.origin);
-  const { pathname } = parse(request.httpRequest.url);
+  const {pathname} = parse(request.httpRequest.url);
   console.log("pathname => ", pathname);
   connection ? console.log("connection ok") : console.log("connection failed");
   app.use("/callws", callRoutesWsNeeded(connection, pathname));

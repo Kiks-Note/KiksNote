@@ -33,7 +33,7 @@ import {
 import UpdateCoursDialog from "./../../../components/ressources/cours/UpdateCoursDialog";
 import CoursLinkDialog from "./../../../components/ressources/cours/CoursLinkDialog";
 
-import { makeStyles } from "@mui/styles";
+import {makeStyles} from "@mui/styles";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import UploadIcon from "@mui/icons-material/Upload";
@@ -95,10 +95,10 @@ export const toastFail = (message) => {
 };
 
 const CoursInfo = () => {
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const userStatus = user?.status;
 
-  const { id } = useParams();
+  const {id} = useParams();
   const navigate = useNavigate();
 
   const [allcourses, setCourses] = useState([]);
@@ -149,7 +149,7 @@ const CoursInfo = () => {
   const getAllInstructors = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/instructors")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/instructors`)
         .then((res) => {
           setAllPo(res.data);
         })
@@ -168,7 +168,7 @@ const CoursInfo = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/classes")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/classes`)
         .then((res) => {
           setAllclass(res.data);
         })
@@ -187,7 +187,7 @@ const CoursInfo = () => {
   const getCoursId = async () => {
     try {
       await axios
-        .get(`http://212.73.217.176:5050/ressources/cours/${id}`)
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/cours/${id}`)
         .then((res) => {
           setCoursData(res.data.data);
           setPdfLinksCours(res.data.data.pdfLinkCours);
@@ -208,7 +208,7 @@ const CoursInfo = () => {
   const getAllCours = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/cours")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/cours`)
         .then((res) => {
           setCourses(res.data);
         })
@@ -236,7 +236,10 @@ const CoursInfo = () => {
       formData.append("title", coursData.title);
       formData.append("courseId", id);
       await axios
-        .post(`http://212.73.217.176:5050/ressources/cours/upload-pdf`, formData)
+        .post(
+          `${process.env.REACT_APP_SERVER_API}/ressources/cours/upload-pdf`,
+          formData
+        )
         .then((res) => {
           if (res.status === 200) {
             toastSuccess(`Votre pdf cours a bien été uploadé`);
@@ -274,7 +277,7 @@ const CoursInfo = () => {
 
       await axios
         .post(
-          `http://212.73.217.176:5050/ressources/cours/backlog/upload-pdf`,
+          `${process.env.REACT_APP_SERVER_API}/ressources/cours/backlog/upload-pdf`,
           formData
         )
         .then((res) => {
@@ -307,10 +310,15 @@ const CoursInfo = () => {
     pdfLinkCours,
     courseId
   ) => {
-    const data = { courseClass, title, fileName, pdfLinkCours, courseId };
+    const data = {courseClass, title, fileName, pdfLinkCours, courseId};
 
     return axios
-      .delete("http://212.73.217.176:5050/ressources/cours/delete-pdf", { data })
+      .delete(
+        `${process.env.REACT_APP_SERVER_API}/ressources/cours/delete-pdf`,
+        {
+          data,
+        }
+      )
       .then((res) => {
         if (res.status === 200) {
           toastSuccess(`Votre fichier cours ${fileName} a bien été supprimé`);
@@ -336,11 +344,11 @@ const CoursInfo = () => {
     pdfLinkBackLog,
     courseId
   ) => {
-    const data = { courseClass, title, fileName, pdfLinkBackLog, courseId };
+    const data = {courseClass, title, fileName, pdfLinkBackLog, courseId};
 
     try {
       const res = await axios.delete(
-        "http://212.73.217.176:5050/ressources/backlog/delete-pdf",
+        `${process.env.REACT_APP_SERVER_API}/ressources/backlog/delete-pdf`,
         { data }
       );
       if (res.status === 200) {
@@ -381,7 +389,7 @@ const CoursInfo = () => {
   ) => {
     try {
       axios
-        .put(`http://212.73.217.176:5050/ressources/cours/${id}`, {
+        .put(`${process.env.REACT_APP_SERVER_API}/ressources/cours/${id}`, {
           title: title,
           description: description,
           dateStartSprint: dateStartSprint,
@@ -419,9 +427,12 @@ const CoursInfo = () => {
   const deleteCours = async (cours_id, courseClass, title) => {
     try {
       await axios
-        .delete(`http://212.73.217.176:5050/ressources/cours/${cours_id}`, {
-          data: { courseClass, title },
-        })
+        .delete(
+          `${process.env.REACT_APP_SERVER_API}/ressources/cours/${cours_id}`,
+          {
+            data: {courseClass, title},
+          }
+        )
         .then((res) => {
           console.log(res);
         })
@@ -436,7 +447,7 @@ const CoursInfo = () => {
   const deleteLinkedCours = async (cours_id, linkedCourseName, courseName) => {
     try {
       await axios
-        .delete(`http://212.73.217.176:5050/ressources/linkcours/${cours_id}`)
+        .delete(`${process.env.REACT_APP_SERVER_API}/ressources/linkcours/${cours_id}`)
         .then((res) => {
           if (
             res.status === 200 &&
@@ -601,7 +612,7 @@ const CoursInfo = () => {
             width: "100%",
           }}
         >
-          <Typography variant="h6" sx={{ flexGrow: 1 }}></Typography>
+          <Typography variant="h6" sx={{flexGrow: 1}}></Typography>
           <div
             style={{
               display: "flex",
@@ -1339,8 +1350,7 @@ const CoursInfo = () => {
                           >
                             Modifier
                           </Button>
-                          {coursData?.courseClass?.name &&
-                            coursData?.owner &&
+                          {coursData?.owner &&
                             coursData.owner.lastname &&
                             coursData.owner.firstname && (
                               <UpdateCoursDialog

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 
 import axios from "axios";
 
-import { Typography, Box, List, ListItem } from "@mui/material";
+import {Typography, Box, List, ListItem} from "@mui/material";
 
 import JpoCard from "./../../../components/ressources/jpo/JpoCard";
 import SkeletonHistoryJpo from "../../../components/ressources/jpo/SkeletonHistoryJpo";
@@ -16,7 +16,7 @@ const HistoryJpo = () => {
   const getAllOldJpo = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/pastjpo")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/pastjpo`)
         .then((res) => {
           setAllPastJpo(res.data);
         })
@@ -58,7 +58,7 @@ const HistoryJpo = () => {
               >
                 <Typography
                   variant="h3"
-                  sx={{ fontWeight: "bold", marginLeft: "5%" }}
+                  sx={{fontWeight: "bold", marginLeft: "5%"}}
                 >
                   Historique des JPO
                 </Typography>
@@ -66,7 +66,7 @@ const HistoryJpo = () => {
             </div>
 
             <div className="jpo-list-container">
-              <List sx={{ width: "85%" }}>
+              <List sx={{width: "85%"}}>
                 {allPastJpo.map((jpoData, index) => (
                   <ListItem key={index}>
                     <JpoCard jpoData={jpoData} index={index} />

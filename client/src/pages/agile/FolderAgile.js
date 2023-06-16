@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import axios from "axios";
-import { Grid, Button, Typography } from "@material-ui/core";
+import {Grid, Button, Typography} from "@material-ui/core";
 import useFirebase from "../../hooks/useFirebase";
 import "./agile.css";
 
@@ -14,7 +14,7 @@ export default function FolderAgile({ dashboardId, actorId }) {
     const fetchFolder = async () => {
       try {
         const response = await axios.get(
-          `http://212.73.217.176:5050/agile/${user.id}/agile_folder`
+          `${process.env.REACT_APP_SERVER_API}/agile/${user.id}/agile_folder`
         );
         setFolders(response.data);
         console.log(response.data);
@@ -78,9 +78,9 @@ export default function FolderAgile({ dashboardId, actorId }) {
 
     if (fileLinks.length != 0) {
       // Générer un lien de téléchargement regroupant tous les fichiers
-      const zipLink = `http://212.73.217.176:5050/agile/folder?files=${encodeURIComponent(
-        fileLinks.join(",")
-      )}`;
+      const zipLink = `${
+        process.env.REACT_APP_SERVER_API
+      }/agile/folder?files=${encodeURIComponent(fileLinks.join(","))}`;
 
       // Ouvrir le lien de téléchargement dans une nouvelle fenêtre/onglet
       window.open(zipLink, "_blank");

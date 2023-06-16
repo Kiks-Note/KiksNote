@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import {useState, useEffect, useCallback} from "react";
+import {useNavigate} from "react-router-dom";
 
-import { useForm } from "react-hook-form";
+import {useForm} from "react-hook-form";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 import useFirebase from "../../../hooks/useFirebase";
 
@@ -63,7 +63,7 @@ export const toastFail = (message) => {
 const StudentsProjects = () => {
   let navigate = useNavigate();
 
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const userStatus = user?.status;
 
   const [open, setOpen] = useState(false);
@@ -97,8 +97,6 @@ const StudentsProjects = () => {
   const [openTechno, setOpenTechno] = useState(false);
   const [technoName, setTechnoName] = useState("");
   const [technoImageBase64, setTechnoImageBase64] = useState("");
-
-  const [loadingProjects, setLoadingProjects] = useState(false);
 
   var votePo = 5;
   var votePedago = 3;
@@ -135,7 +133,7 @@ const StudentsProjects = () => {
   const createTechno = async () => {
     try {
       await axios
-        .post("http://212.73.217.176:5050/ressources/technos", {
+        .post(`${process.env.REACT_APP_SERVER_API}/ressources/technos`, {
           name: technoName,
           image: technoImageBase64,
         })
@@ -168,7 +166,7 @@ const StudentsProjects = () => {
   const getAllTechnos = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/technos")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/technos`)
         .then((res) => {
           setTechnos(res.data);
         })
@@ -187,7 +185,7 @@ const StudentsProjects = () => {
   const getAllProjects = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/students-projects")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/students-projects`)
         .then((res) => {
           setProjects(res.data);
         })
@@ -206,7 +204,7 @@ const StudentsProjects = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/classes")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/classes`)
         .then((res) => {
           setAllclass(res.data);
         })
@@ -225,7 +223,7 @@ const StudentsProjects = () => {
   const getAllStudents = async () => {
     try {
       await axios
-        .get("http://212.73.217.176:5050/ressources/students")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/students`)
         .then((res) => {
           setAllStudents(res.data);
         })
@@ -265,7 +263,7 @@ const StudentsProjects = () => {
     } else {
       try {
         await axios
-          .post("http://212.73.217.176:5050/ressources/students-projects", {
+          .post(`${process.env.REACT_APP_SERVER_API}/ressources/students-projects`, {
             StudentId: user?.id,
             nameProject: nameProject,
             RepoProjectLink: repoProjectLink,
@@ -313,7 +311,7 @@ const StudentsProjects = () => {
       setTimeout(async () => {
         try {
           const response = await axios.post(
-            "http://212.73.217.176:5050/ressources/refprojects",
+            `${process.env.REACT_APP_SERVER_API}/ressources/refprojects`,
             {
               projectId: projectId,
               counterRefToAdd: countRefAdd,
@@ -369,7 +367,7 @@ const StudentsProjects = () => {
       setTimeout(async () => {
         try {
           const response = await axios.post(
-            "http://212.73.217.176:5050/ressources/removerefprojects",
+            `${process.env.REACT_APP_SERVER_API}/ressources/removerefprojects`,
             {
               projectId: projectId,
               counterRefToRemove: counterRefToRemove,

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, {useState, useRef, useEffect, useMemo} from "react";
 import {
   FormControl,
   InputLabel,
@@ -7,32 +7,34 @@ import {
   Button,
   useTheme,
 } from "@mui/material";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import "../groups/Popup.scss";
 import axios from "axios";
 
-export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
+export const PopUp = ({onPopupData, dataPopUp, showPopUp}) => {
   const [classChoose, setClassChoose] = useState(" ");
   const [courseChoosed, setCourseChoosed] = useState({
-    data: { title: "Tous les cours" },
+    data: {title: "Tous les cours"},
   });
   const [modeleChoose, setModeleChoose] = useState("Choisir un modèle");
 
   const popUpRef = useRef();
   const [courses, setCourses] = useState([]);
 
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const theme = useTheme();
 
   const ws = useMemo(() => {
-    return new w3cwebsocket("ws://212.73.217.176:5050/retro");
+    return new w3cwebsocket(`${process.env.REACT_APP_SERVER_API_WS}/retro`);
   }, []);
 
   useEffect(() => {
     const getCourse = async () => {
       await axios
-        .get(`http://212.73.217.176:5050/ressources/getCoursesByPo/${user.id}`)
+        .get(
+          `${process.env.REACT_APP_SERVER_API}/ressources/getCoursesByPo/${user.id}`
+        )
         .then((res) => {
           setCourses(res.data);
         });
@@ -83,12 +85,12 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
         }}
       >
         <p>Création de Retrospective</p>
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <FormControl sx={{m: 1, minWidth: 120}}>
           <InputLabel id="demo-simple-select-helper-label">Cours</InputLabel>
           <Select
             variant="filled"
             id="input-class"
-            sx={{ color: "text.primary" }}
+            sx={{color: "text.primary"}}
             renderValue={(selected) => selected.data.title}
             onChange={(e) => {
               setClassChoose(e.target.value.data.courseClass.id);
@@ -106,12 +108,12 @@ export const PopUp = ({ onPopupData, dataPopUp, showPopUp }) => {
               ))}
           </Select>
         </FormControl>
-        <FormControl sx={{ m: 1, minWidth: 120 }}>
+        <FormControl sx={{m: 1, minWidth: 120}}>
           <InputLabel id="demo-simple-select-helper-label">Modele</InputLabel>
           <Select
             variant="filled"
             id="input-class"
-            sx={{ color: "text.primary" }}
+            sx={{color: "text.primary"}}
             onChange={(e) => {
               setModeleChoose(e.target.value);
             }}

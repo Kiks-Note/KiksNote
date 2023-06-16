@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import "./AskResetPassword.scss";
 import axios from "axios";
-import { Box, TextField, Button, Typography } from "@mui/material";
+import {Box, TextField, Button, Typography} from "@mui/material";
 
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-import { useTheme } from "@mui/material";
+import {useTheme} from "@mui/material";
 
 import ForgotPasswordArt from "../../assets/img/forgot_password.svg";
 
@@ -32,7 +32,7 @@ const AskResetPassword = () => {
   const sendEmailFromFront = async () => {
     try {
       await axios
-        .post("http://212.73.217.176:5050/auth/reset-password", {
+        .post(`${process.env.REACT_APP_SERVER_API}/auth/reset-password`, {
           email: mail,
         })
         .then((res) => {
@@ -63,7 +63,7 @@ const AskResetPassword = () => {
   return (
     <div
       className="reset-password-page"
-      style={{ backgroundColor: theme.palette.background.paper }}
+      style={{backgroundColor: theme.palette.background.paper}}
     >
       <div
         style={{
@@ -85,11 +85,11 @@ const AskResetPassword = () => {
           <Typography
             variant="h3"
             fontWeight="bold"
-            style={{ margin: 10, fontSize: "2vw" }}
+            style={{margin: 10, fontSize: "2vw"}}
           >
             Réinitialiser le mot de passe
           </Typography>
-          <div style={{ padding: "5%" }}>
+          <div style={{padding: "5%"}}>
             <img
               src={ForgotPasswordArt}
               style={{
@@ -120,7 +120,7 @@ const AskResetPassword = () => {
               defaultValue={mail}
               onChange={onChangeEmail}
               sx={{
-                input: { color: "text.primary" },
+                input: {color: "text.primary"},
                 width: "70%",
               }}
             />

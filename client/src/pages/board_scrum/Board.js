@@ -1,22 +1,19 @@
-import React, { useState, useEffect } from "react";
-import "./Board.scss";
-import axios from "axios";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import CardBoard from "../../components/board_scrum/board/CardBoard";
-import { Typography } from "@mui/material";
-import ButtonAddCard from "../../components/board_scrum/board/ButtonAddCard";
-import { Toaster, toast } from "react-hot-toast";
-import { Switch } from "@mui/material";
-import { w3cwebsocket } from "websocket";
+import { Switch, Typography } from "@mui/material";
+import axios from "axios";
 import { PropTypes } from "prop-types";
-import SettingsIcon from "@mui/icons-material/Settings";
-import Button from "@mui/material/Button";
+import React, { useEffect, useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
+import { w3cwebsocket } from "websocket";
+import ButtonAddCard from "../../components/board_scrum/board/ButtonAddCard";
+import CardBoard from "../../components/board_scrum/board/CardBoard";
+import "./Board.scss";
 
 Board.propTypes = {
   dashboardId: PropTypes.string.isRequired,
   boardId: PropTypes.string.isRequired,
 };
-export default function Board({ boardId, dashboardId }) {
+export default function Board({boardId, dashboardId}) {
   const labelChange = () => setLabel(!label);
   const [columns, setColumns] = useState({});
   const [boardName, setBoardName] = useState("");
@@ -25,7 +22,9 @@ export default function Board({ boardId, dashboardId }) {
 
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/board`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/board`
+      );
 
       wsComments.onopen = function (e) {
         wsComments.send(
@@ -48,7 +47,7 @@ export default function Board({ boardId, dashboardId }) {
 
   async function changeCardIndex(newColumns) {
     await axios.put(
-      "http://212.73.217.176:5050/dashboard/" +
+      `${process.env.REACT_APP_SERVER_API}/dashboard/` +
         dashboardId +
         "/board/" +
         boardId +

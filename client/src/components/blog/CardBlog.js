@@ -8,20 +8,20 @@ import {
 } from "@mui/material";
 import Button from "@mui/material/Button";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useState } from "react";
+import {useState} from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import useFirebase from "../../hooks/useFirebase";
 import "./cardBlog.css";
 import OrangeHashtag from "../../assets/img/orange-hashtag.svg";
 
-export default function CardBlog({ blog, tags }) {
+export default function CardBlog({blog, tags}) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const { user } = useFirebase();
+  const {user} = useFirebase();
 
   const deleteBlog = function () {
     axios
-      .delete(`http://212.73.217.176:5050/blog/${blog.id}`)
+      .delete(`${process.env.REACT_APP_SERVER_API}/blog/${blog.id}`)
       .then((res) => {
         console.log(res);
       })
@@ -38,7 +38,7 @@ export default function CardBlog({ blog, tags }) {
       blog.visibility = "pending";
     }
     axios
-      .put(`http://212.73.217.176:5050/blog/${blog.id}/visibility`, {
+      .put(`${process.env.REACT_APP_SERVER_API}/blog/${blog.id}/visibility`, {
         visibility: blog.visibility,
       })
       .then((res) => {
@@ -88,14 +88,14 @@ export default function CardBlog({ blog, tags }) {
           <div className="content-title">
             <h3 className="blog-title">{blog.title}</h3>{" "}
             {user.status !== "etudiant" || user.email === blog?.created_by ? (
-              <div style={{ zIndex: 2 }}>
+              <div style={{zIndex: 2}}>
                 <IconButton
                   aria-label="more options"
                   aria-controls="card-menu"
                   aria-haspopup="true"
                   onClick={handleMenuOpen}
                   className="menu_three_blog"
-                  sx={{ color: "#ffff" }}
+                  sx={{color: "#ffff"}}
                 >
                   <MoreVertIcon />
                 </IconButton>
@@ -131,13 +131,13 @@ export default function CardBlog({ blog, tags }) {
                 maxWidth: "90%",
               }}
             >
-              <Typography sx={{ textOverflow: "ellipsis" }}>
+              <Typography sx={{textOverflow: "ellipsis"}}>
                 {blog?.description}
               </Typography>
 
-              <Box sx={{ display: "flex", justifyContent: "space-around" }}>
+              <Box sx={{display: "flex", justifyContent: "space-around"}}>
                 <Button
-                  sx={{ mr: 1 }}
+                  sx={{mr: 1}}
                   size="small"
                   onClick={
                     blog?.type === "tuto" ? handleClickTuto : handleClickBlog
@@ -156,7 +156,7 @@ export default function CardBlog({ blog, tags }) {
                         // <li>{tag}, </li>
                         <Typography
                           variant="body1"
-                          sx={{ mr: 1, color: "white" }}
+                          sx={{mr: 1, color: "white"}}
                         >
                           {getTag(tag)}
                         </Typography>

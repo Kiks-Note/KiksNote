@@ -1,29 +1,29 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import momentPlugin from "@fullcalendar/moment";
 import interactionPlugin from "@fullcalendar/interaction";
 import Modal from "@mui/material/Modal";
-import { Grid } from "@material-ui/core";
+import {Grid} from "@material-ui/core";
 import frLocale from "@fullcalendar/core/locales/fr";
 import DetailCalendar from "./DetailCalendar";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 import axios from "axios";
 import useFirebase from "../../hooks/useFirebase";
 import timeConverter from "../../functions/TimeConverter";
 import moment from "moment";
 import "./calendar.scss";
-import { Rings } from "react-loader-spinner";
+import {Rings} from "react-loader-spinner";
 
 export default function DisplayCalendar() {
   const [statesDetail, setStatesDetail] = useState({
     open: false,
     expanded: false,
   });
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const handleCloseDetail = () =>
-    setStatesDetail({ open: false, expanded: false });
+    setStatesDetail({open: false, expanded: false});
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,7 @@ export default function DisplayCalendar() {
     if (event.event.constraint != "holiday") {
       const selectedEvent = events.find((event) => event.id === eventId); // Recherche de l'événement correspondant à l'id
       setSelectedEvent(selectedEvent);
-      setStatesDetail({ open: true, expanded: false });
+      setStatesDetail({open: true, expanded: false});
     }
   };
   function formatDate(dateString) {
@@ -61,7 +61,9 @@ export default function DisplayCalendar() {
       setEvents(events);
     };
     const fetchSocket = async () => {
-      const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/calendar`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API}/calendar`
+      );
 
       wsComments.onopen = function () {
         wsComments.send(

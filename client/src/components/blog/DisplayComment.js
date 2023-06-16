@@ -10,11 +10,13 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 
-export default function DisplayComment({ comment, tutoId }) {
+export default function DisplayComment({comment, tutoId}) {
   console.log(comment.id);
   const handleDeleteComment = function () {
     axios
-      .delete(`http://212.73.217.176:5050/blog/${tutoId}/comments/${comment.id}`)
+      .delete(
+        `${process.env.REACT_APP_SERVER_API}/blog/${tutoId}/comments/${comment.id}`
+      )
       .then((res) => {
         console.log(res);
       })
@@ -25,7 +27,7 @@ export default function DisplayComment({ comment, tutoId }) {
   };
   const deleteBlog = function () {};
   return (
-    <List sx={{ width: "100%", bgcolor: "background.paper" }}>
+    <List sx={{width: "100%", bgcolor: "background.paper"}}>
       <ListItem alignItems="flex-start">
         <ListItemAvatar>
           <Avatar alt={comment.user.firstname} src={comment.user.image} />
@@ -35,7 +37,7 @@ export default function DisplayComment({ comment, tutoId }) {
           secondary={
             <>
               <Typography
-                sx={{ display: "inline" }}
+                sx={{display: "inline"}}
                 component="span"
                 variant="body2"
                 color="text.primary"

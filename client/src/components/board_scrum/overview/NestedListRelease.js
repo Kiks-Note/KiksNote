@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import PropTypes from "prop-types";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -15,17 +15,14 @@ function NestedListRelease({ releases, dashboardId, selectedStories }) {
   const [open, setOpen] = useState({});
 
   const handleClick = (key) => () => {
-    setOpen((prevState) => ({ ...prevState, [key]: !prevState[key] }));
+    setOpen((prevState) => ({...prevState, [key]: !prevState[key]}));
   };
 
   const chooseBoard = async (sprint) => {
-    await axios.post(
-      `http://212.73.217.176:5050/dashboard/${dashboardId}/moveStories`,
-      {
-        boardId: sprint.boardId,
-        storiesId: selectedStories,
-      }
-    );
+    await axios.post(`${process.env.REACT_APP_SERVER_API}/dashboard/${dashboardId}/moveStories`, {
+      boardId: sprint.boardId,
+      selectedStories: selectedStories,
+    });
   };
 
   return (
