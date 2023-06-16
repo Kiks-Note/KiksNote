@@ -35,7 +35,9 @@ function DetailTuto() {
   };
 
   useEffect(() => {
-    const ws = new w3cwebsocket("ws://localhost:5050/blogDetail");
+    const ws = new w3cwebsocket(
+      `${process.env.REACT_APP_SERVER_API_WS}/blogDetail`
+    );
     ws.onopen = function (e) {
       ws.send(JSON.stringify(id));
     };
@@ -93,9 +95,12 @@ function DetailTuto() {
   }, []);
   async function handleParticipate() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/participant`, {
-        userId: user.id,
-      });
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/blog/${data.id}/participant`,
+        {
+          userId: user.id,
+        }
+      );
     } catch (err) {
       console.log(err);
     }
@@ -103,9 +108,12 @@ function DetailTuto() {
 
   async function handleLike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/like`, {
-        userId: user.id,
-      });
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/blog/${data.id}/like`,
+        {
+          userId: user.id,
+        }
+      );
     } catch (err) {
       console.log(err);
     }
@@ -113,9 +121,12 @@ function DetailTuto() {
 
   async function handleDislike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/dislike`, {
-        userId: user.id,
-      });
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/blog/${data.id}/dislike`,
+        {
+          userId: user.id,
+        }
+      );
     } catch (err) {
       console.log(err);
     }
@@ -232,6 +243,13 @@ function DetailTuto() {
                       <div data-color-mode="light">
                         <MDEditor.Markdown
                           source={data.markdownStepsInfo[activeStep]}
+                          style={{
+                            padding: 10,
+                            // ...{
+                            //   backgroundColor: theme.palette.background.paper,
+                            //   color: theme.palette.text.primary,
+                            // },
+                          }}
                         />
                       </div>
                     </Box>

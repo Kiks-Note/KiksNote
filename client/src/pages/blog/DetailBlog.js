@@ -1,26 +1,26 @@
 import axios from "axios";
-import React, { useEffect, useState, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { Box, Typography, Button } from "@mui/material";
+import React, {useEffect, useState, useRef} from "react";
+import {useParams, useNavigate} from "react-router-dom";
+import {Box, Typography, Button} from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import DisplayComment from "../../components/blog/DisplayComment";
 import CreateComment from "../../components/blog/CreateComment";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 import useFirebase from "../../hooks/useFirebase";
-import { Rings } from "react-loader-spinner";
+import {Rings} from "react-loader-spinner";
 import ListParticipants from "../../components/blog/ListParticipants";
 import "./Blog.css";
-import { useTheme } from "@mui/material";
+import {useTheme} from "@mui/material";
 import MDEditor from "@uiw/react-md-editor";
 
 function DetailBlog() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const { id } = useParams();
-  const { user } = useFirebase();
+  const {id} = useParams();
+  const {user} = useFirebase();
   const navigate = useNavigate();
   const [visibleComments, setVisibleComments] = useState(5);
   const [isUserParticipant, setIsUserParticipant] = useState(false);
@@ -39,7 +39,9 @@ function DetailBlog() {
   };
 
   useEffect(() => {
-    const ws = new w3cwebsocket("ws://localhost:5050/blogDetail");
+    const ws = new w3cwebsocket(
+      `${process.env.REACT_APP_SERVER_API_WS}/blogDetail`
+    );
     ws.onopen = function (e) {
       ws.send(JSON.stringify(id));
     };
@@ -103,9 +105,12 @@ function DetailBlog() {
   async function handleParticipate() {
     try {
       await axios
-        .put(`http://localhost:5050/blog/${data.id}/participant`, {
-          userId: user.id,
-        })
+        .put(
+          `${process.env.REACT_APP_SERVER_API}/blog/${data.id}/participant`,
+          {
+            userId: user.id,
+          }
+        )
         .then(async () => {
           await getBlogParticipant();
         });
@@ -117,7 +122,7 @@ function DetailBlog() {
   async function getBlogParticipant() {
     try {
       await axios
-        .get(`http://localhost:5050/blog/${data?.id}/participant`)
+        .get(`${process.env.REACT_APP_SERVER_API}/blog/${data?.id}/participant`)
         .then((res) => {
           // console.log("res.data : ", res.data);
           if (res.data.length > 0) {
@@ -141,9 +146,12 @@ function DetailBlog() {
 
   async function handleLike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/like`, {
-        userId: user.id,
-      });
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/blog/${data.id}/like`,
+        {
+          userId: user.id,
+        }
+      );
     } catch (err) {
       console.log(err);
     }
@@ -151,9 +159,12 @@ function DetailBlog() {
 
   async function handleDislike() {
     try {
-      await axios.put(`http://localhost:5050/blog/${data.id}/dislike`, {
-        userId: user.id,
-      });
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/blog/${data.id}/dislike`,
+        {
+          userId: user.id,
+        }
+      );
     } catch (err) {
       console.log(err);
     }
@@ -181,13 +192,13 @@ function DetailBlog() {
       >
         {!loading ? (
           <>
-            <Box sx={{ width: "100%", mb: 2, ml: 2 }}>
+            <Box sx={{width: "100%", mb: 2, ml: 2}}>
               <Button
                 variant="contained"
                 onClick={() => {
                   navigate(-1);
                 }}
-                sx={{ marginTop: 2 }}
+                sx={{marginTop: 2}}
               >
                 Retour À la page de blog
               </Button>
@@ -203,7 +214,7 @@ function DetailBlog() {
             >
               <Typography variant="h3">{data?.title}</Typography>
               <Box
-                sx={{ p: 1, width: "100%", display: "flex", height: "100%" }}
+                sx={{p: 1, width: "100%", display: "flex", height: "100%"}}
                 ref={ref}
               >
                 <div data-color-mode="light">
@@ -225,18 +236,18 @@ function DetailBlog() {
                       flexDirection: "column",
                       overflowY: "auto",
                       height: height,
-                      width: { lg: "30%", md: "60%", xs: "100%" },
+                      width: {lg: "30%", md: "60%", xs: "100%"},
                     }}
                   >
                     {data?.participant?.length !== 0 ? (
-                      <Box sx={{ ml: 1 }}>
+                      <Box sx={{ml: 1}}>
                         <Typography variant="h5">
                           Liste des participants
                         </Typography>
                         <ListParticipants participants={data?.participant} />
                       </Box>
                     ) : (
-                      <Typography variant="h5" sx={{ ml: 1 }}>
+                      <Typography variant="h5" sx={{ml: 1}}>
                         Aucun participant
                       </Typography>
                     )}
@@ -252,7 +263,7 @@ function DetailBlog() {
                   my: 2,
                 }}
               >
-                <Box sx={{ display: "flex" }}>
+                <Box sx={{display: "flex"}}>
                   <Button
                     variant="contained"
                     startIcon={
@@ -333,7 +344,7 @@ function DetailBlog() {
                 </Box>
                 <CreateComment tutoId={id} />
               </Box>
-              <Box sx={{ width: "100%" }}>
+              <Box sx={{width: "100%"}}>
                 {data &&
                   data?.comment &&
                   Array.isArray(data?.comment) &&
@@ -355,7 +366,7 @@ function DetailBlog() {
                       my: 3,
                     }}
                   >
-                    <Button onClick={handleShowMore} sx={{ mr: 4 }}>
+                    <Button onClick={handleShowMore} sx={{mr: 4}}>
                       Voir plus
                     </Button>
                     {visibleComments > 5 && (

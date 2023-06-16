@@ -34,7 +34,7 @@ function AppelProf(callId) {
   const LogToExistingRoom = useCallback(async () => {
     try {
       axios
-        .get(`http://localhost:5050/call/getRoomPo/${user?.id}`, {
+        .get(`${process.env.REACT_APP_SERVER_API}/call/getRoomPo/${user?.id}`, {
           params: { callId: callId },
         })
         .then((res) => {
@@ -82,7 +82,6 @@ function AppelProf(callId) {
               tempCall.current = appel;
               setCall(appel);
               setQrcode(appel.qrcode);
-
               generated.current = true;
               divRef.current.scrollIntoView({
                 behavior: "instant",
@@ -130,42 +129,6 @@ function AppelProf(callId) {
                   </li>
                 );
               })}
-              <li className="clearfix">
-                <img
-                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
-                  alt="avatar"
-                />
-                <div className="about">
-                  <div className="name">Test</div>
-                </div>
-              </li>
-              <li className="clearfix">
-                <img
-                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
-                  alt="avatar"
-                />
-                <div className="about">
-                  <div className="name">Test</div>
-                </div>
-              </li>
-              <li className="clearfix">
-                <img
-                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
-                  alt="avatar"
-                />
-                <div className="about">
-                  <div className="name">Test</div>
-                </div>
-              </li>
-              <li className="clearfix">
-                <img
-                  src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg"
-                  alt="avatar"
-                />
-                <div className="about">
-                  <div className="name">Test</div>
-                </div>
-              </li>
             </ul>
           </div>
           <div className="DivQr">

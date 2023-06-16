@@ -73,6 +73,7 @@ function Home() {
     setEdition(false);
     if (layouts) {
       const updatedLayouts = layouts.map((item) => {
+        console.log(item);
         return {
           ...item,
           static: true,
@@ -88,7 +89,7 @@ function Home() {
     const getLayout = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5050/home/${user.id}`
+          `${process.env.REACT_APP_SERVER_API}/home/${user.id}`
         );
         setLayouts(response.data.widgets);
       } catch (error) {
@@ -102,7 +103,7 @@ function Home() {
   const saveLayout = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:5050/home/save/${user.id}/widgets`,
+        `${process.env.REACT_APP_SERVER_API}/home/save/${user.id}/widgets`,
         layouts
       );
     } catch (error) {

@@ -4,7 +4,7 @@ import { useTheme } from "@mui/material";
 
 import "./Widget.scss";
 
-function Widget({ handleOpen, image, text }) {
+function Widget({ handleOpen, image, text, path }) {
   const theme = useTheme();
 
   return (

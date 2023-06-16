@@ -1,34 +1,34 @@
 import { w3cwebsocket } from "websocket";
 
-import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
-import SettingsIcon from "@mui/icons-material/Settings";
-import IconButton from "@mui/material/IconButton";
+import { Icon } from "@iconify/react";
 import EditIcon from "@mui/icons-material/Edit";
-import { format } from "date-fns";
-import {
-  Avatar,
-  Box,
-  Typography,
-  MenuItem,
-  Menu,
-  Dialog,
-  DialogContent,
-} from "@mui/material";
-import JpoCard from "../../components/ressources/jpo/JpoCard";
-import { useTheme } from "@mui/material/styles";
-import { Icon, InlineIcon } from "@iconify/react";
-import Tooltip from "@mui/material/Tooltip";
-import Tab from "@mui/material/Tab";
+import SettingsIcon from "@mui/icons-material/Settings";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
+import {
+  Avatar,
+  Box,
+  Dialog,
+  DialogContent,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
+import IconButton from "@mui/material/IconButton";
+import Tab from "@mui/material/Tab";
+import Tooltip from "@mui/material/Tooltip";
+import { useTheme } from "@mui/material/styles";
+import axios from "axios";
+import { format } from "date-fns";
+import React, { useEffect, useRef, useState } from "react";
+import JpoCard from "../../components/ressources/jpo/JpoCard";
 
+import { useParams } from "react-router";
 import { ToastContainer, toast } from "react-toastify";
 import ProfilFormUpdate from "../../components/profil/ProfilFormUpdate.js";
 import ProfilSkeleton from "../../components/profil/ProfilSkeleton";
 import useFirebase from "../../hooks/useFirebase";
-import { useParams } from "react-router";
 import "./Profil.scss";
 import CardBlog from "../../components/blog/CardBlog";
 
@@ -46,6 +46,7 @@ export default function Profil() {
   const { user } = useFirebase();
   const { id } = useParams();
   const [userProfil, setUserProfil] = useState({});
+  const [userIdeas, setUserIdeas] = useState([]);
   const fileInputRef = useRef(null);
   const notify = () =>
     toast.success("Utilisateur Discord copié.", {
@@ -103,7 +104,7 @@ export default function Profil() {
 
     try {
       await axios.put(
-        `http://localhost:5050/profil/background/${user.id}`,
+        `${process.env.REACT_APP_SERVER_API}/profil/background/${user.id}`,
         formData,
         {
           headers: {
@@ -129,9 +130,9 @@ export default function Profil() {
   const getJpo = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5050/ressources/jpo/user/${id}`
+        `${process.env.REACT_APP_SERVER_API}/ressources/jpo/user/${id}`
       );
-      if (response.data != undefined) {
+      if (response.data !== undefined) {
         setRecentJpo(response.data);
         console.log(response.data);
       }
@@ -141,7 +142,9 @@ export default function Profil() {
   };
   const fetchTags = async () => {
     try {
-      const response = await axios.get("http://localhost:5050/blog/tag");
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API}/blog/tag`
+      );
       const tags = response.data;
       setTags(tags);
     } catch (error) {
@@ -150,7 +153,9 @@ export default function Profil() {
   };
   const fetchBlogs = async () => {
     try {
-      const response = await axios.get(`http://localhost:5050/blog/user/${id}`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_SERVER_API}/blog/user/${id}`
+      );
       var filtredBlogs = filterTwoMostRecentBlogs(response.data, 2);
       var allBlogs = [];
       const dateOptions = {
@@ -201,7 +206,9 @@ export default function Profil() {
   };
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/profil`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/profil`
+      );
 
       wsComments.onopen = function (e) {
         wsComments.send(JSON.stringify(id));
@@ -243,7 +250,7 @@ export default function Profil() {
     const getJpo = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5050/ressources/jpo/user/${user.id}`
+          `${process.env.REACT_APP_SERVER_API}/ressources/jpo/user/${user.id}`
         );
         if (response.data != undefined) {
           setRecentJpo(response.data);

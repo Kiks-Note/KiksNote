@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
+import React, {useEffect, useState, useCallback} from "react";
+import {toast, ToastContainer} from "react-toastify";
+import {useForm} from "react-hook-form";
+import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import moment from "moment";
 
@@ -67,7 +67,7 @@ export const toastFail = (message) => {
 const Cours = () => {
   let navigate = useNavigate();
 
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const userStatus = user?.status;
   console.log(userStatus);
   const userClassConnected = user?.class;
@@ -148,7 +148,7 @@ const Cours = () => {
   const getAllTechnos = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/technos")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/technos`)
         .then((res) => {
           setTechnos(res.data);
           setIsAllCoursesDataLoaded(true);
@@ -168,7 +168,7 @@ const Cours = () => {
   const getAllCours = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/cours")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/cours`)
         .then((res) => {
           setCourses(res.data.cours);
           setIsAllCoursesDataLoaded(true);
@@ -188,7 +188,7 @@ const Cours = () => {
   const getAllPo = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/instructors")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/instructors`)
         .then((res) => {
           setAllPo(res.data);
         })
@@ -207,7 +207,7 @@ const Cours = () => {
   const getClassId = async (classId) => {
     try {
       await axios
-        .get(`http://localhost:5050/ressources/class/${classId}`)
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/class/${classId}`)
         .then((res) => {
           setUserClass(res.data);
         })
@@ -226,7 +226,7 @@ const Cours = () => {
   const getAllClass = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/classes")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/classes`)
         .then((res) => {
           setAllclass(res.data);
         })
@@ -257,7 +257,7 @@ const Cours = () => {
     } else {
       try {
         await axios
-          .post("http://localhost:5050/ressources/cours", {
+          .post(`${process.env.REACT_APP_SERVER_API}/ressources/cours`, {
             title: courseTitle,
             description: courseDescription,
             dateStartSprint: courseDateStart,
@@ -378,7 +378,7 @@ const Cours = () => {
             width: "100%",
           }}
         >
-          <Typography variant="h6" sx={{ flexGrow: 1 }}></Typography>
+          <Typography variant="h6" sx={{flexGrow: 1}}></Typography>
           <div className="header-cours">
             <Box
               sx={{
@@ -387,12 +387,12 @@ const Cours = () => {
                 padding: "20px",
               }}
             >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div style={{display: "flex", justifyContent: "space-between"}}>
                 <ToggleButtonGroup
                   value={view}
                   exclusive
                   onChange={viewChange}
-                  sx={{ margin: 1 }}
+                  sx={{margin: 1}}
                 >
                   <ToggleButton value="module" aria-label="module">
                     <ViewModule />
@@ -404,14 +404,14 @@ const Cours = () => {
               </div>
             </Box>
             <div className="search-bar-container">
-              <form noValidate autoComplete="off" style={{ width: "100%" }}>
+              <form noValidate autoComplete="off" style={{width: "100%"}}>
                 <TextField
                   id="outlined-basic"
                   label="Rechercher votre Cours"
                   variant="outlined"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  sx={{ width: "80%" }}
+                  sx={{width: "80%"}}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -422,7 +422,7 @@ const Cours = () => {
                 />
               </form>
             </div>
-            <FormControl sx={{ width: "15%" }}>
+            <FormControl sx={{width: "15%"}}>
               <Select
                 value={selectedFilterClass}
                 onChange={(event) => {
@@ -955,14 +955,14 @@ const Cours = () => {
                   >
                     <div className="list-card-content">
                       <div className="list-card-details">
-                        <CardContent sx={{ padding: "10px" }}>
+                        <CardContent sx={{padding: "10px"}}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
                           <Chip
                             label={
                               <>
-                                <div style={{ display: "flex" }}>
+                                <div style={{display: "flex"}}>
                                   <Typography>
                                     {course.data.courseClass.name}
                                   </Typography>
@@ -993,7 +993,7 @@ const Cours = () => {
                               </>
                             }
                           ></Chip>
-                          <div style={{ padding: "10px" }}>
+                          <div style={{padding: "10px"}}>
                             <Typography
                               sx={{
                                 display: "flex",
@@ -1092,14 +1092,14 @@ const Cours = () => {
                   >
                     <div className="list-card-content">
                       <div className="list-card-details">
-                        <CardContent sx={{ padding: "10px" }}>
+                        <CardContent sx={{padding: "10px"}}>
                           <h2 variant="h3" component="div">
                             {course.data.title}
                           </h2>
                           <Chip
                             label={
                               <>
-                                <div style={{ display: "flex" }}>
+                                <div style={{display: "flex"}}>
                                   <Typography>
                                     {course.data.courseClass.name}
                                   </Typography>
@@ -1130,7 +1130,7 @@ const Cours = () => {
                               </>
                             }
                           ></Chip>
-                          <div style={{ padding: "10px" }}>
+                          <div style={{padding: "10px"}}>
                             <Typography
                               sx={{
                                 display: "flex",

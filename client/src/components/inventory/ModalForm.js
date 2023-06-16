@@ -6,6 +6,7 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  Switch,
   TextField,
   Typography,
 } from "@mui/material";
@@ -17,10 +18,12 @@ import axios from "axios";
 import * as React from "react";
 import {useEffect, useState} from "react";
 import "react-datetime/css/react-datetime.css";
-import {toast} from "react-hot-toast";
-import {w3cwebsocket} from "websocket";
 // import useAuth from "../../hooks/useAuth";
+import {getDownloadURL, ref, uploadBytes} from "firebase/storage";
+import {useDropzone} from "react-dropzone";
 import useFirebase from "../../hooks/useFirebase";
+import imageCompression from "browser-image-compression";
+import {toast} from "react-hot-toast";
 
 export default function ModalForm({open, toggleDrawerAdd}) {
   const [categories, setCategories] = useState([]);
@@ -28,14 +31,64 @@ export default function ModalForm({open, toggleDrawerAdd}) {
   const [price, setPrice] = useState("");
   const [acquisitiondate, setAcquisitiondate] = useState(null);
   const [image, setImage] = useState(null);
-  const [storage, setStorage] = useState(null);
+  const [storageRef, setStorage] = useState(null);
   const [condition, setCondition] = useState("");
   const [description, setDescription] = useState("");
   const [campus, setCampus] = useState(null);
   const [category, setCategory] = useState(null);
   const [reference, setReference] = useState("");
   const [loading, setLoading] = useState(true);
-  const {user} = useFirebase();
+  const [imageType, setImageType] = useState(1);
+  const [fileUrl, setFileUrl] = useState(null); // <- add this state variable
+  const {user, storage} = useFirebase();
+
+  const Dropzone = () => {
+    const {getRootProps, getInputProps} = useDropzone({
+      accept: {
+        "image/jpeg": [],
+        "image/png": [],
+      },
+      onDrop: (acceptedFiles) => {
+        if (acceptedFiles[0] === undefined) {
+          toast.error("Veuillez sélectionner un fichier valide");
+          return;
+        }
+
+        const url = URL.createObjectURL(acceptedFiles[0]);
+        setImage(acceptedFiles[0]);
+        setFileUrl(url);
+        console.log(url);
+      },
+    });
+
+    return (
+      <div
+        {...getRootProps({className: "dropzone"})}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flexDirection: "column",
+          width: "100%",
+          height: 85,
+          border: "2px dashed #ccc",
+          borderRadius: 5,
+          marginBottom: "1rem",
+          padding: 10,
+        }}
+      >
+        <input {...getInputProps()} />
+        <Typography
+          variant="subtitle2"
+          color={"text.secondary"}
+          sx={{textAlign: "center"}}
+        >
+          Glissez et déposez une image ici, ou cliquez pour sélectionner un
+          fichier
+        </Typography>
+      </div>
+    );
+  };
 
   const addDevice = async () => {
     if (
@@ -43,7 +96,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
       !price ||
       !acquisitiondate ||
       !image ||
-      !storage ||
+      !storageRef ||
       !condition ||
       !description ||
       !campus ||
@@ -53,31 +106,40 @@ export default function ModalForm({open, toggleDrawerAdd}) {
       return;
     } else {
       try {
-        await toast.promise(
-          axios.post("http://localhost:5050/inventory", {
-            label: label,
-            price: price,
-            acquisitiondate: acquisitiondate,
-            campus: campus,
-            storage: storage,
-            image: image,
-            condition: condition,
-            description: description,
-            category: category,
-            reference: reference,
-            createdBy: user.id,
-          }),
-          {
-            success: () => {
-              resetInputs();
-              toggleDrawerAdd(false);
-              return "Le périphérique a bien été ajouté";
-            },
-            error: () => {
-              return "Une erreur est survenue";
-            },
-          }
-        );
+        let downloadURL = null;
+        if (imageType === 2) {
+          const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+          };
+          const compressedFile = await imageCompression(image, options);
+
+          const imageRef = ref(
+            storage,
+            `inventory/${category + "_" + reference}`
+          );
+          const uploadTask = await uploadBytes(imageRef, compressedFile);
+          downloadURL = await getDownloadURL(uploadTask.ref);
+        }
+
+        await axios.post(`${process.env.REACT_APP_SERVER_API}/inventory`, {
+          label: label,
+          price: price,
+          acquisitiondate: acquisitiondate,
+          campus: campus,
+          storage: storageRef,
+          image: imageType === 1 ? image : downloadURL,
+          condition: condition,
+          description: description,
+          category: category,
+          reference: reference,
+          createdBy: user.id,
+        });
+
+        resetInputs();
+        toggleDrawerAdd();
+        toast.success("Périphérique ajouté avec succès !");
       } catch (error) {
         console.log(error);
       }
@@ -100,7 +162,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
     open === true &&
       (async () => {
         await axios
-          .get("http://localhost:5050/inventory/categories")
+          .get(`${process.env.REACT_APP_SERVER_API}/inventory/categories`)
           .then((res) => {
             setCategories(res.data);
             console.log(res.data);
@@ -198,7 +260,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
         id="outlined-search"
         label="Armoire de stockage"
         type={"text"}
-        value={storage ? storage : ""}
+        value={storageRef ? storageRef : ""}
         onChange={(e) => setStorage(e.target.value)}
         fullWidth
         InputLabelProps={{className: "inputLabel"}}
@@ -251,17 +313,45 @@ export default function ModalForm({open, toggleDrawerAdd}) {
         InputProps={{className: "input"}}
       />
 
-      <TextField
-        sx={{marginBottom: 2}}
-        id="outlined-search"
-        label="Image"
-        type={"text"}
-        value={image ? image : ""}
-        onChange={(e) => setImage(e.target.value)}
-        fullWidth
-        InputLabelProps={{className: "inputLabel"}}
-        InputProps={{className: "input"}}
-      />
+      <div
+        style={{
+          display: "flex",
+          // justifyContent: "space-between",
+          alignItems: "center",
+          width: "100%",
+          marginBottom: 2,
+        }}
+      >
+        <Typography variant="subtitle2" color={"text.secondary"}>
+          URL
+        </Typography>
+        <Switch
+          checked={imageType === 1 ? false : true}
+          onChange={() => {
+            setImageType(imageType === 1 ? 2 : 1);
+            setImage(null);
+          }}
+        />
+        <Typography variant="subtitle2" color={"text.secondary"}>
+          Fichier
+        </Typography>
+      </div>
+
+      {imageType === 1 ? (
+        <TextField
+          sx={{marginBottom: 2}}
+          id="outlined-search"
+          label="Image"
+          type={"text"}
+          value={image ? image : ""}
+          onChange={(e) => setImage(e.target.value)}
+          fullWidth
+          InputLabelProps={{className: "inputLabel"}}
+          InputProps={{className: "input"}}
+        />
+      ) : (
+        <Dropzone />
+      )}
       {image && (
         <>
           <Typography
@@ -274,8 +364,8 @@ export default function ModalForm({open, toggleDrawerAdd}) {
           <CardMedia
             sx={{marginBottom: 2, borderRadius: 2}}
             component="img"
-            height="140"
-            image={image ? image : ""}
+            height="150"
+            image={imageType === 1 ? image : fileUrl}
             alt=""
           />
         </>
@@ -285,9 +375,7 @@ export default function ModalForm({open, toggleDrawerAdd}) {
         variant="contained"
         sx={{marginBottom: 2}}
         fullWidth
-        onClick={() => {
-          addDevice();
-        }}
+        onClick={() => addDevice()}
       >
         Ajouter
       </Button>

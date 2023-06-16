@@ -19,7 +19,7 @@ export default function InventoryRequests() {
   useEffect(() => {
     (async () => {
       await axios
-        .get("http://localhost:5050/inventory")
+        .get(`${process.env.REACT_APP_SERVER_API}:5050/inventory`)
         .then(async (inventoryRes) => {
           const inventoryItems = inventoryRes.data;
           const requests = [];
@@ -27,7 +27,7 @@ export default function InventoryRequests() {
             const requestId = item.lastRequestId;
             try {
               const requestRes = await axios.get(
-                `http://localhost:5050/inventory/request/${requestId}`
+                `${process.env.REACT_APP_SERVER_API}/inventory/request/${requestId}`
               );
               const request = {_device: item, _request: requestRes.data};
               requests.push(request);
@@ -49,7 +49,7 @@ export default function InventoryRequests() {
   const handleAcceptRequest = async (deviceId, requestId) => {
     await axios
       .put(
-        `http://localhost:5050/inventory/acceptrequest/${deviceId}/${requestId}`
+        `${process.env.REACT_APP_SERVER_API}/inventory/acceptrequest/${deviceId}/${requestId}`
       )
       .then((res) => {
         console.log(res);
@@ -62,7 +62,7 @@ export default function InventoryRequests() {
   const handleRefuseRequest = async (deviceId, requestId) => {
     toast.promise(
       axios.put(
-        `http://localhost:5050/inventory/refuserequest/${deviceId}/${requestId}`
+        `${process.env.REACT_APP_SERVER_API}/inventory/refuserequest/${deviceId}/${requestId}`
       ),
       {
         loading: "Refus de la demande...",

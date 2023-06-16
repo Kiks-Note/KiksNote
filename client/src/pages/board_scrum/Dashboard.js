@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import axios from "axios";
 import TableDashboard from "../../components/board_scrum/dashboard/TableDashboard";
 import CardDashBoard from "../../components/board_scrum/dashboard/CardDashboard";
 import Box from "@mui/material/Box";
-import { Typography, Grid } from "@mui/material";
+import {Typography, Grid} from "@mui/material";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import ViewModuleIcon from "@mui/icons-material/ViewModule";
 import TablePagination from "@mui/material/TablePagination";
 import CreateDashboard from "./CreateDashboard";
-import { w3cwebsocket } from "websocket";
+import {w3cwebsocket} from "websocket";
 import useFirebase from "../../hooks/useFirebase";
 import ListCardDashboard from "../../components/board_scrum/dashboard/ListCardDashboard";
-import { Rings } from "react-loader-spinner";
+import {Rings} from "react-loader-spinner";
 
 export default function Dashboard() {
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const [dashboard, setDashboard] = useState([]);
   const [actifDashboard, setActifDashboard] = useState([]);
   const [favorisDashboard, setFavorisDashboard] = useState([]);
@@ -39,7 +39,7 @@ export default function Dashboard() {
   async function favorisTell(dashboardId) {
     try {
       await axios.put(
-        `http://localhost:5050/dashboard/favorite/${dashboardId}`
+        `${process.env.REACT_APP_SERVER_API}/dashboard/favorite/${dashboardId}`
       );
     } catch (error) {
       console.error(error);
@@ -51,7 +51,7 @@ export default function Dashboard() {
     const fetchMembers = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5050/profil/student/${user.id}`
+          `${process.env.REACT_APP_SERVER_API}/profil/student/${user.id}`
         );
         setMembers(response.data);
       } catch (error) {
@@ -59,7 +59,9 @@ export default function Dashboard() {
       }
     };
 
-    const wsComments = new w3cwebsocket(`ws://localhost:5050/dashboard`);
+    const wsComments = new w3cwebsocket(
+      `${process.env.REACT_APP_SERVER_API_WS}/dashboard`
+    );
 
     wsComments.onopen = function (e) {
       wsComments.send(JSON.stringify({ id: user.id, status: user.status }));
@@ -243,7 +245,7 @@ export default function Dashboard() {
               >
                 <TablePagination
                   component="div"
-                  rowsPerPageOptions={[5, 10, 25, { label: "Tout", value: -1 }]}
+                  rowsPerPageOptions={[5, 10, 25, {label: "Tout", value: -1}]}
                   count={!loading && dashboard.length}
                   rowsPerPage={rowsPerPage}
                   page={page}

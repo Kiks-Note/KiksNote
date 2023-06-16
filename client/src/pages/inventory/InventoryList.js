@@ -28,7 +28,9 @@ export default function InventoryList() {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/liveInventory");
+      const ws = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/liveInventory`
+      );
       ws.onmessage = (message) => {
         const data = JSON.parse(message.data);
         console.log(data);
@@ -54,7 +56,9 @@ export default function InventoryList() {
     setSnackBarOpen(false);
 
     await axios
-      .delete(`http://localhost:5050/inventory/device/${deviceId}`)
+      .delete(
+        `${process.env.REACT_APP_SERVER_API}/inventory/device/${deviceId}`
+      )
       .then((res) => {
         toast.success("Matériel supprimé avec succès");
       })

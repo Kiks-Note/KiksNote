@@ -42,7 +42,9 @@ export default function SideBarModifyRequest({
     open === true &&
       (async () => {
         await axios
-          .get(`http://localhost:5050/inventory/request/${requestId}`)
+          .get(
+            `${process.env.REACT_APP_SERVER_API}/inventory/request/${requestId}`
+          )
           .then((res) => {
             setRequest(res.data);
             setLoading(false);
@@ -57,15 +59,18 @@ export default function SideBarModifyRequest({
 
   const handleModify = async () => {
     toast.promise(
-      axios.put(`http://localhost:5050/inventory/request/${requestId}`, {
-        // label,
-        // reference,
-        // category,
-        // campus,
-        // status,
-        // image,
-        // lastModifiedBy: "admin",
-      }),
+      axios.put(
+        `${process.env.REACT_APP_SERVER_API}/inventory/request/${requestId}`,
+        {
+          // label,
+          // reference,
+          // category,
+          // campus,
+          // status,
+          // image,
+          // lastModifiedBy: "admin",
+        }
+      ),
       {
         success: () => {
           toggleDrawerModify(null, false);

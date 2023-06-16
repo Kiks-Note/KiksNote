@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {useState} from "react";
+import {useParams} from "react-router-dom";
 import axios from "axios";
 
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 import {
   Button,
@@ -36,7 +36,7 @@ export const toastFail = (message) => {
 };
 
 const StudentProjectLinkDialog = (props) => {
-  const { id } = useParams();
+  const {id} = useParams();
   const [selectedStudentProjectId, setSelectedStudentProjectId] = useState("");
 
   const selectedProject = props.allprojects.find(
@@ -56,7 +56,7 @@ const StudentProjectLinkDialog = (props) => {
   const linkStudentProjectToJpo = async () => {
     try {
       await axios
-        .post(`http://localhost:5050/ressources/jpo/${id}`, {
+        .post(`${process.env.REACT_APP_SERVER_API}/ressources/jpo/${id}`, {
           studentProjectId: selectedStudentProjectId,
         })
         .then((res) => {
@@ -95,17 +95,17 @@ const StudentProjectLinkDialog = (props) => {
       <Dialog open={props.open} onClose={props.close}>
         <DialogTitle>Lier à un projet étudiant</DialogTitle>
         <DialogContent>
-          <div style={{ height: "600px", overflow: "auto" }}>
+          <div style={{height: "600px", overflow: "auto"}}>
             <Grid container spacing={2}>
               {props.allprojects.map((project) => (
                 <Grid item key={project.id} xs={12} sm={6} md={4}>
                   <Typography
                     variant="subtitle1"
-                    sx={{ textAlign: "center", marginBottom: "15px" }}
+                    sx={{textAlign: "center", marginBottom: "15px"}}
                   >
                     {project.nameProject}
                   </Typography>
-                  <div style={{ position: "relative" }}>
+                  <div style={{position: "relative"}}>
                     <FormControlLabel
                       value={project.id}
                       control={
@@ -124,7 +124,7 @@ const StudentProjectLinkDialog = (props) => {
                     />
                     <img
                       src={project.imgProject}
-                      style={{ width: "100%", cursor: "pointer" }}
+                      style={{width: "100%", cursor: "pointer"}}
                       alt="blog-tuto-linked-img"
                       onClick={() => handleImageClick(project.id)}
                     />
@@ -137,7 +137,7 @@ const StudentProjectLinkDialog = (props) => {
         <DialogActions>
           <Button
             onClick={linkStudentProjectToJpo}
-            sx={{ backgroundColor: "#7a52e1", color: "white" }}
+            sx={{backgroundColor: "#7a52e1", color: "white"}}
             disabled={!selectedStudentProjectId}
           >
             Valider

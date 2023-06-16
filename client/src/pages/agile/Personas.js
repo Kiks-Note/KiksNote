@@ -108,7 +108,9 @@ export default function Persona({ dashboardId, actorId }) {
           formData.append("actorId", actorId);
 
           return axios.post(
-            "http://localhost:5050/agile/" + dashboardId + "/folder",
+            `${process.env.REACT_APP_SERVER_API}/agile/` +
+              dashboardId +
+              "/folder",
             formData
           );
         })

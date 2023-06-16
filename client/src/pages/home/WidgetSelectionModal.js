@@ -39,8 +39,16 @@ const WidgetSelection = ({ open, handleClose, img, text, addLayout }) => {
             borderRadius: "5px",
           }}
         >
-          <h2 style={{ color: "black" }}>Choissisez la taille du Widget {text}</h2>
-          <GridLayout className="layout" cols={16} rowHeight={30} layout={layout} width={1200}>
+          <h2 style={{ color: "black" }}>
+            Choissisez la taille du Widget {text}
+          </h2>
+          <GridLayout
+            className="layout"
+            cols={16}
+            rowHeight={30}
+            layout={layout}
+            width={1000}
+          >
             {layout.map((card) => (
               <div
                 onClick={() => {
@@ -57,6 +65,8 @@ const WidgetSelection = ({ open, handleClose, img, text, addLayout }) => {
                   flexDirection: "column",
                   position: "relative",
                   borderRadius: "10px",
+                  maxHeight: "100%",
+                  maxWidth: "100%",
                 }}
               >
                 <img

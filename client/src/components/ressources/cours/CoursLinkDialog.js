@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, {useState} from "react";
+import {useParams} from "react-router-dom";
 import axios from "axios";
 
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 import {
   Button,
@@ -36,7 +36,7 @@ export const toastFail = (message) => {
 };
 
 const CoursLinkDialog = (props) => {
-  const { id } = useParams();
+  const {id} = useParams();
   const [selectedCoursId, setSelectedCoursId] = useState("");
 
   const selectedCours = props.allcours?.cours?.find(
@@ -51,9 +51,12 @@ const CoursLinkDialog = (props) => {
   const linkCoursinCoursInfo = async () => {
     try {
       await axios
-        .post(`http://localhost:5050/ressources/linkcours/${id}`, {
-          id: selectedCoursId,
-        })
+        .post(
+          `${process.env.REACT_APP_SERVER_API}/ressources/linkcours/${id}`,
+          {
+            id: selectedCoursId,
+          }
+        )
         .then((res) => {
           console.log(res.data);
           if (res.data === `Le cours lié a été ajouté avec succès.`) {
@@ -88,7 +91,7 @@ const CoursLinkDialog = (props) => {
       <Dialog open={props.open} onClose={props.close}>
         <DialogTitle>Lier votre cours à un autre cours</DialogTitle>
         <DialogContent>
-          <div style={{ height: "600px", overflow: "auto" }}>
+          <div style={{height: "600px", overflow: "auto"}}>
             <Grid container spacing={2}>
               {props.allcours?.cours?.map(
                 (cours) => (
@@ -97,11 +100,11 @@ const CoursLinkDialog = (props) => {
                     <Grid item key={cours.id} xs={12} sm={6} md={4}>
                       <Typography
                         variant="subtitle1"
-                        sx={{ textAlign: "center", marginBottom: "15px" }}
+                        sx={{textAlign: "center", marginBottom: "15px"}}
                       >
                         {cours.data?.title}
                       </Typography>
-                      <div style={{ position: "relative" }}>
+                      <div style={{position: "relative"}}>
                         <FormControlLabel
                           value={cours.id}
                           control={
@@ -120,7 +123,7 @@ const CoursLinkDialog = (props) => {
                         />
                         <img
                           src={cours.data?.imageCourseUrl}
-                          style={{ width: "100%", cursor: "pointer" }}
+                          style={{width: "100%", cursor: "pointer"}}
                           alt="blog-tuto-linked-img"
                           onClick={() => handleImageClick(cours.id)}
                         />
@@ -135,7 +138,7 @@ const CoursLinkDialog = (props) => {
         <DialogActions>
           <Button
             onClick={linkCoursinCoursInfo}
-            sx={{ backgroundColor: "#7a52e1", color: "white" }}
+            sx={{backgroundColor: "#7a52e1", color: "white"}}
             disabled={!selectedCoursId}
           >
             Valider

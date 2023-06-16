@@ -9,7 +9,7 @@ import StatTab from "../../../components/board_scrum/overview/StatTab";
 import StoryList from "../../../components/board_scrum/overview/StoryList";
 import { w3cwebsocket } from "websocket";
 import PropTypes from "prop-types";
-import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
+import {setActiveTab, addTab} from "../../../redux/slices/tabBoardSlice";
 
 import ApexChart from "./ApexChart";
 import BurndownChart from "./BurnDown";
@@ -32,6 +32,7 @@ import Roadmap from "./Roadmap";
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
 };
+
 function OverView({ id }) {
   const [displayedBoards, setDisplayedBoards] = useState([]);
   var [releases, setRelease] = useState({});
@@ -71,7 +72,7 @@ function OverView({ id }) {
       label: "Backlog ",
       closeable: true,
       component: "PdfView",
-      data: { dashboardId: id, pdfLink: pdfLink },
+      data: {dashboardId: id, pdfLink: pdfLink},
     };
     dispatch(addTab(pdfViewTab));
     dispatch(setActiveTab(pdfViewTab.id));
@@ -115,7 +116,9 @@ function OverView({ id }) {
 
   useEffect(() => {
     (async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/overview`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/overview`
+      );
 
       wsComments.onopen = function (e) {
         wsComments.send(JSON.stringify(id));

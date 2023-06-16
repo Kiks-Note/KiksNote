@@ -105,7 +105,7 @@ const ColorlibConnector = styled(StepConnector)(({ theme }) => ({
     borderRadius: 1,
   },
 }));
-export default function FormPersona({ dashboardId, actorId}) {
+export default function FormPersona({ dashboardId, actorId }) {
   const [activeStep, setActiveStep] = useState(0);
   const [formData, setFormData] = useState({});
   const [avatars, setAvatars] = useState([]);
@@ -117,7 +117,7 @@ export default function FormPersona({ dashboardId, actorId}) {
   };
   const savePersona = () => {
     axios.post(
-      "http://localhost:5050/agile/" +
+      `${process.env.REACT_APP_SERVER_API}/agile/` +
         dashboardId +
         "/persona/" +
         actorId +

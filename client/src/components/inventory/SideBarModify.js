@@ -45,7 +45,7 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
     open === true &&
       (async () => {
         await axios
-          .get("http://localhost:5050/inventory/categories")
+          .get(`${process.env.REACT_APP_SERVER_API}/inventory/categories`)
           .then((res) => {
             setCategories(res.data);
             console.log(res.data);
@@ -58,7 +58,9 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
     open === true &&
       (async () => {
         await axios
-          .get(`http://localhost:5050/inventory/device/${deviceId}`)
+          .get(
+            `${process.env.REACT_APP_SERVER_API}/inventory/device/${deviceId}`
+          )
           .then((res) => {
             setLabel(res.data.label);
             setReference(res.data.reference);
@@ -101,7 +103,7 @@ export default function SideBarModify({open, toggleDrawerModify, deviceId}) {
     }
 
     await axios
-      .put(`http://localhost:5050/inventory/device/${deviceId}`, {
+      .put(`${process.env.REACT_APP_SERVER_API}/inventory/device/${deviceId}`, {
         label,
         reference,
         category,
