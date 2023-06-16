@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { Typography, Divider, Card } from "@mui/material";
+
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 import CardSprint from "../../../components/board_scrum/overview/CardSprint";
@@ -9,6 +10,7 @@ import StoryList from "../../../components/board_scrum/overview/StoryList";
 import { w3cwebsocket } from "websocket";
 import PropTypes from "prop-types";
 import { setActiveTab, addTab } from "../../../redux/slices/tabBoardSlice";
+
 import ApexChart from "./ApexChart";
 import BurndownChart from "./BurnDown";
 import { CircularProgressbarWithChildren, buildStyles } from "react-circular-progressbar";
@@ -24,6 +26,7 @@ import BarChart from "../../../components/board_scrum/overview/BarChart";
 import { withStyles } from "@material-ui/core/styles";
 import Timer from "../../../components/board_scrum/overview/Timer";
 
+
 OverView.propTypes = {
   id: PropTypes.string.isRequired,
 };
@@ -35,6 +38,7 @@ function OverView({ id }) {
   const [display, setDisplay] = useState(false);
   const [pdfLink, setPdfLink] = useState("");
   const [agile, setAgile] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [selectedBoard, setSelectedBoard] = useState({
     data: {
       toDo: {
@@ -59,7 +63,16 @@ function OverView({ id }) {
   };
   const CustomDivider = withStyles(dividerStyle)(Divider);
 
-  const moveToOverView = () => {
+
+  const dividerStyle = {
+    root: {
+      height: "1px",
+      backgroundColor: "gray",
+    },
+  };
+  const CustomDivider = withStyles(dividerStyle)(Divider);
+
+  const moveToBacklog = () => {
     const pdfViewTab = {
       id: "Backlog" + id,
       label: "Backlog ",
@@ -69,17 +82,20 @@ function OverView({ id }) {
     };
     dispatch(addTab(pdfViewTab));
     dispatch(setActiveTab(pdfViewTab.id));
+    handleClose();
   };
-  const moveToImpact = () => {
-    const impactTab = {
-      id: "Impact" + id,
-      label: "Impact mapping ",
+
+  const moveToAgileHome = () => {
+    const agileTab = {
+      id: "Agile" + id,
+      label: "Agile",
       closeable: true,
-      component: "Impact",
-      data: { agile: agile, dashboardId: id },
+      component: "AgileHome",
+      data: { dashboardId: id },
     };
-    dispatch(addTab(impactTab));
-    dispatch(setActiveTab(impactTab.id));
+    dispatch(addTab(agileTab));
+    dispatch(setActiveTab(agileTab.id));
+    handleClose();
   };
 
   const moveToBoard = (board) => {
@@ -90,10 +106,30 @@ function OverView({ id }) {
       component: "Board",
       data: { boardId: board.id, dashboardId: id },
     };
+
+
+  const moveToBoard = (board) => {
+    const boardTab = {
+      id: board.id,
+      label: `Board ${board.name}`,
+      closeable: true,
+      component: "Board",
+      data: { boardId: board.id, dashboardId: id },
+    };
+
     dispatch(addTab(boardTab));
     dispatch(setActiveTab(boardTab.id));
     console.log("moved ?");
   };
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
 
   useEffect(() => {
     (async () => {
@@ -107,6 +143,7 @@ function OverView({ id }) {
         var data = JSON.parse(message.data);
         setPdfLink(data.pdf_link);
         setRelease((releases = data.release));
+        setBoards(data.boards);
         setStories(data.stories);
         setAgile(data.agile);
         setDisplay(true);
@@ -116,6 +153,7 @@ function OverView({ id }) {
           const data = { begin: 0, end: 4 };
           setDisplayedBoards(data);
         } else {
+          const data = { begin: 0, end: data.boards.length };
           // const data = { begin: 0, end: data.boards.length };
           setDisplayedBoards(data);
         }
@@ -154,11 +192,13 @@ function OverView({ id }) {
     const allItems = [...todoItems, ...doneItems, ...inProgressItems];
 
     // Extract the assignedTo value from each item
+
     const assignedToList = allItems.flatMap((item) => item.assignedTo).filter((assignedTo) => assignedTo.length > 0);
 
     // Count the participation for each name
     const participationList = assignedToList.reduce((result, name) => {
       const existingParticipant = result.find((participant) => participant.name === name);
+
       if (existingParticipant) {
         existingParticipant.participation++;
       } else {
@@ -194,20 +234,43 @@ function OverView({ id }) {
   return (
     <>
       <div>
-        <Box sx={{ padding: "1vh" }}>
-          <Typography variant="h5" sx={{ fontWeight: "bold", paddingLeft: "5vh" }}>
-            Statistiques
-          </Typography>
+        <Box style={{ display: "flex", justifyContent: " flex-end" }}>
+          <IconButton onClick={handleClick}>
+            <MoreVertIcon />
+          </IconButton>
+          <Menu
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={moveToAgileHome}>
+              Accéder à la partie Agile
+            </MenuItem>
+            {pdfLink.length != 0 && (
+              <MenuItem onClick={moveToBacklog}>Accéder au Backlog</MenuItem>
+            )}
+            <MenuItem>
+              <Roadmap
+                stories={stories}
+                releases={releases}
+                boards={boards}
+                dashboardId={id}
+              />
+            </MenuItem>
+          </Menu>
+        </Box>
+        <Box>
+          <Typography>Statistiques</Typography>
           <Box
-            sx={{
+            style={{
               display: "flex",
               justifyContent: "space-between",
               margin: "5vh",
-              marginTop: "1vh",
             }}
           >
-            <Card
-              sx={{
+            <Box
+              style={{
+                backgroundColor: "#424242",
                 width: "25%",
                 height: "35vh",
                 borderRadius: "5px",
@@ -216,24 +279,26 @@ function OverView({ id }) {
                 justifyContent: "center",
               }}
             >
-              <Typography
-                varian="h5"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  fontWeight: "bold",
-                  paddingLeft: "2vh",
+
+              <Typography varian="h5" style={{ textAlign: "center" }}>
+                Participation
+              </Typography>
+
+              <Box
+                style={{
+                  marginTop: "5vh",
                 }}
               >
-                <EngineeringIcon /> Participation
-              </Typography>
-              <Box sx={{ padding: "2vh" }}>
-                <BarChart participation={getParticipation()} label={"Nombre de taches"} />
+                <BarChart
+                  participation={getParticipation()}
+                  label={"Nombre de taches"}
+                />
               </Box>
-            </Card>
+            </Box>
 
-            <Card
-              sx={{
+            <Box
+              style={{
+                backgroundColor: "#424242",
                 width: "30%",
                 height: "35vh",
                 borderRadius: "5px",
@@ -242,24 +307,17 @@ function OverView({ id }) {
                 justifyContent: "center",
               }}
             >
-              <Typography
-                varian="h5"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  fontWeight: "bold",
-                  paddingLeft: "2vh",
-                }}
-              >
-                <DonutLargeIcon /> Avancement
+              <Typography varian="h5" style={{ textAlign: "center" }}>
+                Avancement
               </Typography>
               <Box
                 style={{
                   display: "flex",
-                  justifyContent: "center",
+
                 }}
               >
                 <ApexChart selectedBoard={selectedBoard} />
+
 
                 <Box
                   sx={{
@@ -269,6 +327,7 @@ function OverView({ id }) {
                     justifyContent: "center",
                   }}
                 >
+
                   <div style={{ display: "flex", alignItems: "center" }}>
                     <div
                       style={{
@@ -307,6 +366,7 @@ function OverView({ id }) {
                   </div>
                 </Box>
               </Box>
+
             </Card>
             <Card
               style={{

@@ -4,7 +4,7 @@ import { Grid, Button, Typography } from "@material-ui/core";
 import useFirebase from "../../hooks/useFirebase";
 import "./agile.css";
 
-const FolderAgile = () => {
+export default function FolderAgile({ dashboardId, actorId }) {
   const { user } = useFirebase();
   const [folders, setFolders] = useState([]);
   const [selectedFolder, setSelectedFolder] = useState(null);
@@ -38,13 +38,22 @@ const FolderAgile = () => {
   const handleDownloadContent = (event) => {
     event.stopPropagation();
     // Récupérer les liens des fichiers du dossier sélectionné
-    const { elevator_pitch, impact_mapping, empathy_map, three, personas } =
-      selectedFolder;
+    const {
+      elevator_pitch,
+      impact_mapping,
+      empathy_map,
+      tree,
+      personas,
+      roadmap,
+    } = selectedFolder;
 
     // Créer une liste des liens de fichiers à télécharger
     const fileLinks = [];
-    if (three) {
-      fileLinks.push(three);
+    if (roadmap) {
+      fileLinks.push(roadmap);
+    }
+    if (tree) {
+      fileLinks.push(tree);
     }
     if (elevator_pitch) {
       fileLinks.push(elevator_pitch);
@@ -52,8 +61,19 @@ const FolderAgile = () => {
     if (impact_mapping) {
       fileLinks.push(impact_mapping);
     }
-    if (empathy_map) {
-      fileLinks.push(empathy_map);
+    if (empathy_map && empathy_map.length > 0) {
+      empathy_map.forEach((item) => {
+        if (item.url) {
+          fileLinks.push(item.url);
+        }
+      });
+    }
+    if (personas && personas.length > 0) {
+      personas.forEach((item) => {
+        if (item.url) {
+          fileLinks.push(item.url);
+        }
+      });
     }
 
     if (fileLinks.length != 0) {
@@ -86,7 +106,7 @@ const FolderAgile = () => {
     <Grid container>
       <p className="title_folder__">Dossier agile</p>
       {folders.map((fold, index) => (
-        <Grid item xs={2} key={fold.id + index}>
+        <Grid item xs={4} key={fold.id + index}>
           <div
             className={`container${selectedFolder === fold ? " active" : ""}`}
             onClick={(event) => handleOpenContextMenu(event, fold)}
@@ -115,6 +135,4 @@ const FolderAgile = () => {
       ))}
     </Grid>
   );
-};
-
-export default FolderAgile;
+}

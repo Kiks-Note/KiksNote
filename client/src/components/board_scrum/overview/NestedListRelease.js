@@ -11,13 +11,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import axios from "axios";
 
-
-
-function NestedListRelease({
-  releases,
-  dashboardId,
-  selectedStories,
-}) {
+function NestedListRelease({ releases, dashboardId, selectedStories }) {
   const [open, setOpen] = useState({});
 
   const handleClick = (key) => () => {
@@ -35,7 +29,7 @@ function NestedListRelease({
   };
 
   return (
-    <div >
+    <div>
       <List component="nav">
         {releases.map((release) => {
           const isOpen = open[release[0]] || false;
@@ -49,11 +43,7 @@ function NestedListRelease({
                 {isOpen ? <ExpandLess /> : <ExpandMore />}
               </ListItem>
               <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                <List
-                  component="div"
-                  disablePadding
-                  style={{ marginLeft: "5%" }}
-                >
+                <List component="div" disablePadding style={{ marginLeft: "5%" }}>
                   {release[1].map((sprint) => (
                     <ListItem
                       key={sprint.id}

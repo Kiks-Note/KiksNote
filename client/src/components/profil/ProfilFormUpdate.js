@@ -29,14 +29,17 @@ function ProfilFormUpdate({ onClose, user }) {
   const [description, setDescription] = useState(user.description);
   const [classe, setClasse] = useState(user.class);
   const [programmationLanguage, setProgrammationLanguage] = useState();
-  const [programmationLanguages, setProgrammationLanguages] = useState(user.programmationLanguage);
+  const [programmationLanguages, setProgrammationLanguages] = useState(
+    user.programmationLanguage
+  );
 
   const [discordName, setDiscordName] = useState(user.discord);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
 
   /// VALIDATION && REGEX FORM
   const PHONE_NUMBER_REGEX = /^\d{10}$/;
-  const GITHUB_LINK_REGEX = /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+$/;
+  const GITHUB_LINK_REGEX =
+    /^(https?:\/\/)?(www\.)?github\.com\/[a-zA-Z0-9_-]+$/;
 
   const LINKEDIN_REGEX = /^https:\/\/www.linkedin.com\/in\/[a-zA-Z0-9_-]+\/?$/;
 
@@ -55,19 +58,15 @@ function ProfilFormUpdate({ onClose, user }) {
 
   const sendData = async (data) => {
     const formData = new FormData();
-    formData.append("dateofbirth", data.dateBirthday);
-    formData.append("job", data.job);
-    formData.append("linkedin", data.linkedin);
-    formData.append("git", data.gitLink);
-    formData.append("company", data.company);
-    if (user.statut == "etudiant") {
-      formData.append("class", data.class);
-    }
-    formData.append("programmationLanguage", programmationLanguages);
-    formData.append("discord", data.discordName);
-    formData.append("phone", data.phoneNumber);
-    formData.append("image", pictureToUpload);
     formData.append("description", data.description);
+    formData.append("phone", data.phoneNumber);
+    formData.append("programmationLanguage", programmationLanguages);
+    formData.append("git", data.gitLink);
+    formData.append("discord", data.discordName);
+    formData.append("linkedin", data.linkedin);
+    formData.append("company", data.company);
+    formData.append("job", data.job);
+    formData.append("image", pictureToUpload);
 
     try {
       const response = await axios.put(`http://212.73.217.176:5050/profil/${user.id}`, formData, {
@@ -82,21 +81,31 @@ function ProfilFormUpdate({ onClose, user }) {
   };
 
   const handleButtonClick = () => {
-    if (typeof programmationLanguage === "string" && programmationLanguage.trim() !== "") {
+    if (
+      typeof programmationLanguage === "string" &&
+      programmationLanguage.trim() !== ""
+    ) {
       if (
         !programmationLanguages.some(
-          (language) => typeof language === "string" && language.toLowerCase() === programmationLanguage.toLowerCase()
+          (language) =>
+            typeof language === "string" &&
+            language.toLowerCase() === programmationLanguage.toLowerCase()
         ) &&
         programmationLanguages.length < 5
       ) {
-        setProgrammationLanguages([...programmationLanguages, programmationLanguage]);
+        setProgrammationLanguages([
+          ...programmationLanguages,
+          programmationLanguage,
+        ]);
         setProgrammationLanguage("");
       }
     }
   };
 
   const handleDelete = (languageToDelete) => {
-    setProgrammationLanguages(programmationLanguages.filter((language) => language !== languageToDelete));
+    setProgrammationLanguages(
+      programmationLanguages.filter((language) => language !== languageToDelete)
+    );
   };
 
   const handleOnChange = async (event) => {
@@ -138,8 +147,18 @@ function ProfilFormUpdate({ onClose, user }) {
               }}
             >
               {image && (
-                <IconButton color="indefined" aria-label="upload picture" component="label">
-                  <input hidden type="file" onChange={handleOnChange} name="image" accept="image/png,image/jpeg" />
+                <IconButton
+                  color="indefined"
+                  aria-label="upload picture"
+                  component="label"
+                >
+                  <input
+                    hidden
+                    type="file"
+                    onChange={handleOnChange}
+                    name="image"
+                    accept="image/png,image/jpeg"
+                  />
                   <Avatar
                     src={image}
                     style={{
@@ -150,12 +169,17 @@ function ProfilFormUpdate({ onClose, user }) {
                 </IconButton>
               )}
               {!image && (
-                <IconButton color="indefined" aria-label="upload picture" component="label">
+                <IconButton
+                  color="indefined"
+                  aria-label="upload picture"
+                  component="label"
+                >
                   <input
                     hidden
                     {...register("image", {
                       validate: {
-                        lessThan10MB: (file) => file[0]?.size < 10000000 || "Max 10MB",
+                        lessThan10MB: (file) =>
+                          file[0]?.size < 10000000 || "Max 10MB",
                       },
                     })}
                     type="file"
@@ -214,7 +238,10 @@ function ProfilFormUpdate({ onClose, user }) {
               </Box>
               <Box>
                 <Grid item xs={12} sm={6}>
-                  <InputLabel id="phonenumber"> Numéro de téléphone * </InputLabel>
+                  <InputLabel id="phonenumber">
+                    {" "}
+                    Numéro de téléphone *{" "}
+                  </InputLabel>
                   <Input
                     id="phonenumber"
                     aria-describedby="phoneNumber"
@@ -237,7 +264,9 @@ function ProfilFormUpdate({ onClose, user }) {
                 </Grid>
 
                 <Grid item xs={12} sm={6}>
-                  <InputLabel id="ProgrammationLanguage-name">Langage de Programmation Favori</InputLabel>
+                  <InputLabel id="ProgrammationLanguage-name">
+                    Langage de Programmation Favori
+                  </InputLabel>
                   <TextField
                     id="ProgrammationLanguage-name"
                     aria-describedby="ProgrammationLanguage"
@@ -367,10 +396,22 @@ function ProfilFormUpdate({ onClose, user }) {
                   justifyContent: "space-evenly",
                 }}
               >
-                <Button variant="contained" color="success" type="submit" disabled={isSubmitting} sx={{ mt: 3, mb: 2 }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  type="submit"
+                  disabled={isSubmitting}
+                  sx={{ mt: 3, mb: 2 }}
+                >
                   Mettre à jour
                 </Button>
-                <Button variant="contained" color="error" sx={{ mt: 3, mb: 2 }} type="button" onClick={onClose}>
+                <Button
+                  variant="contained"
+                  color="error"
+                  sx={{ mt: 3, mb: 2 }}
+                  type="button"
+                  onClick={onClose}
+                >
                   Annuler
                 </Button>
               </Box>

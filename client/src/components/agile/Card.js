@@ -28,7 +28,7 @@ import {
   editImpactMappingDeliverable,
 } from "../../redux/slices/impactMappingSlice";
 import { setActiveTab, addTab } from "../../redux/slices/tabBoardSlice";
-
+import { deleteActors } from "./agile";
 const BasicCard = ({
   title,
   type,
@@ -51,33 +51,29 @@ const BasicCard = ({
   const uniqueId = uuidv4();
 
   useEffect(() => {
-    console.log(actors)
     setColor(defineColor);
     setText(texte);
-    console.log(dashboardId);
     setId(dashboardId);
   }, [defineColor, texte, goals, actors, impacts, deliverables, dashboardId]);
 
-
   const moveToPersona = () => {
     const personaTab = {
-      id: "Persona" + id,
+      id: "Persona" +  actors[index].id,
       label: "Persona ",
       closeable: true,
       component: "Personas",
-      data: { dashboardId: id },
+      data: { dashboardId: id, actorId: actors[index].id },
     };
     dispatch(addTab(personaTab));
     dispatch(setActiveTab(personaTab.id));
   };
   const moveToEmpathy = () => {
-    console.log(id, actors[index].id)
     const empathyTab = {
-      id: "Empathy" + id,
+      id: "Empathy" + actors[index].id,
       label: "Empathy ",
       closeable: true,
       component: "Empathy",
-      data: { dashboardId: id, actorId: actors[index].id},
+      data: { dashboardId: id, actorId: actors[index].id },
     };
     dispatch(addTab(empathyTab));
     dispatch(setActiveTab(empathyTab.id));
@@ -113,7 +109,6 @@ const BasicCard = ({
         default:
           break;
       }
-      console.log(text, color, uniqueId);
       onCloseForm();
     } else {
       setOpenSnackbar(true);
@@ -126,6 +121,8 @@ const BasicCard = ({
         dispatch(deleteImpactMappingGoals({ index: index }));
         break;
       case 1:
+        deleteActors( id, actors[index].id );
+        console.log('actors', id, actors[index].id)
         dispatch(deleteImpactMappingActors({ index: index }));
         break;
       case 2:
@@ -137,7 +134,6 @@ const BasicCard = ({
       default:
         break;
     }
-    console.log("delete", index);
   };
   const handleColorChange = (e) => {
     setColor(e.target.value);
@@ -155,7 +151,6 @@ const BasicCard = ({
   };
 
   const onHandleEdit = () => {
-    console.log(index, text, color);
     switch (column) {
       case 0:
         dispatch(
@@ -184,7 +179,6 @@ const BasicCard = ({
       default:
         break;
     }
-    console.log("edit", index);
     toggleEditForm();
   };
 
@@ -199,6 +193,7 @@ const BasicCard = ({
       sx={{
         minWidth: 200,
         border: "1px solid black",
+        borderRadius: 3,
         m: 1,
         display: "flex",
         flexDirection: "column",
@@ -236,24 +231,44 @@ const BasicCard = ({
             <Select
               labelId="demo-simple-select-label"
               id="demo-simple-select"
-              value={color || ''}
+              value={color || ""}
               onChange={handleColorChange}
               displayEmpty
             >
-              <MenuItem value="" disabled style={{ display: 'flex' }}>Choississez une couleur</MenuItem>
-              <MenuItem value="#FFC0CB" style={{ display: 'flex' }}>Rose</MenuItem>
-              <MenuItem value="#ADD8E6" style={{ display: 'flex' }}>Bleu clair</MenuItem>
-              <MenuItem value="#90EE90" style={{ display: 'flex' }}>Vert clair</MenuItem>
-              <MenuItem value="#FFD700" style={{ display: 'flex' }}>Or</MenuItem>
-              <MenuItem value="#FFA07A" style={{ display: 'flex' }}>Saumon</MenuItem>
+              <MenuItem value="" disabled style={{ display: "flex" }}>
+                Choississez une couleur
+              </MenuItem>
+              <MenuItem value="#FFC0CB" style={{ display: "flex" }}>
+                Rose
+              </MenuItem>
+              <MenuItem value="#ADD8E6" style={{ display: "flex" }}>
+                Bleu clair
+              </MenuItem>
+              <MenuItem value="#90EE90" style={{ display: "flex" }}>
+                Vert clair
+              </MenuItem>
+              <MenuItem value="#FFD700" style={{ display: "flex" }}>
+                Or
+              </MenuItem>
+              <MenuItem value="#FFA07A" style={{ display: "flex" }}>
+                Saumon
+              </MenuItem>
             </Select>
-
           </FormControl>
           <CardActions sx={{ justifyContent: "flex-end" }}>
-            <Button size="small" onClick={() => onHandleClick()} style={{ color: '#90caf9' }}>
+            <Button
+              size="small"
+              onClick={() => onHandleClick()}
+              style={{ color: "#90caf9" }}
+            >
               Confirmer
             </Button>
-            <Button size="small" color="error" onClick={() => onCloseForm()} style={{ color: '#ff5252' }}>
+            <Button
+              size="small"
+              color="error"
+              onClick={() => onCloseForm()}
+              style={{ color: "#ff5252" }}
+            >
               Annuler
             </Button>
           </CardActions>
@@ -290,18 +305,38 @@ const BasicCard = ({
                 onChange={handleColorChange}
                 sx={{ width: "100%", mt: 1 }}
               >
-                <MenuItem value="" disabled style={{ display: 'flex' }}>Choississez une couleur</MenuItem>
-                <MenuItem value="#FFC0CB" style={{ display: 'flex' }}>Rose</MenuItem>
-                <MenuItem value="#ADD8E6" style={{ display: 'flex' }}>Bleu clair</MenuItem>
-                <MenuItem value="#90EE90" style={{ display: 'flex' }}>Vert clair</MenuItem>
-                <MenuItem value="#FFD700" style={{ display: 'flex' }}>Or</MenuItem>
-                <MenuItem value="#FFA07A" style={{ display: 'flex' }}>Saumon</MenuItem>
+                <MenuItem value="" disabled style={{ display: "flex" }}>
+                  Choississez une couleur
+                </MenuItem>
+                <MenuItem value="#FFC0CB" style={{ display: "flex" }}>
+                  Rose
+                </MenuItem>
+                <MenuItem value="#ADD8E6" style={{ display: "flex" }}>
+                  Bleu clair
+                </MenuItem>
+                <MenuItem value="#90EE90" style={{ display: "flex" }}>
+                  Vert clair
+                </MenuItem>
+                <MenuItem value="#FFD700" style={{ display: "flex" }}>
+                  Or
+                </MenuItem>
+                <MenuItem value="#FFA07A" style={{ display: "flex" }}>
+                  Saumon
+                </MenuItem>
               </Select>
               <CardActions sx={{ justifyContent: "flex-end" }}>
-                <Button size="small" onClick={() => onHandleEdit()} style={{ color: '#90caf9' }}>
+                <Button
+                  size="small"
+                  onClick={() => onHandleEdit()}
+                  style={{ color: "#90caf9" }}
+                >
                   Confirmer
                 </Button>
-                <Button size="small" onClick={() => toggleEditForm()} style={{ color: '#ff5252' }}>
+                <Button
+                  size="small"
+                  onClick={() => toggleEditForm()}
+                  style={{ color: "#ff5252" }}
+                >
                   Annuler
                 </Button>
               </CardActions>
@@ -309,34 +344,42 @@ const BasicCard = ({
           ) : (
             <>
               <Typography variant="body2">{texte}</Typography>
-              <CardActions sx={{ justifyContent: "flex-end" }}>
+              <CardActions sx={{ justifyContent: "space-between", display: "inline-flex" }}>
                 {column === 1 && (
                   <CardActions>
                     <Button
                       size="small"
                       color="success"
+                      style={{ color: "#9acd32", backgroundColor: "transparent", border: "1px solid #9acd32", borderRadius: "5px", padding: 10 }}
                       onClick={() => moveToEmpathy()}
                     >
                       {" "}
-                      Allez vers Empathy Map{" "}
+                      Empathy Map{" "}
                     </Button>
                     <Button
                       size="small"
                       color="success"
+                      style={{ color: "#bf2020", backgroundColor: "transparent", border: "1px solid #bf2020", borderRadius: "5px", padding: 10 }}
                       onClick={() => moveToPersona()}
                     >
-                      Allez vers Persona
+                      Persona
                     </Button>
                   </CardActions>
                 )}
-                <Button size="small" onClick={() => toggleEditForm()} style={{ color: '#90caf9' }}>
+              </CardActions>
+              <CardActions sx={{justifyContent: "space-between"}}>
+                <Button
+                  size="small"
+                  onClick={() => toggleEditForm()}
+                  style={{ color: "#90caf9" }}
+                >
                   Modifier
                 </Button>
                 <Button
                   size="small"
                   color="error"
                   onClick={() => deleteButton()}
-                  style={{ color: '#ff5252' }}
+                  style={{ color: "#ff5252" }}
                 >
                   Supprimer
                 </Button>

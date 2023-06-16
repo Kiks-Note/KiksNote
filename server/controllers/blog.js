@@ -634,11 +634,28 @@ const getUserBlog = async (req, res) => {
     .get();
 
   const blogs = [];
-  snapshot.forEach((doc) => {
-    const blog = doc.data();
-    blogs.push(blog);
+
+  const promises = snapshot.docs.map(async (doc) => {
+    const blogData = doc.data();
+    const blogId = doc.id;
+
+    const userRef = db.collection("users").doc(blogData.created_by);
+    const userDoc = await userRef.get();
+
+    if (userDoc.exists) {
+      const userData = userDoc.data();
+      blogData.info_creator = [
+        userData.image,
+        userData.lastname,
+        userData.firstname,
+      ];
+      blogs.push({ id: blogId, ...blogData });
+    } else {
+      console.log("Utilisateur introuvable");
+    }
   });
 
+  await Promise.all(promises);
   res.send(blogs);
 };
 

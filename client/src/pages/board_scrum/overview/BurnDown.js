@@ -35,6 +35,7 @@ function BurndownChart({ board, value }) {
     (_, i) => coefficient * i
   );
 
+
   const realisationData = Array.from({ length: totalDays }, (_, i) => {
     const day = `Jour ${i}`;
     const toDoSum = board.data.toDo.items.reduce((acc, item) => {
@@ -65,6 +66,7 @@ function BurndownChart({ board, value }) {
   });
 
   return (
+
     <>
       <Box style={{ display: "flex", width: "100%" }}>
         <Typography
@@ -111,6 +113,7 @@ function BurndownChart({ board, value }) {
         }}
       />
     </>
+
   );
 }
 

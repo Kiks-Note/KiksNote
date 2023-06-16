@@ -128,6 +128,7 @@ const createCard = async (req, res) => {
         labels: [],
         color: color,
         storyId: id,
+        value: 0,
       };
     } else if (
       columnName == "toDo" ||
@@ -173,79 +174,61 @@ const createCard = async (req, res) => {
 const moveStories = async (req, res) => {
   try {
     const dashboardRef = db.collection("dashboard").doc(req.params.dashboardId);
-    const sourceBoardId = req.params.boardId;
     const destinationBoardId = req.body.boardId;
+    const selectedStories = req.body.selectedStories;
     const storiesToMove = [];
     const cardsToMove = {};
+    // TODO :
+    // Liste de stoy récup avec leur boardId
 
-    // Récupérer les histoires et tâches à déplacer
-    const sourceBoardSnapshot = await dashboardRef
+    //  -  A recuperer leur card associés puis les bouger...
+
+    const destinationBoardSnapshot = await dashboardRef
       .collection("board")
-      .doc(sourceBoardId)
+      .doc(destinationBoardId)
       .get();
-    const sourceBoardData = sourceBoardSnapshot.data();
-    const requestedItems = sourceBoardData.requested.items;
-    const otherColumns = Object.keys(sourceBoardData).filter(
-      (column) => column !== "requested"
-    );
+    const destinationBoardData = destinationBoardSnapshot.data();
 
-    requestedItems.forEach((story) => {
-      if (req.body.storiesId.includes(story.id)) {
-        storiesToMove.push(story);
-      }
-    });
+    selectedStories.forEach(async (story) => {
+      const sourceBoardSnapshot = await dashboardRef
+        .collection("board")
+        .doc(story.boardId)
+        .get();
+      const sourceBoardData = sourceBoardSnapshot.data();
+      const otherColumns = Object.keys(sourceBoardData).filter(
+        (column) => column
+      );
+      console.log(otherColumns);
 
-    otherColumns.forEach((column) => {
-      cardsToMove[column] = [];
-      sourceBoardData[column].items.forEach((card) => {
-        if (req.body.storiesId.includes(card.storyId)) {
-          cardsToMove[column].push(card);
+      otherColumns.forEach((column) => {
+        if (column == "requested") {
+          destinationBoardData[column].items =
+            destinationBoardData[column].items.concat(story);
+          sourceBoardData[column].items = sourceBoardData[column].items.filter(
+            (card) => card.id !== story.id
+          );
+        } else {
+          sourceBoardData[column].items.forEach((card) => {
+            if (story.id == card.storyId) {
+              destinationBoardData[column].items =
+                destinationBoardData[column].items.concat(card);
+              sourceBoardData[column].items = sourceBoardData[
+                column
+              ].items.filter((card) => card !== card);
+            }
+          });
         }
       });
+      // Update Firestore documents with the modified data
+      await dashboardRef
+        .collection("board")
+        .doc(destinationBoardId)
+        .update(destinationBoardData);
+      await dashboardRef
+        .collection("board")
+        .doc(story.boardId)
+        .update(sourceBoardData);
     });
-
-    // Mettre à jour les tableaux source et destination
-    const batch = db.batch();
-
-    // Supprimer les histoires et tâches du tableau source
-    const sourceBoardRef = dashboardRef.collection("board").doc(sourceBoardId);
-    batch.update(sourceBoardRef, {
-      "requested.items": requestedItems.filter(
-        (story) => !req.body.storiesId.includes(story.id)
-      ),
-    });
-    otherColumns.forEach((column) => {
-      const sourceColumnRef = sourceBoardRef.collection("column").doc(column);
-      batch.update(sourceColumnRef, {
-        items: sourceBoardData[column].items.filter(
-          (card) => !req.body.storiesId.includes(card.storyId)
-        ),
-      });
-    });
-
-    // Ajouter les histoires et tâches dans le tableau de destination
-    const destinationBoardRef = dashboardRef
-      .collection("board")
-      .doc(destinationBoardId);
-    const destinationBoardSnapshot = await destinationBoardRef.get();
-    const destinationBoardData = destinationBoardSnapshot.data();
-    batch.update(destinationBoardRef, {
-      "requested.items": [
-        ...destinationBoardData.requested.items,
-        ...storiesToMove,
-      ],
-    });
-    otherColumns.forEach((column) => {
-      const destinationColumnRef = destinationBoardRef
-        .collection("column")
-        .doc(column);
-      batch.update(destinationColumnRef, {
-        items: [...destinationBoardData[column].items, ...cardsToMove[column]],
-      });
-    });
-
-    await batch.commit();
-
     res.send({ message: "Stories moved successfully" });
   } catch (error) {
     console.error(error);
@@ -292,18 +275,23 @@ const createDashboards = async (req, res) => {
       impacts: [],
       deliverables: [],
     });
-    await agileRef.doc("empathy_map").set({
-      think:[],
-      see:[],
-      do:[],
-      hear:[]
+    await agileRef.doc("elevator_pitch").set({
+      name: "",
+      forWho: "",
+      needed: "",
+      type: "",
+      who: "",
+      difference: "",
+      alternative: "",
     });
+    await agileRef.doc("functional_tree").set({});
     await agileRef.doc("agile_folder").set({
       impact_mapping: "",
-      empathy_map: "",
+      empathy_map: [],
       personas: [],
-      three: "",
+      tree: "",
       elevator_pitch: "",
+      roadmap: "",
     });
     await batch.commit();
 
@@ -382,6 +370,7 @@ const createStory = async (req, res) => {
       labels: [],
       color: color,
       storyId: id,
+      value: 0,
     };
     // Ajouter la nouvelle histoire à la collection "stories" du document "dashboard"
     const storiesRef = dashboardRef.collection("stories");
@@ -414,7 +403,12 @@ const editCard = async (req, res) => {
 
     switch (columnId.toString()) {
       case "0":
-        updatedItems = setColumnItems(columns.requested.items, data, false);
+        updatedItems = setColumnItems(
+          columns.requested.items,
+          data,
+          false,
+          true
+        );
         name = "Stories";
         break;
       case "1":
@@ -444,7 +438,6 @@ const editCard = async (req, res) => {
       default:
         throw new Error("Invalid column ID");
     }
-
     const updateData = {
       [getColumnField(parseInt(columnId))]: {
         items: updatedItems,
@@ -617,7 +610,8 @@ function getColumnField(columnId) {
 function setColumnItems(
   columnItems,
   updatedItem,
-  includeEstimationAndAdvancement
+  includeEstimationAndAdvancement,
+  isStory = false
 ) {
   return columnItems.map((item) => {
     if (item.id === updatedItem.id) {
@@ -637,15 +631,16 @@ function setColumnItems(
 
         newItem.estimation = updatedItem.estimation;
         newItem.advancement = updatedItem.advancement;
+      } else if (isStory) {
+        newItem.value = updatedItem.value;
       }
-
       return newItem;
     } else {
       return item;
     }
   });
 }
-
+///Path to create Releases
 async function createReleases(startingDate, endingDate, dashboardRef) {
   const releaseDuration = 28; // 4 weeks
   const sprintDuration = 7; // 1 week
@@ -671,7 +666,7 @@ async function createReleases(startingDate, endingDate, dashboardRef) {
   await Promise.all(Object.values(releases));
   return releases;
 }
-
+///Path to create Sprints
 async function createSprints(
   releaseStart,
   releaseEnd,
@@ -716,7 +711,7 @@ async function createSprints(
 
   return sprints;
 }
-
+///Path to create Dashboard
 async function createDashboard(body, bool) {
   var dashboardRef;
   if (bool) {
@@ -727,7 +722,7 @@ async function createDashboard(body, bool) {
       favorite: false,
       group_name: body.group_name,
       sprint_name: body.sprint_name,
-      image: "https://picsum.photos/600",
+      image: "https://picsum.photos/1920/900",
       pdf_link: "",
       groupId: body.groupId,
       created_by: body.created_by,
@@ -740,7 +735,7 @@ async function createDashboard(body, bool) {
       favorite: false,
       group_name: body.group_name,
       sprint_name: body.sprint_name,
-      image: "https://picsum.photos/600",
+      image: "https://picsum.photos/1920/900",
       pdf_link: "",
       groupId: body.groupId,
       created_by: body.po_id,
@@ -749,7 +744,7 @@ async function createDashboard(body, bool) {
 
   return dashboardRef;
 }
-
+/// Function to have randomColor
 const getRandomColor = () => {
   const hexLetters = "0123456789ABCDEF";
   let color = "#";
@@ -758,7 +753,7 @@ const getRandomColor = () => {
   }
   return color;
 };
-
+/// Path to Websocket
 const dashboardRequests = async (connection) => {
   connection.on("message", async (message) => {
     console.log(message);
@@ -766,8 +761,7 @@ const dashboardRequests = async (connection) => {
     groups = [];
 
     if (user.status === "etudiant") {
-      db
-        .collection("groups")
+      db.collection("groups")
         .where("students", "array-contains", user.id)
         .onSnapshot((snapshot) => {
           snapshot.forEach((doc) => {
@@ -775,8 +769,7 @@ const dashboardRequests = async (connection) => {
           });
         });
     } else if (user.status === "po") {
-      db
-        .collection("groups")
+      db.collection("groups")
         .where("po_id", "==", user.id)
         .onSnapshot((snapshot) => {
           snapshot.forEach((doc) => {
@@ -947,7 +940,10 @@ const overviewRequests = async (connection) => {
               };
 
               boards.push(board);
-              stories = stories.concat(doc.data().requested.items);
+              const modifiedItems = doc.data().requested.items.map((story) => {
+                return { ...story, boardId: doc.id };
+              });
+              stories = stories.concat(modifiedItems);
             }
           });
         }
@@ -970,7 +966,7 @@ const overviewRequests = async (connection) => {
     );
   });
 };
-
+/// Function to addDashboard
 async function addDashboard(groups, db) {
   const dashboardSnapshot = await db.collection("dashboard").get();
 
@@ -1040,12 +1036,23 @@ async function addDashboard(groups, db) {
         impacts: [],
         deliverables: [],
       });
+      await agileRef.doc("elevator_pitch").set({
+        name: "",
+        forWho: "",
+        needed: "",
+        type: "",
+        who: "",
+        difference: "",
+        alternative: "",
+      });
+      await agileRef.doc("functional-tree").set({});
       await agileRef.doc("agile_folder").set({
         impact_mapping: "",
-        empathy_map: "",
+        empathy_map: [],
         personas: [],
-        three: "",
+        tree: "",
         elevator_pitch: "",
+        roadmap: "",
       });
     }
   }

@@ -30,23 +30,23 @@ import ProfilSkeleton from "../../components/profil/ProfilSkeleton";
 import useFirebase from "../../hooks/useFirebase";
 import { useParams } from "react-router";
 import "./Profil.scss";
+import CardBlog from "../../components/blog/CardBlog";
 
 export default function Profil() {
   const textRef = useRef(null);
   const [tabValue, setTabValue] = React.useState("1");
-
+  const [tags, setTags] = useState([]);
   const queryParameters = new URLSearchParams(window.location.pathname);
   const [anchorEl, setAnchorEl] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [recentBlogs, SetRecentBlogs] = useState([]);
+  const [recentBlogs, setRecentBlogs] = useState([]);
   const [recentJpo, setRecentJpo] = useState([]);
   const radioGroupRef = React.useRef(null);
   const { user } = useFirebase();
   const { id } = useParams();
   const [userProfil, setUserProfil] = useState({});
   const fileInputRef = useRef(null);
-  const theme = useTheme();
   const notify = () =>
     toast.success("Utilisateur Discord copié.", {
       position: "top-right",
@@ -64,7 +64,6 @@ export default function Profil() {
       .writeText(text)
       .then(() => {
         notify();
-        console.log("Text copied to clipboard");
       })
       .catch((error) => {
         console.error("Failed to copy text:", error);
@@ -127,7 +126,79 @@ export default function Profil() {
       }));
     }
   };
-
+  const getJpo = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5050/ressources/jpo/user/${id}`
+      );
+      if (response.data != undefined) {
+        setRecentJpo(response.data);
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get("http://localhost:5050/blog/tag");
+      const tags = response.data;
+      setTags(tags);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des tags :", error);
+    }
+  };
+  const fetchBlogs = async () => {
+    try {
+      const response = await axios.get(`http://localhost:5050/blog/user/${id}`);
+      var filtredBlogs = filterTwoMostRecentBlogs(response.data, 2);
+      var allBlogs = [];
+      const dateOptions = {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      };
+      filtredBlogs.forEach((blog) => {
+        const dateCreation = new Date(
+          blog.created_at._seconds * 1000 +
+            blog.created_at._nanoseconds / 100000
+        ).toLocaleString("fr", dateOptions);
+        const userLiked = blog.like.includes(user.id);
+        const userDisliked = blog.dislike.includes(user.id);
+        const userIsParticipant = blog.participant.includes(user.id);
+        const blogFront = {
+          id: blog.id,
+          created_at: dateCreation,
+          created_by: blog.created_by,
+          editorState: blog.editorState,
+          inputEditorState: blog.inputEditorState,
+          participant: blog.participant,
+          comment: blog.comment,
+          statut: blog.statut,
+          thumbnail: blog.thumbnail,
+          title: blog.title,
+          description: blog.description,
+          updated_at: blog.updated_at,
+          like: blog.like,
+          dislike: blog.dislike,
+          userLiked: userLiked,
+          userDisliked: userDisliked,
+          userIsParticipant: userIsParticipant,
+          type: blog.type,
+          tag: blog.tag,
+          info_creator: blog.info_creator,
+          visibility: blog.visibility,
+        };
+        allBlogs.push(blogFront);
+      });
+      console.log(allBlogs);
+      setRecentBlogs(allBlogs);
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+    }
+  };
   useEffect(() => {
     (async () => {
       const wsComments = new w3cwebsocket(`ws://212.73.217.176:5050/profil`);
@@ -138,14 +209,6 @@ export default function Profil() {
 
       wsComments.onmessage = (message) => {
         const data = JSON.parse(message.data);
-        console.log(data);
-        var userInfo = data;
-        const date = new Date(
-          userInfo.dateofbirth._seconds * 1000 +
-            userInfo.dateofbirth._nanoseconds / 1000000
-        );
-        const formattedDate = format(date, "yyyy-MM-dd");
-
         setUserProfil({
           id: id,
           firstname: data.firstname,
@@ -156,7 +219,6 @@ export default function Profil() {
           imagebackground: !data.imagebackground
             ? "https://picsum.photos/1920/900"
             : data.imagebackground,
-          dateBirthday: formattedDate,
           job: data.job,
           linkedin: data.linkedin,
           git: data.git,
@@ -169,8 +231,10 @@ export default function Profil() {
           phoneNumber: data.phone,
           status: data.status,
         });
+        getJpo();
+        fetchBlogs();
+        fetchTags();
         setIsLoading(false);
-        console.log(userProfil);
       };
     })();
   }, [id]);
@@ -209,22 +273,6 @@ export default function Profil() {
     return twoMostRecentBlogs;
   };
 
-  useEffect(() => {
-    const fetchBlogs = async () => {
-      try {
-        const response = await axios.get(
-          "http://212.73.217.176:5050/blog/user/ilan.petiot@edu.esiee-it.fr"
-        );
-        var filtredBlogs = filterTwoMostRecentBlogs(response.data, 2);
-        SetRecentBlogs(filtredBlogs);
-      } catch (error) {
-        console.error("Error fetching blogs:", error);
-      }
-    };
-
-    fetchBlogs();
-  }, []);
-
   return (
     <div>
       {isLoading ? (
@@ -235,7 +283,7 @@ export default function Profil() {
           <Box
             className="background"
             style={{
-              "--url": `url(${userProfil.imagebackground})`,
+              backgroundImage: `url(${userProfil.imagebackground})`,
             }}
           ></Box>
           <Box
@@ -285,7 +333,7 @@ export default function Profil() {
                   )}
                   <Typography sx={{ textAlign: "center", fontSize: "medium" }}>
                     {userProfil.job && `${userProfil.job}`}
-                    {userProfil.company && userProfil.job ? " chez " : " Chez "}
+                    {userProfil.company && userProfil.job ? " Chez " : ""}
                     {userProfil.company && userProfil.company}
                   </Typography>
                   <Box>
@@ -299,7 +347,7 @@ export default function Profil() {
                         marginBottom: "5%",
                       }}
                     >
-                      Mes languages
+                      Mes langages
                     </Typography>
 
                     <div
@@ -388,7 +436,7 @@ export default function Profil() {
                       onChange={handleTabChange}
                       aria-label="lab API tabs example"
                     >
-                      <Tab label="About Me" value="1" />
+                      <Tab label="A propos de moi" value="1" />
                       <Tab label="Derniers Blogs" value="2" />
                       <Tab label="Dernières JPO" value="3" />
                     </TabList>
@@ -398,7 +446,15 @@ export default function Profil() {
                       ? userProfil.description
                       : "Aucune description"}
                   </TabPanel>
-                  <TabPanel value="2">Derniers Blogs</TabPanel>
+                  <TabPanel value="2">
+                    {recentBlogs ? (
+                      recentBlogs.map((blog, index) => (
+                        <CardBlog blog={blog} key={index} tags={tags} />
+                      ))
+                    ) : (
+                      <p>Aucune journée porte ouverte prévue</p>
+                    )}
+                  </TabPanel>
                   <TabPanel value="3">
                     {recentJpo ? (
                       recentJpo.map((jpo, index) => (
