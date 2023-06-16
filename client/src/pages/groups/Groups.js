@@ -21,7 +21,7 @@ import "./Groups.scss";
 const options = {
   autoClose: 2000,
   className: "",
-  position: toast.POSITION.BOTTOM_RIGHT,
+  position: toast.POSITION.BOTTOM_CENTER,
   theme: "colored",
 };
 
@@ -206,7 +206,7 @@ function GroupsCreation() {
               break;
             case "closeRoom":
               setInRoom(false);
-              navigate("/groupes");
+              navigate("/");
               ws.close();
               break;
             case "updateCol":
@@ -283,7 +283,7 @@ function GroupsCreation() {
     const { source, destination } = result;
     if (notAllowed) {
       setNotAllowed(false);
-      toast.error("Vous ne pouvez pas déplacer cet élève");
+      toastFail("Vous ne pouvez pas déplacer cet élève");
       return;
     }
     if (source.droppableId === destination.droppableId) return;
@@ -401,7 +401,7 @@ function GroupsCreation() {
 
       for (let index = 1; index < numberOfCase + 1; index++) {
         copiedColContent[`g${index}`] = {
-          name: `Group ${index}`,
+          name: `Groupe ${index}`,
           items: [],
         };
       }
@@ -551,7 +551,7 @@ function GroupsCreation() {
           data: { class: classStudents, lock: false, status: user.status },
         })
       );
-      toast.success("Les groupes sont verrouillés");
+      toastSuccess("Les groupes sont verrouillés");
     } else {
       setHasLock(true);
       ws.send(
@@ -560,7 +560,7 @@ function GroupsCreation() {
           data: { class: classStudents, lock: true, status: user.status },
         })
       );
-      toast.success("Les groupes sont déverrouillés");
+      toastSuccess("Les groupes sont déverrouillés");
     }
   }
 
@@ -650,6 +650,7 @@ function GroupsCreation() {
               height: "100%",
               overflow: "hidden",
             }}
+            className="group-container"
           >
             {showSettings && user?.status === "po" ? (
               <PopUp
@@ -812,7 +813,7 @@ function GroupsCreation() {
                                   style={{
                                     backgroundColor: snapshot.isDraggingOver
                                       ? theme.palette.custom.selectBackground
-                                      : "#6b6b6b",
+                                      : theme.palette.background.paper,
                                     padding: "0px 50px",
                                     width: "100%",
                                     minHeight: 140,
@@ -821,6 +822,7 @@ function GroupsCreation() {
                                     height: "auto",
                                     display: "flex",
                                     justifyContent: "space-around",
+                                    borderRadius: "10px",
                                     alignItems: "center",
                                     ...(!lock && {
                                       backgroundColor: "#999999",
@@ -876,9 +878,19 @@ function GroupsCreation() {
                                               }}
                                               className="post-it"
                                             >
-                                              <p>{item.firstname}</p>
+                                              <p
+                                                style={{
+                                                  textShadow:
+                                                    "0px 0px 10px rgba(0, 0, 0, 0.658)",
+                                                }}
+                                              >
+                                                {item.firstname}
+                                              </p>
                                               {!userCursors?.get(item.id) ? (
-                                                <p className="no-connect-label">
+                                                <p
+                                                  className="no-connect-label"
+                                                  style={{ margin: 0 }}
+                                                >
                                                   <WifiOffIcon />
                                                 </p>
                                               ) : null}
@@ -943,9 +955,10 @@ function GroupsCreation() {
                                   style={{
                                     backgroundColor: snapshot.isDraggingOver
                                       ? theme.palette.custom.selectBackground
-                                      : "#6b6b6b",
+                                      : theme.palette.background.paper,
                                     padding: 4,
                                     width: 250,
+                                    borderRadius: "10px",
                                     minHeight: 140,
                                     maxHeight: 500,
                                     overflow: "auto",
@@ -1033,9 +1046,19 @@ function GroupsCreation() {
                                               }}
                                               className="post-it"
                                             >
-                                              <p>{item.firstname}</p>
+                                              <p
+                                                style={{
+                                                  textShadow:
+                                                    "0px 0px 10px rgba(0, 0, 0, 0.658)",
+                                                }}
+                                              >
+                                                {item.firstname}
+                                              </p>
                                               {!userCursors?.get(item.id) ? (
-                                                <p className="no-connect-label">
+                                                <p
+                                                  className="no-connect-label"
+                                                  style={{ margin: 0 }}
+                                                >
                                                   <WifiOffIcon />
                                                 </p>
                                               ) : null}

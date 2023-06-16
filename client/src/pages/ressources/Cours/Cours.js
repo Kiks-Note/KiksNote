@@ -69,7 +69,10 @@ const Cours = () => {
 
   const { user } = useFirebase();
   const userStatus = user?.status;
+  console.log(userStatus);
   const userClassConnected = user?.class;
+
+  console.log(userClassConnected);
 
   const [view, setView] = useState("module");
 
@@ -360,6 +363,8 @@ const Cours = () => {
     const courseDate = timeConverter(course.data.dateStartSprint);
     return courseDate >= startLastYear && courseDate <= endLastYear;
   });
+
+  console.log(view);
 
   return (
     <>

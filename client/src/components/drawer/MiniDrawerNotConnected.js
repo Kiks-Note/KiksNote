@@ -113,7 +113,7 @@ export default function MiniDrawerNotConnected({ element }) {
     {
       id: 4,
       name: "Inscription",
-      route: "/signup",
+      route: "/inscription",
       icon: (
         <AccountCircleIcon sx={{ color: theme.palette.custom.iconDrawer }} />
       ),

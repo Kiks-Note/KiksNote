@@ -1,14 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import ArbreFonctionnel from "./pages/agile/ArbreFonctionnel";
 import FolderAgile from "./pages/agile/FolderAgile";
 import Blog from "./pages/blog/Blog";
-import DetailBlog from "./pages/blog/DetailBlog";
 import TabBoard from "./pages/board_scrum/tabs/TabBoard";
 import Appel from "./pages/call/Call";
 import GroupsDisplay from "./pages/groups/GroupsDisplay";
 import GroupsCreation from "./pages/groups/Groups";
 import Home from "./pages/home/Home";
-import DeviceHistory from "./pages/inventory/DeviceHistory";
 import InventoryAdminDashboard from "./pages/inventory/InventoryAdminDashboard";
 import InventoryDevices from "./pages/inventory/InventoryDevices";
 import InventoryHome from "./pages/inventory/InventoryHome";
@@ -23,6 +20,9 @@ import NotFound from "./pages/not_found/NotFound";
 import Presence from "./pages/presence/Presence";
 import Profil from "./pages/profil/Profil";
 import Register from "./pages/register/Register";
+import DetailBlog from "./pages/blog/DetailBlog";
+import DeviceHistory from "./pages/inventory/DeviceHistory";
+import ElevatorPitchPage from "./pages/agile/ElevatorPitchPage";
 import DetailTuto from "./pages/blog/DetailTuto";
 import Cours from "./pages/ressources/Cours/Cours";
 import CoursInfo from "./pages/ressources/Cours/CoursInfo";
@@ -32,7 +32,6 @@ import JpoInfo from "./pages/ressources/jpo/JpoInfo";
 import StudentsProjectsInfo from "./pages/ressources/students_project/StudentProjectInfo";
 import StudentsProjects from "./pages/ressources/students_project/StudentsProjects";
 import Retrospective from "./pages/retrospective/Retrospective";
-import RetrospectiveStudent from "./pages/retrospective/RetrospectiveStudent";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import PublicRoutes from "./utils/PublicRoutes";
 import Board from "./pages/board_retro/board";
@@ -50,7 +49,7 @@ function RoutesProvider() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Register />} />
           <Route path="/askresetpassword" element={<AskResetPassword />} />
-          <Route path="/arbre" element={<ArbreFonctionnel />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
         {/* {Route} */}
         <Route element={<PrivateRoutes />}>
@@ -58,7 +57,9 @@ function RoutesProvider() {
           <Route path="/groupes" element={<GroupsDisplay />} />
           <Route path="/groupes/creation" element={<GroupsCreation />} />
           <Route path="/" element={<Home />} />
-          <Route path="/appel" element={<Appel />} />
+          <Route path="/appel/:id" element={<Appel />} />
+          <Route path="/presence/:id" element={<Presence />} />
+          <Route path="/groups" element={<GroupsCreation />} />
           <Route path="/tableau-de-bord" element={<TabBoard />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<DetailBlog />} />
@@ -77,12 +78,9 @@ function RoutesProvider() {
           />
           <Route path="/cours" element={<Cours />} />
           <Route path="/coursinfo/:id" element={<CoursInfo />} />
-
-          <Route path="/agile" element={<FolderAgile />} />
           <Route path="/retro" element={<Retrospective />} />
           <Route path="/board" element={<Board />} />
           <Route path="/boardReview" element={<BoardReview />} />
-
           {/* INVENTORY */}
           <Route path="/inventory" element={<InventoryHome />} />
           <Route path="/inventory/ideas" element={<InventoryIdeas />} />

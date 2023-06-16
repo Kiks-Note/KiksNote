@@ -24,7 +24,7 @@ const db = getFirestore(firebaseApp);
 export const FirebaseContext = createContext();
 
 export const useFirebase = () => useContext(FirebaseContext);
-export const FirebaseContextProvider = ({children}) => {
+export const FirebaseContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const cookies = new Cookies();
   const lastConnectionAt = cookies.get("lastConnectionAt");
@@ -75,7 +75,7 @@ export const FirebaseContextProvider = ({children}) => {
   };
 
   return (
-    <FirebaseContext.Provider value={{auth, db, user, logout}}>
+    <FirebaseContext.Provider value={{ auth, db, user, logout }}>
       {children}
     </FirebaseContext.Provider>
   );

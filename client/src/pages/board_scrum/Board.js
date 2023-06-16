@@ -47,14 +47,7 @@ export default function Board({ boardId, dashboardId }) {
   }, []);
 
   async function changeCardIndex(newColumns) {
-    await axios.put(
-      "http://localhost:5050/dashboard/" +
-        dashboardId +
-        "/board/" +
-        boardId +
-        "/setCards",
-      newColumns
-    );
+    await axios.put("http://localhost:5050/dashboard/" + dashboardId + "/board/" + boardId + "/setCards", newColumns);
   }
   const onDragEnd = async (result, columns, setColumns) => {
     if (!result.destination) return;
@@ -89,22 +82,12 @@ export default function Board({ boardId, dashboardId }) {
       // Déplacement entre deux colonnes différentes
       const sourceColumn = columns[sourceId];
       const destinationColumn = columns[destinationId];
-      if (
-        destinationId === "0" ||
-        sourceId === "1" ||
-        destinationId === "5" ||
-        sourceId === "6"
-      ) {
+      if (destinationId === "0" || sourceId === "1" || destinationId === "5" || sourceId === "6") {
         toast.error("Impossible de déplacer cet élément dans cette colonne", {
           duration: 5000,
         });
         return;
-      } else if (
-        sourceId === "0" ||
-        destinationId === "1" ||
-        sourceId === "5" ||
-        destinationId === "6"
-      ) {
+      } else if (sourceId === "0" || destinationId === "1" || sourceId === "5" || destinationId === "6") {
         toast.error("Impossible de déplacer cet élément dans cette colonne", {
           duration: 5000,
         });
@@ -122,21 +105,15 @@ export default function Board({ boardId, dashboardId }) {
       if (destinationId == "2") {
         // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
         for (const item of removed.advancement) {
-          if (
-            new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") ==
-            formattedDate
-          ) {
-            item.advance = 0;
+          if (new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") == formattedDate) {
+            item.advance = removed.estimation;
             break; // Sortir de la boucle une fois l'élément trouvé
           }
         }
       } else if (destinationId == "3") {
         // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
         for (const item of removed.advancement) {
-          if (
-            new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") ==
-            formattedDate
-          ) {
+          if (new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") == formattedDate) {
             item.advance = removed.estimation / 2;
             break; // Sortir de la boucle une fois l'élément trouvé
           }
@@ -144,11 +121,8 @@ export default function Board({ boardId, dashboardId }) {
       } else if (destinationId == "4") {
         // Parcourir 'advancement' pour trouver la clé 'dayNow' correspondant à la date actuelle
         for (const item of removed.advancement) {
-          if (
-            new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") ==
-            formattedDate
-          ) {
-            item.advance = removed.estimation;
+          if (new Date(item.dayNow._seconds * 1000).toLocaleDateString("fr") == formattedDate) {
+            item.advance = 0;
             break; // Sortir de la boucle une fois l'élément trouvé
           }
         }
@@ -182,15 +156,11 @@ export default function Board({ boardId, dashboardId }) {
 
   return (
     <>
-      <section class="board-info-bar">
-        <div class="board-controls">
+      <section className="board-info-bar">
+        <div className="board-controls">
           <h2> {boardName}</h2>
 
-          <Switch
-            checked={label}
-            onChange={labelChange}
-            inputProps={{ "aria-label": "controlled" }}
-          />
+          <Switch checked={label} onChange={labelChange} inputProps={{ "aria-label": "controlled" }} />
         </div>
 
         {/* <Button variant="outlined" startIcon={<SettingsIcon />}>
@@ -200,9 +170,7 @@ export default function Board({ boardId, dashboardId }) {
       <div>
         <Toaster />
         <div className="board_container_all grid-container-board ">
-          <DragDropContext
-            onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
-          >
+          <DragDropContext onDragEnd={(result) => onDragEnd(result, columns, setColumns)}>
             {Object.entries(columns).map(([columnId, column], index) => {
               return (
                 <div className="board_container_table" key={columnId}>
@@ -227,9 +195,7 @@ export default function Board({ boardId, dashboardId }) {
                             {...provided.droppableProps}
                             ref={provided.innerRef}
                             style={{
-                              background: snapshot.isDraggingOver
-                                ? "#ed6c0247"
-                                : "#c4c9cc",
+                              background: snapshot.isDraggingOver ? "#ed6c0247" : "#c4c9cc",
                               paddingInline: 14,
                               minHeight: 20,
                               maxHeight: "30vh",
@@ -243,10 +209,7 @@ export default function Board({ boardId, dashboardId }) {
                                   key={item.id}
                                   draggableId={item.id}
                                   index={index}
-                                  isDragDisabled={
-                                    column.isDragDisabled &&
-                                    column.name === "Stories"
-                                  } //  disable the drag on the "Stories" column
+                                  isDragDisabled={column.isDragDisabled && column.name === "Stories"} //  disable the drag on the "Stories" column
                                 >
                                   {(provided, snapshot) => {
                                     return (
@@ -259,9 +222,7 @@ export default function Board({ boardId, dashboardId }) {
                                           marginBottom: 8,
                                           minHeight: "60px",
                                           borderRadius: 3,
-                                          backgroundColor: snapshot.isDragging
-                                            ? "#FFFFFF"
-                                            : "#FFFFFF",
+                                          backgroundColor: snapshot.isDragging ? "#FFFFFF" : "#FFFFFF",
                                           boxShadow:
                                             "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)",
                                           color: "white",
@@ -290,11 +251,7 @@ export default function Board({ boardId, dashboardId }) {
                         );
                       }}
                     </Droppable>
-                    <ButtonAddCard
-                      columnId={columnId}
-                      dashboardId={dashboardId}
-                      boardId={boardId}
-                    />
+                    <ButtonAddCard columnId={columnId} dashboardId={dashboardId} boardId={boardId} />
                   </div>
                 </div>
               );
