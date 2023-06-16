@@ -63,7 +63,7 @@ $gray: #92959e;
   width: 90%;
   display: flex;
   flex-direction: row;
-  background: #444753;
+  background-color: #444753;
   margin-top: 40px;
   border-radius: 5px;
   height: 85vh;
@@ -281,4 +281,8 @@ $gray: #92959e;
   content: " ";
   clear: both;
   height: 0;
+}
+/* Track */
+::-webkit-scrollbar-track {
+  background: #444753;
 }

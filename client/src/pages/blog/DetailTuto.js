@@ -1,16 +1,16 @@
 import axios from "axios";
-import React, {useEffect, useState} from "react";
-import {useParams, useNavigate} from "react-router-dom";
-import {Box, Typography, Button} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Box, Typography, Button } from "@mui/material";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownAltIcon from "@mui/icons-material/ThumbDownAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import DisplayComment from "../../components/blog/DisplayComment";
 import CreateComment from "../../components/blog/CreateComment";
-import {w3cwebsocket} from "websocket";
+import { w3cwebsocket } from "websocket";
 import useFirebase from "../../hooks/useFirebase";
-import {Rings} from "react-loader-spinner";
+import { Rings } from "react-loader-spinner";
 import "./Blog.css";
 import MDEditor from "@uiw/react-md-editor";
 import Stepper from "@mui/material/Stepper";
@@ -21,8 +21,8 @@ import "./Blog.css";
 function DetailTuto() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const {id} = useParams();
-  const {user} = useFirebase();
+  const { id } = useParams();
+  const { user } = useFirebase();
   const navigate = useNavigate();
   const [visibleComments, setVisibleComments] = useState(5);
 
@@ -196,13 +196,13 @@ function DetailTuto() {
       >
         {!loading ? (
           <>
-            <Box sx={{width: "100%", mb: 2}}>
+            <Box sx={{ width: "100%", mb: 2 }}>
               <Button
                 variant="contained"
                 onClick={() => {
                   navigate(-1);
                 }}
-                sx={{marginTop: 2}}
+                sx={{ marginTop: 2 }}
               >
                 Retour À la page de blog
               </Button>
@@ -229,41 +229,48 @@ function DetailTuto() {
               <div>
                 {allStepsCompleted() ? (
                   <>
-                    <Typography sx={{mt: 2, mb: 1}}>
+                    <Typography sx={{ mt: 2, mb: 1 }}>
                       Vous avez terminé le tutoriel !
                     </Typography>
-                    <Box sx={{display: "flex", flexDirection: "row", pt: 2}}>
-                      <Box sx={{flex: "1 1 auto"}} />
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Box sx={{ flex: "1 1 auto" }} />
                       <Button onClick={handleReset}>Recommencer</Button>
                     </Box>
                   </>
                 ) : (
                   <>
-                    <Box sx={{m: 3}}>
+                    <Box sx={{ m: 3 }}>
                       <div data-color-mode="light">
                         <MDEditor.Markdown
                           source={data.markdownStepsInfo[activeStep]}
+                          style={{
+                            padding: 10,
+                            // ...{
+                            //   backgroundColor: theme.palette.background.paper,
+                            //   color: theme.palette.text.primary,
+                            // },
+                          }}
                         />
                       </div>
                     </Box>
-                    <Box sx={{display: "flex", flexDirection: "row", pt: 2}}>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
                       <Button
                         color="inherit"
                         disabled={activeStep === 0}
                         onClick={handleBack}
-                        sx={{mr: 1}}
+                        sx={{ mr: 1 }}
                       >
                         Précédent
                       </Button>
-                      <Box sx={{flex: "1 1 auto"}} />
-                      <Button onClick={handleNext} sx={{mr: 1}}>
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      <Button onClick={handleNext} sx={{ mr: 1 }}>
                         Suivant
                       </Button>
                       {activeStep !== steps.length &&
                         (completed[activeStep] ? (
                           <Typography
                             variant="caption"
-                            sx={{display: "inline-block"}}
+                            sx={{ display: "inline-block" }}
                           >
                             Étape {activeStep + 1} déjà complétée
                           </Typography>
@@ -289,7 +296,7 @@ function DetailTuto() {
                 my: 2,
               }}
             >
-              <Box sx={{display: "flex"}}>
+              <Box sx={{ display: "flex" }}>
                 <Button
                   variant="contained"
                   startIcon={
@@ -332,7 +339,7 @@ function DetailTuto() {
               </Box>
               <CreateComment tutoId={id} />
             </Box>
-            <Box sx={{width: "100%"}}>
+            <Box sx={{ width: "100%" }}>
               {data &&
                 data.comment &&
                 Array.isArray(data.comment) &&
