@@ -151,7 +151,7 @@ export default function AgileHome({ dashboardId, agile }) {
               )}
             </div>
           ))}
-          <div
+          {/* <div
             className="folder folder_cursor"
             key={three.id}
             onClick={() => moveToThree()}
@@ -159,7 +159,7 @@ export default function AgileHome({ dashboardId, agile }) {
             <div className="folder_content">
               <Typography variant="h4">Arbre Fonctionnel</Typography>
             </div>
-          </div>
+          </div> */}
           <div
             className="folder folder_cursor"
             key={elevator.id}
