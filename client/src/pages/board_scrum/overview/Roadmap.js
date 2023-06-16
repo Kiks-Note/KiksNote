@@ -28,8 +28,6 @@ const Roadmap = ({ stories, releases, boards, dashboardId }) => {
 
             boards.forEach((board) => {
               if (board.id === sprint.boardId) {
-                console.log(board.data.toDo);
-
                 const filteredItems = board.data.toDo.items.filter((item) => {
                   return sprintData.stories.some(
                     (story) => story.storyId === item.storyId
@@ -58,7 +56,6 @@ const Roadmap = ({ stories, releases, boards, dashboardId }) => {
           return formattedRelease;
         }
       );
-      console.log(formattedReleasesTemp);
       setFormatedReleases(formattedReleasesTemp);
     };
 
@@ -200,7 +197,7 @@ const Roadmap = ({ stories, releases, boards, dashboardId }) => {
 
     try {
       await axios.post(
-        "http://localhost:5050/agile/" + dashboardId + "/folder",
+        `${process.env.REACT_APP_SERVER_API}/agile/${dashboardId}/folder`,
         formData
       );
       toast.success("Votre persona a été ajouté à votre dossier agile", {

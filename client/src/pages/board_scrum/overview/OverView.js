@@ -103,7 +103,6 @@ function OverView({ id }) {
 
     dispatch(addTab(boardTab));
     dispatch(setActiveTab(boardTab.id));
-    console.log("moved ?");
   };
 
   const handleClick = (event) => {
@@ -132,7 +131,6 @@ function OverView({ id }) {
         setStories(data.stories);
         setAgile(data.agile);
         setDisplay(true);
-        console.log(data.boards);
         sortBoards(data.boards);
         if (data.boards.length > 4) {
           const data = { begin: 0, end: 4 };
@@ -152,7 +150,6 @@ function OverView({ id }) {
         begin: displayedBoards.begin + 4,
         end: displayedBoards.end + 4,
       };
-      console.log(newData);
       setDisplayedBoards(newData);
     }
   };
@@ -163,7 +160,6 @@ function OverView({ id }) {
         begin: displayedBoards.begin - 4,
         end: displayedBoards.end - 4,
       };
-      console.log(newData);
       setDisplayedBoards(newData);
     }
   };
@@ -192,7 +188,6 @@ function OverView({ id }) {
       return result;
     }, []);
 
-    console.log(participationList);
     return participationList;
   };
 
@@ -208,7 +203,6 @@ function OverView({ id }) {
       }
       return releaseA - releaseB;
     });
-    console.log("sorted");
     setBoards(sortedItems);
   };
 
@@ -407,7 +401,6 @@ function OverView({ id }) {
                   }}
                   onMouseEnter={() => {
                     setSelectedBoard(board);
-                    console.log(board);
                   }}
                   onClick={() => {
                     moveToBoard(board);

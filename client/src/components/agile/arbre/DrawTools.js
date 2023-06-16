@@ -189,12 +189,9 @@ const DrawTools = ({
         );
       })
       .then((response) => {
-        toast.success(
-          "Votre Arbre a été ajouté a votre dossier agile",
-          {
-            duration: 5000,
-          }
-        );
+        toast.success("Votre Arbre a été ajouté a votre dossier agile", {
+          duration: 5000,
+        });
       })
       .catch((error) => {
         toast.error(

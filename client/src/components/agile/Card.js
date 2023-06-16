@@ -122,7 +122,6 @@ const BasicCard = ({
         break;
       case 1:
         deleteActors( id, actors[index].id );
-        console.log('actors', id, actors[index].id)
         dispatch(deleteImpactMappingActors({ index: index }));
         break;
       case 2:

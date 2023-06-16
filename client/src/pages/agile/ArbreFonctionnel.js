@@ -16,7 +16,7 @@ function ArbreFonctionnel({ dashboardId }) {
         const data = JSON.parse(message.data);
         console.log(data);
         setSelectedProject(data);
-         setLoading(false);
+        setLoading(false);
       } catch (error) {
         setLoading(true);
         console.error(error);
@@ -46,7 +46,7 @@ function ArbreFonctionnel({ dashboardId }) {
           />
         </div>
       ) : (
-        <Arbre projet={selectedProject} dashboardId ={dashboardId}/>
+        <Arbre projet={selectedProject} dashboardId={dashboardId} />
       )}
     </>
   );

@@ -787,6 +787,7 @@ const personaRequest = async (connection) => {
 const treeRequest = async (connection) => {
   connection.on("message", async (message) => {
     const dashboardId = JSON.parse(message.utf8Data);
+    console.log(dashboardId);
 
     let impactMappingRef = db
       .collection("dashboard")

@@ -284,7 +284,12 @@ const createDashboards = async (req, res) => {
       difference: "",
       alternative: "",
     });
-    await agileRef.doc("functional_tree").set({});
+    await agileRef.doc("functional_tree").set({
+      content: {
+        childreen: [],
+        name: "root",
+      },
+    });
     await agileRef.doc("agile_folder").set({
       impact_mapping: "",
       empathy_map: [],
@@ -1045,7 +1050,12 @@ async function addDashboard(groups, db) {
         difference: "",
         alternative: "",
       });
-      await agileRef.doc("functional-tree").set({});
+      await agileRef.doc("functional_tree").set({
+        content: {
+          childreen: [],
+          name: "root",
+        },
+      });
       await agileRef.doc("agile_folder").set({
         impact_mapping: "",
         empathy_map: [],
