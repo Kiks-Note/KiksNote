@@ -364,6 +364,8 @@ const Cours = () => {
     return courseDate >= startLastYear && courseDate <= endLastYear;
   });
 
+  console.log(view);
+
   return (
     <>
       <div className="cours-container">

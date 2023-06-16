@@ -29,7 +29,7 @@ export default function Dashboard() {
   // * FUNCTION
 
   //* CHANGE THE VIEW OF THE CARD BOARD
-  const viewChange = (nextView) => {
+  const viewChange = (event, nextView) => {
     if (nextView !== null) {
       setView(nextView);
     }
@@ -66,10 +66,12 @@ export default function Dashboard() {
         const data = JSON.parse(message.data);
         const listDashboards = data.map((dashboarddto) => {
           const startDate = new Date(
-            dashboarddto.starting_date._seconds * 1000 + dashboarddto.starting_date._nanoseconds / 100000
+            dashboarddto.starting_date._seconds * 1000 +
+              dashboarddto.starting_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
           const endDate = new Date(
-            dashboarddto.ending_date._seconds * 1000 + dashboarddto.ending_date._nanoseconds / 100000
+            dashboarddto.ending_date._seconds * 1000 +
+              dashboarddto.ending_date._nanoseconds / 100000
           ).toLocaleDateString("fr");
           return {
             id: dashboarddto.id,
@@ -108,7 +110,9 @@ export default function Dashboard() {
       return startDate <= maDateFormatted && maDateFormatted <= endDate;
     });
     setActifDashboard(actifDashboards);
-    const favorisDashboards = dashboard.filter((board) => board.favorite === true);
+    const favorisDashboards = dashboard.filter(
+      (board) => board.favorite === true
+    );
 
     setFavorisDashboard(favorisDashboards);
   }, [dashboard]);
@@ -121,6 +125,8 @@ export default function Dashboard() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+
+  console.log(view);
 
   return (
     <>
@@ -146,43 +152,78 @@ export default function Dashboard() {
         </div>
       ) : (
         <div style={{ marginLeft: "1%", marginTop: "1%" }}>
-          {favorisDashboard.length > 0 && ListCardDashboard(favorisDashboard, "Espace de travail favoris", favorisTell)}
-          {actifDashboard.length > 0 && ListCardDashboard(actifDashboard, "Espace de travail actif", favorisTell)}
+          {favorisDashboard.length > 0 &&
+            ListCardDashboard(
+              favorisDashboard,
+              "Espace de travail favoris",
+              favorisTell
+            )}
+          {actifDashboard.length > 0 &&
+            ListCardDashboard(
+              actifDashboard,
+              "Espace de travail actif",
+              favorisTell
+            )}
 
           <Box sx={{ width: "100%", display: "flex", flexDirection: "column" }}>
-            <Typography variant="h6" gutterBottom sx={{ flexGrow: 1 }}>
+            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: "bold" }}>
               Mon espace de travail
             </Typography>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <ToggleButtonGroup value={view} exclusive onChange={viewChange} sx={{ margin: 1 }}>
-                <ToggleButton value="module" aria-label="module">
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <ToggleButtonGroup
+                value={view}
+                exclusive
+                onChange={viewChange}
+                sx={{ margin: 1 }}
+              >
+                <ToggleButton
+                  value="module"
+                  aria-label="module"
+                  style={{ padding: 10, borderRadius: 10 }}
+                >
                   <ViewModuleIcon />
                 </ToggleButton>
-                <ToggleButton value="list" aria-label="list">
+                <ToggleButton
+                  value="list"
+                  aria-label="list"
+                  style={{ padding: 10, borderRadius: 10 }}
+                >
                   <ViewListIcon />
                 </ToggleButton>
               </ToggleButtonGroup>
+
               <CreateDashboard members={members} />
             </div>
           </Box>
 
           {view === "module" ? (
-            <Grid container spacing={2}>
+            <Grid container spacing={2} style={{ padding: 16 }}>
               {!loading &&
-                dashboard.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((board) => (
-                  <Grid item xs={3} key={board.id}>
-                    <CardDashBoard
-                      picture={board.picture}
-                      sprint_group={board.sprint_group}
-                      fav={board.favorite}
-                      isFavoris={favorisTell}
-                      id={board.id}
-                    />
-                  </Grid>
-                ))}
+                dashboard
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((board) => (
+                    <Grid item xs={3} key={board.id} style={{ padding: 16 }}>
+                      <CardDashBoard
+                        picture={board.picture}
+                        sprint_group={board.sprint_group}
+                        fav={board.favorite}
+                        isFavoris={favorisTell}
+                        id={board.id}
+                      />
+                    </Grid>
+                  ))}
             </Grid>
           ) : (
-            !loading && dashboard.length > 0 && <TableDashboard rows={!loading && dashboard} />
+            !loading &&
+            dashboard.length > 0 && (
+              <TableDashboard rows={!loading && dashboard} />
+            )
           )}
 
           {view === "module" ? (
@@ -205,7 +246,9 @@ export default function Dashboard() {
                   onPageChange={handleChangePage}
                   onRowsPerPageChange={handleChangeRowsPerPage}
                   labelRowsPerPage="Par page"
-                  labelDisplayedRows={({ from, to, count }) => `${from} - ${to} sur ${count}`}
+                  labelDisplayedRows={({ from, to, count }) =>
+                    `${from} - ${to} sur ${count}`
+                  }
                 />
               </Box>
             )
