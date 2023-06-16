@@ -32,11 +32,12 @@ const WidgetSelection = ({ open, handleClose, img, text, addLayout }) => {
             top: "50%",
             left: "50%",
             width: "80%",
-            height: "80vh",
+            height: "120vh",
             transform: "translate(-50%, -50%)",
             backgroundColor: "white",
             padding: "20px",
             borderRadius: "5px",
+            overflowY: "scroll",
           }}
         >
           <h2 style={{ color: "black" }}>
