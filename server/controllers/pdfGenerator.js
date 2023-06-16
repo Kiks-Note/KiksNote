@@ -21,7 +21,7 @@ function generatePDF(inventoryData, res) {
       .text(`Campus: ${item.campus}`, {align: "left"})
       .text(`Condition: ${item.condition}`, {align: "left"})
       .text(`Référence: ${item.reference}`, {align: "left"})
-      .text(`Stockage: ${item.storage}`, {align: "left"})
+      .text(`Armoire de Stockage: ${item.storage}`, {align: "left"})
       .text(`Description: ${item.description}`, {align: "left"})
       .text(`Prix: ${item.price}`, {align: "left"})
       .text("---------------------------------------");
