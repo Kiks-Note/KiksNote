@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 1024 * 1024 * 5 },
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: function (req, file, cb) {
     if (file.mimetype !== "application/pdf") {
       return cb(new Error("Le fichier doit être un PDF"));
@@ -157,89 +157,55 @@ const getAllJpoByParticipant = async (req, res) => {
 
 const createJpo = async (req, res) => {
   try {
-    await upload(req, res, async (err) => {
-      if (err instanceof multer.MulterError) {
-        res.status(400).json({ error: "Error uploading file." });
-        return;
-      } else if (err) {
-        res.status(400).json({ error: err.message });
-        return;
-      }
+    const {
+      jpoTitle,
+      jpoDescription,
+      jpoThumbnail,
+      jpoDayStart,
+      jpoDayEnd,
+      jpoParticipants = [],
+    } = req.body;
 
-      const {
-        jpoTitle,
-        jpoDescription,
-        jpoThumbnail,
-        jpoDayStart,
-        jpoDayEnd,
-        jpoParticipants = [],
-      } = req.body;
+    const jpoData = {
+      jpoTitle: jpoTitle,
+      jpoDescription: jpoDescription,
+      jpoThumbnail: jpoThumbnail,
+      jpoDayStart: new Date(jpoDayStart),
+      jpoDayEnd: new Date(jpoDayEnd),
+    };
 
-      const mimeType = "image/png";
-      const fileExtension = mime.extension(mimeType);
-      const fileName = `${jpoTitle}.${fileExtension}`;
+    const jpoParticipantsData = [];
+    for (const participantId of jpoParticipants) {
+      const jpoParticipantRef = await db
+        .collection("users")
+        .doc(participantId)
+        .get();
+      if (jpoParticipantRef.exists) {
+        const participantsData = {
+          id: jpoParticipantRef.id,
+          firstname: jpoParticipantRef.data().firstname,
+          lastname: jpoParticipantRef.data().lastname,
+          status: jpoParticipantRef.data().status,
+        };
 
-      const buffer = Buffer.from(
-        (jpoThumbnail || "").replace(/^data:image\/\w+;base64,/, ""),
-        "base64"
-      );
-      const file = bucket.file(`jpo/${jpoTitle}/${fileName}`);
-
-      const options = {
-        metadata: {
-          contentType: mimeType || "image/png",
-          cacheControl: "public, max-age=31536000",
-        },
-      };
-
-      await file.save(buffer, options);
-
-      const [urlImageJpo] = await file.getSignedUrl({
-        action: "read",
-        expires: "03-17-2025",
-      });
-
-      const jpoData = {
-        jpoTitle: jpoTitle,
-        jpoDescription: jpoDescription,
-        jpoThumbnail: urlImageJpo,
-        jpoDayStart: new Date(jpoDayStart),
-        jpoDayEnd: new Date(jpoDayEnd),
-      };
-
-      const jpoParticipantsData = [];
-      for (const participantId of jpoParticipants) {
-        const jpoParticipantRef = await db
-          .collection("users")
-          .doc(participantId)
-          .get();
-        if (jpoParticipantRef.exists) {
-          const participantsData = {
-            id: jpoParticipantRef.id,
-            firstname: jpoParticipantRef.data().firstname,
-            lastname: jpoParticipantRef.data().lastname,
-            status: jpoParticipantRef.data().status,
-          };
-
-          if (jpoParticipantRef.data().image) {
-            memberData.image = memberRef.data().image;
-          }
-
-          jpoParticipantsData.push(participantsData);
+        if (jpoParticipantRef.data().image) {
+          memberData.image = memberRef.data().image;
         }
+
+        jpoParticipantsData.push(participantsData);
       }
-      jpoData.jpoParticipants = jpoParticipantsData;
+    }
+    jpoData.jpoParticipants = jpoParticipantsData;
 
-      const jpoRef = await db.collection("jpo").add(jpoData);
-      const newJPO = await jpoRef.get();
+    const jpoRef = await db.collection("jpo").add(jpoData);
+    const newJPO = await jpoRef.get();
 
-      res.status(200).json({
-        message: "JPO créée avec succès.",
-        jpoData: {
-          id: newJPO.id,
-          ...newJPO.data(),
-        },
-      });
+    res.status(200).json({
+      message: "JPO créée avec succès.",
+      jpoData: {
+        id: newJPO.id,
+        ...newJPO.data(),
+      },
     });
   } catch (err) {
     console.error(err);
