@@ -83,7 +83,6 @@ const Login = () => {
         password
       );
       const token = await loggedInUser.user.getIdToken();
-
       await axios
         .post("http://212.73.217.176:5050/auth/login", {
           token,

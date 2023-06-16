@@ -15,20 +15,37 @@ function Home() {
   const [edition, setEdition] = useState(false);
   const addLayout = (newLayout) => {
     let randNumber = Math.floor(Math.random() * 1000);
-    var updatedLayout = { ...newLayout, i: randNumber + "%" + newLayout.img + " % " + newLayout.text };
+    var updatedLayout = {
+      ...newLayout,
+      i: randNumber + "%" + newLayout.img + " % " + newLayout.text,
+    };
 
-    var isUnique = layouts.every((layout) => layout.i !== updatedLayout.i);
-    while (!isUnique) {
-      let randNumber = Math.floor(Math.random() * 1000);
-      updatedLayout = { ...newLayout, i: randNumber + "%" + newLayout.img + " % " + newLayout.text };
-      isUnique = layouts.every((layout) => layout.i !== updatedLayout.i);
+    console.log(layouts);
+
+    if (layouts !== undefined && layouts.length >= 1) {
+      var isUnique = layouts.every((layout) => layout.i !== updatedLayout.i);
+
+      while (!isUnique) {
+        randNumber = Math.floor(Math.random() * 1000);
+        updatedLayout = {
+          ...newLayout,
+          i: randNumber + "%" + newLayout.img + " % " + newLayout.text,
+        };
+        isUnique = layouts.every((layout) => layout.i !== updatedLayout.i);
+      }
+      setLayouts(layouts.concat(updatedLayout));
+    } else {
+      var emptyArray = [];
+      setLayouts(emptyArray.concat(updatedLayout));
     }
-    setLayouts((prevLayouts) => [...prevLayouts, updatedLayout]);
+
     saveLayout();
   };
 
   const removeLayout = (layoutToRemove) => {
-    setLayouts((prevLayouts) => prevLayouts.filter((layout) => layout.i !== layoutToRemove.i));
+    setLayouts((prevLayouts) =>
+      prevLayouts.filter((layout) => layout.i !== layoutToRemove.i)
+    );
     saveLayout();
   };
 
@@ -78,7 +95,7 @@ function Home() {
     };
 
     getLayout();
-  }, []);
+  }, [user.id]);
 
   const saveLayout = async () => {
     try {
@@ -92,7 +109,7 @@ function Home() {
       <div className="home-dashboard">
         <div
           style={{
-            width: "65%",
+            width: "90%",
             marginRight: "5%",
             borderStyle: "dashed",
             borderColor: "#0005",
@@ -125,7 +142,7 @@ function Home() {
               cols={14}
               rowHeight={30}
               layout={layouts}
-              width={950}
+              width={1100}
               onLayoutChange={handleLayoutChange}
               style={{
                 height: "100%",
@@ -149,7 +166,12 @@ function Home() {
                         onClick={() => {
                           removeLayout(card);
                         }}
-                        style={{ position: "absolute", top: "0", right: "0", color: "red" }}
+                        style={{
+                          position: "absolute",
+                          top: "0",
+                          right: "0",
+                          color: "red",
+                        }}
                       />
                     )}
                     <img
@@ -183,33 +205,6 @@ function Home() {
                   </div>
                 ))}
             </GridLayout>
-          </div>
-        </div>
-        <div
-          className="news-feed"
-          style={{
-            backgroundColor: theme.palette.background.container,
-            height: "80vh",
-          }}
-        >
-          <div
-            className="news-feed-header"
-            style={{
-              backgroundColor: theme.palette.background.element,
-              padding: "10px",
-            }}
-          >
-            <p
-              style={{
-                fontWeight: "bold",
-                fontSize: "20px",
-                fontFamily: "poppins-bold",
-                color: "white",
-                marginLeft: "10px",
-              }}
-            >
-              Votre Feed
-            </p>
           </div>
         </div>
       </div>

@@ -69,7 +69,10 @@ const Cours = () => {
 
   const { user } = useFirebase();
   const userStatus = user?.status;
+  console.log(userStatus);
   const userClassConnected = user?.class;
+
+  console.log(userClassConnected);
 
   const [view, setView] = useState("module");
 
@@ -521,7 +524,7 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? userClass.id === course.data.courseClass.id
+                          ? userClass.id === course?.data?.courseClass.id
                           : true
                       )
                       .filter((course) =>
@@ -715,7 +718,7 @@ const Cours = () => {
                     )
                       .filter((course) =>
                         userStatus === "etudiant"
-                          ? userClass.id === course.data.courseClass.id
+                          ? userClass.id === course?.data?.courseClass.id
                           : true
                       )
                       .filter((course) =>
@@ -895,7 +898,7 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? userClass.id === course.data.courseClass.id
+                    ? userClass.id === course?.data?.courseClass.id
                     : true
                 )
                 .filter((course) =>
@@ -1006,7 +1009,7 @@ const Cours = () => {
               )
                 .filter((course) =>
                   userStatus === "etudiant"
-                    ? userClass.id === course.data.courseClass.id
+                    ? userClass.id === course?.data?.courseClass.id
                     : true
                 )
                 .filter((course) =>

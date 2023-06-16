@@ -51,6 +51,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import GroupIcon from "@mui/icons-material/Group";
 
 import uploadFile from "../../../assets/img/upload-file.svg";
+import CallModal from "./CallModal";
 import "./CoursInfo.scss";
 import "react-toastify/dist/ReactToastify.css";
 import SkeletonCoursInfoLeft from "../../../components/ressources/cours/SkeletonCoursInfoLeft";
@@ -130,6 +131,8 @@ const CoursInfo = () => {
 
   const [pdfLinksCours, setPdfLinksCours] = useState([]);
   const [pdfLinksBacklog, setPdfLinksBacklog] = useState([]);
+
+  const [openCall, setOpenCall] = useState(false);
 
   const { control } = useForm({
     mode: "onTouched",
@@ -518,6 +521,12 @@ const CoursInfo = () => {
     setFileBacklog(event.target.files[0]);
   };
 
+  const handleOpenCallModal = () => {
+    setOpenCall(true);
+  };
+  const handleCloseCallModal = () => {
+    setOpenCall(false);
+  };
   const handleDownload = (url) => {
     const link = document.createElement("a");
     link.href = url;
@@ -579,7 +588,7 @@ const CoursInfo = () => {
         console.error(error);
         setLoading(false);
       });
-  }, [id]);
+  }, [getCoursId, id]);
 
   return (
     <>
@@ -1239,6 +1248,7 @@ const CoursInfo = () => {
                               color: "#ffffff",
                             }}
                             className={classes.callButton}
+                            onClick={handleOpenCallModal}
                           >
                             Lancer l'appel
                           </Button>
@@ -1252,6 +1262,7 @@ const CoursInfo = () => {
                               color: "#ffffff",
                             }}
                             className={classes.joinCallButton}
+                            onClick={handleOpenCallModal}
                           >
                             Rejoindre l'appel
                           </Button>
@@ -1413,6 +1424,14 @@ const CoursInfo = () => {
           </div>
         </div>
         <ToastContainer></ToastContainer>
+        <CallModal
+          open={openCall}
+          lessonId={id}
+          handleClose={handleCloseCallModal}
+          classId={coursData?.courseClass?.id}
+          className={coursData?.courseClass?.name}
+          user={user}
+        ></CallModal>
       </div>
     </>
   );
