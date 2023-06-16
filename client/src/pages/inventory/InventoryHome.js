@@ -32,6 +32,7 @@ import "../../styles/inventoryGlobal.css";
 
 const Sujection = ({openSujection, setOpenSujection}) => {
   const [url, setUrl] = useState("");
+  const [imageURL, setImageURL] = useState("");
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -42,9 +43,10 @@ const Sujection = ({openSujection, setOpenSujection}) => {
   const handleSendSujection = async () => {
     setLoading(true);
     await axios
-      .post("http://localhost:5050/inventory/createIdea", {
+      .post(`${process.env.REACT_APP_SERVER_API}/inventory/createIdea`, {
         name,
         url,
+        imageURL,
         price,
         description,
         reason,
@@ -73,12 +75,24 @@ const Sujection = ({openSujection, setOpenSujection}) => {
             autoFocus
             margin="dense"
             id="url"
-            label="URL du produit"
+            label="Page du produit (URL)"
             type="url"
             fullWidth
             variant="outlined"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+          />
+          <TextField
+            required
+            autoFocus
+            margin="dense"
+            id="url"
+            label="Image du produit (URL)"
+            type="url"
+            fullWidth
+            variant="outlined"
+            value={imageURL}
+            onChange={(e) => setImageURL(e.target.value)}
           />
           <TextField
             required
@@ -214,7 +228,9 @@ function InventoryHome() {
 
   useEffect(() => {
     (async () => {
-      const ws = new w3cwebsocket("ws://localhost:5050/liveInventory");
+      const ws = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/liveInventory`
+      );
 
       const inv = (ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
@@ -299,6 +315,11 @@ function InventoryHome() {
       />
 
       <Toaster position="bottom-left" />
+      <Sujection
+        openSujection={openSujection}
+        setOpenSujection={setOpenSujection}
+      />
+
       {user?.status !== "etudiant" && (
         <Button
           variant="contained"

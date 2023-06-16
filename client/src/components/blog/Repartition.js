@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -11,7 +11,7 @@ import {
   PointElement,
   Filler,
 } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
+import {Doughnut} from "react-chartjs-2";
 import axios from "axios";
 
 function BlogRepartition() {
@@ -24,7 +24,7 @@ function BlogRepartition() {
   const fetchData = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5050/blog/stats/distribution"
+        `${process.env.REACT_APP_SERVER_API}/blog/stats/distribution`
       );
       const data = response.data;
 

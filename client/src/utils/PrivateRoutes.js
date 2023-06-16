@@ -19,6 +19,17 @@ function PrivateRoutes() {
       logout();
       navigate("/login");
     }
+
+    (async () => {
+      await axios
+        .post(`${process.env.REACT_APP_SERVER_API}/auth/login`, {
+          token,
+        })
+        .catch((err) => {
+          logout();
+          navigate("/login");
+        });
+    })();
   }, [token, lastConnectionAt]);
 
   return user && <MiniDrawer element={<Outlet />} />;

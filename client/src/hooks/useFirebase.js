@@ -20,6 +20,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 
 export const FirebaseContext = createContext();
 
@@ -39,7 +40,7 @@ export const FirebaseContextProvider = ({ children }) => {
     const authUnsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         axios
-          .post("http://localhost:5050/auth/login", {
+          .post(`${process.env.REACT_APP_SERVER_API}/auth/login`, {
             token: user?.accessToken,
           })
           .then((res) => {
@@ -75,7 +76,7 @@ export const FirebaseContextProvider = ({ children }) => {
   };
 
   return (
-    <FirebaseContext.Provider value={{ auth, db, user, logout }}>
+    <FirebaseContext.Provider value={{auth, db, user, logout, storage}}>
       {children}
     </FirebaseContext.Provider>
   );

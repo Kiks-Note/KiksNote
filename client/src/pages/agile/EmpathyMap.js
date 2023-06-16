@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 import Button from "@mui/material/Button";
-import { TextField, Typography } from "@mui/material";
+import {TextField, Typography} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import IconButton from "@mui/material/IconButton";
 import PostIt from "../../components/agile/PostIt";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import axios from "axios";
-import { w3cwebsocket } from "websocket";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {w3cwebsocket} from "websocket";
+import {DragDropContext, Droppable, Draggable} from "react-beautiful-dnd";
 import html2pdf from "html2pdf.js";
 import "../../components/agile/Postit.scss";
 import { Rings } from "react-loader-spinner";
@@ -100,8 +100,9 @@ export default function EmpathyMap({ dashboardId, actorId }) {
     }
   };
   const addPostIt = (columnId) => {
+
     axios.put(
-      "http://localhost:5050/agile/" +
+      `${process.env.REACT_APP_SERVER_API}/agile/` +
         dashboardId +
         "/empathy/" +
         actorId +
@@ -117,7 +118,7 @@ export default function EmpathyMap({ dashboardId, actorId }) {
   };
   async function changeCardIndex(newColumns) {
     await axios.put(
-      "http://localhost:5050/agile/" +
+      `${process.env.REACT_APP_SERVER_API}/agile/` +
         dashboardId +
         "/empathy/" +
         actorId +
@@ -161,14 +162,15 @@ export default function EmpathyMap({ dashboardId, actorId }) {
         const formData = new FormData();
         formData.append(
           "pdfFile",
-          new Blob([buffer], { type: "application/pdf" }),
+          new Blob([buffer], {type: "application/pdf"}),
           "empathy-map.pdf"
         );
         formData.append("fieldName", "empathy_map");
         formData.append("actorId", actorId);
 
         return axios.post(
-          "http://localhost:5050/agile/" + dashboardId + "/folder",
+
+          `${process.env.REACT_APP_SERVER_API}/agile/` + dashboardId + "/folder",
           formData
         );
       })

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import axios from "axios";
 import {
   Card,
@@ -31,7 +31,7 @@ import ListModal from "./ListModal";
 import useFirebase from "../../../hooks/useFirebase";
 import "./DetailCard.css";
 export default function DetailCard(props) {
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const info = props.info;
   //NAME LISTENER
   const [isEditingName, setIsEditingName] = useState(false);
@@ -115,7 +115,7 @@ export default function DetailCard(props) {
         };
       }
       await axios.put(
-        "http://localhost:5050/dashboard/" +
+        `${process.env.REACT_APP_SERVER_API}/dashboard/` +
           props.dashboardId +
           "/board/" +
           props.boardId +
@@ -187,7 +187,7 @@ export default function DetailCard(props) {
         };
       }
       await axios.put(
-        "http://localhost:5050/dashboard/" +
+        `${process.env.REACT_APP_SERVER_API}/dashboard/` +
           props.dashboardId +
           "/board/" +
           props.boardId +
@@ -205,7 +205,7 @@ export default function DetailCard(props) {
   const deleteCard = async () => {
     try {
       await axios.delete(
-        "http://localhost:5050/dashboard/" +
+        `${process.env.REACT_APP_SERVER_API}/dashboard/` +
           props.dashboardId +
           "/board/" +
           props.boardId +
@@ -228,7 +228,7 @@ export default function DetailCard(props) {
           (userId) => userId !== user.id
         );
         await axios.put(
-          "http://localhost:5050/dashboard/" +
+          `${process.env.REACT_APP_SERVER_API}/dashboard/` +
             props.dashboardId +
             "/board/" +
             props.boardId +
@@ -257,7 +257,7 @@ export default function DetailCard(props) {
 
     try {
       await axios.post(
-        "http://localhost:5050/dashboard/" +
+        `${process.env.REACT_APP_SERVER_API}/dashboard/` +
           props.dashboardId +
           "/board/" +
           props.boardId +
@@ -266,7 +266,7 @@ export default function DetailCard(props) {
           "/story/" +
           info.id +
           "/add-users",
-        { userIds: [user.id] }
+        {userIds: [user.id]}
       );
       setIsAssigned(true);
       props.handleClose();
@@ -393,11 +393,11 @@ export default function DetailCard(props) {
             </div>
           ))}
         <CardContent className="card-content">
-          <div style={{ width: "-webkit-fill-available" }}>
+          <div style={{width: "-webkit-fill-available"}}>
             <div>
               <Typography sx={style_title} color="text.default">
                 {" "}
-                <LabelIcon style={{ color: "gray", marginRight: "5px" }} />
+                <LabelIcon style={{color: "gray", marginRight: "5px"}} />
                 Label(s)
               </Typography>
               <Typography
@@ -412,7 +412,7 @@ export default function DetailCard(props) {
             </div>
             <div>
               <Typography sx={style_title}>
-                <NotesIcon style={{ color: "gray", marginRight: "5px" }} />
+                <NotesIcon style={{color: "gray", marginRight: "5px"}} />
                 Description
               </Typography>
               {isEditingDescription || !info.desc ? (
@@ -425,7 +425,7 @@ export default function DetailCard(props) {
                   }}
                 >
                   <TextField
-                    sx={{ width: "100%" }}
+                    sx={{width: "100%"}}
                     value={descriptionValue}
                     onChange={handleDescriptionChange}
                     placeholder="Ajouter une description…"
@@ -503,7 +503,7 @@ export default function DetailCard(props) {
                   </ListItemIcon>
                   <ListItemText
                     primary="Lier Story"
-                    primaryTypographyProps={{ color: "text.default" }}
+                    primaryTypographyProps={{color: "text.default"}}
                   />
                 </ListItemButton>
               </ListItem>
@@ -520,7 +520,7 @@ export default function DetailCard(props) {
                 </ListItemIcon>
                 <ListItemText
                   primary="Label(s)"
-                  primaryTypographyProps={{ color: "text.default" }}
+                  primaryTypographyProps={{color: "text.default"}}
                 />
               </ListItemButton>
             </ListItem>
@@ -531,7 +531,7 @@ export default function DetailCard(props) {
                 </ListItemIcon>
                 <ListItemText
                   primary="Supprimer"
-                  primaryTypographyProps={{ color: "text.default" }}
+                  primaryTypographyProps={{color: "text.default"}}
                 />
               </ListItemButton>
             </ListItem>

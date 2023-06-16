@@ -15,10 +15,10 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import React, {useEffect, useState} from "react";
+import {useForm} from "react-hook-form";
 import axios from "axios";
-function ProfilFormUpdate({ onClose, user }) {
+function ProfilFormUpdate({onClose, user}) {
   const [image, setImage] = useState(user.image);
   const [pictureToUpload, setPictureToUpload] = useState(null);
   const [dateBirthday, setDateBirthday] = useState(new Date(user.dateBirthday));
@@ -46,7 +46,7 @@ function ProfilFormUpdate({ onClose, user }) {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting, isSubmitSuccessful },
+    formState: {errors, isSubmitting, isSubmitSuccessful},
   } = useForm({
     mode: "onTouched",
   });
@@ -70,7 +70,7 @@ function ProfilFormUpdate({ onClose, user }) {
 
     try {
       const response = await axios.put(
-        `http://localhost:5050/profil/${user.id}`,
+        `${process.env.REACT_APP_SERVER_API}/profil/${user.id}`,
         formData,
         {
           headers: {

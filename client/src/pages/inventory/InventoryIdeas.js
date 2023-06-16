@@ -3,42 +3,94 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
-  Popover,
   Skeleton,
   TextField,
   Typography,
 } from "@mui/material";
 import axios from "axios";
 import moment from "moment";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Toaster, toast} from "react-hot-toast";
+import {useParams} from "react-router-dom";
+import BasicModal from "../../components/inventory/BasicModal";
 import GridData from "../../components/inventory/GridData";
 import timeConverter from "../../functions/TimeConverter";
-import BasicModal from "../../components/inventory/BasicModal";
-import {useParams} from "react-router-dom";
 import useFirebase from "../../hooks/useFirebase";
+import {w3cwebsocket} from "websocket";
 
-const CommentModal = ({open, setOpen, ideaId}) => {
+const ChatBox = ({sender, message}) => {
+  const {user} = useFirebase();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        marginTop: 8,
+        backgroundColor: message.userId !== user.id ? "#1E4675" : "#fff",
+        maxWidth: "80%",
+        borderRadius: 8,
+        alignSelf: message.userId === user.id ? "flex-end" : "flex-start",
+      }}
+    >
+      <Typography
+        sx={{
+          fontFamily: "poppins-regular",
+          fontSize: 14,
+          color: "grey",
+          alignSelf: "flex-start",
+          marginTop: 2,
+          marginLeft: 2,
+          maxWidth: "80%",
+          textOverflow: "ellipsis",
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {message.userId}
+      </Typography>
+      <Typography
+        sx={{
+          fontFamily: "poppins-regular",
+          fontSize: 14,
+          color: message.userId !== user.id ? "#fff" : "#000",
+          alignSelf: "flex-start",
+          padding: 2,
+
+          wordBreak: "break-word",
+          alignSelf: message.userId !== user.id ? "flex-end" : "flex-start",
+        }}
+      >
+        {message.comment}
+      </Typography>
+    </div>
+  );
+};
+
+const CommentModal = ({open, setOpen, ideaId, messages, setComments}) => {
   const [comment, setComment] = useState("");
   const {user} = useFirebase();
+  const bottomRef = useRef();
 
   const handleClose = () => {
     setOpen(false);
+    setComments([]);
   };
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({behavior: "smooth"});
+  }, [messages]);
 
   const handleSend = async () => {
     try {
       await axios.post(
-        `http://localhost:5050/inventory/ideas/comment${ideaId}`,
-        {
-          comment,
-          userId: user.id,
-        }
+        `${process.env.REACT_APP_SERVER_API}/inventory/ideas/comment/${ideaId}`,
+        {comment, userId: user.id}
       );
       toast.success("Commentaire envoyé");
-      setOpen(false);
+      setComment("");
+      // setOpen(false);
     } catch (error) {
       toast.error("Erreur lors de l'envoi");
       console.error(error);
@@ -66,6 +118,20 @@ const CommentModal = ({open, setOpen, ideaId}) => {
         </Typography>
       </DialogTitle>
       <DialogContent>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-start",
+            maxHeight: 400,
+            overflowY: "auto",
+          }}
+        >
+          {messages.map((message) => (
+            <ChatBox sender={message.sender} message={message.comment} />
+          ))}
+          <div ref={bottomRef} />
+        </div>
         <TextField
           autoFocus
           margin="dense"
@@ -81,12 +147,12 @@ const CommentModal = ({open, setOpen, ideaId}) => {
             maxLength: 500,
             style: {
               fontFamily: "poppins-regular",
-              minHeight: 150,
+              minHeight: 40,
               fontSize: 16,
             },
           }}
           sx={{
-            minHeight: 150,
+            minHeight: 40,
             fontFamily: "poppins-regular",
             marginTop: 4,
             fontSize: 16,
@@ -106,7 +172,7 @@ const CommentModal = ({open, setOpen, ideaId}) => {
             Annuler
           </Typography>
         </Button>
-        <Button onClick={handleClose}>
+        <Button onClick={() => handleSend()}>
           <Typography
             sx={{
               fontFamily: "poppins-regular",
@@ -131,6 +197,7 @@ const InventoryIdeas = () => {
   const [modalType, setModalType] = useState("");
   const [modalCommentOpen, setModalCommentOpen] = useState(false);
   const [clickedIdeaId, setClickedIdeaId] = useState("");
+  const [comments, setComments] = useState([]);
 
   const params = useParams();
 
@@ -139,7 +206,7 @@ const InventoryIdeas = () => {
       (async () => {
         try {
           const response = await axios.get(
-            `http://localhost:5050/inventory/ideas`
+            `${process.env.REACT_APP_SERVER_API}/inventory/ideas`
           );
 
           if (params.status === "treated") {
@@ -177,7 +244,9 @@ const InventoryIdeas = () => {
 
   const handleAccept = async (id) => {
     try {
-      await axios.put(`http://localhost:5050/inventory/ideas/${id}/accept`);
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/inventory/ideas/${id}/accept`
+      );
       toast.success("Idée acceptée");
       setLoading(true);
     } catch (error) {
@@ -188,13 +257,32 @@ const InventoryIdeas = () => {
 
   const handleRefuse = async (id) => {
     try {
-      await axios.put(`http://localhost:5050/inventory/ideas/${id}/refuse`);
+      await axios.put(
+        `${process.env.REACT_APP_SERVER_API}/inventory/ideas/${id}/refuse`
+      );
       toast.success("Idée refusée");
       setLoading(true);
     } catch (error) {
       toast.error("Erreur lors du refus");
       console.error(error);
     }
+  };
+
+  const loadComments = async (value) => {
+    const ws = new w3cwebsocket(
+      `${process.env.REACT_APP_SERVER_API_WS}/getIdeaComments`
+    );
+
+    ws.onopen = () => {
+      const message = JSON.stringify({value}); // Convert the value to JSON string
+      ws.send(message); // Send the message to the server
+    };
+
+    ws.onmessage = (e) => {
+      const message = JSON.parse(e.data);
+      setComments(message);
+      console.log(message);
+    };
   };
 
   const renderCells = (value, skeletonWidth = 100) => {
@@ -468,6 +556,7 @@ const InventoryIdeas = () => {
               onClick={() => {
                 setModalCommentOpen(true);
                 setClickedIdeaId(value);
+                loadComments(value);
               }}
               sx={{
                 backgroundColor: "#1E4675",
@@ -487,29 +576,6 @@ const InventoryIdeas = () => {
                 }}
               >
                 Ecrire
-              </Typography>
-            </Button>
-            <Button
-              aria-describedby={value}
-              onClick={() => setModalCommentOpen(true)}
-              sx={{
-                backgroundColor: "#1E4675",
-                "&:hover": {
-                  backgroundColor: "#2868B6",
-                },
-              }}
-            >
-              <Typography
-                sx={{
-                  fontFamily: "poppins-regular",
-                  fontSize: 14,
-                  textOverflow: "ellipsis",
-                  overflow: "hidden",
-                  cursor: "pointer",
-                  color: "#fff",
-                }}
-              >
-                Voir
               </Typography>
             </Button>
           </>
@@ -629,6 +695,8 @@ const InventoryIdeas = () => {
         open={modalCommentOpen}
         setOpen={setModalCommentOpen}
         ideaId={clickedIdeaId}
+        messages={comments}
+        setComments={setComments}
       />
 
       {params.status === undefined && (

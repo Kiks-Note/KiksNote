@@ -1,3 +1,4 @@
+
 import { useEffect, useState, useRef, useMemo, useCallback } from "react";
 import axios from "axios";
 import "./Callteacher.scss";
@@ -59,6 +60,7 @@ function AppelProf(callId) {
     }
   }, [user?.id, user?.firstname, user?.class, ws]);
 
+
   useEffect(() => {
     const handleOpen = async () => {
       if (user.status === "po") {
@@ -82,7 +84,6 @@ function AppelProf(callId) {
               tempCall.current = appel;
               setCall(appel);
               setQrcode(appel.qrcode);
-
               generated.current = true;
               divRef.current.scrollIntoView({
                 behavior: "instant",

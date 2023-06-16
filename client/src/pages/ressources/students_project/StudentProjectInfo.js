@@ -1,51 +1,48 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
-
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
-
 import useFirebase from "../../../hooks/useFirebase";
-
 import { toast, ToastContainer } from "react-toastify";
 
 import {
-  Typography,
-  Divider,
-  ListItemText,
-  ListItemAvatar,
   Avatar,
   Button,
+  Card,
+  CardContent,
+  CardMedia,
+  Chip,
+  Collapse,
+  Divider,
   List,
   ListItem,
-  Collapse,
-  Chip,
-  Card,
-  CardMedia,
-  CardContent,
+  ListItemAvatar,
+  ListItemText,
+  Typography,
 } from "@mui/material";
 
-import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
-import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
-import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
-import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
-import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
-import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
-import ConstructionIcon from "@mui/icons-material/Construction";
 import AddLinkIcon from "@mui/icons-material/AddLink";
+import BackHandRoundedIcon from "@mui/icons-material/BackHandRounded";
+import ConstructionIcon from "@mui/icons-material/Construction";
+import DeleteIcon from "@mui/icons-material/Delete";
+import DesktopWindowsRoundedIcon from "@mui/icons-material/DesktopWindowsRounded";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
-import SchoolIcon from "@mui/icons-material/School";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import OpenInNewIcon from "@mui/icons-material/OpenInNew";
-import DeleteIcon from "@mui/icons-material/Delete";
 import GitHubIcon from "@mui/icons-material/GitHub";
+import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import SchoolIcon from "@mui/icons-material/School";
+import SmartphoneRoundedIcon from "@mui/icons-material/SmartphoneRounded";
+import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
+import SportsEsportsRoundedIcon from "@mui/icons-material/SportsEsportsRounded";
 import VideocamIcon from "@mui/icons-material/Videocam";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 
 import NoVotesImg from "../../../assets/img/votes-students-projects.svg";
 
+import SkeletonStudentProjectInfo from "../../../components/ressources/students_project/SkeletonStudentProjectInfo";
 import BlogTutosLinkDialog from "./../../../components/ressources/students_project/BlogTutosLinkDialog";
 import UploadVideoPlayerDialog from "./../../../components/ressources/students_project/UploadVideoStudentProject";
 import "./StudentsProjectsInfo.scss";
-import SkeletonStudentProjectInfo from "../../../components/ressources/students_project/SkeletonStudentProjectInfo";
 
 const options = {
   autoClose: 2000,
@@ -70,7 +67,7 @@ const StudentProjectInfo = () => {
   const { user } = useFirebase();
   const navigate = useNavigate();
 
-  const { projectid } = useParams();
+  const {projectid} = useParams();
 
   const [allblogtutos, setAllBlogTutos] = useState([]);
   const [blogTutoData, setBlogTutoData] = useState([]);
@@ -95,7 +92,7 @@ const StudentProjectInfo = () => {
   const getBlogTutorials = async () => {
     try {
       await axios
-        .get("http://localhost:5050/ressources/blogstutos")
+        .get(`${process.env.REACT_APP_SERVER_API}/ressources/blogstutos`)
         .then((res) => {
           setAllBlogTutos(res.data);
         })
@@ -115,7 +112,7 @@ const StudentProjectInfo = () => {
   const getBlogTutoById = async (blogTutoId) => {
     try {
       const response = await axios.get(
-        `http://localhost:5050/ressources/blogstutos/${blogTutoId}`
+        `${process.env.REACT_APP_SERVER_API}/ressources/blogstutos/${blogTutoId}`
       );
       setBlogTutoData(response.data);
       setHasAddedBlog(true);
@@ -131,7 +128,7 @@ const StudentProjectInfo = () => {
   const getStudentProjectById = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:5050/ressources/studentsprojects/${projectid}`
+        `${process.env.REACT_APP_SERVER_API}/ressources/studentsprojects/${projectid}`
       );
       setSelectedProjectData(response.data);
     } catch (error) {
@@ -146,7 +143,7 @@ const StudentProjectInfo = () => {
   ) => {
     try {
       await axios
-        .delete(`http://localhost:5050/ressources/linkblogtuto/${project_id}`)
+        .delete(`${process.env.REACT_APP_SERVER_API}/ressources/linkblogtuto/${project_id}`)
         .then((res) => {
           if (
             res.status === 200 &&

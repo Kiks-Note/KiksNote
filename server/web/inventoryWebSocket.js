@@ -5,6 +5,7 @@ const {
   liveCategories,
   liveInventory,
   borrowedList,
+  getIdeaComments,
 } = require("../controllers/inventory");
 
 module.exports = function (connection, pathname) {
@@ -32,6 +33,10 @@ module.exports = function (connection, pathname) {
     case "/adminBorrowedList":
       borrowedList(connection);
       console.log("adminBorrowedList");
+      break;
+    case "/getIdeaComments":
+      getIdeaComments(connection);
+      console.log("getIdeasComments");
       break;
     default:
       break;

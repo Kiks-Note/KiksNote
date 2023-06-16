@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material";
+import React, {useEffect, useState} from "react";
+import {useTheme} from "@mui/material";
 import useFirebase from "../../hooks/useFirebase";
 import Modal from "./WidgetModal";
 import GridLayout from "react-grid-layout";
@@ -9,7 +9,7 @@ import axios from "axios";
 import "./Home.scss";
 
 function Home() {
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const theme = useTheme();
   const [layouts, setLayouts] = useState([]);
   const [edition, setEdition] = useState(false);
@@ -88,7 +88,7 @@ function Home() {
     const getLayout = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5050/home/${user.id}`
+          `${process.env.REACT_APP_SERVER_API}/home/${user.id}`
         );
         setLayouts(response.data.widgets);
       } catch (error) {
@@ -102,7 +102,7 @@ function Home() {
   const saveLayout = async () => {
     try {
       const response = await axios.post(
-        `http://localhost:5050/home/save/${user.id}/widgets`,
+        `${process.env.REACT_APP_SERVER_API}/home/save/${user.id}/widgets`,
         layouts
       );
     } catch (error) {
@@ -136,12 +136,12 @@ function Home() {
               removeLayout={removeLayout}
             />
             {edition && (
-              <h2 style={{ marginLeft: "40%", color: "red" }} className="shaky">
+              <h2 style={{marginLeft: "40%", color: "red"}} className="shaky">
                 Mode Edition
               </h2>
             )}
           </div>
-          <div style={{ position: "relative" }}>
+          <div style={{position: "relative"}}>
             <GridLayout
               className={"layout"}
               cols={14}

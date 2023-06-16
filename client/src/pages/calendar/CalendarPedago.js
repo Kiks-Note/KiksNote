@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import {useState, useEffect} from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -6,20 +6,20 @@ import momentPlugin from "@fullcalendar/moment";
 import interactionPlugin from "@fullcalendar/interaction";
 import Modal from "@mui/material/Modal";
 import moment from "moment";
-import { Grid, Typography, Box, Button } from "@material-ui/core";
+import {Grid, Typography, Box, Button} from "@material-ui/core";
 import frLocale from "@fullcalendar/core/locales/fr";
 import DetailCalendar from "../../components/calendar/DetailCalendar";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { w3cwebsocket } from "websocket";
-import { useParams } from "react-router-dom";
+import {Link} from "react-router-dom";
+import {w3cwebsocket} from "websocket";
+import {useParams} from "react-router-dom";
 import timeConverter from "../../functions/TimeConverter";
 import useFirebase from "../../hooks/useFirebase";
-import { Rings } from "react-loader-spinner";
+import {Rings} from "react-loader-spinner";
 
 export default function CalendarPedago() {
-  const { id } = useParams();
-  const { user } = useFirebase();
+  const {id} = useParams();
+  const {user} = useFirebase();
   const [statesDetail, setStatesDetail] = useState({
     open: false,
     expanded: false,
@@ -29,7 +29,7 @@ export default function CalendarPedago() {
   const [className, setClassName] = useState("");
 
   const handleCloseDetail = () =>
-    setStatesDetail({ open: false, expanded: false });
+    setStatesDetail({open: false, expanded: false});
   const [selectedEvent, setSelectedEvent] = useState(null);
   const handleEventClick = (event) => {
     const eventId = event.event.id; // Récupération de l'id de l'événement cliqué
@@ -37,7 +37,7 @@ export default function CalendarPedago() {
     const selectedEvent = events.find((event) => event.id === eventId); // Recherche de l'événement correspondant à l'id
 
     setSelectedEvent(selectedEvent);
-    setStatesDetail({ open: true, expanded: false });
+    setStatesDetail({open: true, expanded: false});
   };
 
   function formatDate(dateString) {
@@ -63,7 +63,9 @@ export default function CalendarPedago() {
       setEvents(events);
     };
     const fetchSocket = async () => {
-      const wsComments = new w3cwebsocket(`ws://localhost:5050/calendar`);
+      const wsComments = new w3cwebsocket(
+        `${process.env.REACT_APP_SERVER_API_WS}/calendar`
+      );
       wsComments.onopen = function (e) {
         wsComments.send(
           JSON.stringify({
@@ -78,7 +80,7 @@ export default function CalendarPedago() {
         try {
           const data = JSON.parse(message.data);
           const modifiedData = [];
-          let idCounter = 1; 
+          let idCounter = 1;
           data.forEach((item) => {
             const startDate = new Date(timeConverter(item.dateStartSprint));
             const endDate = new Date(timeConverter(item.dateEndSprint));
@@ -147,7 +149,7 @@ export default function CalendarPedago() {
             display="flex"
             justifyContent="space-between"
             alignItems="center"
-            style={{ padding: "20px" }}
+            style={{padding: "20px"}}
           >
             <Typography variant="h3" align="center">
               Calendrier de formation {className}
@@ -162,7 +164,7 @@ export default function CalendarPedago() {
             </Button>
           </Box>
 
-          <Grid container spacing={2} style={{ padding: "20px" }}>
+          <Grid container spacing={2} style={{padding: "20px"}}>
             <Grid item xs={12} md={7}>
               <FullCalendar
                 plugins={[

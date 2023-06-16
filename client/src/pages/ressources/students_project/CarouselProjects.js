@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { toast, ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 
 import useFirebase from "../../../hooks/useFirebase";
 
@@ -24,7 +24,7 @@ import SmartToyRoundedIcon from "@mui/icons-material/SmartToyRounded";
 import MediationRoundedIcon from "@mui/icons-material/MediationRounded";
 import SchoolIcon from "@mui/icons-material/School";
 
-import { Splide, SplideSlide } from "@splidejs/react-splide";
+import {Splide, SplideSlide} from "@splidejs/react-splide";
 
 import "@splidejs/react-splide/css/sea-green";
 
@@ -32,7 +32,7 @@ import studentTopProjectsImg from "../../../assets/img/students-top-projects.jpg
 
 import "./CarouselProjects.scss";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 
 const options = {
   autoClose: 2000,
@@ -54,7 +54,7 @@ export const toastFail = (message) => {
 };
 
 const CarouselProjects = (props) => {
-  const { user } = useFirebase();
+  const {user} = useFirebase();
   const userStatus = user?.status;
   const [loading, setLoading] = useState(false);
 
@@ -74,7 +74,7 @@ const CarouselProjects = (props) => {
       setTimeout(async () => {
         try {
           const response = await axios.post(
-            "http://localhost:5050/ressources/refprojects",
+            `${process.env.REACT_APP_SERVER_API}/ressources/refprojects`,
             {
               projectId: projectId,
               counterRefToAdd: countRefAdd,
@@ -130,7 +130,7 @@ const CarouselProjects = (props) => {
       setTimeout(async () => {
         try {
           const response = await axios.post(
-            "http://localhost:5050/ressources/removerefprojects",
+            `${process.env.REACT_APP_SERVER_API}/ressources/removerefprojects`,
             {
               projectId: projectId,
               counterRefToRemove: counterRefToRemove,
@@ -218,7 +218,7 @@ const CarouselProjects = (props) => {
                     height="500"
                     style={{ objectFit: "contain" }}
                   />
-                  <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                  <Typography variant="h5" sx={{fontWeight: "bold"}}>
                     {project.nameProject}
                   </Typography>
                   <div className="type-promo-project-container">
@@ -227,35 +227,35 @@ const CarouselProjects = (props) => {
                         <Typography variant="h5">
                           {project.typeProject}
                         </Typography>
-                        <DesktopWindowsRoundedIcon sx={{ marginLeft: "5px" }} />
+                        <DesktopWindowsRoundedIcon sx={{marginLeft: "5px"}} />
                       </div>
                     ) : project.typeProject === "Mobile" ? (
                       <div className="project-type-typo">
                         <Typography variant="h5">
                           {project.typeProject}
                         </Typography>
-                        <SmartphoneRoundedIcon sx={{ marginLeft: "5px" }} />
+                        <SmartphoneRoundedIcon sx={{marginLeft: "5px"}} />
                       </div>
                     ) : project.typeProject === "Gaming" ? (
                       <div className="project-type-typo">
                         <Typography variant="h5">
                           {project.typeProject}
                         </Typography>
-                        <SportsEsportsRoundedIcon sx={{ marginLeft: "5px" }} />
+                        <SportsEsportsRoundedIcon sx={{marginLeft: "5px"}} />
                       </div>
                     ) : project.typeProject === "IA" ? (
                       <div className="project-type-typo">
                         <Typography variant="h5">
                           {project.typeProject}
                         </Typography>
-                        <SmartToyRoundedIcon sx={{ marginLeft: "5px" }} />
+                        <SmartToyRoundedIcon sx={{marginLeft: "5px"}} />
                       </div>
                     ) : project.typeProject === "DevOps" ? (
                       <div className="project-type-typo">
                         <Typography variant="h5">
                           {project.typeProject}
                         </Typography>
-                        <MediationRoundedIcon sx={{ marginLeft: "5px" }} />
+                        <MediationRoundedIcon sx={{marginLeft: "5px"}} />
                       </div>
                     ) : (
                       <div></div>
