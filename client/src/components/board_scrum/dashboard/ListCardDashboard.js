@@ -1,5 +1,4 @@
-
-import {Typography,Grid } from "@mui/material";
+import { Typography, Grid } from "@mui/material";
 import CardDashboard from "./CardDashboard";
 import PropTypes from "prop-types";
 
@@ -11,15 +10,15 @@ ListCardDashboard.propTypes = {
 ListCardDashboard.defaultProps = {
   favorisTell: () => {},
 };
-export default function ListCardDashboard(list, name,favorisTell) {
+export default function ListCardDashboard(list, name, favorisTell) {
   return (
-    <div sx={{ width: "100%" }}>
-      <Typography variant="h6" gutterBottom>
+    <div style={{ width: "100%" }}>
+      <Typography variant="h6" sx={{ fontWeight: "bold" }}>
         {name}
       </Typography>
-      <Grid container spacing={1}>
+      <Grid container spacing={2} style={{ padding: 16 }}>
         {list.map((person) => (
-          <Grid item xs={4} key={person.id}>
+          <Grid item xs={3} key={person.id} style={{ padding: 16 }}>
             <CardDashboard
               key={person.id}
               picture={person.picture}
