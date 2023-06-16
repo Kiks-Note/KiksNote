@@ -3,18 +3,17 @@ const { db } = require("../firebase");
 const calendarRequest = async (connection) => {
   connection.on("message", async (message) => {
     const userInfo = JSON.parse(message.utf8Data);
-    console.log(userInfo);
     const { class: classId, status, id: userId } = userInfo;
-    console.log(classId);
 
     try {
       let querySnapshot;
 
       if (status == "etudiant" || status == "pedago") {
-        querySnapshot = await db
-          .collection("cours")
-          .where("courseClass.id", "==", classId)
-          .get();
+       querySnapshot = await db
+         .collection("cours")
+         .where("courseClass", "array-contains", { id: classId })
+         .get();
+
       } else if (status == "po") {
         querySnapshot = await db.collection("cours").get();
       }
