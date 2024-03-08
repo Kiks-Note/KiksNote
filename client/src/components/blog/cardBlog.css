@@ -1,0 +1,101 @@
+@import url("https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap");
+
+.card_blog {
+  width: 450px;
+  height: 250px;
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.card-img-holder {
+  position: relative;
+}
+.card-img-holder img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+
+.card-blog-content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem;
+  color: #fff;
+}
+
+.content-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.blog-title {
+  position: relative;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: bold;
+  color: white;
+  bottom: 150px;
+  background-color: rgba(14, 14, 13, 0.5);
+  padding: 0.3rem;
+}
+
+.blog-time {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.5;
+  position: relative;
+  left: 8px;
+}
+
+.description {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.5;
+  position: absolute;
+  left: 8px;
+  bottom: -5px;
+}
+
+.tags_blog {
+  font-size: 0.75rem;
+  color: #aaa;
+  font-weight: 400;
+  transition: all 0.3s;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  padding: 0.5rem 0;
+  align-items: center;
+}
+
+.tags_blog li:not(:last-child) {
+  margin-right: 0.5rem;
+}
+
+.tags_blog img {
+  margin-right: 0.5rem;
+  width: 1rem;
+  height: 1rem;
+}
+
+
+.back-text{
+  bottom: 2px;
+  position: absolute;
+  left: 0px;
+  height:100%;
+  width: 100%;
+  border-radius: 0.5rem;
+  background-color: rgba(14, 14, 13, 0.5);
+}

@@ -1,0 +1,47 @@
+.home-dashboard {
+  display: flex;
+
+  padding: 50px;
+  flex-wrap: nowrap;
+}
+.news-feed {
+  min-width: 400px;
+  max-width: 600px;
+  width: 40%;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.home-dashboard-items {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+@keyframes shaky {
+  0% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shaky {
+  animation: shaky 0.5s infinite;
+}
+
+.grid {
+  background-size: 62px 35px;
+  background-image: radial-gradient(circle, #878686 1px, rgba(0, 0, 0, 0) 1px);
+}

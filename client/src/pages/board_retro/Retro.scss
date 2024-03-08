@@ -1,0 +1,184 @@
+@font-face {
+  font-family: "marker";
+  src: url("../../assets/fonts/MessyChild-axdLa.ttf");
+}
+
+.retro-container {
+  h1 {
+    font-weight: bold;
+    font-size: 40px;
+  }
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  h2 {
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .post-it {
+    position: relative;
+    font-size: 15px;
+    padding: 10px;
+    white-space: break-spaces;
+    line-break: anywhere;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    font-family: "marker";
+    input[type="text"] {
+      white-space: wrap;
+    }
+    .no-connect-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      font-size: 9px;
+      margin-left: 5px;
+    }
+    .student-cross {
+      position: absolute;
+      top: 0;
+      right: 0;
+      font-size: 9px;
+      margin-right: 5px;
+      opacity: 0;
+      transition: all 500ms ease-in-out;
+    }
+  }
+
+  input[type="text"] {
+    color: black;
+  }
+  .post-it:hover {
+    cursor: pointer;
+    transition: all 500ms ease-in-out;
+    .student-cross {
+      opacity: 1;
+    }
+    .student-cross:hover {
+      color: #191919;
+    }
+  }
+
+  nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px;
+  }
+
+  .group {
+    display: flex;
+    flex-flow: row wrap;
+    border: 1px solid rgb(190, 190, 190);
+    border-style: none;
+    overflow: hidden;
+  }
+
+  .groups-inputs {
+    width: fit-content;
+    margin-left: auto;
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-around;
+    input[type="text"] {
+      text-align: center;
+      margin-right: 10px;
+      border-radius: 5px;
+      background-color: #252525;
+      color: white;
+      border: none;
+    }
+
+    datalist {
+      width: 100%;
+      background-color: #252525;
+      color: white;
+    }
+    option {
+      width: 100%;
+      background-color: #252525;
+      color: white;
+    }
+
+    .input-button {
+      width: 40px;
+      height: 40px;
+      border-radius: 5px;
+      transition: all 500ms ease-in-out;
+      margin: 0px 5px;
+      background: transparent;
+      border: none;
+    }
+
+    .input-button:hover {
+      cursor: pointer;
+      background-color: #46464641;
+    }
+  }
+}
+
+#post-it-container {
+  position: relative;
+  margin: 5px;
+  width: 10em;
+  height: 10em;
+  z-index: 1;
+  float: left;
+
+  perspective: 1000;
+
+  #post-it-card {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: all 500ms linear;
+  }
+}
+.clicked {
+  #post-it-card {
+    transform: rotateY(180deg);
+    cursor: pointer;
+  }
+}
+
+.face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  box-sizing: unset;
+}
+
+.face.back {
+  display: block;
+  transform: rotateY(180deg);
+  padding: 5px;
+  color: black;
+  text-align: center;
+  background-color: #ffc;
+  font-size: 1em;
+}
+
+div.strategy {
+  margin: 0;
+  float: left;
+  color: #151515;
+  background: #ffc;
+  display: block;
+  height: 7.5em;
+  width: 7.5em;
+  padding: 1em;
+  text-align: center;
+  font-family: "Gloria Hallelujah", "Lato", "Helvetica Neue", Arial, sans-serif;
+  font-size: 0.9rem;
+  -moz-box-shadow: 2px 2px 9px rgba(194, 194, 194, 0.5);
+  -webkit-box-shadow: 2px 2px 9px rgba(194, 194, 194, 0.5);
+  box-shadow: 2px 2px 9px rgba(194, 194, 194, 0.5);
+}
+
+#post-its {
+  width: 560px;
+}
